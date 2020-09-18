@@ -52,7 +52,7 @@ This application is anticipated to include the following main features:
 
 ## Getting Help or Reporting an Issue
 
-To report bugs/issues/features requests, please file an [issue](https://github.com/bcgov/lucy-web/issues).
+To report bugs/issues/features requests, please file an issue.
 
 ## How to Contribute
 
@@ -67,8 +67,6 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
 ## Project Structure
 
     .config/                   - Whole application configuration
-    .jenkins/                  - Jenkins build config
-    .storybook/                - Storybook tests for the client
     .vscode/                   - IDE config for Visual Studio Code
     api/                       - API codebase
     app/                       - Ionic APP Codebase
@@ -84,7 +82,7 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
 
 ## Acknowledgements
 
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=bcgov_lucy-web)
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)]()
 
 ## License
 
