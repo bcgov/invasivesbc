@@ -5,7 +5,6 @@
     "allowJs": false,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": false,
     "suppressImplicitAnyIndexErrors": true,
