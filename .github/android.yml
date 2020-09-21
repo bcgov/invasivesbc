@@ -1,0 +1,50 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ dev, test ]
+  pull_request:
+    branches: [ dev, test ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install Ionic
+      run: |
+        npm install -g @ionic/cli
+    - name: Install Application modules
+      working-directory: ./app
+      env:
+        CI: true
+      run: npm install
+    - name: set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Build App
+      working-directory: ./app
+      env:
+        CI: ""
+      run: |
+        ionic build
+        npx cap update android
+        npx cap copy android
+    - name: Build with Gradle
+      working-directory: ./app/android
+      run: gradle assembleDebug --stacktrace
+    - name: Upload APK
+      uses: actions/upload-artifact@v1
+      with:
+        name: app
+        path: app/android/app/build/outputs/apk/debug/app-debug.apk
