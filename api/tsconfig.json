@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": ["es2018"],
+    "baseUrl": "src",
+    "outDir": "dist",
+    "typeRoots": ["node_modules/@types"]
+  },
+  "include": ["src"]
+}

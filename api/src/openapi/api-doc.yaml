@@ -1,0 +1,903 @@
+openapi: 3.0.0
+
+info:
+  version: 0.0.0
+  title: invasivesbc-api-mobile
+  description: API for InvasivesBC mobile.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:3002/api
+    description: local api
+  - url: http://localhost:7080/api
+    description: local api via docker
+  - url: https://api-mobile-dev-invasivesbc.pathfinder.gov.bc.ca
+    description: deployed api in dev environment
+  - url: https://api-mobile-test-invasivesbc.pathfinder.gov.bc.ca
+    description: deployed api in test environment
+  - url: https://api-mobile-invasivesbc.pathfinder.gov.bc.ca
+    description: deployed api in prod environmen
+
+tags:
+  - name: misc
+    description: Miscellaneous endpoints
+  - name: activity
+    description: |
+      Activity endpoints
+      An activity is a parent classification that contains Observations, Treatments, and Monitoring 'activities'
+  - name: observation
+    description: Observation activity endpoints
+  - name: plant
+    description: Plant endpoints
+  - name: code
+    description: Code endpoints
+  - name: media
+    description: Media endpoints
+
+externalDocs:
+  description: Visit GitHub to find out more about this API
+  url: https://github.com/bcgov/lucy-web.git
+
+# paths are generated via express-openapi based on the ./src/paths/* structure
+paths: {}
+
+# See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#componentsObject for supported component types
+components:
+  securitySchemes:
+    Bearer: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
+      description: |
+        To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.
+        The 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`
+
+  responses:
+    "401":
+      description: Unauthorized user
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    "503":
+      description: Service unavailable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      description: Error response object.
+      properties:
+        status:
+          type: number
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    Observation:
+      description: |
+        Observation main object.
+      type: object
+      required:
+        - observation_id
+        - workflow_id
+        - observation_date
+        - observation time
+        - observer_first_name
+        - observer_last_name
+        - species_id
+        - observation_type
+        - species_agency_code
+        - jurisdiction_code
+      properties:
+        observation_id:
+          type: number
+          title: "ID"
+        workflow_id:
+          type: number
+          title: "Workflow ID"
+        observation_date:
+          type: string
+          title: "Date"
+        observation_time:
+          type: string
+          title: "Time"
+        observer_first_name:
+          type: string
+          title: "First Name"
+        observer_last_name:
+          type: string
+          title: "Last Name"
+        species_id:
+          type: string
+          title: "Species"
+        observation_type:
+          type: string
+          title: "Type"
+        species_agency_code:
+          type: string
+          title: "Agency"
+        jurisdiction_code:
+          type: string
+          title: "Jurisdiction"
+        negative_obs_ind:
+          type: boolean
+          title: "Negative Observation"
+        subType:
+          oneOf:
+            - $ref: "#/components/schemas/Observation_PlantTerrestial"
+            - $ref: "#/components/schemas/Observation_AnimalTerrestrial"
+            - $ref: "#/components/schemas/Observation_AnimalAquatic"
+
+    Observation_PlantTerrestial:
+      description: |
+        Plant Observation Terrestrial
+      type: object
+      properties:
+        species_density_code:
+          type: string
+          title: "Density"
+        species_distribution_code:
+          type: string
+          title: "Distribution"
+        soil_texture_code:
+          type: string
+          title: "Soil Texture"
+        specific_use_code:
+          type: string
+          title: "Specific Use"
+        slope_code:
+          type: string
+          title: "Slope"
+        aspect_code:
+          type: string
+          title: "Aspect"
+        proposed_action_code:
+          type: string
+          title: "Proposed Action"
+        flowering:
+          type: boolean
+          title: "Flowering"
+        plant_life_stage:
+          type: string
+          title: "Life Stage"
+        plant_health:
+          type: string
+          title: "Health"
+        plant_seed_stage:
+          type: string
+          title: "Seed Stage"
+        sample_identifier:
+          type: string
+          title: "Sample ID"
+        range_unit_number:
+          type: string
+          title: "Range Unit"
+        general_comment:
+          type: string
+          title: "Comment"
+          maximum: 300
+        access_description:
+          type: string
+          title: "Access Description"
+        primary_file_id:
+          type: string
+          title: "Primary File"
+        secondary_file_id:
+          type: string
+          title: "Secondary File"
+        sample_taken:
+          type: boolean
+          title: "Sample Taken"
+        sample_number:
+          type: string
+          title: "Sample Number"
+        aquatic_obs_ind:
+          type: boolean
+          title: "Aquatic Observation"
+        legacy_site_ind:
+          type: boolean
+        early_detection_rapid_resp_ind:
+          type: boolean
+          title: "Early Detection"
+        research_detection_ind:
+          type: boolean
+          title: "Research Detection"
+        well_ind:
+          type: boolean
+          title: "Well"
+        special_care_ind:
+          type: boolean
+          title: "Special Care"
+        biological_ind:
+          type: boolean
+          title: "Biological"
+        Photo_Indicator:
+          type: boolean
+          title: "Photo"
+        Bec_Zone:
+          type: string
+          title: "Bec Zone"
+        RISO:
+          type: string
+          title: "RISO"
+        IPMA:
+          type: string
+          title: "IPMA"
+        Ownership:
+          type: string
+          title: "Owned by"
+        Regional_District:
+          type: string
+          title: "Regional District"
+        FLNRO_District:
+          type: string
+          title: "FLNRO District"
+        MOTI_District:
+          type: string
+          title: "MOTI District"
+        MOE_Region:
+          type: string
+          title: "MOE Region"
+        photo:
+          type: array
+          title: "Photos"
+          items:
+            $ref: "#/components/schemas/Photo"
+
+    Photo:
+      description: |
+        List of Photos
+      type: object
+      required:
+        - photo_id
+      properties:
+        photo_id:
+          type: number
+          title: "ID"
+        observation_id:
+          type: number
+          title: "Observation ID"
+        photo_date:
+          type: string
+          title: "Date"
+        photo_time:
+          type: string
+          title: "Time"
+        description:
+          type: string
+          title: "description"
+        photo_store:
+          type: string
+          title: "Photo"
+
+    Observation_AnimalTerrestrial:
+      description: |
+        Animal Observation Terrestrial.
+      type: object
+      properties:
+        Number_of_Individuals_observed:
+          type: number
+          title: "Number of Individuals"
+        Life_Stage:
+          type: string
+          title: "Life Stage"
+        Behaviour:
+          type: string
+          title: "Behaviour"
+        sample_taken:
+          type: boolean
+          title: "Sample Taken"
+        sample_number:
+          type: string
+          title: "Sample Number"
+        general_comment:
+          type: string
+          title: "Comment"
+        access_description:
+          type: string
+          title: "Access Description"
+        photo:
+          type: array
+          title: "Photos"
+          items:
+            $ref: "#/components/schemas/Photo"
+
+    Observation_AnimalAquatic:
+      description: |
+        Animal Observation Aquatic.
+      type: object
+      properties:
+        Number_of_Individuals_observed:
+          type: number
+          title: "Number of Individuals"
+        Life_Stage:
+          type: string
+          title: "Life Stage"
+        Behaviour:
+          type: string
+          title: "Behaviour"
+        sample_taken:
+          type: boolean
+          title: "Sample Taken"
+        sample_number:
+          type: string
+          title: "Sample Number"
+        general_comment:
+          type: string
+          title: "Comment"
+        access_description:
+          type: string
+          title: "Access Description"
+        photo:
+          type: array
+          title: "Photos"
+          items:
+            $ref: "#/components/schemas/Photo"
+
+    ObservationPlantResponse:
+      description: |
+        Observation plant response object.
+        Returned in the 200 responses for all `/observation/plant/*` routes.
+      type: object
+      required:
+        - observation_id
+        - observation_date
+        - access_description
+        - observer_first_name
+        - observer_last_name
+        - sample_identifier
+        - range_unit_number
+        - general_comment
+        - legacy_site_ind
+        - early_detection_rapid_resp_ind
+        - research_detection_ind
+        - sample_taken_ind
+        - well_ind
+        - special_care_ind
+        - biological_ind
+        - aquatic_ind
+        - species_id
+        - jurisdiction_code_id
+        - species_density_code_id
+        - species_distribution_code_id
+        - observation_type_code_id
+        - species_agency_code_id
+        - soil_texture_code_id
+        - specific_use_code_id
+        - observation_slope_code_id
+        - observation_aspect_code_id
+        - observation_proposed_action_code_id
+        - created_at
+        - updated_at
+        - updated_by_user_id
+        - created_by_user_id
+        - space_geom_id
+        - hex_id
+        - hex_sub_id
+        - total_area
+        - negative_occurance_ind
+        - paper_id_primary
+        - paper_id_secondary
+        - elevation_meters
+        - well_proximity
+        - well_tag
+        - observation_geometry_code_id
+        - photo_indicator
+        - flowering
+        - bec_zone
+        - riso
+        - ipma
+        - ownership
+        - regional_district
+        - flnro_district
+        - moti_district
+        - raw_longitude
+        - raw_latitude
+        - raw_utm_zone
+        - raw_utm_easting
+        - raw_utm_northing
+        - raw_albers_x
+        - raw_albers_y
+      properties:
+        observation_id:
+          type: number
+        observation_date:
+          type: string
+        access_description:
+          type: string
+        observer_first_name:
+          type: string
+        observer_last_name:
+          type: string
+        sample_identifier:
+          type: string
+        range_unit_number:
+          type: string
+        general_comment:
+          type: string
+        legacy_site_ind:
+          type: boolean
+        early_detection_rapid_resp_ind:
+          type: boolean
+        research_detection_ind:
+          type: boolean
+        sample_taken_ind:
+          type: boolean
+        well_ind:
+          type: boolean
+        special_care_ind:
+          type: boolean
+        biological_ind:
+          type: boolean
+        aquatic_ind:
+          type: boolean
+        species_id:
+          type: object
+        jurisdiction_code_id:
+          type: object
+        species_density_code_id:
+          type: object
+        species_distribution_code_id:
+          type: object
+        observation_type_code_id:
+          type: object
+        species_agency_code_id:
+          type: object
+        soil_texture_code_id:
+          type: object
+        specific_use_code_id:
+          type: object
+        observation_slope_code_id:
+          type: object
+        observation_aspect_code_id:
+          type: object
+        observation_proposed_action_code_id:
+          type: object
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        updated_by_user_id:
+          type: number
+        created_by_user_id:
+          type: number
+        space_geom_id:
+          type: number
+        hex_id:
+          type: number
+        hex_sub_id:
+          type: number
+        total_area:
+          type: number
+        negative_occurance_ind:
+          type: boolean
+        paper_id_primary:
+          type: string
+        paper_id_secondary:
+          type: string
+        elevation_meters:
+          type: number
+        well_proximity:
+          type: number
+        well_tag:
+          type: number
+        observation_geometry_code_id:
+          type: object
+        photo_indicator:
+          type: boolean
+        flowering:
+          type: boolean
+        bec_zone:
+          type: string
+        riso:
+          type: string
+        ipma:
+          type: string
+        ownership:
+          type: string
+        regional_district:
+          type: string
+        flnro_district:
+          type: string
+        moti_district:
+          type: string
+        raw_longitude:
+          type: number
+        raw_latitude:
+          type: number
+        raw_utm_zone:
+          type: number
+        raw_utm_easting:
+          type: number
+        raw_utm_northing:
+          type: number
+        raw_albers_x:
+          type: number
+        raw_albers_y:
+          type: number
+
+    ObservationCodeResponse:
+      required:
+        - message
+        - data
+      properties:
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/ObservationCode"
+
+    ObservationCode:
+      description: Observation code tables.
+      required:
+        - observation_aspect_code
+        - jurisdiction_code
+        - observation_geometry_code
+        - observation_type_code
+        - observation_proposed_action_code
+        - observation_slope_code
+        - soil_texture_code
+        - species_agency_code
+        - species_density_code
+        - species_distribution_code
+        - species
+        - specific_use_code
+      properties:
+        observation_aspect_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/AspectCode"
+        jurisdiction_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/JurisdictionCode"
+        observation_geometry_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/ObservationGeometryCode"
+        observation_type_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/ObservationTypeCode"
+        observation_proposed_action_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProposedActionCode"
+        observation_slope_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/SlopeCode"
+        soil_texture_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/SoilTextureCode"
+        species:
+          type: array
+          items:
+            $ref: "#/components/schemas/Species"
+        species_density_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/SpeciesDensityCode"
+        species_distribution_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/SpeciesDistributionCode"
+        species_agency_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/SpeciesAgencyCode"
+        specific_use_code:
+          type: array
+          items:
+            $ref: "#/components/schemas/SpecificUseCode"
+
+    AspectCode:
+      type: object
+      required:
+        - observation_aspect_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        observation_aspect_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    JurisdictionCode:
+      type: object
+      required:
+        - jurisdiction_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        jurisdiction_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    ObservationGeometryCode:
+      type: object
+      required:
+        - observation_geometry_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        observation_geometry_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    ObservationTypeCode:
+      type: object
+      required:
+        - observation_type_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        observation_type_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    ProposedActionCode:
+      type: object
+      required:
+        - observation_proposed_action_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        observation_proposed_action_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    SlopeCode:
+      type: object
+      required:
+        - observation_slope_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        observation_slope_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    SoilTextureCode:
+      type: object
+      required:
+        - soil_texture_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        soil_texture_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    Species:
+      type: object
+      required:
+        - species_id
+        - mapCode
+        - earlyDetection
+        - containmentSpecies
+        - containmentSpacialRef
+        - species
+        - genus
+        - commonName
+        - latinName
+        - updateAt
+        - createdAt
+      properties:
+        species_id:
+          type: number
+        mapCode:
+          type: string
+        earlyDetection:
+          type: boolean
+        containmentSpecies:
+          type: number
+        containmentSpacialRef:
+          type: number
+        species:
+          type: string
+        genus:
+          type: string
+        commonName:
+          type: string
+        latinName:
+          type: string
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    SpeciesDensityCode:
+      type: object
+      required:
+        - species_density_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        species_density_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    SpeciesDistributionCode:
+      type: object
+      required:
+        - species_distribution_code_id
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        species_distribution_code_id:
+          type: number
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    SpeciesAgencyCode:
+      type: object
+      required:
+        - species_agency_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        species_agency_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string
+
+    SpecificUseCode:
+      type: object
+      required:
+        - specific_use_code_id
+        - code
+        - description
+        - activeIndicator
+        - updateAt
+        - createdAt
+      properties:
+        specific_use_code_id:
+          type: number
+        code:
+          type: string
+        description:
+          type: string
+        activeIndicator:
+          type: boolean
+        updateAt:
+          type: string
+        createdAt:
+          type: string

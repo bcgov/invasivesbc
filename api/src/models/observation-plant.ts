@@ -1,0 +1,127 @@
+/**
+ * Observation plant data model.
+ *
+ * @export
+ * @class ObservationPlant
+ */
+export class ObservationPlant {
+  observation_id: number;
+  observation_date: string;
+  access_description: string;
+  observer_first_name: string;
+  observer_last_name: string;
+  sample_identifier: string;
+  range_unit_number: string;
+  general_comment: string;
+  legacy_site_ind: boolean;
+  early_detection_rapid_resp_ind: boolean;
+  research_detection_ind: boolean;
+  sample_taken_ind: boolean;
+  well_ind: boolean;
+  special_care_ind: boolean;
+  biological_ind: boolean;
+  aquatic_ind: boolean;
+  species_id: number;
+  jurisdiction_code_id: number;
+  species_density_code_id: number;
+  species_distribution_code_id: number;
+  observation_type_code_id: number;
+  species_agency_code_id: number;
+  soil_texture_code_id: number;
+  specific_use_code_id: number;
+  observation_slope_code_id: number;
+  observation_aspect_code_id: number;
+  observation_proposed_action_code_id: number;
+  createdAt: string;
+  updateAt: string;
+  updated_by_user_id: number;
+  created_by_user_id: number;
+  space_geom_id: number;
+  hex_id: number;
+  hex_sub_id: number;
+  total_area: number;
+  negative_occurance_ind: boolean;
+  paper_id_primary: string;
+  paper_id_secondary: string;
+  elevation_meters: number;
+  well_proximity: number;
+  well_tag: number;
+  observation_geometry_code_id: number;
+  photo_indicator: boolean;
+  flowering: boolean;
+  bec_zone: string;
+  riso: string;
+  ipma: string;
+  ownership: string;
+  regional_district: string;
+  flnro_district: string;
+  moti_district: string;
+  raw_longitude: number;
+  raw_latitude: number;
+  raw_utm_zone: number;
+  raw_utm_easting: number;
+  raw_utm_northing: number;
+  raw_albers_x: number;
+  raw_albers_y: number;
+
+  constructor(obj?: any) {
+    this.observation_id = (obj && obj.observation_id) || null;
+    this.observation_date = (obj && obj.observation_date) || null;
+    this.access_description = (obj && obj.access_description) || null;
+    this.observer_first_name = (obj && obj.observer_first_name) || null;
+    this.observer_last_name = (obj && obj.observer_last_name) || null;
+    this.sample_identifier = (obj && obj.sample_identifier) || null;
+    this.range_unit_number = (obj && obj.range_unit_number) || null;
+    this.general_comment = (obj && obj.general_comment) || null;
+    this.legacy_site_ind = (obj && obj.legacy_site_ind) || null;
+    this.early_detection_rapid_resp_ind = (obj && obj.early_detection_rapid_resp_ind) || null;
+    this.research_detection_ind = (obj && obj.research_detection_ind) || null;
+    this.sample_taken_ind = (obj && obj.sample_taken_ind) || null;
+    this.well_ind = (obj && obj.well_ind) || null;
+    this.special_care_ind = (obj && obj.special_care_ind) || null;
+    this.biological_ind = (obj && obj.biological_ind) || null;
+    this.aquatic_ind = (obj && obj.aquatic_ind) || null;
+    this.species_id = (obj && obj.species_id) || null;
+    this.jurisdiction_code_id = (obj && obj.jurisdiction_code_id) || null;
+    this.species_density_code_id = (obj && obj.species_density_code_id) || null;
+    this.species_distribution_code_id = (obj && obj.species_distribution_code_id) || null;
+    this.observation_type_code_id = (obj && obj.observation_type_code_id) || null;
+    this.species_agency_code_id = (obj && obj.species_agency_code_id) || null;
+    this.soil_texture_code_id = (obj && obj.soil_texture_code_id) || null;
+    this.specific_use_code_id = (obj && obj.specific_use_code_id) || null;
+    this.observation_slope_code_id = (obj && obj.observation_slope_code_id) || null;
+    this.observation_aspect_code_id = (obj && obj.observation_aspect_code_id) || null;
+    this.observation_proposed_action_code_id = (obj && obj.observation_proposed_action_code_id) || null;
+    this.updateAt = (obj && obj.updateAt) || null;
+    this.createdAt = (obj && obj.createdAt) || null;
+    this.updated_by_user_id = (obj && obj.updated_by_user_id) || null;
+    this.created_by_user_id = (obj && obj.created_by_user_id) || null;
+    this.space_geom_id = (obj && obj.space_geom_id) || null;
+    this.hex_id = (obj && obj.hex_id) || null;
+    this.hex_sub_id = (obj && obj.hex_sub_id) || null;
+    this.total_area = (obj && obj.total_area) || null;
+    this.negative_occurance_ind = (obj && obj.negative_occurance_ind) || null;
+    this.paper_id_primary = (obj && obj.paper_id_primary) || null;
+    this.paper_id_secondary = (obj && obj.paper_id_secondary) || null;
+    this.elevation_meters = (obj && obj.elevation_meters) || null;
+    this.well_proximity = (obj && obj.well_proximity) || null;
+    this.well_tag = (obj && obj.well_tag) || null;
+    this.observation_geometry_code_id = (obj && obj.observation_geometry_code_id) || null;
+    this.photo_indicator = (obj && obj.photo_indicator) || null;
+    this.flowering = (obj && obj.flowering) || null;
+    this.bec_zone = (obj && obj.bec_zone) || null;
+    this.riso = (obj && obj.riso) || null;
+    this.ipma = (obj && obj.ipma) || null;
+    this.ownership = (obj && obj.ownership) || null;
+    this.regional_district = (obj && obj.regional_district) || null;
+    this.flnro_district = (obj && obj.flnro_district) || null;
+    this.moti_district = (obj && obj.moti_district) || null;
+    this.raw_longitude = (obj && obj.raw_longitude) || null;
+    this.raw_latitude = (obj && obj.raw_latitude) || null;
+    this.raw_utm_zone = (obj && obj.raw_utm_zone) || null;
+    this.raw_utm_easting = (obj && obj.raw_utm_easting) || null;
+    this.raw_utm_northing = (obj && obj.raw_utm_northing) || null;
+    this.raw_albers_x = (obj && obj.raw_albers_x) || null;
+    this.raw_albers_y = (obj && obj.raw_albers_y) || null;
+  }
+}
