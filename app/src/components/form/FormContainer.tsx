@@ -94,33 +94,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const [schema, setSchema] = useState({ properties: {} });
 
-  const [collection, setCollection] = useState(null);
+  // const [collection, setCollection] = useState(null);
 
   const [formData, setFormData] = useState({ activityType: 'LAME' });
-
-  const setupCollection = async () => {
-    if (!database) {
-      // database not yet set up
-      return;
-    }
-
-    if (database.activities) {
-      // collection already exists
-      if (!collection) {
-        // set existing collection if not already set
-        setCollection(database.activities);
-      }
-      return;
-    }
-
-    console.log(props.schema);
-    const table = await database.collection({
-      name: 'activities',
-      schema: { ...props.schema, version: 0 }
-    });
-
-    setCollection(table);
-  };
 
   const submitEventHandler = async (event: any) => {
     console.log('submitEventHandler: ', event);
@@ -128,10 +104,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     // const results = await collection.find().exec();
     // results.map((item) => console.log(item.toJSON()));
   };
-
-  useEffect(() => {
-    // setupCollection();
-  }, [database]);
 
   useEffect(() => {
     const getApiSpec = async () => {
