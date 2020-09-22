@@ -57,17 +57,15 @@ const App: React.FC<{ info: DeviceInfo }> = (props) => {
         <AuthStateContextProvider>
           <IonReactRouter>
             <DatabaseContextProvider>
-              <DatabaseChangesContextProvider>
-                <AuthStateContext.Consumer>
-                  {(context: IAuthState) => {
-                    if (!context.ready) {
-                      return <CircularProgress />;
-                    }
+              <AuthStateContext.Consumer>
+                {(context: IAuthState) => {
+                  if (!context.ready) {
+                    return <CircularProgress />;
+                  }
 
-                    return <AppRouter />;
-                  }}
-                </AuthStateContext.Consumer>
-              </DatabaseChangesContextProvider>
+                  return <AppRouter />;
+                }}
+              </AuthStateContext.Consumer>
             </DatabaseContextProvider>
           </IonReactRouter>
         </AuthStateContextProvider>

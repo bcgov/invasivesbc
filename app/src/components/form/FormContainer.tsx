@@ -11,15 +11,15 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'api/api';
 
 interface IFormControlProps {
-  database: PouchDB.Database;
   setFormData: Function;
-  schema?: any;
-  uiSchema?: any;
+  activity: any;
 }
 
 // Form controls:
 const FormControls: React.FC<IFormControlProps> = (props) => {
   const api = useInvasivesApi();
+
+  const databaseContext = useContext(DatabaseContext);
 
   // needed for fetch:
   const [activityID, setActivityID] = useState('');
@@ -43,7 +43,7 @@ const FormControls: React.FC<IFormControlProps> = (props) => {
   };
 
   const save = async (formData: any) => {
-    // props.database.insert(formData);
+    // databaseContext.database.put(formData);
   };
 
   return (
@@ -85,18 +85,13 @@ const FormControls: React.FC<IFormControlProps> = (props) => {
 interface IFormContainerProps {
   schema?: any;
   uiSchema?: any;
+  activity: any;
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const api = useInvasivesApi();
 
-  const database = useContext(DatabaseContext);
-
-  const [schema, setSchema] = useState({ properties: {} });
-
-  // const [collection, setCollection] = useState(null);
-
-  const [formData, setFormData] = useState({ activityType: 'LAME' });
+  const [formData, setFormData] = useState(null);
 
   const submitEventHandler = async (event: any) => {
     console.log('submitEventHandler: ', event);
@@ -113,15 +108,17 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       //       "application/json"
       //     ].schema
       //   );
-      setSchema(response.data.paths['/activity'].post.requestBody.content['application/json'].schema);
+      // setSchema(response.data.paths['/activity'].post.requestBody.content['application/json'].schema);
     };
 
     getApiSpec();
   }, [api]);
 
+  useEffect(() => {});
+
   return (
     <div>
-      <FormControls database={database} setFormData={setFormData} />
+      <FormControls activity={props.activity} setFormData={setFormData} />
 
       <Form
         formData={formData}

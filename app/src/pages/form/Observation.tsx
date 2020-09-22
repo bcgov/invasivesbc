@@ -1,9 +1,8 @@
 import { Container } from '@material-ui/core';
-import React from 'react';
 import FormContainer from 'components/form/FormContainer';
+import React from 'react';
 import { observation_uischema } from 'rjsf/uiSchema';
 
-// react json schema form related:
 const schema = {
   type: 'object',
   required: [
@@ -296,14 +295,14 @@ const schema = {
 };
 
 interface IObservationProps {
-  id: number;
   classes?: any;
+  activity: any;
 }
 
 const Observation: React.FC<IObservationProps> = (props) => {
   return (
     <Container className={props.classes.container}>
-      <FormContainer schema={schema} uiSchema={observation_uischema} />
+      <FormContainer {...props} schema={schema} uiSchema={observation_uischema} />
     </Container>
   );
 };

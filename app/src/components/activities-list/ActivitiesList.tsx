@@ -13,10 +13,10 @@ import {
 } from '@material-ui/core';
 import { Add, DeleteForever } from '@material-ui/icons';
 import { ActivityType, ActivityTypeIcon } from 'constants/activities';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
@@ -56,14 +56,12 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
   const history = useHistory();
 
-  const database = useContext(DatabaseContext);
-  const databaseChanges = useContext(DatabaseChangesContext);
-  const [databaseChangesSubscription, setDatabaseChangesSubscription] = useState(null);
+  const databaseContext = useContext(DatabaseContext);
 
   const [docs, setDocs] = useState<any[]>([]);
 
   const updateActivityList = async () => {
-    const activityDocs = await database.find({
+    const activityDocs = await databaseContext.database.find({
       selector: { type: props.type }
     });
 
@@ -71,46 +69,52 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   };
 
   useEffect(() => {
-    const subscribeToDatabaseChanges = () => {
-      if (!database) {
+    const updateComponent = (): Subscription => {
+      if (!databaseContext.database) {
+        // database not ready
         return;
       }
 
       // initial update
       updateActivityList();
 
-      // subscribe to changes and update on changes
-      const subscription = databaseChanges.subscribe(() => {
-        updateActivityList();
-      });
-
-      // store subscription
-      setDatabaseChangesSubscription(subscription);
-    };
-
-    subscribeToDatabaseChanges();
-
-    return () => {
-      if (!databaseChangesSubscription) {
+      // subscribe to future updates
+      if (!databaseContext.changes) {
+        // changes observable not ready
         return;
       }
 
-      // unsubscribe on component cleanup
-      databaseChangesSubscription.unsubscribe();
+      // subscribe to changes and update list on emit
+      const subscription = databaseContext.changes.subscribe(() => {
+        updateActivityList();
+      });
+
+      // return subscription for use in cleanup
+      return subscription;
     };
-  }, [databaseChanges]);
+
+    const subscription = updateComponent();
+
+    return () => {
+      if (!subscription) {
+        return;
+      }
+
+      // unsubscribe on cleanup
+      subscription.unsubscribe();
+    };
+  }, [databaseContext]);
 
   const removeActivity = async (doc: PouchDB.Core.RemoveDocument) => {
-    database.remove(doc);
+    databaseContext.database.remove(doc);
   };
 
-  const setActiveAAndNavigateToActivity = async (doc: any) => {
-    await database.upsert('AppState', (appStateDoc) => {
-      console.log(appStateDoc);
+  const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
+    await databaseContext.database.upsert('AppState', (appStateDoc) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
 
-    history.push(`/home/activity/${doc._id}`);
+    history.push(`/home/activity`);
   };
 
   return (
@@ -121,7 +125,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
             button
             key={doc._id}
             className={classes.activitiyListItem}
-            onClick={() => setActiveAAndNavigateToActivity(doc)}>
+            onClick={() => setActiveActivityAndNavigateToActivityPage(doc)}>
             <ListItemIcon>
               <SvgIcon component={ActivityTypeIcon[props.type]} />
             </ListItemIcon>
@@ -141,10 +145,10 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 };
 
 const ActivitiesList: React.FC = (props) => {
-  const database = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext);
 
   const addNewActivity = async (activityType: ActivityType) => {
-    await database.put({
+    await databaseContext.database.put({
       _id: uuidv4(),
       type: activityType,
       status: 'new',

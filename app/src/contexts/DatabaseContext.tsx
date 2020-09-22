@@ -2,35 +2,75 @@ import PouchDB from 'pouchdb-core';
 import PouchDBFind from 'pouchdb-find';
 import PouchDBUpsert from 'pouchdb-upsert';
 import React, { useEffect, useState } from 'react';
+import { Subject } from 'rxjs';
 
-export const DatabaseContext = React.createContext<PouchDB.Database>(null);
+interface IDatabaseContext<T> {
+  database: PouchDB.Database<T>;
+  changes: Subject<PouchDB.Core.ChangesResponseChange<T>>;
+}
+
+export const DatabaseContext = React.createContext<IDatabaseContext<any>>({ database: null, changes: null });
 
 export const DatabaseContextProvider: React.FC = (props) => {
-  const [database, setDatabase] = useState<PouchDB.Database>(null);
+  const [databaseContext, setDatabaseContext] = useState<IDatabaseContext<any>>({ database: null, changes: null });
+  const [changesListener, setChangesListener] = useState<PouchDB.Core.Changes<any>>(null);
 
   const setupDatabase = async () => {
-    if (database) {
-      return;
+    let db = databaseContext.database;
+    let dbChanges = databaseContext.changes;
+
+    if (!db) {
+      PouchDB.plugin(PouchDBFind); // adds find query support
+      PouchDB.plugin(PouchDBUpsert); // adds upsert query support
+
+      if (window['cordova']) {
+        PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite')); // adds mobile adapter
+        db = new PouchDB('invasivesbc', { adapter: 'cordova-sqlite' });
+      } else {
+        PouchDB.plugin(require('pouchdb-adapter-idb').default); // add sbrowser adapter
+        db = new PouchDB('invasivesbc', { adapter: 'idb' });
+      }
     }
 
-    let db: PouchDB.Database;
-    PouchDB.plugin(PouchDBFind); // adds find query support
-    PouchDB.plugin(PouchDBUpsert); // adds upsert query support
+    if (!dbChanges) {
+      dbChanges = new Subject<any>();
 
-    if (window['cordova']) {
-      PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite')); // adds mobile adapter
-      db = new PouchDB('invasivesbc', { adapter: 'cordova-sqlite' });
-    } else {
-      PouchDB.plugin(require('pouchdb-adapter-idb').default); // add sbrowser adapter
-      db = new PouchDB('invasivesbc', { adapter: 'idb' });
+      // add changes listenter to db that emits the changes obj to anyone subscribed to the subject
+      const changes = db
+        .changes({ live: true, since: 'now' })
+        .on('change', (change) => dbChanges.next(change))
+        .on('complete', () => () => dbChanges.complete())
+        .on('error', () => () => dbChanges.complete());
+
+      // sotre changes reference for use in cleanup
+      setChangesListener(changes);
     }
 
-    setDatabase(db);
+    setDatabaseContext({ database: db, changes: dbChanges });
   };
 
+  const cleanupDatabase = async () => {
+    let db = databaseContext.database;
+
+    if (changesListener) {
+      // cancel changes listener
+      changesListener.cancel();
+    }
+
+    if (db) {
+      // close db
+      db.close();
+    }
+  };
+
+  // TODO Update [] dependencies to properly run cleanup (if keycloak expires?)
   useEffect(() => {
     setupDatabase();
-  });
 
-  return <DatabaseContext.Provider value={database}>{props.children}</DatabaseContext.Provider>;
+    return () => {
+      cleanupDatabase();
+    };
+  }, []);
+
+  return <DatabaseContext.Provider value={databaseContext}>{props.children}</DatabaseContext.Provider>;
 };
