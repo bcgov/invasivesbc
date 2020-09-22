@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import {
   Button,
   Divider,
@@ -12,16 +11,15 @@ import {
   makeStyles,
   SvgIcon
 } from '@material-ui/core';
-import { Add, Assignment, Build, DeleteForever, SvgIconComponent, Visibility } from '@material-ui/icons';
+import { Add, DeleteForever } from '@material-ui/icons';
+import { ActivityType, ActivityTypeIcon } from 'constants/activities';
+import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import PouchDB from 'pouchdb-core';
+import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
-  subItem: {
-    paddingLeft: '32px'
-  },
   activitiyListItem: {
     display: 'flex',
     flexDirection: 'column'
@@ -31,127 +29,104 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface IListItem {
-  title: string;
-  icon: SvgIconComponent;
-  url?: string;
-  subItems?: IListSubItem[];
+interface IActivityListItem {
+  doc: any;
 }
 
-interface IListSubItem {
-  title: string;
-  icon: SvgIconComponent;
-  url?: string;
+const ActivityListItem: React.FC<IActivityListItem> = (props) => {
+  const classes = useStyles();
+
+  return (
+    <Grid container direction="row" spacing={2}>
+      <Grid item>{props.doc.title}</Grid>
+      <Divider flexItem={true} orientation="vertical" />
+      <Grid item>{props.doc.url}</Grid>
+    </Grid>
+  );
+};
+
+interface IActivityList {
+  classes?: any;
+  type: ActivityType;
 }
-
-const newObservation = (): IListSubItem => {
-  return {
-    title: 'Observation',
-    icon: Assignment,
-    url: '/activities/observation/id'
-  };
-};
-
-const newTreatment = (): IListSubItem => {
-  return {
-    title: 'Treatment',
-    icon: Build,
-    url: '/activities/treatment/id'
-  };
-};
-
-const newMonitoring = (): IListSubItem => {
-  return {
-    title: 'Monitoring',
-    icon: Visibility,
-    url: '/activities/monitoring/id'
-  };
-};
-
-interface IActivitiesList {
-  Observations: any[];
-  Treatments: any[];
-  Monitorings: any[];
-  // {
-  //   title: 'Photo Gallery',
-  //   url: '/activities/photo',
-  //   icon: Photo
-  // },
-  // {
-  //   title: 'Map',
-  //   url: '/activities/map',
-  //   icon: Map
-  // }
-}
-
-// const basicListItems: IListItem[] = [
-//   {
-//     title: 'Observation',
-//     url: '/activities/:id/observation',
-//     icon: Add,
-//     subItems: []
-//   },
-//   {
-//     title: 'Treatment',
-//     url: '/activities/:id/treatment',
-//     icon: Add,
-//     subItems: []
-//   },
-//   {
-//     title: 'Monitoring',
-//     url: '/activities/:id/monitoring',
-//     icon: Add,
-//     subItems: []
-//   }
-//   // {
-//   //   title: 'Photo Gallery',
-//   //   url: '/activities/photo',
-//   //   icon: Photo
-//   // },
-//   // {
-//   //   title: 'Map',
-//   //   url: '/activities/map',
-//   //   icon: Map
-//   // }
-// ];
 
 // TODO change any to a type that defines the overall items being displayed
-const ActivityList: React.FC<any> = (props) => {
+const ActivityList: React.FC<IActivityList> = (props) => {
+  const classes = useStyles();
+
+  const history = useHistory();
+
   const database = useContext(DatabaseContext);
+  const databaseChanges = useContext(DatabaseChangesContext);
+  const [databaseChangesSubscription, setDatabaseChangesSubscription] = useState(null);
+
+  const [docs, setDocs] = useState<any[]>([]);
+
+  const updateActivityList = async () => {
+    const activityDocs = await database.find({
+      selector: { type: props.type }
+    });
+
+    setDocs([...activityDocs.docs]);
+  };
 
   useEffect(() => {
-    if (!database) {
-      return;
-    }
+    const subscribeToDatabaseChanges = () => {
+      if (!database) {
+        return;
+      }
 
-    const updateActivityList = async () => {
-      const allDocs = await database.allDocs({
-        include_docs: true,
-        attachments: true
+      // initial update
+      updateActivityList();
+
+      // subscribe to changes and update on changes
+      const subscription = databaseChanges.subscribe(() => {
+        updateActivityList();
       });
 
-      database.find({
-        selector: { type: 'Observation' }
-      });
+      // store subscription
+      setDatabaseChangesSubscription(subscription);
     };
 
-    updateActivityList();
-  }, [database]);
+    subscribeToDatabaseChanges();
+
+    return () => {
+      if (!databaseChangesSubscription) {
+        return;
+      }
+
+      // unsubscribe on component cleanup
+      databaseChangesSubscription.unsubscribe();
+    };
+  }, [databaseChanges]);
 
   const removeActivity = async (doc: PouchDB.Core.RemoveDocument) => {
     database.remove(doc);
   };
 
+  const setActiveAAndNavigateToActivity = async (doc: any) => {
+    await database.upsert('AppState', (appStateDoc) => {
+      console.log(appStateDoc);
+      return { ...appStateDoc, activeActivity: doc._id };
+    });
+
+    history.push(`/home/activity/${doc._id}`);
+  };
+
   return (
     <List>
-      {props?.items.map((subItem, subItemIndex) => {
+      {docs.map((doc) => {
         return (
-          <ListItem button key={subItem.url} className={props?.classes.subItem}>
+          <ListItem
+            button
+            key={doc._id}
+            className={classes.activitiyListItem}
+            onClick={() => setActiveAAndNavigateToActivity(doc)}>
             <ListItemIcon>
-              <SvgIcon component={subItem.icon} />
+              <SvgIcon component={ActivityTypeIcon[props.type]} />
             </ListItemIcon>
             <ListItemText>
-              <ActivityListItem {...subItem} />
+              <ActivityListItem doc={doc} />
             </ListItemText>
             <ListItemSecondaryAction>
               <IconButton onClick={() => removeActivity(doc)}>
@@ -165,65 +140,11 @@ const ActivityList: React.FC<any> = (props) => {
   );
 };
 
-const ActivityListItem: React.FC<IListSubItem> = (props) => {
-  const classes = useStyles();
-
-  return (
-    <Grid container direction="row" spacing={2}>
-      <Grid item>{props.title}</Grid>
-      <Divider flexItem={true} orientation="vertical" />
-      <Grid item>{props.url}</Grid>
-    </Grid>
-  );
-};
-
 const ActivitiesList: React.FC = (props) => {
-  const classes = useStyles();
-
   const database = useContext(DatabaseContext);
 
-  const history = useHistory();
-
-  const [listItems, setListItems] = useState<IActivitiesList>({ Observations: [], Treatments: [], Monitorings: [] });
-
-  // useEffect(() => {
-  //   if (!database) {
-  //     return;
-  //   }
-
-  //   const updateActivityLists = async () => {
-  //     const allDocs = await database.allDocs({
-  //       include_docs: true
-  //     });
-  //   };
-
-  //   updateActivityLists();
-  // }, [database]);
-
-  // const addNewForm = (listItemIndex: number) => {
-  //   return setListItems((listItems) => {
-  //     const listItemsCopy = [...listItems];
-
-  //     let newSubItem = null;
-  //     switch (listItems[listItemIndex].title) {
-  //       case 'Observation':
-  //         newSubItem = newObservation();
-  //         break;
-  //       case 'Treatment':
-  //         newSubItem = newTreatment();
-  //         break;
-  //       case 'Monitoring':
-  //         newSubItem = newMonitoring();
-  //         break;
-  //     }
-  //     listItemsCopy[listItemIndex].subItems.push(newSubItem);
-
-  //     return listItemsCopy;
-  //   });
-  // };
-
-  const addNewActivity = async (activityType: string) => {
-    database.put({
+  const addNewActivity = async (activityType: ActivityType) => {
+    await database.put({
       _id: uuidv4(),
       type: activityType,
       status: 'new',
@@ -236,74 +157,28 @@ const ActivitiesList: React.FC = (props) => {
     });
   };
 
-  // const removeForm = (listItemIndex: number, subItemIndex: number) => {
-  //   return setListItems((listItems) => {
-  //     const listItemsCopy = [...listItems];
-
-  //     listItemsCopy[listItemIndex].subItems.splice(subItemIndex, 1);
-
-  //     return listItemsCopy;
-  //   });
-  // };
-
   return (
     <>
       <div>
-        <Button variant="contained" startIcon={<Add />} onClick={() => addNewActivity('Observation')}>
+        <Button variant="contained" startIcon={<Add />} onClick={() => addNewActivity(ActivityType.OBSERVATION)}>
           Add New Observation
         </Button>
-        <ActivityList type="Observation" />
+        <ActivityList type={ActivityType.OBSERVATION} />
       </div>
       <div>
-        <Button variant="contained" startIcon={<Add />} onClick={() => addNewActivity('Treatment')}>
+        <Button variant="contained" startIcon={<Add />} onClick={() => addNewActivity(ActivityType.TREATMENT)}>
           Add New Treatment
         </Button>
-        <ActivityList type="Treatment" />
+        <ActivityList type={ActivityType.TREATMENT} />
       </div>
       <div>
-        <Button variant="contained" startIcon={<Add />} onClick={() => addNewActivity('Monitoring')}>
+        <Button variant="contained" startIcon={<Add />} onClick={() => addNewActivity(ActivityType.MONITORING)}>
           Add New Monitoring
         </Button>
-        <ActivityList type="Monitoring" />
+        <ActivityList type={ActivityType.MONITORING} />
       </div>
     </>
   );
-
-  // return (
-  //   <List>
-  //     {listItems.map((listItem, listItemIndex) => {
-  //       return (
-  //         <>
-  //           <ListItem button key={listItem.title} onClick={() => addNewForm(listItemIndex)}>
-  //             <ListItemIcon>
-  //               <SvgIcon component={listItem.icon} />
-  //             </ListItemIcon>
-  //             <ListItemText>{listItem.title}</ListItemText>
-  //           </ListItem>
-  //           {listItem.subItems.map((subItem, subItemIndex) => {
-  //             return (
-  //               <List component="div" disablePadding>
-  //                 <ListItem button key={subItem.url} className={classes.subItem}>
-  //                   <ListItemIcon>
-  //                     <SvgIcon component={subItem.icon} />
-  //                   </ListItemIcon>
-  //                   <ListItemText>
-  //                     <ActivityListItem {...subItem} />
-  //                   </ListItemText>
-  //                   <ListItemSecondaryAction>
-  //                     <IconButton onClick={() => removeForm(listItemIndex, subItemIndex)}>
-  //                       <DeleteForever />
-  //                     </IconButton>
-  //                   </ListItemSecondaryAction>
-  //                 </ListItem>
-  //               </List>
-  //             );
-  //           })}
-  //         </>
-  //       );
-  //     })}
-  //   </List>
-  // );
 };
 
 export default ActivitiesList;

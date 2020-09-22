@@ -6,6 +6,7 @@ interface IMapProps {
 }
 
 const ActivityPage: React.FC<IMapProps> = (props) => {
+
   return <Container className={props.classes.container}>Add Activity Components to me!</Container>;
 };
 

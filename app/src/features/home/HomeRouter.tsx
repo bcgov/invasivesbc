@@ -18,7 +18,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
       <PrivateRoute layout={HomeLayout} path="/home/plan" component={PlanPage} componentProps={props} />
       <PrivateRoute layout={HomeLayout} path="/home/activities" component={ActivitiesPage} componentProps={props} />
       <PrivateRoute layout={HomeLayout} path="/home/map" component={MapPage} componentProps={props} />
-      <PrivateRoute layout={HomeLayout} path="/home/activity" component={ActivityPage} componentProps={props} />
+      <PrivateRoute layout={HomeLayout} path="/home/activity/:_id" component={ActivityPage} componentProps={props} />
       {/* <PrivateRoute
         layout={HomeLayout}
         path="/home/cache"

@@ -6,12 +6,12 @@ import { Grid, Button, TextField } from '@material-ui/core';
 import { useState, useEffect, useContext } from 'react';
 
 // db caching related:
-import * as RxDB from 'rxdb';
+import PouchDB from 'pouchdb-core';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'api/api';
 
 interface IFormControlProps {
-  database: RxDB.RxDatabase;
+  database: PouchDB.Database;
   setFormData: Function;
   schema?: any;
   uiSchema?: any;

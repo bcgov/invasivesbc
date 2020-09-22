@@ -19,6 +19,8 @@ export interface IUserInfo {
   agencies: number[];
 }
 
+// TODO cleanout old code from copied project
+
 /**
  * IKeycloak interface, represents the keycloak object for the authenticated user.
  */
