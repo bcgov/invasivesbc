@@ -267,31 +267,25 @@ components:
           items:
             $ref: "#/components/schemas/Photo"
 
-    Photo:
+    Media:
       description: |
-        List of Photos
+        List of Media
       type: object
-      required:
-        - photo_id
       properties:
-        photo_id:
-          type: number
-          title: "ID"
-        observation_id:
-          type: number
-          title: "Observation ID"
-        photo_date:
+        media_date:
           type: string
           title: "Date"
-        photo_time:
-          type: string
-          title: "Time"
         description:
           type: string
-          title: "description"
-        photo_store:
-          type: string
-          title: "Photo"
+          title: "Description"
+        file_name:
+          type: 'string'
+          title: 'File Name'
+        encoded_file:
+          type: 'string'
+          format: 'base64'
+          description: 'A Data URL base64 encoded image'
+          example: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/4REy...'
 
     Observation_AnimalTerrestrial:
       description: |

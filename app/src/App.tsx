@@ -2,6 +2,7 @@ import { DeviceInfo } from '@capacitor/core';
 import { IonReactRouter } from '@ionic/react-router';
 import { CircularProgress, makeStyles } from '@material-ui/core';
 import { KeycloakProvider } from '@react-keycloak/web';
+import { DatabaseChangesContextProvider } from 'contexts/DatabaseChangesContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
 import AppRouter from './AppRouter';
