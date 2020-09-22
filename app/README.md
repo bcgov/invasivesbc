@@ -9,6 +9,8 @@ React: https://reactjs.org/docs/getting-started.html
 
 ## Run the app locally (web)
 
+In the app directory:
+
 ```
 npm install
 
@@ -19,15 +21,27 @@ ionic serve
 
 ### Android
 
-1. `ionic build`
-2. `ionic cap add android` (Only once, does not need to be repeated)
-3. `ionic cap copy`
-4. Open Android Studio and under the "Refactor" Menu, choose "Migrate to AndroidX", make sure that follow up by agreeing to do the full migration (bottom left of your main IDE). [Migrating to AndroidX](https://flutter.dev/docs/development/androidx-migration#how-do-i-migrate-my-existing-app-plugin-or-host-editable-module-project-to-androidx)
-5. Save and close Android Studio
-6. `ionic cap sync`
-7. The GitHub Workflow will now build your Android (Debug) APK that you can download and install.
+On MacOS, Windows or Linux, in the app directory:
+
+1. `npm install`
+2. `ionic build`
+3. `ionic cap add android` (Only the first time, does not need to be repeated after)
+4. `ionic cap copy`
+5. `ionic cap sync`
+6. `npx cap open Android`
+
+Android Studio will open and, after a short delay, will allow you to run the application in the simulator.
+
 
 ### IOS
 
-TODO
+On MacOS, in the app directory:
 
+1. `npm install`
+2. `ionic build`
+3. `ionic cap add android` (Only the first time, does not need to be repeated after)
+4. `ionic cap copy`
+5. `ionic cap sync`
+6. `npx cap open ios`
+
+xCode will open and, after a short delay, will allow you to run the application in the simulator.

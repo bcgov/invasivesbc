@@ -78,7 +78,70 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
 
 ## Requirements
 
+We are using Visual Code for our IDE due to the excellent integration of our tolls and utilities.
+
+### Development
+
+Ionic/React
+
+```
+npm install -g @ionic/cli native-run cordova-res
+```
+
+The ideal multi-platform supporting machine is the Mac, But Windows and Linus work very well for Web and Android as well.
+
+### Android Development
+
+Install AndroidStudio and the Android SDK
+
+### IOS Development
+
+On MacOS: Install xCode
+
+
 ## Setup Instructions
+
+Clone the repository to your own machine and follow instructions below.
+
+## Run the app locally (web)
+
+In the app directory:
+
+```
+npm install
+
+ionic serve
+```
+
+## Run the app on mobile
+
+### Android
+
+On MacOS, Windows or Linux, in the app directory:
+
+1. `npm install`
+2. `ionic build`
+3. `ionic cap add android` (Only the first time, does not need to be repeated after)
+4. `ionic cap copy`
+5. `ionic cap sync`
+6. `npx cap open Android`
+
+Android Studio will open and, after a short delay, will allow you to run the application in the simulator.
+
+
+### IOS
+
+On MacOS, in the app directory:
+
+1. `npm install`
+2. `ionic build`
+3. `ionic cap add android` (Only the first time, does not need to be repeated after)
+4. `ionic cap copy`
+5. `ionic cap sync`
+6. `npx cap open ios`
+
+xCode will open and, after a short delay, will allow you to run the application in the simulator.
+
 
 ## Acknowledgements
 
