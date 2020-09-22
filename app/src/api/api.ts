@@ -24,7 +24,7 @@ export const useApi = () => {
   const instance = useMemo(() => {
     return axios.create({
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        // 'Access-Control-Allow-Origin': '*',
         Authorization: `Bearer ${keycloak?.token}`
       },
       baseURL: API_URL
