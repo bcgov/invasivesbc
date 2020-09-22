@@ -40,7 +40,7 @@ externalDocs:
   description: Visit GitHub to find out more about this API
   url: https://github.com/bcgov/lucy-web.git
 
-# paths are generated via express-openapi based on the ./src/paths/* structure
+## paths are generated via express-openapi based on the ./src/paths/* structure
 paths: {}
 
 # See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#componentsObject for supported component types
@@ -96,60 +96,95 @@ components:
           items:
             type: string
 
-    Observation:
-      description: |
-        Observation main object.
+    Activity:
+      description:
+        Activity main object.
       type: object
       required:
-        - observation_id
-        - workflow_id
-        - observation_date
-        - observation time
-        - observer_first_name
-        - observer_last_name
-        - species_id
-        - observation_type
         - species_agency_code
-        - jurisdiction_code
+        - activity_status
       properties:
-        observation_id:
-          type: number
-          title: "ID"
-        workflow_id:
-          type: number
-          title: "Workflow ID"
-        observation_date:
-          type: string
-          title: "Date"
-        observation_time:
-          type: string
-          title: "Time"
-        observer_first_name:
-          type: string
-          title: "First Name"
-        observer_last_name:
-          type: string
-          title: "Last Name"
-        species_id:
-          type: string
-          title: "Species"
-        observation_type:
-          type: string
-          title: "Type"
         species_agency_code:
           type: string
           title: "Agency"
         jurisdiction_code:
           type: string
           title: "Jurisdiction"
+        activity_status:
+          type: string
+          title: "Activity status"
+        species_id:
+          type: string
+          title: "Species"
+        general_comment:
+          type: string
+          title: "Comment"
+          maximum: 300
+        access_description:
+          type: string
+          title: "Access Description"
+        primary_paper_file_id:
+          type: string
+          title: "Primary File"
+        secondary_paper_file_id:
+          type: string
+          title: "Secondary File"
+        media_indicator:
+          type: boolean
+          title: "Photo"
+        media:
+          type: array
+          title: "Photos"
+          items:
+            $ref: "#/components/schemas/Media"
+
+    Observation:
+      description: |
+        Observation main object.
+      type: object
+      required:
+        - observation_id
+        - observation_date
+        - observation time
+        - observation_type
+      properties:
+        observation_id:
+          type: number
+          title: "ID"
+        observation_date:
+          type: string
+          title: "Date"
+        observation_time:
+          type: string
+          title: "Time"
+        observation_type:
+          type: string
+          title: "Type"
+        observer_first_name:
+          type: string
+          title: "First Name"
+        observer_last_name:
+          type: string
+          title: "Last Name"
+        reported_area:
+          type: integer
+          title: "Area"
+        sample_taken:
+          type: boolean
+          title: "Sample Taken"
+        sample_number:
+          type: string
+          title: "Sample Number"
         negative_obs_ind:
           type: boolean
           title: "Negative Observation"
         subType:
           oneOf:
             - $ref: "#/components/schemas/Observation_PlantTerrestial"
+            - $ref: "#/components/schemas/Observation_PlantAquatic"
             - $ref: "#/components/schemas/Observation_AnimalTerrestrial"
             - $ref: "#/components/schemas/Observation_AnimalAquatic"
+            
 
     Observation_PlantTerrestial:
       description: |
@@ -195,28 +230,6 @@ components:
         range_unit_number:
           type: string
           title: "Range Unit"
-        general_comment:
-          type: string
-          title: "Comment"
-          maximum: 300
-        access_description:
-          type: string
-          title: "Access Description"
-        primary_file_id:
-          type: string
-          title: "Primary File"
-        secondary_file_id:
-          type: string
-          title: "Secondary File"
-        sample_taken:
-          type: boolean
-          title: "Sample Taken"
-        sample_number:
-          type: string
-          title: "Sample Number"
-        aquatic_obs_ind:
-          type: boolean
-          title: "Aquatic Observation"
         legacy_site_ind:
           type: boolean
         early_detection_rapid_resp_ind:
@@ -234,64 +247,71 @@ components:
         biological_ind:
           type: boolean
           title: "Biological"
-        Photo_Indicator:
-          type: boolean
-          title: "Photo"
-        Bec_Zone:
-          type: string
-          title: "Bec Zone"
-        RISO:
-          type: string
-          title: "RISO"
-        IPMA:
-          type: string
-          title: "IPMA"
-        Ownership:
-          type: string
-          title: "Owned by"
-        Regional_District:
-          type: string
-          title: "Regional District"
-        FLNRO_District:
-          type: string
-          title: "FLNRO District"
-        MOTI_District:
-          type: string
-          title: "MOTI District"
-        MOE_Region:
-          type: string
-          title: "MOE Region"
-        photo:
-          type: array
-          title: "Photos"
-          items:
-            $ref: "#/components/schemas/Photo"
 
-    Photo:
-      description: |
-        List of Photos
+    Observation_PlantAquatic:
+      description:
+        Plant Observation Terrestrial
       type: object
-      required:
-        - photo_id
       properties:
-        photo_id:
+        specific_use_code:
+          type: string
+          title: "Specific Use"
+        proposed_action_code:
+          type: string
+          title: "Proposed Action"
+        flowering:
+          type: boolean
+          title: "Flowering"
+        plant_life_stage:
+          type: string
+          title: "Life Stage"
+        plant_health:
+          type: string
+          title: "Health"
+        plant_seed_stage:
+          type: string
+          title: "Seed Stage"
+        sample_identifier:
+          type: string
+          title: "Sample ID"
+        range_unit_number:
+          type: string
+          title: "Range Unit"
+        legacy_site_ind:
+          type: boolean
+        early_detection_rapid_resp_ind:
+          type: boolean
+          title: "Early Detection"
+        research_detection_ind:
+          type: boolean
+          title: "Research Detection"
+        sample_taken:
+          type: boolean
+          title: "Sample Taken"
+        sample_point_number:
+          type: string
+          title: "Sample Number"
+        special_care_ind:
+          type: boolean
+          title: "Special Care"
+        biological_ind:
+          type: boolean
+          title: "Biological"
+        secchi_depth:
           type: number
-          title: "ID"
-        observation_id:
+          format: float
+          title: "secchi depth"
+        water_depth:
           type: number
-          title: "Observation ID"
-        photo_date:
+          format: float
+          title: "water depth"
+        voucher_submitted_ind:
+          type: boolean
+          title: "Voucher submitted"
+        voucher_submission_detail:
           type: string
-          title: "Date"
-        photo_time:
-          type: string
-          title: "Time"
-        description:
-          type: string
-          title: "description"
-        photo_store:
-          type: string
-          title: "Photo"
+          title: "Voucher submission details"
+        
 
     Observation_AnimalTerrestrial:
       description: |
@@ -307,597 +327,185 @@ components:
         Behaviour:
           type: string
           title: "Behaviour"
-        sample_taken:
-          type: boolean
-          title: "Sample Taken"
-        sample_number:
-          type: string
-          title: "Sample Number"
-        general_comment:
-          type: string
-          title: "Comment"
-        access_description:
-          type: string
-          title: "Access Description"
-        photo:
-          type: array
-          title: "Photos"
-          items:
-            $ref: "#/components/schemas/Photo"
-
+  
+        
     Observation_AnimalAquatic:
       description: |
         Animal Observation Aquatic.
       type: object
       properties:
-        Number_of_Individuals_observed:
-          type: number
-          title: "Number of Individuals"
-        Life_Stage:
+        observation_details:
           type: string
-          title: "Life Stage"
-        Behaviour:
-          type: string
-          title: "Behaviour"
-        sample_taken:
-          type: boolean
-          title: "Sample Taken"
-        sample_number:
-          type: string
-          title: "Sample Number"
-        general_comment:
-          type: string
-          title: "Comment"
-        access_description:
-          type: string
-          title: "Access Description"
-        photo:
-          type: array
-          title: "Photos"
-          items:
-            $ref: "#/components/schemas/Photo"
+          title: "Aquatic animal observations"
 
-    ObservationPlantResponse:
+
+    Treatment:
       description: |
-        Observation plant response object.
-        Returned in the 200 responses for all `/observation/plant/*` routes.
+        Treament main object.
       type: object
       required:
-        - observation_id
-        - observation_date
-        - access_description
-        - observer_first_name
-        - observer_last_name
-        - sample_identifier
-        - range_unit_number
-        - general_comment
-        - legacy_site_ind
-        - early_detection_rapid_resp_ind
-        - research_detection_ind
-        - sample_taken_ind
-        - well_ind
-        - special_care_ind
-        - biological_ind
-        - aquatic_ind
-        - species_id
-        - jurisdiction_code_id
-        - species_density_code_id
-        - species_distribution_code_id
-        - observation_type_code_id
-        - species_agency_code_id
-        - soil_texture_code_id
-        - specific_use_code_id
-        - observation_slope_code_id
-        - observation_aspect_code_id
-        - observation_proposed_action_code_id
-        - created_at
-        - updated_at
-        - updated_by_user_id
-        - created_by_user_id
-        - space_geom_id
-        - hex_id
-        - hex_sub_id
-        - total_area
-        - negative_occurance_ind
-        - paper_id_primary
-        - paper_id_secondary
-        - elevation_meters
-        - well_proximity
-        - well_tag
-        - observation_geometry_code_id
-        - photo_indicator
-        - flowering
-        - bec_zone
-        - riso
-        - ipma
-        - ownership
-        - regional_district
-        - flnro_district
-        - moti_district
-        - raw_longitude
-        - raw_latitude
-        - raw_utm_zone
-        - raw_utm_easting
-        - raw_utm_northing
-        - raw_albers_x
-        - raw_albers_y
+        - treatment_method
+        - treatment_date
+        - treatment_time
       properties:
-        observation_id:
-          type: number
-        observation_date:
+        treatment_method:
           type: string
-        access_description:
+          title: "Treatment method"
+        treatment_date:
           type: string
-        observer_first_name:
+          title: "Treatment date"
+        treatment_time:
           type: string
-        observer_last_name:
-          type: string
-        sample_identifier:
-          type: string
-        range_unit_number:
-          type: string
-        general_comment:
-          type: string
-        legacy_site_ind:
-          type: boolean
-        early_detection_rapid_resp_ind:
-          type: boolean
-        research_detection_ind:
-          type: boolean
-        sample_taken_ind:
-          type: boolean
-        well_ind:
-          type: boolean
-        special_care_ind:
-          type: boolean
-        biological_ind:
-          type: boolean
-        aquatic_ind:
-          type: boolean
-        species_id:
-          type: object
-        jurisdiction_code_id:
-          type: object
-        species_density_code_id:
-          type: object
-        species_distribution_code_id:
-          type: object
-        observation_type_code_id:
-          type: object
-        species_agency_code_id:
-          type: object
-        soil_texture_code_id:
-          type: object
-        specific_use_code_id:
-          type: object
-        observation_slope_code_id:
-          type: object
-        observation_aspect_code_id:
-          type: object
-        observation_proposed_action_code_id:
-          type: object
-        created_at:
-          type: string
-        updated_at:
-          type: string
-        updated_by_user_id:
-          type: number
-        created_by_user_id:
-          type: number
-        space_geom_id:
-          type: number
-        hex_id:
-          type: number
-        hex_sub_id:
-          type: number
-        total_area:
-          type: number
-        negative_occurance_ind:
-          type: boolean
-        paper_id_primary:
-          type: string
-        paper_id_secondary:
-          type: string
-        elevation_meters:
-          type: number
-        well_proximity:
-          type: number
-        well_tag:
-          type: number
-        observation_geometry_code_id:
-          type: object
-        photo_indicator:
-          type: boolean
-        flowering:
-          type: boolean
-        bec_zone:
-          type: string
-        riso:
-          type: string
-        ipma:
-          type: string
-        ownership:
-          type: string
-        regional_district:
-          type: string
-        flnro_district:
-          type: string
-        moti_district:
-          type: string
-        raw_longitude:
-          type: number
-        raw_latitude:
-          type: number
-        raw_utm_zone:
-          type: number
-        raw_utm_easting:
-          type: number
-        raw_utm_northing:
-          type: number
-        raw_albers_x:
-          type: number
-        raw_albers_y:
-          type: number
-
-    ObservationCodeResponse:
-      required:
-        - message
-        - data
-      properties:
-        message:
-          type: string
-        data:
-          $ref: "#/components/schemas/ObservationCode"
-
-    ObservationCode:
-      description: Observation code tables.
-      required:
-        - observation_aspect_code
-        - jurisdiction_code
-        - observation_geometry_code
-        - observation_type_code
-        - observation_proposed_action_code
-        - observation_slope_code
-        - soil_texture_code
-        - species_agency_code
-        - species_density_code
-        - species_distribution_code
-        - species
-        - specific_use_code
-      properties:
-        observation_aspect_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/AspectCode"
-        jurisdiction_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/JurisdictionCode"
-        observation_geometry_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/ObservationGeometryCode"
-        observation_type_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/ObservationTypeCode"
-        observation_proposed_action_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/ProposedActionCode"
-        observation_slope_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/SlopeCode"
-        soil_texture_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/SoilTextureCode"
-        species:
-          type: array
-          items:
-            $ref: "#/components/schemas/Species"
-        species_density_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/SpeciesDensityCode"
-        species_distribution_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/SpeciesDistributionCode"
-        species_agency_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/SpeciesAgencyCode"
-        specific_use_code:
-          type: array
-          items:
-            $ref: "#/components/schemas/SpecificUseCode"
-
-    AspectCode:
+          title: "Treatment time"
+  
+    Treatment_ChemicalPlant:
+      description: |
+        Chemical treament for plants - main object.
       type: object
       required:
-        - observation_aspect_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
+        - primary_applicator_employee_code
+        - secondary_applicator_employee_code
+        - pesticide_employer_code
       properties:
-        observation_aspect_code_id:
-          type: number
-        code:
+        primary_applicator_employee_code:
           type: string
+          title: "Primary Applicator employee code"
+        secondary_applicator_employee_code:
+          type: string
+          title: "Secondary Applicator employee code"
+        pesticide_employer_code:
+          type: string
+          title: "Pesticide employer code"
+        project_management_plan_PMP:
+          type: string
+          title: "Projecty Management Plan"
+        pesticide_use_permit_PUP:
+          type: string
+          title: "Pesticide use permit"
+        chemical_treatment_method:
+          type: string
+          title: "Chemical treatment method"
+        temperature:
+          type: integer
+          title: "Temperature"
+        wind_speed:
+          type: string
+          title: "Wind"
+        humidity:
+          type: integer
+          title: "Humidity"
+        mix_delivery_rate:
+          type: number
+          format: float
+          title: "Mix delivery rate"
+        application_rate:
+          type: number
+          format: float
+          title: "Application rate"
+        area_treated:
+          type: number
+          format: float
+          title: "Area treated"
+        amount_of_herbicide_1:
+          type: number
+          format: float
+          title: "Herbicide 1 amount"
+        amount_of_herbicide_2:
+          type: number
+          format: float
+          title: "Herbicide 2 amount"
+        amount_of_herbicide_3:
+          type: number
+          format: float
+          title: "Herbicide 3 amount"
+        herbicide_1:
+          type: string
+          title: "Herbicide 1"
+        herbicide_2:
+          type: string
+          title: "Herbicide 2"
+        herbicide_3:
+          type: string
+          title: "Herbicide 3"
+
+    Treatment_MechanicalPlant:
+      description:
+        Mechanical treament for plants - main object.
+      type: object
+      required:
+        - mechanical_method
+      properties:
+        applicator1_first_name:
+          type: string
+          title: "Applicator 1 first name"
+        applicator1_last_name:
+          type: string
+          title: "Applicator 1 last name"
+        applicator2_first_name:
+          type: string
+          title: "Applicator 1 first name"
+        applicator2_last_name:
+          type: string
+          title: "Applicator 1 last name"
+        treatment_contractor:
+          type: string
+          title: "Treatment contractor"
+        mechanical_method:
+          type: string
+          title: "Mechanical method"
+        mechanical_disposal_method:
+          type: string
+          title: "Mechanical disposal method"
+        mechanical_root_removal_code:
+          type: string
+          title: "Mechanical root removal code"
+        mechanical_soil_disturbance_code:
+          type: string
+          title: "Mechanical soil disturbance code"
+        signage_on_site:
+          type: boolean
+          title: "Signage on site"
+
+
+  
+
+
+
+
+
+
+
+
+
+    Media:
+      description: |
+        List of Media
+      type: object
+      properties:
+        media_date:
+          type: string
+          title: "Date"
         description:
           type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
+          title: "Description"
+        file_name: 
+          type: 'string'
+          title: 'File Name'
+        encoded_file:
+          type: 'string'
+          format: 'base64'
+          description: 'A Data URL base64 encoded image'
+          example: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/4REy...'
+    
+      
+      
+      
+    
+      
+      
 
-    JurisdictionCode:
-      type: object
-      required:
-        - jurisdiction_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        jurisdiction_code_id:
-          type: number
-        code:
-          type: string
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
+    
 
-    ObservationGeometryCode:
-      type: object
-      required:
-        - observation_geometry_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        observation_geometry_code_id:
-          type: number
-        code:
-          type: string
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
+    
 
-    ObservationTypeCode:
-      type: object
-      required:
-        - observation_type_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        observation_type_code_id:
-          type: number
-        code:
-          type: string
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
-
-    ProposedActionCode:
-      type: object
-      required:
-        - observation_proposed_action_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        observation_proposed_action_code_id:
-          type: number
-        code:
-          type: string
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
-
-    SlopeCode:
-      type: object
-      required:
-        - observation_slope_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        observation_slope_code_id:
-          type: number
-        code:
-          type: string
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
-
-    SoilTextureCode:
-      type: object
-      required:
-        - soil_texture_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        soil_texture_code_id:
-          type: number
-        code:
-          type: string
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
-
-    Species:
-      type: object
-      required:
-        - species_id
-        - mapCode
-        - earlyDetection
-        - containmentSpecies
-        - containmentSpacialRef
-        - species
-        - genus
-        - commonName
-        - latinName
-        - updateAt
-        - createdAt
-      properties:
-        species_id:
-          type: number
-        mapCode:
-          type: string
-        earlyDetection:
-          type: boolean
-        containmentSpecies:
-          type: number
-        containmentSpacialRef:
-          type: number
-        species:
-          type: string
-        genus:
-          type: string
-        commonName:
-          type: string
-        latinName:
-          type: string
-        updateAt:
-          type: string
-        createdAt:
-          type: string
-
-    SpeciesDensityCode:
-      type: object
-      required:
-        - species_density_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        species_density_code_id:
-          type: number
-        code:
-          type: string
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
-
-    SpeciesDistributionCode:
-      type: object
-      required:
-        - species_distribution_code_id
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        species_distribution_code_id:
-          type: number
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
-
-    SpeciesAgencyCode:
-      type: object
-      required:
-        - species_agency_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        species_agency_code_id:
-          type: number
-        code:
-          type: string
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
-
-    SpecificUseCode:
-      type: object
-      required:
-        - specific_use_code_id
-        - code
-        - description
-        - activeIndicator
-        - updateAt
-        - createdAt
-      properties:
-        specific_use_code_id:
-          type: number
-        code:
-          type: string
-        description:
-          type: string
-        activeIndicator:
-          type: boolean
-        updateAt:
-          type: string
-        createdAt:
-          type: string
+    
