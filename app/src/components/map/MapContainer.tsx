@@ -5,6 +5,7 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.locatecontrol'
 import 'leaflet.locatecontrol/dist/L.Control.Locate.css'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css'
 import './MapContainer.css';
 
 interface IMapContainerProps {
@@ -19,14 +20,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     // On init setup
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    L.control.locate().addTo(map);
+
+    const options = {
+      icon: 'blah',
+      flyTo: true
+    };
+
+    L.control.locate(options).addTo(map);
 
     const esriBase = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 24
       }
-    )
+    );
 
     const bcBase = L.tileLayer(
       'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',

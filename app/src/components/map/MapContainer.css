@@ -10,3 +10,7 @@
 .leaflet-control-zoom.leaflet-control {
   transform: scale(1.5) translate(-5px, -5px);
 }
+
+.leaflet-control-locate.leaflet-control {
+  transform: scale(1.2) translate(5px, 5px);
+}
