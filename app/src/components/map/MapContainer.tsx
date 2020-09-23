@@ -7,6 +7,7 @@ import './MapContainer.css';
 
 interface IMapContainerProps {
   classes?: any;
+  activity?: any;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {

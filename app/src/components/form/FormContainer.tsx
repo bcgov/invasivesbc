@@ -2,15 +2,16 @@ import React from 'react';
 import Form from '@rjsf/material-ui';
 import { JSONSchema7 } from 'json-schema';
 
-import { Grid, Button, TextField } from '@material-ui/core';
+import { Grid, Button, TextField, CircularProgress } from '@material-ui/core';
 import { useState, useEffect, useContext } from 'react';
 
 // db caching related:
-import PouchDB from 'pouchdb-core';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'api/api';
+import { Activity } from 'rjsf/uiSchema';
 
 interface IFormControlProps {
+  classes?: any;
   setFormData: Function;
   activity: any;
 }
@@ -83,8 +84,7 @@ const FormControls: React.FC<IFormControlProps> = (props) => {
 };
 
 interface IFormContainerProps {
-  schema?: any;
-  uiSchema?: any;
+  classes?: any;
   activity: any;
 }
 
@@ -92,6 +92,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const api = useInvasivesApi();
 
   const [formData, setFormData] = useState(null);
+  const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
 
   const submitEventHandler = async (event: any) => {
     console.log('submitEventHandler: ', event);
@@ -103,18 +104,22 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   useEffect(() => {
     const getApiSpec = async () => {
       const response = await api.getApiSpec();
-      //   console.log(
-      //     response.data.paths["/activity"].post.requestBody.content[
-      //       "application/json"
-      //     ].schema
-      //   );
-      // setSchema(response.data.paths['/activity'].post.requestBody.content['application/json'].schema);
+
+      // TODO add the promise from `api-getApiSpec()` to this array.
+      setSchemas({
+        schema: { ...response.data.components.schemas.Activity, components: response.data.components },
+        uiSchema: Activity
+      });
     };
 
     getApiSpec();
-  }, [api]);
+  }, []);
 
   useEffect(() => {});
+
+  if (!schemas.schema || !schemas.uiSchema) {
+    return <CircularProgress />;
+  }
 
   return (
     <div>
@@ -122,8 +127,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
       <Form
         formData={formData}
-        schema={props.schema as JSONSchema7}
-        uiSchema={props.uiSchema}
+        schema={schemas.schema as JSONSchema7}
+        uiSchema={schemas.uiSchema}
         onSubmit={submitEventHandler}
       />
     </div>

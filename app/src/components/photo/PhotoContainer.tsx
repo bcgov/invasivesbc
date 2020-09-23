@@ -3,7 +3,12 @@ import { AddAPhoto, DeleteForever } from '@material-ui/icons';
 import { usePhotoGallery } from 'hooks/usePhotoGallery';
 import React from 'react';
 
-const PhotoContainer: React.FC = () => {
+interface IPhotoContainerProps {
+  classes?: any;
+  activity?: any;
+}
+
+const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const { photos, takePhoto, deletePhotos } = usePhotoGallery();
 
   // Grid with overlays: https://material-ui.com/components/grid-list/
@@ -20,7 +25,7 @@ const PhotoContainer: React.FC = () => {
           ))}
         </Grid>
       </div>
-      <div style={{ height: '200px' }}>
+      <div>
         <Grid container spacing={3} justify="center">
           <Grid item>
             <Fab color="primary" onClick={() => takePhoto()}>
