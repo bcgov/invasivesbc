@@ -3,6 +3,7 @@ import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import './MapContainer.css';
 
 interface IMapContainerProps {
   classes?: any;
@@ -72,8 +73,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     map.on('draw:drawstart', function (layerGroup) {
-      console.log('started');
-      console.log(layerGroup);
+      drawnItems.clearLayers(); // Clear previous shape
     });
 
     map.on('draw:drawstop', function (layerGroup) {

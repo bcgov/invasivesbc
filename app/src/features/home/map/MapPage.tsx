@@ -21,7 +21,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const classes = useStyles();
 
   return (
-    <Container className={clsx(classes.mapContainer, props.classes.container)}>
+    <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
       <MapContainer classes={classes} />
     </Container>
   );
