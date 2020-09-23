@@ -132,11 +132,22 @@ components:
         media_indicator:
           type: boolean
           title: "Photo"
+        created_date_on_device:
+          type: string
+          title: "created on device"
+        updated_date_on_device:
+          type: string
+          title: "created on device"
         media:
           type: array
           title: "Photos"
           items:
             $ref: "#/components/schemas/Media"
+        subType:
+          oneOf:
+            - $ref: "#/components/schemas/Observation"
+            - $ref: "#/components/schemas/Treatment"
+            - $ref: "#/components/schemas/Monitoring"
 
     Observation:
       description: |
@@ -357,6 +368,15 @@ components:
         treatment_time:
           type: string
           title: "Treatment time"
+        subType:
+          oneOf:
+            - $ref: "#/components/schemas/Treatment_ChemicalPlant:"
+            - $ref: "#/components/schemas/Treatment_MechanicalPlant"
+            - $ref: "#/components/schemas/Treatment_BiologicalPlant"
+            - $ref: "#/components/schemas/Treatment_BiologicalDispersalPlant"
+            - $ref: "#/components/schemas/Treatment_MechanicalTerrestrialAnimal"
+            - $ref: "#/components/schemas/Treatment_ChemicalTerrestrialAnimal"
+            - $ref: "#/components/schemas/Treatment_BiologicalTerrestrialAnimal"
   
     Treatment_ChemicalPlant:
       description: |
@@ -468,14 +488,251 @@ components:
 
 
   
+    Treatment_BiologicalPlant:
+      description:
+        Mechanical treament for plants - main object.
+      type: object
+      required:
+        - treatment_contractor
+      properties:
+        applicator1_first_name:
+          type: string
+          title: "Applicator 1 first name"
+        applicator1_last_name:
+          type: string
+          title: "Applicator 1 last name"
+        applicator2_first_name:
+          type: string
+          title: "Applicator 1 first name"
+        applicator2_last_name:
+          type: string
+          title: "Applicator 1 last name"
+        treatment_contractor:
+          type: string
+          title: "Treatment contractor"
+        classified_area:
+          type: string
+          title: "Classified area"
+        release_quantity:
+          type: integer
+          title: "Release quantity"
+        agent_source:
+          type: string
+          title: "Agent source"
+        biological_agent:
+          type: string
+          title: "Biological agent"
+        biological_agent_stage:
+          type: string
+          title: "Biological agent stage"
+        biological_maturity_status:
+          type: string
+          title: "Biological maturity status"
 
+    Treatment_BiologicalDispersalPlant:
+      description:
+        Mechanical treament for plants - main object.
+      type: object
+      required:
+        - treatment_contractor
+      properties:
+        applicator1_first_name:
+          type: string
+          title: "Applicator 1 first name"
+        applicator1_last_name:
+          type: string
+          title: "Applicator 1 last name"
+        applicator2_first_name:
+          type: string
+          title: "Applicator 1 first name"
+        applicator2_last_name:
+          type: string
+          title: "Applicator 1 last name"
+        treatment_contractor:
+          type: string
+          title: "Treatment contractor"
+        duration_of_count:
+          type: integer
+          title: "Duration of count"
+        biological_agent:
+          type: string
+          title: "Biological agent"
+        plant_count:
+          type: integer
+          title: "Plant count"
+        biological_agent_count:
+          type: integer
+          title: "Biological agent count"
+        biological_agent_presence:
+          type: string
+          title: "Biological agent presence"
 
+    Treatment_MechanicalTerrestrialAnimal:
+      description:
+        Mechanical treament for terrestrial animals - main object.
+      type: object
+      required:
+        - treatment_details
+      properties:
+        treatment_details:
+          type: string
+          title: "Treatment details"
 
+    Treatment_ChemicalTerrestrialAnimal:
+      description:
+        Chemical treament for animals - main object.
+      type: object
+      required:
+        - treatment_details
+      properties:
+        treatment_details:
+          type: string
+          title: "Treatment details"
+    
+    Treatment_BiologicalTerrestrialAnimal:
+      description:
+        Biological treament for animals - main object.
+      type: object
+      required:
+        - treatment_details
+      properties:
+        treatment_details:
+          type: string
+          title: "Treatment details"
 
+    Monitoring:
+      description: |
+        Monitoring main object.
+      type: object
+      required:
+        - activity_id
+      properties:
+        activity_id:
+          type: integer
+          title: "Treatment id"
+        monitoring_date:
+          type: string
+          title: "Treatment date"
+        observer_first_name:
+          type: string
+          title: "First Name"
+        observer_last_name:
+          type: string
+          title: "Last Name"
+        efficacy_rating_code:
+          type: integer
+          title: "Efficacy rating"
+        subType:
+          oneOf:
+            - $ref: "#/components/schemas/Monitoring_ChemicalTerrestrialAquaticPlant"
+            - $ref: "#/components/schemas/Monitoring_MechanicalTerrestrialAquaticPlant"
+            - $ref: "#/components/schemas/Monitoring_BiologicalTerrestrialPlant"
+            - $ref: "#/components/schemas/Monitoring_MechanicalTerrestrialAnimal"
+            - $ref: "#/components/schemas/Monitoring_ChemicalTerrestrialAnimal"
+            - $ref: "#/components/schemas/Monitoring_BiologicalTerrestrialAnimal"
+      
+    Monitoring_ChemicalTerrestrialAquaticPlant:
+      description:
+        Chemical monitoring for terrestrial plants - main object.
+      type: object
+      required:
+        - monitoring_details
+      properties:
+        monitoring_details:
+          type: string
+          title: "Monitoring details"
 
+    Monitoring_MechanicalTerrestrialAquaticPlant:
+      description:
+        Mechanical monitoring for terrestrial plants - main object.
+      type: object
+      required:
+        - monitoring_details
+      properties:
+        monitoring_details:
+          type: string
+          title: "Monitoring details"
 
+    Monitoring_BiologicalTerrestrialPlant:
+      description:
+        Biological monitoring for terrestrial plants - main object.
+      type: object
+      properties:
+        plant_count:
+          type: integer
+          title: "Plant count"
+        agent_count:
+          type: integer
+          title: "Agent count"
+        count_duration:
+          type: integer
+          title: "Count duration"
+        agent_destroyed_ind:
+          type: boolean
+          title: "Agent destroyed"
+        legacy_presence_ind:
+          type: boolean
+          title: "Legacy presence"
+        foliar_feeding_damage_ind:
+          type: boolean
+          title: "Foliar feeding damage"
+        root_feeding_damage_ind:
+          type: boolean
+          title: "Root feeding damage"
+        oviposition_marks_ind:
+          type: boolean
+          title: "Oviposition marks"
+        eggs_present_ind:
+          type: boolean
+          title: "Eggs present"
+        larvae_present_ind:
+          type: boolean
+          title: "Larvae present"
+        pupae_present_ind:
+          type: boolean
+          title: "Pupae present"
+        adults_present_ind:
+          type: boolean
+          title: "Adults present"
+        tunnels_present_ind:
+          type: boolean
+          title: "Tunnels present"
+        biological_agent_spread:
+          type: string
+          title: "Biological agent spread"
 
+    Monitoring_MechanicalTerrestrialAnimal:
+      description:
+        Mechanical monitoring for terrestrial plants - main object.
+      type: object
+      required:
+        - monitoring_details
+      properties:
+        monitoring_details:
+          type: string
+          title: "Monitoring details"
 
+    Monitoring_ChemicalTerrestrialAnimal:
+      description:
+        Chemical monitoring for terrestrial plants - main object.
+      type: object
+      required:
+        - monitoring_details
+      properties:
+        monitoring_details:
+          type: string
+          title: "Monitoring details"
+
+    Monitoring_BiologicalTerrestrialAnimal:
+      description:
+        Mechanical monitoring for terrestrial plants - main object.
+      type: object
+      required:
+        - monitoring_details
+      properties:
+        monitoring_details:
+          type: string
+          title: "Monitoring details"
 
     Media:
       description: |
@@ -496,16 +753,4 @@ components:
           format: 'base64'
           description: 'A Data URL base64 encoded image'
           example: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/4REy...'
-    
-      
-      
-      
-    
-      
-      
-
-    
-
-    
-
     
