@@ -1,8 +1,8 @@
 import { Container } from '@material-ui/core';
-import React from 'react';
 import FormContainer from 'components/form/FormContainer';
+import React from 'react';
+import { treatment_uischema } from 'rjsf/uiSchema';
 
-// react json schema form related:
 const schema = {
   type: 'object',
   required: [
@@ -388,72 +388,15 @@ const schema = {
   }
 };
 
-const uiSchema = {
-  treatment_id: {},
-  workflow_id: {},
-  treatment_date: {},
-  treatment_time: {},
-  applicator_first_name: {},
-  applicator_last_name: {},
-  species_id: {},
-  treatment_type: {},
-  species_agency_code: {},
-  jurisdiction_code: {},
-  negative_obs_ind: {},
-  subType: {
-    workflow_id: {},
-    chemical_treatment_id: {},
-    treatment_date: {},
-    treatment_time: {},
-    species_id: {},
-    species_agency_code: {},
-    jurisdiction_code: {},
-    primary_applicator_employee_code: {},
-    secondary_applicator_employee_code: {},
-    pesticide_employer_code: {},
-    project_management_plan_PMP: {},
-    pesticide_use_permit_PUP: {},
-    primary_paper_file_id: {},
-    secondary_paper_file_id: {},
-    chemical_treatment_method: {},
-    temperature: {},
-    wind_speed: {},
-    humidity: {},
-    mix_delivery_rate: {},
-    application_rate: {},
-    area_treated: {},
-    herbicide: {
-      herbicide_id: {},
-      chemical_treatment_id: {},
-      amount_of_herbicide: {},
-      description: {}
-    },
-    general_comment: {},
-    access_description: {},
-    herbicide_id: {},
-    description: {},
-    species_animal_id: {},
-    treatment_method: {},
-    mechanical_treatment_id: {},
-    biological_treatment_id: {},
-    applicator: {
-      biological_treatment_id: {},
-      applicator_first_name: {},
-      applicator_last_name: {}
-    },
-    treatment_contractor: {},
-    applicator_last_name: {}
-  }
-};
-
 interface ITreatmentProps {
   classes?: any;
+  activity: any;
 }
 
 const Treatment: React.FC<ITreatmentProps> = (props) => {
   return (
     <Container className={props.classes.container}>
-      <FormContainer schema={schema} uiSchema={uiSchema} />
+      <FormContainer {...props} schema={schema} uiSchema={treatment_uischema} />
     </Container>
   );
 };

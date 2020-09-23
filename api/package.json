@@ -1,6 +1,6 @@
 {
   "name": "lucy-api-mobile",
-  "description": "API for InvasivesBC iOS app",
+  "description": "API for InvasivesBC App",
   "version": "0.0.0",
   "license": "Apache-2.0",
   "main": "app",
