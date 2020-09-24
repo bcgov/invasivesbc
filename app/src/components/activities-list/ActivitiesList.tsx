@@ -18,6 +18,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Subscription } from 'rxjs';
+import { addNewError, triggerError } from 'utils/NotificationUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -156,24 +157,6 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 const ActivitiesList: React.FC = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
-  const addNewError = async () => {
-    await databaseContext.database.put({
-      _id: uuidv4(),
-      docType: "error",
-      errorText: "Some error text",
-      errorAcknowledged: false,
-      dateCreated: new Date()
-    });
-    console.log('added a new error')
-  }
-
-  const triggerError = async() => {
-    try {
-      throw Error("crash the app!")
-    } catch (error) {
-      addNewError()
-    }
-  }
 
   const addNewActivity = async (activityType: ActivityType) => {
     await databaseContext.database.put({
@@ -204,8 +187,14 @@ const ActivitiesList: React.FC = (props) => {
         <ActivityList type={ActivityType.TREATMENT} />
       </div>
       <div>
-        <Button variant="contained" startIcon={<Add />} onClick={() => triggerError()}>
+        <Button variant="contained" startIcon={<Add />} onClick={() => addNewActivity(ActivityType.MONITORING)}>
           Add New Monitoring
+        </Button>
+        <ActivityList type={ActivityType.MONITORING} />
+      </div>
+      <div>
+        <Button variant="contained" startIcon={<Add />} onClick={() => triggerError(databaseContext)}>
+          Simulate Error
         </Button>
         <ActivityList type={ActivityType.MONITORING} />
       </div>
