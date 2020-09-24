@@ -20,6 +20,9 @@ import { useHistory } from 'react-router-dom';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
+
+
+
 const useStyles = makeStyles((theme) => ({
   activitiyListItem: {
     display: 'flex',
@@ -60,6 +63,8 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const [docs, setDocs] = useState<any[]>([]);
+
+
 
   const updateActivityList = async () => {
     const activityDocs = await databaseContext.database.find({
@@ -155,6 +160,8 @@ const ActivitiesList: React.FC = (props) => {
     await databaseContext.database.put({
       _id: uuidv4(),
       docType: "error",
+      errorText: "Some error text",
+      errorAcknowledged: false,
       dateCreated: new Date()
     });
     console.log('added a new error')

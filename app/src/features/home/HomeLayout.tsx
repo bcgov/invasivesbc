@@ -1,9 +1,12 @@
-import { makeStyles, Theme } from '@material-ui/core';
+import { Collapse, IconButton,  makeStyles, Snackbar, Theme, withWidth} from '@material-ui/core';
 import TabsContainer from 'components/tabs/TabsContainer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { Subscription } from 'rxjs';
+import CloseIcon from '@material-ui/icons/Close';
 
+
+import { Alert } from '@material-ui/lab';
 
 
 
@@ -68,11 +71,19 @@ const HomeLayout = (props: any) => {
   }, [databaseContext]);
 
   const addToErrorsOnPage = async () => {
+
     const errors = await databaseContext.database.find({
-      selector: { docType: "error" }
+      selector: { docType: "error", errorAcknowledged: false }
     });
 
-    setErrorText(JSON.stringify(errors))
+    if(errors.docs.length > 0)
+    {
+      setErrorText(errors.docs[0].errorText)
+      databaseContext.database.upsert(errors.docs[0]._id, (doc) => { return {...doc, errorAcknowledged: true }})
+
+      setIsOpen(true)
+    }
+
   };
 
 
@@ -93,13 +104,30 @@ const HomeLayout = (props: any) => {
 
 
 
-
-
+   const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className={classes.homeLayoutRoot}>
       <TabsContainer classes={classes.tabsContainer} />
-      <div>{errorText}</div>
+      <Collapse in={isOpen}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setIsOpen(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {errorText}
+        </Alert>
+      </Collapse>
       <div className={classes.homeContainer}>{props.children}</div>
     </div>
   );
