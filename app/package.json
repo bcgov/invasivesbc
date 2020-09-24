@@ -62,6 +62,8 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
+        "build-prod": "react-scripts build --prod --engine=web",
+        "deploy_start": "npm install -g serve && npm run serve -s build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint": "eslint src/ --ext .jsx,.js,.ts,.tsx",
