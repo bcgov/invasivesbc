@@ -24,7 +24,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     const options = {
       icon: 'bullseye',
-      flyTo: true
+      flyTo: true,
+      iconElementTag: 'div'
     };
 
     L.control.locate(options).addTo(map);
