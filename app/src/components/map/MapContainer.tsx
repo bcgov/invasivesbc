@@ -31,7 +31,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const esriBase = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
-        maxZoom: 24
+        maxZoom: 24,
+        maxNativeZoom: 17
       }
     );
 
