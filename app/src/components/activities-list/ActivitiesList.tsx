@@ -12,6 +12,7 @@ import {
   Theme
 } from '@material-ui/core';
 import { Add, DeleteForever } from '@material-ui/icons';
+import { useInvasivesApi } from 'api/api';
 import { ActivityType, ActivityTypeIcon } from 'constants/activities';
 import { MediumDateFormat } from 'constants/misc';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -131,6 +132,9 @@ const ActivityList: React.FC<IActivityList> = (props) => {
     history.push(`/home/activity`);
   };
 
+    const api = useInvasivesApi();
+
+
   return (
     <List className={classes.activityList}>
       {docs.map((doc) => {
@@ -158,6 +162,23 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
 const ActivitiesList: React.FC = (props) => {
   const databaseContext = useContext(DatabaseContext);
+
+  const addNewError = async () => {
+    await databaseContext.database.put({
+      _id: uuidv4(),
+      docType: "error",
+      dateCreated: new Date()
+    });
+    console.log('added a new error')
+  }
+
+  const triggerError = async() => {
+    try {
+      throw Error("crash the app!")
+    } catch (error) {
+      addNewError()
+    }
+  }
 
   const addNewActivity = async (activityType: ActivityType) => {
     await databaseContext.database.put({
@@ -189,7 +210,7 @@ const ActivitiesList: React.FC = (props) => {
         <ActivityList type={ActivityType.TREATMENT} />
       </div>
       <div>
-        <Button variant="contained" startIcon={<Add />} onClick={() => addNewActivity(ActivityType.MONITORING)}>
+        <Button variant="contained" startIcon={<Add />} onClick={() => triggerError()}>
           Add New Monitoring
         </Button>
         <ActivityList type={ActivityType.MONITORING} />
