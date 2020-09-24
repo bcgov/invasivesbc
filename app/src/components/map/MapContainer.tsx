@@ -22,7 +22,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     const options = {
-      icon: 'blah',
+      icon: 'bullseye',
       flyTo: true
     };
 
