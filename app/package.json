@@ -62,7 +62,7 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "build-prod": "react-scripts build --prod --engine=web",
+        "build-prod": "npm install -g @ionic/cli && npm install && react-scripts build --prod",
         "deploy_start": "npm install -g serve && npm run serve -s build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
