@@ -4,7 +4,7 @@ import PouchDBUpsert from 'pouchdb-upsert';
 import React, { useEffect, useState } from 'react';
 import { Subject } from 'rxjs';
 
-interface IDatabaseContext<T> {
+export interface IDatabaseContext<T> {
   database: PouchDB.Database<T>;
   changes: Subject<PouchDB.Core.ChangesResponseChange<T>>;
 }
