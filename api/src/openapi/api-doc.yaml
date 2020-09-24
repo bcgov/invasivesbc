@@ -38,7 +38,7 @@ tags:
 
 externalDocs:
   description: Visit GitHub to find out more about this API
-  url: https://github.com/bcgov/lucy-web.git
+  url: https://github.com/bcgov/invasivesbc.git
 
 # paths are generated via express-openapi based on the ./src/paths/* structure
 paths: {}

@@ -1,0 +1,72 @@
+{
+    "apiVersion": "build.openshift.io/v1",
+    "kind": "BuildConfig",
+    "metadata": {
+        "annotations": {
+            "openshift.io/generated-by": "OpenShiftNewBuild"
+        },
+        "creationTimestamp": null,
+        "labels": {
+            "build": "invasivesbci-app-test"
+        },
+        "name": "invasivesbci-app-test",
+        "selfLink": "/apis/build.openshift.io/v1/namespaces/8ecbmv-tools/buildconfigs/invasivesbci-app-test"
+    },
+    "spec": {
+        "failedBuildsHistoryLimit": 5,
+        "nodeSelector": null,
+        "output": {
+            "to": {
+                "kind": "ImageStreamTag",
+                "name": "invasivesbci-app-test:latest"
+            }
+        },
+        "postCommit": {},
+        "resources": {},
+        "runPolicy": "Serial",
+        "source": {
+            "contextDir": "/app",
+            "git": {
+                "ref": "ci-cd-update",
+                "uri": "https://github.com/bcgov/invasivesbc"
+            },
+            "type": "Git"
+        },
+        "strategy": {
+            "dockerStrategy": {
+                "from": {
+                    "kind": "ImageStreamTag",
+                    "name": "nodejs-8-rhel7:latest"
+                }
+            },
+            "type": "Docker"
+        },
+        "successfulBuildsHistoryLimit": 5,
+        "triggers": [
+            {
+                "github": {
+                    "secret": "eFYXhlv3ytHsI2BiNOHb"
+                },
+                "type": "GitHub"
+            },
+            {
+                "generic": {
+                    "secret": "CAKim-KscvFDMu9_bnC-"
+                },
+                "type": "Generic"
+            },
+            {
+                "type": "ConfigChange"
+            },
+            {
+                "imageChange": {
+                    "lastTriggeredImageID": "registry.access.redhat.com/rhscl/nodejs-8-rhel7@sha256:c9561f3067d6a774754c1401ec9372300d57ecb07a6d8e14260d43b424fa9dc9"
+                },
+                "type": "ImageChange"
+            }
+        ]
+    },
+    "status": {
+        "lastVersion": 1
+    }
+}

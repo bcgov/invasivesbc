@@ -1,0 +1,1171 @@
+{
+	"info": {
+		"_postman_id": "a9d3b9e5-c601-4164-8568-a8fe883f0489",
+		"name": "lucy-api-mobile",
+		"description": "API for lucy mobile.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "misc/version",
+			"item": [
+				{
+					"name": "/misc/version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "59139360-923c-4232-b545-e5cd8d105e96",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "OPTIONS",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlMobile}}/misc/version",
+							"host": [
+								"{{baseUrlMobile}}"
+							],
+							"path": [
+								"misc",
+								"version"
+							]
+						},
+						"description": "Options on public version route"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "OPTIONS",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/misc/version",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"misc",
+										"version"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "/misc/version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d35384d0-0eed-49ac-b05c-acbf5610960c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body matches 'dev-'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"dev-\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Running on Localhost\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.environment).to.eql(\"localhost\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlMobile}}/misc/version",
+							"host": [
+								"{{baseUrlMobile}}"
+							],
+							"path": [
+								"misc",
+								"version"
+							]
+						},
+						"description": "Get api version information"
+					},
+					"response": [
+						{
+							"name": "Fetched api version information",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/misc/version",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"misc",
+										"version"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"version\": \"eu esse sint aliqua Lorem\",\n \"environment\": \"est qui nostrud\"\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "activity",
+			"item": [
+				{
+					"name": "/activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d177c75f-d3e2-4437-9012-60efea150fde",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "OPTIONS",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlMobile}}/activity",
+							"host": [
+								"{{baseUrlMobile}}"
+							],
+							"path": [
+								"activity"
+							]
+						},
+						"description": "Options on authenticated activity route"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "OPTIONS",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "OPTIONS",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"magna dolore ullamco\",\n \"errors\": [\n  \"consequat laborum \",\n  \"sunt\"\n ]\n}"
+						}
+					]
+				},
+				{
+					"name": "/activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1f352f90-60cd-492f-bd60-3fa3e6b4a558",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201,202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+								"key": "Authorization",
+								"value": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activity_type\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activity_sub_type\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrlMobile}}/activity",
+							"host": [
+								"{{baseUrlMobile}}"
+							],
+							"path": [
+								"activity"
+							]
+						},
+						"description": "Create a new activity"
+					},
+					"response": [
+						{
+							"name": "Created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activity_type\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activity_sub_type\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"activity_type\": \"irure in est dolor\",\n \"activity_sub_type\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
+						},
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activity_type\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activity_sub_type\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "observation/plant",
+			"item": [
+				{
+					"name": "{observation Id}",
+					"item": [
+						{
+							"name": "/observation/plant/:observationId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b8d03299-16ae-4372-83bf-9d57806ffe9d",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time is less than 1000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "OPTIONS",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrlMobile}}/observation/plant/:observationId",
+									"host": [
+										"{{baseUrlMobile}}"
+									],
+									"path": [
+										"observation",
+										"plant",
+										":observationId"
+									],
+									"variable": [
+										{
+											"key": "observationId",
+											"value": "<number>",
+											"description": "(Required) "
+										}
+									]
+								},
+								"description": "Options on authenticated plant observation route"
+							},
+							"response": [
+								{
+									"name": "Unauthorized user",
+									"originalRequest": {
+										"method": "OPTIONS",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/observation/plant/:observationId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"observation",
+												"plant",
+												":observationId"
+											],
+											"variable": [
+												{
+													"key": "observationId"
+												}
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+								},
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "OPTIONS",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/observation/plant/:observationId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"observation",
+												"plant",
+												":observationId"
+											],
+											"variable": [
+												{
+													"key": "observationId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "/observation/plant/:observationId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4669b0da-c851-425f-aaff-ee08c01b5bc5",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time is less than 1000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+											"});\r",
+											"pm.test(\"Your test name\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.observation_id).to.eql(parseInt(pm.environment.get(\"observation_id\"),10));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "",
+										"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrlMobile}}/observation/plant/{{observation_id}}",
+									"host": [
+										"{{baseUrlMobile}}"
+									],
+									"path": [
+										"observation",
+										"plant",
+										"{{observation_id}}"
+									]
+								},
+								"description": "Get a single plant observation based on its id (observation id)"
+							},
+							"response": [
+								{
+									"name": "Fetched observation with id",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/observation/plant/:observationId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"observation",
+												"plant",
+												":observationId"
+											],
+											"variable": [
+												{
+													"key": "observationId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"observation_id\": -17174384.55881597,\n \"observation_date\": \"ut esse\",\n \"access_description\": \"laboris ut Lorem id\",\n \"observer_first_name\": \"in mollit\",\n \"observer_last_name\": \"cillum officia exercitation\",\n \"sample_identifier\": \"culpa\",\n \"range_unit_number\": \"culpa pariatur\",\n \"general_comment\": \"commodo minim ipsum\",\n \"legacy_site_ind\": false,\n \"early_detection_rapid_resp_ind\": true,\n \"research_detection_ind\": false,\n \"sample_taken_ind\": false,\n \"well_ind\": false,\n \"special_care_ind\": true,\n \"biological_ind\": false,\n \"aquatic_ind\": true,\n \"species_id\": \"ullamco dolore id\",\n \"jurisdiction_code_id\": \"tempor velit ut dolor pariatur\",\n \"species_density_code_id\": \"id eiu\",\n \"species_distribution_code_id\": \"nostrud incididunt dolore sed\",\n \"observation_type_code_id\": \"aliquip velit cupidatat\",\n \"species_agency_code_id\": \"ea ut\",\n \"soil_texture_code_id\": \"labore cupidatat ut do Ut\",\n \"specific_use_code_id\": \"qui ut labore velit tempor\",\n \"observation_slope_code_id\": \"eiusmod sit id cillum\",\n \"observation_aspect_code_id\": \"aute fugiat commodo Lorem\",\n \"observation_proposed_action_code_id\": \"minim\",\n \"created_at\": \"cillum culpa et deserunt \",\n \"updated_at\": \"eu fugiat \",\n \"updated_by_user_id\": -51487829.82396054,\n \"created_by_user_id\": -39115719.30843167,\n \"space_geom_id\": 95783768.80553958,\n \"hex_id\": 76477316.9219133,\n \"hex_sub_id\": 92792051.2181589,\n \"total_area\": 65361668.54917601,\n \"negative_occurance_ind\": false,\n \"paper_id_primary\": \"sunt in amet minim\",\n \"paper_id_secondary\": \"ex eu labore officia\",\n \"elevation_meters\": -11673654.854623854,\n \"well_proximity\": 65627605.62445617,\n \"well_tag\": -4762183.118084356,\n \"observation_geometry_code_id\": \"Ut proident nulla do anim\",\n \"photo_indicator\": true,\n \"flowering\": true,\n \"bec_zone\": \"do nulla dolor\",\n \"riso\": \"elit commodo id nisi\",\n \"ipma\": \"id occaecat\",\n \"ownership\": \"commodo est\",\n \"regional_district\": \"id adipisicing\",\n \"flnro_district\": \"dolor anim e\",\n \"moti_district\": \"in dolore aliquip\",\n \"raw_longitude\": 6056072.601907164,\n \"raw_latitude\": -57143616.40591532,\n \"raw_utm_zone\": -83990885.02210246,\n \"raw_utm_easting\": -21367993.65508853,\n \"raw_utm_northing\": 42276911.74803433,\n \"raw_albers_x\": 70628385.95304152,\n \"raw_albers_y\": 43842598.52467522\n}"
+								},
+								{
+									"name": "Validation error - no observation with id",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/observation/plant/:observationId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"observation",
+												"plant",
+												":observationId"
+											],
+											"variable": [
+												{
+													"key": "observationId"
+												}
+											]
+										}
+									},
+									"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+									"code": 422,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+								}
+							]
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "/observation/plant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1290d19e-6af3-485d-8b34-455c845f9e48",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "OPTIONS",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlMobile}}/observation/plant",
+							"host": [
+								"{{baseUrlMobile}}"
+							],
+							"path": [
+								"observation",
+								"plant"
+							]
+						},
+						"description": "Options on authenticated plant observation route"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "OPTIONS",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/observation/plant",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"observation",
+										"plant"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "OPTIONS",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/observation/plant",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"observation",
+										"plant"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+						}
+					]
+				},
+				{
+					"name": "/observation/plant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9ca2bd5d-b6b8-4a9f-9184-c76f98d7accc",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"\r",
+									"pm.test(\"Observer first name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.observer_first_name).to.eql(\"COLEEN\");\r",
+									"});\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrlMobile}}/observation/plant",
+							"host": [
+								"{{baseUrlMobile}}"
+							],
+							"path": [
+								"observation",
+								"plant"
+							]
+						},
+						"description": "Get all plant observations"
+					},
+					"response": [
+						{
+							"name": "Validation error - no observation with id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/observation/plant",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"observation",
+										"plant"
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+						},
+						{
+							"name": "Fetched observation with id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/observation/plant",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"observation",
+										"plant"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"observation_id\": -17174384.55881597,\n \"observation_date\": \"ut esse\",\n \"access_description\": \"laboris ut Lorem id\",\n \"observer_first_name\": \"in mollit\",\n \"observer_last_name\": \"cillum officia exercitation\",\n \"sample_identifier\": \"culpa\",\n \"range_unit_number\": \"culpa pariatur\",\n \"general_comment\": \"commodo minim ipsum\",\n \"legacy_site_ind\": false,\n \"early_detection_rapid_resp_ind\": true,\n \"research_detection_ind\": false,\n \"sample_taken_ind\": false,\n \"well_ind\": false,\n \"special_care_ind\": true,\n \"biological_ind\": false,\n \"aquatic_ind\": true,\n \"species_id\": \"ullamco dolore id\",\n \"jurisdiction_code_id\": \"tempor velit ut dolor pariatur\",\n \"species_density_code_id\": \"id eiu\",\n \"species_distribution_code_id\": \"nostrud incididunt dolore sed\",\n \"observation_type_code_id\": \"aliquip velit cupidatat\",\n \"species_agency_code_id\": \"ea ut\",\n \"soil_texture_code_id\": \"labore cupidatat ut do Ut\",\n \"specific_use_code_id\": \"qui ut labore velit tempor\",\n \"observation_slope_code_id\": \"eiusmod sit id cillum\",\n \"observation_aspect_code_id\": \"aute fugiat commodo Lorem\",\n \"observation_proposed_action_code_id\": \"minim\",\n \"created_at\": \"cillum culpa et deserunt \",\n \"updated_at\": \"eu fugiat \",\n \"updated_by_user_id\": -51487829.82396054,\n \"created_by_user_id\": -39115719.30843167,\n \"space_geom_id\": 95783768.80553958,\n \"hex_id\": 76477316.9219133,\n \"hex_sub_id\": 92792051.2181589,\n \"total_area\": 65361668.54917601,\n \"negative_occurance_ind\": false,\n \"paper_id_primary\": \"sunt in amet minim\",\n \"paper_id_secondary\": \"ex eu labore officia\",\n \"elevation_meters\": -11673654.854623854,\n \"well_proximity\": 65627605.62445617,\n \"well_tag\": -4762183.118084356,\n \"observation_geometry_code_id\": \"Ut proident nulla do anim\",\n \"photo_indicator\": true,\n \"flowering\": true,\n \"bec_zone\": \"do nulla dolor\",\n \"riso\": \"elit commodo id nisi\",\n \"ipma\": \"id occaecat\",\n \"ownership\": \"commodo est\",\n \"regional_district\": \"id adipisicing\",\n \"flnro_district\": \"dolor anim e\",\n \"moti_district\": \"in dolore aliquip\",\n \"raw_longitude\": 6056072.601907164,\n \"raw_latitude\": -57143616.40591532,\n \"raw_utm_zone\": -83990885.02210246,\n \"raw_utm_easting\": -21367993.65508853,\n \"raw_utm_northing\": 42276911.74803433,\n \"raw_albers_x\": 70628385.95304152,\n \"raw_albers_y\": 43842598.52467522\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "code/observation/plant",
+			"item": [
+				{
+					"name": "/code/observation/plant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "64c08fef-6c79-40a0-beb8-c5972cd55b11",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "OPTIONS",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlMobile}}/code/observation/plant",
+							"host": [
+								"{{baseUrlMobile}}"
+							],
+							"path": [
+								"code",
+								"observation",
+								"plant"
+							]
+						},
+						"description": "Options on authenticated observation code route"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "OPTIONS",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/code/observation/plant",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"code",
+										"observation",
+										"plant"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "OPTIONS",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/code/observation/plant",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"code",
+										"observation",
+										"plant"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+						}
+					]
+				},
+				{
+					"name": "/code/observation/plant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c83ec28-f51d-468e-9b54-d13f36d2d50c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"pm.test(\"Make sure we are looking at observation codes\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql(\"observation codes\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrlMobile}}/code/observation/plant",
+							"host": [
+								"{{baseUrlMobile}}"
+							],
+							"path": [
+								"code",
+								"observation",
+								"plant"
+							]
+						},
+						"description": "API to get all observation code values"
+					},
+					"response": [
+						{
+							"name": "Fetched code values",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/code/observation/plant",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"code",
+										"observation",
+										"plant"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"cillum tempor laboris \",\n \"data\": {\n  \"observation_aspect_code\": [\n   {\n    \"observation_aspect_code_id\": -18809135.256108165,\n    \"code\": \"ipsum\",\n    \"description\": \"ut dolor cillum\",\n    \"activeIndicator\": false,\n    \"updateAt\": \"est esse laborum aliquip sed\",\n    \"createdAt\": \"adipisicing ea incididunt anim\"\n   },\n   {\n    \"observation_aspect_code_id\": -32948509.52430828,\n    \"code\": \"consectetur nulla eiusmod\",\n    \"description\": \"tempor culpa aute\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"fugiat\",\n    \"createdAt\": \"aliquip Ut dolor volupta\"\n   }\n  ],\n  \"jurisdiction_code\": [\n   {\n    \"jurisdiction_code_id\": 1586482.4674376845,\n    \"code\": \"irure enim\",\n    \"description\": \"in et\",\n    \"activeIndicator\": false,\n    \"updateAt\": \"mollit eu tempor p\",\n    \"createdAt\": \"et dolore ea\"\n   },\n   {\n    \"jurisdiction_code_id\": 60256444.57564142,\n    \"code\": \"Duis esse\",\n    \"description\": \"labo\",\n    \"activeIndicator\": false,\n    \"updateAt\": \"deserunt\",\n    \"createdAt\": \"dolore ipsum aliqua ea\"\n   }\n  ],\n  \"observation_geometry_code\": [\n   {\n    \"observation_geometry_code_id\": -8870262.583315685,\n    \"code\": \"adipisicing\",\n    \"description\": \"magna deserunt aute\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"deserunt voluptate ut nisi\",\n    \"createdAt\": \"eu veniam Duis\"\n   },\n   {\n    \"observation_geometry_code_id\": 83170014.00410104,\n    \"code\": \"in sed sit adipisicing\",\n    \"description\": \"eu quis irure\",\n    \"activeIndicator\": false,\n    \"updateAt\": \"magna mollit minim velit\",\n    \"createdAt\": \"ea in aliquip\"\n   }\n  ],\n  \"observation_type_code\": [\n   {\n    \"observation_type_code_id\": 21700793.383103803,\n    \"code\": \"Duis\",\n    \"description\": \"proident veniam\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"ex exercitation\",\n    \"createdAt\": \"pariatur sunt in deserunt laborum\"\n   },\n   {\n    \"observation_type_code_id\": -75912206.43681757,\n    \"code\": \"aliquip veniam adipisicing\",\n    \"description\": \"aliquip\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"mollit aliqua\",\n    \"createdAt\": \"magna eu in id\"\n   }\n  ],\n  \"observation_proposed_action_code\": [\n   {\n    \"observation_proposed_action_code_id\": -77056443.68466182,\n    \"code\": \"anim\",\n    \"description\": \"tempor anim veniam\",\n    \"activeIndicator\": false,\n    \"updateAt\": \"consequat elit in\",\n    \"createdAt\": \"ad veniam consectetur\"\n   },\n   {\n    \"observation_proposed_action_code_id\": -5780571.004861474,\n    \"code\": \"fugiat\",\n    \"description\": \"enim ea\",\n    \"activeIndicator\": false,\n    \"updateAt\": \"ad ipsum sed\",\n    \"createdAt\": \"aliquip sed\"\n   }\n  ],\n  \"observation_slope_code\": [\n   {\n    \"observation_slope_code_id\": -37057391.57477734,\n    \"code\": \"exercitation ut\",\n    \"description\": \"ut q\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"officia ut\",\n    \"createdAt\": \"sit commodo\"\n   },\n   {\n    \"observation_slope_code_id\": 47546393.007587016,\n    \"code\": \"consectetur fugiat tempor anim nisi\",\n    \"description\": \"consectetur commodo eiusmod sunt\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"elit ullamco quis eiusmod\",\n    \"createdAt\": \"eiusmod fugiat\"\n   }\n  ],\n  \"soil_texture_code\": [\n   {\n    \"soil_texture_code_id\": -13558701.417320237,\n    \"code\": \"aliquip consectetur ad\",\n    \"description\": \"commodo cillum aliqua aliquip amet\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"amet Ut dolor\",\n    \"createdAt\": \"commodo deserunt est Lorem\"\n   },\n   {\n    \"soil_texture_code_id\": -99376843.49984682,\n    \"code\": \"fugiat sed Excepteur\",\n    \"description\": \"in sed eiusm\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"adipisicing tempor deserunt\",\n    \"createdAt\": \"sunt non\"\n   }\n  ],\n  \"species_agency_code\": [\n   {\n    \"species_agency_code_id\": 80265532.87241095,\n    \"code\": \"eu officia laborum\",\n    \"description\": \"dolor est officia et\",\n    \"activeIndicator\": false,\n    \"updateAt\": \"occaecat \",\n    \"createdAt\": \"sunt\"\n   },\n   {\n    \"species_agency_code_id\": 18871651.76228507,\n    \"code\": \"dolor ipsum sit\",\n    \"description\": \"dolore proident\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"labore velit\",\n    \"createdAt\": \"et exercitation\"\n   }\n  ],\n  \"species_density_code\": [\n   {\n    \"species_density_code_id\": 78522005.96068078,\n    \"code\": \"ea est\",\n    \"description\": \"nisi magna\",\n    \"activeIndicator\": false,\n    \"updateAt\": \"mollit amet reprehenderit\",\n    \"createdAt\": \"s\"\n   },\n   {\n    \"species_density_code_id\": -35782839.37948807,\n    \"code\": \"sint amet nostrud\",\n    \"description\": \"veniam \",\n    \"activeIndicator\": true,\n    \"updateAt\": \"magna\",\n    \"createdAt\": \"ipsum eu\"\n   }\n  ],\n  \"species_distribution_code\": [\n   {\n    \"species_distribution_code_id\": -1143428.4162840694,\n    \"description\": \"amet id Ut enim\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"Duis occaecat irure\",\n    \"createdAt\": \"ex fugiat sit aute\"\n   },\n   {\n    \"species_distribution_code_id\": 65747512.972582996,\n    \"description\": \"dolore c\",\n    \"activeIndicator\": false,\n    \"updateAt\": \"ex\",\n    \"createdAt\": \"velit ipsum enim proident\"\n   }\n  ],\n  \"species\": [\n   {\n    \"species_id\": 38882650.352721125,\n    \"mapCode\": \"ea con\",\n    \"earlyDetection\": true,\n    \"containmentSpecies\": -68335104.3286288,\n    \"containmentSpacialRef\": 2188710.5917010754,\n    \"species\": \"in consectetur Lor\",\n    \"genus\": \"non officia consectetur incididunt fugiat\",\n    \"commonName\": \"deserunt non\",\n    \"latinName\": \"aliquip ex\",\n    \"updateAt\": \"nulla est in occaecat\",\n    \"createdAt\": \"ullamco qui nulla dolore\"\n   },\n   {\n    \"species_id\": 24635273.851175338,\n    \"mapCode\": \"est Ut labore\",\n    \"earlyDetection\": true,\n    \"containmentSpecies\": 40892690.291599244,\n    \"containmentSpacialRef\": 30000888.245922804,\n    \"species\": \"aute qui ni\",\n    \"genus\": \"voluptate Lo\",\n    \"commonName\": \"mollit do ea\",\n    \"latinName\": \"sint c\",\n    \"updateAt\": \"amet\",\n    \"createdAt\": \"sit dolore mollit\"\n   }\n  ],\n  \"specific_use_code\": [\n   {\n    \"specific_use_code_id\": -57033856.42400751,\n    \"code\": \"pariatur ad laboris\",\n    \"description\": \"veniam Excepteur occaecat dolor\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"dolore\",\n    \"createdAt\": \"sint magna\"\n   },\n   {\n    \"specific_use_code_id\": 76012862.37501022,\n    \"code\": \"in eiusmod Ut et tempor\",\n    \"description\": \"dolor enim cupidatat\",\n    \"activeIndicator\": true,\n    \"updateAt\": \"commodo dolore magna amet\",\n    \"createdAt\": \"do\"\n   }\n  ]\n }\n}"
+						},
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/code/observation/plant",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"code",
+										"observation",
+										"plant"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4446bcb2-9776-4396-af39-37ce1acfa5b8",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "invasives-bc",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "istest1@idir",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{postman_pw}}",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "openid",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token",
+					"protocol": "https",
+					"host": [
+						"sso-dev",
+						"pathfinder",
+						"gov",
+						"bc",
+						"ca"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"dfmlcg7z",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{KEYCLOAK_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "28ed808c-5613-4b9b-ae86-c95bcabd650e",
+				"type": "text/javascript",
+				"exec": [
+					"const echoPostRequest = {",
+					"  url: 'https://sso-dev.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token',",
+					"  method: 'POST',",
+					"  header: 'Content-Type:application/x-www-form-urlencoded',",
+					"  body: {",
+					"    mode: 'urlencoded',",
+					"    urlencoded: [",
+					"        {key:'username', value:'istest1@idir'}, ",
+					"        {key:'password', value:pm.environment.get('postman_pw')}, ",
+					"        {key:'scope', value:'openid'}, ",
+					"        {key:'client_id', value:'invasives-bc'}, ",
+					"        {key:'grant_type', value:'password'}",
+					"    ]",
+					"  }",
+					"};",
+					"",
+					"var getToken = true;",
+					"",
+					"if (!pm.environment.get('KEYCLOAK_TOKEN_EXPIRY') || ",
+					"    !pm.environment.get('KEYCLOAK_TOKEN')) {",
+					"    console.log('Token or expiry date are missing')",
+					"} else if (pm.environment.get('KEYCLOAK_TOKEN_EXPIRY') <= (new Date()).getTime()) {",
+					"    console.log('Token is expired')",
+					"} else {",
+					"    getToken = false;",
+					"    console.log('Token and expiry date are all good');",
+					"}",
+					"",
+					"if (getToken === true) {",
+					"    pm.sendRequest(echoPostRequest, function (err, res) {",
+					"    console.log(err ? err : res.json());",
+					"        if (err === null) {",
+					"            console.log('Saving the token and expiry date')",
+					"            var responseJson = res.json();",
+					"            pm.environment.set('KEYCLOAK_TOKEN', responseJson.access_token)",
+					"    ",
+					"            var expiryDate = new Date();",
+					"            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+					"            pm.environment.set('KEYCLOAK_TOKEN_EXPIRY', expiryDate.getTime());",
+					"        }",
+					"    });",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "58db7d12-6973-4d83-b8be-118686a601b1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
