@@ -14,10 +14,10 @@
 .leaflet-control-locate.leaflet-control {
   transform: scale(1.2) translate(5px, 5px);
 }
-.leaflet-control-locate.leaflet-control a .bullseye {
+.leaflet-control-locate.leaflet-control .bullseye {
   background-image: url('/assets/icon/location-button.svg');
   background-repeat: no-repeat;
   width: 60px;
   height: 60px;
-  transform: translate(-21px,-17px) scale(0.4);
+  transform: translate(-22px,-16px) scale(0.4);
 }
