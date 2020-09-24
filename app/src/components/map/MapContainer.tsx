@@ -3,15 +3,21 @@ import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import 'leaflet.locatecontrol'
-import 'leaflet.locatecontrol/dist/L.Control.Locate.css'
-import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css'
+import 'leaflet.locatecontrol';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import './MapContainer.css';
+import * as PouchDB from 'pouchdb';
+// import 'leaflet.tilelayer.pouchdbcached';
+
+
+console.log('PouchDB',PouchDB);
 
 interface IMapContainerProps {
   classes?: any;
   activity?: any;
 }
+
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const renderMap = () => {
@@ -41,7 +47,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const bcBase = L.tileLayer(
       'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
       {
-        maxZoom: 24
+        maxZoom: 24,
+        useCache: true,
+        cacheMaxAge: 1.72e8 // 48 hours
       }
     ).addTo(map);
 
