@@ -110,6 +110,7 @@ jobs:
       - name: Build APP Images
         working-directory: "./app/.pipeline/"
         run: |
+          npm install
           npm ci
           DEBUG=* npm run build -- --pr=$BUILD_ID
 
