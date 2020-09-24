@@ -1,0 +1,12 @@
+
+.leaflet-draw.leaflet-control {
+  transform: scale(1.5) translate(-5px,40px);
+}
+
+.leaflet-control-layers.leaflet-control {
+  transform: translate(0, 120px);
+}
+
+.leaflet-control-zoom.leaflet-control {
+  transform: scale(1.5) translate(-5px, -5px);
+}

@@ -6,6 +6,7 @@ import React from 'react';
 const PhotoContainer: React.FC = () => {
   const { photos, takePhoto, deletePhotos } = usePhotoGallery();
 
+  // Grid with overlays: https://material-ui.com/components/grid-list/
   return (
     <div>
       <div style={{ display: 'flex', flex: '1' }}>

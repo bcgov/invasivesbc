@@ -6,20 +6,20 @@ import { Grid, Button, TextField } from '@material-ui/core';
 import { useState, useEffect, useContext } from 'react';
 
 // db caching related:
-import * as RxDB from 'rxdb';
+import PouchDB from 'pouchdb-core';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'api/api';
 
 interface IFormControlProps {
-  database: RxDB.RxDatabase;
   setFormData: Function;
-  schema?: any;
-  uiSchema?: any;
+  activity: any;
 }
 
 // Form controls:
 const FormControls: React.FC<IFormControlProps> = (props) => {
   const api = useInvasivesApi();
+
+  const databaseContext = useContext(DatabaseContext);
 
   // needed for fetch:
   const [activityID, setActivityID] = useState('');
@@ -43,7 +43,7 @@ const FormControls: React.FC<IFormControlProps> = (props) => {
   };
 
   const save = async (formData: any) => {
-    // props.database.insert(formData);
+    // databaseContext.database.put(formData);
   };
 
   return (
@@ -85,42 +85,13 @@ const FormControls: React.FC<IFormControlProps> = (props) => {
 interface IFormContainerProps {
   schema?: any;
   uiSchema?: any;
+  activity: any;
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const api = useInvasivesApi();
 
-  const database = useContext(DatabaseContext);
-
-  const [schema, setSchema] = useState({ properties: {} });
-
-  const [collection, setCollection] = useState(null);
-
-  const [formData, setFormData] = useState({ activityType: 'LAME' });
-
-  const setupCollection = async () => {
-    if (!database) {
-      // database not yet set up
-      return;
-    }
-
-    if (database.activities) {
-      // collection already exists
-      if (!collection) {
-        // set existing collection if not already set
-        setCollection(database.activities);
-      }
-      return;
-    }
-
-    console.log(props.schema);
-    const table = await database.collection({
-      name: 'activities',
-      schema: { ...props.schema, version: 0 }
-    });
-
-    setCollection(table);
-  };
+  const [formData, setFormData] = useState(null);
 
   const submitEventHandler = async (event: any) => {
     console.log('submitEventHandler: ', event);
@@ -130,10 +101,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   };
 
   useEffect(() => {
-    // setupCollection();
-  }, [database]);
-
-  useEffect(() => {
     const getApiSpec = async () => {
       const response = await api.getApiSpec();
       //   console.log(
@@ -141,15 +108,17 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       //       "application/json"
       //     ].schema
       //   );
-      setSchema(response.data.paths['/activity'].post.requestBody.content['application/json'].schema);
+      // setSchema(response.data.paths['/activity'].post.requestBody.content['application/json'].schema);
     };
 
     getApiSpec();
   }, [api]);
 
+  useEffect(() => {});
+
   return (
     <div>
-      <FormControls database={database} setFormData={setFormData} />
+      <FormControls activity={props.activity} setFormData={setFormData} />
 
       <Form
         formData={formData}
