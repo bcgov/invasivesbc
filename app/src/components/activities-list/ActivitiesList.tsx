@@ -7,22 +7,30 @@ import {
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction,
-  ListItemText,
   makeStyles,
-  SvgIcon
+  SvgIcon,
+  Theme
 } from '@material-ui/core';
 import { Add, DeleteForever } from '@material-ui/icons';
 import { ActivityType, ActivityTypeIcon } from 'constants/activities';
+import { MediumDateFormat } from 'constants/misc';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
+  activityList: {},
   activitiyListItem: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'row',
+    marginTop: '0.5rem',
+    marginBottom: '0.5rem',
+    border: '1px solid',
+    borderColor: theme.palette.grey[300],
+    borderRadius: '6px'
   },
   activitiyListCol: {
     flex: '1'
@@ -38,9 +46,15 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
 
   return (
     <Grid container direction="row" spacing={2}>
-      <Grid item>{props.doc.title}</Grid>
       <Divider flexItem={true} orientation="vertical" />
-      <Grid item>{props.doc.url}</Grid>
+      <Grid item>Status: {props.doc.status}</Grid>
+      <Divider flexItem={true} orientation="vertical" />
+      <Grid item>Created: {moment(props.doc.dateCreated).format(MediumDateFormat)}</Grid>
+      <Divider flexItem={true} orientation="vertical" />
+      <Grid item>
+        Edited: {(props.doc.dateUpdated && moment(props.doc.dateUpdated).format(MediumDateFormat)) || 'n/a'}
+      </Grid>
+      <Divider flexItem={true} orientation="vertical" />
     </Grid>
   );
 };
@@ -118,7 +132,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   };
 
   return (
-    <List>
+    <List className={classes.activityList}>
       {docs.map((doc) => {
         return (
           <ListItem
@@ -129,9 +143,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
             <ListItemIcon>
               <SvgIcon component={ActivityTypeIcon[props.type]} />
             </ListItemIcon>
-            <ListItemText>
-              <ActivityListItem doc={doc} />
-            </ListItemText>
+            <ActivityListItem doc={doc} />
             <ListItemSecondaryAction>
               <IconButton onClick={() => removeActivity(doc)}>
                 <DeleteForever />
@@ -157,7 +169,8 @@ const ActivitiesList: React.FC = (props) => {
         error: null
       },
       dateCreated: new Date(),
-      dateUpated: null
+      dateUpated: null,
+      formData: null
     });
   };
 
