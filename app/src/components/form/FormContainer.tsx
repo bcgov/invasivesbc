@@ -30,7 +30,6 @@ const FormControls: React.FC<IFormControlProps> = (props) => {
     props.formRef.submit();
   };
 
-  console.log(props);
   return (
     <>
       <Grid container spacing={3} className={props.classes.root}>
@@ -69,12 +68,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
-      // TODO cache this response for offline/performance (since it shouldnt change much)
-      const response = await api.getApiSpec();
+      const response = await api.getCachedApiSpec();
 
-      // TODO add the promise from `api-getApiSpec()` to this array.
       setSchemas({
-        schema: { ...response.data.components.schemas.Activity, components: response.data.components },
+        schema: { ...response.components.schemas.Activity, components: response.components },
         uiSchema: Activity
       });
     };
