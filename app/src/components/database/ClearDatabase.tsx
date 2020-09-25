@@ -11,10 +11,6 @@ const ManageDatabaseContainer: React.FC<IManageDatabaseContainerProps> = (props)
   const databaseContext = useContext(DatabaseContext);
 
   const wipeLocalDatabase = async () => {
-    if (!databaseContext.database) {
-      return;
-    }
-
     const docs = await databaseContext.database.allDocs();
 
     if (!docs) {

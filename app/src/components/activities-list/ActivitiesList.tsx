@@ -86,19 +86,8 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
   useEffect(() => {
     const updateComponent = (): Subscription => {
-      if (!databaseContext.database) {
-        // database not ready
-        return;
-      }
-
       // initial update
       updateActivityList();
-
-      // subscribe to future updates
-      if (!databaseContext.changes) {
-        // changes observable not ready
-        return;
-      }
 
       // subscribe to changes and update list on emit
       const subscription = databaseContext.changes.subscribe(() => {

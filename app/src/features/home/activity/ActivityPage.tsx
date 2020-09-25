@@ -41,10 +41,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   useEffect(() => {
     const getActivityData = async () => {
-      if (!databaseContext.database) {
-        return;
-      }
-
       const appState = await databaseContext.database.find({ selector: { _id: 'AppState' } });
 
       if (!appState || !appState.docs || !appState.docs.length) {

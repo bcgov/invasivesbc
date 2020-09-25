@@ -33,19 +33,8 @@ const HomeLayout = (props: any) => {
 
   useEffect(() => {
     const updateComponent = (): Subscription => {
-      if (!databaseContext.database) {
-        console.log('db not ready');
-        // database not ready
-        return;
-      }
-
       // read from db on first render
       addToErrorsOnPage();
-
-      if (!databaseContext.changes) {
-        // changes observable not ready
-        return;
-      }
 
       // subscribe to changes and update list on emit
       const subscription = databaseContext.changes.subscribe(() => {
