@@ -1,11 +1,16 @@
 import React, { useEffect } from 'react';
 import * as L from 'leaflet';
-import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import 'leaflet.locatecontrol'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.css'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css'
+import './MapContainer.css';
 
 interface IMapContainerProps {
   classes?: any;
+  activity?: any;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -17,12 +22,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
+    const options = {
+      icon: 'bullseye',
+      flyTo: true
+    };
+
+    L.control.locate(options).addTo(map);
+
     const esriBase = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
-        maxZoom: 24
+        maxZoom: 24,
+        maxNativeZoom: 17
       }
-    ).addTo(map);
+    );
 
     const bcBase = L.tileLayer(
       'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
@@ -72,8 +85,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     map.on('draw:drawstart', function (layerGroup) {
-      console.log('started');
-      console.log(layerGroup);
+      drawnItems.clearLayers(); // Clear previous shape
     });
 
     map.on('draw:drawstop', function (layerGroup) {

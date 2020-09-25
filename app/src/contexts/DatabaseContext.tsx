@@ -25,7 +25,12 @@ export const DatabaseContextProvider: React.FC = (props) => {
 
       if (window['cordova']) {
         PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite')); // adds mobile adapter
-        db = new PouchDB('invasivesbc', { adapter: 'cordova-sqlite' });
+        db = new PouchDB('invasivesbc', {
+          adapter: 'cordova-sqlite',
+          // See https://www.npmjs.com/package/cordova-sqlite-storage for details on the below options
+          iosDatabaseLocation: 'default',
+          androidDatabaseProvider: 'system'
+        } as any);
       } else {
         PouchDB.plugin(require('pouchdb-adapter-idb').default); // add sbrowser adapter
         db = new PouchDB('invasivesbc', { adapter: 'idb' });

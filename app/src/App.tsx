@@ -1,13 +1,34 @@
 import { DeviceInfo } from '@capacitor/core';
 import { IonReactRouter } from '@ionic/react-router';
-import { CircularProgress, makeStyles } from '@material-ui/core';
+import { CircularProgress, createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core';
 import { KeycloakProvider } from '@react-keycloak/web';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
 import AppRouter from './AppRouter';
 import { AuthStateContext, AuthStateContextProvider, IAuthState } from './contexts/authStateContext';
-import { DatabaseContextProvider } from './contexts/DatabaseContext';
+import { DatabaseContext, DatabaseContextProvider, IDatabaseContext } from './contexts/DatabaseContext';
 import getKeycloakEventHandler from './utils/KeycloakEventHandler';
+
+const theme = createMuiTheme({
+  overrides: {
+    MuiCircularProgress: {
+      root: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        height: '60px !important',
+        width: '60px !important',
+        marginLeft: '-30px',
+        marginTop: '-30px'
+      }
+    },
+    MuiContainer: {
+      root: {
+        maxWidth: 'xl'
+      }
+    }
+  }
+});
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -18,7 +39,11 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const App: React.FC<{ info: DeviceInfo }> = (props) => {
+interface IAppProps {
+  info: DeviceInfo;
+}
+
+const App: React.FC<IAppProps> = (props) => {
   const classes = useStyles();
 
   const keycloakConfig: KeycloakConfig = {
@@ -48,27 +73,39 @@ const App: React.FC<{ info: DeviceInfo }> = (props) => {
 
   return (
     <div className={classes.root}>
-      <KeycloakProvider
-        keycloak={keycloak}
-        initConfig={initConfig}
-        LoadingComponent={<CircularProgress />}
-        onEvent={getKeycloakEventHandler(keycloak)}>
-        <AuthStateContextProvider>
-          <IonReactRouter>
-            <DatabaseContextProvider>
+      <ThemeProvider theme={theme}>
+        <KeycloakProvider
+          keycloak={keycloak}
+          initConfig={initConfig}
+          LoadingComponent={<CircularProgress />}
+          onEvent={getKeycloakEventHandler(keycloak)}>
+          <AuthStateContextProvider>
+            <IonReactRouter>
               <AuthStateContext.Consumer>
                 {(context: IAuthState) => {
                   if (!context.ready) {
+                    // authentication not ready, delay loading app
                     return <CircularProgress />;
                   }
-
-                  return <AppRouter />;
+                  return (
+                    <DatabaseContextProvider>
+                      <DatabaseContext.Consumer>
+                        {(context: IDatabaseContext<any>) => {
+                          if (!context.database || !context.changes) {
+                            // database not ready, delay loading app
+                            return <CircularProgress />;
+                          }
+                          return <AppRouter />;
+                        }}
+                      </DatabaseContext.Consumer>
+                    </DatabaseContextProvider>
+                  );
                 }}
               </AuthStateContext.Consumer>
-            </DatabaseContextProvider>
-          </IonReactRouter>
-        </AuthStateContextProvider>
-      </KeycloakProvider>
+            </IonReactRouter>
+          </AuthStateContextProvider>
+        </KeycloakProvider>
+      </ThemeProvider>
     </div>
   );
 };

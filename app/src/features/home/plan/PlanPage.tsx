@@ -1,4 +1,5 @@
 import { Container } from '@material-ui/core';
+import ManageDatabaseContainer from 'components/database/ClearDatabase';
 import React from 'react';
 
 interface IPlanPageProps {
@@ -6,7 +7,11 @@ interface IPlanPageProps {
 }
 
 const PlanPage: React.FC<IPlanPageProps> = (props) => {
-  return <Container className={props.classes.container}>Add Plan Components to me!</Container>;
+  return (
+    <Container className={props.classes.container}>
+      <ManageDatabaseContainer />
+    </Container>
+  );
 };
 
 export default PlanPage;

@@ -1,12 +1,13 @@
 import { Collapse, IconButton, makeStyles, Snackbar, Theme, withWidth } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import { Alert } from '@material-ui/lab';
 import TabsContainer from 'components/tabs/TabsContainer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { Subscription } from 'rxjs';
-import CloseIcon from '@material-ui/icons/Close';
-import { Alert } from '@material-ui/lab';
 import MarkunreadMailboxIcon from '@material-ui/icons/MarkunreadMailbox';
 import Badge from '@material-ui/core/Badge';
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   homeLayoutRoot: {
@@ -36,19 +37,9 @@ const HomeLayout = (props: any) => {
 
   useEffect(() => {
     const updateComponent = (): Subscription => {
-      if (!databaseContext.database) {
-        console.log('db not ready')
-        // database not ready
-        return;
-      }
 
       // read from db on first render
       addNotificationsToPage();
-
-      if (!databaseContext.changes) {
-        // changes observable not ready
-        return;
-      }
 
       // subscribe to changes and update list on emit
       const subscription = databaseContext.changes.subscribe(() => {
@@ -115,6 +106,7 @@ const HomeLayout = (props: any) => {
   }
 
 
+
   /*useEffect(() => {
     const isDBOK = () => {
       if (!databaseContext.database) {
@@ -134,6 +126,7 @@ const HomeLayout = (props: any) => {
         <Alert
           // severity can't be null so this is a workaround
           severity={notification == null ? "success": notification.notificationType}
+
           action={
             <IconButton
               aria-label="close"
@@ -152,6 +145,7 @@ const HomeLayout = (props: any) => {
           }
         >
           {notification == null ? null : notification.text}
+
         </Alert>
       </Collapse>
       <div className={classes.homeContainer}>{props.children}</div>
