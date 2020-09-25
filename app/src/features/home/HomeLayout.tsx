@@ -122,7 +122,9 @@ const HomeLayout = (props: any) => {
   return (
     <div className={classes.homeLayoutRoot}>
       <TabsContainer classes={classes.tabsContainer} />
-      <Collapse in={isOpen}>
+      <Collapse 
+      timeout={50}
+      in={isOpen}>
         <Alert
           // severity can't be null so this is a workaround
           severity={notification == null ? "success": notification.notificationType}
@@ -131,7 +133,7 @@ const HomeLayout = (props: any) => {
             <IconButton
               aria-label="close"
               color="inherit"
-              size="small"
+              size="medium"
               onClick={() => {
                 acknowledgeNotification(notification._id)
               }}
@@ -144,7 +146,7 @@ const HomeLayout = (props: any) => {
             </IconButton>
           }
         >
-          {notification == null ? null : notification.text}
+         <strong>{notification == null ? null : notification.text}</strong> 
 
         </Alert>
       </Collapse>
