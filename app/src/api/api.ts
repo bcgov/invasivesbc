@@ -55,7 +55,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getApiSpec = async (): Promise<any> => {
-    const { data } = await api.get('/api/api-docsx/');
+    const { data } = await api.get('/api/api-docs/');
 
     return data;
   };
