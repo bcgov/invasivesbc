@@ -11,7 +11,7 @@
   "previousVersion": "NA",
   "olderVersions": [],
   "module": {
-    "app": "invasivesbc-app"
+    "app": "invasivesbci-app"
   },
   "staticBranches": [
     "dev",
