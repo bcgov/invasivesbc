@@ -89,10 +89,10 @@ objects:
     resources:
       limits:
         cpu: 1250m
-        memory: 3Gi
+        memory: 5Gi
       requests:
         cpu: 750m
-        memory: 2Gi
+        memory: 5Gi
     runPolicy: Serial
     source:
       contextDir: "${SOURCE_CONTEXT_DIR}"
