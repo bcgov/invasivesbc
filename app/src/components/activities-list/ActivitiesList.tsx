@@ -12,6 +12,7 @@ import {
   Theme
 } from '@material-ui/core';
 import { Add, DeleteForever } from '@material-ui/icons';
+import { useInvasivesApi } from 'api/api';
 import { ActivityType, ActivityTypeIcon } from 'constants/activities';
 import { MediumDateFormat } from 'constants/misc';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -19,6 +20,7 @@ import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Subscription } from 'rxjs';
+import { triggerError } from 'utils/NotificationUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -131,6 +133,8 @@ const ActivityList: React.FC<IActivityList> = (props) => {
     history.push(`/home/activity`);
   };
 
+  const api = useInvasivesApi();
+
   return (
     <List className={classes.activityList}>
       {docs.map((doc) => {
@@ -191,6 +195,12 @@ const ActivitiesList: React.FC = (props) => {
       <div>
         <Button variant="contained" startIcon={<Add />} onClick={() => addNewActivity(ActivityType.MONITORING)}>
           Add New Monitoring
+        </Button>
+        <ActivityList type={ActivityType.MONITORING} />
+      </div>
+      <div>
+        <Button variant="contained" startIcon={<Add />} onClick={() => triggerError(databaseContext)}>
+          Simulate Error
         </Button>
         <ActivityList type={ActivityType.MONITORING} />
       </div>
