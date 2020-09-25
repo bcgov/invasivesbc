@@ -47,6 +47,7 @@ jobs:
       - name: Build APP Images
         working-directory: "./app/.pipeline/"
         run: |
+          npm install
           npm ci
           DEBUG=* npm run build -- --pr=$BUILD_ID
 
@@ -80,6 +81,7 @@ jobs:
       - name: Deploy App
         working-directory: "./app/.pipeline"
         run: |
+          npm install
           npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
 
@@ -111,6 +113,7 @@ jobs:
       - name: Clean APP Deployment
         working-directory: "./app/.pipeline/"
         run: |
+          npm install
           npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev

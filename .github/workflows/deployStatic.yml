@@ -50,6 +50,7 @@ jobs:
       - name: Build APP Images
         working-directory: "./app/.pipeline/"
         run: |
+          npm install
           npm ci
           DEBUG=* npm run build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
   # End buildAPP
@@ -84,6 +85,7 @@ jobs:
       - name: Deploy App
         working-directory: "./app/.pipeline"
         run: |
+          npm install
           npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev --type=static --branch=${{ github.base_ref }}
 
@@ -117,5 +119,6 @@ jobs:
       - name: Deploy App
         working-directory: "./app/.pipeline"
         run: |
+          npm install
           npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=test --type=static --branch=${{ github.base_ref }}
