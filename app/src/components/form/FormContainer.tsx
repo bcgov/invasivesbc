@@ -8,7 +8,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Activity } from 'rjsf/uiSchema';
 
 // Custom themed `Form` component, using @rjsf/material-ui as default base theme
-// const Formx = withTheme({ ...rjsfMaterialTheme });
+// const Form = withTheme({ ...rjsfMaterialTheme });
 
 const useStyles = makeStyles((theme: Theme) => ({
   formControlsTop: {
@@ -98,6 +98,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         uiSchema={schemas.uiSchema}
         onSubmit={submitHandler}
         // `ref` does exist, but currently is missing from the `index.d.ts` types file.
+        // @ts-ignore: No overload matches this call ts(2769)
         ref={(form) => setFormRef(form)}>
         <React.Fragment />
       </Form>
