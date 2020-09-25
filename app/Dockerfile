@@ -15,6 +15,7 @@ COPY ./package*.json ./
 
 # INSATLL NODE DEPENDENCIES
 RUN npm install
+RUN npm install -g @ionic/cli
 
 # Copy All the sources
 COPY ./ .
