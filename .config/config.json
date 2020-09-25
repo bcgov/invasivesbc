@@ -1,0 +1,61 @@
+{
+    "name": "invasivesbci",
+    "namespaceSuffix": "8ecbmv",
+    "namespace": {
+        "tools": "tools",
+        "dev": "dev",
+        "test": "test",
+        "prod": "prod"
+    },
+    "version": "1.0.0",
+    "previousVersion": "NA",
+    "olderVersions": [],
+    "module": {
+        "app": "invasivesbc-app",
+    },
+    "staticBranches": ["dev", "staging", "prod"],
+    "staticUrls": {
+        "dev": "dev-invasivesbci.pathfinder.gov.bc.ca",
+        "staging": "test-invasivesbci.pathfinder.gov.bc.ca",
+        "prod": "invasivesbci.pathfinder.gov.bc.ca"
+    },
+    "certificateURL": {
+        "dev": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
+        "test": "https://sso-test.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
+        "prod": "https://sso.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs"
+    },
+    "sso": {
+        "dev": {
+            "url": "https://sso-dev.pathfinder.gov.bc.ca",
+            "clientId": "invasives-bc",
+            "realm": "dfmlcg7z"
+        },
+        "test": {
+            "url": "https://sso-test.pathfinder.gov.bc.ca",
+            "clientId": "invasives-bc",
+            "realm": "dfmlcg7z"
+        },
+        "prod": {
+            "url": "https://sso.pathfinder.gov.bc.ca",
+            "clientId": "invasives-bc",
+            "realm": "dfmlcg7z"
+        }
+    },
+    "migrationInfo" : {
+        "dev": {
+            "type": "normal",
+            "cleanup": "none",
+            "dbSeed": "yes"
+        },
+        "test": {
+            "type": "normal",
+            "cleanup": "none",
+            "dbSeed": "yes"
+        },
+        "prod": {
+            "type": "normal",
+            "cleanup": "none",
+            "dbSeed": "yes"
+        }
+    }
+}
