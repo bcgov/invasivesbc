@@ -18,7 +18,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Subscription } from 'rxjs';
-import { addNewError, triggerError } from 'utils/NotificationUtils';
+import { notifyError, notifySuccess, notifyWarning, triggerError } from 'utils/NotificationUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -195,6 +195,12 @@ const ActivitiesList: React.FC = (props) => {
       <div>
         <Button variant="contained" startIcon={<Add />} onClick={() => triggerError(databaseContext)}>
           Simulate Error
+        </Button>
+        <Button variant="contained" startIcon={<Add />} onClick={() => notifySuccess(databaseContext, 'hooray!')}>
+          Simulate Success
+        </Button>
+        <Button variant="contained" startIcon={<Add />} onClick={() => notifyWarning(databaseContext, 'better watch it')}>
+          Simulate Warning
         </Button>
         <ActivityList type={ActivityType.MONITORING} />
       </div>
