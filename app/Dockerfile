@@ -1,15 +1,7 @@
-FROM node:10
+FROM node:12
 
 # Setting Path
 ENV PATH /opt/rh/rh-nodejs8/root/usr/bin:/opt/app-root/src/node_modules/.bin/:/opt/app-root/src/app.npm-global/bin/:/opt/app-root/src/app/bin:/opt/app-root/src/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
-# Print NODE Version
-# RUN node -v
-# Updating NPM
-# RUN npm install npm@6.0.1 -g
-
-# Print NPM Version
-# RUN npm -v
 
 # Create app directory
 
@@ -29,9 +21,6 @@ COPY ./ .
 
 # BUILD APP
 RUN npm run build-prod
-
-# RUN Sonar Analysis
-# RUN npm run sonar-analysis //TODO: Uncomment this once the sonarqube properties are updated
 
 EXPOSE 3030
 

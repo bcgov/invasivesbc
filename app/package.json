@@ -70,8 +70,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "build-prod": "npm install -g @ionic/cli && npm install && react-scripts build --prod",
-    "deploy_start": "npm run serve -s build",
+    "build-prod": "npm install -g @ionic/cli && npm install -g serve && react-scripts build --prod",
+    "deploy_start": "serve -s build -p 3030",
     "eject": "react-scripts eject",
     "lint": "eslint src/ --ext .jsx,.js,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix"
