@@ -20,7 +20,7 @@ import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Subscription } from 'rxjs';
-import { addNewError, triggerError } from 'utils/NotificationUtils';
+import { triggerError } from 'utils/NotificationUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -75,8 +75,6 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const [docs, setDocs] = useState<any[]>([]);
-
-
 
   const updateActivityList = async () => {
     const activityDocs = await databaseContext.database.find({
@@ -135,8 +133,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
     history.push(`/home/activity`);
   };
 
-    const api = useInvasivesApi();
-
+  const api = useInvasivesApi();
 
   return (
     <List className={classes.activityList}>
@@ -165,7 +162,6 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
 const ActivitiesList: React.FC = (props) => {
   const databaseContext = useContext(DatabaseContext);
-
 
   const addNewActivity = async (activityType: ActivityType) => {
     await databaseContext.database.put({

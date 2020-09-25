@@ -1,10 +1,10 @@
-import { Collapse, IconButton, makeStyles, Snackbar, Theme, withWidth } from '@material-ui/core';
+import { Collapse, IconButton, makeStyles, Theme } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import { Alert } from '@material-ui/lab';
 import TabsContainer from 'components/tabs/TabsContainer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { Subscription } from 'rxjs';
-import CloseIcon from '@material-ui/icons/Close';
-import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme: Theme) => ({
   homeLayoutRoot: {
@@ -28,13 +28,13 @@ const HomeLayout = (props: any) => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
 
-  const [isOpen, setIsOpen] = useState(false)
-  const [error, setError] = useState(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const updateComponent = (): Subscription => {
       if (!databaseContext.database) {
-        console.log('db not ready')
+        console.log('db not ready');
         // database not ready
         return;
       }
@@ -69,31 +69,29 @@ const HomeLayout = (props: any) => {
   }, [databaseContext]);
 
   const addToErrorsOnPage = async () => {
-    console.log('add errors to page')
-
+    console.log('add errors to page');
 
     //console.dir(databaseContext.database.allDocs())
 
     const errors = await databaseContext.database.find({
-      selector: { docType: "error", errorAcknowledged: false }
+      selector: { docType: 'error', errorAcknowledged: false }
     });
-    console.dir(errors)
+    console.dir(errors);
 
     if (errors.docs.length > 0) {
-      setError(errors.docs[0])
-      setIsOpen(true)
-      console.log('it happened')
+      setError(errors.docs[0]);
+      setIsOpen(true);
+      console.log('it happened');
     }
-
   };
 
-
   const acknowledgeError = (docId: string) => {
-    databaseContext.database.upsert(docId, (doc) => { return { ...doc, errorAcknowledged: true } })
+    databaseContext.database.upsert(docId, (doc) => {
+      return { ...doc, errorAcknowledged: true };
+    });
     setIsOpen(false);
-    console.log('acknowledged error')
-  }
-
+    console.log('acknowledged error');
+  };
 
   /*useEffect(() => {
     const isDBOK = () => {
@@ -119,13 +117,11 @@ const HomeLayout = (props: any) => {
               color="inherit"
               size="small"
               onClick={() => {
-                acknowledgeError(error._id)
-              }}
-            >
+                acknowledgeError(error._id);
+              }}>
               <CloseIcon fontSize="inherit" />
             </IconButton>
-          }
-        >
+          }>
           {error == null ? null : error.errorText}
         </Alert>
       </Collapse>
