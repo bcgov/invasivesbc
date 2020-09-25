@@ -17,7 +17,7 @@ const isStaticDeployment = () => {
 const isProduction = () => false;
 
 const deployChangeId  = isStaticDeployment() ? 'deploy' : changeId;
-const defaultHost = 'invasivebc-8ecbmv-dev.pathfinder.gov.bc.ca';
+const defaultHost = 'invasivebci-8ecbmv-dev.pathfinder.gov.bc.ca';
 const defaultHostAPI = 'invasivebc-8ecbmv-api.dev.pathfinder.gov.bc.ca'
 
 // Get SSO_Info
@@ -50,26 +50,26 @@ options = processOptions(options);
 const phases = {
   build: {
     namespace:'8ecbmv-tools'    ,
-    name: `${name}`, 
-    phase: 'build'  , 
-    changeId:changeId, 
-    suffix: `-build-${changeId}`  , 
-    instance: `${name}-build-${changeId}`  , 
-    version:`${version}-${changeId}`, 
+    name: `${name}`,
+    phase: 'build'  ,
+    changeId:changeId,
+    suffix: `-build-${changeId}`  ,
+    instance: `${name}-build-${changeId}`  ,
+    version:`${version}-${changeId}`,
     tag: tag,
     env: 'build',
     branch: branch
   },
   dev: {
-    namespace:'8ecbmv-dev'    , 
-    name: `${name}`, 
-    phase: 'dev'  , 
-    changeId:deployChangeId, 
-    suffix: `-dev-${deployChangeId}`  , 
-    instance: `${name}-dev-${deployChangeId}`  , 
-    version:`${version}-${deployChangeId}`, 
-    tag:`dev-${version}-${deployChangeId}`, 
-    host: isStaticDeployment() ? staticUrls['dev'] || defaultHost : `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`, 
+    namespace:'8ecbmv-dev'    ,
+    name: `${name}`,
+    phase: 'dev'  ,
+    changeId:deployChangeId,
+    suffix: `-dev-${deployChangeId}`  ,
+    instance: `${name}-dev-${deployChangeId}`  ,
+    version:`${version}-${deployChangeId}`,
+    tag:`dev-${version}-${deployChangeId}`,
+    host: isStaticDeployment() ? staticUrls['dev'] || defaultHost : `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
     apiHost: isStaticDeployment() ? staticUrlsAPI['dev'] || defaultHostAPI : `${apiName}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
     env: 'dev',
     sso: sso.dev,
@@ -77,14 +77,14 @@ const phases = {
     maxReplicas: 3
   },
   test: {
-    namespace:'8ecbmv-test'    , 
-    name: `${name}`, 
-    phase: 'test'  , 
-    changeId: deployChangeId, 
-    suffix: `-test`  , 
-    instance: `${name}-test`  , 
-    version:`${version}`, 
-    tag:`test-${version}`, 
+    namespace:'8ecbmv-test'    ,
+    name: `${name}`,
+    phase: 'test'  ,
+    changeId: deployChangeId,
+    suffix: `-test`  ,
+    instance: `${name}-test`  ,
+    version:`${version}`,
+    tag:`test-${version}`,
     host: staticUrls['staging'],
     apiHost: staticUrlsAPI['staging'] || defaultHostAPI,
     env: 'test',
@@ -93,14 +93,14 @@ const phases = {
     maxReplicas: 5
   },
   prod: {
-    namespace:'8ecbmv-prod'    , 
+    namespace:'8ecbmv-prod'    ,
     name: `${name}`,
-    phase: 'prod'  , 
+    phase: 'prod'  ,
     changeId: deployChangeId,
-    suffix: `-prod`  , 
-    instance: `${name}-prod`  , 
-    version:`${version}`, 
-    tag:`prod-${version}`, 
+    suffix: `-prod`  ,
+    instance: `${name}-prod`  ,
+    version:`${version}`,
+    tag:`prod-${version}`,
     host: staticUrls['prod'],
     apiHost: staticUrlsAPI['prod'] || defaultHostAPI,
     env: 'prod',
