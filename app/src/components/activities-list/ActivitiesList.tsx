@@ -20,8 +20,9 @@ import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Subscription } from 'rxjs';
-import { triggerError } from 'utils/NotificationUtils';
+import { notifyError, notifySuccess, notifyWarning, triggerError } from 'utils/NotificationUtils';
 import { v4 as uuidv4 } from 'uuid';
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   activityList: {},
@@ -76,6 +77,8 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
   const [docs, setDocs] = useState<any[]>([]);
 
+
+
   const updateActivityList = async () => {
     const activityDocs = await databaseContext.database.find({
       selector: { type: props.type }
@@ -122,6 +125,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
     history.push(`/home/activity`);
   };
 
+
   const api = useInvasivesApi();
 
   return (
@@ -151,6 +155,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
 const ActivitiesList: React.FC = (props) => {
   const databaseContext = useContext(DatabaseContext);
+
 
   const addNewActivity = async (activityType: ActivityType) => {
     await databaseContext.database.put({
@@ -191,6 +196,13 @@ const ActivitiesList: React.FC = (props) => {
         <Button variant="contained" startIcon={<Add />} onClick={() => triggerError(databaseContext)}>
           Simulate Error
         </Button>
+        <Button variant="contained" startIcon={<Add />} onClick={() => notifySuccess(databaseContext, 'hooray!')}>
+          Simulate Success
+        </Button>
+        <Button variant="contained" startIcon={<Add />} onClick={() => notifyWarning(databaseContext, 'better watch it')}>
+          Simulate Warning
+        </Button>
+
         <ActivityList type={ActivityType.MONITORING} />
       </div>
     </>
