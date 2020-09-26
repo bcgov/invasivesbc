@@ -82,7 +82,7 @@ objects:
           readinessProbe:
             failureThreshold: 10
             httpGet:
-              path: /healthcheck
+              path: /
               port: ${{APP_PORT_DEFAULT}}
               scheme: HTTP
             initialDelaySeconds: 65
@@ -92,7 +92,7 @@ objects:
           livenessProbe:
             failureThreshold: 10
             httpGet:
-              path: /healthcheck
+              path: /
               port: ${{APP_PORT_DEFAULT}}
               scheme: HTTP
             initialDelaySeconds: 65

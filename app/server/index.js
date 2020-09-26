@@ -15,7 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Created by Pushan Mitra on 2019-06-24.
 /**
  * Imports
  */
@@ -27,8 +26,6 @@ const request = require('request');
  * @description Bootstrap script to start app web server
  */
 (() => {
-    // TODO: Find proper solution
-    // Ignoring ssl certificate of host
     process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
     // Express APP
     const app = express();
@@ -57,7 +54,7 @@ const request = require('request');
     app.use('/healthcheck', (_, resp) => {
         // Request server api
         const host = process.env.API_HOST || process.env.LOCAL_API_HOST || 'localhost'
-        request(`https://${host}/api/misc/version`, (err, res) => {
+        request(`https://${host}/`, (err, res) => {
             if (err) {
                 console.log(`Error: ${err}, host: ${host}`);
                 resp.status(404).json({error: `${err}`, host: host});
@@ -77,7 +74,7 @@ const request = require('request');
     app.use('*', route);
 
     // Logging
-    console.log(`Stating express web server on port with resource path => ${port}: ${resourcePath}`);
+    console.log(`Starting express web server on port with resource path => ${port}: ${resourcePath}`);
     // Listing to port
     app.listen(port, () => {
         console.log(`Application started on port => ${port}`);
