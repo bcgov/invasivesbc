@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+// import React, { useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
@@ -7,11 +7,13 @@ import 'leaflet.locatecontrol';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import './MapContainer.css';
-import * as PouchDB from 'pouchdb';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import React, { useContext, useEffect, useState } from 'react';
+// import * as PouchDB from 'pouchdb';
 // import 'leaflet.tilelayer.pouchdbcached';
 
 
-console.log('PouchDB',PouchDB);
+// console.log('PouchDB',PouchDB);
 
 interface IMapContainerProps {
   classes?: any;
@@ -20,7 +22,16 @@ interface IMapContainerProps {
 
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
+
+  const databaseContext = useContext(DatabaseContext);
+
   const renderMap = () => {
+    // TODO: Need to wrap this function in a higher order function
+    // that waits for the db to serialize before running **renderMap**
+    // if (!databaseContext.database) {
+    //   // database not ready
+    //   return;
+    // }
     console.log('Map componentDidMount!');
 
     var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
@@ -79,27 +90,23 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
-    setTimeout(function () {
-      map.invalidateSize();
-      map.setView([55, -128], 10);
-    }, 1000);
 
     map.on('draw:created', (feature) => {
-      console.log(feature.layer.toGeoJSON());
       drawnItems.addLayer(feature.layer);
     });
 
     map.on('draw:drawvertex', function (layerGroup) {
-      console.log(layerGroup);
+      console.log('drawvertex',layerGroup);
     });
 
-    map.on('draw:drawstart', function (layerGroup) {
+    map.on('draw:drawstart', function () {
       drawnItems.clearLayers(); // Clear previous shape
     });
 
     map.on('draw:drawstop', function (layerGroup) {
       console.log('stopped');
-      console.log(layerGroup);
+      console.log(databaseContext);
+      databaseContext.database.put(layerGroup);
     });
 
     map.on('draw:deleted', function () {
@@ -122,8 +129,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       console.log('editvertex');
     });
 
-    map.on('draw:editstop', function () {
+    map.on('draw:editstop', function (layerGroup) {
       console.log('editstop');
+      console.log('layerGroup',layerGroup)
     });
 
     map.on('draw:deletestart', function () {
