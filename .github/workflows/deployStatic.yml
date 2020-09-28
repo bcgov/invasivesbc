@@ -127,7 +127,7 @@ jobs:
   clean:
     name: Clean Deployment Artifacts for App
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && (github.base_ref = 'dev' && github.base_ref != 'prod') }}
+    if: ${{ github.event.pull_request.merged == true && (github.base_ref == 'dev' && github.base_ref != 'prod') }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
