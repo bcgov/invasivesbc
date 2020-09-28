@@ -55,7 +55,7 @@ jobs:
           DEBUG=* npm run build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
   # End buildAPP
 
-  # Deploy App, API, and API-MOBILE images in Dev
+  # Deploy App images in Dev
   deployDev:
     name: Deploy App
     runs-on: ubuntu-latest
@@ -122,3 +122,37 @@ jobs:
           npm install
           npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=test --type=static --branch=${{ github.base_ref }}
+
+  # Clean App images and related build/deployment artifacts from dev and tools
+  clean:
+    name: Clean Deployment Artifacts for App
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && (github.base_ref == 'dev' && github.base_ref != 'prod') }}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    steps:
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.16
+
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+
+      # Clean the app deployment artifacts
+      - name: Clean APP Deployment
+        working-directory: "./app/.pipeline/"
+        run: |
+          npm install
+          npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+
