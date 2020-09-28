@@ -57,7 +57,7 @@ jobs:
 
   # Deploy App images in Dev
   deployDev:
-    name: Deploy App
+    name: DeployAppDevPR
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true && github.base_ref != 'prod'}}
     env:
@@ -130,6 +130,10 @@ jobs:
     if: ${{ github.event.pull_request.merged == true && (github.base_ref == 'dev' && github.base_ref != 'prod') }}
     env:
       BUILD_ID: ${{ github.event.number }}
+    needs:
+      - buildAPP
+      - deployDev
+      - deployTest  
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
