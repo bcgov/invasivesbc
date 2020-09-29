@@ -222,11 +222,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   );
 };
 
-interface IActivitiesListProps {
-  activity: any;
-}
-
-const ActivitiesList: React.FC<IActivitiesListProps> = (props) => {
+const ActivitiesList: React.FC = (props) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
