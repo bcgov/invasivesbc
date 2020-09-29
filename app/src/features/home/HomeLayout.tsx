@@ -7,6 +7,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Subscription } from 'rxjs';
 import MarkunreadMailboxIcon from '@material-ui/icons/MarkunreadMailbox';
 import Badge from '@material-ui/core/Badge';
+import { DocType } from 'constants/database';
 
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -65,25 +66,25 @@ const HomeLayout = (props: any) => {
   const addNotificationsToPage = async () => {
     console.log('add notifications to page')
 
-    await databaseContext.database.createIndex({index: {name: 'notifyIndex', fields: ['dateCreated', 
-                                                                                      '_id', 
-                                                                                      'docType', 
-                                                                                      'notificationType', 
-                                                                                      'text', 
+    await databaseContext.database.createIndex({index: {name: 'notifyIndex', fields: ['dateCreated',
+                                                                                      '_id',
+                                                                                      'docType',
+                                                                                      'notificationType',
+                                                                                      'text',
                                                                                       'acknowledged']}});
     console.log('index added')
 
     const notifyIndex = (await (await databaseContext.database.getIndexes()).indexes.find(e => e.name === 'notifyIndex'))
 
     const notifications = await databaseContext.database.find({
-      selector: { dateCreated: {$gte: null }, 
+      selector: { dateCreated: {$gte: null },
                   _id: {$gte: null},
-                  docType: "notification", 
-                  notificationType: {$gte: null}, 
-                  text: {$gte: null}, 
-                  acknowledged: false }, 
+                  docType: DocType.NOTIFICATION,
+                  notificationType: {$gte: null},
+                  text: {$gte: null},
+                  acknowledged: false },
 
-      fields: ['dateCreated', '_id', 'docType', 'notificationType', 'text', 'acknowledged'], 
+      fields: ['dateCreated', '_id', 'docType', 'notificationType', 'text', 'acknowledged'],
       sort: [{dateCreated: 'desc'}],    //    <--   can't find or use index
       use_index: notifyIndex.ddoc,
     });
@@ -122,7 +123,7 @@ const HomeLayout = (props: any) => {
   return (
     <div className={classes.homeLayoutRoot}>
       <TabsContainer classes={classes.tabsContainer} />
-      <Collapse 
+      <Collapse
       timeout={50}
       in={isOpen}>
         <Alert
@@ -139,14 +140,14 @@ const HomeLayout = (props: any) => {
               }}
             >
           <Badge badgeContent={notificationCount}>
-            <MarkunreadMailboxIcon></MarkunreadMailboxIcon> 
+            <MarkunreadMailboxIcon></MarkunreadMailboxIcon>
 
           </Badge>
               <CloseIcon fontSize="inherit" />
             </IconButton>
           }
         >
-         <strong>{notification == null ? null : notification.text}</strong> 
+         <strong>{notification == null ? null : notification.text}</strong>
 
         </Alert>
       </Collapse>

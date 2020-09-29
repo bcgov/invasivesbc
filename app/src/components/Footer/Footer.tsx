@@ -1,5 +1,3 @@
-import './Footer.scss';
-
 import React from 'react';
 import { Link, Toolbar } from '@material-ui/core';
 
