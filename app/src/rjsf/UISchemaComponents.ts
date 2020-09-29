@@ -1,95 +1,18 @@
-// Declare variables at top so they can be used in any order below.
-// Fixes: https://palantir.github.io/tslint/rules/no-use-before-declare/
-let Activity;
-let Observation;
-let Observation_PlantTerrestial;
-let Observation_PlantAquatic;
-let Observation_AnimalTerrestrial;
-let Observation_AnimalAquatic;
-let Treatment;
-let Treatment_ChemicalPlant;
-let Treatment_MechanicalPlant;
-let Treatment_BiologicalPlant;
-let Treatment_BiologicalDispersalPlant;
-let Treatment_MechanicalTerrestrialAnimal;
-let Treatment_ChemicalTerrestrialAnimal;
-let Treatment_BiologicalTerrestrialAnimal;
-let Monitoring;
-let Monitoring_ChemicalTerrestrialAquaticPlant;
-let Monitoring_MechanicalTerrestrialAquaticPlant;
-let Monitoring_BiologicalTerrestrialPlant;
-let Monitoring_MechanicalTerrestrialAnimal;
-let Monitoring_ChemicalTerrestrialAnimal;
-let Monitoring_BiologicalTerrestrialAnimal;
-let Media;
+/**
+ * This file should contain any UI Schema items that have one or more nested elements.
+ *
+ * Example of schema item with nested element:
+ *
+ * const Obj = {
+ *   some_nested_field: {
+ *      ...nested_field_properties
+ *   }
+ * }
+ */
 
-Activity = {
-  species_agency_code: {
-    type: 'string',
-    title: 'Agency'
-  },
-  jurisdiction_code: {
-    type: 'string',
-    title: 'Jurisdiction'
-  },
-  activity_status: {
-    type: 'string',
-    title: 'Activity status'
-  },
-  species_id: {
-    type: 'string',
-    title: 'Species'
-  },
-  general_comment: {
-    type: 'string',
-    title: 'Comment',
-    'ui:widget': 'textarea'
-  },
-  access_description: {
-    type: 'string',
-    title: 'Access Description',
-    'ui:widget': 'textarea'
-  },
-  primary_paper_file_id: {
-    type: 'string',
-    title: 'Primary File'
-  },
-  secondary_paper_file_id: {
-    type: 'string',
-    title: 'Secondary File'
-  },
-  media_indicator: {
-    type: 'boolean',
-    title: 'Photo'
-  },
-  created_date_on_device: {
-    type: 'string',
-    title: 'created on device',
-    format: 'date'
-  },
-  updated_date_on_device: {
-    type: 'string',
-    title: 'created on device',
-    format: 'date-time'
-  },
-  media: {
-    type: 'array',
-    items: {
-      ...Media
-    }
-  },
-  subType: {
-    ...Observation,
-    ...Treatment,
-    ...Monitoring
-  }
-};
+import BaseUISchemaComponents from 'rjsf/BaseUISchemaComponents';
 
-Observation = {
-  observation_id: {
-    type: 'number',
-    title: 'ID'
-  },
+const Observation = {
   observation_date: {
     type: 'string',
     title: 'Date'
@@ -104,37 +27,38 @@ Observation = {
   },
   observer_first_name: {
     type: 'string',
-    title: 'First Name'
+    title: 'First Name',
+    maximum: 50
   },
   observer_last_name: {
     type: 'string',
-    title: 'Last Name'
+    title: 'Last Name',
+    maximum: 50
   },
   reported_area: {
     type: 'integer',
-    title: 'Area'
+    title: 'Area',
+    minimum: 1,
+    maximum: 100
   },
   sample_taken: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Sample Taken'
   },
   sample_number: {
     type: 'string',
-    title: 'Sample Number'
+    title: 'Sample Number',
+    maximum: 50
   },
   negative_obs_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Negative Observation'
-  },
-  subType: {
-    ...Observation_PlantTerrestial,
-    ...Observation_PlantAquatic,
-    ...Observation_AnimalTerrestrial,
-    ...Observation_AnimalAquatic
   }
 };
 
-Observation_PlantTerrestial = {
+const Observation_PlantTerrestial = {
   species_density_code: {
     type: 'string',
     title: 'Density'
@@ -164,6 +88,7 @@ Observation_PlantTerrestial = {
     title: 'Proposed Action'
   },
   flowering: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Flowering'
   },
@@ -188,31 +113,38 @@ Observation_PlantTerrestial = {
     title: 'Range Unit'
   },
   legacy_site_ind: {
-    type: 'boolean'
+    'ui:widget': 'radio',
+    type: 'boolean',
+    title: 'Legacy site'
   },
   early_detection_rapid_resp_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Early Detection'
   },
   research_detection_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Research Detection'
   },
   well_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
-    title: 'Well'
+    title: 'Visible well nearby'
   },
   special_care_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Special Care'
   },
   biological_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Biological'
   }
 };
 
-Observation_PlantAquatic = {
+const Observation_PlantAquatic = {
   specific_use_code: {
     type: 'string',
     title: 'Specific Use'
@@ -246,17 +178,21 @@ Observation_PlantAquatic = {
     title: 'Range Unit'
   },
   legacy_site_ind: {
+    'ui:widget': 'radio',
     type: 'boolean'
   },
   early_detection_rapid_resp_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Early Detection'
   },
   research_detection_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Research Detection'
   },
   sample_taken: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Sample Taken'
   },
@@ -265,10 +201,12 @@ Observation_PlantAquatic = {
     title: 'Sample Number'
   },
   special_care_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Special Care'
   },
   biological_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Biological'
   },
@@ -283,6 +221,7 @@ Observation_PlantAquatic = {
     title: 'water depth'
   },
   voucher_submitted_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Voucher submitted'
   },
@@ -292,53 +231,37 @@ Observation_PlantAquatic = {
   }
 };
 
-Observation_AnimalTerrestrial = {
-  Number_of_Individuals_observed: {
+const Observation_AnimalTerrestrial = {
+  number_of_individuals_observed: {
     type: 'number',
-    title: 'Number of Individuals'
+    title: 'Number of individuals'
   },
-  Life_Stage: {
+  life_stage: {
     type: 'string',
-    title: 'Life Stage'
+    title: 'Life Stage',
+    enum: ['unknown', 'egg', 'neonate', 'juvenile', 'adult']
   },
-  Behaviour: {
+  behaviour: {
     type: 'string',
-    title: 'Behaviour'
+    title: 'Behaviour',
+    enum: ['unknown', 'moving', 'resting', 'deceased']
   }
 };
 
-Observation_AnimalAquatic = {
+const Observation_AnimalAquatic = {
   observation_details: {
     type: 'string',
     title: 'Aquatic animal observations'
   }
 };
 
-Treatment = {
-  treatment_method: {
-    type: 'string',
-    title: 'Treatment method'
-  },
-  treatment_date: {
-    type: 'string',
-    title: 'Treatment date'
-  },
-  treatment_time: {
-    type: 'string',
-    title: 'Treatment time'
-  },
-  subType: {
-    ...Treatment_ChemicalPlant,
-    ...Treatment_MechanicalPlant,
-    ...Treatment_BiologicalPlant,
-    ...Treatment_BiologicalDispersalPlant,
-    ...Treatment_MechanicalTerrestrialAnimal,
-    ...Treatment_ChemicalTerrestrialAnimal,
-    ...Treatment_BiologicalTerrestrialAnimal
-  }
+const Treatment = {
+  title: 'Treatment Information',
+  description: 'Basic information captured for all treatments',
+  type: 'object'
 };
 
-Treatment_ChemicalPlant = {
+const Treatment_ChemicalPlant = {
   primary_applicator_employee_code: {
     type: 'string',
     title: 'Primary Applicator employee code'
@@ -353,7 +276,7 @@ Treatment_ChemicalPlant = {
   },
   project_management_plan_PMP: {
     type: 'string',
-    title: 'Projecty Management Plan'
+    title: 'Project Management Plan'
   },
   pesticide_use_permit_PUP: {
     type: 'string',
@@ -365,15 +288,23 @@ Treatment_ChemicalPlant = {
   },
   temperature: {
     type: 'integer',
-    title: 'Temperature'
+    title: 'Temperature',
+    minimum: 10,
+    maximum: 30
   },
   wind_speed: {
+    type: 'integer',
+    title: ' Wind speed'
+  },
+  wind_direction: {
     type: 'string',
-    title: 'Wind'
+    title: 'Wind direction',
+    enum: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
   },
   humidity: {
     type: 'integer',
-    title: 'Humidity'
+    title: 'Humidity',
+    enum: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
   },
   mix_delivery_rate: {
     type: 'number',
@@ -390,36 +321,16 @@ Treatment_ChemicalPlant = {
     format: 'float',
     title: 'Area treated'
   },
-  amount_of_herbicide_1: {
-    type: 'number',
-    format: 'float',
-    title: 'Herbicide 1 amount'
-  },
-  amount_of_herbicide_2: {
-    type: 'number',
-    format: 'float',
-    title: 'Herbicide 2 amount'
-  },
-  amount_of_herbicide_3: {
-    type: 'number',
-    format: 'float',
-    title: 'Herbicide 3 amount'
-  },
-  herbicide_1: {
-    type: 'string',
-    title: 'Herbicide 1'
-  },
-  herbicide_2: {
-    type: 'string',
-    title: 'Herbicide 2'
-  },
-  herbicide_3: {
-    type: 'string',
-    title: 'Herbicide 3'
+  herbicide: {
+    type: 'array',
+    title: 'Herbicide',
+    items: {
+      ...BaseUISchemaComponents.Herbicide
+    }
   }
 };
 
-Treatment_MechanicalPlant = {
+const Treatment_MechanicalPlant = {
   applicator1_first_name: {
     type: 'string',
     title: 'Applicator 1 first name'
@@ -457,12 +368,13 @@ Treatment_MechanicalPlant = {
     title: 'Mechanical soil disturbance code'
   },
   signage_on_site: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Signage on site'
   }
 };
 
-Treatment_BiologicalPlant = {
+const Treatment_BiologicalPlant = {
   applicator1_first_name: {
     type: 'string',
     title: 'Applicator 1 first name'
@@ -503,13 +415,13 @@ Treatment_BiologicalPlant = {
     type: 'string',
     title: 'Biological agent stage'
   },
-  biological_maturity_status: {
+  bioagent_maturity_status: {
     type: 'string',
-    title: 'Biological maturity status'
+    title: 'Bioagent maturity status'
   }
 };
 
-Treatment_BiologicalDispersalPlant = {
+const Treatment_BiologicalDispersalPlant = {
   applicator1_first_name: {
     type: 'string',
     title: 'Applicator 1 first name'
@@ -520,11 +432,11 @@ Treatment_BiologicalDispersalPlant = {
   },
   applicator2_first_name: {
     type: 'string',
-    title: 'Applicator 1 first name'
+    title: 'Applicator 2 first name'
   },
   applicator2_last_name: {
     type: 'string',
-    title: 'Applicator 1 last name'
+    title: 'Applicator 2 last name'
   },
   treatment_contractor: {
     type: 'string',
@@ -552,35 +464,31 @@ Treatment_BiologicalDispersalPlant = {
   }
 };
 
-Treatment_MechanicalTerrestrialAnimal = {
+const Treatment_MechanicalTerrestrialAnimal = {
   treatment_details: {
     type: 'string',
     title: 'Treatment details'
   }
 };
 
-Treatment_ChemicalTerrestrialAnimal = {
+const Treatment_ChemicalTerrestrialAnimal = {
   treatment_details: {
     type: 'string',
     title: 'Treatment details'
   }
 };
 
-Treatment_BiologicalTerrestrialAnimal = {
+const Treatment_BiologicalTerrestrialAnimal = {
   treatment_details: {
     type: 'string',
     title: 'Treatment details'
   }
 };
 
-Monitoring = {
+const Monitoring = {
   activity_id: {
     type: 'integer',
     title: 'Treatment id'
-  },
-  monitoring_date: {
-    type: 'string',
-    title: 'Treatment date'
   },
   observer_first_name: {
     type: 'string',
@@ -592,33 +500,26 @@ Monitoring = {
   },
   efficacy_rating_code: {
     type: 'integer',
-    title: 'Efficacy rating'
-  },
-  subType: {
-    ...Monitoring_ChemicalTerrestrialAquaticPlant,
-    ...Monitoring_MechanicalTerrestrialAquaticPlant,
-    ...Monitoring_BiologicalTerrestrialPlant,
-    ...Monitoring_MechanicalTerrestrialAnimal,
-    ...Monitoring_ChemicalTerrestrialAnimal,
-    ...Monitoring_BiologicalTerrestrialAnimal
+    title: 'Efficacy rating',
+    enum: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
   }
 };
 
-Monitoring_ChemicalTerrestrialAquaticPlant = {
+const Monitoring_ChemicalTerrestrialAquaticPlant = {
   monitoring_details: {
     type: 'string',
     title: 'Monitoring details'
   }
 };
 
-Monitoring_MechanicalTerrestrialAquaticPlant = {
+const Monitoring_MechanicalTerrestrialAquaticPlant = {
   monitoring_details: {
     type: 'string',
     title: 'Monitoring details'
   }
 };
 
-Monitoring_BiologicalTerrestrialPlant = {
+const Monitoring_BiologicalTerrestrialPlant = {
   plant_count: {
     type: 'integer',
     title: 'Plant count'
@@ -632,42 +533,52 @@ Monitoring_BiologicalTerrestrialPlant = {
     title: 'Count duration'
   },
   agent_destroyed_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Agent destroyed'
   },
   legacy_presence_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Legacy presence'
   },
   foliar_feeding_damage_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Foliar feeding damage'
   },
   root_feeding_damage_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Root feeding damage'
   },
   oviposition_marks_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Oviposition marks'
   },
   eggs_present_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Eggs present'
   },
   larvae_present_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Larvae present'
   },
   pupae_present_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Pupae present'
   },
   adults_present_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Adults present'
   },
   tunnels_present_ind: {
+    'ui:widget': 'radio',
     type: 'boolean',
     title: 'Tunnels present'
   },
@@ -677,36 +588,35 @@ Monitoring_BiologicalTerrestrialPlant = {
   }
 };
 
-Monitoring_MechanicalTerrestrialAnimal = {
+const Monitoring_MechanicalTerrestrialAnimal = {
   monitoring_details: {
     type: 'string',
     title: 'Monitoring details'
   }
 };
 
-Monitoring_ChemicalTerrestrialAnimal = {
+const Monitoring_ChemicalTerrestrialAnimal = {
   monitoring_details: {
     type: 'string',
     title: 'Monitoring details'
   }
 };
 
-Monitoring_BiologicalTerrestrialAnimal = {
+const Monitoring_BiologicalTerrestrialAnimal = {
   monitoring_details: {
     type: 'string',
     title: 'Monitoring details'
   }
 };
 
-Media = {
+const Media = {
   media_date: {
     type: 'string',
     title: 'Date'
   },
   description: {
     type: 'string',
-    title: 'Description',
-    "ui:widget": "textarea"
+    title: 'Description'
   },
   file_name: {
     type: 'string',
@@ -714,13 +624,144 @@ Media = {
   },
   encoded_file: {
     type: 'string',
-
+    format: 'base64',
+    description: 'A Data URL base64 encoded image',
     example: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/4REy...'
   }
 };
 
-export {
-  Activity,
+const PaperFile = {
+  description: {
+    type: 'string',
+    title: 'Description',
+    maximum: 50
+  }
+};
+
+const Herbicide = {
+  herbicide_name: {
+    type: 'string',
+    title: 'herbicide name'
+  },
+  herbicide_amount: {
+    type: 'number',
+    title: 'herbicide amount',
+    format: 'float'
+  }
+};
+
+const Point = {
+  radius: {
+    type: 'number',
+    format: 'float',
+    title: 'Radius',
+    writeOnly: true
+  },
+  coordinates: {
+    type: 'array',
+    items: {}
+  }
+};
+
+const LineString = {
+  offset: {
+    type: 'number',
+    format: 'float',
+    title: 'Offset',
+    writeOnly: true
+  },
+  coordinates: {
+    type: 'array',
+    items: {}
+  }
+};
+
+const Polygon = {
+  coordinates: {
+    type: 'array',
+    items: {}
+  }
+};
+
+const Geometry = {
+  well_proximity: {
+    type: 'number',
+    format: 'float',
+    title: 'Well proximity',
+    readOnly: true
+  },
+  well_tag: {
+    type: 'integer',
+    title: 'Well tag',
+    readOnly: true
+  },
+  subType: {
+    title: 'Geometry subtype',
+    oneOf: [
+      {
+        ...BaseUISchemaComponents.Point
+      },
+      {
+        ...BaseUISchemaComponents.LineString
+      },
+      {
+        ...BaseUISchemaComponents.Polygon
+      }
+    ]
+  }
+};
+
+const Activity = {
+  species_agency_code: {
+    type: 'string',
+    title: 'Agency'
+  },
+  jurisdiction_code: {
+    type: 'string',
+    title: 'Jurisdiction'
+  },
+  activity_status: {
+    type: 'string',
+    title: 'Activity status',
+    enum: ['sync', 'done', 'pending', 'errors']
+  },
+  species_id: {
+    type: 'string',
+    title: 'Species'
+  },
+  general_comment: {
+    type: 'string',
+    title: 'Comment',
+    maximum: 300
+  },
+  access_description: {
+    type: 'string',
+    title: 'Access Description',
+    maximum: 300
+  },
+  media_indicator: {
+    'ui:widget': 'radio',
+    type: 'boolean',
+    title: 'Photo'
+  },
+  created_date_on_device: {
+    type: 'string',
+    title: 'Created date on device'
+  },
+  updated_date_on_device: {
+    type: 'string',
+    title: 'Updated date on device'
+  },
+  paper_file: {
+    type: 'array',
+    title: 'Paper file',
+    items: {
+      ...BaseUISchemaComponents.PaperFile
+    }
+  }
+};
+
+const UISchemaComponents = {
   Observation,
   Observation_PlantTerrestial,
   Observation_PlantAquatic,
@@ -741,5 +782,14 @@ export {
   Monitoring_MechanicalTerrestrialAnimal,
   Monitoring_ChemicalTerrestrialAnimal,
   Monitoring_BiologicalTerrestrialAnimal,
-  Media
+  Media,
+  PaperFile,
+  Herbicide,
+  Geometry,
+  Point,
+  LineString,
+  Polygon,
+  Activity
 };
+
+export default UISchemaComponents;
