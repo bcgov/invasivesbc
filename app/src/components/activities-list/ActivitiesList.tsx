@@ -1,5 +1,7 @@
 import {
+  Box,
   Button,
+  ButtonGroup,
   Checkbox,
   Divider,
   Grid,
@@ -16,7 +18,13 @@ import {
 } from '@material-ui/core';
 import { Add, DeleteForever, Sync } from '@material-ui/icons';
 import clsx from 'clsx';
-import { ActivityStatus, ActivitySyncStatus, ActivityType, ActivityTypeIcon } from 'constants/activities';
+import {
+  ActivityStatus,
+  ActivitySyncStatus,
+  ActivityParentType,
+  ActivityType,
+  ActivityParentTypeIcon
+} from 'constants/activities';
 import { DocType } from 'constants/database';
 import { MediumDateFormat } from 'constants/misc';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -32,6 +40,12 @@ import { v4 as uuidv4 } from 'uuid';
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
   activityList: {},
+  newActivityButtonsRow: {
+    '& Button': {
+      marginRight: '0.5rem',
+      marginBottom: '0.5rem'
+    }
+  },
   syncSuccessful: {
     color: theme.palette.success.main
   },
@@ -92,6 +106,13 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={2}>
+        <Box overflow="hidden" textOverflow="ellipsis" title={props.activity.activityType.split('_')[2]}>
+          <Typography className={classes.activitiyListItem_Typography}>Type</Typography>
+          {props.activity.activityType.split('_')[2]}
+        </Box>
+      </Grid>
+      <Divider flexItem={true} orientation="vertical" />
+      <Grid item md={2}>
         <Typography className={classes.activitiyListItem_Typography}>Status</Typography>
         {props.activity.status}
       </Grid>
@@ -111,8 +132,8 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
         {(props.activity.dateUpdated && moment(props.activity.dateUpdated).format(MediumDateFormat)) || 'n/a'}
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={2}>
-        <Typography className={classes.activitiyListItem_Typography}>Ready to Sync?</Typography>
+      <Grid item md={1}>
+        <Typography className={classes.activitiyListItem_Typography}>Reviewed</Typography>
         <Checkbox
           disabled={props.disable}
           checked={props.activity.sync.ready}
@@ -127,7 +148,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
 interface IActivityList {
   classes?: any;
   disable?: boolean;
-  type: ActivityType;
+  activityParentType: ActivityParentType;
 }
 
 // TODO change any to a type that defines the overall items being displayed
@@ -142,7 +163,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
   const updateActivityList = async () => {
     const activityDocs = await databaseContext.database.find({
-      selector: { type: props.type }
+      selector: { activityParentType: props.activityParentType }
     });
 
     setDocs([...activityDocs.docs]);
@@ -203,7 +224,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
                     (doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL && classes.syncSuccessful) ||
                       (doc.sync.status === ActivitySyncStatus.SYNC_FAILED && classes.syncFailed)
                   )}
-                  component={ActivityTypeIcon[props.type]}
+                  component={ActivityParentTypeIcon[props.activityParentType]}
                 />
               </ListItemIcon>
               <ActivityListItem disable={props.disable} activity={doc} />
@@ -244,8 +265,14 @@ const ActivitiesList: React.FC = (props) => {
     // save each activity one-by-one
     for (const activity of results.docs) {
       try {
-        const response = await invasivesApi.createActivity(activity.formData);
-        console.log('sync response', response);
+        const response = await invasivesApi.createActivity({
+          activity_type: activity.activityParentType,
+          activity_subtype: activity.activityType,
+          geometry: [],
+          media: [],
+          form_data: activity.formData
+        });
+
         await databaseContext.database.upsert(activity._id, (activityDoc) => {
           return {
             ...activityDoc,
@@ -253,7 +280,6 @@ const ActivitiesList: React.FC = (props) => {
           };
         });
       } catch (error) {
-        console.log('sync error', error);
         await databaseContext.database.upsert(activity._id, (activityDoc) => {
           return {
             ...activityDoc,
@@ -267,11 +293,12 @@ const ActivitiesList: React.FC = (props) => {
     setDisable(false);
   };
 
-  const addNewActivity = async (activityType: ActivityType) => {
+  const addNewActivity = async (activityParentType: ActivityParentType, activityType: ActivityType) => {
     await databaseContext.database.put({
       _id: uuidv4(),
       docType: DocType.ACTIVITY,
-      type: activityType,
+      activityParentType: activityParentType,
+      activityType: activityType,
       status: ActivityStatus.NEW,
       sync: {
         ready: false,
@@ -298,59 +325,210 @@ const ActivitiesList: React.FC = (props) => {
         </div>
         <div className={classes.activitiesContent}>
           <div>
-            <Button
-              disabled={disable}
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => addNewActivity(ActivityType.OBSERVATION)}>
-              Add New Observation
-            </Button>
-            <ActivityList disable={disable} type={ActivityType.OBSERVATION} />
-          </div>
-          <div>
-            <Button
-              disabled={disable}
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => addNewActivity(ActivityType.TREATMENT)}>
-              Add New Treatment
-            </Button>
-            <ActivityList disable={disable} type={ActivityType.TREATMENT} />
-          </div>
-          <div>
-            <Button
-              disabled={disable}
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => addNewActivity(ActivityType.MONITORING)}>
-              Add New Monitoring
-            </Button>
-            <ActivityList disable={disable} type={ActivityType.MONITORING} />
-          </div>
-          <div>
-            <Button
-              disabled={disable}
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => triggerError(databaseContext)}>
-              Simulate Error
-            </Button>
-            <Button
-              disabled={disable}
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => notifySuccess(databaseContext, 'hooray!')}>
-              Simulate Success
-            </Button>
-            <Button
-              disabled={disable}
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => notifyWarning(databaseContext, 'better watch it')}>
-              Simulate Warning
-            </Button>
+            <div>
+              <Typography variant="h5">Observations</Typography>
+            </div>
+            <div className={classes.newActivityButtonsRow}>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Observation, ActivityType.Observation_PlantTerrestial)
+                }>
+                Plant Terrestrial
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => addNewActivity(ActivityParentType.Observation, ActivityType.Observation_PlantAquatic)}>
+                Plant Aquatic
+              </Button>
 
-            <ActivityList disable={disable} type={ActivityType.MONITORING} />
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Observation, ActivityType.Observation_AnimalTerrestrial)
+                }>
+                Animal Terrestrial
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => addNewActivity(ActivityParentType.Observation, ActivityType.Observation_AnimalAquatic)}>
+                Animal Aquatic
+              </Button>
+
+              <ActivityList disable={disable} activityParentType={ActivityParentType.Observation} />
+            </div>
+          </div>
+          <div>
+            <div>
+              <Typography variant="h5">Treatments</Typography>
+            </div>
+            <div className={classes.newActivityButtonsRow}>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_ChemicalPlant)}>
+                Plant Chemical
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_MechanicalPlant)}>
+                Plant Mechanical
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_BiologicalPlant)}>
+                Plant Biological
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_BiologicalDispersalPlant)
+                }>
+                Plant Biological Dispersal
+              </Button>
+
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_MechanicalTerrestrialAnimal)
+                }>
+                Animal Terrestrial Mechanical
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_ChemicalTerrestrialAnimal)
+                }>
+                Animal Terrestrial Chemical
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_BiologicalTerrestrialAnimal)
+                }>
+                Animal Terrestrial Biological
+              </Button>
+
+              <ActivityList disable={disable} activityParentType={ActivityParentType.Treatment} />
+            </div>
+          </div>
+          <div>
+            <div>
+              <Typography variant="h5">Monitorings</Typography>
+            </div>
+            <div className={classes.newActivityButtonsRow}>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Monitoring, ActivityType.Monitoring_ChemicalTerrestrialAquaticPlant)
+                }>
+                Plant Terrestrial/Aquatic Chemical
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(
+                    ActivityParentType.Monitoring,
+                    ActivityType.Monitoring_MechanicalTerrestrialAquaticPlant
+                  )
+                }>
+                Plant Terrestrial/Aquatic Mechanical
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Monitoring, ActivityType.Monitoring_BiologicalTerrestrialPlant)
+                }>
+                Plant Terrestrial Biological
+              </Button>
+
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Monitoring, ActivityType.Monitoring_MechanicalTerrestrialAnimal)
+                }>
+                Animal Terrestrial Mechanical
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Monitoring, ActivityType.Monitoring_ChemicalTerrestrialAnimal)
+                }>
+                Animal Terrestrial Chemical
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() =>
+                  addNewActivity(ActivityParentType.Monitoring, ActivityType.Monitoring_BiologicalTerrestrialAnimal)
+                }>
+                Animal Terrestrial Biological
+              </Button>
+
+              <ActivityList disable={disable} activityParentType={ActivityParentType.Monitoring} />
+            </div>
+          </div>
+          <div>
+            <div>
+              <Typography>Development/Testing</Typography>
+            </div>
+            <div>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => triggerError(databaseContext)}>
+                Simulate Error
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => notifySuccess(databaseContext, 'hooray!')}>
+                Simulate Success
+              </Button>
+              <Button
+                disabled={disable}
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => notifyWarning(databaseContext, 'better watch it')}>
+                Simulate Warning
+              </Button>
+
+              <ActivityList disable={disable} activityParentType={ActivityParentType.Monitoring} />
+            </div>
           </div>
         </div>
       </div>

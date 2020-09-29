@@ -1,11 +1,11 @@
-import { Button, CircularProgress, Grid, Theme } from '@material-ui/core';
+import { Button, CircularProgress, Grid, Theme, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import Form from '@rjsf/material-ui';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { JSONSchema7 } from 'json-schema';
 import React, { useContext, useEffect, useState } from 'react';
-import { Activity } from 'rjsf/uiSchema';
+import RootUISchemas from 'rjsf/RootUISchemas';
 import { ActivityStatus } from 'constants/activities';
 
 // Custom themed `Form` component, using @rjsf/material-ui as default base theme
@@ -72,8 +72,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       const response = await invasivesApi.getCachedApiSpec();
 
       setSchemas({
-        schema: { ...response.components.schemas.Activity, components: response.components },
-        uiSchema: Activity
+        schema: { ...response.components.schemas[props.activity.activityType], components: response.components },
+        uiSchema: RootUISchemas[props.activity.activityType]
       });
     };
 
@@ -94,6 +94,17 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         formData={props.activity?.formData || null}
         schema={schemas.schema as JSONSchema7}
         uiSchema={schemas.uiSchema}
+        liveValidate={false}
+        showErrorList={true}
+        ErrorList={() => {
+          return (
+            <div>
+              <Typography color="error" variant="h5">
+                The form contains one or more errors
+              </Typography>
+            </div>
+          );
+        }}
         onSubmit={submitHandler}
         // `ref` does exist, but currently is missing from the `index.d.ts` types file.
         // @ts-ignore: No overload matches this call ts(2769)
