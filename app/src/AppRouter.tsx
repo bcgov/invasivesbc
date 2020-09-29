@@ -14,6 +14,7 @@ const AppRouter: React.FC = () => {
 
   return (
     <Switch>
+      <Redirect exact from="/" to="/home" />
       <AppRoute
         path="/forbidden"
         title={getTitle('Forbidden')}
