@@ -1,11 +1,12 @@
 import { Button, CircularProgress, Grid, Theme } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import Form from '@rjsf/material-ui';
-import { useInvasivesApi } from 'api/api';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { JSONSchema7 } from 'json-schema';
 import React, { useContext, useEffect, useState } from 'react';
 import { Activity } from 'rjsf/uiSchema';
+import { ActivityStatus } from 'constants/activities';
 
 // Custom themed `Form` component, using @rjsf/material-ui as default base theme
 // const Form = withTheme({ ...rjsfMaterialTheme });
@@ -53,7 +54,7 @@ interface IFormContainerProps {
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const classes = useStyles();
 
-  const api = useInvasivesApi();
+  const invasivesApi = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
 
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
@@ -62,13 +63,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const submitHandler = async (event: any) => {
     await databaseContext.database.upsert(props.activity._id, (activity) => {
-      return { ...activity, formData: event.formData };
+      return { ...activity, formData: event.formData, status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
   };
 
   useEffect(() => {
     const getApiSpec = async () => {
-      const response = await api.getCachedApiSpec();
+      const response = await invasivesApi.getCachedApiSpec();
 
       setSchemas({
         schema: { ...response.components.schemas.Activity, components: response.components },

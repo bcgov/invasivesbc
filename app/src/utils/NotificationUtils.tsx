@@ -1,3 +1,4 @@
+import { DocType } from "constants/database";
 import { DatabaseContext, IDatabaseContext } from "contexts/DatabaseContext";
 import { useContext } from "react";
 import { v4 as uuidv4 } from 'uuid';
@@ -5,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 export const notifyError = async (databaseContext: IDatabaseContext<any>, message: string) => {
   await databaseContext.database.put({
     _id: uuidv4(),
-    docType: "notification",
+    docType: DocType.NOTIFICATION,
     notificationType: "error",
     text: message,
     acknowledged: false,
@@ -17,7 +18,7 @@ export const notifyError = async (databaseContext: IDatabaseContext<any>, messag
 export const notifySuccess = async (databaseContext: IDatabaseContext<any>, message: string) => {
   await databaseContext.database.put({
     _id: uuidv4(),
-    docType: "notification",
+    docType: DocType.NOTIFICATION,
     notificationType: "success",
     text: message,
     acknowledged: false,
@@ -29,7 +30,7 @@ export const notifySuccess = async (databaseContext: IDatabaseContext<any>, mess
 export const notifyWarning = async (databaseContext: IDatabaseContext<any>, message: string) => {
   await databaseContext.database.put({
     _id: uuidv4(),
-    docType: "notification",
+    docType: DocType.NOTIFICATION,
     notificationType: "warning",
     text: message,
     acknowledged: false,

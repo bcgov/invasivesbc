@@ -4,7 +4,6 @@ import {
   Theme
 } from '@material-ui/core';
 import React from 'react';
-import './PublicLayout.scss';
 
 const useStyles = makeStyles((theme: Theme) => ({
   publicLayoutRoot: {

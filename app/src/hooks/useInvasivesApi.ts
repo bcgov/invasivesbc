@@ -1,11 +1,12 @@
 import { useContext, useMemo } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 
 const API_URL = 'https://api-mobile-dev-invasivesbc.pathfinder.gov.bc.ca';
+// const API_URL = 'http://localhost:3002';
 
-export const useApi = () => {
+const useApi = () => {
   const { keycloak } = useKeycloak();
   const instance = useMemo(() => {
     return axios.create({
@@ -29,7 +30,7 @@ export const useInvasivesApi = () => {
    * Fetch a signle activity by its id.
    *
    * @param {string} activityId
-   * @return {*}  {Promise<AxiosResponse<IActivity>>}
+   * @return {*}  {Promise<any>}
    */
   const getActivityById = async (activityId: string): Promise<any> => {
     const { data } = await api.get(`/api/activity/${activityId}`);

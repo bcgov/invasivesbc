@@ -4,6 +4,7 @@
   "description": "Invasives BC - Cross Platform 'Ionic' Application",
   "private": true,
   "dependencies": {
+    "@bcgov/bc-sans": "^1.0.1",
     "@capacitor/android": "^2.4.0",
     "@capacitor/core": "2.4.0",
     "@capacitor/ios": "^2.4.0",
