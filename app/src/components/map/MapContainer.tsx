@@ -26,13 +26,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const renderMap = () => {
-    // TODO: Need to wrap this function in a higher order function
-    // that waits for the db to serialize before running **renderMap**
-    // if (!databaseContext.database) {
-    //   // database not ready
-    //   return;
-    // }
     console.log('Map componentDidMount!');
+
 
     var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
     // On init setup
@@ -90,9 +85,28 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
+    // Add any previous drawn feature
+    databaseContext.database.get('1234')
+      .then((doc) => {
+        const style = {
+          "color": "#ff7800",
+          "weight": 5,
+          "opacity": 0.65
+        };
+
+        const layer = L.geoJSON(doc,style);
+        console.log(layer);
+        drawnItems.addLayer(layer);
+        console.log(doc);
+      });
+
 
     map.on('draw:created', (feature) => {
       drawnItems.addLayer(feature.layer);
+
+      var layer = feature.layer.toGeoJSON();
+      layer._id = '1234';
+      databaseContext.database.put(layer);
     });
 
     map.on('draw:drawvertex', function (layerGroup) {
@@ -105,12 +119,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     map.on('draw:drawstop', function (layerGroup) {
       console.log('stopped');
-      console.log(databaseContext);
-      databaseContext.database.put(layerGroup);
     });
 
     map.on('draw:deleted', function () {
       console.log('deleted');
+      databaseContext.database.get('1234')
+        .then((doc) => {
+          databaseContext.database.remove(doc);
+          console.log(doc)
+        });
     });
 
     map.on('draw:editstart', function () {
@@ -143,7 +160,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
-  useEffect(() => renderMap(), []);
+  useEffect(() => {
+    if (!databaseContext.database) {
+      // database not ready
+      return;
+    }
+
+    renderMap();
+  }, [databaseContext]);
 
   return <div id="map" className={props.classes.map} />;
 };
