@@ -102,6 +102,8 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
     });
   };
 
+  const isDisabled = props.disable || props.activity.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
+
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
@@ -135,7 +137,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
       <Grid item md={1}>
         <Typography className={classes.activitiyListItem_Typography}>Reviewed</Typography>
         <Checkbox
-          disabled={props.disable}
+          disabled={isDisabled}
           checked={props.activity.sync.ready}
           onChange={(event) => toggleActivitySyncReadyStatus(event)}
           onClick={(event) => event.stopPropagation()}
@@ -210,11 +212,13 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   return (
     <List className={classes.activityList}>
       {docs.map((doc) => {
+        const isDisabled = props.disable || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
+
         return (
           <Paper elevation={1} key={doc._id}>
             <ListItem
               button
-              disabled={props.disable}
+              // disabled={isDisabled}
               className={classes.activitiyListItem}
               onClick={() => setActiveActivityAndNavigateToActivityPage(doc)}>
               <ListItemIcon>
@@ -229,9 +233,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
               </ListItemIcon>
               <ActivityListItem disable={props.disable} activity={doc} />
               <ListItemSecondaryAction>
-                <IconButton
-                  disabled={props.disable || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL}
-                  onClick={() => removeActivity(doc)}>
+                <IconButton disabled={isDisabled} onClick={() => removeActivity(doc)}>
                   <DeleteForever />
                 </IconButton>
               </ListItemSecondaryAction>
@@ -251,10 +253,10 @@ const ActivitiesList: React.FC = (props) => {
   const invasivesApi = useInvasivesApi();
 
   const [syncing, setSyncing] = useState(false);
-  const [disable, setDisable] = useState(false);
+  const [isDisabled, setIsDisable] = useState(false);
 
   const syncActivities = async () => {
-    setDisable(true);
+    setIsDisable(true);
     setSyncing(true);
 
     // fetch all activity documents that are ready to sync
@@ -290,7 +292,7 @@ const ActivitiesList: React.FC = (props) => {
     }
 
     setSyncing(false);
-    setDisable(false);
+    setIsDisable(false);
   };
 
   const addNewActivity = async (activityParentType: ActivityParentType, activityType: ActivityType) => {
@@ -316,7 +318,7 @@ const ActivitiesList: React.FC = (props) => {
       <div>
         <div className={classes.actionsBar}>
           <Button
-            disabled={disable}
+            disabled={isDisabled}
             variant="contained"
             startIcon={<Sync className={clsx(syncing && 'rotating')} />}
             onClick={() => syncActivities()}>
@@ -330,7 +332,7 @@ const ActivitiesList: React.FC = (props) => {
             </div>
             <div className={classes.newActivityButtonsRow}>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -339,7 +341,7 @@ const ActivitiesList: React.FC = (props) => {
                 Plant Terrestrial
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => addNewActivity(ActivityParentType.Observation, ActivityType.Observation_PlantAquatic)}>
@@ -347,7 +349,7 @@ const ActivitiesList: React.FC = (props) => {
               </Button>
 
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -356,14 +358,14 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Terrestrial
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => addNewActivity(ActivityParentType.Observation, ActivityType.Observation_AnimalAquatic)}>
                 Animal Aquatic
               </Button>
 
-              <ActivityList disable={disable} activityParentType={ActivityParentType.Observation} />
+              <ActivityList disable={isDisabled} activityParentType={ActivityParentType.Observation} />
             </div>
           </div>
           <div>
@@ -372,28 +374,28 @@ const ActivitiesList: React.FC = (props) => {
             </div>
             <div className={classes.newActivityButtonsRow}>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_ChemicalPlant)}>
                 Plant Chemical
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_MechanicalPlant)}>
                 Plant Mechanical
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => addNewActivity(ActivityParentType.Treatment, ActivityType.Treatment_BiologicalPlant)}>
                 Plant Biological
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -403,7 +405,7 @@ const ActivitiesList: React.FC = (props) => {
               </Button>
 
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -412,7 +414,7 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Terrestrial Mechanical
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -421,7 +423,7 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Terrestrial Chemical
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -430,7 +432,7 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Terrestrial Biological
               </Button>
 
-              <ActivityList disable={disable} activityParentType={ActivityParentType.Treatment} />
+              <ActivityList disable={isDisabled} activityParentType={ActivityParentType.Treatment} />
             </div>
           </div>
           <div>
@@ -439,7 +441,7 @@ const ActivitiesList: React.FC = (props) => {
             </div>
             <div className={classes.newActivityButtonsRow}>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -448,7 +450,7 @@ const ActivitiesList: React.FC = (props) => {
                 Plant Terrestrial/Aquatic Chemical
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -460,7 +462,7 @@ const ActivitiesList: React.FC = (props) => {
                 Plant Terrestrial/Aquatic Mechanical
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -470,7 +472,7 @@ const ActivitiesList: React.FC = (props) => {
               </Button>
 
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -479,7 +481,7 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Terrestrial Mechanical
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -488,7 +490,7 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Terrestrial Chemical
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() =>
@@ -497,37 +499,35 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Terrestrial Biological
               </Button>
 
-              <ActivityList disable={disable} activityParentType={ActivityParentType.Monitoring} />
+              <ActivityList disable={isDisabled} activityParentType={ActivityParentType.Monitoring} />
             </div>
           </div>
           <div>
             <div>
-              <Typography>Development/Testing</Typography>
+              <Typography variant="h5">Development/Testing</Typography>
             </div>
-            <div>
+            <div className={classes.newActivityButtonsRow}>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => triggerError(databaseContext)}>
                 Simulate Error
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => notifySuccess(databaseContext, 'hooray!')}>
                 Simulate Success
               </Button>
               <Button
-                disabled={disable}
+                disabled={isDisabled}
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => notifyWarning(databaseContext, 'better watch it')}>
                 Simulate Warning
               </Button>
-
-              <ActivityList disable={disable} activityParentType={ActivityParentType.Monitoring} />
             </div>
           </div>
         </div>

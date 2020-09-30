@@ -11,16 +11,17 @@
  */
 
 import UISchemaComponents from 'rjsf/UISchemaComponents';
+import BaseUISchemaComponents from 'rjsf/BaseUISchemaComponents';
 
 const Activity_Observation_PlantTerrestial = {
   activity_data: {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Observation
+    ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Observation_PlantTerrestial
+    ...BaseUISchemaComponents.Observation_PlantTerrestial
   }
 };
 
@@ -29,10 +30,10 @@ const Activity_Observation_PlantAquatic = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Observation
+    ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Observation_PlantAquatic
+    ...BaseUISchemaComponents.Observation_PlantAquatic
   }
 };
 
@@ -41,10 +42,10 @@ const Activity_Observation_AnimalTerrestrial = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Observation
+    ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Observation_AnimalTerrestrial
+    ...BaseUISchemaComponents.Observation_AnimalTerrestrial
   }
 };
 
@@ -53,10 +54,10 @@ const Activity_Observation_AnimalAquatic = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Observation
+    ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Observation_AnimalAquatic
+    ...BaseUISchemaComponents.Observation_AnimalAquatic
   }
 };
 
@@ -65,7 +66,7 @@ const Activity_Treatment_ChemicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Treatment
+    ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
     ...UISchemaComponents.Treatment_ChemicalPlant
@@ -77,10 +78,10 @@ const Activity_Treatment_MechanicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Treatment
+    ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Treatment_MechanicalPlant
+    ...BaseUISchemaComponents.Treatment_MechanicalPlant
   }
 };
 
@@ -89,10 +90,10 @@ const Activity_Treatment_BiologicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Treatment
+    ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Treatment_BiologicalPlant
+    ...BaseUISchemaComponents.Treatment_BiologicalPlant
   }
 };
 
@@ -101,10 +102,10 @@ const Activity_Treatment_BiologicalDispersalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Treatment
+    ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Treatment_BiologicalDispersalPlant
+    ...BaseUISchemaComponents.Treatment_BiologicalDispersalPlant
   }
 };
 
@@ -113,10 +114,10 @@ const Activity_Treatment_MechanicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Treatment
+    ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Treatment_MechanicalTerrestrialAnimal
+    ...BaseUISchemaComponents.Treatment_MechanicalTerrestrialAnimal
   }
 };
 
@@ -125,10 +126,10 @@ const Activity_Treatment_ChemicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Treatment
+    ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Treatment_ChemicalTerrestrialAnimal
+    ...BaseUISchemaComponents.Treatment_ChemicalTerrestrialAnimal
   }
 };
 
@@ -137,10 +138,10 @@ const Activity_Treatment_BiologicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Treatment
+    ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Treatment_BiologicalTerrestrialAnimal
+    ...BaseUISchemaComponents.Treatment_BiologicalTerrestrialAnimal
   }
 };
 
@@ -149,10 +150,10 @@ const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Monitoring
+    ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Monitoring_ChemicalTerrestrialAquaticPlant
+    ...BaseUISchemaComponents.Monitoring_ChemicalTerrestrialAquaticPlant
   }
 };
 
@@ -161,10 +162,10 @@ const Activity_Monitoring_MechanicalTerrestrialAquaticPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Monitoring
+    ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Monitoring_MechanicalTerrestrialAquaticPlant
+    ...BaseUISchemaComponents.Monitoring_MechanicalTerrestrialAquaticPlant
   }
 };
 
@@ -173,10 +174,10 @@ const Activity_Monitoring_BiologicalTerrestrialPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Monitoring
+    ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Monitoring_BiologicalTerrestrialPlant
+    ...BaseUISchemaComponents.Monitoring_BiologicalTerrestrialPlant
   }
 };
 
@@ -185,10 +186,10 @@ const Activity_Monitoring_MechanicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Monitoring
+    ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Monitoring_MechanicalTerrestrialAnimal
+    ...BaseUISchemaComponents.Monitoring_MechanicalTerrestrialAnimal
   }
 };
 
@@ -197,10 +198,10 @@ const Activity_Monitoring_ChemicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Monitoring
+    ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Monitoring_ChemicalTerrestrialAnimal
+    ...BaseUISchemaComponents.Monitoring_ChemicalTerrestrialAnimal
   }
 };
 
@@ -209,10 +210,10 @@ const Activity_Monitoring_BiologicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...UISchemaComponents.Monitoring
+    ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    ...UISchemaComponents.Monitoring_BiologicalTerrestrialAnimal
+    ...BaseUISchemaComponents.Monitoring_BiologicalTerrestrialAnimal
   }
 };
 
