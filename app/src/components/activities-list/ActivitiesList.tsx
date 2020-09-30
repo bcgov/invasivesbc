@@ -261,7 +261,11 @@ const ActivitiesList: React.FC = (props) => {
 
     // fetch all activity documents that are ready to sync
     const results = await databaseContext.database.find({
-      selector: { docType: DocType.ACTIVITY, 'sync.ready': true }
+      selector: {
+        docType: DocType.ACTIVITY,
+        'sync.ready': true,
+        'sync.status': { $ne: ActivitySyncStatus.SYNC_SUCCESSFUL }
+      }
     });
 
     // save each activity one-by-one
