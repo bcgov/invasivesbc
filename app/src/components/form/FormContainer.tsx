@@ -6,7 +6,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { JSONSchema7 } from 'json-schema';
 import React, { useContext, useEffect, useState } from 'react';
 import RootUISchemas from 'rjsf/RootUISchemas';
-import { ActivityStatus } from 'constants/activities';
+import { ActivityStatus, ActivitySyncStatus } from 'constants/activities';
 
 // Custom themed `Form` component, using @rjsf/material-ui as default base theme
 // const Form = withTheme({ ...rjsfMaterialTheme });
@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface IFormControlProps {
   classes?: { root?: any };
+  disabled?: boolean;
   formRef: { submit: Function };
   activity: any;
 }
@@ -31,12 +32,14 @@ const FormControls: React.FC<IFormControlProps> = (props) => {
     props.formRef.submit();
   };
 
+  const isDisabled = props.disabled || false;
+
   return (
     <>
       <Grid container spacing={3} className={props.classes.root}>
         <Grid container item spacing={3}>
           <Grid item>
-            <Button size="small" variant="contained" color="primary" onClick={save}>
+            <Button disabled={isDisabled} size="small" variant="contained" color="primary" onClick={save}>
               Save
             </Button>
           </Grid>
@@ -86,11 +89,19 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     return <CircularProgress />;
   }
 
+  const isDisabled = props.activity?.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL || false;
+
   return (
     <div>
-      <FormControls activity={props.activity} formRef={formRef} classes={{ root: classes.formControlsTop }} />
+      <FormControls
+        activity={props.activity}
+        formRef={formRef}
+        disabled={isDisabled}
+        classes={{ root: classes.formControlsTop }}
+      />
 
       <Form
+        disabled={isDisabled}
         formData={props.activity?.formData || null}
         schema={schemas.schema as JSONSchema7}
         uiSchema={schemas.uiSchema}
@@ -112,7 +123,12 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         <React.Fragment />
       </Form>
 
-      <FormControls activity={props.activity} formRef={formRef} classes={{ root: classes.formControlsBottom }} />
+      <FormControls
+        activity={props.activity}
+        formRef={formRef}
+        disabled={isDisabled}
+        classes={{ root: classes.formControlsBottom }}
+      />
     </div>
   );
 };
