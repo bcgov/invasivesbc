@@ -70,9 +70,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         circle: true
       },
       edit: {
-        featureGroup: drawnItems
-        // remove: true,
-        // edit: true
+        featureGroup: drawnItems,
+        remove: true,
+        edit: true
       }
     });
 
@@ -86,7 +86,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     L.control.layers(baseLayers).addTo(map);
 
     // Add any previous drawn feature
-    databaseContext.database.get('1234')
+    databaseContext.database.get('geometry')
       .then((doc) => {
         const style = {
           "color": "#ff7800",
@@ -94,10 +94,17 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           "opacity": 0.65
         };
 
-        const layer = L.geoJSON(doc,style);
+        delete doc._id;
+        delete doc._rev;
+
+        const layer = L.geoJSON(doc,{
+          style: style,
+          onEachFeature: function (_,layer) {
+            drawnItems.addLayer(layer);
+          }
+        });
         console.log(layer);
-        drawnItems.addLayer(layer);
-        console.log(doc);
+        // drawnItems.addLayer(layer);
       });
 
 
@@ -105,7 +112,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       drawnItems.addLayer(feature.layer);
 
       var layer = feature.layer.toGeoJSON();
-      layer._id = '1234';
+      layer._id = 'geometry';
       databaseContext.database.put(layer);
     });
 
@@ -115,6 +122,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     map.on('draw:drawstart', function () {
       drawnItems.clearLayers(); // Clear previous shape
+      databaseContext.database.get('geometry')
+        .then((doc) => databaseContext.database.remove(doc));
     });
 
     map.on('draw:drawstop', function (layerGroup) {
@@ -123,15 +132,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     map.on('draw:deleted', function () {
       console.log('deleted');
-      databaseContext.database.get('1234')
-        .then((doc) => {
-          databaseContext.database.remove(doc);
-          console.log(doc)
-        });
+      databaseContext.database.get('geometry')
+        .then((doc) => databaseContext.database.remove(doc));
     });
 
-    map.on('draw:editstart', function () {
-      console.log('editstart');
+    map.on('draw:editstart', function (event) {
+      // TBD: May need some custom magic here
+
+      console.log('editstart',event);
     });
 
     map.on('draw:editmove', function () {
