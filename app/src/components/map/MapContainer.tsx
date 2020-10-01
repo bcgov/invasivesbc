@@ -1,21 +1,33 @@
-import React, { useEffect } from 'react';
+// import React, { useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import 'leaflet.locatecontrol'
-import 'leaflet.locatecontrol/dist/L.Control.Locate.css'
-import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css'
+import 'leaflet.locatecontrol';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import './MapContainer.css';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import React, { useContext, useEffect } from 'react';
+// import * as PouchDB from 'pouchdb';
+// import 'leaflet.tilelayer.pouchdbcached';
+
+
+// console.log('PouchDB',PouchDB);
 
 interface IMapContainerProps {
   classes?: any;
   activity?: any;
 }
 
+
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
+
+  const databaseContext = useContext(DatabaseContext);
+
   const renderMap = () => {
     console.log('Map componentDidMount!');
+
 
     var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
     // On init setup
@@ -24,7 +36,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     const options = {
       icon: 'bullseye',
-      flyTo: true
+      flyTo: true,
+      iconElementTag: 'div'
     };
 
     L.control.locate(options).addTo(map);
@@ -40,7 +53,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const bcBase = L.tileLayer(
       'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
       {
-        maxZoom: 24
+        maxZoom: 24,
+        useCache: true,
+        cacheMaxAge: 1.72e8 // 48 hours
       }
     ).addTo(map);
 
@@ -55,9 +70,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         circle: true
       },
       edit: {
-        featureGroup: drawnItems
-        // remove: true,
-        // edit: true
+        featureGroup: drawnItems,
+        remove: true,
+        edit: true
       }
     });
 
@@ -70,35 +85,59 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
-    setTimeout(function () {
-      map.invalidateSize();
-      map.setView([55, -128], 10);
-    }, 1000);
+    // Add any previous drawn feature
+    databaseContext.database.get('geometry')
+      .then((doc) => {
+        const style = {
+          "color": "#ff7800",
+          "weight": 5,
+          "opacity": 0.65
+        };
+
+        delete doc._id;
+        delete doc._rev;
+
+        L.geoJSON(doc,{
+          style: style,
+          onEachFeature: function (_,layer) {
+            drawnItems.addLayer(layer);
+          }
+        });
+      });
+
 
     map.on('draw:created', (feature) => {
-      console.log(feature.layer.toGeoJSON());
       drawnItems.addLayer(feature.layer);
+
+      var layer = feature.layer.toGeoJSON();
+      layer._id = 'geometry';
+      databaseContext.database.put(layer);
     });
 
     map.on('draw:drawvertex', function (layerGroup) {
-      console.log(layerGroup);
+      console.log('drawvertex',layerGroup);
     });
 
-    map.on('draw:drawstart', function (layerGroup) {
+    map.on('draw:drawstart', function () {
       drawnItems.clearLayers(); // Clear previous shape
+      databaseContext.database.get('geometry')
+        .then((doc) => databaseContext.database.remove(doc));
     });
 
     map.on('draw:drawstop', function (layerGroup) {
       console.log('stopped');
-      console.log(layerGroup);
     });
 
     map.on('draw:deleted', function () {
       console.log('deleted');
+      databaseContext.database.get('geometry')
+        .then((doc) => databaseContext.database.remove(doc));
     });
 
-    map.on('draw:editstart', function () {
-      console.log('editstart');
+    map.on('draw:editstart', function (event) {
+      // TBD: May need some custom magic here
+
+      console.log('editstart',event);
     });
 
     map.on('draw:editmove', function () {
@@ -113,8 +152,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       console.log('editvertex');
     });
 
-    map.on('draw:editstop', function () {
+    map.on('draw:editstop', function (layerGroup) {
       console.log('editstop');
+      console.log('layerGroup',layerGroup)
     });
 
     map.on('draw:deletestart', function () {
@@ -126,7 +166,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
-  useEffect(() => renderMap(), []);
+  useEffect(() => {
+    if (!databaseContext.database) {
+      // database not ready
+      return;
+    }
+
+    renderMap();
+  }, [databaseContext]);
 
   return <div id="map" className={props.classes.map} />;
 };
