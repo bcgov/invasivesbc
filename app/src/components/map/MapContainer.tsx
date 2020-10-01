@@ -8,12 +8,20 @@ import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import './MapContainer.css';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 // import * as PouchDB from 'pouchdb';
 // import 'leaflet.tilelayer.pouchdbcached';
 
 
 // console.log('PouchDB',PouchDB);
+
+import {
+  ActivityStatus,
+  ActivitySyncStatus,
+  ActivityParentType,
+  ActivityType,
+  ActivityParentTypeIcon
+} from 'constants/activities'
 
 interface IMapContainerProps {
   classes?: any;
@@ -25,6 +33,21 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const databaseContext = useContext(DatabaseContext);
 
+  const [geo, setGeo] = useState(null)
+
+  const saveGeo = async (doc: any, geoJSON: any) => {
+    await databaseContext.database.upsert(doc._id, (activityDoc) => {
+      return { ...activityDoc, geometry: [geoJSON], status: ActivityStatus.EDITED, dateUpdated: new Date() };
+    });
+  };
+
+  useEffect(() => {
+    if(geo)
+    {
+      saveGeo(props.activity, geo)
+    }
+  },[geo])
+
   const renderMap = () => {
     console.log('Map componentDidMount!');
 
@@ -33,6 +56,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     // On init setup
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+
+    //load last poly
+    if(props.activity.geometry)
+    {
+      let lastGeo = L.geoJSON().addTo(map);
+      lastGeo.addData(props.activity.geometry[0]);
+    }
 
     const options = {
       icon: 'bullseye',
@@ -106,12 +137,17 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       });
 
 
+    //MARK PERSIST GEO HERE:
     map.on('draw:created', (feature) => {
+      console.log(feature.layer.toGeoJSON());
+      console.log('lets make the record persist here')
+      console.dir(props.activity)
+      console.log('doc var:' + props.activity.activityType)
+
+      let aGeo = feature.layer.toGeoJSON()
+      setGeo(aGeo)
       drawnItems.addLayer(feature.layer);
 
-      var layer = feature.layer.toGeoJSON();
-      layer._id = 'geometry';
-      databaseContext.database.put(layer);
     });
 
     map.on('draw:drawvertex', function (layerGroup) {
@@ -120,8 +156,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     map.on('draw:drawstart', function () {
       drawnItems.clearLayers(); // Clear previous shape
-      databaseContext.database.get('geometry')
-        .then((doc) => databaseContext.database.remove(doc));
+      setGeo(null)
     });
 
     map.on('draw:drawstop', function (layerGroup) {
@@ -130,8 +165,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     map.on('draw:deleted', function () {
       console.log('deleted');
-      databaseContext.database.get('geometry')
-        .then((doc) => databaseContext.database.remove(doc));
+      setGeo(null)
     });
 
     map.on('draw:editstart', function (event) {
