@@ -1,8 +1,8 @@
 import React from 'react';
-import { useInvasivesApi } from 'api/api';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const StatusContainer: React.FC = (props) => {
-  const api = useInvasivesApi();
+  const invasivesApi = useInvasivesApi();
 
   return <div></div>;
 };

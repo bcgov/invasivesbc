@@ -41,10 +41,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   useEffect(() => {
     const getActivityData = async () => {
-      if (!databaseContext.database) {
-        return;
-      }
-
       const appState = await databaseContext.database.find({ selector: { _id: 'AppState' } });
 
       if (!appState || !appState.docs || !appState.docs.length) {
@@ -65,7 +61,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   return (
     <Container className={props.classes.container}>
-      <Accordion>
+      <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Map</Typography>
         </AccordionSummary>

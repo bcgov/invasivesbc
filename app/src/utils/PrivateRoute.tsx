@@ -28,11 +28,6 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
               <Component {...props} {...rest.componentProps} />
             </Layout>
           );
-        } else {
-          if (props.location.pathname !== '/login') {
-            const redirectTo = encodeURI(`${location.pathname}${location.search}`);
-            return <Redirect to={`/login?redirect=${redirectTo}`} />;
-          }
         }
       }}
     />

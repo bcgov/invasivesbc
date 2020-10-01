@@ -4,7 +4,7 @@ import PouchDBUpsert from 'pouchdb-upsert';
 import React, { useEffect, useState } from 'react';
 import { Subject } from 'rxjs';
 
-interface IDatabaseContext<T> {
+export interface IDatabaseContext<T> {
   database: PouchDB.Database<T>;
   changes: Subject<PouchDB.Core.ChangesResponseChange<T>>;
 }
@@ -25,7 +25,12 @@ export const DatabaseContextProvider: React.FC = (props) => {
 
       if (window['cordova']) {
         PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite')); // adds mobile adapter
-        db = new PouchDB('invasivesbc', { adapter: 'cordova-sqlite' });
+        db = new PouchDB('invasivesbc', {
+          adapter: 'cordova-sqlite',
+          // See https://www.npmjs.com/package/cordova-sqlite-storage for details on the below options
+          iosDatabaseLocation: 'default',
+          androidDatabaseProvider: 'system'
+        } as any);
       } else {
         PouchDB.plugin(require('pouchdb-adapter-idb').default); // add sbrowser adapter
         db = new PouchDB('invasivesbc', { adapter: 'idb' });

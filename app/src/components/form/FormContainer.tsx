@@ -1,80 +1,46 @@
-import React from 'react';
+import { Button, CircularProgress, Grid, Theme, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import Form from '@rjsf/material-ui';
-import { JSONSchema7 } from 'json-schema';
-
-import { Grid, Button, TextField, CircularProgress } from '@material-ui/core';
-import { useState, useEffect, useContext } from 'react';
-
-// db caching related:
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { useInvasivesApi } from 'api/api';
-import { Activity } from 'rjsf/uiSchema';
+import { JSONSchema7 } from 'json-schema';
+import React, { useContext, useEffect, useState } from 'react';
+import RootUISchemas from 'rjsf/RootUISchemas';
+import { ActivityStatus, ActivitySyncStatus } from 'constants/activities';
+
+// Custom themed `Form` component, using @rjsf/material-ui as default base theme
+// const Form = withTheme({ ...rjsfMaterialTheme });
+
+const useStyles = makeStyles((theme: Theme) => ({
+  formControlsTop: {
+    marginBottom: '1rem'
+  },
+  formControlsBottom: {
+    marginTop: '1rem'
+  }
+}));
 
 interface IFormControlProps {
-  classes?: any;
-  setFormData: Function;
+  classes?: { root?: any };
+  disabled?: boolean;
+  formRef: { submit: Function };
   activity: any;
 }
 
-// Form controls:
 const FormControls: React.FC<IFormControlProps> = (props) => {
-  const api = useInvasivesApi();
-
-  const databaseContext = useContext(DatabaseContext);
-
-  // needed for fetch:
-  const [activityID, setActivityID] = useState('');
-
-  // just for fun (first half):
-  const [isValidActivityID, setIsValidActivityID] = useState(true);
-
-  useEffect(() => {
-    var activityIDAsNumber = +activityID;
-    activityIDAsNumber >= 0 ? setIsValidActivityID(true) : setIsValidActivityID(false);
-  }, [activityID]);
-
-  const sync = async (formData: any) => {
-    const response = await api.createActivity(formData);
-  };
-
-  const read = async (event: any) => {
-    const response = await api.getActivityById(activityID);
-    console.log(response.data);
-    props.setFormData(response.data);
-  };
-
   const save = async (formData: any) => {
-    // databaseContext.database.put(formData);
+    props.formRef.submit();
   };
+
+  const isDisabled = props.disabled || false;
 
   return (
     <>
-      <TextField
-        id="outlined-basic"
-        label="Activity ID To Fetch"
-        variant="outlined"
-        // other half of fun:
-        error={!isValidActivityID}
-        onChange={(e) => setActivityID(e.target.value)}
-        helperText="It's gotta be a number."
-      />
-
-      <br></br>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} className={props.classes.root}>
         <Grid container item spacing={3}>
           <Grid item>
-            <Button size="small" variant="contained" color="primary" onClick={sync}>
-              Sync Record
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button size="small" variant="contained" color="primary" onClick={read}>
-              Get Record
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button size="small" variant="contained" color="primary" onClick={save}>
-              Local Save
+            <Button disabled={isDisabled} size="small" variant="contained" color="primary" onClick={save}>
+              Save
             </Button>
           </Grid>
         </Grid>
@@ -89,26 +55,28 @@ interface IFormContainerProps {
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
-  const api = useInvasivesApi();
+  const classes = useStyles();
 
-  const [formData, setFormData] = useState(null);
+  const invasivesApi = useInvasivesApi();
+  const databaseContext = useContext(DatabaseContext);
+
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
 
-  const submitEventHandler = async (event: any) => {
-    console.log('submitEventHandler: ', event);
-    // await collection.insert(event.formData);
-    // const results = await collection.find().exec();
-    // results.map((item) => console.log(item.toJSON()));
+  const [formRef, setFormRef] = useState(null);
+
+  const submitHandler = async (event: any) => {
+    await databaseContext.database.upsert(props.activity._id, (activity) => {
+      return { ...activity, formData: event.formData, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+    });
   };
 
   useEffect(() => {
     const getApiSpec = async () => {
-      const response = await api.getApiSpec();
+      const response = await invasivesApi.getCachedApiSpec();
 
-      // TODO add the promise from `api-getApiSpec()` to this array.
       setSchemas({
-        schema: { ...response.data.components.schemas.Activity, components: response.data.components },
-        uiSchema: Activity
+        schema: { ...response.components.schemas[props.activity.activityType], components: response.components },
+        uiSchema: RootUISchemas[props.activity.activityType]
       });
     };
 
@@ -121,15 +89,45 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     return <CircularProgress />;
   }
 
+  const isDisabled = props.activity?.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL || false;
+
   return (
     <div>
-      <FormControls activity={props.activity} setFormData={setFormData} />
+      <FormControls
+        activity={props.activity}
+        formRef={formRef}
+        disabled={isDisabled}
+        classes={{ root: classes.formControlsTop }}
+      />
 
       <Form
-        formData={formData}
+        disabled={isDisabled}
+        formData={props.activity?.formData || null}
         schema={schemas.schema as JSONSchema7}
         uiSchema={schemas.uiSchema}
-        onSubmit={submitEventHandler}
+        liveValidate={false}
+        showErrorList={true}
+        ErrorList={() => {
+          return (
+            <div>
+              <Typography color="error" variant="h5">
+                The form contains one or more errors
+              </Typography>
+            </div>
+          );
+        }}
+        onSubmit={submitHandler}
+        // `ref` does exist, but currently is missing from the `index.d.ts` types file.
+        // @ts-ignore: No overload matches this call ts(2769)
+        ref={(form) => setFormRef(form)}>
+        <React.Fragment />
+      </Form>
+
+      <FormControls
+        activity={props.activity}
+        formRef={formRef}
+        disabled={isDisabled}
+        classes={{ root: classes.formControlsBottom }}
       />
     </div>
   );

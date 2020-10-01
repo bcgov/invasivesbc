@@ -1,5 +1,3 @@
-import Login from 'features/account/Login';
-import { LogoutPage } from 'features/account/Logout';
 import HomeRouter from 'features/home/HomeRouter';
 import AuthLayout from 'layouts/AuthLayout';
 import PublicLayout from 'layouts/PublicLayout';
@@ -16,9 +14,7 @@ const AppRouter: React.FC = () => {
 
   return (
     <Switch>
-      <Redirect exact from="/" to="/login" />
-      <AppRoute path="/login" title={getTitle('Login')} component={Login} layout={PublicLayout}></AppRoute>
-      <AppRoute path="/logout" title={getTitle('Logout')} component={LogoutPage}></AppRoute>
+      <Redirect exact from="/" to="/home" />
       <AppRoute
         path="/forbidden"
         title={getTitle('Forbidden')}
