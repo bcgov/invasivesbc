@@ -8,7 +8,7 @@ import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import './MapContainer.css';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 // import * as PouchDB from 'pouchdb';
 // import 'leaflet.tilelayer.pouchdbcached';
 
@@ -97,14 +97,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         delete doc._id;
         delete doc._rev;
 
-        const layer = L.geoJSON(doc,{
+        L.geoJSON(doc,{
           style: style,
           onEachFeature: function (_,layer) {
             drawnItems.addLayer(layer);
           }
         });
-        console.log(layer);
-        // drawnItems.addLayer(layer);
       });
 
 
