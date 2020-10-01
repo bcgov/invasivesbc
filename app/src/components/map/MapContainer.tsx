@@ -94,6 +94,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           "opacity": 0.65
         };
 
+        // Remove PouchDB variables
         delete doc._id;
         delete doc._rev;
 
@@ -110,13 +111,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       drawnItems.addLayer(feature.layer);
 
       var layer = feature.layer.toGeoJSON();
+      console.log("This is going into the database",layer);
       layer._id = 'geometry';
       databaseContext.database.put(layer);
     });
 
-    map.on('draw:drawvertex', function (layerGroup) {
-      console.log('drawvertex',layerGroup);
-    });
 
     map.on('draw:drawstart', function () {
       drawnItems.clearLayers(); // Clear previous shape
@@ -124,19 +123,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         .then((doc) => databaseContext.database.remove(doc));
     });
 
-    map.on('draw:drawstop', function (layerGroup) {
-      console.log('stopped');
+    map.on('draw:editstop', async function (layerGroup) {
+      await databaseContext.database.get('geometry')
+        .then((doc) => databaseContext.database.remove(doc));
+
+      const feature = drawnItems?.toGeoJSON()?.features[0];
+      if (feature) {
+        feature._id = 'geometry';
+        databaseContext.database.put(feature);
+      }
     });
 
     map.on('draw:deleted', function () {
-      console.log('deleted');
       databaseContext.database.get('geometry')
         .then((doc) => databaseContext.database.remove(doc));
     });
 
+    /*
     map.on('draw:editstart', function (event) {
-      // TBD: May need some custom magic here
-
       console.log('editstart',event);
     });
 
@@ -152,9 +156,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       console.log('editvertex');
     });
 
-    map.on('draw:editstop', function (layerGroup) {
-      console.log('editstop');
-      console.log('layerGroup',layerGroup)
+    map.on('draw:drawvertex', function (layerGroup) {
+      console.log('drawvertex',layerGroup);
+    });
+
+    map.on('draw:drawstop', function (layerGroup) {
+      console.log('stopped');
     });
 
     map.on('draw:deletestart', function () {
@@ -164,6 +171,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     map.on('draw:deletestop', function () {
       console.log('deletestop');
     });
+    */
   };
 
   useEffect(() => {
