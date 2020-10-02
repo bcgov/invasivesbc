@@ -51,12 +51,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 
-    //load last poly
-    if(props.activity && props.activity.geometry)
-    {
-      let lastGeo = L.geoJSON().addTo(map);
-      lastGeo.addData(props.activity.geometry[0]);
-    }
 
     const options = {
       icon: 'bullseye',
@@ -109,22 +103,26 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
-    // Add any previous drawn feature
-     /*   const style = {
-          "color": "#ff7800",
-          "weight": 5,
-          "opacity": 0.65
-        };*/
+    //load last poly
+    if(props.activity && props.activity.geometry)
+    {
+      //let lastGeo = L.geoJSON().addTo(map);
+      //lastGeo.addData(props.activity.geometry[0]);
 
-        /*
-        L.geoJSON(doc,{
+        const style = {
+          "color": "#ff7800",
+           "weight": 5,
+           "opacity": 0.65
+        };
+ 
+        L.geoJSON(props.activity.geometry,{
           style: style,
-          onEachFeature: function (_,layer) {
+          onEachFeature: function (_: any,layer: any) {
             drawnItems.addLayer(layer);
           }
         });
-      });
-      */
+    }
+
 
 
     map.on('draw:created', (feature) => {
@@ -143,9 +141,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     map.on('draw:editstop', async function (layerGroup) {
 
+      console.log('draw:edit stop')
+      console.dir(layerGroup)
+
       const feature = drawnItems?.toGeoJSON()?.features[0];
       if (feature) {
-        setGeo(feature.layer.toGeoJSON())
+        if(feature.layer)
+        {
+          //setGeo(feature.layer.toGeoJSON())
+          setGeo(feature.layer.toGeoJSON())
+        }
       }
     });
 
