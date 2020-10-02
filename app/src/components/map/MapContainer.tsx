@@ -9,18 +9,11 @@ import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import './MapContainer.css';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useState, useContext, useEffect } from 'react';
-// import * as PouchDB from 'pouchdb';
-// import 'leaflet.tilelayer.pouchdbcached';
 
 
-// console.log('PouchDB',PouchDB);
 
 import {
   ActivityStatus,
-  ActivitySyncStatus,
-  ActivityParentType,
-  ActivityType,
-  ActivityParentTypeIcon
 } from 'constants/activities'
 
 interface IMapContainerProps {
