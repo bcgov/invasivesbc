@@ -1,4 +1,3 @@
-// import React, { useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
@@ -8,12 +7,13 @@ import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import './MapContainer.css';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect } from 'react';
-// import * as PouchDB from 'pouchdb';
-// import 'leaflet.tilelayer.pouchdbcached';
+import React, { useState, useContext, useEffect } from 'react';
 
 
-// console.log('PouchDB',PouchDB);
+
+import {
+  ActivityStatus,
+} from 'constants/activities'
 
 interface IMapContainerProps {
   classes?: any;
@@ -25,9 +25,23 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const databaseContext = useContext(DatabaseContext);
 
+  const [geo, setGeo] = useState(null)
+
+  const saveGeo = async (doc: any, geoJSON: any) => {
+    await databaseContext.database.upsert(doc._id, (activityDoc) => {
+      return { ...activityDoc, geometry: [geoJSON], status: ActivityStatus.EDITED, dateUpdated: new Date() };
+    });
+  };
+
+  useEffect(() => {
+    if(geo && props)
+    {
+      saveGeo(props.activity, geo)
+    }
+  },[geo])
+
   const renderMap = () => {
     console.log('Map componentDidMount!');
-
 
     var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
     // On init setup
@@ -85,58 +99,51 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
-    // Add any previous drawn feature
-    databaseContext.database.get('geometry')
-      .then((doc) => {
+    //load last poly
+    if(props.activity && props.activity.geometry)
+    {
         const style = {
           "color": "#ff7800",
-          "weight": 5,
-          "opacity": 0.65
+           "weight": 5,
+           "opacity": 0.65
         };
-
-        delete doc._id;
-        delete doc._rev;
-
-        L.geoJSON(doc,{
+ 
+        L.geoJSON(props.activity.geometry,{
           style: style,
-          onEachFeature: function (_,layer) {
+          onEachFeature: function (_: any,layer: any) {
             drawnItems.addLayer(layer);
           }
         });
-      });
+    }
+
 
 
     map.on('draw:created', (feature) => {
+      let aGeo = feature.layer.toGeoJSON()
+      setGeo(aGeo)
       drawnItems.addLayer(feature.layer);
-
-      var layer = feature.layer.toGeoJSON();
-      layer._id = 'geometry';
-      databaseContext.database.put(layer);
     });
 
-    map.on('draw:drawvertex', function (layerGroup) {
-      console.log('drawvertex',layerGroup);
-    });
 
     map.on('draw:drawstart', function () {
       drawnItems.clearLayers(); // Clear previous shape
-      databaseContext.database.get('geometry')
-        .then((doc) => databaseContext.database.remove(doc));
+      setGeo(null)
     });
 
-    map.on('draw:drawstop', function (layerGroup) {
-      console.log('stopped');
+    map.on('draw:editstop', async function (layerGroup) {
+      const feature = drawnItems?.toGeoJSON()?.features[0];
+      if (feature) {
+          setGeo(feature)
+      }
     });
 
     map.on('draw:deleted', function () {
       console.log('deleted');
-      databaseContext.database.get('geometry')
-        .then((doc) => databaseContext.database.remove(doc));
+      setGeo(null)
     });
 
+    /*
     map.on('draw:editstart', function (event) {
-      // TBD: May need some custom magic here
-
       console.log('editstart',event);
     });
 
@@ -152,9 +159,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       console.log('editvertex');
     });
 
-    map.on('draw:editstop', function (layerGroup) {
-      console.log('editstop');
-      console.log('layerGroup',layerGroup)
+    map.on('draw:drawvertex', function (layerGroup) {
+      console.log('drawvertex',layerGroup);
+    });
+
+    map.on('draw:drawstop', function (layerGroup) {
+      console.log('stopped');
     });
 
     map.on('draw:deletestart', function () {
@@ -164,6 +174,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     map.on('draw:deletestop', function () {
       console.log('deletestop');
     });
+    */
   };
 
   useEffect(() => {
