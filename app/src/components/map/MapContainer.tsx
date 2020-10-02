@@ -1,4 +1,3 @@
-// import React, { useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
@@ -44,13 +43,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const renderMap = () => {
     console.log('Map componentDidMount!');
 
-
     var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
     // On init setup
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-
 
     const options = {
       icon: 'bullseye',
@@ -106,9 +102,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     //load last poly
     if(props.activity && props.activity.geometry)
     {
-      //let lastGeo = L.geoJSON().addTo(map);
-      //lastGeo.addData(props.activity.geometry[0]);
-
         const style = {
           "color": "#ff7800",
            "weight": 5,
@@ -126,11 +119,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
 
     map.on('draw:created', (feature) => {
-
       let aGeo = feature.layer.toGeoJSON()
       setGeo(aGeo)
       drawnItems.addLayer(feature.layer);
-
     });
 
 
@@ -140,17 +131,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     map.on('draw:editstop', async function (layerGroup) {
-
-      console.log('draw:edit stop')
-      console.dir(layerGroup)
-
       const feature = drawnItems?.toGeoJSON()?.features[0];
       if (feature) {
-        if(feature.layer)
-        {
-          //setGeo(feature.layer.toGeoJSON())
-          setGeo(feature.layer.toGeoJSON())
-        }
+          setGeo(feature)
       }
     });
 
