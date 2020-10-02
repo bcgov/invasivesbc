@@ -34,7 +34,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   useEffect(() => {
-    if(geo && props)
+    if(props && geo)
     {
       saveGeo(props.activity, geo)
     }
@@ -139,7 +139,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     map.on('draw:deleted', function () {
       console.log('deleted');
-      setGeo(null)
+      setGeo('{}')
     });
 
     /*
