@@ -109,13 +109,25 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
+    // Add any previous drawn feature
+     /*   const style = {
+          "color": "#ff7800",
+          "weight": 5,
+          "opacity": 0.65
+        };*/
 
-    //MARK PERSIST GEO HERE:
+        /*
+        L.geoJSON(doc,{
+          style: style,
+          onEachFeature: function (_,layer) {
+            drawnItems.addLayer(layer);
+          }
+        });
+      });
+      */
+
+
     map.on('draw:created', (feature) => {
-      console.log(feature.layer.toGeoJSON());
-      console.log('lets make the record persist here')
-      console.dir(props.activity)
-      console.log('doc var:' + props.activity.activityType)
 
       let aGeo = feature.layer.toGeoJSON()
       setGeo(aGeo)
@@ -123,17 +135,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     });
 
-    map.on('draw:drawvertex', function (layerGroup) {
-      console.log('drawvertex',layerGroup);
-    });
 
     map.on('draw:drawstart', function () {
       drawnItems.clearLayers(); // Clear previous shape
       setGeo(null)
     });
 
-    map.on('draw:drawstop', function (layerGroup) {
-      console.log('stopped');
+    map.on('draw:editstop', async function (layerGroup) {
+
+      const feature = drawnItems?.toGeoJSON()?.features[0];
+      if (feature) {
+        setGeo(feature.layer.toGeoJSON())
+      }
     });
 
     map.on('draw:deleted', function () {
@@ -141,9 +154,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       setGeo(null)
     });
 
+    /*
     map.on('draw:editstart', function (event) {
-      // TBD: May need some custom magic here
-
       console.log('editstart',event);
     });
 
@@ -159,9 +171,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       console.log('editvertex');
     });
 
-    map.on('draw:editstop', function (layerGroup) {
-      console.log('editstop');
-      console.log('layerGroup',layerGroup)
+    map.on('draw:drawvertex', function (layerGroup) {
+      console.log('drawvertex',layerGroup);
+    });
+
+    map.on('draw:drawstop', function (layerGroup) {
+      console.log('stopped');
     });
 
     map.on('draw:deletestart', function () {
@@ -171,6 +186,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     map.on('draw:deletestop', function () {
       console.log('deletestop');
     });
+    */
   };
 
   useEffect(() => {
