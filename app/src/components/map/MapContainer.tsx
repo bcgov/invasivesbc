@@ -42,7 +42,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   useEffect(() => {
-    if(geo)
+    if(geo && props)
     {
       saveGeo(props.activity, geo)
     }
@@ -59,7 +59,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
 
     //load last poly
-    if(props.activity.geometry)
+    if(props.activity && props.activity.geometry)
     {
       let lastGeo = L.geoJSON().addTo(map);
       lastGeo.addData(props.activity.geometry[0]);
@@ -115,26 +115,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     };
 
     L.control.layers(baseLayers).addTo(map);
-
-    // Add any previous drawn feature
-    databaseContext.database.get('geometry')
-      .then((doc) => {
-        const style = {
-          "color": "#ff7800",
-          "weight": 5,
-          "opacity": 0.65
-        };
-
-        delete doc._id;
-        delete doc._rev;
-
-        L.geoJSON(doc,{
-          style: style,
-          onEachFeature: function (_,layer) {
-            drawnItems.addLayer(layer);
-          }
-        });
-      });
 
 
     //MARK PERSIST GEO HERE:
