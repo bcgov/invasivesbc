@@ -21,13 +21,10 @@ module.exports = {
       max: 10
     },
     migrations: {
-      // stub: './config/knex-migration-stub.js',
       tableName: 'migration',
       directory: 'src/database/migrations'
     },
     seeds: {
-      // stub: './config/knex-migration-stub.js',
-      tableName: 'seed',
       directory: 'src/database/seeds'
     }
   },

@@ -1,5 +1,5 @@
 {
-  "name": "invasivesbc-ionic",
+  "name": "invasivesbc-app",
   "version": "0.0.1",
   "description": "Invasives BC - Cross Platform 'Ionic' Application",
   "private": true,
@@ -73,6 +73,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "start:ionic": "ionic serve",
+    "start:ionic:reload": "ionic serve -l",
     "build-prod": "react-scripts build --prod",
     "deploy_start": "node server",
     "eject": "react-scripts eject",

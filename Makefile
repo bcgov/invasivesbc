@@ -1,16 +1,18 @@
 #!make
 
 # ------------------------------------------------------------------------------
-# Makefile -- InvasivesBC api
+# Makefile -- InvasivesBC
 # ------------------------------------------------------------------------------
 
+
+# You must manually create an empty `.env` file at the root level (this level), otherwise the below commands will fail.
 -include .env
 
 export $(shell sed 's/=.*//' .env)
 
 all : help
 .DEFAULT : help
-.PHONY : local local-debug build-local setup-local run-local run-debug close-local cclean-local test-local database api help
+.PHONY : local local-debug build-local setup-local run-local run-debug close-local cclean-local test-local database app api help
 
 # ------------------------------------------------------------------------------
 # Task Aliases
@@ -29,12 +31,6 @@ local-debug: | setup-docker close-local build-local run-debug ## Performs all co
 # Development Commands
 # ------------------------------------------------------------------------------
 
-setup-local: ## Prepares the environment variables for local development (will not overwrite an existing .env file)
-	@echo "==============================================="
-	@echo "Make: setup-local - copying env.local to .env"
-	@echo "==============================================="
-	@cp -i env_config/env.local .env
-
 setup-docker: ## Prepares the environment variables for local development using docker (will not overwrite an existing .env file)
 	@echo "==============================================="
 	@echo "Make: setup-local - copying env.docker to .env"
@@ -43,31 +39,31 @@ setup-docker: ## Prepares the environment variables for local development using 
 
 build-local: ## Builds the local development containers
 	@echo "==============================================="
-	@echo "Make: build-local - building api Docker image"
+	@echo "Make: build-local - building Docker images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml build
 
 run-local: ## Runs the local development containers
 	@echo "==============================================="
-	@echo "Make: run-local - running api"
+	@echo "Make: run-local - running api/app images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up -d
 
 run-debug: ## Runs the local development containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
-	@echo "Make: run-debug - running api for debugging"
+	@echo "Make: run-debug - running api/app images in debug mode"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up
 
 close-local: ## Closes the local development containers
 	@echo "==============================================="
-	@echo "Make: close-local - closing local api containers"
+	@echo "Make: close-local - closing Docker containers"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml down
 
 clean-local: ## Closes and cleans (removes) local development containers
 	@echo "==============================================="
-	@echo "Make: clean-local - closing and cleaning api containers"
+	@echo "Make: clean-local - closing and cleaning Docker containers"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
 
@@ -81,6 +77,12 @@ database: ## Executes into database container.
 	@echo "==============================================="
 	@export PGPASSWORD=$(DB_PASS)
 	@docker-compose exec db psql -U $(DB_USER) $(DB_DATABASE)
+
+app: ## Executes into the app container.
+	@echo "==============================================="
+	@echo "Shelling into app container"
+	@echo "==============================================="
+	@docker-compose exec app bash
 
 api: ## Executes into the workspace container.
 	@echo "==============================================="

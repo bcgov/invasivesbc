@@ -7,7 +7,7 @@ on:
     types: [closed]
 jobs:
   clean:
-    name: Clean Deployment Artifacts for App, API, and API-MOBILE in Dev and Tools environment
+    name: Clean Deployment Artifacts for API and App in Dev and Tools environment
     runs-on: ubuntu-latest
     # Only do this when the PR was not merged and only for dev
     if: ${{ github.event.pull_request.merged != true && github.base_ref == 'dev'  }}
