@@ -51,7 +51,7 @@ jobs:
           npm ci
           DEBUG=* npm run build -- --pr=$BUILD_ID
 
-  # Deploy App, API, and API-MOBILE images
+  # Deploy API and App images
   deploy:
     name: Deploy App
     runs-on: ubuntu-latest
@@ -85,9 +85,9 @@ jobs:
           npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
 
-  # Deploy App, API, and API-MOBILE images and related build/deployment artifacts
+  # Deploy API and App images and related build/deployment artifacts
   clean:
-    name: Clean Deployment Artifacts for App, API, and API-MOBILE
+    name: Clean Deployment Artifacts for API and App
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true && (github.base_ref != 'dev' && github.base_ref != 'prod') }}
     env:

@@ -1,12 +1,10 @@
 /**
  * This file should only contain UI Schema items that have NO nested elements.
  *
- * Example of schema item with nested element:
+ * Example of schema item without nested element:
  *
  * const Obj = {
- *   some_nested_field: {
- *      ...nested_field_properties
- *   }
+ *   some_field: {}
  * }
  */
 

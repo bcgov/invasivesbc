@@ -18,27 +18,27 @@
 
   Root config object used in various parts of the pipeline
 
-- ### _./api-mobile/.pipeline/_
+- ### _./api/.pipeline/_
 
   Contains all of the jobs executed as part of one or more GitHub workflows
 
-  - #### _./api-mobile/.pipeline/package.json_
+  - #### _./api/.pipeline/package.json_
 
     Defines the scripts executed in one or more steps (in a GitHub Workflow->job)
 
-  - #### _./api-mobile/.pipeline/config.js_
+  - #### _./api/.pipeline/config.js_
 
     Defines the scripts executed in one or more steps (in a GitHub Workflow->job)
 
-  - #### _./api-mobile/.pipeline/lib/_
+  - #### _./api/.pipeline/lib/_
 
     Defines additional config used by the pipeline, extending the root config.
 
-  - #### _./api-mobile/.pipeline/utils/_
+  - #### _./api/.pipeline/utils/_
 
     Contains general helper functions utilized by the task functions
 
-- ### _./api-mobile/openshift/_
+- ### _./api/openshift/_
 
   Contains OpenShift yaml configs for builds/deployments/etc. These are utilized by the library functions when configuring pods/commands.
 
@@ -49,7 +49,7 @@
 
 - ### _pipeline-cli_
 
-  The BCGov npm package that is leveraged heavily in the `./api-mobile/.pipeline/*` code.
+  The BCGov npm package that is leveraged heavily in the `./api/.pipeline/*` code.
 
   Repo: https://github.com/BCDevOps/pipeline-cli
 

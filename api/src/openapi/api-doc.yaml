@@ -2,8 +2,8 @@ openapi: 3.0.0
 
 info:
   version: 0.0.0
-  title: invasivesbc-api-mobile
-  description: API for InvasivesBC mobile.
+  title: invasivesbc-api
+  description: API for InvasivesBC.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html

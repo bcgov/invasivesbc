@@ -209,10 +209,10 @@ parameters:
   value: 'dev'
 - name: APP_PORT_DEFAULT
   description: Application default port
-  value: '3030'
+  value: '8100'
 - name: APP_PORT_DEFAULT_NAME
   description: Default port resource name
-  value: '3030-tcp'
+  value: '8100-tcp'
 - name: APP_PORT_OTHER
   description: Other reserved port of the application
   value: '8088'

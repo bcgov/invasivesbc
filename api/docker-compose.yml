@@ -1,39 +1,23 @@
-version: "3.5"
+version: '3.5'
 
 services:
-  db:
-    image: ${PROJECT_NAME}-${TAG}-postgress-img-mobile
-    container_name: ${PROJECT_NAME}-${TAG}-db-mobile
-    build:
-      context: ./.docker/db
-      dockerfile: Dockerfile
-    ports:
-      - ${DB_PORT}:${DB_PORT}
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-      - POSTGRES_DB=${DB_DATABASE}
-      - PORT=${DB_PORT}
-    networks:
-      - local-network
-    volumes:
-      - postgres:/var/lib/postgresql/data
-
-  api-mobile_dependency:
-    image: ${PROJECT_NAME}-${TAG}-api-mobile-dep-img
-    container_name: ${PROJECT_NAME}-${TAG}-api-mobile-dep
+  ## Build the api npm dependencies docker image
+  api_dependency:
+    image: ${PROJECT_NAME}-${TAG}-api-dep-img
+    container_name: ${PROJECT_NAME}-${TAG}-api-dep
     build:
       context: ./
-      dockerfile: ./.docker/api-mobile/Dockerfile.npm
+      dockerfile: ./.docker/api/Dockerfile.npm
     volumes:
-      - npmcache:/opt/app-root/src/node_modules
+      - npmcache_api:/opt/app-root/src/node_modules
 
-  api-mobile:
-    image: ${PROJECT_NAME}-${TAG}-api-mobile-img
-    container_name: ${PROJECT_NAME}-${TAG}-api-mobile
+  ## Build the api docker image
+  api:
+    image: ${PROJECT_NAME}-${TAG}-api-img
+    container_name: ${PROJECT_NAME}-${TAG}-api
     build:
       context: ./
-      dockerfile: ./.docker/api-mobile/Dockerfile
+      dockerfile: ./.docker/api/Dockerfile
     ports:
       - ${API_PORT}:${API_PORT}
     environment:
@@ -53,38 +37,21 @@ services:
       - OBJECT_STORE_SECRET_KEY_ID=${OBJECT_STORE_SECRET_KEY_ID}
       - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
     volumes:
-      - ./:/opt/app-root/src
-      - npmcache:/opt/app-root/src/node_modules
+      - ./api:/opt/app-root/src
+      - npmcache_api:/opt/app-root/src/node_modules
     networks:
       - local-network
     links:
       - db
     depends_on:
       - db
-      - api-mobile_dependency
-    restart: "no"
-
-  nginx:
-    image: ${PROJECT_NAME}-${TAG}-nginx-mobile-img
-    container_name: ${PROJECT_NAME}-${TAG}-nginx-mobile
-    build:
-      context: ./.docker/nginx
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - 80:80
-    depends_on:
-      - db
-      - api-mobile
-    networks:
-      - local-network
+      - api_dependency
+    restart: 'no'
 
 networks:
   local-network:
     driver: bridge
 
 volumes:
-  postgres:
-    name: ${PROJECT_NAME}-${TAG}-vol-postgres
   npmcache:
     name: ${PROJECT_NAME}-${TAG}-vol-npmcache

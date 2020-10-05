@@ -14,7 +14,7 @@ WORKDIR /opt/app-root/src
 COPY ./package*.json ./
 
 # INSATLL NODE DEPENDENCIES
-RUN npm install
+# RUN npm install
 RUN npm install -g @ionic/cli
 
 # Copy All the sources
@@ -23,7 +23,7 @@ COPY ./ .
 # BUILD APP
 RUN npm run build-prod
 
-EXPOSE 3030
+EXPOSE 8100
 
 # RUN APP
 CMD ["npm", "run", "deploy_start"]

@@ -3,14 +3,14 @@ kind: Template
 metadata:
   creationTimestamp: null
   labels:
-    build: invasivebc-api-mobile
-  name: invasivebc-api-mobile
+    build: invasivebc-api
+  name: invasivebc-api
 parameters:
   - name: NAME
     displayName: Name
     description: A suffix appended to all objects
     required: true
-    value: invasivebc-api-mobile
+    value: invasivebc-api
   - name: SUFFIX
     displayName: Name Suffix
     description: A suffix appended to all objects
@@ -21,7 +21,7 @@ parameters:
     value: "1.0"
   - name: SOURCE_CONTEXT_DIR
     required: true
-    value: api-mobile
+    value: api
   - name: SOURCE_REPOSITORY_URL
     required: true
     value: https://github.com/bcgov/lucy-web

@@ -2,6 +2,7 @@ FROM node:10
 
 RUN apt-get -qq update
 RUN apt-get -qq install -y curl
+
 RUN npm install -g npm
 
 # set variables
@@ -21,5 +22,5 @@ VOLUME ${HOME}
 
 ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
-# run the database migrations and start api-mobile in reload mode (will reload on file changes)
+# run the database migrations and start api in reload mode (will reload on file changes)
 CMD [ "npm", "run", "start:migrate:reload" ]
