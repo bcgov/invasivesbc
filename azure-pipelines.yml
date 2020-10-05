@@ -1,0 +1,107 @@
+# NOTES
+#
+# In the Azure DevOps Web IDE:
+# 1) Set the following pipeline variables:
+#   - AzureStorageAccountName
+#   - AzureSubscriptionID
+# 2) In the project settings you must create a `service connection` of type `Azure Resource Manager`
+#    call it `SomethingServiceConnection` and reference by name in in the AzureCLI tasks
+#    `connectedServiceNameARM` input.
+#
+# These will be used by the AzureCLI@2 to copy the build artifact(s) to an Azure blob storage for easy
+# downloading or further processing.
+#
+# For build numbering you can use the following options:
+# BUILD_BUILDID     = NN            # Linier build number eg. 87, 88, 89
+# Build.BuildNumber = NN            # Linier daily build number eg. 1, 2, 3
+# Build.BuildId     = YYYYMMDD.NN   # Build identifier eg. 20190515.3, 20190516.1
+#
+# Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
+#
+
+trigger:
+- master
+
+pool:
+  vmImage: 'macos-latest'
+
+variables:
+- group: CertsAndKeys
+- name: 'ProfileFileName'
+  value: 'Invasive_Species.mobileprovision'
+- name: 'ProfileUUID'
+  value: '2102259a-ce94-4a64-a594-6df94ad87a63'
+- name: 'CertificateFileName'
+  value: 'itunes-store.p12'
+- name: 'WorkspacePath'
+  value: '**/App.xcworkspace'
+- name: 'SchemaName'
+  value: 'App'
+- name: 'ExportOptionsFileName'
+  value: 'options.plist'
+- name: 'ExportMethod'
+  value: 'app-store'
+  # Variables below are used for ITC uploads
+- name: 'BundleID'
+  value: 'ca.bc.gov.invasive-species'
+- name: 'AppStoreServiceConnectionName'
+  value: 'BCDevX'
+- name: 'ITCTeamID'
+  value: 908186
+
+steps:
+# - task: InstallIonic
+# - task: CreateIOSDir
+# - task: BuildIOS
+- task: InstallAppleCertificate@2
+  inputs:
+    certSecureFile: $(CertificateFileName)
+    certPwd: '$(P12password)'
+    keychain: 'temp'
+- task: InstallAppleProvisioningProfile@1
+  inputs:
+    provisioningProfileLocation: 'secureFiles'
+    provProfileSecureFile: $(ProfileFileName)
+    removeProfile: true
+- task: CmdLine@2
+  displayName: Bump build number
+  timeoutInMinutes: 1
+  inputs:
+    script: |
+        ./scripts/az-set-build-no.sh $(SchemaName) # SchemaName matches the target.
+- task: CocoaPods@0
+  timeoutInMinutes: 10
+  inputs:
+    forceRepoUpdate: false
+- task: Xcode@5
+  displayName: Build
+  timeoutInMinutes: 20
+  inputs:
+    actions: 'archive' # build, clean, test, analyze, and archive
+    scheme: $(SchemaName)
+    sdk: 'iphoneos'
+    configuration: 'Release'
+    xcWorkspacePath: $(WorkspacePath)
+    xcodeVersion: 'default'
+    packageApp: true
+    signingOption: 'default'
+    provisioningProfileUuid: $(ProfileUUID)
+    exportMethod: $(ExportMethod)
+    exportOptions: 'plist'
+    exportOptionsPlist: $(ExportOptionsFileName)
+    archivePath: '$(Build.ArtifactStagingDirectory)/pack'
+    args: '-xcconfig release.xcconfig'
+- task: AppStoreRelease@1
+  timeoutInMinutes: 25
+  condition: ne(variables['Build.Reason'], 'PullRequest')
+  inputs:
+    serviceEndpoint: $(AppStoreServiceConnectionName)
+    appIdentifier: $(BundleID)
+    appType: 'iOS'
+    ipaPath: '**/*.ipa'
+    releaseTrack: 'TestFlight'
+    shouldSkipWaitingForProcessing: true # don't wait
+    shouldSkipSubmission: true # don't auto send to testers
+  env:
+    FASTLANE_ITC_TEAM_ID: $(ITCTeamID)
