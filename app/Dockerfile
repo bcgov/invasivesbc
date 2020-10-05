@@ -13,8 +13,8 @@ WORKDIR /opt/app-root/src
 # COPY PACKAGE JSON
 COPY ./package*.json ./
 
-# INSATLL NODE DEPENDENCIES
-# RUN npm install
+# INSTALL NODE DEPENDENCIES
+RUN npm install
 RUN npm install -g @ionic/cli
 
 # Copy All the sources
