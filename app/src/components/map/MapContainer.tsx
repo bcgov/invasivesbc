@@ -114,27 +114,36 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     {
         const style = {
           "color": "#ff7800",
-           "weight": 5,
+           "weight": 4,
            "opacity": 0.65
         };
+
+        const markerStyle = {
+          radius: 10,
+          weight: 4,
+          stroke: true
+        }
  
         L.geoJSON(props.activity.geometry,{
           style: style,
+          pointToLayer: (_, latLng) => {
+            return L.circleMarker(latLng,markerStyle);
+          },
           onEachFeature: function (_: any,layer: any) {
-            if(_.properties.radius)
-            {
-              var circleOptions = {
-                color: 'red',
-                fillColor: '#f03',
-                fillOpacity: 1,
-             }
-              console.log('make it a circle')
-              console.log(_.properties.radius)
-              let circLayer = new L.Circle(_.geometry.coordinates, _.properties.radius, circleOptions)
-              console.dir(circLayer)
-              //drawnItems.addlayer(circLayer)
-              //
-            }
+            // if(_.properties.radius)
+            // {
+            //   var circleOptions = {
+            //     color: 'red',
+            //     fillColor: '#f03',
+            //     fillOpacity: 1,
+            //  }
+            //   console.log('make it a circle')
+            //   console.log(_.properties.radius)
+            //   let circLayer = new L.Circle(_.geometry.coordinates, _.properties.radius, circleOptions)
+            //   console.dir(circLayer)
+            //   //drawnItems.addlayer(circLayer)
+            //   //
+            // }
             if(!_.properties.radius)
             {
               drawnItems.addLayer(layer);
