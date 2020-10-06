@@ -1,3 +1,7 @@
+# ################################# W A R N I N G ####################################################################
+# This DockerFile is used for deployments only, please do not change for other purposes. It will break our deployment.
+# ####################################################################################################################
+
 FROM node:10
 
 # Setting Path
