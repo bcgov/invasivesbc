@@ -1,3 +1,7 @@
+# ################################# W A R N I N G ####################################################################
+# This DockerFile is used for deployments only, please do not change for other purposes. It will break our deployment.
+# ####################################################################################################################
+
 FROM node:10
 
 # Setting Path
@@ -13,7 +17,7 @@ WORKDIR /opt/app-root/src
 # COPY PACKAGE JSON
 COPY ./package*.json ./
 
-# INSATLL NODE DEPENDENCIES
+# INSTALL NODE DEPENDENCIES
 RUN npm install
 RUN npm install -g @ionic/cli
 

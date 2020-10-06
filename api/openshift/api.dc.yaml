@@ -247,7 +247,7 @@ metadata:
   selfLink: ""
 parameters:
   - name: NAME
-    value: invasivesbc-api-mobile
+    value: invasivesbc-api
   - name: DBNAME
     value: invasivesbc-api
   - name: SUFFIX

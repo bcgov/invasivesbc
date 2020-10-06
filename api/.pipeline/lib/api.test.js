@@ -27,7 +27,7 @@ module.exports = settings => {
   // Get API image stream
   const data = oc.get(`istag/${image}`) || [];
   if (data.length === 0) {
-    console.log('Unable to fetch API Mobile image ref');
+    console.log('Unable to fetch API image ref');
     process.exit(0);
   }
   const imageStream = data[0];

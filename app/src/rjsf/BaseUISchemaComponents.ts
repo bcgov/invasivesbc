@@ -1,12 +1,10 @@
 /**
  * This file should only contain UI Schema items that have NO nested elements.
  *
- * Example of schema item with nested element:
+ * Example of schema item without nested element:
  *
  * const Obj = {
- *   some_nested_field: {
- *      ...nested_field_properties
- *   }
+ *   some_field: {}
  * }
  */
 
@@ -102,8 +100,8 @@ const Observation_PlantAquatic = {
 
 const Observation_AnimalTerrestrial = {
   number_of_individuals_observed: {},
-  life_stage: {},
-  behaviour: {}
+  life_stage_code: {},
+  behaviour_code: {}
 };
 
 const Observation_AnimalAquatic = {
@@ -118,8 +116,8 @@ const Treatment_MechanicalPlant = {
   applicator2_first_name: {},
   applicator2_last_name: {},
   treatment_contractor: {},
-  mechanical_method: {},
-  mechanical_disposal_method: {},
+  mechanical_method_code: {},
+  mechanical_disposal_method_code: {},
   mechanical_root_removal_code: {},
   mechanical_soil_disturbance_code: {},
   signage_on_site: {

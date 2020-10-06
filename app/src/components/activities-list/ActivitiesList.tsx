@@ -274,7 +274,7 @@ const ActivitiesList: React.FC = (props) => {
         const response = await invasivesApi.createActivity({
           activity_type: activity.activityParentType,
           activity_subtype: activity.activityType,
-          geometry: [],
+          geometry: activity.geometry,
           media: [],
           form_data: activity.formData
         });

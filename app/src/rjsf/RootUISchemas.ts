@@ -1,13 +1,7 @@
 /**
  * This file should only contain root level Schema items.
  *
- * Example of schema item with nested element:
- *
- * const Obj = {
- *   some_nested_field: {
- *      ...nested_field_properties
- *   }
- * }
+ * These should mirror the schemas of the same name in the api-doc.json.
  */
 
 import UISchemaComponents from 'rjsf/UISchemaComponents';
