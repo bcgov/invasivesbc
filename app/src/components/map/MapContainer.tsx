@@ -169,8 +169,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     map.on('draw:editstop', async function (layerGroup) {
-      // The current feature isn't passed to this function
-      // So grab from the acetate layer
+      /*
+        The current feature isn't passed to this function
+        So grab from the acetate layer
+      */ 
       let aGeo = drawnItems?.toGeoJSON()?.features[0];
 
       // If this is a circle feature... Grab the radius and store in the GeoJSON
