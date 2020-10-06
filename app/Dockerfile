@@ -23,7 +23,7 @@ COPY ./ .
 # BUILD APP
 RUN npm run build-prod
 
-EXPOSE 8100
+EXPOSE 3030
 
 # RUN APP
 CMD ["npm", "run", "deploy_start"]
