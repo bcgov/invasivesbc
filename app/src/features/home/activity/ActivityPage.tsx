@@ -25,7 +25,9 @@ const useStyles = makeStyles((theme) => ({
   map: {
     height: '100%',
     width: '100%'
-  }
+  },
+  photoContainer: {
+  },
 }));
 
 interface IActivityPageProps {
@@ -66,7 +68,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           <Typography className={classes.heading}>Map</Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.mapContainer}>
-          <MapContainer {...props} classes={classes} activity={doc} />
+          <MapContainer {...props} classes={classes} activity={doc} /> 
         </AccordionDetails>
       </Accordion>
       <Accordion>
@@ -74,15 +76,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           <Typography className={classes.heading}>Form</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <FormContainer {...props} activity={doc} />
+          <FormContainer {...props} activity={doc} /> 
         </AccordionDetails>
       </Accordion>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-photo-content" id="panel-photo-header">
           <Typography className={classes.heading}>Photos</Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          <PhotoContainer {...props} activity={doc} />
+        <AccordionDetails className={classes.photoContainer}>
+          <PhotoContainer {...props} classes={classes} activity={doc} />
         </AccordionDetails>
       </Accordion>
     </Container>

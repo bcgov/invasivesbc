@@ -1,24 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useCamera } from '@ionic/react-hooks/camera';
 import { useFilesystem, base64FromPath } from '@ionic/react-hooks/filesystem';
 import { useStorage } from '@ionic/react-hooks/storage';
 import { isPlatform } from '@ionic/react';
 import { CameraResultType, CameraSource, CameraPhoto, Capacitor, FilesystemDirectory } from '@capacitor/core';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+
+import {
+  ActivityStatus,
+} from 'constants/activities'
 
 //This is the key in the filesystem
 const PHOTO_STORAGE = 'photos';
 
-export function usePhotoGallery() {
+export function usePhotoGallery(activity: any) {
   const { getPhoto } = useCamera();
   console.log('used camera');
+  const databaseContext = useContext(DatabaseContext);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const { deleteFile, getUri, readFile, writeFile } = useFilesystem();
   const { get, set, clear } = useStorage();
 
+
+
+
+
   useEffect(() => {
     const loadSaved = async () => {
       const photosString = await get('photos');
-      const photosInStorage = (photosString ? JSON.parse(photosString) : []) as Photo[];
+      console.log("Photostring: " + photosString);
+      const photosInStorage = (photosString ? JSON.parse(photosString) : [...photos]) as Photo[];
+      console.log("PhotosInstorage: " + photosInStorage);
       // If running on the web...
       if (!isPlatform('hybrid')) {
         for (let photo of photosInStorage) {
@@ -35,17 +47,27 @@ export function usePhotoGallery() {
     loadSaved();
   }, [get, readFile]);
 
-  const takePhoto = async () => {
+  const takePhoto = async (doc: any) => {
     const cameraPhoto = await getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100
     });
 
+    console.log("takePhoto(doc): doc = " + JSON.stringify(doc));
+
     const fileName = new Date().getTime() + '.jpeg';
-    const savedFileImage = await savePicture(cameraPhoto, fileName);
-    const newPhotos = [savedFileImage, ...photos];
+    const photo = await convert2Photo(cameraPhoto, fileName);
+
+    
+    //const newPhotos = [savedFileImage, ...photos];
+    const newPhotos = [photo, ...photos];
     setPhotos(newPhotos);
+
+    await databaseContext.database.upsert(doc._id, (activityDoc) => {
+      return { ...activityDoc, photos: newPhotos, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+    });
+
     set(
       PHOTO_STORAGE,
       isPlatform('hybrid')
@@ -60,6 +82,29 @@ export function usePhotoGallery() {
             })
           )
     );
+  };
+  
+  const convert2Photo = async (cameraPhoto: CameraPhoto, filepath: string): Promise<Photo> => {
+    let webviewPath: string;
+    let base64: string;
+
+    webviewPath = cameraPhoto.webPath;
+
+    // "hybrid" will detect Cordova or Capacitor;
+    if (isPlatform('hybrid')) {
+      const file = await readFile({
+        path: cameraPhoto.path!
+      });
+      base64 = file.data;
+    } else {
+      base64 = await base64FromPath(cameraPhoto.webPath!);
+    }
+
+    return {
+      filepath: filepath,
+      webviewPath: webviewPath,
+      base64: base64
+    };
   };
 
   const savePicture = async (photo: CameraPhoto, fileName: string): Promise<Photo> => {
@@ -99,24 +144,34 @@ export function usePhotoGallery() {
   };
 
   const deletePhotos = async () => {
-    const photosString = await get('photos');
-    const photosInStorage = (photosString ? JSON.parse(photosString) : []) as Photo[];
-
-    console.log('Deleting photos from file system:');
-    for (let photo of photosInStorage) {
-      console.log('Deleting photo with path: ' + photo.filepath);
-
-      // delete photo from file system
-      const fileDeleted = await deleteFile({
-        path: photo.filepath
-      });
-    }
-
-    // clear photos from storage
+    try{
+      const photosString = await get('photos');
+      const photosInStorage = (photosString ? JSON.parse(photosString) : []) as Photo[];
+      console.log("inside deletePhotos");
+      console.dir(photosString);
+      console.dir(photosInStorage);
+  
+      console.log('Deleting photos from file system:');
+      for (let photo of photosInStorage) {
+        console.log('Deleting photo with path: ' + photo.filepath);
+        console.dir(photo);
+  
+        // delete photo from file system
+        const fileDeleted = await deleteFile({
+          path: photo.filepath
+        });
+      }      // clear photos from storage
+    console.log('Clear photos from the filesystem');
     clear();
+    console.dir(photosInStorage);
 
     // clear photo array from useState
+    console.log('Clear photos from the useState');
     setPhotos([]);
+    console.dir(photosInStorage);
+    } catch(error){
+      console.log(error);
+    }
   };
 
   return {
