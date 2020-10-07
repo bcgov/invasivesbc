@@ -1,7 +1,8 @@
 'use strict';
 const config = require('./lib/config.js');
-const cleanTask = require('./lib/clean.js');
+const migrateDatabaseTask = require('./lib/db.migrate.js');
 
 const settings = { ...config, phase: settings.options.env };
 
-cleanTask(settings);
+// apply database migrations
+migrateDatabaseTask(settings);

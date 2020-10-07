@@ -1,11 +1,3 @@
-import dotenv from 'dotenv';
-
-const env = process.env.NODE_ENV || 'local';
-
-if (env === 'local') {
-  dotenv.config({ path: './env_config/env.local' });
-}
-
 module.exports = {
   local: {
     client: 'postgresql',

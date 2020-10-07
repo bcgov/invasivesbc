@@ -11,8 +11,12 @@
     "url": "git+https://github.com/bcgov/ocp-sso.git"
   },
   "scripts": {
-    "build": "node build.js",
-    "deploy": "node deploy.js",
+    "build": "node db.build.js",
+    "deploy": "node db.deploy.js",
+    "migrate": "node db.migrate.js",
+    "seed": "node db.seed.js",
+    "build-schemaspy": "node schemaspy.build.js",
+    "deploy-schemaspy": "node schemaspy.deploy.js",
     "clean": "node clean.js",
     "version": "echo \"node@$(node --version) ($(which node))\" && echo \"npm@$(npm --version) ($(which npm))\" && npm ls"
   },
