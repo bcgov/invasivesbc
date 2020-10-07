@@ -28,6 +28,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const [geo, setGeo] = useState(null)
 
+  const [extent, setExtent] = useState(null)
+
   /* ## saveGeo
     Save the geometry added by the user
     @param doc {object} The activity data object
@@ -45,7 +47,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
   },[geo])
 
-  /* ## saveExtent
+  /* ## setExtent
     Save the map Extent within the database
     @param doc {object} The activity data object
     @param extent {object} The leaflet bounds object
@@ -55,6 +57,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       return { ...activityDoc, mapExtent: extent };
     });
   };
+
+  useEffect(() => {
+    if(props && extent) {
+      saveExtent(props.activity, extent)
+    }
+  },[extent])
 
   const renderMap = () => {
     console.log('Map componentDidMount!');
@@ -145,12 +153,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         });
     }
 
-    const blah = function (event) {
-      console.log(map.getBounds());
-      // map.fitBounds();
-    };
-
-    map.on('moveend',blah);
+    map.on('moveend',() => {
+      setExtent(map.getBounds());
+    });
 
     map.on('draw:created', (feature) => {
       let aGeo = feature.layer.toGeoJSON() // convert feature to geojson
