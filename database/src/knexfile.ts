@@ -14,10 +14,11 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
-      directory: 'src/database/migrations'
+      directory: './migrations'
     },
     seeds: {
-      directory: 'src/database/seeds'
+      tableName: 'seed',
+      directory: './seeds'
     }
   },
   dev: {
@@ -35,7 +36,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
-      directory: 'src/database/migrations'
+      directory: './migrations'
     }
   },
   test: {
@@ -53,7 +54,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
-      directory: 'src/database/migrations'
+      directory: './migrations'
     }
   },
   prod: {
@@ -71,7 +72,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
-      directory: 'src/database/migrations'
+      directory: './migrations'
     }
   }
 };

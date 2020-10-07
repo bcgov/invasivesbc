@@ -22,5 +22,5 @@ VOLUME ${HOME}
 
 ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
-# run the database migrations and start api in reload mode (will reload on file changes)
-CMD [ "npm", "run", "start:migrate:reload" ]
+# start api in reload mode (will reload on file changes)
+CMD [ "npm", "run", "start:reload" ]

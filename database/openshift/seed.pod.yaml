@@ -8,7 +8,7 @@ parameters:
     description: 'Image for pod'
     required: true
   - name: NAME
-    value: invasivesbc-api
+    value: invasivesbc-database-seed-pod
   - name: SUFFIX
     value: '-dev'
   - name: VERSION
@@ -60,7 +60,7 @@ objects:
             - container-entrypoint
             - bash
             - '-c'
-            - 'npm run seed-db'
+            - 'npm run seed'
           resources:
             limits:
               cpu: '1'

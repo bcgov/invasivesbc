@@ -8,7 +8,7 @@ parameters:
     description: 'Image for pod'
     required: true
   - name: NAME
-    value: invasivesbc-api
+    value: invasivesbc-database-migrate-pod
   - name: SUFFIX
     value: '-dev'
   - name: VERSION
@@ -66,7 +66,7 @@ objects:
             - container-entrypoint
             - bash
             - '-c'
-            - 'npm run migration'
+            - 'npm run migrate:latest'
           resources:
             limits:
               cpu: '1'
