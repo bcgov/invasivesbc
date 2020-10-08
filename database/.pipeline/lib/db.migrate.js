@@ -8,13 +8,15 @@ module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
-  const changeId = phases[phase].changeId;
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
-  var objects = [];
-  var is = [];
 
-  // The deployment of your cool app goes here ▼▼▼
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+
+  const changeId = phases[phase].changeId;
+  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
+
+  const objects = [];
+  const is = [];
+
   const isName = `${phases[phase].name}`;
   const instance = `${isName}-${changeId}`;
   const migrateTag = `${phases[phase].tag}-migrate`;
@@ -41,6 +43,7 @@ module.exports = (settings) => {
     console.log('Unable to fetch API imag ref');
     process.exit(0);
   }
+
   const imageStream = data[0];
   const podName = `${phases[phase].name}${phases[phase].suffix}-migrate`;
 
@@ -53,15 +56,15 @@ module.exports = (settings) => {
         CHANGE_ID: phases[phase].changeId,
         ENVIRONMENT: phases[phase].env || 'dev',
         DB_SERVICE_NAME: `${phases[phase].name}-postgresql${phases[phase].suffix}`,
-        IMAGE: imageStream.image.dockerImageReference,
-        DB_MIGRATION_TYPE: phases[phase].migrationInfo.type,
-        DB_CLEAN_UP: phases[phase].migrationInfo.cleanup,
-        DB_SEED: phases[phase].migrationInfo.dbSeed
+        IMAGE: imageStream.image.dockerImageReference
       }
     })
   );
+
   checkAndClean(`pod/${podName}`, oc);
+
   oc.applyRecommendedLabels(objects, phases[phase].name, phase, `${changeId}`, instance);
   oc.applyAndDeploy(objects, phases[phase].instance);
+
   wait(`pod/${podName}`, settings, 30);
 };

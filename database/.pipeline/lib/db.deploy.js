@@ -2,18 +2,27 @@
 const { OpenShiftClientX } = require('pipeline-cli');
 const path = require('path');
 
+/**
+ * Run a pod to deploy the database image (must be already built, see db.build.js).
+ *
+ * @param {*} settings
+ * @returns
+ */
 module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
-  const changeId = phases[phase].changeId;
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
-  var objects = [];
 
-  // The deployment of your cool app goes here ▼▼▼
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+
   const name = `${phases[phase].name}-db`;
   const instance = `${phases[phase].instance}`;
+  const changeId = `${phases[phase].changeId}`;
+  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
+
+  const objects = [];
+
+  // The deployment of your cool app goes here ▼▼▼
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.dc.yaml`, {
       param: {
@@ -31,7 +40,7 @@ module.exports = (settings) => {
     })
   );
 
-  oc.applyRecommendedLabels(objects, name, phase, `${changeId}`, instance);
+  oc.applyRecommendedLabels(objects, name, phase, changeId, instance);
   oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
   oc.applyAndDeploy(objects, instance);
 };

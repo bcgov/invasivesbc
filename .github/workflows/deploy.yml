@@ -173,9 +173,9 @@ jobs:
         run: |
           npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
-          DEBUG=* npm run migrate -- --pr=$BUILD_ID --env=dev
-          DEBUG=* npm run seed -- --pr=$BUILD_ID --env=dev
-          DEBUG=* npm run deploy-schemaspy -- --pr=$BUILD_ID --env=dev
+          # DEBUG=* npm run migrate -- --pr=$BUILD_ID --env=dev
+          # DEBUG=* npm run seed -- --pr=$BUILD_ID --env=dev
+          # DEBUG=* npm run deploy-schemaspy -- --pr=$BUILD_ID --env=dev
 
       # Deploy the api
       - name: Deploy API

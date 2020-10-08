@@ -10,7 +10,6 @@ module.exports = (settings) => {
   let objects = [];
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
-  // The building of your cool app goes here ▼▼▼
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/app.bc.yaml`, {
       param: {
