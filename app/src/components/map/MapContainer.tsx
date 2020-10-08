@@ -52,9 +52,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     @param doc {object} The activity data object
     @param extent {object} The leaflet bounds object
    */
-  const saveExtent = async (doc: any, extent: any) => {
+  const saveExtent = async (doc: any, newExtent: any) => {
     await databaseContext.database.upsert(doc._id, (activityDoc) => {
-      return { ...activityDoc, mapExtent: extent };
+      return { ...activityDoc, mapExtent: newExtent };
     });
   };
 
@@ -210,7 +210,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         aGeo = {...aGeo, properties: {...aGeo.properties, radius: radius}};
       }
 
-      if (aGeo) { setGeo(aGeo) }; // Save feature
+      if (aGeo) { setGeo(aGeo) } // Save feature
     });
 
     map.on('draw:deleted', function () {
