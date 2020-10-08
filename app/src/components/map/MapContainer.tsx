@@ -58,6 +58,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
+  // useEffect(() => {
+  //   let isMounted = true; // No idea why this works... just does.
+  //   if(props && extent && isMounted) {
+  //     saveExtent(props.activity, extent)
+  //   }
+  //   return () => {isMounted = false};
+  // },[extent])
+
   useEffect(() => {
     if(props && extent) {
       saveExtent(props.activity, extent)
@@ -67,7 +75,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const renderMap = () => {
     console.log('Map componentDidMount!');
 
-    var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
+    var map = L.map('map', { zoomControl: false }).setView([55, -123], 5);
     // On init setup
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -123,7 +131,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
-    //load last feature
+    /*
+      Load last feature... If available.
+    */
     if(props.activity && props.activity.geometry)
     {
         const style = {
@@ -151,7 +161,21 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             drawnItems.addLayer(layer);
           }
         });
+
     }
+
+    /*
+      Move map to previous distination and scale... If available.
+    */
+    if(props?.activity?.mapExtent) {
+      const b = props.activity.mapExtent;
+      const bounds = [
+        [b._northEast.lat,b._northEast.lng],
+        [b._southWest.lat,b._southWest.lng]
+      ]
+      map.fitBounds(bounds);
+    }
+
 
     map.on('moveend',() => {
       setExtent(map.getBounds());
