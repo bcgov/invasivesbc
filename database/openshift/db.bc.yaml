@@ -1,4 +1,3 @@
----
 kind: Template
 apiVersion: v1
 metadata:
@@ -9,7 +8,7 @@ parameters:
     displayName: Name
     description: A name used for all objects
     required: true
-  - name: NAME_SUFFIX
+  - name: SUFFIX
     displayName: Name Suffix
     description: A suffix appended to all objects
     required: true

@@ -23,7 +23,7 @@ module.exports = (settings) => {
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.bc.yaml`, {
       param: {
         NAME: `${dbName}`,
-        NAME_SUFFIX: `${phases[phase].suffix}`,
+        SUFFIX: `${phases[phase].suffix}`,
         TAG_NAME: `${phases[phase].tag}`
       }
     })
