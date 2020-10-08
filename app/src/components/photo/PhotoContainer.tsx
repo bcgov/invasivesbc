@@ -2,7 +2,6 @@ import { CardMedia, Fab, Grid, Paper, SvgIcon } from '@material-ui/core';
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
 import { useCamera } from '@ionic/react-hooks/camera';
 import { CameraResultType, CameraSource } from '@capacitor/core';
-import { useFilesystem } from '@ionic/react-hooks/filesystem';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useState, useContext, useEffect } from 'react';
 
@@ -27,17 +26,18 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const initPhotos = async function (activityDoc: any) {
-    const activity_id = activityDoc._id;
+    const activity = activityDoc;
+    const activity_id = activity._id;
     const dbDoc = await databaseContext.database.get(activity_id)
     const dbPhotos = dbDoc.photos != undefined ? dbDoc.photos : [];
     setPhotos(dbPhotos);
   }
 
   const updateDB = async function (activityDoc: any) {
-    console.log("updateDB(doc): new photos.length = " + photos.length);
-    const activity_id = activityDoc._id;
-    await databaseContext.database.upsert(activity_id, (activityDoc) => {
-      return { ...activityDoc, photos: photos, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+    const activity = activityDoc;
+    const activity_id = activity._id;
+    await databaseContext.database.upsert(activity_id, (activity) => {
+      return { ...activity, photos: photos, status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
   }
 
