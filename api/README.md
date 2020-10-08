@@ -16,13 +16,13 @@ See `./Makefile` for all available commands.
 
 ## Primary make commands
 
-- Build and run a dockerized instance of the api-mobile api, a postgresql database, and an nginx reverse proxy.
+- Build and run a dockerized instance of the api, a postgresql database, and an nginx reverse proxy.
 
   ```
   make local
   ```
 
-- Build and run a dockerized instance of the api-mobile api, a postgresql database, and an nginx reverse proxy, in debug mode where all docker output is printed to the console:
+- Build and run a dockerized instance of the api, a postgresql database, and an nginx reverse proxy, in debug mode where all docker output is printed to the console:
 
   ```
   make local-debug

@@ -21,7 +21,7 @@ const Treatment_ChemicalPlant = {
   chemical_treatment_method: {},
   temperature: {},
   wind_speed: {},
-  wind_direction: {},
+  wind_direction_code: {},
   humidity: {},
   mix_delivery_rate: {},
   application_rate: {},

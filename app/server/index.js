@@ -30,7 +30,7 @@ const request = require('request');
     // Express APP
     const app = express();
     // Getting Port
-    const port = process.env.APP_PORT || 3030;
+    const port = process.env.APP_PORT || 8100;
     // Resource path
     const resourcePath = path.resolve(__dirname, '../build')
     // Setting express static

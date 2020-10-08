@@ -14,6 +14,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import {
   ActivityStatus,
 } from 'constants/activities'
+import { Geolocation } from '@capacitor/core';
 
 interface IMapContainerProps {
   classes?: any;
@@ -28,10 +29,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [geo, setGeo] = useState(null)
 
   const saveGeo = async (doc: any, geoJSON: any) => {
+
+
     await databaseContext.database.upsert(doc._id, (activityDoc) => {
       return { ...activityDoc, geometry: [geoJSON], status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
   };
+
+
+  const checkIfCircle = (radius: number, xy: [number]) => {
+    let aGeo = geo
+    return aGeo
+  }
+
 
   useEffect(() => {
     if(props && geo)
@@ -99,17 +109,30 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
-    //load last poly
+    //load last feature
     if(props.activity && props.activity.geometry)
     {
         const style = {
-          "color": "#ff7800",
-           "weight": 5,
-           "opacity": 0.65
+          color: "#ff7800",
+          weight: 4,
+          opacity: 0.65
         };
+
+        const markerStyle = {
+          radius: 10,
+          weight: 4,
+          stroke: true
+        }
  
         L.geoJSON(props.activity.geometry,{
           style: style,
+          pointToLayer: (feature: any, latLng: any) => {
+            if (feature.properties.radius) {
+              return L.circle(latLng,{radius: feature.properties.radius});
+            } else {
+              return L.circleMarker(latLng,markerStyle);
+            }
+          },
           onEachFeature: function (_: any,layer: any) {
             drawnItems.addLayer(layer);
           }
@@ -120,6 +143,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     map.on('draw:created', (feature) => {
       let aGeo = feature.layer.toGeoJSON()
+      if(feature.layerType === 'circle') {
+        aGeo = {...aGeo, properties: {...aGeo.properties, radius: feature.layer.getRadius()}};
+      }
       setGeo(aGeo)
       drawnItems.addLayer(feature.layer);
     });

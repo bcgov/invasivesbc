@@ -26,7 +26,7 @@ WORKDIR ${HOME}
 # RUN npm install --only=production
 COPY ./package*.json ./
 
-RUN npm ci
+RUN npm install
 
 # If you are building your code for production, copy all files
 COPY ./ .
