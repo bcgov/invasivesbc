@@ -109,6 +109,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
+
+
     //load last feature
     if(props.activity && props.activity.geometry)
     {
