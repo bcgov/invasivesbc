@@ -55,10 +55,13 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
 
   const takePhoto = async (doc: any) => {
     const cameraPhoto = await getPhoto({
-      resultType: CameraResultType.Uri,
+      resultType: CameraResultType.Base64,
       source: CameraSource.Camera,
       quality: 100
     });
+
+    console.log("cameraPhoto: " + cameraPhoto);
+    console.dir(cameraPhoto);
 
     console.log("takePhoto(doc): doc = " + doc);
     console.dir(doc);
@@ -72,18 +75,18 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     const fileName = new Date().getTime() + '.jpeg';
 
     // "hybrid" will detect Cordova or Capacitor;
-    if (isPlatform('hybrid')) {
+/*     if (isPlatform('hybrid')) {
       const file = await readFile({
         path: cameraPhoto.path!
       });
       cameraPhoto.base64String = file.data;
     } else {
       cameraPhoto.base64String = await base64FromPath(cameraPhoto.webPath!);
-    }
+    } */
 
     const photo = {
       filepath: fileName,
-      base64: cameraPhoto.base64String
+      base64: "data:image/jpeg;base64," + cameraPhoto.base64String
     };
 
     const newPhotos = [photo, ...photos];
