@@ -47,7 +47,8 @@ jobs:
       - name: Build Database Images
         working-directory: './database/.pipeline/'
         run: |
-          npm ci
+          npm install
+          # npm ci
           DEBUG=* npm run build -- --pr=$BUILD_ID
 
   # Build the API
@@ -78,7 +79,8 @@ jobs:
       - name: Build API Images
         working-directory: './api/.pipeline/'
         run: |
-          npm ci
+          npm install
+          # npm ci
           DEBUG=* npm run build -- --pr=$BUILD_ID
 
   # Build the web frontend app
@@ -124,7 +126,7 @@ jobs:
         working-directory: './app/.pipeline/'
         run: |
           npm install
-          npm ci
+          # npm ci
           DEBUG=* npm run build -- --pr=$BUILD_ID
 
   # Deploy API and App images
