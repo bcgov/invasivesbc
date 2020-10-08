@@ -32,8 +32,6 @@ module.exports = settings => {
         ENVIRONMENT: phases[phase].env || 'dev',
         DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
         CERTIFICATE_URL: phases[phase].certificateURL,
-        DB_CLEAN_UP: phases[phase].migrationInfo.cleanup,
-        DB_SEED: phases[phase].migrationInfo.dbSeed,
         REPLICAS: phases[phase].replicas || 1,
         REPLICA_MAX: phases[phase].maxReplicas || 1
       }

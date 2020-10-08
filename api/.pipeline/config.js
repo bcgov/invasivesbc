@@ -66,7 +66,6 @@ const phases = {
       `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
     env: 'dev',
     certificateURL: config.certificateURL.dev,
-    migrationInfo: config.migrationInfo.dev,
     replicas: 1,
     maxReplicas: 2
   },
@@ -84,7 +83,6 @@ const phases = {
     host: staticUrlsAPIMobile.staging,
     env: 'test',
     certificateURL: config.certificateURL.test,
-    migrationInfo: config.migrationInfo.test,
     replicas: 3,
     maxReplicas: 5
   },
@@ -102,7 +100,6 @@ const phases = {
     host: staticUrlsAPIMobile.prod,
     env: 'prod',
     certificateURL: config.certificateURL.prod,
-    migrationInfo: config.migrationInfo.prod,
     replicas: 3,
     maxReplicas: 6
   }
