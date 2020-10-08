@@ -15,7 +15,7 @@ module.exports = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
-  const name = `${phases[phase].name}-db`;
+  const dbName = `${phases[phase].dbName}`;
   const instance = `${phases[phase].instance}`;
   const changeId = `${phases[phase].changeId}`;
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
@@ -26,14 +26,14 @@ module.exports = (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.dc.yaml`, {
       param: {
-        NAME: name,
-        DATABASE_SERVICE_NAME: `${phases[phase].name}-postgresql${phases[phase].suffix}`,
-        IMAGE_STREAM_NAME: name,
+        NAME: dbName,
+        DATABASE_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
+        IMAGE_STREAM_NAME: dbName,
         IMAGE_STREAM_VERSION: phases.build.tag,
         POSTGRESQL_DATABASE: 'InvasiveBC',
         IMAGE_STREAM_NAMESPACE: phases.build.namespace,
         VOLUME_CAPACITY:
-          `${phases[phase].name}-postgresql${phases[phase].suffix}` == 'invasivesbc-api-postgresql-dev-deploy'
+          `${phases[phase].dbName}-postgresql${phases[phase].suffix}` == 'invasivesbci-db-postgresql-dev-deploy'
             ? '20Gi'
             : '3Gi'
       }

@@ -11,6 +11,8 @@
   "previousVersion": "NA",
   "olderVersions": [],
   "module": {
+    "db": "invasivesbci-db",
+    "api": "invasivesbci-api",
     "app": "invasivesbci-app"
   },
   "staticBranches": [
@@ -43,23 +45,6 @@
       "url": "https://sso.pathfinder.gov.bc.ca",
       "clientId": "invasives-bc",
       "realm": "dfmlcg7z"
-    }
-  },
-  "migrationInfo": {
-    "dev": {
-      "type": "normal",
-      "cleanup": "none",
-      "dbSeed": "yes"
-    },
-    "test": {
-      "type": "normal",
-      "cleanup": "none",
-      "dbSeed": "yes"
-    },
-    "prod": {
-      "type": "normal",
-      "cleanup": "none",
-      "dbSeed": "yes"
     }
   }
 }

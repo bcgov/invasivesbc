@@ -4,7 +4,7 @@ const config = require('../../.config/config.json');
 
 const defaultHost = 'invasivebc-8ecbmv-api.pathfinder.gov.bc.ca';
 const name = (config.module && config.module['api']) || 'lucy-api';
-const dbName = (config.module && config.module['api']) || 'lucy-api';
+const dbName = (config.module && config.module['db']) || 'lucy-db';
 const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; //aka pull-request or brach to process
 const version = config.version || '1.0.0';
 const deployType = options.type || '';
