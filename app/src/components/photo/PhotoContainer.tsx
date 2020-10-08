@@ -1,10 +1,8 @@
 import { CardMedia, Fab, Grid, Paper, SvgIcon } from '@material-ui/core';
-import { AddAPhoto, DeleteForever, SettingsSystemDaydreamTwoTone } from '@material-ui/icons';
+import { AddAPhoto, DeleteForever } from '@material-ui/icons';
 
 import { useCamera } from '@ionic/react-hooks/camera';
-import { CameraResultType, CameraSource, CameraPhoto, Capacitor, FilesystemDirectory } from '@capacitor/core';
-import { isPlatform } from '@ionic/react';
-import { useFilesystem, base64FromPath } from '@ionic/react-hooks/filesystem';
+import { CameraResultType, CameraSource } from '@capacitor/core';
 
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useState, useContext, useEffect } from 'react';
@@ -26,28 +24,16 @@ interface IPhotoContainerProps {
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const { getPhoto } = useCamera();
-  const { deleteFile, getUri, readFile, writeFile } = useFilesystem();
-  const activityId = props.activity._id;
-
   const [photos, setPhotos] = useState<Photo[]>([]);
-
   const databaseContext = useContext(DatabaseContext);
 
   const initPhotos = async function (activityDoc: any) {
     const dbDoc = await databaseContext.database.get(activityDoc._id)
-    
     const dbPhotos = dbDoc.photos != undefined ? dbDoc.photos : [];
-
-    console.log("initData(doc): dbPhotos.length = " + dbPhotos.length);
-
     setPhotos(dbPhotos);
-
-    console.log("initData(doc): photos.length = " + photos.length);
   }
 
   const updateDB = async function (activityDoc: any) {
-    console.log("updateDB(doc): new photos.length = " + photos.length);
-
     await databaseContext.database.upsert(activityDoc._id, (activityDoc) => {
       return { ...activityDoc, photos: photos, status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
@@ -60,29 +46,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       quality: 100
     });
 
-    console.log("cameraPhoto: " + cameraPhoto);
-    console.dir(cameraPhoto);
-
-    console.log("takePhoto(doc): doc = " + doc);
-    console.dir(doc);
-    if (!doc.photos) {
-      console.log("takePhoto(doc): doc.photos = null");
-    } else {
-      console.log("takePhoto(doc): doc.photos.length = " + doc.photos.length);
-    }
-    console.log("takePhoto(doc): photos.length = " + photos.length);
-
     const fileName = new Date().getTime() + '.jpeg';
-
-    // "hybrid" will detect Cordova or Capacitor;
-/*     if (isPlatform('hybrid')) {
-      const file = await readFile({
-        path: cameraPhoto.path!
-      });
-      cameraPhoto.base64String = file.data;
-    } else {
-      cameraPhoto.base64String = await base64FromPath(cameraPhoto.webPath!);
-    } */
 
     const photo = {
       filepath: fileName,
@@ -91,9 +55,6 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
 
     const newPhotos = [photo, ...photos];
     setPhotos(newPhotos);
-    console.log("takePhoto(doc): newPhotos.length = " + newPhotos.length);
-    console.dir(newPhotos);
-    console.log("takePhoto(doc): new photos.length = " + photos.length);
   };
 
   const deletePhotos = async (doc: any) => {
@@ -101,13 +62,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   };
 
   const deletePhoto = async (filepath: any) => {
-    console.log("deletePhoto(): filepath = " + filepath);
-
     const reducedPhotos = photos.filter((photo) => photo.filepath != filepath);
-
-    console.log("deletePhoto(): photos.length = " + photos.length);
-    console.log("deletePhoto(): reducedPhotos.length = " + reducedPhotos.length);
-
     setPhotos(reducedPhotos);
   };
 
