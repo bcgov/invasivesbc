@@ -50,11 +50,11 @@ objects:
       containers:
         - name: test
           image: '${IMAGE}'
-          # command:
-          #   - container-entrypoint
-          #   - bash
-          #   - '-c'
-          #   - 'npm run migration'
+          command:
+            - container-entrypoint
+            - bash
+            - '-c'
+            - 'npm run setup'
           resources:
             limits:
               cpu: '1'

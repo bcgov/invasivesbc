@@ -17,11 +17,10 @@ module.exports = (settings) => {
   const objects = [];
   const imageStreams = [];
 
-  // The deployment of your cool app goes here ▼▼▼
-  const isName = `${phases[phase].name}`;
-  const setupTag = `${phases[phase].tag}-setup`;
+  const isName = `${phases[phase].name}-setup`;
+  const isVersion = `${phases[phase].tag}`;
 
-  const imageStreamName = `${isName}:${setupTag}`;
+  const imageStreamName = `${isName}:${isVersion}`;
 
   const instance = `${isName}-${changeId}`;
 
@@ -38,7 +37,7 @@ module.exports = (settings) => {
   );
 
   oc.applyRecommendedLabels(imageStreams, phases[phase].name, phase, `${changeId}`, instance);
-  oc.importImageStreams(imageStreams, setupTag, phases.build.namespace, phases.build.tag);
+  oc.importImageStreams(imageStreams, isVersion, phases.build.namespace, phases.build.tag);
 
   // Get API image stream
   const fetchedImageStreams = oc.get(`istag/${imageStreamName}`) || [];

@@ -252,7 +252,7 @@ jobs:
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
       # Deploy the database setup
-      - name: Deploy Database
+      - name: Deploy Database Setup
         working-directory: './database/.pipeline/'
         run: |
           npm install
