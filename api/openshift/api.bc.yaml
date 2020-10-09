@@ -24,7 +24,7 @@ parameters:
     value: api
   - name: SOURCE_REPOSITORY_URL
     required: true
-    value: https://github.com/bcgov/lucy-web
+    value: https://github.com/bcgov/invasivesbc
   - name: SOURCE_REPOSITORY_REF
     required: false
     value: dev

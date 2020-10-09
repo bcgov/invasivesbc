@@ -14,6 +14,9 @@ parameters:
   - name: VERSION
     description: Version of the application
     value: '1.0.0'
+  - name: SOURCE_CONTEXT_DIR
+    required: true
+    value: database
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true
@@ -39,14 +42,6 @@ parameters:
     value: '2Gi'
   - name: REPLICAS
     value: '1'
-  - name: APP_PORT_DEFAULT
-    value: '3001-tcp'
-  - name: APP_PORT_OTHER
-    value: '8080-tcp'
-  - name: PORT
-    value: '3001'
-  - name: DB_MIGRATION_TYPE
-    value: 'refresh'
 objects:
   - kind: Pod
     apiVersion: v1
@@ -98,8 +93,6 @@ objects:
               value: ${ENVIRONMENT}
             - name: VERSION
               value: ${VERSION}
-            - name: DB_MIGRATION_TYPE
-              value: ${DB_MIGRATION_TYPE}
           imagePullPolicy: Always
       restartPolicy: Never
       activeDeadlineSeconds: 900

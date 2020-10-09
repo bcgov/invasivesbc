@@ -1,5 +1,5 @@
 'use strict';
-const config = require('./lib/config.js');
+const config = require('./config.js');
 const cleanTask = require('./lib/clean.js');
 
 const settings = { ...config, phase: settings.options.env };
