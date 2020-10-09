@@ -49,7 +49,71 @@ jobs:
         run: |
           npm install
           # npm ci
-          DEBUG=* npm run build -- --pr=$BUILD_ID
+          DEBUG=* npm run db:build -- --pr=$BUILD_ID
+
+  # Build the Database Migrations image
+  # buildDatabaseMigrations:
+  #   name: Build Database Migration Image
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.event.pull_request.merged == false}}
+  #   env:
+  #     BUILD_ID: ${{ github.event.number }}
+  #   steps:
+  #     # Checkout the PR branch
+  #     - name: Checkout Target Branch
+  #       uses: actions/checkout@v2
+
+  #     # Install Node - for `node` and `npm` commands
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 10.16
+
+  #     # Log in to OpenShift.
+  #     # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+  #     # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+  #     - name: Log in to OpenShift
+  #       run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+
+  #     # Build the database images
+  #     - name: Build Database Migration Image
+  #       working-directory: './database/.pipeline/'
+  #       run: |
+  #         npm install
+  #         # npm ci
+  #         DEBUG=* npm run migrate:build -- --pr=$BUILD_ID
+
+  # Build the Database Seeding image
+  # buildDatabaseSeeding:
+  #   name: Build Database Seeding Image
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.event.pull_request.merged == false}}
+  #   env:
+  #     BUILD_ID: ${{ github.event.number }}
+  #   steps:
+  #     # Checkout the PR branch
+  #     - name: Checkout Target Branch
+  #       uses: actions/checkout@v2
+
+  #     # Install Node - for `node` and `npm` commands
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 10.16
+
+  #     # Log in to OpenShift.
+  #     # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+  #     # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+  #     - name: Log in to OpenShift
+  #       run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+
+  #     # Build the database images
+  #     - name: Build Database Seeding Image
+  #       working-directory: './database/.pipeline/'
+  #       run: |
+  #         npm install
+  #         # npm ci
+  #         DEBUG=* npm run build -- --pr=$BUILD_ID
 
   # Build the API
   # buildAPI:
@@ -173,8 +237,9 @@ jobs:
       - name: Deploy Database
         working-directory: './database/.pipeline/'
         run: |
-          npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
+          npm install
+          # npm ci
+          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev
           # DEBUG=* npm run migrate -- --pr=$BUILD_ID --env=dev
           # DEBUG=* npm run seed -- --pr=$BUILD_ID --env=dev
           # DEBUG=* npm run deploy-schemaspy -- --pr=$BUILD_ID --env=dev
