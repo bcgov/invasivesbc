@@ -22,7 +22,7 @@ parameters:
     required: true
     value: '0'
   - name: DB_SERVICE_NAME
-    description: 'Database service name associated  with deployment'
+    description: 'Database service name associated with deployment'
     required: true
   - name: ENVIRONMENT
     description: Application Environment type variable
