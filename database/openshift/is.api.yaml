@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Template
 parameters:
   - name: NAME
-    value: invasivesbc-api-setup
+    value: invasivesbci-api-setup
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
