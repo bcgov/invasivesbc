@@ -8,7 +8,6 @@ import React, { useState, useContext, useEffect } from 'react';
 import {
   ActivityStatus,
 } from 'constants/activities'
-import { fileURLToPath } from 'url';
 
 interface Photo {
   filepath: string;
