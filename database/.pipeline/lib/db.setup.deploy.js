@@ -17,18 +17,11 @@ module.exports = (settings) => {
   const objects = [];
   const imageStreams = [];
 
-  const isName = `${phases[phase].name}-setup`;        // invasivesbci-db-setup
-  const instance = `${isName}-${changeId}`;           // invasivesbci-db-1.0.0
-  const isVersion = `${phases[phase].tag}-setup`;     // build-1.0.0-77-setup
+  const isName = `${phases[phase].name}-setup`;
+  const instance = `${isName}-${changeId}`;
+  const isVersion = `${phases[phase].tag}-setup`;
 
-  const imageStreamName = `${isName}:${isVersion}`;   // invasivesbci-db-setup:build-1.0.0-77-setup
-
-  console.log('1+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-  console.log('isName:', isName);
-  console.log('instance:', instance);
-  console.log('isVersion:', isVersion);
-  console.log('imageStreamName:', imageStreamName);
-  console.log('1+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  const imageStreamName = `${isName}:${isVersion}`;
 
   // Clean existing image
   checkAndClean(`istag/${imageStreamName}`, oc);
@@ -48,10 +41,6 @@ module.exports = (settings) => {
   // Get API image stream
   const fetchedImageStreams = oc.get(`istag/${imageStreamName}`) || [];
 
-  console.log('2+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-  console.log('fetchedImageStreams:', fetchedImageStreams);
-  console.log('2+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-
   if (!fetchedImageStreams.length) {
     console.log('Unable to fetch Database image reference for use in database setup deployment');
     process.exit(0);
@@ -59,7 +48,7 @@ module.exports = (settings) => {
 
   const dbSetupImageStream = fetchedImageStreams[0];
 
-  const dbSetupPodName = `${isName}${phases[phase].suffix}-setup`; //invasivesbci-db-setup-build-1.0.0-setup
+  const dbSetupPodName = `${isName}${phases[phase].suffix}`;
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.deploy.yaml`, {
