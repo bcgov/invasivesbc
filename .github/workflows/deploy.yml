@@ -171,7 +171,7 @@ jobs:
 
       # Deploy the database
       - name: Deploy Database
-        working-directory: './api/.pipeline/'
+        working-directory: './database/.pipeline/'
         run: |
           npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
