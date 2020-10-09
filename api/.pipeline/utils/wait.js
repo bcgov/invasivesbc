@@ -2,12 +2,14 @@
 const { OpenShiftClientX } = require('pipeline-cli');
 
 module.exports = (resourceName, settings, countArg, timeoutArg) => {
-  const timeout = timeoutArg || 20000;
-  let count = countArg || 20;
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
+
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+
+  const timeout = timeoutArg || 20000;
+  let count = countArg || 20;
 
   const check = () => {
     try {
