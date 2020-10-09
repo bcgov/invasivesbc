@@ -5,13 +5,16 @@ const path = require('path');
 module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
   const phase = 'build';
-  let objects = [];
+
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
+
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift/tools'));
 
-  // The building of your cool app goes here ▼▼▼
   const name = `${phases[phase].name}-schemaspy`;
+
+  const objects = [];
+
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/schemaspy.bc.json`, {
       param: {

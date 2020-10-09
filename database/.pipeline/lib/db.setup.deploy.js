@@ -51,7 +51,7 @@ module.exports = (settings) => {
   const dbSetupPodName = `${isName}${phases[phase].suffix}`;
 
   objects.push(
-    ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.deploy.yaml`, {
+    ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.dc.yaml`, {
       param: {
         NAME: dbSetupPodName,
         SUFFIX: phases[phase].suffix,

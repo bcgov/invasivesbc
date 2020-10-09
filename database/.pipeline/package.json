@@ -15,8 +15,8 @@
     "db:deploy": "node db.deploy.js",
     "db-setup:build": "node db.setup.build.js",
     "db-setup:deploy": "node db.setup.deploy.js",
-    "build-schemaspy": "node schemaspy.build.js",
-    "deploy-schemaspy": "node schemaspy.deploy.js",
+    "schemaspy:build": "node schemaspy.build.js",
+    "schemaspy:deploy": "node schemaspy.deploy.js",
     "clean": "node clean.js",
     "version": "echo \"node@$(node --version) ($(which node))\" && echo \"npm@$(npm --version) ($(which npm))\" && npm ls"
   },

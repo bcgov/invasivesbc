@@ -6,6 +6,9 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+
+
+
 jobs:
   # Print variables for logging and debugging purposes
   checkEnv:
@@ -19,9 +22,9 @@ jobs:
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
           echo OC CLI Version: $(oc version)
 
-  # Build the Database
+  # Build the Database image
   buildDatabase:
-    name: Build Database
+    name: Build Database Image
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false}}
     env:
@@ -43,8 +46,8 @@ jobs:
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Build the database images
-      - name: Build Database Images
+      # Build the database image
+      - name: Build Database Image
         working-directory: './database/.pipeline/'
         run: |
           npm install
@@ -75,7 +78,7 @@ jobs:
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Build the database images
+      # Build the database image
       - name: Build Database Setup Image
         working-directory: './database/.pipeline/'
         run: |
@@ -83,87 +86,73 @@ jobs:
           # npm ci
           DEBUG=* npm run db-setup:build -- --pr=$BUILD_ID
 
-  # Build the API
-  # buildAPI:
-  #   name: Build API
-  #   runs-on: ubuntu-latest
-  #   if: ${{ github.event.pull_request.merged == false}}
-  #   env:
-  #     BUILD_ID: ${{ github.event.number }}
-  #   steps:
-  #     # Checkout the PR branch
-  #     - name: Checkout Target Branch
-  #       uses: actions/checkout@v2
+  # Build the API image
+  buildAPI:
+    name: Build API Image
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == false}}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    steps:
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
 
-  #     # Install Node - for `node` and `npm` commands
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 10.16
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.16
 
-  #     # Log in to OpenShift.
-  #     # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-  #     # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-  #     - name: Log in to OpenShift
-  #       run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-  #     # Build the api images
-  #     - name: Build API Images
-  #       working-directory: './api/.pipeline/'
-  #       run: |
-  #         npm install
-  #         # npm ci
-  #         DEBUG=* npm run build -- --pr=$BUILD_ID
+      # Build the api image
+      - name: Build API Image
+        working-directory: './api/.pipeline/'
+        run: |
+          npm install
+          # npm ci
+          DEBUG=* npm run build -- --pr=$BUILD_ID
 
-  # Build the web frontend app
-  # buildAPP:
-  #   name: Build App
-  #   runs-on: ubuntu-latest
-  #   if: ${{ github.event.pull_request.merged == false}}
-  #   env:
-  #     BUILD_ID: ${{ github.event.number }}
-  #   steps:
-  #     # Checkout the PR branch
-  #     - name: Checkout Target Branch
-  #       uses: actions/checkout@v2
+  # Build the web frontend app image
+  buildAPP:
+    name: Build App Image
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == false}}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    steps:
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
 
-  #     # Install Node - for `node` and `npm` commands
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 10.16
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.16
 
-  #     # Cache Node modules
-  #     - name: Cache node modules
-  #       uses: actions/cache@v2
-  #       env:
-  #         cache-name: cache-node-modules
-  #       with:
-  #         # npm cache files are stored in `~/.npm` on Linux/macOS
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-build-${{ env.cache-name }}-
-  #           ${{ runner.os }}-build-
-  #           ${{ runner.os }}-
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-  #     # Log in to OpenShift.
-  #     # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-  #     # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-  #     - name: Log in to OpenShift
-  #       run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
-
-  #     # Build the app images
-  #     - name: Build APP Images
-  #       working-directory: './app/.pipeline/'
-  #       run: |
-  #         npm install
-  #         # npm ci
-  #         DEBUG=* npm run build -- --pr=$BUILD_ID
+      # Build the app image
+      - name: Build APP Image
+        working-directory: './app/.pipeline/'
+        run: |
+          npm install
+          # npm ci
+          DEBUG=* npm run build -- --pr=$BUILD_ID
 
   # Deploy Database image
   deployDatabase:
-    name: Deploy Database
+    name: Deploy Database Image
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false}}
     env:
@@ -181,38 +170,23 @@ jobs:
         with:
           node-version: 10.16
 
-      # Cache Node modules
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Deploy the database
-      - name: Deploy Database
+      # Deploy the database image
+      - name: Deploy Database Image
         working-directory: './database/.pipeline/'
         run: |
           npm install
           # npm ci
           DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev
-          # DEBUG=* npm run deploy-schemaspy -- --pr=$BUILD_ID --env=dev
 
   # Deploy Database image
   deployDatabaseSetup:
-    name: Deploy Database Setup
+    name: Deploy Database Setup Image
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false}}
     env:
@@ -231,28 +205,14 @@ jobs:
         with:
           node-version: 10.16
 
-      # Cache Node modules
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Deploy the database setup
-      - name: Deploy Database Setup
+      # Deploy the database setup image
+      - name: Deploy Database Setup Image
         working-directory: './database/.pipeline/'
         run: |
           npm install
@@ -260,103 +220,74 @@ jobs:
           DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=dev
 
   # Deploy API image
-  # deployAPI:
-  #   name: Deploy API
-  #   runs-on: ubuntu-latest
-  #   if: ${{ github.event.pull_request.merged == false}}
-  #   env:
-  #     BUILD_ID: ${{ github.event.number }}
-  #   needs:
-  #     - deployDatabase
-  #   steps:
-  #     # Checkout the PR branch
-  #     - name: Checkout Target Branch
-  #       uses: actions/checkout@v2
+  deployAPI:
+    name: Deploy API Image
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == false}}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    needs:
+      - deployDatabase
+    steps:
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
 
-  #     # Install Node - for `node` and `npm` commands
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 10.16
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.16
 
-  #     # Cache Node modules
-  #     - name: Cache node modules
-  #       uses: actions/cache@v2
-  #       env:
-  #         cache-name: cache-node-modules
-  #       with:
-  #         # npm cache files are stored in `~/.npm` on Linux/macOS
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-build-${{ env.cache-name }}-
-  #           ${{ runner.os }}-build-
-  #           ${{ runner.os }}-
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-  #     # Log in to OpenShift.
-  #     # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-  #     # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-  #     - name: Log in to OpenShift
-  #       run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
-
-  #     # Deploy the api
-  #     - name: Deploy API
-  #       working-directory: './api-mobile/.pipeline/'
-  #       run: |
-  #         npm ci
-  #         # TODO disable test while there are no tests to run. Test command (see api.test.yaml) will need updating.
-  #         # DEBUG=* npm run test -- --pr=$BUILD_ID --env=dev
-  #         DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
+      # Deploy the api image
+      - name: Deploy API Image
+        working-directory: './api-mobile/.pipeline/'
+        run: |
+          npm install
+          # npm ci
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
 
   # Deploy App image
-  # deployAPP:
-  #   name: Deploy App
-  #   runs-on: ubuntu-latest
-  #   if: ${{ github.event.pull_request.merged == false}}
-  #   env:
-  #     BUILD_ID: ${{ github.event.number }}
-  #   needs:
-  #     - buildAPP
-  #   steps:
-  #     # Checkout the PR branch
-  #     - name: Checkout Target Branch
-  #       uses: actions/checkout@v2
+  deployAPP:
+    name: Deploy App Image
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == false}}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    needs:
+      - buildAPP
+    steps:
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
 
-  #     # Install Node - for `node` and `npm` commands
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 10.16
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.16
 
-  #     # Cache Node modules
-  #     - name: Cache node modules
-  #       uses: actions/cache@v2
-  #       env:
-  #         cache-name: cache-node-modules
-  #       with:
-  #         # npm cache files are stored in `~/.npm` on Linux/macOS
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-build-${{ env.cache-name }}-
-  #           ${{ runner.os }}-build-
-  #           ${{ runner.os }}-
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-  #     # Log in to OpenShift.
-  #     # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-  #     # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-  #     - name: Log in to OpenShift
-  #       run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+      # Deploy the app image
+      - name: Deploy App Image
+        working-directory: './app/.pipeline'
+        run: |
+          npm install
+          # npm ci
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
 
-  #     # Deploy the app
-  #     - name: Deploy App
-  #       working-directory: './app/.pipeline'
-  #       run: |
-  #         npm install
-  #         npm ci
-  #         DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
-
-  # Deploy API and App images and related build/deployment artifacts
+  # Clean build/deployment artifacts
   clean:
     name: Clean Deployment Artifacts for API and App
     runs-on: ubuntu-latest
@@ -374,20 +305,6 @@ jobs:
         with:
           node-version: 10.16
 
-      # Cache Node modules
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -399,6 +316,6 @@ jobs:
         working-directory: './app/.pipeline/'
         run: |
           npm install
-          npm ci
+          # npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
