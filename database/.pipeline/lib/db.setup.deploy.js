@@ -71,10 +71,7 @@ module.exports = (settings) => {
         ENVIRONMENT: phases[phase].env || 'dev',
         NODE_ENV: phases[phase].env || 'dev',
         DB_SERVICE_NAME: `${phases[phase].name}-postgresql${phases[phase].suffix}`,
-        IMAGE: dbSetupImageStream.image.dockerImageReference,
-        DB_MIGRATION_TYPE: phases[phase].migrationInfo.type,
-        DB_CLEAN_UP: phases[phase].migrationInfo.cleanup,
-        DB_SEED: phases[phase].migrationInfo.dbSeed
+        IMAGE: dbSetupImageStream.image.dockerImageReference
       }
     })
   );
