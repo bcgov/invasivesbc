@@ -6,7 +6,6 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { kml } from '@tmcw/togeojson';
-var fs = require('fs');
 // node doesn't have xml parsing or a dom. use xmldom
 const DOMParser = require('xmldom').DOMParser;
 
@@ -35,29 +34,37 @@ const useStyles = makeStyles((theme) => ({
 const KMLUpload: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
-  const [aKml, setAKML] = useState(null);
+  // Raw file kept in useState var and converted to Geo before hitting db:
+  const [aFile, setAFile] = useState(null);
+
+  const saveKML = async (input: File) => {
+    const fileAsString = await input.text().then((xmlString) => {
+      return xmlString;
+    });
+    const DOMFromXML = new DOMParser().parseFromString(fileAsString);
+    const geoFromDOM = kml(DOMFromXML);
+    console.log('geo');
+    console.dir(geoFromDOM);
+
+    if (geoFromDOM) {
+      console.log('saving geo feat collection');
+      databaseContext.database.upsert('theShapeAsGeoFeatureCollection', (shapeLastTime) => {
+        return geoFromDOM;
+      });
+    }
+  };
 
   useEffect(() => {
-    if (aKml) {
-      console.dir(aKml);
-      console.dir(aKml[0]);
-
-      console.log(aKml[0])
-      console.log(aKml[0].toString())
-      //let loadedKMLFromFile = new DOMParser().parseFromString(fs.readFileSync(aKml.path));
-
-     /* databaseContext.database.upsert('theShapeAsGeo', (shapeLastTime) => {
-        console.dir(aKml);
-        return kml(loadedKMLFromFile);
-      });*/
+    if (aFile) {
+      saveKML(aFile);
     }
-  }, [aKml]);
+  }, [aFile]);
 
   return (
     <DropzoneArea
       dropzoneText="Upload KML here"
       onChange={(e) => {
-        setAKML(e);
+        setAFile(e[0]);
       }}
     />
   );
@@ -68,7 +75,29 @@ const Trip: React.FC<any> = (props) => {
 };
 
 const PlanPage: React.FC<IPlanPageProps> = (props) => {
+  const [geoFeatCollection, setGeoFeatCollection] = useState(null);
+
   const databaseContext = useContext(DatabaseContext);
+  const getGeos = () => {
+    databaseContext.database
+      .find({
+        selector: {
+          _id: 'theShapeAsGeoFeatureCollection'
+        }
+      })
+      .then((doc) => {
+        if (doc && doc.docs) {
+          if (doc.docs[0]) {
+            setGeoFeatCollection(doc.docs[0]);
+          }
+        }
+      });
+  };
+
+  useEffect(() => {
+    getGeos();
+  }, []);
+
 
   const classes = useStyles();
   return (
@@ -84,7 +113,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           </Grid>
           <Grid item xs={6}>
             <Paper className={classes.paper}>
-              <MapContainer {...props} classes={classes} />
+              <MapContainer {...props} kmlAsGeoFeatCollection={geoFeatCollection} classes={classes} />
             </Paper>
           </Grid>
           <Grid item xs={3}>

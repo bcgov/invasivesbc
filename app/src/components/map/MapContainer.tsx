@@ -9,48 +9,47 @@ import './MapContainer.css';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useState, useContext, useEffect } from 'react';
 
-
-
-import {
-  ActivityStatus,
-} from 'constants/activities'
+import { ActivityStatus } from 'constants/activities';
 import { Geolocation } from '@capacitor/core';
 
 interface IMapContainerProps {
   classes?: any;
   activity?: any;
+  kmlAsGeoFeatCollection?: any;
 }
 
-
+//let's try and only let the map get input from props, and write based on them and new shapes drawn
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
-
   const databaseContext = useContext(DatabaseContext);
 
-  const [geo, setGeo] = useState(null)
+  const [geo, setGeo] = useState(null);
 
   const saveGeo = async (doc: any, geoJSON: any) => {
-
-
-    await databaseContext.database.upsert(doc._id, (activityDoc) => {
-      return { ...activityDoc, geometry: [geoJSON], status: ActivityStatus.EDITED, dateUpdated: new Date() };
-    });
+    if (props.activity) {
+      await databaseContext.database.upsert(doc._id, (activityDoc) => {
+        return { ...activityDoc, geometry: [geoJSON], status: ActivityStatus.EDITED, dateUpdated: new Date() };
+      });
+    }
   };
 
-
   const checkIfCircle = (radius: number, xy: [number]) => {
-    let aGeo = geo
-    return aGeo
-  }
+    let aGeo = geo;
+    return aGeo;
+  };
 
-
+  //hook to db persist new user drawn geometries
   useEffect(() => {
-    if(props && geo)
-    {
-      saveGeo(props.activity, geo)
+    if (props && geo) {
+      saveGeo(props.activity, geo);
     }
-  },[geo])
+  }, [geo]);
 
-  const renderMap = () => {
+  // shared between mapSetup and mapUpdate
+  let initDrawnItems = new L.FeatureGroup();
+  const [drawnItems] = useState(initDrawnItems)
+
+
+  const mapSetup = (drawnItems: any) => {
     console.log('Map componentDidMount!');
 
     var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
@@ -83,8 +82,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     ).addTo(map);
 
-    var drawnItems = new L.FeatureGroup();
-
     map.addLayer(drawnItems);
 
     var drawControl = new L.Control.Draw({
@@ -109,65 +106,30 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
-
-
-    //load last feature
-    if(props.activity && props.activity.geometry)
-    {
-        const style = {
-          color: "#ff7800",
-          weight: 4,
-          opacity: 0.65
-        };
-
-        const markerStyle = {
-          radius: 10,
-          weight: 4,
-          stroke: true
-        }
- 
-        L.geoJSON(props.activity.geometry,{
-          style: style,
-          pointToLayer: (feature: any, latLng: any) => {
-            if (feature.properties.radius) {
-              return L.circle(latLng,{radius: feature.properties.radius});
-            } else {
-              return L.circleMarker(latLng,markerStyle);
-            }
-          },
-          onEachFeature: function (_: any,layer: any) {
-            drawnItems.addLayer(layer);
-          }
-        });
-    }
-
-
-
     map.on('draw:created', (feature) => {
-      let aGeo = feature.layer.toGeoJSON()
-      if(feature.layerType === 'circle') {
-        aGeo = {...aGeo, properties: {...aGeo.properties, radius: feature.layer.getRadius()}};
+      let aGeo = feature.layer.toGeoJSON();
+      if (feature.layerType === 'circle') {
+        aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: feature.layer.getRadius() } };
       }
-      setGeo(aGeo)
+      setGeo(aGeo);
       drawnItems.addLayer(feature.layer);
     });
 
-
     map.on('draw:drawstart', function () {
       drawnItems.clearLayers(); // Clear previous shape
-      setGeo(null)
+      setGeo(null);
     });
 
     map.on('draw:editstop', async function (layerGroup) {
       const feature = drawnItems?.toGeoJSON()?.features[0];
       if (feature) {
-          setGeo(feature)
+        setGeo(feature);
       }
     });
 
     map.on('draw:deleted', function () {
       console.log('deleted');
-      setGeo('{}')
+      setGeo('{}');
     });
 
     /*
@@ -205,14 +167,68 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     */
   };
 
+  const mapUpdate = (drawnItems: any) => {
+    drawnItems.clearLayers(); // Clear previous shape
+    const featureCollectionsToDraw = [];
+    if (props.activity && props.activity.geometry) {
+      featureCollectionsToDraw.push(props.activity.geometry);
+    }
+
+    if (props.kmlAsGeoFeatCollection) {
+      featureCollectionsToDraw.push(props.kmlAsGeoFeatCollection);
+    }
+
+    if (featureCollectionsToDraw.length > 0) {
+      featureCollectionsToDraw.map((collection) => {
+        const style = {
+          color: '#ff7800',
+          weight: 4,
+          opacity: 0.65
+        };
+
+        const markerStyle = {
+          radius: 10,
+          weight: 4,
+          stroke: true
+        };
+
+        console.dir(collection);
+
+        L.geoJSON(collection, {
+          style: style,
+          pointToLayer: (feature: any, latLng: any) => {
+            if (feature.properties.radius) {
+              return L.circle(latLng, { radius: feature.properties.radius });
+            } else {
+              return L.circleMarker(latLng, markerStyle);
+            }
+          },
+          onEachFeature: function (_: any, layer: any) {
+            console.dir(layer);
+            drawnItems.addLayer(layer);
+          }
+        });
+      });
+    }
+  };
+
+  //initial hook to set up leaflet map, the delay on waiting for db avoids a bug where leaflet doesnt
+  //resize/render right on first load
   useEffect(() => {
     if (!databaseContext.database) {
       // database not ready
       return;
     }
-
-    renderMap();
+    mapSetup(drawnItems);
   }, [databaseContext]);
+
+
+  // the hook to fire if the props change (activity being passed, featurecollection from KML, etc)
+  useEffect(() => {
+    if (props.kmlAsGeoFeatCollection) {
+      mapUpdate(drawnItems);
+    }
+  }, [props]);
 
   return <div id="map" className={props.classes.map} />;
 };
