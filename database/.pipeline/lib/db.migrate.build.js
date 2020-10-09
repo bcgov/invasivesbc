@@ -15,10 +15,15 @@ module.exports = (settings) => {
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
 
   const name = `${phases[phase].name}-migrate`;
-  const changeId = phases[phase].changeId;
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
   const objects = [];
+
+  console.log('==============================================');
+  console.log('oc.git.http_url:', oc.git.http_url);
+  console.log('phases[phase].branch:', phases[phase].branch);
+  console.log('oc.git.ref:', oc.git.ref);
+  console.log('==============================================');
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.migrate.bc.yaml`, {
@@ -26,12 +31,13 @@ module.exports = (settings) => {
         NAME: name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
+        SOURCE_CONTEXT_DIR: 'database',
         SOURCE_REPOSITORY_URL: oc.git.http_url,
         SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref
       }
     })
   );
 
-  oc.applyRecommendedLabels(objects, name, phase, changeId, phases[phase].instance);
+  oc.applyRecommendedLabels(objects, name, phase, phases[phase].changeId, phases[phase].instance);
   oc.applyAndBuild(objects);
 };

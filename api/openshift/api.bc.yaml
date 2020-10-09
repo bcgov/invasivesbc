@@ -3,14 +3,14 @@ kind: Template
 metadata:
   creationTimestamp: null
   labels:
-    build: invasivebc-api
-  name: invasivebc-api
+    build: invasivebci-api
+  name: invasivebci-api
 parameters:
   - name: NAME
     displayName: Name
-    description: A suffix appended to all objects
+    description: Image name
     required: true
-    value: invasivebc-api
+    value: invasivebci-api
   - name: SUFFIX
     displayName: Name Suffix
     description: A suffix appended to all objects
