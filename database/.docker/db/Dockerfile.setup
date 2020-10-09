@@ -1,7 +1,7 @@
 FROM node:10
 
-RUN apt-get -qq update
-RUN npm install -g npm
+# RUN apt-get -qq update
+# RUN npm install -g npm
 
 # set variables
 ENV HOME_ROOT=/opt/app-root

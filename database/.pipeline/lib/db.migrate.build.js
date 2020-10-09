@@ -19,12 +19,6 @@ module.exports = (settings) => {
 
   const objects = [];
 
-  console.log('==============================================');
-  console.log('oc.git.http_url:', oc.git.http_url);
-  console.log('phases[phase].branch:', phases[phase].branch);
-  console.log('oc.git.ref:', oc.git.ref);
-  console.log('==============================================');
-
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.migrate.bc.yaml`, {
       param: {
