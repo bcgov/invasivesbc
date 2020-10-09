@@ -247,7 +247,7 @@ jobs:
 
       # Deploy the api image
       - name: Deploy API Image
-        working-directory: './api-mobile/.pipeline/'
+        working-directory: './api/.pipeline/'
         run: |
           npm install
           # npm ci
