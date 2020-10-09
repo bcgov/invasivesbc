@@ -8,11 +8,13 @@ import React, { useState, useContext, useEffect } from 'react';
 import {
   ActivityStatus,
 } from 'constants/activities'
+import { fileURLToPath } from 'url';
 
 interface Photo {
   filepath: string;
   webviewPath?: string;
   base64?: string;
+  dataUrl?: string;
 }
 
 interface IPhotoContainerProps {
@@ -26,32 +28,31 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const initPhotos = async function (activityDoc: any) {
-    const activity = activityDoc;
-    const activity_id = activity._id;
-    const dbDoc = await databaseContext.database.get(activity_id)
-    const dbPhotos = dbDoc.photos != undefined ? dbDoc.photos : [];
+    const dbDoc = await databaseContext.database.get(activityDoc._id)
+    const dbPhotos = dbDoc.photos || [];
     setPhotos(dbPhotos);
   }
 
   const updateDB = async function (activityDoc: any) {
-    const activity = activityDoc;
-    const activity_id = activity._id;
-    await databaseContext.database.upsert(activity_id, (activity) => {
-      return { ...activity, photos: photos, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+    await databaseContext.database.upsert(activityDoc._id, (doc) => {
+      return { ...doc, photos: photos, status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
   }
 
   const takePhoto = async (doc: any) => {
     const cameraPhoto = await getPhoto({
-      resultType: CameraResultType.Base64,
+      resultType: CameraResultType.DataUrl,
       source: CameraSource.Camera,
       quality: 100
     });
 
-    const fileName = new Date().getTime() + '.jpeg';
+    console.log("cameraPhoto object");
+    console.dir(cameraPhoto);
+
+    const fileName = new Date().getTime() + "." + cameraPhoto.format;
     const photo = {
       filepath: fileName,
-      base64: "data:image/jpeg;base64," + cameraPhoto.base64String
+      dataUrl: cameraPhoto.dataUrl
     };
 
     const newPhotos = [photo, ...photos];
@@ -69,13 +70,13 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   };
 
   useEffect(() => {
-    if (props && databaseContext.database) {
+    if (props) {
       initPhotos(props.activity);
     }
   }, [props]);
 
   useEffect(() => {
-    if (props && databaseContext.database) {
+    if (props) {
       updateDB(props.activity);
     }
   }, [photos]);
@@ -90,7 +91,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
           {photos.map((photo, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
               <Paper>
-                <CardMedia src={photo.base64 ?? photo.webviewPath} component="img" />
+                <CardMedia src={photo.dataUrl} component="img" />
                 <div style={{ cursor: 'pointer' }} onClick={() => deletePhoto(photo.filepath)}><SvgIcon component={DeleteForever} /> {photo.filepath}</div>
               </Paper>
             </Grid>
