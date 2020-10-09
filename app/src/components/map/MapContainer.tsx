@@ -28,32 +28,54 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const [geo, setGeo] = useState(null)
 
+  const [extent, setExtent] = useState(null)
+
+  /* ## saveGeo
+    Save the geometry added by the user
+    @param doc {object} The activity data object
+    @param geoJSON {object} The geometry in GeoJSON format
+  */
   const saveGeo = async (doc: any, geoJSON: any) => {
-
-
     await databaseContext.database.upsert(doc._id, (activityDoc) => {
       return { ...activityDoc, geometry: [geoJSON], status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
   };
 
-
-  const checkIfCircle = (radius: number, xy: [number]) => {
-    let aGeo = geo
-    return aGeo
-  }
-
-
   useEffect(() => {
-    if(props && geo)
-    {
+    if(props && geo) {
       saveGeo(props.activity, geo)
     }
   },[geo])
 
+  /* ## setExtent
+    Save the map Extent within the database
+    @param doc {object} The activity data object
+    @param extent {object} The leaflet bounds object
+   */
+  const saveExtent = async (doc: any, newExtent: any) => {
+    await databaseContext.database.upsert(doc._id, (activityDoc) => {
+      return { ...activityDoc, mapExtent: newExtent };
+    });
+  };
+
+  // useEffect(() => {
+  //   let isMounted = true; // No idea why this works... just does.
+  //   if(props && extent && isMounted) {
+  //     saveExtent(props.activity, extent)
+  //   }
+  //   return () => {isMounted = false};
+  // },[extent])
+
+  useEffect(() => {
+    if(props && extent) {
+      saveExtent(props.activity, extent)
+    }
+  },[extent])
+
   const renderMap = () => {
     console.log('Map componentDidMount!');
 
-    var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
+    var map = L.map('map', { zoomControl: false }).setView([55, -123], 5);
     // On init setup
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -109,7 +131,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.layers(baseLayers).addTo(map);
 
-    //load last feature
+    /*
+      Load last feature... If available.
+    */
     if(props.activity && props.activity.geometry)
     {
         const style = {
@@ -137,19 +161,36 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             drawnItems.addLayer(layer);
           }
         });
+
+    }
+
+    /*
+      Move map to previous distination and scale... If available.
+    */
+    if(props?.activity?.mapExtent) {
+      const b = props.activity.mapExtent;
+      const bounds = [
+        [b._northEast.lat,b._northEast.lng],
+        [b._southWest.lat,b._southWest.lng]
+      ]
+      map.fitBounds(bounds);
     }
 
 
+    map.on('moveend',() => {
+      setExtent(map.getBounds());
+    });
 
     map.on('draw:created', (feature) => {
-      let aGeo = feature.layer.toGeoJSON()
+      let aGeo = feature.layer.toGeoJSON() // convert feature to geojson
+
+      // If a circle... store the radius in the geojson
       if(feature.layerType === 'circle') {
         aGeo = {...aGeo, properties: {...aGeo.properties, radius: feature.layer.getRadius()}};
       }
-      setGeo(aGeo)
-      drawnItems.addLayer(feature.layer);
+      setGeo(aGeo) // Save feature
+      drawnItems.addLayer(feature.layer); // Add feature to acetate layer
     });
-
 
     map.on('draw:drawstart', function () {
       drawnItems.clearLayers(); // Clear previous shape
@@ -157,10 +198,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     map.on('draw:editstop', async function (layerGroup) {
-      const feature = drawnItems?.toGeoJSON()?.features[0];
-      if (feature) {
-          setGeo(feature)
+      /*
+        The current feature isn't passed to this function
+        So grab from the acetate layer
+      */ 
+      let aGeo = drawnItems?.toGeoJSON()?.features[0];
+
+      // If this is a circle feature... Grab the radius and store in the GeoJSON
+      if (drawnItems.getLayers()[0]._mRadius) {
+        const radius = drawnItems.getLayers()[0]?.getRadius();
+        aGeo = {...aGeo, properties: {...aGeo.properties, radius: radius}};
       }
+
+      if (aGeo) { setGeo(aGeo) } // Save feature
     });
 
     map.on('draw:deleted', function () {
