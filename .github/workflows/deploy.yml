@@ -218,6 +218,7 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
+      - buildDatabaseSetup
       - deployDatabase
     steps:
       # Checkout the PR branch
