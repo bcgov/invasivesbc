@@ -79,10 +79,6 @@ objects:
                   value: ${ENVIRONMENT}
                 - name: VERSION
                   value: ${VERSION}
-                - name: DB_CLEAN_UP
-                  value: ${DB_CLEAN_UP}
-                - name: DB_SEED
-                  value: ${DB_SEED}
                 - name: OBJECT_STORE_URL
                   valueFrom:
                     secretKeyRef:
@@ -247,9 +243,9 @@ metadata:
   selfLink: ''
 parameters:
   - name: NAME
-    value: invasivesbc-api
+    value: invasivesbci-api
   - name: DBNAME
-    value: invasivesbc-api
+    value: invasivesbci-api
   - name: SUFFIX
     value: '-dev'
   - name: VERSION
@@ -289,12 +285,8 @@ parameters:
     value: '8080-tcp'
   - name: PORT
     value: '3002'
-  - name: DB_CLEAN_UP
-    value: 'none'
-  - name: DB_SEED
-    value: 'yes'
   - name: OBJECT_STORE_SECRETS
-    value: 'invasivesbc-object-store'
+    value: 'invasivesbci-object-store'
   - name: REPLICA_MAX
     required: true
     value: '1'

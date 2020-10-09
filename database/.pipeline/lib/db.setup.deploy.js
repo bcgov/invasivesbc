@@ -11,23 +11,22 @@ module.exports = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
-  const changeId = phases[phase].changeId;
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
-  const objects = [];
-  const imageStreams = [];
-
+  const changeId = phases[phase].changeId;
   const isName = `${phases[phase].name}-setup`;
   const instance = `${isName}-${changeId}`;
   const isVersion = `${phases[phase].tag}-setup`;
-
   const imageStreamName = `${isName}:${isVersion}`;
+
+  const objects = [];
+  const imageStreamObjects = [];
 
   // Clean existing image
   checkAndClean(`istag/${imageStreamName}`, oc);
 
   // Creating image stream for setup
-  imageStreams.push(
+  imageStreamObjects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.is.yaml`, {
       param: {
         NAME: `${isName}`
@@ -35,8 +34,8 @@ module.exports = (settings) => {
     })
   );
 
-  oc.applyRecommendedLabels(imageStreams, isName, phase, `${changeId}`, instance);
-  oc.importImageStreams(imageStreams, isVersion, phases.build.namespace, phases.build.tag);
+  oc.applyRecommendedLabels(imageStreamObjects, isName, phase, `${changeId}`, instance);
+  oc.importImageStreams(imageStreamObjects, isVersion, phases.build.namespace, phases.build.tag);
 
   // Get API image stream
   const fetchedImageStreams = oc.get(`istag/${imageStreamName}`) || [];

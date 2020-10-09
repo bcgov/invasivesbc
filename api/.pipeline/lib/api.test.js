@@ -9,20 +9,20 @@ const checkAndClean = require('../utils/checkAndClean');
  *
  * @param {*} settings
  */
-module.exports = settings => {
+module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
-  const changeId = phases[phase].changeId;
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
-  let objects = [];
-
+  const changeId = phases[phase].changeId;
   const instance = `${phases[phase].name}-${changeId}`;
   const image = `${phases[phase].name}:${phases[phase].tag}-setup`;
+
+  let objects = [];
 
   // Get API image stream
   const data = oc.get(`istag/${image}`) || [];

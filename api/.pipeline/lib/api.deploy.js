@@ -8,15 +8,16 @@ const path = require('path');
  * @param {*} settings
  * @returns
  */
-module.exports = settings => {
+module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
-  const changeId = phases[phase].changeId;
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
+
+  const changeId = phases[phase].changeId;
 
   let objects = [];
 

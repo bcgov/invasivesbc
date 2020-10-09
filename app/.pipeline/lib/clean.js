@@ -4,8 +4,9 @@ const { OpenShiftClientX } = require('pipeline-cli');
 module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
   const target_phase = options.env;
+
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
 
   for (let phaseKey in phases) {
     if (!phases.hasOwnProperty(phaseKey)) {

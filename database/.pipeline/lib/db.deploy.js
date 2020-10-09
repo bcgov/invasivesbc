@@ -15,10 +15,11 @@ module.exports = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
+  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
+
   const name = `${phases[phase].name}`;
   const instance = `${phases[phase].instance}`;
   const changeId = `${phases[phase].changeId}`;
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
   const objects = [];
 
