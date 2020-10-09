@@ -15,6 +15,7 @@ module.exports = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
+  const name = `${phases[phase].name}`;
   const dbName = `${phases[phase].dbName}`;
   const instance = `${phases[phase].instance}`;
   const changeId = `${phases[phase].changeId}`;
@@ -22,13 +23,12 @@ module.exports = (settings) => {
 
   const objects = [];
 
-  // The deployment of your cool app goes here ▼▼▼
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.dc.yaml`, {
       param: {
         NAME: dbName,
         DATABASE_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
-        IMAGE_STREAM_NAME: dbName,
+        IMAGE_STREAM_NAME: name,
         IMAGE_STREAM_VERSION: phases.build.tag,
         POSTGRESQL_DATABASE: 'InvasiveBC',
         IMAGE_STREAM_NAMESPACE: phases.build.namespace,
