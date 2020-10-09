@@ -17,11 +17,11 @@ module.exports = (settings) => {
   const objects = [];
   const imageStreams = [];
 
-  const isName = `${phases[phase].name}-setup`;
-  const instance = `${isName}-${changeId}`;
-  const isVersion = `${phases[phase].tag}`;
+  const isName = `${phases[phase].name}-setup`;             // invasivesbci-db
+  const instance = `${isName}-${changeId}`;           // invasivesbci-db-1.0.0
+  const isVersion = `${phases[phase].tag}-setup`;     // build-1.0.0-77-setup
 
-  const imageStreamName = `${isName}:${isVersion}`;
+  const imageStreamName = `${isName}:${isVersion}`;   // invasivesbci-db:build-1.0.0-77
 
 
   console.log('1+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
@@ -70,6 +70,7 @@ module.exports = (settings) => {
         VERSION: phases[phase].tag,
         CHANGE_ID: changeId,
         ENVIRONMENT: phases[phase].env || 'dev',
+        NODE_ENV: phases[phase].env || 'dev',
         DB_SERVICE_NAME: `${phases[phase].name}-postgresql${phases[phase].suffix}`,
         IMAGE: dbSetupImageStream.image.dockerImageReference,
         DB_MIGRATION_TYPE: phases[phase].migrationInfo.type,

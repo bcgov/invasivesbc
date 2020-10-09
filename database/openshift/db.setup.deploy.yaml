@@ -25,10 +25,10 @@ parameters:
     description: Application Environment type variable
     required: true
     value: 'dev'
-  - name: CERTIFICATE_URL
-    description: Authentication certificate urls
+  - name: NODE_ENV
+    description: Application Environment type variable
     required: true
-    value: 'https://sso.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs'
+    value: 'dev'
   - name: CPU_REQ
     value: '500m'
   - name: CPU_LIMIT
@@ -82,12 +82,12 @@ objects:
                   name: ${DB_SERVICE_NAME}
             - name: DB_PORT
               value: '5432'
-            - name: APP_CERTIFICATE_URL
-              value: ${CERTIFICATE_URL}
             - name: CHANGE_VERSION
               value: ${CHANGE_ID}
             - name: ENVIRONMENT
               value: ${ENVIRONMENT}
+            - name: NODE_ENV
+              value: ${NODE_ENV}
             - name: VERSION
               value: ${VERSION}
           imagePullPolicy: Always
