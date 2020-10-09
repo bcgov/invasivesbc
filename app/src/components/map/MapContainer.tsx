@@ -32,11 +32,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
   };
 
-  const checkIfCircle = (radius: number, xy: [number]) => {
-    let aGeo = geo;
-    return aGeo;
-  };
-
   //hook to db persist new user drawn geometries
   useEffect(() => {
     if (props && geo) {
@@ -44,10 +39,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
   }, [geo]);
 
+
+  const checkIfCircle = (radius: number, xy: [number]) => {
+    let aGeo = geo;
+    return aGeo;
+  };
+
+
   // shared between mapSetup and mapUpdate
   let initDrawnItems = new L.FeatureGroup();
-  const [drawnItems] = useState(initDrawnItems)
-
+  const [drawnItems] = useState(initDrawnItems);
 
   const mapSetup = (drawnItems: any) => {
     console.log('Map componentDidMount!');
@@ -168,7 +169,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const mapUpdate = (drawnItems: any) => {
-    drawnItems.clearLayers(); // Clear previous shape
+//    drawnItems.clearLayers(); // Clear previous shape
     const featureCollectionsToDraw = [];
     if (props.activity && props.activity.geometry) {
       featureCollectionsToDraw.push(props.activity.geometry);
@@ -221,7 +222,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
     mapSetup(drawnItems);
   }, [databaseContext]);
-
 
   // the hook to fire if the props change (activity being passed, featurecollection from KML, etc)
   useEffect(() => {
