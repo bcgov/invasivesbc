@@ -1,18 +1,25 @@
 'use strict';
 let options = require('pipeline-cli').Util.parseArguments();
+
+// The root config for common values
 const config = require('../../.config/config.json');
 
 const defaultHost = 'invasivebc-8ecbmv-api.pathfinder.gov.bc.ca';
-const name = (config.module && config.module['db']) || 'lucy-db';
-const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; //aka pull-request or brach to process
+
+const name = (config.module && config.module['db']) || 'invasivesbci-db';
+
+const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
 const version = config.version || '1.0.0';
-const deployType = options.type || '';
-const isStaticDeployment = deployType === 'static';
+
+// A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
+const isStaticDeployment = options.type === 'static';
+
 const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
-const branch = (isStaticDeployment && options.branch) || undefined;
+const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
-const staticUrlsAPIMobile = config.staticUrlsAPIMobile || {};
+
 const staticBranches = config.staticBranches || [];
+const staticUrls = config.staticUrls || {};
 
 const processOptions = (options) => {
   const result = options;
@@ -47,6 +54,7 @@ const phases = {
     instance: `${name}-build-${changeId}`,
     version: `${version}-${changeId}`,
     tag: tag,
+    env: 'build',
     branch: branch
   },
   dev: {
@@ -59,8 +67,7 @@ const phases = {
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     host:
-      (isStaticDeployment && (staticUrlsAPIMobile.dev || defaultHost)) ||
-      `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
+      (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
     env: 'dev',
     certificateURL: config.certificateURL.dev,
     replicas: 1,
@@ -76,7 +83,7 @@ const phases = {
     version: `${version}`,
     previousVersion: config.previousVersion || 'NA',
     tag: `test-${version}`,
-    host: staticUrlsAPIMobile.staging,
+    host: staticUrls.staging,
     env: 'test',
     certificateURL: config.certificateURL.test,
     replicas: 3,
@@ -92,7 +99,7 @@ const phases = {
     version: `${version}`,
     previousVersion: config.previousVersion || 'NA',
     tag: `prod-${version}`,
-    host: staticUrlsAPIMobile.prod,
+    host: staticUrls.prod,
     env: 'prod',
     certificateURL: config.certificateURL.prod,
     replicas: 3,

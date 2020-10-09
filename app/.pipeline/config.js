@@ -1,38 +1,39 @@
 'use strict';
 let options = require('pipeline-cli').Util.parseArguments();
-const config = require('../../../.config/config.json');
-const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; //aka pull-request
+
+// The root config for common values
+const config = require('../../.config/config.json');
+
+const defaultHost = 'invasivebci-8ecbmv-dev.pathfinder.gov.bc.ca';
+const defaultHostAPI = 'invasivebc-8ecbmv-api.dev.pathfinder.gov.bc.ca';
+
+const name = (config.module && config.module['app']) || 'invasivesbci-app';
+const apiName = (config.module && config.module['api']) || 'invasivesbci-api';
+
+const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
 const version = config.version || '1.0.0';
-const name = (config.module || {}).app || 'lucy-app';
-const apiName = (config.module || {}).api || 'lucy-api';
+
+// A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
+const isStaticDeployment = options.type === 'static';
+
+const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
+const branch = (isStaticDeployment && options.branch) || null;
+const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
 const staticBranches = config.staticBranches || [];
 const staticUrls = config.staticUrls || {};
 const staticUrlsAPI = config.staticUrlsAPI || {};
-const deployType = options.type || '';
 
-const isStaticDeployment = () => {
-  return deployType === 'static';
-};
-const isProduction = () => false;
-
-const deployChangeId = isStaticDeployment() ? 'deploy' : changeId;
-const defaultHost = 'invasivebci-8ecbmv-dev.pathfinder.gov.bc.ca';
-const defaultHostAPI = 'invasivebc-8ecbmv-api.dev.pathfinder.gov.bc.ca';
-
-// Get SSO_Info
 const sso = config.sso;
-
-const branch = isStaticDeployment() && !isProduction() ? options.branch : undefined;
-const tag =
-  isStaticDeployment() && !isProduction() ? `build-${version}-${changeId}-${branch}` : `build-${version}-${changeId}`;
 
 const processOptions = (options) => {
   const result = { ...options };
+
   // Check git
   if (!result.git.url.includes('.git')) {
     result.git.url = `${result.git.url}.git`;
   }
+
   if (!result.git.http_url.includes('.git')) {
     result.git.http_url = `${result.git.http_url}.git`;
   }
@@ -43,6 +44,7 @@ const processOptions = (options) => {
     const final = last.split('.')[0];
     result.git.repository = final;
   }
+
   return result;
 };
 
@@ -79,7 +81,7 @@ const phases = {
     env: 'dev',
     sso: sso.dev,
     replicas: 1,
-    maxReplicas: 3
+    maxReplicas: 2
   },
   test: {
     namespace: '8ecbmv-test',
@@ -111,7 +113,7 @@ const phases = {
     env: 'prod',
     sso: sso.prod,
     replicas: 3,
-    maxReplicas: 8
+    maxReplicas: 6
   }
 };
 

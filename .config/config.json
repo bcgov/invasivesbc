@@ -17,12 +17,12 @@
   },
   "staticBranches": [
     "dev",
-    "staging",
+    "test",
     "prod"
   ],
   "staticUrls": {
     "dev": "dev-invasivesbci.pathfinder.gov.bc.ca",
-    "staging": "test-invasivesbci.pathfinder.gov.bc.ca",
+    "test": "test-invasivesbci.pathfinder.gov.bc.ca",
     "prod": "invasivesbci.pathfinder.gov.bc.ca"
   },
   "certificateURL": {
