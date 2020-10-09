@@ -14,7 +14,7 @@ module.exports = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
 
-  const dbName = `${phases[phase].dbName}`;
+  const name = `${phases[phase].name}`;
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
   const objects = [];
@@ -22,13 +22,13 @@ module.exports = (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.bc.yaml`, {
       param: {
-        NAME: `${dbName}`,
+        NAME: name,
         SUFFIX: `${phases[phase].suffix}`,
         TAG_NAME: `${phases[phase].tag}`
       }
     })
   );
 
-  oc.applyRecommendedLabels(objects, `${dbName}`, phase, phases[phase].changeId, phases[phase].instance);
+  oc.applyRecommendedLabels(objects, name, phase, phases[phase].changeId, phases[phase].instance);
   oc.applyAndBuild(objects);
 };
