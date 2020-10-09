@@ -1,6 +1,6 @@
 'use strict';
 const { OpenShiftClientX } = require('pipeline-cli');
-const wait = require('./wait');
+const wait = require('../utils/wait');
 const checkAndClean = require('./checkAndClean');
 const path = require('path');
 
@@ -17,12 +17,11 @@ module.exports = (settings) => {
   const objects = [];
   const imageStreams = [];
 
-  const isName = `${phases[phase].name}-setup`;             // invasivesbci-db
+  const isName = `${phases[phase].name}-setup`;        // invasivesbci-db-setup
   const instance = `${isName}-${changeId}`;           // invasivesbci-db-1.0.0
   const isVersion = `${phases[phase].tag}-setup`;     // build-1.0.0-77-setup
 
-  const imageStreamName = `${isName}:${isVersion}`;   // invasivesbci-db:build-1.0.0-77
-
+  const imageStreamName = `${isName}:${isVersion}`;   // invasivesbci-db-setup:build-1.0.0-77-setup
 
   console.log('1+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
   console.log('isName:', isName);
@@ -43,7 +42,7 @@ module.exports = (settings) => {
     })
   );
 
-  oc.applyRecommendedLabels(imageStreams, phases[phase].name, phase, `${changeId}`, instance);
+  oc.applyRecommendedLabels(imageStreams, isName, phase, `${changeId}`, instance);
   oc.importImageStreams(imageStreams, isVersion, phases.build.namespace, phases.build.tag);
 
   // Get API image stream
@@ -60,7 +59,7 @@ module.exports = (settings) => {
 
   const dbSetupImageStream = fetchedImageStreams[0];
 
-  const dbSetupPodName = `${phases[phase].name}-postgresql${phases[phase].suffix}-setup`;
+  const dbSetupPodName = `${isName}${phases[phase].suffix}-setup`; //invasivesbci-db-setup-build-1.0.0-setup
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.deploy.yaml`, {
@@ -82,7 +81,7 @@ module.exports = (settings) => {
 
   checkAndClean(`pod/${dbSetupPodName}`, oc);
 
-  oc.applyRecommendedLabels(objects, phases[phase].name, phase, `${changeId}`, instance);
+  oc.applyRecommendedLabels(objects, isName, phase, `${changeId}`, instance);
   oc.applyAndDeploy(objects, phases[phase].instance);
 
   wait(`pod/${dbSetupPodName}`, settings, 30);
