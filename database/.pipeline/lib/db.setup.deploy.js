@@ -18,11 +18,18 @@ module.exports = (settings) => {
   const imageStreams = [];
 
   const isName = `${phases[phase].name}-setup`;
+  const instance = `${isName}-${changeId}`;
   const isVersion = `${phases[phase].tag}`;
 
   const imageStreamName = `${isName}:${isVersion}`;
 
-  const instance = `${isName}-${changeId}`;
+
+  console.log('1+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  console.log('isName:', isName);
+  console.log('instance:', instance);
+  console.log('isVersion:', isVersion);
+  console.log('imageStreamName:', imageStreamName);
+  console.log('1+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
 
   // Clean existing image
   checkAndClean(`istag/${imageStreamName}`, oc);
@@ -41,6 +48,10 @@ module.exports = (settings) => {
 
   // Get API image stream
   const fetchedImageStreams = oc.get(`istag/${imageStreamName}`) || [];
+
+  console.log('2+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  console.log('fetchedImageStreams:', fetchedImageStreams);
+  console.log('2+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
 
   if (!fetchedImageStreams.length) {
     console.log('Unable to fetch Database image reference for use in database setup deployment');
