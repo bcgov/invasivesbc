@@ -50,11 +50,6 @@ objects:
       containers:
         - name: test
           image: '${IMAGE}'
-          command:
-            - container-entrypoint
-            - bash
-            - '-c'
-            - 'npm run migrate:latest2'
           resources:
             limits:
               cpu: '1'
