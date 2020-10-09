@@ -1,7 +1,7 @@
 'use strict';
 const { OpenShiftClientX } = require('pipeline-cli');
 const wait = require('../utils/wait');
-const checkAndClean = require('./checkAndClean');
+const checkAndClean = require('../utils/checkAndClean');
 const path = require('path');
 
 module.exports = (settings) => {
