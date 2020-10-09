@@ -83,7 +83,7 @@ const phases = {
     version: `${version}`,
     previousVersion: config.previousVersion || 'NA',
     tag: `test-${version}`,
-    host: staticUrls.staging,
+    host: staticUrls.test,
     env: 'test',
     certificateURL: config.certificateURL.test,
     replicas: 3,

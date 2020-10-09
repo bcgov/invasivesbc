@@ -25,6 +25,11 @@
     "test": "test-invasivesbci.pathfinder.gov.bc.ca",
     "prod": "invasivesbci.pathfinder.gov.bc.ca"
   },
+  "staticUrlsAPI": {
+    "dev": "api-dev-invasivesbci.pathfinder.gov.bc.ca",
+    "test": "api-test-invasivesbci.pathfinder.gov.bc.ca",
+    "prod": "api-invasivesbci.pathfinder.gov.bc.ca"
+  },
   "certificateURL": {
     "dev": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
     "test": "https://sso-test.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",

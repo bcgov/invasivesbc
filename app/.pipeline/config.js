@@ -72,12 +72,11 @@ const phases = {
     instance: `${name}-dev-${deployChangeId}`,
     version: `${version}-${deployChangeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    host: isStaticDeployment()
-      ? staticUrls['dev'] || defaultHost
-      : `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
-    apiHost: isStaticDeployment()
-      ? staticUrlsAPI['dev'] || defaultHostAPI
-      : `${apiName}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
+    host:
+      (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
+    apiHost:
+      (isStaticDeployment && (staticUrls.dev || defaultHostAPI)) ||
+      `${apiName}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
     env: 'dev',
     sso: sso.dev,
     replicas: 1,
@@ -92,8 +91,8 @@ const phases = {
     instance: `${name}-test`,
     version: `${version}`,
     tag: `test-${version}`,
-    host: staticUrls['staging'],
-    apiHost: staticUrlsAPI['staging'] || defaultHostAPI,
+    host: staticUrls.test,
+    apiHost: staticUrlsAPI.test || defaultHostAPI,
     env: 'test',
     sso: sso.test,
     replicas: 3,
@@ -108,8 +107,8 @@ const phases = {
     instance: `${name}-prod`,
     version: `${version}`,
     tag: `prod-${version}`,
-    host: staticUrls['prod'],
-    apiHost: staticUrlsAPI['prod'] || defaultHostAPI,
+    host: staticUrls.prod,
+    apiHost: staticUrlsAPI.prod || defaultHostAPI,
     env: 'prod',
     sso: sso.prod,
     replicas: 3,
