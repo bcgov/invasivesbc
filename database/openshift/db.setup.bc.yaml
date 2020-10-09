@@ -3,14 +3,14 @@ kind: Template
 metadata:
   creationTimestamp: null
   labels:
-    build: invasivebci-db-migrate
-  name: invasivebci-db-migrate
+    build: invasivebci-db-setup
+  name: invasivebci-db-setup
 parameters:
   - name: NAME
     displayName: Name
     description: Image name
     required: true
-    value: invasivesbci-db-migrate
+    value: invasivesbci-db-setup
   - name: SUFFIX
     displayName: Name Suffix
     description: A suffix appended to all objects

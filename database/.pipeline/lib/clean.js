@@ -58,10 +58,8 @@ module.exports = (settings) => {
     // Cleaning other pods
     if (phaseKey !== 'build') {
       const newOC = new OpenShiftClientX(Object.assign({ namespace: phases[phaseKey].namespace }, options));
-      const migratePod = `${phases[phaseKey].name}${phases[phaseKey].suffix}-migrate`;
-      const seedPod = `${phases[phaseKey].name}${phases[phaseKey].suffix}-seed`;
-      checkAndClean(`pod/${migratePod}`, newOC);
-      checkAndClean(`pod/${seedPod}`, newOC);
+      const setupPod = `${phases[phaseKey].name}${phases[phaseKey].suffix}-setup`;
+      checkAndClean(`pod/${setupPod}`, newOC);
     }
 
     oc.raw('delete', ['all'], {

@@ -13,8 +13,7 @@
   "scripts": {
     "db:build": "node db.build.js",
     "db:deploy": "node db.deploy.js",
-    "migrate:build": "node db.migrate.build.js",
-    "seed": "node db.seed.js",
+    "db:setup": "node db.setup.build.js",
     "build-schemaspy": "node schemaspy.build.js",
     "deploy-schemaspy": "node schemaspy.deploy.js",
     "clean": "node clean.js",

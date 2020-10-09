@@ -19,13 +19,13 @@ module.exports = (settings) => {
 
   const isName = `${phases[phase].name}`;
   const instance = `${isName}-${changeId}`;
-  const migrateTag = `${phases[phase].tag}-migrate`;
-  const image = `${isName}:${migrateTag}`;
+  const setupTag = `${phases[phase].tag}-setup`;
+  const image = `${isName}:${setupTag}`;
 
   // Clean existing image
   checkAndClean(`istag/${image}`, oc);
 
-  // Creating image stream for migrate
+  // Creating image stream for setup
   is.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/is.api.yaml`, {
       param: {
@@ -35,7 +35,7 @@ module.exports = (settings) => {
   );
 
   oc.applyRecommendedLabels(is, phases[phase].name, phase, `${changeId}`, instance);
-  oc.importImageStreams(is, migrateTag, phases.build.namespace, phases.build.tag);
+  oc.importImageStreams(is, setupTag, phases.build.namespace, phases.build.tag);
 
   // Get API image stream
   const data = oc.get(`istag/${image}`) || [];
@@ -45,7 +45,7 @@ module.exports = (settings) => {
   }
 
   const imageStream = data[0];
-  const podName = `${phases[phase].name}${phases[phase].suffix}-migrate`;
+  const podName = `${phases[phase].name}${phases[phase].suffix}-setup`;
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/migrate.pod.yaml`, {

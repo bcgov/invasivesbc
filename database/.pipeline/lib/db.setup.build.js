@@ -3,7 +3,7 @@ const { OpenShiftClientX } = require('pipeline-cli');
 const path = require('path');
 
 /**
- * Run a pod to build the db migration image stream.
+ * Run a pod to build the db setup (migrations, seeding, etc) image stream.
  *
  * @param {*} settings
  */
@@ -14,13 +14,13 @@ module.exports = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
 
-  const name = `${phases[phase].name}-migrate`;
+  const name = `${phases[phase].name}-setup`;
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
   const objects = [];
 
   objects.push(
-    ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.migrate.bc.yaml`, {
+    ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.bc.yaml`, {
       param: {
         NAME: name,
         SUFFIX: phases[phase].suffix,

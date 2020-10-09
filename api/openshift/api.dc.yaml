@@ -6,7 +6,7 @@ objects:
       annotations:
         description: Nodejs Runtime Image
       labels:
-        shared: "true"
+        shared: 'true'
       creationTimestamp: null
       generation: 0
       name: ${NAME}
@@ -25,7 +25,7 @@ objects:
       labels: null
       name: ${NAME}${SUFFIX}
     spec:
-      replicas: "${{REPLICAS}}"
+      replicas: '${{REPLICAS}}'
       revisionHistoryLimit: 10
       selector:
         deploymentConfig: ${NAME}${SUFFIX}
@@ -70,7 +70,7 @@ objects:
                       key: database-name
                       name: ${DBNAME}${SUFFIX}
                 - name: DB_PORT
-                  value: "5432"
+                  value: '5432'
                 - name: APP_CERTIFICATE_URL
                   value: ${CERTIFICATE_URL}
                 - name: CHANGE_VERSION
@@ -103,11 +103,11 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
-              image: " "
+              image: ' '
               imagePullPolicy: Always
               name: api
               ports:
-                - containerPort: "${{PORT}}"
+                - containerPort: '${{PORT}}'
                   protocol: TCP
                 - containerPort: 8080
                   protocol: TCP
@@ -171,9 +171,9 @@ objects:
       updatedReplicas: 0
   - apiVersion: v1
     stringData:
-      database-name: ""
-      database-password: ""
-      database-user: ""
+      database-name: ''
+      database-password: ''
+      database-user: ''
     kind: Secret
     metadata:
       annotations:
@@ -191,9 +191,9 @@ objects:
     spec:
       ports:
         - name: ${NAME}-${APP_PORT_DEFAULT}
-          port: "${{PORT}}"
+          port: '${{PORT}}'
           protocol: TCP
-          targetPort: "${{PORT}}"
+          targetPort: '${{PORT}}'
         - name: ${APP_PORT_OTHER}
           port: 8080
           protocol: TCP
@@ -233,8 +233,8 @@ objects:
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
-      maxReplicas: "${{REPLICA_MAX}}"
-      minReplicas: "${{REPLICAS}}"
+      maxReplicas: '${{REPLICA_MAX}}'
+      minReplicas: '${{REPLICAS}}'
       scaleTargetRef:
         apiVersion: v1
         kind: DeploymentConfig
@@ -243,58 +243,58 @@ objects:
         targetPercentage: 95
 kind: Template
 metadata:
-  resourceVersion: ""
-  selfLink: ""
+  resourceVersion: ''
+  selfLink: ''
 parameters:
   - name: NAME
     value: invasivesbc-api
   - name: DBNAME
     value: invasivesbc-api
   - name: SUFFIX
-    value: "-dev"
+    value: '-dev'
   - name: VERSION
     description: Version of the application
-    value: "1.0.0"
+    value: '1.0.0'
   - name: HOST
     description: Host name of the application
     required: true
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true
-    value: "0"
+    value: '0'
   - name: DB_SERVICE_NAME
-    description: "Database service name associated with deployment"
+    description: 'Database service name associated with deployment'
     required: true
   - name: ENVIRONMENT
     description: Application Environment type variable
     required: true
-    value: "dev"
+    value: 'dev'
   - name: CERTIFICATE_URL
     description: Authentication certificate urls
     required: true
-    value: "https://sso.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs"
+    value: 'https://sso.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs'
   - name: CPU_REQ
-    value: "500m"
+    value: '500m'
   - name: CPU_LIMIT
-    value: "750m"
+    value: '750m'
   - name: MEMORY_REQ
-    value: "1Gi"
+    value: '1Gi'
   - name: MEMORY_LIMIT
-    value: "2Gi"
+    value: '2Gi'
   - name: REPLICAS
-    value: "1"
+    value: '1'
   - name: APP_PORT_DEFAULT
-    value: "3002-tcp"
+    value: '3002-tcp'
   - name: APP_PORT_OTHER
-    value: "8080-tcp"
+    value: '8080-tcp'
   - name: PORT
-    value: "3002"
+    value: '3002'
   - name: DB_CLEAN_UP
-    value: "none"
+    value: 'none'
   - name: DB_SEED
-    value: "yes"
+    value: 'yes'
   - name: OBJECT_STORE_SECRETS
-    value: "invasivesbc-object-store"
+    value: 'invasivesbc-object-store'
   - name: REPLICA_MAX
     required: true
-    value: "1"
+    value: '1'
