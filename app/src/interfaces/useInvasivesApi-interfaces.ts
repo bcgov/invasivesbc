@@ -77,6 +77,19 @@ export interface ICreateActivity {
   activity_type: ActivityParentType;
   activity_subtype: ActivityType;
   geometry: Feature[];
-  media: Photo[];
+  media: IMedia[];
   form_data: any;
+}
+
+/**
+ * Media object.
+ *
+ * @export
+ * @interface IMedia
+ */
+export interface IMedia {
+  media_date?: string;
+  description?: string;
+  file_name: string;
+  encoded_file: string;
 }
