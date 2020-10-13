@@ -5,7 +5,7 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.locatecontrol';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
-import 'leaflet.offline'
+import 'leaflet.offline';
 import './MapContainer.css';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useState, useContext, useEffect } from 'react';
@@ -59,13 +59,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
-  // useEffect(() => {
-  //   let isMounted = true; // No idea why this works... just does.
-  //   if(props && extent && isMounted) {
-  //     saveExtent(props.activity, extent)
-  //   }
-  //   return () => {isMounted = false};
-  // },[extent])
 
   useEffect(() => {
     if(props && extent) {
@@ -89,13 +82,38 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     L.control.locate(options).addTo(map);
 
-    const esriBase = L.tileLayer(
+    const esriBase = L.tileLayer.offline(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 24,
-        maxNativeZoom: 17
+        maxNativeZoom: 17,
+        attribution: '&copy; <a href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps">ESRI Basemap</a>'
       }
     ).addTo(map);
+
+    const saveBaseControl = L.control.savetiles(esriBase, {
+      zoomlevels: [13,14,15,16,17],
+      confirm (layer, succescallback) {
+        if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
+          succescallback();
+        }
+      },
+      confirmRemoval (layer, succescallback) {
+        if (window.confirm('Remove all the stored tiles')) {
+          succescallback();
+        }
+      },
+      saveText: '<span title="Save me some basemap">&#128190;</span>',
+      rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
+    }).addTo(map);
+
+    // const esriBase = L.tileLayer(
+    //   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    //   {
+    //     maxZoom: 24,
+    //     maxNativeZoom: 17
+    //   }
+    // ).addTo(map);
 
     const bcBase = L.tileLayer(
       'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
