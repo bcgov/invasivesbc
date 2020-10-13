@@ -118,6 +118,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       console.log('Removed all tiles');
     });
 
+
+    // const esriBase = L.tileLayer(
+    //   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    //   {
+    //     maxZoom: 24,
+    //     maxNativeZoom: 17
+    //   }
+    // ).addTo(map);
+
     const bcBase = L.tileLayer(
       'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
       {
