@@ -5,6 +5,7 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.locatecontrol';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
+import 'leaflet.offline'
 import './MapContainer.css';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useState, useContext, useEffect } from 'react';
@@ -94,7 +95,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         maxZoom: 24,
         maxNativeZoom: 17
       }
-    );
+    ).addTo(map);
 
     const bcBase = L.tileLayer(
       'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
@@ -103,7 +104,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         useCache: true,
         cacheMaxAge: 1.72e8 // 48 hours
       }
-    ).addTo(map);
+    );
 
     var drawnItems = new L.FeatureGroup();
 
@@ -123,6 +124,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     map.addControl(drawControl);
+
+    /**************************************
+     * Basemap offlining
+     */
 
     const baseLayers = {
       'Esri Imagery': esriBase,
