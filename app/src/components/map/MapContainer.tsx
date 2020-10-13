@@ -40,15 +40,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [geo]);
 
 
-  const checkIfCircle = (radius: number, xy: [number]) => {
-    let aGeo = geo;
-    return aGeo;
-  };
-
-
   // shared between mapSetup and mapUpdate
-  let initDrawnItems = new L.FeatureGroup();
-  const [drawnItems] = useState(initDrawnItems);
+  const [drawnItems] = useState(new L.FeatureGroup());
 
   const mapSetup = (drawnItems: any) => {
     console.log('Map componentDidMount!');
@@ -108,6 +101,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     L.control.layers(baseLayers).addTo(map);
 
     map.on('draw:created', (feature) => {
+      console.log('draw:created');
       let aGeo = feature.layer.toGeoJSON();
       if (feature.layerType === 'circle') {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: feature.layer.getRadius() } };
@@ -117,16 +111,21 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     map.on('draw:drawstart', function () {
+      console.log('draw:drawstart');
+      // this works ok in context of needing one geo, nfg if we need to draw a few different things
       drawnItems.clearLayers(); // Clear previous shape
       setGeo(null);
     });
 
     map.on('draw:editstop', async function (layerGroup) {
+      console.log('draw edit stop');
       const feature = drawnItems?.toGeoJSON()?.features[0];
       if (feature) {
         setGeo(feature);
+        console.log('should have saved it');
       }
     });
+
 
     map.on('draw:deleted', function () {
       console.log('deleted');
@@ -169,9 +168,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const mapUpdate = (drawnItems: any) => {
-//    drawnItems.clearLayers(); // Clear previous shape
+    console.log('map update')
+    //    drawnItems.clearLayers(); // Clear previous shape
     const featureCollectionsToDraw = [];
     if (props.activity && props.activity.geometry) {
+      console.log('is there a geom for this activity');
       featureCollectionsToDraw.push(props.activity.geometry);
     }
 
@@ -193,7 +194,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           stroke: true
         };
 
-        console.dir(collection);
 
         L.geoJSON(collection, {
           style: style,
@@ -205,7 +205,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             }
           },
           onEachFeature: function (_: any, layer: any) {
-            console.dir(layer);
             drawnItems.addLayer(layer);
           }
         });
@@ -225,7 +224,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   // the hook to fire if the props change (activity being passed, featurecollection from KML, etc)
   useEffect(() => {
-    if (props.kmlAsGeoFeatCollection) {
+    if (props.kmlAsGeoFeatCollection || props.activity?.geometry) {
+      console.log('props changed')
       mapUpdate(drawnItems);
     }
   }, [props]);
