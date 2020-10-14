@@ -93,7 +93,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       })
       .addTo(map);
 
-    L.control
+    const saveBaseControl = L.control
       .savetiles(esriBase, {
         zoomlevels: [13, 14, 15, 16, 17],
         confirm(layer, succescallback) {
@@ -116,14 +116,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
     esriBase.on('tilesremoved', () => {
       console.log('Removed all tiles');
-    });
-
-
-    esriBase.on('saveend', (e) => {
-      console.log(`Saved ${e.lengthSaved} tiles`)
-    })
-    esriBase.on('tilesremoved', () => {
-      console.log('Removed all tiles')
     });
 
     const bcBase = L.tileLayer(
