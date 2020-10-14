@@ -21,6 +21,18 @@ module.exports = (settings) => {
 
   let objects = [];
 
+  console.log('=================================');
+  console.log('=================================');
+  console.log('=================================');
+  console.log(JSON.stringify(options));
+  console.log('----------');
+  console.log(changeId);
+  console.log('----------');
+  console.log(JSON.stringify(phases[phase]));
+  console.log('=================================');
+  console.log('=================================');
+  console.log('=================================');
+
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.dc.yaml`, {
       param: {

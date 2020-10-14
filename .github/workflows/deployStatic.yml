@@ -15,7 +15,7 @@ jobs:
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true }}
     steps:
       - name: Print Env Vars
         run: |
@@ -28,7 +28,7 @@ jobs:
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -60,7 +60,7 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -92,7 +92,7 @@ jobs:
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -124,7 +124,7 @@ jobs:
   buildAPP:
     name: Build App Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -156,7 +156,7 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
@@ -190,7 +190,7 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
@@ -225,7 +225,7 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
@@ -259,7 +259,7 @@ jobs:
   deployAPP:
     name: Deploy App Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
