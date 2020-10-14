@@ -70,7 +70,7 @@ const phases = {
     changeId: deployChangeId,
     suffix: `-dev-${deployChangeId}`,
     instance: `${name}-dev-${deployChangeId}`,
-    version: `${version}-${deployChangeId}`,
+    version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     host:
       (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,

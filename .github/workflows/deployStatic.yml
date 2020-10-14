@@ -1,5 +1,5 @@
 # Static Deploy On OpensShift
-# Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev environment.
+# Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev or Test or Prod environment.
 name: Static Deploy on OpensShift
 
 on:
@@ -7,6 +7,7 @@ on:
     types: [opened, reopened, synchronize, closed]
     branches:
       - dev
+      - test
       - prod
 
 jobs:
@@ -14,11 +15,12 @@ jobs:
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true}}
     steps:
       - name: Print Env Vars
         run: |
           echo Git Base Ref: ${{ github.base_ref }}
-          echo Git Build ID: ${{ github.event.number }}
+          echo Git Change ID: ${{ github.event.number }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
           echo OC CLI Version: $(oc version)
 

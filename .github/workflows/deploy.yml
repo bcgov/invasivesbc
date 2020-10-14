@@ -1,6 +1,6 @@
 # PR Based Deploy On OpensShift
 # Builds and Deploys unmerged PR's to temporary pods/services/routes/etc in the OpenShift Dev environment.
-name: Deploy on OpensShift
+name: PR-Based Deploy on OpensShift
 
 on:
   pull_request:
@@ -11,11 +11,12 @@ jobs:
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == false}}
     steps:
       - name: Print Env Vars
         run: |
           echo Git Base Ref: ${{ github.base_ref }}
-          echo Git Build ID: ${{ github.event.number }}
+          echo Git Change ID: ${{ github.event.number }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
           echo OC CLI Version: $(oc version)
 

@@ -23,12 +23,13 @@ const staticBranches = config.staticBranches || [];
 const staticUrls = config.staticUrls || {};
 
 const processOptions = (options) => {
-  const result = options;
+  const result = { ...options };
 
   // Check git
   if (!result.git.url.includes('.git')) {
     result.git.url = `${result.git.url}.git`;
   }
+
   if (!result.git.http_url.includes('.git')) {
     result.git.http_url = `${result.git.http_url}.git`;
   }
@@ -85,7 +86,6 @@ const phases = {
     suffix: `-test`,
     instance: `${name}-test`,
     version: `${version}`,
-    previousVersion: config.previousVersion || 'NA',
     tag: `test-${version}`,
     host: staticUrls.test,
     env: 'test',
@@ -102,7 +102,6 @@ const phases = {
     suffix: `-prod`,
     instance: `${name}-prod`,
     version: `${version}`,
-    previousVersion: config.previousVersion || 'NA',
     tag: `prod-${version}`,
     host: staticUrls.prod,
     env: 'prod',
