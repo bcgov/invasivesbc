@@ -224,8 +224,9 @@ jobs:
     if: ${{ github.event.pull_request.merged == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
-    # needs:
-    #   - deployDatabase
+    needs:
+      - buildAPI
+      # - deployDatabase
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
