@@ -6,9 +6,6 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
-
-
-
 jobs:
   # Print variables for logging and debugging purposes
   checkEnv:
@@ -289,9 +286,13 @@ jobs:
 
   # Clean build/deployment artifacts
   clean:
-    name: Clean Deployment Artifacts for API and App
+    name: Clean Build/Deployment Artifacts
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && (github.base_ref != 'dev' && github.base_ref != 'prod') }}
+    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'dev' && github.base_ref != 'test' && github.base_ref != 'prod' }}
+    needs:
+      - deployDatabase
+      - deployAPI
+      - deployAPP
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -311,8 +312,26 @@ jobs:
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Clean the app deployment artifacts
-      - name: Clean APP Deployment
+      # Clean the database build/deployment artifacts
+      - name: Clean Database Artifacts
+        working-directory: './app/.pipeline/'
+        run: |
+          npm install
+          # npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+
+      # Clean the api build/deployment artifacts
+      - name: Clean API Artifacts
+        working-directory: './api/.pipeline/'
+        run: |
+          npm install
+          # npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+
+      # Clean the app build/deployment artifacts
+      - name: Clean APP Artifacts
         working-directory: './app/.pipeline/'
         run: |
           npm install

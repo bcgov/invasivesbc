@@ -24,9 +24,9 @@ jobs:
 
   # Build the Database image
   buildDatabase:
-    name: Build Database
+    name: Build Database Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == false}}
+    if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -46,8 +46,8 @@ jobs:
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Build the database images
-      - name: Build Database Images
+      # Build the database image
+      - name: Build Database Image
         working-directory: './database/.pipeline/'
         run: |
           npm install
@@ -58,7 +58,7 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == false}}
+    if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -78,7 +78,7 @@ jobs:
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Build the database images
+      # Build the database image
       - name: Build Database Setup Image
         working-directory: './database/.pipeline/'
         run: |
@@ -88,7 +88,7 @@ jobs:
 
   # Build the API image
   buildAPI:
-    name: Build API Static
+    name: Build API Image
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true}}
     env:
@@ -110,8 +110,8 @@ jobs:
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Build the api images
-      - name: Build API Images
+      # Build the api image
+      - name: Build API Image
         working-directory: './api/.pipeline/'
         run: |
           npm install
@@ -120,7 +120,7 @@ jobs:
 
   # Build the web frontend app
   buildAPP:
-    name: Build App Static
+    name: Build App Image
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true}}
     env:
@@ -142,8 +142,8 @@ jobs:
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Build the app images
-      - name: Build APP Images
+      # Build the app image
+      - name: Build APP Image
         working-directory: './app/.pipeline/'
         run: |
           npm install
@@ -154,7 +154,7 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == false}}
+    if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
@@ -188,7 +188,7 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == false}}
+    if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
@@ -223,7 +223,7 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == false}}
+    if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
@@ -257,7 +257,7 @@ jobs:
   deployAPP:
     name: Deploy App Image
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == false}}
+    if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
@@ -287,11 +287,15 @@ jobs:
           # npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev --branch=${{ github.base_ref }} --type=static
 
-  # Clean App images and related build/deployment artifacts from dev and tools
+  # Clean build/deployment artifacts
   clean:
-    name: Clean Deployment Artifacts for App
+    name: Clean Build/Deployment Artifacts
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && (github.base_ref == 'dev' && github.base_ref != 'prod') }}
+    if: ${{ github.event.pull_request.merged == true && (github.base_ref == 'dev' || github.base_ref == 'test') }}
+    needs:
+      - deployDatabase
+      - deployAPI
+      - deployAPP
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -311,8 +315,26 @@ jobs:
       - name: Log in to OpenShift
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Clean the app deployment artifacts
-      - name: Clean APP Deployment
+      # Clean the database build/deployment artifacts
+      - name: Clean Database Artifacts
+        working-directory: './app/.pipeline/'
+        run: |
+          npm install
+          # npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+
+      # Clean the api build/deployment artifacts
+      - name: Clean API Artifacts
+        working-directory: './api/.pipeline/'
+        run: |
+          npm install
+          # npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+
+      # Clean the app build/deployment artifacts
+      - name: Clean APP Artifacts
         working-directory: './app/.pipeline/'
         run: |
           npm install
