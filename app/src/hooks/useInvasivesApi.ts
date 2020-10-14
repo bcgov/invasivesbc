@@ -2,6 +2,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { IActivitySearchCriteria, ICreateActivity } from 'interfaces/useInvasivesApi-interfaces';
+import qs from 'qs';
 import { useContext, useMemo } from 'react';
 
 const API_URL = 'https://api-mobile-dev-invasivesbc.pathfinder.gov.bc.ca';
@@ -62,6 +63,23 @@ export const useInvasivesApi = () => {
   };
 
   /**
+   * Fetch media items.
+   *
+   * @param {string[]} mediaKeys
+   * @return {*}  {Promise<any>}
+   */
+  const getMedia = async (mediaKeys: string[]): Promise<any> => {
+    const { data } = await api.get('/api/media/', {
+      params: { key: mediaKeys },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
+  /**
    * Create a new activity record.
    *
    * @param {ICreateActivity} activity
@@ -107,6 +125,7 @@ export const useInvasivesApi = () => {
   };
 
   return {
+    getMedia,
     getActivities,
     getActivityById,
     createActivity,
