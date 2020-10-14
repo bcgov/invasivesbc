@@ -12,6 +12,7 @@ import React, { useState, useContext, useEffect } from 'react';
 
 import { ActivityStatus } from 'constants/activities';
 import { Geolocation } from '@capacitor/core';
+import { notifySuccess } from 'utils/NotificationUtils';
 
 interface IMapContainerProps {
   classes?: any;
@@ -97,12 +98,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         zoomlevels: [13, 14, 15, 16, 17],
         confirm(layer, succescallback) {
           if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
-            succescallback();
+            succescallback(notifySuccess(databaseContext, `Saved ${layer._tilesforSave.length} tiles`));
           }
         },
         confirmRemoval(layer, succescallback) {
           if (window.confirm('Remove all the stored tiles')) {
-            succescallback();
+            succescallback(notifySuccess(databaseContext, `Removed tiles`));
           }
         },
         saveText: '<span title="Save me some basemap">&#128190;</span>',
