@@ -1,11 +1,17 @@
-import { useContext, useMemo } from 'react';
-import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
+import axios from 'axios';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { IActivitySearchCriteria, ICreateActivity } from 'interfaces/useInvasivesApi-interfaces';
+import { useContext, useMemo } from 'react';
 
 const API_URL = 'https://api-mobile-dev-invasivesbc.pathfinder.gov.bc.ca';
 // const API_URL = 'http://localhost:3002';
 
+/**
+ * Returns an instance of axios with baseURL and authorization headers set.
+ *
+ * @return {*}
+ */
 const useApi = () => {
   const { keycloak } = useKeycloak();
   const instance = useMemo(() => {
@@ -21,10 +27,27 @@ const useApi = () => {
   return instance;
 };
 
+/**
+ * Returns a set of supported api methods.
+ *
+ * @return {object} object whose properties are supported api methods.
+ */
 export const useInvasivesApi = () => {
   const api = useApi();
 
   const databaseContext = useContext(DatabaseContext);
+
+  /**
+   * Fetch activities by search criteria.
+   *
+   * @param {activitiesSearchCriteria} activitiesSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
+    const { data } = await api.post(`/api/activity/`, activitiesSearchCriteria);
+
+    return data;
+  };
 
   /**
    * Fetch a signle activity by its id.
@@ -41,17 +64,17 @@ export const useInvasivesApi = () => {
   /**
    * Create a new activity record.
    *
-   * @param {*} activity
+   * @param {ICreateActivity} activity
    * @return {*}  {Promise<any>}
    */
-  const createActivity = async (activity: any): Promise<any> => {
+  const createActivity = async (activity: ICreateActivity): Promise<any> => {
     const { data } = await api.post('/api/activity', activity);
 
     return data;
   };
 
   /**
-   * Fetch the api yaml spec.
+   * Fetch the api json-schema spec.
    *
    * @return {*}  {Promise<any>}
    */
@@ -62,7 +85,7 @@ export const useInvasivesApi = () => {
   };
 
   /**
-   * Fetch the api spec and save it in the local database.
+   * Fetch the api json-schema spec and save it in the local database.
    * If the request fails (due to lack of internet connection, etc), then return the cached copy of the api spec.
    *
    * @return {*}  {Promise<any>}
@@ -82,7 +105,9 @@ export const useInvasivesApi = () => {
       return data;
     }
   };
+
   return {
+    getActivities,
     getActivityById,
     createActivity,
     getApiSpec,
