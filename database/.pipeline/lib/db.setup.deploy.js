@@ -37,7 +37,7 @@ module.exports = (settings) => {
   oc.applyRecommendedLabels(imageStreamObjects, isName, phase, `${changeId}`, instance);
   oc.importImageStreams(imageStreamObjects, isVersion, phases.build.namespace, phases.build.tag);
 
-  // Get API image stream
+  // Get database setup image stream
   const fetchedImageStreams = oc.get(`istag/${imageStreamName}`) || [];
 
   if (!fetchedImageStreams.length) {

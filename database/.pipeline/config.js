@@ -4,8 +4,6 @@ let options = require('pipeline-cli').Util.parseArguments();
 // The root config for common values
 const config = require('../../.config/config.json');
 
-const defaultHost = 'invasivebc-8ecbmv-api.pathfinder.gov.bc.ca';
-
 const name = (config.module && config.module['db']) || 'invasivesbci-db';
 
 const changeId = options.pr || `${Math.floor(Date.now() * 1000) / 60.0}`; // aka pull-request or branch
@@ -17,9 +15,6 @@ const isStaticDeployment = options.type === 'static';
 const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
-
-const staticBranches = config.staticBranches || [];
-const staticUrls = config.staticUrls || {};
 
 const processOptions = (options) => {
   const result = { ...options };
@@ -67,11 +62,7 @@ const phases = {
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    host:
-      (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
-    env: 'dev',
-    replicas: 1,
-    maxReplicas: 2
+    env: 'dev'
   },
   test: {
     namespace: '8ecbmv-test',
@@ -82,10 +73,7 @@ const phases = {
     instance: `${name}-test`,
     version: `${version}`,
     tag: `test-${version}`,
-    host: staticUrls.test,
-    env: 'test',
-    replicas: 3,
-    maxReplicas: 5
+    env: 'test'
   },
   prod: {
     namespace: '8ecbmv-prod',
@@ -96,10 +84,7 @@ const phases = {
     instance: `${name}-prod`,
     version: `${version}`,
     tag: `prod-${version}`,
-    host: staticUrls.prod,
-    env: 'prod',
-    replicas: 3,
-    maxReplicas: 6
+    env: 'prod'
   }
 };
 
@@ -109,4 +94,4 @@ process.on('unhandledRejection', (reason) => {
   process.exit(1);
 });
 
-module.exports = exports = { phases, options, staticBranches };
+module.exports = exports = { phases, options };
