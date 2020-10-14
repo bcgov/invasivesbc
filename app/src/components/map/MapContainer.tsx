@@ -93,23 +93,21 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       })
       .addTo(map);
 
-    const saveBaseControl = L.control
-      .savetiles(esriBase, {
-        zoomlevels: [13, 14, 15, 16, 17],
-        confirm(layer, succescallback) {
-          if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
-            succescallback(notifySuccess(databaseContext, `Saved ${layer._tilesforSave.length} tiles`));
-          }
-        },
-        confirmRemoval(layer, succescallback) {
-          if (window.confirm('Remove all the stored tiles')) {
-            succescallback(notifySuccess(databaseContext, `Removed tiles`));
-          }
-        },
-        saveText: '<span title="Save me some basemap">&#128190;</span>',
-        rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
-      })
-      .addTo(map);
+    L.control.savetiles(esriBase, {
+      zoomlevels: [13, 14, 15, 16, 17],
+      confirm(layer, succescallback) {
+        if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
+          succescallback(notifySuccess(databaseContext, `Saved ${layer._tilesforSave.length} tiles`));
+        }
+      },
+      confirmRemoval(layer, succescallback) {
+        if (window.confirm('Remove all the stored tiles')) {
+          succescallback(notifySuccess(databaseContext, `Removed tiles`));
+        }
+      },
+      saveText: '<span title="Save me some basemap">&#128190;</span>',
+      rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
+    }).addTo(map);
 
     esriBase.on('saveend', (e) => {
       console.log(`Saved ${e.lengthSaved} tiles`);
