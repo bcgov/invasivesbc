@@ -4,7 +4,7 @@ labels:
   template: postgresql-persistent-template
 metadata:
   creationTimestamp: null
-  name: postgresql-dc
+  name: invasivesbci-db-dc
 parameters:
   - description: The name of the OpenShift Service exposed for the database.
     displayName: Database Service Name
@@ -46,24 +46,6 @@ parameters:
     generate: expression
     name: POSTGRESQL_ADMIN_PASSWORD
     required: true
-  - description: Oracle FDW name
-    name: FDW_NAME
-    value: ''
-  - description: Oracle FDW remote schema name
-    name: FDW_FOREIGN_SCHEMA
-    value: ''
-  - description: Oracle FDW remote server name
-    name: FDW_FOREIGN_SERVER
-    value: ''
-  - description: Oracle FDW user
-    name: FDW_USER
-    value: ''
-  - description: Oracle FDW pass
-    name: FDW_PASS
-    value: ''
-  - description: Oracle FDW postgres schema
-    name: FDW_SCHEMA
-    value: ''
   - description: Name of the PostgreSQL database accessed.
     displayName: PostgreSQL Database Name
     name: POSTGRESQL_DATABASE
@@ -104,19 +86,13 @@ objects:
         template.openshift.io/expose-password: "{.data['database-password']}"
         template.openshift.io/expose-admin-password: "{.data['database-admin-password']}"
         template.openshift.io/expose-admin-username: "{.data['database-admin-user']}"
-        as-copy-of: invasivebc
+        as-copy-of: invasivesbci-db
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
       database-name: '${POSTGRESQL_DATABASE}'
       database-password: '${POSTGRESQL_PASSWORD}'
       database-admin-password: '${POSTGRESQL_ADMIN_PASSWORD}'
-      database-user: ''
-      oracle-fdw-name: ''
-      oracle-fdw-foreign-schema: ''
-      oracle-fdw-foreign-server: ''
-      oracle-fdw-user: ''
-      oracle-fdw-password: ''
-      oracle-fdw-schema: ''
+      database-user: '${POSTGRESQL_USER}'
   - apiVersion: v1
     kind: Service
     metadata:
@@ -198,36 +174,6 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: database-name
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: FDW_NAME
-                  valueFrom:
-                    secretKeyRef:
-                      key: oracle-fdw-name
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: FDW_FOREIGN_SCHEMA
-                  valueFrom:
-                    secretKeyRef:
-                      key: oracle-fdw-foreign-schema
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: FDW_FOREIGN_SERVER
-                  valueFrom:
-                    secretKeyRef:
-                      key: oracle-fdw-foreign-server
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: FDW_USER
-                  valueFrom:
-                    secretKeyRef:
-                      key: oracle-fdw-user
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: FDW_PASS
-                  valueFrom:
-                    secretKeyRef:
-                      key: oracle-fdw-password
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: FDW_SCHEMA
-                  valueFrom:
-                    secretKeyRef:
-                      key: oracle-fdw-schema
                       name: '${DATABASE_SERVICE_NAME}'
                 - name: PGCRYPTO_EXTENSION
                   value: 'Y'

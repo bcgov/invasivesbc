@@ -21,31 +21,6 @@ module.exports = (settings) => {
 
   let objects = [];
 
-  console.log('=================================');
-  console.log('=================================');
-  console.log('=================================');
-  console.log(JSON.stringify(options));
-  console.log('----------');
-  console.log(JSON.stringify(phases));
-  console.log('----------');
-  const x = {
-    NAME: phases[phase].name,
-    DBNAME: phases[phase].dbName,
-    SUFFIX: phases[phase].suffix,
-    VERSION: phases[phase].tag,
-    HOST: phases[phase].host,
-    CHANGE_ID: phases.build.changeId || changeId,
-    ENVIRONMENT: phases[phase].env || 'dev',
-    DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
-    CERTIFICATE_URL: phases[phase].certificateURL,
-    REPLICAS: phases[phase].replicas || 1,
-    REPLICA_MAX: phases[phase].maxReplicas || 1
-  };
-  console.log(JSON.stringify(x));
-  console.log('=================================');
-  console.log('=================================');
-  console.log('=================================');
-
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.dc.yaml`, {
       param: {

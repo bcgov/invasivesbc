@@ -1,4 +1,62 @@
 apiVersion: v1
+kind: Template
+metadata:
+  resourceVersion: ''
+  selfLink: ''
+  name: invasivesbci-api-dc
+parameters:
+  - name: NAME
+    value: invasivesbci-api
+  - name: DBNAME
+    value: invasivesbci-db
+  - name: SUFFIX
+    value: '-dev'
+  - name: VERSION
+    description: Version of the application
+    value: '1.0.0'
+  - name: HOST
+    description: Host name of the application
+    required: true
+  - name: CHANGE_ID
+    description: Change id of the project. This will help to pull image stream
+    required: true
+    value: '0'
+  - name: DB_SERVICE_NAME
+    description: 'Database service name associated with deployment'
+    required: true
+  - name: ENVIRONMENT
+    description: Application Environment type variable
+    required: true
+    value: 'dev'
+  - name: CERTIFICATE_URL
+    description: Authentication certificate urls
+    required: true
+    value: 'https://sso.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs'
+  - name: CPU_REQ
+    value: '500m'
+  - name: CPU_LIMIT
+    value: '750m'
+  - name: MEMORY_REQ
+    value: '1Gi'
+  - name: MEMORY_LIMIT
+    value: '2Gi'
+  - name: REPLICAS
+    value: '1'
+  - name: API_PORT_DEFAULT
+    value: '3002'
+  - name: API_PORT_DEFAULT_NAME
+    description: Api default port name
+    value: '3002-tcp'
+  - name: APP_PORT_OTHER_NAME
+    description: Other reserved port resource name
+    value: '8088-tcp'
+  - name: APP_PORT_OTHER
+    value: '8080'
+  - name: OBJECT_STORE_SECRETS
+    value: 'invasivesbci-object-store'
+  - name: REPLICA_MAX
+    required: true
+    value: '1'
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -103,9 +161,9 @@ objects:
               imagePullPolicy: Always
               name: api
               ports:
-                - containerPort: '${{PORT}}'
+                - containerPort: '${{API_PORT_DEFAULT}}'
                   protocol: TCP
-                - containerPort: 8080
+                - containerPort: ${APP_PORT_OTHER}
                   protocol: TCP
               resources:
                 limits:
@@ -186,14 +244,14 @@ objects:
       name: ${NAME}${SUFFIX}
     spec:
       ports:
-        - name: ${NAME}-${APP_PORT_DEFAULT}
-          port: '${{PORT}}'
+        - name: ${NAME}-${API_PORT_DEFAULT_NAME}
+          port: ${{API_PORT_DEFAULT}}
           protocol: TCP
-          targetPort: '${{PORT}}'
-        - name: ${APP_PORT_OTHER}
-          port: 8080
+          targetPort: ${{API_PORT_DEFAULT}}
+        - name: ${NAME}-${APP_PORT_OTHER_NAME}
+          port: ${{APP_PORT_OTHER}}
           protocol: TCP
-          targetPort: 8080
+          targetPort: ${{APP_PORT_OTHER}}
       selector:
         deploymentconfig: ${NAME}${SUFFIX}
       sessionAffinity: None
@@ -213,7 +271,7 @@ objects:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
       port:
-        targetPort: ${NAME}-${APP_PORT_DEFAULT}
+        targetPort: ${NAME}-${API_PORT_DEFAULT_NAME}
       to:
         kind: Service
         name: ${NAME}${SUFFIX}
@@ -237,56 +295,3 @@ objects:
         name: ${NAME}${SUFFIX}
       cpuUtilization:
         targetPercentage: 95
-kind: Template
-metadata:
-  resourceVersion: ''
-  selfLink: ''
-parameters:
-  - name: NAME
-    value: invasivesbci-api
-  - name: DBNAME
-    value: invasivesbci-api
-  - name: SUFFIX
-    value: '-dev'
-  - name: VERSION
-    description: Version of the application
-    value: '1.0.0'
-  - name: HOST
-    description: Host name of the application
-    required: true
-  - name: CHANGE_ID
-    description: Change id of the project. This will help to pull image stream
-    required: true
-    value: '0'
-  - name: DB_SERVICE_NAME
-    description: 'Database service name associated with deployment'
-    required: true
-  - name: ENVIRONMENT
-    description: Application Environment type variable
-    required: true
-    value: 'dev'
-  - name: CERTIFICATE_URL
-    description: Authentication certificate urls
-    required: true
-    value: 'https://sso.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs'
-  - name: CPU_REQ
-    value: '500m'
-  - name: CPU_LIMIT
-    value: '750m'
-  - name: MEMORY_REQ
-    value: '1Gi'
-  - name: MEMORY_LIMIT
-    value: '2Gi'
-  - name: REPLICAS
-    value: '1'
-  - name: APP_PORT_DEFAULT
-    value: '3002-tcp'
-  - name: APP_PORT_OTHER
-    value: '8080-tcp'
-  - name: PORT
-    value: '3002'
-  - name: OBJECT_STORE_SECRETS
-    value: 'invasivesbci-object-store'
-  - name: REPLICA_MAX
-    required: true
-    value: '1'

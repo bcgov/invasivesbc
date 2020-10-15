@@ -15,10 +15,10 @@ parameters:
     displayName: Name Suffix
     description: A suffix appended to all objects
     required: true
-    value: "-dev"
+    value: '-dev'
   - name: VERSION
     required: true
-    value: "1.0"
+    value: '1.0'
   - name: SOURCE_CONTEXT_DIR
     required: true
     value: api
@@ -46,7 +46,7 @@ objects:
       annotations:
         description: Nodejs Base Image
       labels:
-        shared: "true"
+        shared: 'true'
     spec:
       lookupPolicy:
         local: false
@@ -62,19 +62,19 @@ objects:
   - kind: ImageStream
     apiVersion: v1
     metadata:
-      name: "${NAME}"
-      creationTimestamp:
+      name: '${NAME}'
+      creationTimestamp: null
       annotations:
         description: Nodejs Runtime Image
       labels:
-        shared: "true"
+        shared: 'true'
     spec:
       lookupPolicy:
         local: false
   - apiVersion: v1
     kind: BuildConfig
     metadata:
-      name: "${NAME}${SUFFIX}"
+      name: '${NAME}${SUFFIX}'
       creationTimestamp:
       labels: {}
       annotations: {}
@@ -84,7 +84,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: "${NAME}:${VERSION}"
+          name: '${NAME}:${VERSION}'
       postCommit: {}
       resources:
         limits:
@@ -95,10 +95,10 @@ objects:
           memory: 2Gi
       runPolicy: SerialLatestOnly
       source:
-        contextDir: "${SOURCE_CONTEXT_DIR}"
+        contextDir: '${SOURCE_CONTEXT_DIR}'
         git:
-          uri: "${SOURCE_REPOSITORY_URL}"
-          ref: "${SOURCE_REPOSITORY_REF}"
+          uri: '${SOURCE_REPOSITORY_URL}'
+          ref: '${SOURCE_REPOSITORY_REF}'
         type: Git
       strategy:
         dockerStrategy:
