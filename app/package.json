@@ -30,6 +30,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^8.0.3",
+    "@tmcw/togeojson": "^4.2.0",
     "axios": "^0.20.0",
     "clsx": "~1.1.1",
     "cordova-plugin-inappbrowser": "^4.0.0",
@@ -45,6 +46,7 @@
     "leaflet.locatecontrol": "^0.72.0",
     "leaflet.offline": "^2.0.0-beta.4",
     "leaflet.tilelayer.pouchdbcached": "^1.0.0",
+    "material-ui-dropzone": "^3.5.0",
     "moment": "^2.29.0",
     "node-sass": "~4.14.1",
     "pouchdb": "^7.2.2",
@@ -60,7 +62,8 @@
     "react-router-dom": "^5.1.2",
     "rxjs": "^6.6.3",
     "typescript": "3.8.3",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.0",
+    "xmldom": "^0.3.0"
   },
   "devDependencies": {
     "@capacitor/cli": "2.4.0",
