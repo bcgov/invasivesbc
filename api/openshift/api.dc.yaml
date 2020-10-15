@@ -53,7 +53,7 @@ parameters:
   - name: APP_PORT_OTHER
     value: '8080'
   - name: OBJECT_STORE_SECRETS
-    description: Secrets used to read/write to the S3 storage
+    description: Secrets used to read and write to the S3 storage
     value: 'invasivesbci-object-store'
   - name: REPLICA_MAX
     required: true
