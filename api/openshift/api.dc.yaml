@@ -162,9 +162,9 @@ objects:
               imagePullPolicy: Always
               name: api
               ports:
-                - containerPort: '${{API_PORT_DEFAULT}}'
+                - containerPort: ${{API_PORT_DEFAULT}}
                   protocol: TCP
-                - containerPort: ${APP_PORT_OTHER}
+                - containerPort: ${{APP_PORT_OTHER}}
                   protocol: TCP
               resources:
                 limits:
@@ -177,7 +177,7 @@ objects:
                 failureThreshold: 10
                 httpGet:
                   path: /api/misc/version
-                  port: 3002
+                  port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 100
                 periodSeconds: 30
@@ -187,7 +187,7 @@ objects:
                 failureThreshold: 10
                 httpGet:
                   path: /api/misc/version
-                  port: 3002
+                  port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 80
                 periodSeconds: 30
