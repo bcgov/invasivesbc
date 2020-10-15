@@ -54,7 +54,7 @@ jobs:
         run: |
           npm install
           # npm ci
-          DEBUG=* npm run build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run db:build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
 
   # Build the Database Setup image
   buildDatabaseSetup:
