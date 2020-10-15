@@ -116,17 +116,17 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: database-user
-                      name: ${DBNAME}${SUFFIX}
+                      name: ${DB_SERVICE_NAME}
                 - name: DB_PASS
                   valueFrom:
                     secretKeyRef:
                       key: database-password
-                      name: ${DBNAME}${SUFFIX}
+                      name: ${DB_SERVICE_NAME}
                 - name: DB_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: database-name
-                      name: ${DBNAME}${SUFFIX}
+                      name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
                   value: '5432'
                 - name: APP_CERTIFICATE_URL
