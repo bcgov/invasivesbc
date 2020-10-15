@@ -63,7 +63,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [drawnItems] = useState(new L.FeatureGroup());
 
   useEffect(() => {
-    if (props && extent) {
+    if (props?.activity && extent) {
       saveExtent(props.activity, extent);
     }
   }, [extent]);
