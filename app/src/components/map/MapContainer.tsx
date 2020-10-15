@@ -68,7 +68,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
   }, [extent]);
 
-  const mapSetup = (drawnItems: any) => {
+  const mapSetup = (drawnItemsInput: any) => {
     console.log('Map componentDidMount!');
 
     var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
@@ -93,21 +93,23 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       })
       .addTo(map);
 
-    L.control.savetiles(esriBase, {
-      zoomlevels: [13, 14, 15, 16, 17],
-      confirm(layer, succescallback) {
-        if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
-          succescallback(notifySuccess(databaseContext, `Saved ${layer._tilesforSave.length} tiles`));
-        }
-      },
-      confirmRemoval(layer, succescallback) {
-        if (window.confirm('Remove all the stored tiles')) {
-          succescallback(notifySuccess(databaseContext, `Removed tiles`));
-        }
-      },
-      saveText: '<span title="Save me some basemap">&#128190;</span>',
-      rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
-    }).addTo(map);
+    L.control
+      .savetiles(esriBase, {
+        zoomlevels: [13, 14, 15, 16, 17],
+        confirm(layer, succescallback) {
+          if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
+            succescallback(notifySuccess(databaseContext, `Saved ${layer._tilesforSave.length} tiles`));
+          }
+        },
+        confirmRemoval(layer, succescallback) {
+          if (window.confirm('Remove all the stored tiles')) {
+            succescallback(notifySuccess(databaseContext, `Removed tiles`));
+          }
+        },
+        saveText: '<span title="Save me some basemap">&#128190;</span>',
+        rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
+      })
+      .addTo(map);
 
     esriBase.on('saveend', (e) => {
       console.log(`Saved ${e.lengthSaved} tiles`);
@@ -125,7 +127,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     );
 
-    map.addLayer(drawnItems);
+    map.addLayer(drawnItemsInput);
 
     var drawControl = new L.Control.Draw({
       position: 'topright',
@@ -134,7 +136,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         circle: true
       },
       edit: {
-        featureGroup: drawnItems,
+        featureGroup: drawnItemsInput,
         remove: true,
         edit: true
       }
@@ -174,13 +176,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: feature.layer.getRadius() } };
       }
       setGeo(aGeo);
-      drawnItems.addLayer(feature.layer);
+      drawnItemsInput.addLayer(feature.layer);
     });
 
     map.on('draw:drawstart', function () {
       console.log('draw:drawstart');
       // this works ok in context of needing one geo, nfg if we need to draw a few different things
-      drawnItems.clearLayers(); // Clear previous shape
+      drawnItemsInput.clearLayers(); // Clear previous shape
       setGeo(null);
     });
 
@@ -190,11 +192,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         The current feature isn't passed to this function
         So grab it from the acetate layer
       */
-      let aGeo = drawnItems?.toGeoJSON()?.features[0];
+      let aGeo = drawnItemsInput?.toGeoJSON()?.features[0];
 
       // If this is a circle feature... Grab the radius and store in the GeoJSON
-      if (drawnItems.getLayers()[0]._mRadius) {
-        const radius = drawnItems.getLayers()[0]?.getRadius();
+      if (drawnItemsInput.getLayers()[0]._mRadius) {
+        const radius = drawnItemsInput.getLayers()[0]?.getRadius();
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
       }
 
@@ -244,9 +246,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     */
   };
 
-  const mapUpdate = (drawnItems: any) => {
+  const mapUpdate = (drawnItemsInput: any) => {
     console.log('map update');
-    //    drawnItems.clearLayers(); // Clear previous shape
+    //    drawnItemsInput.clearLayers(); // Clear previous shape
     const featureCollectionsToDraw = [];
     if (props.activity && props.activity.geometry) {
       console.log('is there a geom for this activity');
@@ -281,7 +283,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             }
           },
           onEachFeature: function (_: any, layer: any) {
-            drawnItems.addLayer(layer);
+            drawnItemsInput.addLayer(layer);
           }
         });
       });
