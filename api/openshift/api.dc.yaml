@@ -53,6 +53,7 @@ parameters:
   - name: APP_PORT_OTHER
     value: '8080'
   - name: OBJECT_STORE_SECRETS
+    description: Secrets used to read/write to the S3 storage
     value: 'invasivesbci-object-store'
   - name: REPLICA_MAX
     required: true
@@ -140,22 +141,22 @@ objects:
                 - name: OBJECT_STORE_URL
                   valueFrom:
                     secretKeyRef:
-                      key: OBJECT_STORE_URL
+                      key: object_store_url
                       name: ${OBJECT_STORE_SECRETS}
                 - name: OBJECT_STORE_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
-                      key: OBJECT_STORE_ACCESS_KEY_ID
+                      key: object_store_access_key_id
                       name: ${OBJECT_STORE_SECRETS}
                 - name: OBJECT_STORE_SECRET_KEY_ID
                   valueFrom:
                     secretKeyRef:
-                      key: OBJECT_STORE_SECRET_KEY_ID
+                      key: object_store_secret_key_id
                       name: ${OBJECT_STORE_SECRETS}
                 - name: OBJECT_STORE_BUCKET_NAME
                   valueFrom:
                     secretKeyRef:
-                      key: OBJECT_STORE_BUCKET_NAME
+                      key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
               image: ' '
               imagePullPolicy: Always
