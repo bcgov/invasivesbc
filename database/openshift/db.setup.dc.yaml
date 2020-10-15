@@ -5,69 +5,54 @@ metadata:
   creationTimestamp: null
 parameters:
   - name: IMAGE
-    description: "Image for pod"
+    description: 'Image for pod'
     required: true
   - name: NAME
-    value: invasivesbc-api
+    value: invasivesbci-db-setup
   - name: SUFFIX
-    value: "-dev"
+    value: '-dev'
   - name: VERSION
     description: Version of the application
-    value: "1.0.0"
+    value: '1.0.0'
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true
-    value: "0"
+    value: '0'
   - name: DB_SERVICE_NAME
-    description: "Database service name associated with deployment"
+    description: 'Database service name associated  with deployment'
     required: true
   - name: ENVIRONMENT
     description: Application Environment type variable
     required: true
-    value: "dev"
+    value: 'dev'
   - name: NODE_ENV
     description: Application Environment type variable
     required: true
-    value: "dev"
-  - name: CERTIFICATE_URL
-    description: Authentication certificate urls
-    required: true
-    value: "https://sso.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs"
+    value: 'dev'
   - name: CPU_REQ
-    value: "500m"
+    value: '500m'
   - name: CPU_LIMIT
-    value: "750m"
+    value: '750m'
   - name: MEMORY_REQ
-    value: "1Gi"
+    value: '1Gi'
   - name: MEMORY_LIMIT
-    value: "2Gi"
+    value: '2Gi'
   - name: REPLICAS
-    value: "1"
-  - name: APP_PORT_DEFAULT
-    value: "3002-tcp"
-  - name: APP_PORT_OTHER
-    value: "8080-tcp"
-  - name: PORT
-    value: "3002"
+    value: '1'
 objects:
   - kind: Pod
     apiVersion: v1
     metadata:
-      name: "${NAME}"
+      name: '${NAME}'
       creationTimestamp:
       labels: {}
     spec:
       containers:
         - name: test
-          image: "${IMAGE}"
-          command:
-            - container-entrypoint
-            - bash
-            - -c
-            - npm run migrate:latest;
+          image: '${IMAGE}'
           resources:
             limits:
-              cpu: "1"
+              cpu: '1'
               memory: 1.5Gi
             requests:
               cpu: 500m
@@ -91,15 +76,13 @@ objects:
                   key: database-name
                   name: ${DB_SERVICE_NAME}
             - name: DB_PORT
-              value: "5432"
-            - name: APP_CERTIFICATE_URL
-              value: ${CERTIFICATE_URL}
+              value: '5432'
             - name: CHANGE_VERSION
               value: ${CHANGE_ID}
             - name: ENVIRONMENT
               value: ${ENVIRONMENT}
             - name: NODE_ENV
-              value: ${ENVIRONMENT}
+              value: ${NODE_ENV}
             - name: VERSION
               value: ${VERSION}
           imagePullPolicy: Always

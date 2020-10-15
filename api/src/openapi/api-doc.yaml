@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   version: 0.0.0
-  title: invasivesbc-api
+  title: invasivesbci-api
   description: API for InvasivesBC.
   license:
     name: Apache 2.0

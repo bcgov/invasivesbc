@@ -3,7 +3,7 @@ version: '3.5'
 services:
   ## Build postgres docker image
   db:
-    image: ${PROJECT_NAME}-${TAG}-postgress-img
+    image: ${PROJECT_NAME}-${TAG}-postgres-img
     container_name: ${PROJECT_NAME}-${TAG}-db
     build:
       context: ./database/.docker/db
@@ -19,6 +19,32 @@ services:
       - local-network
     volumes:
       - postgres:/var/lib/postgresql/data
+
+  ## Run the database migrations and seeding
+  db_setup:
+    image: ${PROJECT_NAME}-${TAG}-postgres-setup-img
+    container_name: ${PROJECT_NAME}-${TAG}-db-setup
+    build:
+      context: ./database
+      dockerfile: ./.docker/db/Dockerfile.setup
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - ENVIRONMENT=local
+      - NODE_ENV=local
+    networks:
+      - local-network
+    links:
+      - db
+    depends_on:
+      - db
+      # Doesn't actually depend on api_dependency, but we need a way to delay this from running so the database is fully
+      # started before the setup runs. Possible better solutions:
+      # https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
+      - api_dependency
 
   ## Build the api npm dependencies docker image
   api_dependency:
@@ -64,8 +90,8 @@ services:
       - db
     depends_on:
       - db
+      - db_setup
       - api_dependency
-    restart: 'no'
 
   ## Build the app npm dependencies docker image
   app_dependency:
@@ -77,7 +103,7 @@ services:
     volumes:
       - npmcache_app:/opt/app-root/src/node_modules
 
-  # https://blog.knoldus.com/deployment-with-docker-in-ionic/ #########################################################
+  # https://blog.knoldus.com/deployment-with-docker-in-ionic/
 
   ## Build the app docker image
   app:

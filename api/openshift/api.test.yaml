@@ -8,7 +8,7 @@ parameters:
     description: "Image for pod"
     required: true
   - name: NAME
-    value: invasivesbc-api
+    value: invasivesbci-api
   - name: SUFFIX
     value: "-dev"
   - name: VERSION
@@ -45,12 +45,8 @@ parameters:
     value: "8080-tcp"
   - name: PORT
     value: "3002"
-  - name: DB_CLEAN_UP
-    value: "none"
-  - name: DB_SEED
-    value: "yes"
   - name: OBJECT_STORE_SECRETS
-    value: "invasivesbc-object-store"
+    value: "invasivesbci-object-store"
 objects:
   - kind: Pod
     apiVersion: v1
@@ -102,10 +98,6 @@ objects:
               value: ${ENVIRONMENT}
             - name: VERSION
               value: ${VERSION}
-            - name: DB_CLEAN_UP
-              value: ${DB_CLEAN_UP}
-            - name: DB_SEED
-              value: ${DB_SEED}
             - name: TEST_RUN
               value: "yes"
             - name: OBJECT_STORE_URL

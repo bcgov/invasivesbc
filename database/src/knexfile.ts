@@ -1,11 +1,3 @@
-import dotenv from 'dotenv';
-
-const env = process.env.NODE_ENV || 'local';
-
-if (env === 'local') {
-  dotenv.config({ path: './env_config/env.local' });
-}
-
 module.exports = {
   local: {
     client: 'postgresql',
@@ -22,10 +14,11 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
-      directory: 'src/database/migrations'
+      directory: './migrations'
     },
     seeds: {
-      directory: 'src/database/seeds'
+      tableName: 'seed',
+      directory: './seeds'
     }
   },
   dev: {
@@ -43,7 +36,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
-      directory: 'src/database/migrations'
+      directory: './migrations'
     }
   },
   test: {
@@ -61,7 +54,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
-      directory: 'src/database/migrations'
+      directory: './migrations'
     }
   },
   prod: {
@@ -79,7 +72,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
-      directory: 'src/database/migrations'
+      directory: './migrations'
     }
   }
 };

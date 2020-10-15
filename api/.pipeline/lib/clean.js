@@ -3,15 +3,16 @@ const { OpenShiftClientX } = require('pipeline-cli');
 const checkAndClean = require('../utils/checkAndClean');
 
 /**
- * Run OC commands to clean all build and deployment artifacts (pods, etc).
+ * Run OC commands to clean all build and deployment artifacts (pods, imagestreams, builds/deployment configs, etc).
  *
  * @param {*} settings
  */
-module.exports = settings => {
+module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
   const target_phase = options.env;
+
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
 
   for (let phaseKey in phases) {
     if (!phases.hasOwnProperty(phaseKey)) {
@@ -31,7 +32,7 @@ module.exports = settings => {
     });
 
     // Clean build configs
-    buildConfigs.forEach(buildConfig => {
+    buildConfigs.forEach((buildConfig) => {
       if (buildConfig.spec.output.to.kind == 'ImageStreamTag') {
         oc.delete([`ImageStreamTag/${buildConfig.spec.output.to.name}`], {
           'ignore-not-found': 'true',
@@ -48,8 +49,8 @@ module.exports = settings => {
     });
 
     // Clean deployment configs
-    deploymentConfigs.forEach(deploymentConfig => {
-      deploymentConfig.spec.triggers.forEach(trigger => {
+    deploymentConfigs.forEach((deploymentConfig) => {
+      deploymentConfig.spec.triggers.forEach((trigger) => {
         if (trigger.type == 'ImageChange' && trigger.imageChangeParams.from.kind == 'ImageStreamTag') {
           oc.delete([`ImageStreamTag/${trigger.imageChangeParams.from.name}`], {
             'ignore-not-found': 'true',
@@ -60,7 +61,8 @@ module.exports = settings => {
       });
     });
 
-    // Cleaning other pods
+    // Extra cleaning for any disposable 'build' items (database migration/seeding pods, test pods, etc)
+    // This should include anything that is only run/used once, and can be deleted afterwards.
     if (phaseKey !== 'build') {
       const newOC = new OpenShiftClientX(Object.assign({ namespace: phases[phaseKey].namespace }, options));
       const setupPod = `${phases[phaseKey].name}${phases[phaseKey].suffix}-setup`;

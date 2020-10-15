@@ -1,0 +1,30 @@
+{
+  "name": "invasivesbc-db",
+  "version": "0.0.0",
+  "description": "Database migrations/seeding for InvasivesBC API",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcgov/invasivesbc.git"
+  },
+  "engines": {
+    "node": ">= 10.0.0",
+    "npm": ">= 6.0.0"
+  },
+  "scripts": {
+    "setup": "npm-run-all -l -s migrate:latest seed",
+    "migrate:latest": "knex migrate:latest --knexfile ./src/knexfile.ts",
+    "migrate:rollback": "knex migrate:rollback --knexfile ./src/knexfile.ts",
+    "seed": "knex seed:run --knexfile ./src/knexfile.ts"
+  },
+  "dependencies": {
+    "knex": "^0.21.6",
+    "pg": "~8.3.0",
+    "typescript": "~3.9.7"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.24",
+    "npm-run-all": "~4.1.5",
+    "ts-node": "~8.10.2"
+  }
+}

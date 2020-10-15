@@ -1,8 +1,16 @@
 {
-  "name": "invasivesbc-app",
-  "version": "0.0.1",
+  "name": "invasivesbci-app",
+  "version": "0.0.0",
   "description": "Invasives BC - Cross Platform 'Ionic' Application",
-  "private": true,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcgov/invasivesbc.git"
+  },
+  "engines": {
+    "node": ">= 10.0.0",
+    "npm": ">= 6.0.0"
+  },
   "dependencies": {
     "@bcgov/bc-sans": "^1.0.1",
     "@capacitor/android": "^2.4.0",
