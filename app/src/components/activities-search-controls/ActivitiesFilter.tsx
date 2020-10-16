@@ -13,11 +13,13 @@ import {
 import { Delete } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
+import SpeciesTree from './SpeciesInput';
 
 interface IActivityChoices {
   activityType: string;
   includePhotos: boolean;
   includeForms: boolean;
+  species: [number];
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -76,6 +78,10 @@ const useStyles = makeStyles((theme) => ({
   totalStorageUsageBar: {
     height: '20px',
     borderRadius: '20px'
+  },
+  switch: {
+    colorPrimary: theme.palette.secondary.main,
+    colorSecondary: theme.palette.secondary.dark
   },
   deleteActivityChoicesButton: {
     color: theme.palette.text.secondary,
@@ -148,7 +154,8 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
           addActivityChoice({
             activityType: 'Observation',
             includePhotos: false,
-            includeForms: false
+            includeForms: false,
+            species: [null]
           });
         }}>
         add new
@@ -198,6 +205,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                   <Grid item xs={3}>
                     <InputLabel>Forms</InputLabel>
                     <Switch
+                      className={classes.switch}
                       checked={activityChoices[index].includeForms}
                       onChange={(e) => {
                         updateActivityChoice(
@@ -219,6 +227,11 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                       onClick={(e) => {
                         deleteActivityChoice(index);
                       }}></Button>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3}>
+                  <Grid item xs={9}>
+                    <SpeciesTree />
                   </Grid>
                 </Grid>
               </Paper>

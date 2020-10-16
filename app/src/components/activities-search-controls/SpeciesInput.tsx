@@ -5,6 +5,7 @@ import { TreeView } from '@material-ui/lab';
 import Brightness1SharpIcon from '@material-ui/icons/Brightness1Sharp';
 import Brightness2SharpIcon from '@material-ui/icons/Brightness2Sharp';
 import Brightness3SharpIcon from '@material-ui/icons/Brightness3Sharp';
+import { Input, InputLabel, TextField } from '@material-ui/core';
 
 export const SpeciesTree = () => {
   const data = {
@@ -36,6 +37,7 @@ export const SpeciesTree = () => {
 
   return (
     <>
+      <TextField label="Species" />
       <TreeView
         defaultCollapseIcon={<Brightness1SharpIcon />}
         defaultExpandIcon={<Brightness2SharpIcon />}
