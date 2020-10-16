@@ -31,35 +31,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary
   },
-  mapContainer: {
-    height: '600px',
-    position: 'fixed'
-  },
-  mapGridItem: {
-    //position: 'fixed',
-    //width: '500px',
-  },
-  map: {
-    height: '500px',
-    width: '100%'
-  },
-  kmlContainer: {
-    height: '100%',
-    width: '100%'
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightRegular
-  },
-  layerPicker: {
-    height: '100%',
-    width: '100%'
-  },
   activityRecordPicker: {
-    height: '100%',
-    width: '100%'
-  },
-  pointOfInterest: {
     height: '100%',
     width: '100%'
   },
@@ -69,15 +41,6 @@ const useStyles = makeStyles((theme) => ({
   activityRecordPickerAddButton: {
     color: theme.palette.text.primary,
     backgroundcolor: theme.palette.primary.light
-  },
-  //TODO:  make colour of bar depend on how much is used (red = full/bad)
-  tripStorageUsageBar: {
-    height: '20px',
-    borderRadius: '20px'
-  },
-  totalStorageUsageBar: {
-    height: '20px',
-    borderRadius: '20px'
   },
   switch: {
     colorPrimary: theme.palette.secondary.main,

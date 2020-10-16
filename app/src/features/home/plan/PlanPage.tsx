@@ -2,21 +2,13 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Button,
   Container,
   Grid,
-  InputLabel,
-  List,
-  ListItem,
   makeStyles,
-  MenuItem,
   Paper,
-  Select,
   LinearProgress,
-  Switch,
   Typography
 } from '@material-ui/core';
-import Delete from '@material-ui/icons/Delete';
 import ManageDatabaseContainer from 'components/database/ClearDatabase';
 import MapContainer from 'components/map/MapContainer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -85,10 +77,6 @@ const useStyles = makeStyles((theme) => ({
   totalStorageUsageBar: {
     height: '20px',
     borderRadius: '20px'
-  },
-  deleteActivityChoicesButton: {
-    color: theme.palette.text.secondary,
-    backgroundcolor: theme.palette.primary.dark
   }
 }));
 
