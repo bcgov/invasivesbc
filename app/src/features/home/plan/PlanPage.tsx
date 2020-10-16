@@ -20,13 +20,9 @@ import Delete from '@material-ui/icons/Delete';
 import ManageDatabaseContainer from 'components/database/ClearDatabase';
 import MapContainer from 'components/map/MapContainer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useContext, useEffect, useState } from 'react';
-
-import { kml } from '@tmcw/togeojson';
+import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ExpandMore } from '@material-ui/icons';
-// node doesn't have xml parsing or a dom. use xmldom
-const DOMParser = require('xmldom').DOMParser;
 
 interface IPlanPageProps {
   classes?: any;
@@ -94,44 +90,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundcolor: theme.palette.primary.dark
   }
 }));
-
-const KMLUpload: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
-
-  // Raw file kept in useState var and converted to Geo before hitting db:
-  const [aFile, setAFile] = useState(null);
-
-  const saveKML = async (input: File) => {
-    const fileAsString = await input.text().then((xmlString) => {
-      return xmlString;
-    });
-    const DOMFromXML = new DOMParser().parseFromString(fileAsString);
-    const geoFromDOM = kml(DOMFromXML);
-    console.log('geo');
-
-    if (geoFromDOM) {
-      console.log('saving geo feat collection');
-      databaseContext.database.upsert('theShapeAsGeoFeatureCollection', (shapeLastTime) => {
-        return geoFromDOM;
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (aFile) {
-      saveKML(aFile);
-    }
-  }, [aFile]);
-
-  return (
-    <DropzoneArea
-      dropzoneText="Upload KML here"
-      onChange={(e) => {
-        setAFile(e[0]);
-      }}
-    />
-  );
-};
 
 interface IActivityChoices {
   activityType: string;
@@ -213,7 +171,7 @@ const ActivityDataToCacheChooser: React.FC<any> = (props) => {
         {activityChoices.map((activityChoice, index) => {
           return (
             <ListItem key={index}>
-              <Paper className={classes.activityRecordQueryParmsRow}>
+              <Paper elevation={5} className={classes.activityRecordQueryParmsRow}>
                 <Grid container spacing={3}>
                   <Grid item xs={3}>
                     <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
