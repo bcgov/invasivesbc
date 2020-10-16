@@ -36,19 +36,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%'
   },
   activityRecordQueryParmsRow: {
-    width: '400px'
-  },
-  activityRecordPickerAddButton: {
-    color: theme.palette.text.primary,
-    backgroundcolor: theme.palette.primary.light
-  },
-  switch: {
-    colorPrimary: theme.palette.secondary.main,
-    colorSecondary: theme.palette.secondary.dark
-  },
-  deleteActivityChoicesButton: {
-    color: theme.palette.text.secondary,
-    backgroundcolor: theme.palette.primary.dark
+    width: '100%'
   }
 }));
 
@@ -112,7 +100,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   return (
     <>
       <Button
-        className={classes.activityRecordPickerAddButton}
+        color="primary"
         onClick={() => {
           addActivityChoice({
             activityType: 'Observation',
@@ -128,31 +116,34 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
           return (
             <ListItem key={index}>
               <Paper elevation={5} className={classes.activityRecordQueryParmsRow}>
-                <Grid container spacing={3}>
+                <Grid container spacing={4} alignItems="center" justify="center">
                   <Grid item xs={3}>
-                    <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={activityChoices[index].activityType}
-                      defaultValue="Select an Activity Type"
-                      onChange={(e) => {
-                        updateActivityChoice(
-                          {
-                            ...activityChoices[index],
-                            activityType: e.target.value
-                          },
-                          index
-                        );
-                      }}>
-                      <MenuItem value={'Observation'}>Observation</MenuItem>
-                      <MenuItem value={'Treatment'}>Treatment</MenuItem>
-                      <MenuItem value={'Monitoring'}>Monitoring</MenuItem>
-                    </Select>
+                    <div style={{ padding: 20 }}>
+                      <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={activityChoices[index].activityType}
+                        defaultValue="Select an Activity Type"
+                        onChange={(e) => {
+                          updateActivityChoice(
+                            {
+                              ...activityChoices[index],
+                              activityType: e.target.value
+                            },
+                            index
+                          );
+                        }}>
+                        <MenuItem value={'Observation'}>Observation</MenuItem>
+                        <MenuItem value={'Treatment'}>Treatment</MenuItem>
+                        <MenuItem value={'Monitoring'}>Monitoring</MenuItem>
+                      </Select>
+                    </div>
                   </Grid>
                   <Grid item xs={3}>
                     <InputLabel>Photos</InputLabel>
                     <Switch
+                      color="primary"
                       checked={activityChoices[index].includePhotos}
                       onChange={(e) => {
                         updateActivityChoice(
@@ -168,7 +159,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                   <Grid item xs={3}>
                     <InputLabel>Forms</InputLabel>
                     <Switch
-                      className={classes.switch}
+                      color="primary"
                       checked={activityChoices[index].includeForms}
                       onChange={(e) => {
                         updateActivityChoice(
@@ -184,8 +175,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                   <Grid item xs={3}>
                     <Button
                       variant="contained"
-                      color="secondary"
-                      className={classes.deleteActivityChoicesButton}
+                      color="primary"
                       startIcon={<Delete />}
                       onClick={(e) => {
                         deleteActivityChoice(index);
@@ -194,7 +184,9 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                 </Grid>
                 <Grid container spacing={3}>
                   <Grid item xs={9}>
-                    <SpeciesTree />
+                    <div style={{ padding: 20 }}>
+                      <SpeciesTree />
+                    </div>
                   </Grid>
                 </Grid>
               </Paper>
