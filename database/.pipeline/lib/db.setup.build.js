@@ -3,7 +3,7 @@ const { OpenShiftClientX } = require('pipeline-cli');
 const path = require('path');
 
 /**
- * Run a pod to build the db setup (migrations, seeding, etc) image stream.
+ * Run a pod to build the database setup (migrations, seeding, etc) image stream.
  *
  * @param {*} settings
  */

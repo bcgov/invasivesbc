@@ -20,7 +20,7 @@ const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
 const staticBranches = config.staticBranches || [];
-const staticUrls = config.staticUrls || {};
+const staticUrlsAPI = config.staticUrlsAPI || {};
 
 const processOptions = (options) => {
   const result = { ...options };
@@ -71,7 +71,7 @@ const phases = {
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     host:
-      (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
+      (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) || `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
     env: 'dev',
     certificateURL: config.certificateURL.dev,
     replicas: 1,
@@ -87,7 +87,7 @@ const phases = {
     instance: `${name}-test`,
     version: `${version}`,
     tag: `test-${version}`,
-    host: staticUrls.test,
+    host: staticUrlsAPI.test,
     env: 'test',
     certificateURL: config.certificateURL.test,
     replicas: 3,
@@ -103,7 +103,7 @@ const phases = {
     instance: `${name}-prod`,
     version: `${version}`,
     tag: `prod-${version}`,
-    host: staticUrls.prod,
+    host: staticUrlsAPI.prod,
     env: 'prod',
     certificateURL: config.certificateURL.prod,
     replicas: 3,
