@@ -7,7 +7,7 @@ const path = require('path');
  *
  * @param {*} settings
  */
-module.exports = settings => {
+module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = 'build';
@@ -16,14 +16,14 @@ module.exports = settings => {
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
-  const changeId = phases[phase].changeId;
+  const name = `${phases[phase].name}`;
 
   const objects = [];
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.bc.yaml`, {
       param: {
-        NAME: phases[phase].name,
+        NAME: name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
@@ -32,6 +32,6 @@ module.exports = settings => {
     })
   );
 
-  oc.applyRecommendedLabels(objects, phases[phase].name, phase, changeId, phases[phase].instance);
+  oc.applyRecommendedLabels(objects, name, phase, phases[phase].changeId, phases[phase].instance);
   oc.applyAndBuild(objects);
 };

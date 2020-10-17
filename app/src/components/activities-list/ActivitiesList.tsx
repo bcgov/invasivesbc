@@ -271,11 +271,13 @@ const ActivitiesList: React.FC = (props) => {
     // save each activity one-by-one
     for (const activity of results.docs) {
       try {
-        const response = await invasivesApi.createActivity({
+        await invasivesApi.createActivity({
           activity_type: activity.activityParentType,
           activity_subtype: activity.activityType,
           geometry: activity.geometry,
-          media: [],
+          media: activity.photos.map((photo) => {
+            return { file_name: photo.filepath, encoded_file: photo.dataUrl };
+          }),
           form_data: activity.formData
         });
 
