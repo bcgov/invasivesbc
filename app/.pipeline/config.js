@@ -5,7 +5,7 @@ let options = require('pipeline-cli').Util.parseArguments();
 const config = require('../../.config/config.json');
 
 const defaultHost = 'invasivebci-8ecbmv-dev.pathfinder.gov.bc.ca';
-const defaultHostAPI = 'invasivebc-8ecbmv-api.dev.pathfinder.gov.bc.ca';
+const defaultHostAPI = 'invasivebci-8ecbmv-api-dev.pathfinder.gov.bc.ca';
 
 const name = (config.module && config.module['app']) || 'invasivesbci-app';
 const apiName = (config.module && config.module['api']) || 'invasivesbci-api';
@@ -75,7 +75,7 @@ const phases = {
     host:
       (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
     apiHost:
-      (isStaticDeployment && (staticUrls.dev || defaultHostAPI)) ||
+      (isStaticDeployment && (staticUrlsAPI.dev || defaultHostAPI)) ||
       `${apiName}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
     env: 'dev',
     sso: sso.dev,

@@ -26,12 +26,6 @@ parameters:
   - name: APP_PORT_DEFAULT_NAME
     description: Default port resource name
     value: '8100-tcp'
-  - name: APP_PORT_OTHER
-    description: Other reserved port of the application
-    value: '8088'
-  - name: APP_PORT_OTHER_NAME
-    description: Other reserved port resource name
-    value: '8088-tcp'
   - name: CPU_REQUEST
     description: CPU REQUEST for deployment config
     value: '200m'
@@ -129,8 +123,6 @@ objects:
               ports:
                 - containerPort: ${{APP_PORT_DEFAULT}}
                   protocol: TCP
-                - containerPort: ${{APP_PORT_OTHER}}
-                  protocol: TCP
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
@@ -199,10 +191,6 @@ objects:
           port: ${{APP_PORT_DEFAULT}}
           protocol: TCP
           targetPort: ${{APP_PORT_DEFAULT}}
-        - name: ${NAME}-${APP_PORT_OTHER_NAME}
-          port: ${{APP_PORT_OTHER}}
-          protocol: TCP
-          targetPort: ${{APP_PORT_OTHER}}
       selector:
         deploymentconfig: ${NAME}${SUFFIX}
       sessionAffinity: None

@@ -7,8 +7,6 @@ metadata:
 parameters:
   - name: NAME
     value: invasivesbci-api
-  - name: DBNAME
-    value: invasivesbci-db
   - name: SUFFIX
     value: '-dev'
   - name: VERSION
@@ -47,11 +45,6 @@ parameters:
   - name: API_PORT_DEFAULT_NAME
     description: Api default port name
     value: '3002-tcp'
-  - name: APP_PORT_OTHER_NAME
-    description: Other reserved port resource name
-    value: '8088-tcp'
-  - name: APP_PORT_OTHER
-    value: '8080'
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
     value: 'invasivesbci-object-store'
@@ -164,8 +157,6 @@ objects:
               ports:
                 - containerPort: ${{API_PORT_DEFAULT}}
                   protocol: TCP
-                - containerPort: ${{APP_PORT_OTHER}}
-                  protocol: TCP
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
@@ -249,10 +240,6 @@ objects:
           port: ${{API_PORT_DEFAULT}}
           protocol: TCP
           targetPort: ${{API_PORT_DEFAULT}}
-        - name: ${NAME}-${APP_PORT_OTHER_NAME}
-          port: ${{APP_PORT_OTHER}}
-          protocol: TCP
-          targetPort: ${{APP_PORT_OTHER}}
       selector:
         deploymentconfig: ${NAME}${SUFFIX}
       sessionAffinity: None

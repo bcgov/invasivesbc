@@ -41,8 +41,6 @@ parameters:
     value: "1"
   - name: APP_PORT_DEFAULT
     value: "3002-tcp"
-  - name: APP_PORT_OTHER
-    value: "8080-tcp"
   - name: PORT
     value: "3002"
   - name: OBJECT_STORE_SECRETS
