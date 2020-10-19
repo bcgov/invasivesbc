@@ -127,14 +127,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <Accordion defaultExpanded={false}>
-            <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-kml-content" id="panel-kml-header">
-              <Typography className={classes.heading}>Load KML</Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.kmlContainer}>
-              <KMLUpload />
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded={false}>
             <AccordionSummary
               expandIcon={<ExpandMore />}
               aria-controls="panel-layer-picker-content"
@@ -165,6 +157,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             </AccordionSummary>
             <AccordionDetails className={classes.pointOfInterest}>
               <PointOfInterestDataFilter />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded={false}>
+            <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-kml-content" id="panel-kml-header">
+              <Typography className={classes.heading}>Load KML</Typography>
+            </AccordionSummary>
+            <AccordionDetails className={classes.kmlContainer}>
+              <KMLUpload />
             </AccordionDetails>
           </Accordion>
         </Grid>
