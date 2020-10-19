@@ -13,13 +13,11 @@ import {
 import { Delete } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
-import SpeciesTree from './SpeciesInput';
 
-interface IActivityChoices {
-  activityType: string;
+interface IPointOfInterestChoices {
+  pointOfInterestType: string;
   includePhotos: boolean;
   includeForms: boolean;
-  species: [number];
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -31,11 +29,11 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary
   },
-  activityRecordPicker: {
+  pointOfInterestRecordPicker: {
     height: '100%',
     width: '100%'
   },
-  activityRecordQueryParmsRow: {
+  pointOfInterestRecordQueryParmsRow: {
     width: '100%'
   },
   filterGrid: {
@@ -46,15 +44,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const ActivityDataFilter: React.FC<any> = (props) => {
+export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   //todo db persist, ressurect, & update
-  const [activityChoices, setActivityChoices] = useState([]);
+  const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
 
   const saveChoices = async () => {
-    // this is what fixed the main map
+    //placeholder
     await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...activityChoices };
+      return { ...pointOfInterestChoices };
     });
   };
 
@@ -69,12 +67,12 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
         return;
       }
 
-      const doc = await databaseContext.database.find({ selector: { _id: appState.docs[0].activeActivity } });
+      const doc = await databaseContext.database.find({ selector: { _id: appState.docs[0].activePointOfInterest } });
 
       setDoc(doc.docs[0]);
     };
 
-    getActivityData();
+    getPointOfInterestData();
   }, [databaseContext]);
 
   if (!doc) {
@@ -83,22 +81,22 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   */
   useEffect(() => {
     saveChoices();
-  }, [activityChoices]);
+  }, [pointOfInterestChoices]);
 
-  const addActivityChoice = (newActivity: IActivityChoices) => {
-    setActivityChoices([...activityChoices, newActivity]);
+  const addPointOfInterestChoice = (newPointOfInterest: IPointOfInterestChoices) => {
+    setPointOfInterestChoices([...pointOfInterestChoices, newPointOfInterest]);
   };
 
-  const updateActivityChoice = (updatedActivity: IActivityChoices, index: number) => {
-    let updatedActivityChoices = activityChoices;
-    updatedActivityChoices[index] = updatedActivity;
-    setActivityChoices([...updatedActivityChoices]);
+  const updatePointOfInterestChoice = (updatedPointOfInterest: IPointOfInterestChoices, index: number) => {
+    let updatedPointOfInterestChoices = pointOfInterestChoices;
+    updatedPointOfInterestChoices[index] = updatedPointOfInterest;
+    setPointOfInterestChoices([...updatedPointOfInterestChoices]);
   };
 
-  const deleteActivityChoice = (index: number) => {
-    let copy = [...activityChoices];
+  const deletePointOfInterestChoice = (index: number) => {
+    let copy = [...pointOfInterestChoices];
     copy.splice(index, 1);
-    setActivityChoices(copy);
+    setPointOfInterestChoices(copy);
   };
 
   const classes = useStyles();
@@ -108,41 +106,40 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
       <Button
         color="primary"
         onClick={() => {
-          addActivityChoice({
-            activityType: 'Observation',
+          addPointOfInterestChoice({
+            pointOfInterestType: 'IAPP Site',
             includePhotos: false,
-            includeForms: false,
-            species: [null]
+            includeForms: false
           });
         }}>
         add new
       </Button>
       <List>
-        {activityChoices.map((activityChoice, index) => {
+        {pointOfInterestChoices.map((pointOfInterestChoice, index) => {
           return (
             <ListItem key={index}>
-              <Paper elevation={5} className={classes.activityRecordQueryParmsRow}>
+              <Paper elevation={5} className={classes.pointOfInterestRecordQueryParmsRow}>
                 <Grid className={classes.filterGrid} container spacing={4} alignItems="center" justify="center">
                   <Grid item xs={3}>
                     <div style={{ padding: 20 }}>
-                      <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
+                      <InputLabel id="demo-simple-select-label">Point Of Interest Type</InputLabel>
                       <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        value={activityChoices[index].activityType}
-                        defaultValue="Select an Activity Type"
+                        value={pointOfInterestChoices[index].pointOfInterestType}
+                        defaultValue="Select an PointOfInterest Type"
                         onChange={(e) => {
-                          updateActivityChoice(
+                          updatePointOfInterestChoice(
                             {
-                              ...activityChoices[index],
-                              activityType: e.target.value
+                              ...pointOfInterestChoices[index],
+                              pointOfInterestType: e.target.value
                             },
                             index
                           );
                         }}>
-                        <MenuItem value={'Observation'}>Observation</MenuItem>
-                        <MenuItem value={'Treatment'}>Treatment</MenuItem>
-                        <MenuItem value={'Monitoring'}>Monitoring</MenuItem>
+                        <MenuItem value={'IAPP Site'}>IAPP Site</MenuItem>
+                        <MenuItem value={'Well'}>Well</MenuItem>
+                        <MenuItem value={'Sasquatch Siting'}>Sasquatch Siting</MenuItem>
                       </Select>
                     </div>
                   </Grid>
@@ -150,12 +147,12 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                     <InputLabel>Photos</InputLabel>
                     <Switch
                       color="primary"
-                      checked={activityChoices[index].includePhotos}
+                      checked={pointOfInterestChoices[index].includePhotos}
                       onChange={(e) => {
-                        updateActivityChoice(
+                        updatePointOfInterestChoice(
                           {
-                            ...activityChoices[index],
-                            includePhotos: !activityChoices[index].includePhotos
+                            ...pointOfInterestChoices[index],
+                            includePhotos: !pointOfInterestChoices[index].includePhotos
                           },
                           index
                         );
@@ -166,12 +163,12 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                     <InputLabel>Forms</InputLabel>
                     <Switch
                       color="primary"
-                      checked={activityChoices[index].includeForms}
+                      checked={pointOfInterestChoices[index].includeForms}
                       onChange={(e) => {
-                        updateActivityChoice(
+                        updatePointOfInterestChoice(
                           {
-                            ...activityChoices[index],
-                            includeForms: !activityChoices[index].includeForms
+                            ...pointOfInterestChoices[index],
+                            includeForms: !pointOfInterestChoices[index].includeForms
                           },
                           index
                         );
@@ -184,15 +181,8 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                       color="primary"
                       startIcon={<Delete />}
                       onClick={(e) => {
-                        deleteActivityChoice(index);
+                        deletePointOfInterestChoice(index);
                       }}></Button>
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3}>
-                  <Grid item xs={9}>
-                    <div style={{ padding: 20 }}>
-                      <SpeciesTree />
-                    </div>
                   </Grid>
                 </Grid>
               </Paper>
@@ -204,4 +194,4 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   );
 };
 
-export default ActivityDataFilter;
+export default PointOfInterestDataFilter;
