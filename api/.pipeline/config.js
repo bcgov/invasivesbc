@@ -4,7 +4,7 @@ let options = require('pipeline-cli').Util.parseArguments();
 // The root config for common values
 const config = require('../../.config/config.json');
 
-const defaultHost = 'invasivebc-8ecbmv-api.pathfinder.gov.bc.ca';
+const defaultHost = 'invasivebci-8ecbmv-api.pathfinder.gov.bc.ca';
 
 const name = (config.module && config.module['api']) || 'invasivesbci-api';
 const dbName = (config.module && config.module['db']) || 'invasivesbci-db';
@@ -71,7 +71,8 @@ const phases = {
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     host:
-      (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) || `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
+      (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) ||
+      `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
     env: 'dev',
     certificateURL: config.certificateURL.dev,
     replicas: 1,
