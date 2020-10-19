@@ -52,19 +52,12 @@ export interface IActivitySearchCriteria {
    */
   date_range_end?: Date;
   /**
-   * True if the respons should include associated media, false otherwise.
+   * GeoJSON polygon to search in.
    *
-   * @type {boolean}
+   * @type {GeoJSON.Polygon}
    * @memberof IActivitySearchCriteria
    */
-  include_media?: boolean;
-  /**
-   * GeoJSON bounding box.
-   *
-   * @type {GeoJSON.BBox}
-   * @memberof IActivitySearchCriteria
-   */
-  bbox?: GeoJSON.BBox;
+  search_polygon?: GeoJSON.Polygon;
 }
 
 /**
