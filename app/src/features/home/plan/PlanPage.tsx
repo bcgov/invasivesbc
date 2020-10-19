@@ -16,6 +16,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ExpandMore } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
+import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 
 interface IPlanPageProps {
   classes?: any;
@@ -77,6 +78,12 @@ const useStyles = makeStyles((theme) => ({
   totalStorageUsageBar: {
     height: '20px',
     borderRadius: '20px'
+  },
+  tripGrid: {
+    flexDirection: 'row',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column'
+    }
   }
 }));
 
@@ -109,8 +116,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   return (
     <Container className={props.classes.container}>
       <ManageDatabaseContainer />
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
+      <Grid container spacing={3} className={classes.tripGrid}>
+        <Grid item xs={12} sm={12}>
           <Paper className={classes.paper}>
             <Typography className={classes.heading}>Storage Used By This Trip:</Typography>
             <LinearProgress className={classes.tripStorageUsageBar} value={50} variant={'determinate'} />
@@ -118,15 +125,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             <LinearProgress className={classes.totalStorageUsageBar} value={70} variant={'determinate'} />
           </Paper>
         </Grid>
-        <Grid item xs={6}>
-          <Accordion defaultExpanded={false}>
-            <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-kml-content" id="panel-kml-header">
-              <Typography className={classes.heading}>Load KML</Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.kmlContainer}>
-              <KMLUpload />
-            </AccordionDetails>
-          </Accordion>
+        <Grid item xs={12} sm={6}>
           <Accordion defaultExpanded={false}>
             <AccordionSummary
               expandIcon={<ExpandMore />}
@@ -157,11 +156,19 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               <Typography className={classes.heading}>Points Of Interest</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.pointOfInterest}>
-              <Paper>bonana</Paper>
+              <PointOfInterestDataFilter />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded={false}>
+            <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-kml-content" id="panel-kml-header">
+              <Typography className={classes.heading}>Load KML</Typography>
+            </AccordionSummary>
+            <AccordionDetails className={classes.kmlContainer}>
+              <KMLUpload />
             </AccordionDetails>
           </Accordion>
         </Grid>
-        <Grid item xs={6} className={classes.mapGridItem}>
+        <Grid item xs={12} sm={6} className={classes.mapGridItem}>
           <Paper className={classes.paper} elevation={5}>
             <MapContainer {...props} geoFeatCollection={geoFeatCollection} classes={classes} />
           </Paper>
