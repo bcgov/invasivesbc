@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == false && (github.base_ref == 'dev' }}
+    if: ${{ github.event.pull_request.merged == false && github.base_ref == 'dev' }}
 
     strategy:
       matrix:
