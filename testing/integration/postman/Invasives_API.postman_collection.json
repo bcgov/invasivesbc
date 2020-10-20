@@ -1,0 +1,520 @@
+{
+	"info": {
+		"_postman_id": "a9d3b9e5-c601-4164-8568-a8fe883f0489",
+		"name": "Invasives API",
+		"description": "API for Invasives (the Ionic) Version",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "misc/version",
+			"item": [
+				{
+					"name": "/misc/version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d35384d0-0eed-49ac-b05c-acbf5610960c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body matches 'dev-'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"dev-\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURLMOBILE}}/misc/version",
+							"host": [
+								"{{BASEURLMOBILE}}"
+							],
+							"path": [
+								"misc",
+								"version"
+							]
+						},
+						"description": "Get api version information"
+					},
+					"response": [
+						{
+							"name": "Fetched api version information",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/misc/version",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"misc",
+										"version"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"version\": \"eu esse sint aliqua Lorem\",\n \"environment\": \"est qui nostrud\"\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "activity",
+			"item": [
+				{
+					"name": "/activity/{activityId}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d41e4fb9-679c-440e-a29e-7a30bd304767",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+								"key": "Authorization",
+								"value": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n  \"page\": 1,\r\n  \"limit\": 1,\r\n  \"activity_type\": \"\",\r\n  \"activity_subtype\": \"\",\r\n  \"date_range_start\": \"\",\r\n  \"date_range_end\": \"\",\r\n  \"include_media\": false\r\n }",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURLMOBILE}}/activity/2",
+							"host": [
+								"{{BASEURLMOBILE}}"
+							],
+							"path": [
+								"activity",
+								"2"
+							]
+						},
+						"description": "Get activities"
+					},
+					"response": [
+						{
+							"name": "Created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
+						},
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+						}
+					]
+				},
+				{
+					"name": "/activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "36f27949-d785-4efc-ba33-fa24f9d9bfa2",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 0,\r\n    \"limit\": 1,\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"\",\r\n    \"date_range_start\": \"\",\r\n    \"date_range_end\": \"\",\r\n    \"search_polygon\": {\r\n        \"type\": \"Polygon\",\r\n        \"coordinates\": [\r\n            [\r\n                [\r\n                    -123.40315818786621,\r\n                    48.42094176838064\r\n                ],\r\n                [\r\n                    -123.32942962646484,\r\n                    48.42094176838064\r\n                ],\r\n                [\r\n                    -123.32942962646484,\r\n                    48.46427120178859\r\n                ],\r\n                [\r\n                    -123.40315818786621,\r\n                    48.46427120178859\r\n                ],\r\n                [\r\n                    -123.40315818786621,\r\n                    48.42094176838064\r\n                ]\r\n            ]\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURLMOBILE}}/activity",
+							"host": [
+								"{{BASEURLMOBILE}}"
+							],
+							"path": [
+								"activity"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "media",
+			"item": [
+				{
+					"name": "/media/{key}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d8dd7fb2-a685-4e67-9211-bed203abe0b0",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+								"key": "Authorization",
+								"value": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BASEURLMOBILE}}/media/0981685c-d2b1-47e0-91a4-099d97a91676-BunnyPNG.png",
+							"host": [
+								"{{BASEURLMOBILE}}"
+							],
+							"path": [
+								"media",
+								"0981685c-d2b1-47e0-91a4-099d97a91676-BunnyPNG.png"
+							]
+						},
+						"description": "Get activities"
+					},
+					"response": [
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+						},
+						{
+							"name": "Created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4446bcb2-9776-4396-af39-37ce1acfa5b8",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "invasives-bc",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "{{POSTMAN_USERNAME}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{POSTMAN_PW}}",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "openid",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{KEYCLOAK_URL}}",
+					"host": [
+						"{{KEYCLOAK_URL}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{KEYCLOAK_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "28ed808c-5613-4b9b-ae86-c95bcabd650e",
+				"type": "text/javascript",
+				"exec": [
+					"const echoPostRequest = {",
+					"  url: pm.environment.get('KEYCLOAK_URL'),",
+					"  method: 'POST',",
+					"  header: 'Content-Type:application/x-www-form-urlencoded',",
+					"  body: {",
+					"    mode: 'urlencoded',",
+					"    urlencoded: [",
+					"        {key:'username', value:pm.environment.get('POSTMAN_USERNAME')}, ",
+					"        {key:'password', value:pm.environment.get('POSTMAN_PW')}, ",
+					"        {key:'scope', value:'openid'}, ",
+					"        {key:'client_id', value:'invasives-bc'}, ",
+					"        {key:'grant_type', value:'password'}",
+					"    ]",
+					"  }",
+					"};",
+					"",
+					"var getToken = true;",
+					"",
+					"if (!pm.environment.get('KEYCLOAK_TOKEN_EXPIRY') || ",
+					"    !pm.environment.get('KEYCLOAK_TOKEN')) {",
+					"    console.log('Token or expiry date are missing')",
+					"} else if (pm.environment.get('KEYCLOAK_TOKEN_EXPIRY') <= (new Date()).getTime()) {",
+					"    console.log('Token is expired')",
+					"} else {",
+					"    getToken = false;",
+					"    console.log('Token and expiry date are all good');",
+					"}",
+					"",
+					"if (getToken === true) {",
+					"    pm.sendRequest(echoPostRequest, function (err, res) {",
+					"    console.log(err ? err : res.json());",
+					"        if (err === null) {",
+					"            console.log('Saving the token and expiry date')",
+					"            var responseJson = res.json();",
+					"            pm.environment.set('KEYCLOAK_TOKEN', responseJson.access_token)",
+					"    ",
+					"            var expiryDate = new Date();",
+					"            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+					"            pm.environment.set('KEYCLOAK_TOKEN_EXPIRY', expiryDate.getTime());",
+					"        }",
+					"    });",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "58db7d12-6973-4d83-b8be-118686a601b1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
