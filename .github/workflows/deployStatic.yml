@@ -320,7 +320,7 @@ jobs:
 
       # Clean the database build/deployment artifacts
       - name: Clean Database Artifacts
-        working-directory: './app/.pipeline/'
+        working-directory: './database/.pipeline/'
         run: |
           npm install
           # npm ci
