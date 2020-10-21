@@ -36,14 +36,6 @@ jobs:
         run: npm install -g newman
       - name: RunTest
         working-directory: ./testing/integration/postman
-        env:
-          AUTH_HOST: https://sso-dev.pathfinder.gov.bc.ca
-          BASEURLMOBILE: https://api-mobile-dev-invasivesbc.pathfinder.gov.bc.ca/api
-          POSTMAN_USERNAME: postman
-          POSTMAN_PW: ${{ secrets.POSTMAN_PW }}
-          KEYCLOAK_TOKEN_EXPIRY: ""
-          KEYCLOAK_TOKEN: ""
-          KEYCLOAK_URL: https://sso-dev.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token
         run: |
-          newman run Invasives_API.postman_collection.json --global-var BASEURLMOBILE=$BASEURLMOBILE --global-var AUTH_HOST=$AUTH_HOST --global-var BASEURLMOBILE=$BASEURLMOBILE --global-var POSTMAN_USERNAME=$POSTMAN_USERNAME --global-var POSTMAN_PW=$POSTMAN_PW --global-var KEYCLOAK_TOKEN_EXPIRY=$KEYCLOAK_TOKEN_EXPIRY --global-var KEYCLOAK_TOKEN=$KEYCLOAK_TOKEN --global-var KEYCLOAK_URL=$KEYCLOAK_URL
-
+          echo ${{ secrets.POSTMAN_PW }} > devpl.json
+          newman run Invasives_API.postman_collection.json -e devpl.json
