@@ -37,5 +37,5 @@ jobs:
       - name: RunTest
         working-directory: ./testing/integration/postman
         run: |
-          devpl.json<<<"${{ secrets.POSTMAN_PW }}"
+          echo -- "${{ secrets.POSTMAN_PW }}" >> "devpl.json"
           newman run Invasives_API.postman_collection.json -e devpl.json
