@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { Delete } from '@material-ui/icons';
+import { Delete, PrintSharp } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
 
@@ -50,39 +50,23 @@ const useStyles = makeStyles((theme) => ({
 
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  //todo db persist, ressurect, & update
+
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
+
+  //ressurect choices:
+  useEffect(() => {
+    if (props.trip.pointOfInterestChoices) {
+      setPointOfInterestChoices(props.trip.pointOfInterestChoices);
+    }
+  }, [props.trip]);
 
   const saveChoices = async () => {
     //placeholder
     await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...pointOfInterestChoices };
+      return { ...tripDoc, pointOfInterestChoices: pointOfInterestChoices };
     });
   };
 
-  /*
-  const [doc, setDoc] = useState(null);
-
-  useEffect(() => {
-    const getPreviousTripOptions = async () => {
-      const appState = await databaseContext.database.find({ selector: { _id: 'AppState' } });
-
-      if (!appState || !appState.docs || !appState.docs.length) {
-        return;
-      }
-
-      const doc = await databaseContext.database.find({ selector: { _id: appState.docs[0].activePointOfInterest } });
-
-      setDoc(doc.docs[0]);
-    };
-
-    getPointOfInterestData();
-  }, [databaseContext]);
-
-  if (!doc) {
-    return <CircularProgress />;
-  }
-  */
   useEffect(() => {
     saveChoices();
   }, [pointOfInterestChoices]);

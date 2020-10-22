@@ -22,6 +22,12 @@ interface IPlanPageProps {
   classes?: any;
 }
 
+export interface ITripCacheChoices {
+  activityChoices?: [];
+  pointOfInterestChoices?: [];
+  layerChoices?: [];
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1
@@ -88,29 +94,29 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PlanPage: React.FC<IPlanPageProps> = (props) => {
-  const [geoFeatCollection, setGeoFeatCollection] = useState(null);
+  const [trip, setTrip] = useState<[]>([]);
 
   const databaseContext = useContext(DatabaseContext);
-  const getGeos = () => {
+
+  const getTrip = () => {
     databaseContext.database
       .find({
         selector: {
-          _id: 'theShapeAsGeoFeatureCollection'
+          _id: 'trip'
         }
       })
       .then((doc) => {
         if (doc && doc.docs) {
           if (doc.docs[0]) {
-            console.log('call geo feat setter');
-            setGeoFeatCollection(doc.docs[0]);
+            setTrip(doc.docs[0]);
           }
         }
       });
   };
 
   useEffect(() => {
-    getGeos();
-  }, []);
+    getTrip();
+  });
 
   const classes = useStyles();
   return (
@@ -145,7 +151,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               <Typography className={classes.heading}>Pick Activity Records</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.activityRecordPicker}>
-              <ActivityDataFilter />
+              <ActivityDataFilter trip={trip} />
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={false}>
@@ -156,7 +162,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               <Typography className={classes.heading}>Points Of Interest</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.pointOfInterest}>
-              <PointOfInterestDataFilter />
+              <PointOfInterestDataFilter trip={trip} />
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={false}>
@@ -170,7 +176,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         </Grid>
         <Grid item xs={12} sm={6} className={classes.mapGridItem}>
           <Paper className={classes.paper} elevation={5}>
-            <MapContainer {...props} geoFeatCollection={geoFeatCollection} classes={classes} />
+            <MapContainer {...props} classes={classes} />
           </Paper>
         </Grid>
       </Grid>

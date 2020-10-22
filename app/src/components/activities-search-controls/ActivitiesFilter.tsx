@@ -55,13 +55,19 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   //todo db persist, ressurect, & update
   const [activityChoices, setActivityChoices] = useState([]);
 
+  //ressurect choices:
+  useEffect(() => {
+    if (props.trip.activityChoices) {
+      setActivityChoices(props.trip.activityChoices);
+    }
+  }, [props.trip.activityChoices]);
+
   const saveChoices = async () => {
-    // this is what fixed the main map
+    //placeholder
     await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...activityChoices };
+      return { ...tripDoc, activityChoices: activityChoices  };
     });
   };
-
   /*
   const [doc, setDoc] = useState(null);
 
