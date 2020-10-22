@@ -4,7 +4,7 @@
 	"values": [
 		{
 			"key": "AUTH_HOST",
-			"value": "https://sso-dev.pathfinder.gov.bc.ca",
+			"value": "https://dev.oidc.gov.bc.ca",
 			"enabled": true
 		},
 		{
@@ -39,7 +39,7 @@
 		},
 		{
 			"key": "KEYCLOAK_URL",
-			"value": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token",
+			"value": "https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token",
 			"enabled": true
 		}
 	],
