@@ -28,7 +28,7 @@ parameters:
     displayName: PostgreSQL Connection Username
     name: POSTGRESQL_USER
     required: true
-    value: 'mds'
+    value: 'postgres'
   - description: Admin Username for PostgreSQL user that will be used for accessing the database.
     displayName: PostgreSQL Admin Connection Username
     name: POSTGRESQL_ADMIN_USER
@@ -50,7 +50,7 @@ parameters:
     displayName: PostgreSQL Database Name
     name: POSTGRESQL_DATABASE
     required: true
-    value: 'sampledb'
+    value: 'InvasivesBC'
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Volume Capacity
     name: VOLUME_CAPACITY
