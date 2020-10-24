@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Divider,
   Grid,
   List,
@@ -147,18 +146,6 @@ const ReferenceActivitiesList: React.FC = (props) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
-
-  const tempAddReference = () => {
-    databaseContext.database.put({
-      _id: '1234123123123123',
-      docType: DocType.REFERENCE_ACTIVITY,
-      activityType: 'Observation',
-      activitySubtype: 'plant observation',
-      dateCreated: new Date(),
-      dateUpated: null,
-      formData: null
-    });
-  };
 
   return (
     <>

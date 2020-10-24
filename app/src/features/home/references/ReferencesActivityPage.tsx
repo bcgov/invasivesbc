@@ -1,4 +1,3 @@
-import * as L from 'leaflet';
 import { CircularProgress, Container, makeStyles } from '@material-ui/core';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';

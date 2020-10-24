@@ -2,11 +2,11 @@ import { Container } from '@material-ui/core';
 import ReferenceActivitiesList from 'components/activities-list/ReferenceActivitiesList';
 import React from 'react';
 
-interface IReferenceActivitiesPage {
+interface IReferencesPagePage {
   classes?: any;
 }
 
-const ReferenceActivitiesPage: React.FC<IReferenceActivitiesPage> = (props) => {
+const ReferencesPage: React.FC<IReferencesPagePage> = (props) => {
   return (
     <Container className={props.classes.container}>
       <ReferenceActivitiesList />
@@ -14,4 +14,4 @@ const ReferenceActivitiesPage: React.FC<IReferenceActivitiesPage> = (props) => {
   );
 };
 
-export default ReferenceActivitiesPage;
+export default ReferencesPage;

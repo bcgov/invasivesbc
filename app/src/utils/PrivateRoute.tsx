@@ -1,6 +1,6 @@
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React from 'react';
-import { Redirect, Route, RouteProps, useLocation } from 'react-router-dom';
+import { Route, RouteProps } from 'react-router-dom';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;

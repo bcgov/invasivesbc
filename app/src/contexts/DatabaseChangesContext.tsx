@@ -19,7 +19,7 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
 
   const setupDatabase = async () => {
     if (!changesListener) {
-      const changesListener = databaseContext.database
+      const listener = databaseContext.database
         .changes({ live: true, since: 'now' })
         .on('change', (change) => {
           setDatabaseChanges(change);
@@ -27,7 +27,7 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
         .on('complete', (final) => () => setDatabaseChanges(final))
         .on('error', (error) => () => setDatabaseChanges(error));
 
-      setChangesListener(changesListener);
+      setChangesListener(listener);
     }
   };
 

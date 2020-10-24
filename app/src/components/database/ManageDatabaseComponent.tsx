@@ -10,22 +10,6 @@ interface IManageDatabaseComponentProps {
 const ManageDatabaseComponent: React.FC<IManageDatabaseComponentProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
-  const wipeLocalDatabase = async () => {
-    const docs = await databaseContext.database.allDocs();
-
-    if (!docs) {
-      return;
-    }
-
-    const promises = [];
-
-    docs.rows.map((row) => {
-      promises.push(databaseContext.database.remove(row.id, row.value.rev));
-    });
-
-    await Promise.all(promises);
-  };
-
   const resetDatabase = async () => {
     await databaseContext.resetDatabase();
   };
