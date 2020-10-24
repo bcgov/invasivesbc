@@ -13,7 +13,6 @@ interface IPrivateRouteProps extends RouteProps {
  * @param props - Properties to pass { component, role, claim }
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const location = useLocation();
   const keycloak = useKeycloakWrapper();
 
   let { component: Component, layout: Layout, ...rest } = props;

@@ -2,6 +2,7 @@ import { DeviceInfo } from '@capacitor/core';
 import { IonReactRouter } from '@ionic/react-router';
 import { CircularProgress, createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core';
 import { KeycloakProvider } from '@react-keycloak/web';
+import { DatabaseChangesContextProvider } from 'contexts/DatabaseChangesContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
 import AppRouter from './AppRouter';
@@ -104,12 +105,16 @@ const App: React.FC<IAppProps> = (props) => {
                   return (
                     <DatabaseContextProvider>
                       <DatabaseContext.Consumer>
-                        {(context: IDatabaseContext<any>) => {
-                          if (!context.database || !context.changes) {
+                        {(databaseContext: IDatabaseContext) => {
+                          if (!databaseContext.database) {
                             // database not ready, delay loading app
                             return <CircularProgress />;
                           }
-                          return <AppRouter />;
+                          return (
+                            <DatabaseChangesContextProvider>
+                              <AppRouter />
+                            </DatabaseChangesContextProvider>
+                          );
                         }}
                       </DatabaseContext.Consumer>
                     </DatabaseContextProvider>

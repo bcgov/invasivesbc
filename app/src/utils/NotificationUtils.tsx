@@ -2,7 +2,7 @@ import { DocType } from 'constants/database';
 import { IDatabaseContext } from 'contexts/DatabaseContext';
 import { v4 as uuidv4 } from 'uuid';
 
-export const notifyError = async (databaseContext: IDatabaseContext<any>, message: string) => {
+export const notifyError = async (databaseContext: IDatabaseContext, message: string) => {
   await databaseContext.database.put({
     _id: uuidv4(),
     docType: DocType.NOTIFICATION,
@@ -13,7 +13,7 @@ export const notifyError = async (databaseContext: IDatabaseContext<any>, messag
   });
 };
 
-export const notifySuccess = async (databaseContext: IDatabaseContext<any>, message: string) => {
+export const notifySuccess = async (databaseContext: IDatabaseContext, message: string) => {
   await databaseContext.database.put({
     _id: uuidv4(),
     docType: DocType.NOTIFICATION,
@@ -24,7 +24,7 @@ export const notifySuccess = async (databaseContext: IDatabaseContext<any>, mess
   });
 };
 
-export const notifyWarning = async (databaseContext: IDatabaseContext<any>, message: string) => {
+export const notifyWarning = async (databaseContext: IDatabaseContext, message: string) => {
   await databaseContext.database.put({
     _id: uuidv4(),
     docType: DocType.NOTIFICATION,
@@ -33,12 +33,4 @@ export const notifyWarning = async (databaseContext: IDatabaseContext<any>, mess
     acknowledged: false,
     dateCreated: new Date()
   });
-};
-// just for testing
-export const triggerError = async (databaseContext: IDatabaseContext<any>) => {
-  try {
-    throw Error('crash the app!');
-  } catch (error) {
-    notifyError(databaseContext, 'oh no');
-  }
 };

@@ -1,12 +1,12 @@
 import { SvgIconComponent, Assignment, Build, Visibility } from '@material-ui/icons';
 
-export enum ActivityParentType {
+export enum ActivityType {
   Observation = 'Observation',
   Treatment = 'Treatment',
   Monitoring = 'Monitoring'
 }
 
-export enum ActivityType {
+export enum ActivitySubtype {
   Observation_PlantTerrestial = 'Activity_Observation_PlantTerrestial',
   Observation_PlantAquatic = 'Activity_Observation_PlantAquatic',
   Observation_AnimalTerrestrial = 'Activity_Observation_AnimalTerrestrial',
@@ -28,10 +28,10 @@ export enum ActivityType {
   Monitoring_BiologicalTerrestrialAnimal = 'Activity_Monitoring_BiologicalTerrestrialAnimal'
 }
 
-export const ActivityParentTypeIcon: { [key: string]: SvgIconComponent } = {
-  [ActivityParentType.Observation]: Assignment,
-  [ActivityParentType.Treatment]: Build,
-  [ActivityParentType.Monitoring]: Visibility
+export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
+  [ActivityType.Observation]: Assignment,
+  [ActivityType.Treatment]: Build,
+  [ActivityType.Monitoring]: Visibility
 };
 
 export enum ActivityStatus {

@@ -77,7 +77,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
     };
 
     getPointOfInterestData();
-  }, [databaseContext]);
+  }, [databaseChangesContext]);
 
   if (!doc) {
     return <CircularProgress />;

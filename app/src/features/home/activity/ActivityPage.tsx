@@ -1,18 +1,10 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  CircularProgress,
-  Container,
-  makeStyles,
-  Typography
-} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
-import FormContainer from 'components/form/FormContainer';
-import MapContainer from 'components/map/MapContainer';
-import PhotoContainer from 'components/photo/PhotoContainer';
+import * as L from 'leaflet';
+import { CircularProgress, Container, makeStyles } from '@material-ui/core';
+import ActivityComponent from 'components/activity/ActivityComponent';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
+import { ActivityStatus } from 'constants/activities';
+import { Feature } from 'geojson';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -26,12 +18,12 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     width: '100%'
   },
-  photoContainer: {
-  },
+  photoContainer: {}
 }));
 
 interface IActivityPageProps {
   classes?: any;
+  activityId?: string;
 }
 
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
@@ -39,23 +31,67 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const databaseContext = useContext(DatabaseContext);
 
+  const [geometry, setGeometry] = useState<Feature[]>([]);
+  const [extent, setExtent] = useState(null);
+
   const [doc, setDoc] = useState(null);
+
+  /**
+   * Save the geometry added by the user
+   *
+   * @param {Feature} geoJSON The geometry in GeoJSON format
+   */
+  const saveGeometry = async (geometry: Feature[]) => {
+    await databaseContext.database.upsert(doc._id, (dbDoc) => {
+      return { ...dbDoc, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+    });
+  };
+
+  /**
+   * Save the map Extent within the database
+   *
+   * @param {*} extent The leaflet bounds object
+   */
+  const saveExtent = async (newExtent: any) => {
+    await databaseContext.database.upsert(doc._id, (dbDoc) => {
+      return { ...dbDoc, mapExtent: newExtent };
+    });
+  };
 
   useEffect(() => {
     const getActivityData = async () => {
-      const appState = await databaseContext.database.find({ selector: { _id: 'AppState' } });
+      const appStateResults = await databaseContext.database.find({ selector: { _id: 'AppState' } });
 
-      if (!appState || !appState.docs || !appState.docs.length) {
+      if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
         return;
       }
 
-      const doc = await databaseContext.database.find({ selector: { _id: appState.docs[0].activeActivity } });
+      const activityResults = await databaseContext.database.find({
+        selector: { _id: appStateResults.docs[0].activeActivity }
+      });
 
-      setDoc(doc.docs[0]);
+      setGeometry(activityResults.docs[0].geometry);
+      setDoc(activityResults.docs[0]);
     };
 
     getActivityData();
   }, [databaseContext]);
+
+  useEffect(() => {
+    if (!doc) {
+      return;
+    }
+
+    saveGeometry(geometry);
+  }, [geometry]);
+
+  useEffect(() => {
+    if (!doc) {
+      return;
+    }
+
+    saveExtent(extent);
+  }, [extent]);
 
   if (!doc) {
     return <CircularProgress />;
@@ -63,30 +99,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   return (
     <Container className={props.classes.container}>
-      <Accordion defaultExpanded={true}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={classes.heading}>Map</Typography>
-        </AccordionSummary>
-        <AccordionDetails className={classes.mapContainer}>
-          <MapContainer {...props} classes={classes} activity={doc} /> 
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-form-content" id="panel-form-header">
-          <Typography className={classes.heading}>Form</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FormContainer {...props} activity={doc} /> 
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-photo-content" id="panel-photo-header">
-          <Typography className={classes.heading}>Photos</Typography>
-        </AccordionSummary>
-        <AccordionDetails className={classes.photoContainer}>
-          <PhotoContainer {...props} classes={classes} activity={doc} />
-        </AccordionDetails>
-      </Accordion>
+      <ActivityComponent
+        classes={classes}
+        activity={doc}
+        mapId={doc._id}
+        geometryState={{ geometry, setGeometry }}
+        extentState={{ extent, setExtent }}
+      />
     </Container>
   );
 };
