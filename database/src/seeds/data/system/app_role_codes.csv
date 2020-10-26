@@ -1,0 +1,7 @@
+code_sort_order,code_name,code_description
+1,ADM,Admin
+2,DAV,Data Viewer
+3,DAE,Data Editor
+4,SUP,Super User
+5,I_OFFICER,Officer Mussel Inspect App
+6,I_ADM,Admin Mussel Inspect App

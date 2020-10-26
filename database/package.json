@@ -18,6 +18,7 @@
     "seed": "knex seed:run --knexfile ./src/knexfile.ts"
   },
   "dependencies": {
+    "@types/csv-parse": "^1.2.2",
     "knex": "^0.21.6",
     "pg": "~8.3.0",
     "typescript": "~3.9.7"
