@@ -56,18 +56,14 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   const [activityChoices, setActivityChoices] = useState([]);
 
   const getActivityChoicesFromTrip = async () => {
-    console.log('fetching trip from db');
     let docs = await databaseContext.database.find({
       selector: {
-        _id: 'trip2'
+        _id: 'trip'
       }
     });
     if (docs.docs.length > 0) {
-      console.log('doc count: ' + docs.docs.length);
       setActivityChoices([...docs.docs[0]?.activityChoices]);
     }
-
-    console.dir(docs.docs[0]);
   };
 
    useEffect(() => {
@@ -123,7 +119,6 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
 
   return (
     <>
-    {console.dir(activityChoices)}}
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Button
           color="primary"

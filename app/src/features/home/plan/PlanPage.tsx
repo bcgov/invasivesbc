@@ -7,7 +7,8 @@ import {
   makeStyles,
   Paper,
   LinearProgress,
-  Typography
+  Typography,
+  Button
 } from '@material-ui/core';
 import ManageDatabaseContainer from 'components/database/ClearDatabase';
 import MapContainer from 'components/map/MapContainer';
@@ -15,6 +16,7 @@ import React from 'react';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ExpandMore } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
+import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 //import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 
 interface IPlanPageProps {
@@ -93,11 +95,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PlanPage: React.FC<IPlanPageProps> = (props) => {
-
   const classes = useStyles();
   return (
     <Container className={props.classes.container}>
       <ManageDatabaseContainer />
+      <Button>Fetch Data</Button>
       <Grid container spacing={3} className={classes.tripGrid}>
         <Grid item xs={12} sm={12}>
           <Paper className={classes.paper}>
@@ -138,7 +140,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               <Typography className={classes.heading}>Points Of Interest</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.pointOfInterest}>
-              {/* <PointOfInterestDataFilter trip={trip} /> */}
+              <PointOfInterestDataFilter />
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={false}>
