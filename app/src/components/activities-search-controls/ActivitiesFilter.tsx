@@ -62,11 +62,14 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
       }
     });
     if (docs.docs.length > 0) {
-      setActivityChoices([...docs.docs[0]?.activityChoices]);
+      let tripDoc = docs.docs[0];
+      if (tripDoc.activityChoices) {
+        setActivityChoices([...tripDoc.activityChoices]);
+      }
     }
   };
 
-   useEffect(() => {
+  useEffect(() => {
     const updateComponent = (): Subscription => {
       // initial update
       getActivityChoicesFromTrip();
@@ -92,9 +95,8 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
     };
   }, [databaseContext]);
 
-
   const saveChoices = async (newActivityChoices) => {
-    await databaseContext.database.upsert('trip2', (tripDoc) => {
+    await databaseContext.database.upsert('trip', (tripDoc) => {
       return { ...tripDoc, activityChoices: newActivityChoices };
     });
   };
