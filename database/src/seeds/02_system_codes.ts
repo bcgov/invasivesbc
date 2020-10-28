@@ -47,7 +47,7 @@ async function _load_codes(knex: Knex, header_id: any): Promise<void> {
       resolve(); 
     });   
   });
-
+  
   // Insert code entries
   await knex("code").withSchema('invasivesbc').insert(results);
 };
