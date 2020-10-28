@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { Delete, PrintSharp } from '@material-ui/icons';
+import { Delete } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
 import { Subscription } from 'rxjs';
@@ -60,9 +60,8 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
       }
     });
     if (docs.docs.length > 0) {
-      let tripDoc = docs.docs[0]
-      if(tripDoc.pointOfInterestChoices)
-      {
+      let tripDoc = docs.docs[0];
+      if (tripDoc.pointOfInterestChoices) {
         setPointOfInterestChoices([...tripDoc.pointOfInterestChoices]);
       }
     }
@@ -99,7 +98,6 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
       return { ...tripDoc, pointOfInterestChoices: newPointOfInterestChoices };
     });
   };
-
 
   const addPointOfInterestChoice = (newPointOfInterest: IPointOfInterestChoices) => {
     saveChoices([...pointOfInterestChoices, newPointOfInterest]);
