@@ -44,7 +44,7 @@ module.exports = (settings) => {
         ENVIRONMENT: phases[phase].env || 'dev',
         DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
         IMAGE: imageStream.image.dockerImageReference,
-        CERTIFICATE_URL: 'https://sso-dev.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs'
+        CERTIFICATE_URL: 'https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs'
       }
     })
   );

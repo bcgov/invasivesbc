@@ -11,9 +11,7 @@ export async function up(knex: Knex): Promise<void> {
       .timestamp('valid_from')
       .defaultTo(knex.fn.now())
       .notNullable()
-    table
-      .timestamp('valid_to')
-      .defaultTo(knex.fn.now())
+    table.timestamp('valid_to')
     table
       .timestamp('created_at')
       .defaultTo(knex.fn.now())
@@ -35,9 +33,7 @@ export async function up(knex: Knex): Promise<void> {
       .timestamp('valid_from')
       .defaultTo(knex.fn.now())
       .notNullable()
-    table
-      .timestamp('valid_to')
-      .defaultTo(knex.fn.now())
+    table.timestamp('valid_to')
     table
       .timestamp('created_at')
       .defaultTo(knex.fn.now())
@@ -61,7 +57,6 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable()
     table
       .timestamp('valid_to')
-      .defaultTo(knex.fn.now())
     table
       .timestamp('created_at')
       .defaultTo(knex.fn.now())

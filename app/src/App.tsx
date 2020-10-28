@@ -10,6 +10,20 @@ import { DatabaseContext, DatabaseContextProvider, IDatabaseContext } from './co
 import getKeycloakEventHandler from './utils/KeycloakEventHandler';
 
 const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#5469a4',
+      main: '#223f75', // BC ID: corporate blue
+      dark: '#001949',
+      contrastText: '#ffffff'
+    },
+    secondary: {
+      light: '#ffd95e',
+      main: '#e3a82b', // BC ID: corporate gold
+      dark: '#ad7900',
+      contrastText: '#000000'
+    }
+  },
   overrides: {
     MuiCircularProgress: {
       root: {
@@ -48,7 +62,7 @@ const App: React.FC<IAppProps> = (props) => {
 
   const keycloakConfig: KeycloakConfig = {
     realm: 'dfmlcg7z',
-    url: 'https://sso-dev.pathfinder.gov.bc.ca/auth/',
+    url: 'https://dev.oidc.gov.bc.ca/auth/',
     clientId: 'invasives-bc'
   };
 

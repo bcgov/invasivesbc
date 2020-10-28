@@ -29,23 +29,23 @@
     "prod": "api-invasivesbci.pathfinder.gov.bc.ca"
   },
   "certificateURL": {
-    "dev": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
-    "test": "https://sso-test.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
-    "prod": "https://sso.pathfinder.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs"
+    "dev": "https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
+    "test": "https://test.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
+    "prod": "https://oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs"
   },
   "sso": {
     "dev": {
-      "url": "https://sso-dev.pathfinder.gov.bc.ca",
+      "url": "https://dev.oidc.gov.bc.ca",
       "clientId": "invasives-bc",
       "realm": "dfmlcg7z"
     },
     "test": {
-      "url": "https://sso-test.pathfinder.gov.bc.ca",
+      "url": "https://test.oidc.gov.bc.ca",
       "clientId": "invasives-bc",
       "realm": "dfmlcg7z"
     },
     "prod": {
-      "url": "https://sso.pathfinder.gov.bc.ca",
+      "url": "https://oidc.gov.bc.ca",
       "clientId": "invasives-bc",
       "realm": "dfmlcg7z"
     }
