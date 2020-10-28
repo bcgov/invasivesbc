@@ -11,7 +11,6 @@ import {
   makeStyles
 } from '@material-ui/core';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { cloneDeep } from 'lodash';
 import { Delete } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
@@ -57,17 +56,21 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   const [activityChoices, setActivityChoices] = useState([]);
 
   const getActivityChoicesFromTrip = async () => {
+    console.log('fetching trip from db');
     let docs = await databaseContext.database.find({
       selector: {
-        _id: 'trip'
+        _id: 'trip2'
       }
     });
     if (docs.docs.length > 0) {
-      setActivityChoices([...docs.docs[0].activityChoices]);
+      console.log('doc count: ' + docs.docs.length);
+      setActivityChoices([...docs.docs[0]?.activityChoices]);
     }
+
+    console.dir(docs.docs[0]);
   };
 
-  useEffect(() => {
+   useEffect(() => {
     const updateComponent = (): Subscription => {
       // initial update
       getActivityChoicesFromTrip();
@@ -93,35 +96,34 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
     };
   }, [databaseContext]);
 
-  const saveChoices = async () => {
-    await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...tripDoc, activityChoices: activityChoices };
+
+  const saveChoices = async (newActivityChoices) => {
+    await databaseContext.database.upsert('trip2', (tripDoc) => {
+      return { ...tripDoc, activityChoices: newActivityChoices };
     });
   };
 
   const addActivityChoice = (newActivity: IActivityChoices) => {
-    setActivityChoices([...activityChoices, newActivity]);
-    saveChoices();
+    saveChoices([...activityChoices, newActivity]);
   };
 
   const updateActivityChoice = (updatedActivity: IActivityChoices, index: number) => {
-    let updatedActivityChoices = activityChoices;
+    let updatedActivityChoices = [...activityChoices];
     updatedActivityChoices[index] = updatedActivity;
-    setActivityChoices([...updatedActivityChoices]);
-    saveChoices();
+    saveChoices([...updatedActivityChoices]);
   };
 
   const deleteActivityChoice = (index: number) => {
     let copy = [...activityChoices];
     copy.splice(index, 1);
-    setActivityChoices(copy);
-    saveChoices();
+    saveChoices(copy);
   };
 
   const classes = useStyles();
 
   return (
     <>
+    {console.dir(activityChoices)}}
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Button
           color="primary"

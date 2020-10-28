@@ -11,12 +11,11 @@ import {
 } from '@material-ui/core';
 import ManageDatabaseContainer from 'components/database/ClearDatabase';
 import MapContainer from 'components/map/MapContainer';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ExpandMore } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
-import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
+//import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 
 interface IPlanPageProps {
   classes?: any;
@@ -94,29 +93,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PlanPage: React.FC<IPlanPageProps> = (props) => {
-  const [trip, setTrip] = useState<[]>([]);
-
-  const databaseContext = useContext(DatabaseContext);
-
-  const getTrip = () => {
-    databaseContext.database
-      .find({
-        selector: {
-          _id: 'trip'
-        }
-      })
-      .then((doc) => {
-        if (doc && doc.docs) {
-          if (doc.docs[0]) {
-            setTrip(doc.docs[0]);
-          }
-        }
-      });
-  };
-
-  useEffect(() => {
-    getTrip();
-  });
 
   const classes = useStyles();
   return (
@@ -151,7 +127,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               <Typography className={classes.heading}>Pick Activity Records</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.activityRecordPicker}>
-              <ActivityDataFilter trip={trip} />
+              <ActivityDataFilter />
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={false}>
@@ -162,7 +138,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               <Typography className={classes.heading}>Points Of Interest</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.pointOfInterest}>
-              <PointOfInterestDataFilter trip={trip} />
+              {/* <PointOfInterestDataFilter trip={trip} /> */}
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={false}>
