@@ -99,7 +99,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   return (
     <Container className={props.classes.container}>
       <ManageDatabaseContainer />
-      <FetchOrDelete/>
+      <FetchOrDelete />
       <Grid container spacing={3} className={classes.tripGrid}>
         <Grid item xs={12} sm={12}>
           <Paper className={classes.paper}>
