@@ -188,7 +188,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           updatePointOfInterestChoice(
                             {
                               ...pointOfInterestChoices[index],
-                              startDate: pointOfInterestChoices[index].startDate
+                              startDate: e
                             },
                             index
                           );
@@ -211,7 +211,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           updatePointOfInterestChoice(
                             {
                               ...pointOfInterestChoices[index],
-                              endDate: pointOfInterestChoices[index].endDate
+                              endDate: e
                             },
                             index
                           );

@@ -192,7 +192,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                           updateActivityChoice(
                             {
                               ...activityChoices[index],
-                              startDate: activityChoices[index].startDate
+                              startDate: e
                             },
                             index
                           );
@@ -215,7 +215,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                           updateActivityChoice(
                             {
                               ...activityChoices[index],
-                              endDate: activityChoices[index].endDate
+                              endDate: e
                             },
                             index
                           );
