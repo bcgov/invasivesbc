@@ -16,6 +16,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
 import SpeciesTree from './SpeciesInput';
 import DateFnsUtils from '@date-io/date-fns';
+import { Subscription } from 'rxjs';
 
 interface IActivityChoices {
   activityType: string;
@@ -52,57 +53,68 @@ const useStyles = makeStyles((theme) => ({
 
 export const ActivityDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  //todo db persist, ressurect, & update
   const [activityChoices, setActivityChoices] = useState([]);
 
-  const saveChoices = async () => {
-    // this is what fixed the main map
-    await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...activityChoices };
+  const getActivityChoicesFromTrip = async () => {
+    let docs = await databaseContext.database.find({
+      selector: {
+        _id: 'trip'
+      }
     });
+    if (docs.docs.length > 0) {
+      let tripDoc = docs.docs[0];
+      if (tripDoc.activityChoices) {
+        setActivityChoices([...tripDoc.activityChoices]);
+      }
+    }
   };
 
-  /*
-  const [doc, setDoc] = useState(null);
-
   useEffect(() => {
-    const getPreviousTripOptions = async () => {
-      const appState = await databaseContext.database.find({ selector: { _id: 'AppState' } });
+    const updateComponent = (): Subscription => {
+      // initial update
+      getActivityChoicesFromTrip();
 
-      if (!appState || !appState.docs || !appState.docs.length) {
+      // subscribe to changes and update list on emit
+      const subscription = databaseContext.changes.subscribe(() => {
+        getActivityChoicesFromTrip();
+      });
+
+      // return subscription for use in cleanup
+      return subscription;
+    };
+
+    const subscription = updateComponent();
+
+    return () => {
+      if (!subscription) {
         return;
       }
 
-      const doc = await databaseContext.database.find({ selector: { _id: appState.docs[0].activeActivity } });
-
-      setDoc(doc.docs[0]);
+      // unsubscribe on cleanup
+      subscription.unsubscribe();
     };
+  }, [databaseContext]);
 
-    getActivityData();
-  }, [databaseChangesContext]);
-
-  if (!doc) {
-    return <CircularProgress />;
-  }
-  */
-  useEffect(() => {
-    saveChoices();
-  }, [activityChoices]);
+  const saveChoices = async (newActivityChoices) => {
+    await databaseContext.database.upsert('trip', (tripDoc) => {
+      return { ...tripDoc, activityChoices: newActivityChoices };
+    });
+  };
 
   const addActivityChoice = (newActivity: IActivityChoices) => {
-    setActivityChoices([...activityChoices, newActivity]);
+    saveChoices([...activityChoices, newActivity]);
   };
 
   const updateActivityChoice = (updatedActivity: IActivityChoices, index: number) => {
-    let updatedActivityChoices = activityChoices;
+    let updatedActivityChoices = [...activityChoices];
     updatedActivityChoices[index] = updatedActivity;
-    setActivityChoices([...updatedActivityChoices]);
+    saveChoices([...updatedActivityChoices]);
   };
 
   const deleteActivityChoice = (index: number) => {
     let copy = [...activityChoices];
     copy.splice(index, 1);
-    setActivityChoices(copy);
+    saveChoices(copy);
   };
 
   const classes = useStyles();

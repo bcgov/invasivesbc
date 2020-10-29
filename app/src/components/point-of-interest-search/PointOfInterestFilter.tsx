@@ -15,6 +15,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { Delete } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
+import { Subscription } from 'rxjs';
 
 interface IPointOfInterestChoices {
   pointOfInterestType: string;
@@ -50,57 +51,68 @@ const useStyles = makeStyles((theme) => ({
 
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  //todo db persist, ressurect, & update
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
 
-  const saveChoices = async () => {
-    //placeholder
-    await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...pointOfInterestChoices };
+  const getPointOfInterestChoicesFromTrip = async () => {
+    let docs = await databaseContext.database.find({
+      selector: {
+        _id: 'trip'
+      }
     });
+    if (docs.docs.length > 0) {
+      let tripDoc = docs.docs[0];
+      if (tripDoc.pointOfInterestChoices) {
+        setPointOfInterestChoices([...tripDoc.pointOfInterestChoices]);
+      }
+    }
   };
 
-  /*
-  const [doc, setDoc] = useState(null);
-
   useEffect(() => {
-    const getPreviousTripOptions = async () => {
-      const appState = await databaseContext.database.find({ selector: { _id: 'AppState' } });
+    const updateComponent = (): Subscription => {
+      // initial update
+      getPointOfInterestChoicesFromTrip();
 
-      if (!appState || !appState.docs || !appState.docs.length) {
+      // subscribe to changes and update list on emit
+      const subscription = databaseContext.changes.subscribe(() => {
+        getPointOfInterestChoicesFromTrip();
+      });
+
+      // return subscription for use in cleanup
+      return subscription;
+    };
+
+    const subscription = updateComponent();
+
+    return () => {
+      if (!subscription) {
         return;
       }
 
-      const doc = await databaseContext.database.find({ selector: { _id: appState.docs[0].activePointOfInterest } });
-
-      setDoc(doc.docs[0]);
+      // unsubscribe on cleanup
+      subscription.unsubscribe();
     };
+  }, [databaseContext]);
 
-    getPointOfInterestData();
-  }, [databaseChangesContext]);
-
-  if (!doc) {
-    return <CircularProgress />;
-  }
-  */
-  useEffect(() => {
-    saveChoices();
-  }, [pointOfInterestChoices]);
+  const saveChoices = async (newPointOfInterestChoices) => {
+    await databaseContext.database.upsert('trip', (tripDoc) => {
+      return { ...tripDoc, pointOfInterestChoices: newPointOfInterestChoices };
+    });
+  };
 
   const addPointOfInterestChoice = (newPointOfInterest: IPointOfInterestChoices) => {
-    setPointOfInterestChoices([...pointOfInterestChoices, newPointOfInterest]);
+    saveChoices([...pointOfInterestChoices, newPointOfInterest]);
   };
 
   const updatePointOfInterestChoice = (updatedPointOfInterest: IPointOfInterestChoices, index: number) => {
     let updatedPointOfInterestChoices = pointOfInterestChoices;
     updatedPointOfInterestChoices[index] = updatedPointOfInterest;
-    setPointOfInterestChoices([...updatedPointOfInterestChoices]);
+    saveChoices([...updatedPointOfInterestChoices]);
   };
 
   const deletePointOfInterestChoice = (index: number) => {
     let copy = [...pointOfInterestChoices];
     copy.splice(index, 1);
-    setPointOfInterestChoices(copy);
+    saveChoices(copy);
   };
 
   const classes = useStyles();
