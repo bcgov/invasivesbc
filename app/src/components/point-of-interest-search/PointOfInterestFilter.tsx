@@ -15,7 +15,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { Delete } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
-import { Subscription } from 'rxjs';
+import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 
 interface IPointOfInterestChoices {
   pointOfInterestType: string;
@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
+  const databaseChangesContext = useContext(DatabaseChangesContext);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
 
   const getPointOfInterestChoicesFromTrip = async () => {
@@ -66,32 +67,12 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
       }
     }
   };
-
   useEffect(() => {
-    const updateComponent = (): Subscription => {
-      // initial update
+    const updateComponent = () => {
       getPointOfInterestChoicesFromTrip();
-
-      // subscribe to changes and update list on emit
-      const subscription = databaseContext.changes.subscribe(() => {
-        getPointOfInterestChoicesFromTrip();
-      });
-
-      // return subscription for use in cleanup
-      return subscription;
     };
-
-    const subscription = updateComponent();
-
-    return () => {
-      if (!subscription) {
-        return;
-      }
-
-      // unsubscribe on cleanup
-      subscription.unsubscribe();
-    };
-  }, [databaseContext]);
+    updateComponent();
+  }, [databaseChangesContext]);
 
   const saveChoices = async (newPointOfInterestChoices) => {
     await databaseContext.database.upsert('trip', (tripDoc) => {

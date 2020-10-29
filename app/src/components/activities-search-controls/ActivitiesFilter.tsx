@@ -16,7 +16,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
 import SpeciesTree from './SpeciesInput';
 import DateFnsUtils from '@date-io/date-fns';
-import { Subscription } from 'rxjs';
+import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 
 interface IActivityChoices {
   activityType: string;
@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ActivityDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
+  const databaseChangesContext = useContext(DatabaseChangesContext);
   const [activityChoices, setActivityChoices] = useState([]);
 
   const getActivityChoicesFromTrip = async () => {
@@ -70,30 +71,11 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   };
 
   useEffect(() => {
-    const updateComponent = (): Subscription => {
-      // initial update
+    const updateComponent = () => {
       getActivityChoicesFromTrip();
-
-      // subscribe to changes and update list on emit
-      const subscription = databaseContext.changes.subscribe(() => {
-        getActivityChoicesFromTrip();
-      });
-
-      // return subscription for use in cleanup
-      return subscription;
     };
-
-    const subscription = updateComponent();
-
-    return () => {
-      if (!subscription) {
-        return;
-      }
-
-      // unsubscribe on cleanup
-      subscription.unsubscribe();
-    };
-  }, [databaseContext]);
+    updateComponent();
+  }, [databaseChangesContext]);
 
   const saveChoices = async (newActivityChoices) => {
     await databaseContext.database.upsert('trip', (tripDoc) => {
