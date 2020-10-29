@@ -1,100 +1,89 @@
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { Feature } from 'geojson';
 import * as L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.locatecontrol';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import 'leaflet.offline';
-import './MapContainer.css';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useState, useContext, useEffect } from 'react';
-
-import { ActivityStatus } from 'constants/activities';
-import { Geolocation } from '@capacitor/core';
+import 'leaflet/dist/leaflet.css';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
+import './MapContainer.css';
 
-interface IMapContainerProps {
+export type MapControl = (map: any, ...args: any) => void;
+
+export interface IMapContainerProps {
   classes?: any;
-  activity?: any;
-  geoFeatCollection?: any;
+  mapId: string;
+  geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
+  extentState: { extent: any; setExtent: (extent: any) => void };
 }
 
-//let's try and only let the map get input from props, and write based on them and new shapes drawn
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
-  const [geo, setGeo] = useState(null);
-  const [extent, setExtent] = useState(null);
+  const mapRef = useRef(null);
 
-  /* ## saveGeo
-    Save the geometry added by the user
-    @param doc {object} The activity data object
-    @param geoJSON {object} The geometry in GeoJSON format
-  */
-  const saveGeo = async (doc: any, geoJSON: any) => {
-    // this is what fixed the main map
-    if (props.activity) {
-      await databaseContext.database.upsert(doc._id, (activityDoc) => {
-        return { ...activityDoc, geometry: [geoJSON], status: ActivityStatus.EDITED, dateUpdated: new Date() };
-      });
-    }
+  const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
+
+  const getESRIBaseLayer = () => {
+    return L.tileLayer.offline(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 24,
+        maxNativeZoom: 17,
+        attribution:
+          '&copy; <a href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps">ESRI Basemap</a>'
+      }
+    );
   };
 
-  //hook to db persist new user drawn geometries
-  useEffect(() => {
-    if (props && geo) {
-      saveGeo(props.activity, geo);
-    }
-  }, [geo]);
-
-  /* ## setExtent
-    Save the map Extent within the database
-    @param doc {object} The activity data object
-    @param extent {object} The leaflet bounds object
-   */
-  const saveExtent = async (doc: any, newExtent: any) => {
-    await databaseContext.database.upsert(doc._id, (activityDoc) => {
-      return { ...activityDoc, mapExtent: newExtent };
+  const getBCGovBaseLayer = () => {
+    return L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 24,
+      useCache: true,
+      cacheMaxAge: 6.048e+8 // 1 week
     });
   };
 
-  // shared between mapSetup and mapUpdate
-  const [drawnItems] = useState(new L.FeatureGroup());
+  const addZoomControls = () => {
+    const zoomControlOptions = { position: 'bottomright' };
 
-  useEffect(() => {
-    if (props?.activity && extent) {
-      saveExtent(props.activity, extent);
-    }
-  }, [extent]);
+    mapRef.current.addControl(L.control.zoom(zoomControlOptions));
+  };
 
-  const mapSetup = (drawnItemsInput: any) => {
-    console.log('Map componentDidMount!');
+  const addDrawControls = () => {
+    const drawControlOptions = new L.Control.Draw({
+      position: 'topright',
+      draw: {
+        marker: false,
+        circle: true
+      },
+      edit: {
+        featureGroup: drawnItems,
+        remove: true,
+        edit: true
+      }
+    });
 
-    var map = L.map('map', { zoomControl: false }).setView([55, -128], 10);
-    // On init setup
+    mapRef.current.addControl(drawControlOptions);
+  };
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-    const options = {
+  const addLocateControls = () => {
+    const locateControlOptions = {
       icon: 'bullseye',
       flyTo: true,
       iconElementTag: 'div'
     };
 
-    L.control.locate(options).addTo(map);
+    mapRef.current.addControl(L.control.locate(locateControlOptions));
+  };
 
-    const esriBase = L.tileLayer
-      .offline('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 24,
-        maxNativeZoom: 17,
-        attribution:
-          '&copy; <a href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps">ESRI Basemap</a>'
-      })
-      .addTo(map);
-
-    L.control
-      .savetiles(esriBase, {
+  const addSaveTilesControl = (layerToSave: any) => {
+    mapRef.current.addControl(
+      L.control.savetiles(layerToSave, {
         zoomlevels: [13, 14, 15, 16, 17],
         confirm(layer, succescallback) {
           if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
@@ -109,206 +98,153 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         saveText: '<span title="Save me some basemap">&#128190;</span>',
         rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
       })
-      .addTo(map);
-
-    esriBase.on('saveend', (e) => {
-      console.log(`Saved ${e.lengthSaved} tiles`);
-    });
-    esriBase.on('tilesremoved', () => {
-      console.log('Removed all tiles');
-    });
-
-    const bcBase = L.tileLayer(
-      'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
-      {
-        maxZoom: 24,
-        useCache: true,
-        cacheMaxAge: 1.72e8 // 48 hours
-      }
     );
+  };
 
-    map.addLayer(drawnItemsInput);
-
-    var drawControl = new L.Control.Draw({
-      position: 'topright',
-      draw: {
-        marker: false,
-        circle: true
-      },
-      edit: {
-        featureGroup: drawnItemsInput,
-        remove: true,
-        edit: true
-      }
-    });
-
-    map.addControl(drawControl);
-
-    /**************************************
-     * Basemap offlining
-     */
-    const baseLayers = {
-      'Esri Imagery': esriBase,
-      'BC Government': bcBase
-    };
-
-    L.control.layers(baseLayers).addTo(map);
-
-    /*
-      Move map to previous distination and scale... If available.
-    */
-    if (props?.activity?.mapExtent) {
-      const b = props.activity.mapExtent;
+  const setMapBounds = () => {
+    if (props.extentState?.extent) {
+      const extent = props.extentState.extent;
       const bounds = [
-        [b._northEast.lat, b._northEast.lng],
-        [b._southWest.lat, b._southWest.lng]
+        [extent._northEast.lat, extent._northEast.lng],
+        [extent._southWest.lat, extent._southWest.lng]
       ];
-      map.fitBounds(bounds);
-    }
 
-    map.on('moveend', () => {
-      setExtent(map.getBounds());
+      mapRef.current.fitBounds(bounds);
+    }
+  };
+
+  const addLayerControls = (baseLayerControlOptions: any) => {
+    mapRef.current.addControl(L.control.layers(baseLayerControlOptions));
+  };
+
+  const initMap = () => {
+    mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([55, -128], 10);
+
+    addZoomControls();
+
+    addLocateControls();
+
+    addDrawControls();
+
+    const esriBaseLayer = getESRIBaseLayer();
+    const bcBaseLayer = getBCGovBaseLayer();
+
+    // Set initial base map
+    esriBaseLayer.addTo(mapRef.current);
+
+    addLayerControls({
+      'Esri Imagery': esriBaseLayer,
+      'BC Government': bcBaseLayer
     });
-    map.on('draw:created', (feature) => {
-      console.log('draw:created');
+
+    addSaveTilesControl(esriBaseLayer);
+
+    setMapBounds();
+
+    mapRef.current.on('moveend', () => {
+      props.extentState.setExtent(mapRef.current.getBounds());
+    });
+
+    mapRef.current.on('draw:created', (feature) => {
       let aGeo = feature.layer.toGeoJSON();
+
       if (feature.layerType === 'circle') {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: feature.layer.getRadius() } };
       }
-      setGeo(aGeo);
-      drawnItemsInput.addLayer(feature.layer);
+
+      props.geometryState.setGeometry([aGeo]);
     });
 
-    map.on('draw:drawstart', function () {
-      console.log('draw:drawstart');
-      // this works ok in context of needing one geo, nfg if we need to draw a few different things
-      drawnItemsInput.clearLayers(); // Clear previous shape
-      setGeo(null);
+    mapRef.current.on('draw:drawstart', function () {
+      props.geometryState.setGeometry([]);
     });
 
-    map.on('draw:editstop', async function (layerGroup) {
-      console.log('draw edit stop');
-      /*
-        The current feature isn't passed to this function
-        So grab it from the acetate layer
-      */
-      let aGeo = drawnItemsInput?.toGeoJSON()?.features[0];
+    mapRef.current.on('draw:editstop', async function (layerGroup) {
+      // The current feature isn't passed to this function, so grab it from the acetate layer
+      let aGeo = drawnItems?.toGeoJSON()?.features[0];
 
       // If this is a circle feature... Grab the radius and store in the GeoJSON
-      if (drawnItemsInput.getLayers()[0]._mRadius) {
-        const radius = drawnItemsInput.getLayers()[0]?.getRadius();
+      if (drawnItems.getLayers()[0]._mRadius) {
+        const radius = drawnItems.getLayers()[0]?.getRadius();
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
       }
 
-      // Save feature
+      // Save edited feature
       if (aGeo) {
-        setGeo(aGeo);
+        props.geometryState.setGeometry([aGeo]);
       }
     });
 
-    map.on('draw:deleted', function () {
-      console.log('deleted');
-      setGeo('{}');
+    mapRef.current.on('draw:deleted', function () {
+      props.geometryState.setGeometry([]);
     });
-
-    /*
-    map.on('draw:editstart', function (event) {
-      console.log('editstart',event);
-    });
-
-    map.on('draw:editmove', function () {
-      console.log('editmove');
-    });
-
-    map.on('draw:editresize', function () {
-      console.log('editresize');
-    });
-
-    map.on('draw:editvertex', function () {
-      console.log('editvertex');
-    });
-
-    map.on('draw:drawvertex', function (layerGroup) {
-      console.log('drawvertex',layerGroup);
-    });
-
-    map.on('draw:drawstop', function (layerGroup) {
-      console.log('stopped');
-    });
-
-    map.on('draw:deletestart', function () {
-      console.log('deletestart');
-    });
-
-    map.on('draw:deletestop', function () {
-      console.log('deletestop');
-    });
-    */
   };
 
-  const mapUpdate = (drawnItemsInput: any) => {
-    console.log('map update');
-    //    drawnItemsInput.clearLayers(); // Clear previous shape
-    const featureCollectionsToDraw = [];
-    if (props.activity && props.activity.geometry) {
-      console.log('is there a geom for this activity');
-      featureCollectionsToDraw.push(props.activity.geometry);
-    }
+  const updateMapOnGeometryChange = () => {
+    // Clear the drawn features
+    setDrawnItems(drawnItems.clearLayers());
 
-    if (props.geoFeatCollection) {
-      featureCollectionsToDraw.push(props.geoFeatCollection);
-    }
+    // For each geometry, add a new layer to the drawn features
+    props.geometryState.geometry.forEach((collection) => {
+      const style = {
+        // color: '#ff7800',
+        weight: 4,
+        opacity: 0.65
+      };
 
-    if (featureCollectionsToDraw.length > 0) {
-      featureCollectionsToDraw.forEach((collection) => {
-        const style = {
-          color: '#ff7800',
-          weight: 4,
-          opacity: 0.65
-        };
+      const markerStyle = {
+        radius: 10,
+        weight: 4,
+        stroke: true
+      };
 
-        const markerStyle = {
-          radius: 10,
-          weight: 4,
-          stroke: true
-        };
-
-        L.geoJSON(collection, {
-          style: style,
-          pointToLayer: (feature: any, latLng: any) => {
-            if (feature.properties.radius) {
-              return L.circle(latLng, { radius: feature.properties.radius });
-            } else {
-              return L.circleMarker(latLng, markerStyle);
-            }
-          },
-          onEachFeature: function (_: any, layer: any) {
-            drawnItemsInput.addLayer(layer);
+      L.geoJSON(collection, {
+        style: style,
+        pointToLayer: (feature: any, latLng: any) => {
+          if (feature.properties.radius) {
+            return L.circle(latLng, { radius: feature.properties.radius });
+          } else {
+            return L.circleMarker(latLng, markerStyle);
           }
-        });
+        },
+        onEachFeature: function (feature: any, layer: any) {
+          drawnItems.addLayer(layer);
+        }
       });
-    }
+    });
+
+    // Update the drawn featres
+    setDrawnItems(drawnItems);
+
+    // Update the map with the new drawn feaures
+    mapRef.current = mapRef.current.addLayer(drawnItems);
   };
 
-  //initial hook to set up leaflet map, the delay on waiting for db avoids a bug where leaflet doesnt
-  //resize/render right on first load
   useEffect(() => {
-    if (!databaseContext.database) {
-      // database not ready
-      return;
-    }
-    mapSetup(drawnItems);
+    initMap();
+
+    return () => {
+      if (!mapRef.current) {
+        return;
+      }
+
+      mapRef.current.remove();
+    };
   }, [databaseContext]);
 
-  // the hook to fire if the props change (activity being passed, featurecollection from KML, etc)
   useEffect(() => {
-    if (props.geoFeatCollection || props.activity?.geometry) {
-      console.log('props changed');
-      mapUpdate(drawnItems);
+    if (!mapRef.current) {
+      return;
     }
-  }, [props]);
 
-  return <div id="map" className={props.classes.map} />;
+    if (!props.geometryState?.geometry) {
+      return;
+    }
+
+    updateMapOnGeometryChange();
+  }, [props.geometryState.geometry]);
+
+  return <div id={props.mapId} className={props.classes.map} />;
 };
 
 export default MapContainer;

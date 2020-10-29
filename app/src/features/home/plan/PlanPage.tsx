@@ -9,7 +9,7 @@ import {
   LinearProgress,
   Typography
 } from '@material-ui/core';
-import ManageDatabaseContainer from 'components/database/ClearDatabase';
+import ManageDatabaseComponent from 'components/database/ManageDatabaseComponent';
 import MapContainer from 'components/map/MapContainer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
@@ -91,6 +91,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [geoFeatCollection, setGeoFeatCollection] = useState(null);
 
   const databaseContext = useContext(DatabaseContext);
+
+  const [geometry, setGeometry] = useState(null);
+  const [extent, setExtent] = useState(null);
+
   const getGeos = () => {
     databaseContext.database
       .find({
@@ -115,7 +119,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const classes = useStyles();
   return (
     <Container className={props.classes.container}>
-      <ManageDatabaseContainer />
+      <ManageDatabaseComponent />
       <Grid container spacing={3} className={classes.tripGrid}>
         <Grid item xs={12} sm={12}>
           <Paper className={classes.paper}>
@@ -170,7 +174,13 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         </Grid>
         <Grid item xs={12} sm={6} className={classes.mapGridItem}>
           <Paper className={classes.paper} elevation={5}>
-            <MapContainer {...props} geoFeatCollection={geoFeatCollection} classes={classes} />
+            <MapContainer
+              {...props}
+              classes={classes}
+              mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
+              geometryState={{ geometry, setGeometry }}
+              extentState={{ extent, setExtent }}
+            />
           </Paper>
         </Grid>
       </Grid>

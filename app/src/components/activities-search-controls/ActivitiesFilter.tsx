@@ -79,7 +79,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
     };
 
     getActivityData();
-  }, [databaseContext]);
+  }, [databaseChangesContext]);
 
   if (!doc) {
     return <CircularProgress />;

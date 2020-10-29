@@ -1,6 +1,5 @@
-import { ActivityParentType, ActivityType } from 'constants/activities';
-import { Feature } from 'geojson';
-import { Photo } from 'components/photo/PhotoContainer';
+import { ActivityType, ActivitySubtype } from 'constants/activities';
+import { Feature, Polygon } from 'geojson';
 
 /**
  * Activity search filter criteria.
@@ -54,10 +53,10 @@ export interface IActivitySearchCriteria {
   /**
    * GeoJSON polygon to search in.
    *
-   * @type {GeoJSON.Polygon}
+   * @type {Polygon}
    * @memberof IActivitySearchCriteria
    */
-  search_polygon?: GeoJSON.Polygon;
+  search_polygon?: Polygon;
 }
 
 /**
@@ -67,8 +66,8 @@ export interface IActivitySearchCriteria {
  * @interface ICreateActivity
  */
 export interface ICreateActivity {
-  activity_type: ActivityParentType;
-  activity_subtype: ActivityType;
+  activity_type: ActivityType;
+  activity_subtype: ActivitySubtype;
   geometry: Feature[];
   media: IMedia[];
   form_data: any;

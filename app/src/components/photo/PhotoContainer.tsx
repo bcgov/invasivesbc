@@ -24,15 +24,15 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const databaseContext = useContext(DatabaseContext);
 
-  const initPhotos = async function (activityDoc: any) {
-    const dbDoc = await databaseContext.database.get(activityDoc._id);
+  const initPhotos = async function () {
+    const dbDoc = await databaseContext.database.get(props.activity._id);
     const dbPhotos = dbDoc.photos || [];
     setPhotos(dbPhotos);
   };
 
-  const updateDB = async function (activityDoc: any) {
-    await databaseContext.database.upsert(activityDoc._id, (doc) => {
-      return { ...doc, photos: photos, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+  const updateDB = async function () {
+    await databaseContext.database.upsert(props.activity._id, (dbDoc) => {
+      return { ...dbDoc, photos: photos, status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
   };
 
@@ -63,15 +63,15 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   };
 
   useEffect(() => {
-    if (props) {
-      initPhotos(props.activity);
+    if (photos && photos.length) {
+      return;
     }
-  }, [props]);
+
+    initPhotos();
+  }, []);
 
   useEffect(() => {
-    if (props) {
-      updateDB(props.activity);
-    }
+    updateDB();
   }, [photos]);
 
   // Grid with overlays: https://material-ui.com/components/grid-list/

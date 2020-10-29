@@ -4,10 +4,10 @@ import { Alert } from '@material-ui/lab';
 import TabsContainer from 'components/tabs/TabsContainer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
-import { Subscription } from 'rxjs';
 import MarkunreadMailboxIcon from '@material-ui/icons/MarkunreadMailbox';
 import Badge from '@material-ui/core/Badge';
 import { DocType } from 'constants/database';
+import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   homeLayoutRoot: {
@@ -30,36 +30,19 @@ const useStyles = makeStyles((theme: Theme) => ({
 const HomeLayout = (props: any) => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
+  const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [isOpen, setIsOpen] = useState(false);
   const [notification, setNotification] = useState(null);
   const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
-    const updateComponent = (): Subscription => {
-      // read from db on first render
+    const updateComponent = () => {
       addNotificationsToPage();
-
-      // subscribe to changes and update list on emit
-      const subscription = databaseContext.changes.subscribe(() => {
-        addNotificationsToPage();
-      });
-
-      // return subscription for use in cleanup
-      return subscription;
     };
 
-    const subscription = updateComponent();
-
-    return () => {
-      if (!subscription) {
-        return;
-      }
-
-      // unsubscribe on cleanup
-      subscription.unsubscribe();
-    };
-  }, [databaseContext]);
+    updateComponent();
+  }, [databaseChangesContext]);
 
   const addNotificationsToPage = async () => {
     await databaseContext.database.createIndex({
@@ -89,11 +72,10 @@ const HomeLayout = (props: any) => {
     });
 
     setNotificationCount(notifications.docs.length);
+
     if (notifications.docs.length > 0) {
       setNotification(notifications.docs[0]);
       setIsOpen(true);
-      console.log('it happened');
-      //console.log(notifications.docs[0].notificationType)
     }
   };
 
@@ -101,8 +83,8 @@ const HomeLayout = (props: any) => {
     databaseContext.database.upsert(docId, (doc) => {
       return { ...doc, acknowledged: true };
     });
+
     setIsOpen(false);
-    console.log('acknowledged notification');
   };
 
   return (

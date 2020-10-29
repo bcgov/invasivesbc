@@ -1,6 +1,6 @@
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React from 'react';
-import { Redirect, Route, RouteProps, useLocation } from 'react-router-dom';
+import { Route, RouteProps } from 'react-router-dom';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -13,7 +13,6 @@ interface IPrivateRouteProps extends RouteProps {
  * @param props - Properties to pass { component, role, claim }
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const location = useLocation();
   const keycloak = useKeycloakWrapper();
 
   let { component: Component, layout: Layout, ...rest } = props;
