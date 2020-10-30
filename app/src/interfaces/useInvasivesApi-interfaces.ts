@@ -56,7 +56,7 @@ export interface IActivitySearchCriteria {
    * @type {Polygon}
    * @memberof IActivitySearchCriteria
    */
-  search_polygon?: Polygon;
+  search_polygon?: Feature;
 }
 
 /**
