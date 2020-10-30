@@ -4,6 +4,8 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { DocType } from 'constants/database';
+import { notifySuccess } from 'utils/NotificationUtils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,7 +32,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   useStyles();
 
   const getTrip = async () => {
-    console.log('trip update in fetch component')
+    console.log('trip update in fetch component');
     let docs = await databaseContext.database.find({
       selector: {
         _id: 'trip'
@@ -51,16 +53,16 @@ export const TripDataControls: React.FC<any> = (props) => {
   }, [databaseChangesContext]);
 
   const fetchActivities = () => {
-      console.log('got here')
     if (trip.activityChoices) {
       trip.activityChoices.map(async (setOfChoices) => {
         let data = await api.getActivities({ activity_type: setOfChoices.activityType });
         console.dir(data);
-        /*
-      data.map((aFetchedRecord) => {
-        console.dir(aFetchedRecord);
-      });
-      */
+        data.map(async (row) => {
+          await databaseContext.database.upsert(DocType.REFERENCE_ACTIVITY + '_' + row.activity_id, (existingDoc) => {
+            return { ...existingDoc, docType: DocType.REFERENCE_ACTIVITY, tripID: 'trip', ...row };
+          });
+        });
+        notifySuccess(databaseContext, 'Cached ' + data.length + ' activities.');
       });
     }
   };
