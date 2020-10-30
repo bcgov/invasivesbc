@@ -15,6 +15,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { Delete } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
+import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 
 interface IPointOfInterestChoices {
   pointOfInterestType: string;
@@ -50,57 +51,49 @@ const useStyles = makeStyles((theme) => ({
 
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  //todo db persist, ressurect, & update
+  const databaseChangesContext = useContext(DatabaseChangesContext);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
 
-  const saveChoices = async () => {
-    //placeholder
+  const getPointOfInterestChoicesFromTrip = async () => {
+    let docs = await databaseContext.database.find({
+      selector: {
+        _id: 'trip'
+      }
+    });
+    if (docs.docs.length > 0) {
+      let tripDoc = docs.docs[0];
+      if (tripDoc.pointOfInterestChoices) {
+        setPointOfInterestChoices([...tripDoc.pointOfInterestChoices]);
+      }
+    }
+  };
+  useEffect(() => {
+    const updateComponent = () => {
+      getPointOfInterestChoicesFromTrip();
+    };
+    updateComponent();
+  }, [databaseChangesContext]);
+
+  const saveChoices = async (newPointOfInterestChoices) => {
     await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...pointOfInterestChoices };
+      return { ...tripDoc, pointOfInterestChoices: newPointOfInterestChoices };
     });
   };
 
-  /*
-  const [doc, setDoc] = useState(null);
-
-  useEffect(() => {
-    const getPreviousTripOptions = async () => {
-      const appState = await databaseContext.database.find({ selector: { _id: 'AppState' } });
-
-      if (!appState || !appState.docs || !appState.docs.length) {
-        return;
-      }
-
-      const doc = await databaseContext.database.find({ selector: { _id: appState.docs[0].activePointOfInterest } });
-
-      setDoc(doc.docs[0]);
-    };
-
-    getPointOfInterestData();
-  }, [databaseChangesContext]);
-
-  if (!doc) {
-    return <CircularProgress />;
-  }
-  */
-  useEffect(() => {
-    saveChoices();
-  }, [pointOfInterestChoices]);
-
   const addPointOfInterestChoice = (newPointOfInterest: IPointOfInterestChoices) => {
-    setPointOfInterestChoices([...pointOfInterestChoices, newPointOfInterest]);
+    saveChoices([...pointOfInterestChoices, newPointOfInterest]);
   };
 
   const updatePointOfInterestChoice = (updatedPointOfInterest: IPointOfInterestChoices, index: number) => {
     let updatedPointOfInterestChoices = pointOfInterestChoices;
     updatedPointOfInterestChoices[index] = updatedPointOfInterest;
-    setPointOfInterestChoices([...updatedPointOfInterestChoices]);
+    saveChoices([...updatedPointOfInterestChoices]);
   };
 
   const deletePointOfInterestChoice = (index: number) => {
     let copy = [...pointOfInterestChoices];
     copy.splice(index, 1);
-    setPointOfInterestChoices(copy);
+    saveChoices(copy);
   };
 
   const classes = useStyles();
@@ -195,7 +188,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           updatePointOfInterestChoice(
                             {
                               ...pointOfInterestChoices[index],
-                              startDate: pointOfInterestChoices[index].startDate
+                              startDate: e
                             },
                             index
                           );
@@ -218,7 +211,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           updatePointOfInterestChoice(
                             {
                               ...pointOfInterestChoices[index],
-                              endDate: pointOfInterestChoices[index].endDate
+                              endDate: e
                             },
                             index
                           );

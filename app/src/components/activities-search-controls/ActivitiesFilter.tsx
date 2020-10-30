@@ -16,6 +16,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useState, useEffect } from 'react';
 import SpeciesTree from './SpeciesInput';
 import DateFnsUtils from '@date-io/date-fns';
+import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 
 interface IActivityChoices {
   activityType: string;
@@ -52,57 +53,50 @@ const useStyles = makeStyles((theme) => ({
 
 export const ActivityDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  //todo db persist, ressurect, & update
+  const databaseChangesContext = useContext(DatabaseChangesContext);
   const [activityChoices, setActivityChoices] = useState([]);
 
-  const saveChoices = async () => {
-    // this is what fixed the main map
+  const getActivityChoicesFromTrip = async () => {
+    let docs = await databaseContext.database.find({
+      selector: {
+        _id: 'trip'
+      }
+    });
+    if (docs.docs.length > 0) {
+      let tripDoc = docs.docs[0];
+      if (tripDoc.activityChoices) {
+        setActivityChoices([...tripDoc.activityChoices]);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const updateComponent = () => {
+      getActivityChoicesFromTrip();
+    };
+    updateComponent();
+  }, [databaseChangesContext]);
+
+  const saveChoices = async (newActivityChoices) => {
     await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...activityChoices };
+      return { ...tripDoc, activityChoices: newActivityChoices };
     });
   };
 
-  /*
-  const [doc, setDoc] = useState(null);
-
-  useEffect(() => {
-    const getPreviousTripOptions = async () => {
-      const appState = await databaseContext.database.find({ selector: { _id: 'AppState' } });
-
-      if (!appState || !appState.docs || !appState.docs.length) {
-        return;
-      }
-
-      const doc = await databaseContext.database.find({ selector: { _id: appState.docs[0].activeActivity } });
-
-      setDoc(doc.docs[0]);
-    };
-
-    getActivityData();
-  }, [databaseChangesContext]);
-
-  if (!doc) {
-    return <CircularProgress />;
-  }
-  */
-  useEffect(() => {
-    saveChoices();
-  }, [activityChoices]);
-
   const addActivityChoice = (newActivity: IActivityChoices) => {
-    setActivityChoices([...activityChoices, newActivity]);
+    saveChoices([...activityChoices, newActivity]);
   };
 
   const updateActivityChoice = (updatedActivity: IActivityChoices, index: number) => {
-    let updatedActivityChoices = activityChoices;
+    let updatedActivityChoices = [...activityChoices];
     updatedActivityChoices[index] = updatedActivity;
-    setActivityChoices([...updatedActivityChoices]);
+    saveChoices([...updatedActivityChoices]);
   };
 
   const deleteActivityChoice = (index: number) => {
     let copy = [...activityChoices];
     copy.splice(index, 1);
-    setActivityChoices(copy);
+    saveChoices(copy);
   };
 
   const classes = useStyles();
@@ -198,7 +192,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                           updateActivityChoice(
                             {
                               ...activityChoices[index],
-                              startDate: activityChoices[index].startDate
+                              startDate: e
                             },
                             index
                           );
@@ -221,7 +215,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                           updateActivityChoice(
                             {
                               ...activityChoices[index],
-                              endDate: activityChoices[index].endDate
+                              endDate: e
                             },
                             index
                           );
