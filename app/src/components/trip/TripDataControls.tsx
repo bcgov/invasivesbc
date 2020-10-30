@@ -58,7 +58,8 @@ export const TripDataControls: React.FC<any> = (props) => {
         let data = await api.getActivities({
           activity_type: setOfChoices.activityType,
           date_range_start: setOfChoices.startDate,
-          date_range_end: setOfChoices.endDate
+          date_range_end: setOfChoices.endDate,
+          search_feature: setOfChoices.geometry[0]
         });
         console.dir(data);
         data.map(async (row) => {

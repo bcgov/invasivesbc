@@ -18,6 +18,8 @@ import { ExpandMore } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
 import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 import TripDataControls from 'components/trip/TripDataControls';
+import { Feature } from 'geojson';
+import { IonSpinner } from '@ionic/react';
 
 interface IPlanPageProps {
   classes?: any;
@@ -89,33 +91,65 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PlanPage: React.FC<IPlanPageProps> = (props) => {
-  const [geoFeatCollection, setGeoFeatCollection] = useState(null);
-
   const databaseContext = useContext(DatabaseContext);
-
-  const [geometry, setGeometry] = useState(null);
+  const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
+  const [canLoadMap, setCanLoadMap] = useState(false);
+  const [trip, setTrip] = useState(null);
 
-  const getGeos = () => {
-    databaseContext.database
-      .find({
-        selector: {
-          _id: 'theShapeAsGeoFeatureCollection'
+  const getTrip = async () => {
+    console.log('trip update in fetch component');
+    let docs = await databaseContext.database.find({
+      selector: {
+        _id: 'trip'
+      }
+    });
+    if (docs.docs.length > 0) {
+      let tripDoc = docs.docs[0];
+      console.log('initial load of trip');
+      console.dir(tripDoc);
+      if (tripDoc) {
+        setTrip(tripDoc);
+        if (tripDoc.geometry) {
+          console.log('initial setting geo');
+          setGeometry(tripDoc.geometry);
         }
-      })
-      .then((doc) => {
-        if (doc && doc.docs) {
-          if (doc.docs[0]) {
-            console.log('call geo feat setter');
-            setGeoFeatCollection(doc.docs[0]);
-          }
+        if (tripDoc.extent) {
+          console.log('initial setting extent');
+          setExtent(tripDoc.extent);
         }
-      });
+      }
+    }
   };
 
+  //initial fetch
   useEffect(() => {
-    getGeos();
-  }, []);
+    const initialLoad = async () => {
+      await getTrip();
+      setCanLoadMap(true);
+    };
+    initialLoad();
+  }, [databaseContext]);
+
+  //persist updates
+  useEffect(() => {
+    console.log('geo updated');
+    if (canLoadMap) {
+      databaseContext.database.upsert('trip', (tripDoc) => {
+        return { ...tripDoc, geometry: geometry };
+      });
+    }
+  }, [geometry, canLoadMap]);
+
+  //persist updates
+  useEffect(() => {
+    console.log('extent updated');
+    if (canLoadMap) {
+      databaseContext.database.upsert('trip', (tripDoc) => {
+        return { ...tripDoc, extent: extent };
+      });
+    }
+  }, [extent, canLoadMap]);
 
   const classes = useStyles();
   return (
@@ -176,13 +210,17 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         </Grid>
         <Grid item xs={12} sm={6} className={classes.mapGridItem}>
           <Paper className={classes.paper} elevation={5}>
-            <MapContainer
-              {...props}
-              classes={classes}
-              mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
-              geometryState={{ geometry, setGeometry }}
-              extentState={{ extent, setExtent }}
-            />
+            {canLoadMap ? (
+              <MapContainer
+                {...props}
+                classes={classes}
+                mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
+                geometryState={{ geometry, setGeometry }}
+                extentState={{ extent, setExtent }}
+              />
+            ) : (
+              <IonSpinner />
+            )}
           </Paper>
         </Grid>
       </Grid>

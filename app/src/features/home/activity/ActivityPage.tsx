@@ -70,6 +70,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       });
 
       setGeometry(activityResults.docs[0].geometry);
+      setExtent(activityResults.docs[0].mapExtent)
       setDoc(activityResults.docs[0]);
     };
 
