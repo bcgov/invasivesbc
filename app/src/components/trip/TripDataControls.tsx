@@ -55,7 +55,11 @@ export const TripDataControls: React.FC<any> = (props) => {
   const fetchActivities = () => {
     if (trip.activityChoices) {
       trip.activityChoices.map(async (setOfChoices) => {
-        let data = await api.getActivities({ activity_type: setOfChoices.activityType });
+        let data = await api.getActivities({
+          activity_type: setOfChoices.activityType,
+          date_range_start: setOfChoices.startDate,
+          date_range_end: setOfChoices.endDate
+        });
         console.dir(data);
         data.map(async (row) => {
           await databaseContext.database.upsert(DocType.REFERENCE_ACTIVITY + '_' + row.activity_id, (existingDoc) => {

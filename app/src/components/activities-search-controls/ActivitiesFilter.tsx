@@ -112,8 +112,8 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
               includePhotos: false,
               includeForms: false,
               species: [null],
-              startDate: Date(),
-              endDate: Date()
+              startDate: new Date().toISOString(),
+              endDate: new Date().toISOString()
             });
           }}>
           add new
