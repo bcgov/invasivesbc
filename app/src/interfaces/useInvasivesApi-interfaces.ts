@@ -1,5 +1,5 @@
 import { ActivityType, ActivitySubtype } from 'constants/activities';
-import { Feature, Polygon } from 'geojson';
+import { Feature } from 'geojson';
 
 /**
  * Activity search filter criteria.
@@ -51,7 +51,7 @@ export interface IActivitySearchCriteria {
    */
   date_range_end?: Date;
   /**
-   * GeoJSON polygon to search in.
+   * GeoJSON feature (of type polygon) to search in.
    *
    * @type {Feature}
    * @memberof IActivitySearchCriteria
