@@ -14,9 +14,9 @@ export async function up(knex: Knex): Promise<void> {
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
 
-    CREATE SCHEMA IF NOT EXISTS invasivesbc;
+    CREATE SCHEMA IF NOT EXISTS ${DB_SCHEMA};
 
-    ALTER SCHEMA invasivesbc OWNER TO invasivebc;
+    ALTER SCHEMA ${DB_SCHEMA} OWNER TO invasivebc;
   `);
 }
 
@@ -32,6 +32,6 @@ export async function down(knex: Knex): Promise<void> {
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
 
-    DROP SCHEMA IF EXISTS ${DB_SCHEMA}.invasivesbc;
+    DROP SCHEMA IF EXISTS ${DB_SCHEMA};
   `);
 }
