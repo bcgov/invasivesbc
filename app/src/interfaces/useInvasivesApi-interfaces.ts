@@ -53,10 +53,10 @@ export interface IActivitySearchCriteria {
   /**
    * GeoJSON polygon to search in.
    *
-   * @type {Polygon}
+   * @type {Feature}
    * @memberof IActivitySearchCriteria
    */
-  search_polygon?: Feature;
+  search_feature?: Feature;
 }
 
 /**
