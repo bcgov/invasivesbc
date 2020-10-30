@@ -87,7 +87,9 @@ export const TripDataControls: React.FC<any> = (props) => {
               ...row,
               formData: row.activity_payload.form_data,
               activityType: row.activity_type,
-              activitySubtype: row.activity_subtype
+              activitySubtype: row.activity_subtype,
+              geometry: row.activity_payload.geometry,
+              photos: row.activity_payload.media
             };
           });
         });
