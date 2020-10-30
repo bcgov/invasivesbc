@@ -55,16 +55,40 @@ export const TripDataControls: React.FC<any> = (props) => {
   const fetchActivities = () => {
     if (trip.activityChoices) {
       trip.activityChoices.map(async (setOfChoices) => {
-        let data = await api.getActivities({
-          activity_type: setOfChoices.activityType,
-          date_range_start: setOfChoices.startDate,
-          date_range_end: setOfChoices.endDate,
-          search_feature: setOfChoices.geometry[0]
-        });
+        console.log('set of choices');
+        console.dir(setOfChoices);
+        let geo = () => {
+          let aGeo = null;
+          if (trip.geometry) {
+            aGeo = trip.geometry.length > 0 ? trip.geometry[0] : null;
+          }
+          return aGeo;
+        };
+
+        let data = geo()
+          ? await api.getActivities({
+              activity_type: setOfChoices.activityType,
+              date_range_start: setOfChoices.startDate,
+              date_range_end: setOfChoices.endDate //,
+              // search_feature: trip.geometry[0]
+            })
+          : await api.getActivities({
+              activity_type: setOfChoices.activityType,
+              date_range_start: setOfChoices.startDate,
+              date_range_end: setOfChoices.endDate
+            });
         console.dir(data);
         data.map(async (row) => {
           await databaseContext.database.upsert(DocType.REFERENCE_ACTIVITY + '_' + row.activity_id, (existingDoc) => {
-            return { ...existingDoc, docType: DocType.REFERENCE_ACTIVITY, tripID: 'trip', ...row };
+            return {
+              ...existingDoc,
+              docType: DocType.REFERENCE_ACTIVITY,
+              tripID: 'trip',
+              ...row,
+              formData: row.activity_payload.form_data,
+              activityType: row.activity_type,
+              activitySubtype: row.activity_subtype
+            };
           });
         });
         notifySuccess(databaseContext, 'Cached ' + data.length + ' activities.');
