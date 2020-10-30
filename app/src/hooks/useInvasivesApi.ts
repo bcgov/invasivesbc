@@ -46,7 +46,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
-    const { data } = await api.post(`/api/activity/`, activitiesSearchCriteria);
+    const { data } = await api.post(`/api/activities/`, activitiesSearchCriteria);
 
     return data;
   };

@@ -17,6 +17,7 @@ import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import { ExpandMore } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
 import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
+import TripDataControls from 'components/trip/TripDataControls';
 
 interface IPlanPageProps {
   classes?: any;
@@ -120,6 +121,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   return (
     <Container className={props.classes.container}>
       <ManageDatabaseComponent />
+      <TripDataControls />
       <Grid container spacing={3} className={classes.tripGrid}>
         <Grid item xs={12} sm={12}>
           <Paper className={classes.paper}>
