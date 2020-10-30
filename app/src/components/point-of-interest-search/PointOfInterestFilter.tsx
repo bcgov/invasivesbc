@@ -108,8 +108,8 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
               pointOfInterestType: 'IAPP Site',
               includePhotos: false,
               includeForms: false,
-              startDate: Date(),
-              endDate: Date()
+              startDate: new Date().toISOString(),
+              endDate: new Date().toISOString()
             });
           }}>
           add new
