@@ -44,7 +44,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 24,
       useCache: true,
-      cacheMaxAge: 6.048e+8 // 1 week
+      cacheMaxAge: 6.048e8 // 1 week
     });
   };
 
@@ -101,16 +101,17 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
-  const setMapBounds = () => {
-    if (props.extentState?.extent) {
-      const extent = props.extentState.extent;
-      const bounds = [
-        [extent._northEast.lat, extent._northEast.lng],
-        [extent._southWest.lat, extent._southWest.lng]
-      ];
-
-      mapRef.current.fitBounds(bounds);
+  const setMapBounds = (extent) => {
+    if (!extent) {
+      return;
     }
+
+    const bounds = [
+      [extent._northEast.lat, extent._northEast.lng],
+      [extent._southWest.lat, extent._southWest.lng]
+    ];
+
+    mapRef.current.fitBounds(bounds);
   };
 
   const addLayerControls = (baseLayerControlOptions: any) => {
@@ -139,9 +140,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     addSaveTilesControl(esriBaseLayer);
 
-    setMapBounds();
+    setMapBounds(mapRef.current.getBounds());
 
-    mapRef.current.on('moveend', () => {
+    mapRef.current.on('dragend', () => {
+      props.extentState.setExtent(mapRef.current.getBounds());
+    });
+
+    mapRef.current.on('zoomend', () => {
       props.extentState.setExtent(mapRef.current.getBounds());
     });
 
@@ -243,6 +248,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     updateMapOnGeometryChange();
   }, [props.geometryState.geometry]);
+
+  useEffect(() => {
+    if (!mapRef.current) {
+      return;
+    }
+
+    if (!props.extentState?.extent) {
+      return;
+    }
+
+    setMapBounds(props.extentState.extent);
+  }, [props.extentState.extent]);
 
   return <div id={props.mapId} className={props.classes.map} />;
 };

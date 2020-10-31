@@ -1,6 +1,6 @@
 {
 	"id": "3d2fa9aa-b5e8-476c-ae3e-f813dc512df9",
-	"name": "DEV",
+	"name": "InvasivesBC-Environment-DEV",
 	"values": [
 		{
 			"key": "AUTH_HOST",
@@ -9,7 +9,7 @@
 		},
 		{
 			"key": "BASEURL",
-			"value": "https://api-mobile-dev-invasivesbc.pathfinder.gov.bc.ca/api",
+			"value": "https://api-dev-invasivesbci.pathfinder.gov.bc.ca/api",
 			"enabled": true
 		},
 		{
