@@ -1,10 +1,9 @@
 import { Button, makeStyles } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useState, useEffect } from 'react';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { DocType } from 'constants/database';
+import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import React, { useContext, useEffect, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 
 const useStyles = makeStyles((theme) => ({

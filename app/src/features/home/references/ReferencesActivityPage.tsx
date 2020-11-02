@@ -42,10 +42,11 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
 
   useEffect(() => {
     const getActivityData = async () => {
-      const activityResult = await databaseContext.database.find({ selector: { _id: urlParams['id'] } });
+      const activityResults = await databaseContext.database.find({ selector: { _id: urlParams['id'] } });
 
-      setGeometry(activityResult.docs[0].geometry);
-      setDoc(activityResult.docs[0]);
+      setGeometry(activityResults.docs[0].geometry);
+      setExtent(activityResults.docs[0].extent);
+      setDoc(activityResults.docs[0]);
     };
 
     getActivityData();

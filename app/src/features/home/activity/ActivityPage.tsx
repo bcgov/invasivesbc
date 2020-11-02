@@ -53,7 +53,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const saveExtent = async (newExtent: any) => {
     await databaseContext.database.upsert(doc._id, (dbDoc) => {
-      return { ...dbDoc, mapExtent: newExtent };
+      return { ...dbDoc, extent: newExtent };
     });
   };
 
@@ -70,7 +70,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       });
 
       setGeometry(activityResults.docs[0].geometry);
-      setExtent(activityResults.docs[0].mapExtent)
+      setExtent(activityResults.docs[0].extent);
       setDoc(activityResults.docs[0]);
     };
 

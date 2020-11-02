@@ -37,5 +37,5 @@ jobs:
       - name: RunTest
         working-directory: ./testing/integration/postman
         run: |
-          sed -i "s/<postman pw>/${{ secrets.POSTMAN_PW }}/g" devpl.json
-          newman run Invasives_API.postman_collection.json -e devpl.json
+          sed -i "s/<postman pw>/${{ secrets.POSTMAN_PW }}/g" invasives_api_dev.environment.json
+          newman run Invasives_api_dev.postman_collection.json -e invasives_api_dev.environment.json
