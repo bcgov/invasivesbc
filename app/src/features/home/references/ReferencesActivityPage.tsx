@@ -25,7 +25,6 @@ const useStyles = makeStyles((theme) => ({
 
 interface IReferencesActivityPage {
   classes?: any;
-  match?: any;
 }
 
 const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
@@ -54,8 +53,8 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
     const getActivityData = async () => {
       const activityResults = await databaseContext.database.find({ selector: { _id: urlParams['id'] } });
 
+      // TODO these are reference activities, so do we really have an extent to set? Or are we just zooming to where the geometry is?
       setGeometry(activityResults.docs[0].geometry);
-      setExtent(activityResults.docs[0].extent);
       setDoc(activityResults.docs[0]);
     };
 

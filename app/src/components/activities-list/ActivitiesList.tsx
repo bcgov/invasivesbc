@@ -198,7 +198,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
         const isDisabled = props.disable || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
         return (
-          <Paper elevation={1} key={doc._id}>
+          <Paper key={doc._id}>
             <ListItem
               button
               // disabled={isDisabled}

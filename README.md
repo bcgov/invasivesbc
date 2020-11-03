@@ -68,10 +68,15 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
 
 ## Project Structure
 
-    .config/                   - Whole application configuration
+    .config/                   - Common application configuration
+    .github/                   - Github actions
+    .docker/                   - Common Dockerfiles 
     .vscode/                   - IDE config for Visual Studio Code
     api/                       - API codebase
     app/                       - Ionic APP Codebase
+    database/                  - Database Codebase
+    env_config/                - ENV config files
+    testing/                   - Test scrips, in particular Postman configs
     CODE-OF-CONDUCT.md         - Code of Conduct
     CONTRIBUTING.md            - Contributing Guidelines
     LICENSE                    - License

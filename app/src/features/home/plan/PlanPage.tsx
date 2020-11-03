@@ -192,7 +192,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           </Accordion>
         </Grid>
         <Grid item md={6}>
-          <Paper className={classes.paper} elevation={5}>
+          <Paper className={classes.paper}>
             <MapContainer
               {...props}
               classes={classes}
