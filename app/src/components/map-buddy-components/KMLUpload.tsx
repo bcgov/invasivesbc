@@ -22,8 +22,8 @@ export const KMLUpload: React.FC<any> = (props) => {
     if (geoFromDOM) {
       console.log('saving geo feat collection');
       await databaseContext.database.upsert('trip', (tripDoc) => {
-        return { ...tripDoc, geometry: geoFromDOM };
-      })
+        return { ...tripDoc, geometry: geoFromDOM.features };
+      });
     }
   };
 
