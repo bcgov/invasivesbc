@@ -25,52 +25,27 @@ interface IPlanPageProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1
-  },
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary
   },
-  mapContainer: {
-    height: '600px',
-    position: 'fixed'
-  },
-  mapGridItem: {
-    //position: 'fixed',
-    //width: '500px',
-  },
   map: {
     height: '500px',
     width: '100%'
-  },
-  kmlContainer: {
-    height: '100%',
-    width: '100%'
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightRegular
   },
   layerPicker: {
     height: '100%',
     width: '100%'
   },
-  activityRecordPicker: {
-    height: '100%',
-    width: '100%'
+  activityRecordList: {
+    flexDirection: 'column'
   },
-  pointOfInterest: {
-    height: '100%',
-    width: '100%'
+  pointOfInterestList: {
+    flexDirection: 'column'
   },
   activityRecordQueryParmsRow: {
     width: '400px'
-  },
-  activityRecordPickerAddButton: {
-    color: theme.palette.text.primary,
-    backgroundcolor: theme.palette.primary.light
   },
   //TODO:  make colour of bar depend on how much is used (red = full/bad)
   tripStorageUsageBar: {
@@ -100,11 +75,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [tripLoaded, setTripLoaded] = useState(false);
 
   const getTrip = async () => {
-    let docs = await databaseContext.database.find({
-      selector: {
-        _id: 'trip'
-      }
-    });
+    let docs = await databaseContext.database.find({ selector: { _id: 'trip' } });
 
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
@@ -155,14 +126,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   return (
     <Container className={props.classes.container}>
-      <ManageDatabaseComponent />
-      <TripDataControls />
       <Grid container spacing={3} className={classes.tripGrid}>
+        <Grid container item xs={12} justify="space-between">
+          <TripDataControls />
+          <ManageDatabaseComponent />
+        </Grid>
         <Grid item xs={12}>
           <Paper className={classes.paper}>
-            <Typography className={classes.heading}>Storage Used By This Trip:</Typography>
+            <Typography variant="h5">Storage Used By This Trip:</Typography>
             <LinearProgress className={classes.tripStorageUsageBar} value={50} variant={'determinate'} />
-            <Typography className={classes.heading}>Total Storage Used:</Typography>
+            <Typography variant="h5">Total Storage Used:</Typography>
             <LinearProgress className={classes.totalStorageUsageBar} value={70} variant={'determinate'} />
           </Paper>
         </Grid>
@@ -172,20 +145,18 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               expandIcon={<ExpandMore />}
               aria-controls="panel-layer-picker-content"
               id="panel-layer-picker-header">
-              <Typography className={classes.heading}>Pick Layers</Typography>
+              <Typography variant="h5">Pick Layers</Typography>
             </AccordionSummary>
-            <AccordionDetails className={classes.layerPicker}>
-              <Paper>bonana</Paper>
-            </AccordionDetails>
+            <AccordionDetails className={classes.layerPicker}></AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={false}>
             <AccordionSummary
               expandIcon={<ExpandMore />}
               aria-controls="panel-activiity-record-picker-content"
               id="panel-activity-record-picker-header">
-              <Typography className={classes.heading}>Pick Activity Records</Typography>
+              <Typography variant="h5">Pick Activity Records</Typography>
             </AccordionSummary>
-            <AccordionDetails className={classes.activityRecordPicker}>
+            <AccordionDetails className={classes.activityRecordList}>
               <ActivityDataFilter />
             </AccordionDetails>
           </Accordion>
@@ -194,22 +165,22 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               expandIcon={<ExpandMore />}
               aria-controls="panel-pointOfInterest-record-picker-content"
               id="panel-pointOfInterest-record-picker-header">
-              <Typography className={classes.heading}>Points Of Interest</Typography>
+              <Typography variant="h5">Points Of Interest</Typography>
             </AccordionSummary>
-            <AccordionDetails className={classes.pointOfInterest}>
+            <AccordionDetails className={classes.pointOfInterestList}>
               <PointOfInterestDataFilter />
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={false}>
             <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-kml-content" id="panel-kml-header">
-              <Typography className={classes.heading}>Load KML</Typography>
+              <Typography variant="h5">Load KML</Typography>
             </AccordionSummary>
-            <AccordionDetails className={classes.kmlContainer}>
+            <AccordionDetails>
               <KMLUpload />
             </AccordionDetails>
           </Accordion>
         </Grid>
-        <Grid item md={6} className={classes.mapGridItem}>
+        <Grid item md={6}>
           <Paper className={classes.paper} elevation={5}>
             <MapContainer
               {...props}

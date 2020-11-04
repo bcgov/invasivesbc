@@ -1,16 +1,12 @@
-import React from 'react';
-import { TreeItem } from '@material-ui/lab';
-import { TreeView } from '@material-ui/lab';
-
-import Brightness1SharpIcon from '@material-ui/icons/Brightness1Sharp';
-import Brightness2SharpIcon from '@material-ui/icons/Brightness2Sharp';
-import Brightness3SharpIcon from '@material-ui/icons/Brightness3Sharp';
 import { TextField } from '@material-ui/core';
+import { ChevronRight, ExpandMore } from '@material-ui/icons/';
+import { TreeItem, TreeView } from '@material-ui/lab';
+import React from 'react';
 
 export const SpeciesTree = () => {
   const data = {
     id: 'root',
-    name: 'all the things',
+    name: 'All Species',
     children: [
       {
         id: '1',
@@ -38,10 +34,7 @@ export const SpeciesTree = () => {
   return (
     <>
       <TextField label="Species" />
-      <TreeView
-        defaultCollapseIcon={<Brightness1SharpIcon />}
-        defaultExpandIcon={<Brightness2SharpIcon />}
-        defaultEndIcon={<Brightness3SharpIcon />}>
+      <TreeView defaultCollapseIcon={<ExpandMore />} defaultExpandIcon={<ChevronRight />}>
         {renderTree(data)}
       </TreeView>
     </>

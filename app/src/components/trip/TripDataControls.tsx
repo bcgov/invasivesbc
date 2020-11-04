@@ -3,13 +3,11 @@ import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1
-  },
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',
@@ -23,62 +21,70 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const TripDataControls: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
-  const [trip, setTrip] = useState(null);
-  const api = useInvasivesApi();
+export const TripDataControls: React.FC = (props) => {
   useStyles();
 
+  const invasivesApi = useInvasivesApi();
+
+  const databaseContext = useContext(DatabaseContext);
+  const databaseChangesContext = useContext(DatabaseChangesContext);
+
+  const [trip, setTrip] = useState(null);
+
   const getTrip = async () => {
-    console.log('trip update in fetch component');
-    let docs = await databaseContext.database.find({
-      selector: {
-        _id: 'trip'
-      }
-    });
-    if (docs.docs.length > 0) {
-      let tripDoc = docs.docs[0];
-      if (tripDoc) {
-        setTrip(tripDoc);
-      }
+    let docs = await databaseContext.database.find({ selector: { _id: 'trip' } });
+
+    if (!docs || !docs.docs || !docs.docs.length) {
+      return;
     }
+
+    setTrip(docs.docs[0]);
   };
+
   useEffect(() => {
     const updateComponent = () => {
       getTrip();
     };
+
     updateComponent();
   }, [databaseChangesContext]);
 
-  const fetchActivities = () => {
-    if (trip.activityChoices) {
-      trip.activityChoices.map(async (setOfChoices) => {
-        console.log('set of choices');
-        console.dir(setOfChoices);
-        let geo = () => {
-          let aGeo = null;
-          if (trip.geometry) {
-            aGeo = trip.geometry.length > 0 ? trip.geometry[0] : null;
-          }
-          return aGeo;
-        };
+  const fetchActivities = async () => {
+    if (!trip || !trip.activityChoices) {
+      return;
+    }
 
-        let data = geo()
-          ? await api.getActivities({
-              activity_type: setOfChoices.activityType,
-              date_range_start: setOfChoices.startDate,
-              date_range_end: setOfChoices.endDate //,
-              // search_feature: trip.geometry[0]
-            })
-          : await api.getActivities({
-              activity_type: setOfChoices.activityType,
-              date_range_start: setOfChoices.startDate,
-              date_range_end: setOfChoices.endDate
+    let numberActivitiesFetched = 0;
+
+    for (const setOfChoices of trip.activityChoices) {
+      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
+
+      const activitySearchCriteria: IActivitySearchCriteria = {
+        ...((setOfChoices.activityType && { activity_type: setOfChoices.activityType }) || {}),
+        ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
+        ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
+        ...((geometry && { search_feature: geometry }) || {})
+      };
+
+      let response = await invasivesApi.getActivities(activitySearchCriteria);
+
+      for (const row of response) {
+        const photos = [];
+
+        if (setOfChoices.includePhotos && row.media_keys && row.media_keys.length) {
+          try {
+            const mediaResults = await invasivesApi.getMedia(row.media_keys);
+
+            mediaResults.forEach((media) => {
+              photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
             });
-        console.dir(data);
-        data.map(async (row) => {
-          await databaseContext.database.upsert(DocType.REFERENCE_ACTIVITY + '_' + row.activity_id, (existingDoc) => {
+          } catch {
+            // TODO handle errors appropriately
+          }
+        }
+
+        try {
+          await databaseContext.database.upsert(String(row.activity_id), (existingDoc) => {
             return {
               ...existingDoc,
               docType: DocType.REFERENCE_ACTIVITY,
@@ -88,16 +94,21 @@ export const TripDataControls: React.FC<any> = (props) => {
               activityType: row.activity_type,
               activitySubtype: row.activity_subtype,
               geometry: row.activity_payload.geometry,
-              photos: row.activity_payload.media
+              photos: photos
             };
           });
-        });
-        notifySuccess(databaseContext, 'Cached ' + data.length + ' activities.');
-      });
+
+          numberActivitiesFetched++;
+        } catch (error) {
+          // TODO handle errors appropriately
+        }
+      }
     }
+
+    notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
   };
 
-  const fetchPointsOfInterest = () => {};
+  const fetchPointsOfInterest = async () => {};
 
   const deleteTripAndFetch = () => {
     //wipe activities associated to that trip here:
@@ -114,7 +125,9 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   return (
     <>
-      <Button onClick={deleteTripAndFetch}>Fetch</Button>
+      <Button variant="contained" color="primary" onClick={deleteTripAndFetch}>
+        Fetch
+      </Button>
     </>
   );
 };

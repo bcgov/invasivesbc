@@ -15,11 +15,9 @@ const ManageDatabaseComponent: React.FC<IManageDatabaseComponentProps> = (props)
   };
 
   return (
-    <div>
-      <Button variant="contained" startIcon={<DeleteForever />} onClick={() => resetDatabase()}>
-        Wipe Local Data
-      </Button>
-    </div>
+    <Button variant="contained" startIcon={<DeleteForever />} onClick={() => resetDatabase()}>
+      Wipe Local Data
+    </Button>
   );
 };
 

@@ -1,21 +1,21 @@
+import DateFnsUtils from '@date-io/date-fns';
 import {
   Button,
-  List,
-  ListItem,
-  Paper,
   Grid,
   InputLabel,
-  Switch,
-  Select,
+  List,
+  ListItem,
+  makeStyles,
   MenuItem,
-  makeStyles
+  Paper,
+  Select,
+  Switch
 } from '@material-ui/core';
+import { Add, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-import { Delete } from '@material-ui/icons';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useState, useEffect } from 'react';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import React, { useContext, useEffect, useState } from 'react';
 
 interface IPointOfInterestChoices {
   pointOfInterestType: string;
@@ -26,26 +26,13 @@ interface IPointOfInterestChoices {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1
-  },
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary
   },
-  pointOfInterestRecordPicker: {
-    height: '100%',
-    width: '100%'
-  },
-  pointOfInterestRecordQueryParmsRow: {
-    width: '100%'
-  },
-  filterGrid: {
-    flexDirection: 'row',
-    [theme.breakpoints.down('sm')]: {
-      flexDirection: 'column'
-    }
+  pointOfInterestChoice: {
+    padding: theme.spacing(2)
   }
 }));
 
@@ -101,134 +88,98 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   return (
     <>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Button
-          color="primary"
-          onClick={() => {
-            addPointOfInterestChoice({
-              pointOfInterestType: 'IAPP Site',
-              includePhotos: false,
-              includeForms: false,
-              startDate: new Date().toISOString(),
-              endDate: new Date().toISOString()
-            });
-          }}>
-          add new
-        </Button>
         <List>
           {pointOfInterestChoices.map((pointOfInterestChoice, index) => {
             return (
               <ListItem key={index}>
-                <Paper elevation={5} className={classes.pointOfInterestRecordQueryParmsRow}>
-                  <Grid className={classes.filterGrid} container spacing={4} alignItems="center" justify="flex-start">
-                    <Grid item xs={3}>
-                      <div style={{ padding: 20 }}>
+                <Paper elevation={5} className={classes.pointOfInterestChoice}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={4}>
+                      <div>
                         <InputLabel id="demo-simple-select-label">Point Of Interest Type</InputLabel>
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          value={pointOfInterestChoices[index].pointOfInterestType}
-                          defaultValue="Select an PointOfInterest Type"
+                          value={pointOfInterestChoice.pointOfInterestType}
                           onChange={(e) => {
                             updatePointOfInterestChoice(
-                              {
-                                ...pointOfInterestChoices[index],
-                                pointOfInterestType: e.target.value
-                              },
+                              { ...pointOfInterestChoice, pointOfInterestType: e.target.value },
                               index
                             );
                           }}>
+                          <MenuItem value={''}>All</MenuItem>
                           <MenuItem value={'IAPP Site'}>IAPP Site</MenuItem>
                           <MenuItem value={'Well'}>Well</MenuItem>
-                          <MenuItem value={'Sasquatch Siting'}>Sasquatch Siting</MenuItem>
                         </Select>
                       </div>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <InputLabel>Photos</InputLabel>
                       <Switch
                         color="primary"
-                        checked={pointOfInterestChoices[index].includePhotos}
-                        onChange={(e) => {
+                        checked={pointOfInterestChoice.includePhotos}
+                        onChange={() => {
                           updatePointOfInterestChoice(
-                            {
-                              ...pointOfInterestChoices[index],
-                              includePhotos: !pointOfInterestChoices[index].includePhotos
-                            },
-                            index
-                          );
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={3}>
-                      <InputLabel>Forms</InputLabel>
-                      <Switch
-                        color="primary"
-                        checked={pointOfInterestChoices[index].includeForms}
-                        onChange={(e) => {
-                          updatePointOfInterestChoice(
-                            {
-                              ...pointOfInterestChoices[index],
-                              includeForms: !pointOfInterestChoices[index].includeForms
-                            },
+                            { ...pointOfInterestChoice, includePhotos: !pointOfInterestChoice.includePhotos },
                             index
                           );
                         }}
                       />
                     </Grid>
                     <Grid item xs={4}>
+                      <InputLabel>Forms</InputLabel>
+                      <Switch
+                        color="primary"
+                        checked={pointOfInterestChoice.includeForms}
+                        onChange={() => {
+                          updatePointOfInterestChoice(
+                            { ...pointOfInterestChoice, includeForms: !pointOfInterestChoice.includeForms },
+                            index
+                          );
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
                       <KeyboardDatePicker
-                        disableToolbar
+                        autoOk
                         variant="inline"
                         format="MM/dd/yyyy"
                         margin="normal"
                         id="date-picker-inline"
                         label="Earliest Date"
-                        value={pointOfInterestChoices[index].startDate}
+                        value={pointOfInterestChoice.startDate}
                         onChange={(e) => {
-                          updatePointOfInterestChoice(
-                            {
-                              ...pointOfInterestChoices[index],
-                              startDate: e
-                            },
-                            index
-                          );
+                          updatePointOfInterestChoice({ ...pointOfInterestChoice, startDate: e }, index);
                         }}
                         KeyboardButtonProps={{
-                          'aria-label': 'change date'
+                          'aria-label': 'change date start'
                         }}
                       />
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                       <KeyboardDatePicker
-                        disableToolbar
+                        autoOk
                         variant="inline"
                         format="MM/dd/yyyy"
                         margin="normal"
                         id="date-picker-inline"
                         label="Latest Date"
-                        value={pointOfInterestChoices[index].endDate}
+                        value={pointOfInterestChoice.endDate}
                         onChange={(e) => {
-                          updatePointOfInterestChoice(
-                            {
-                              ...pointOfInterestChoices[index],
-                              endDate: e
-                            },
-                            index
-                          );
+                          updatePointOfInterestChoice({ ...pointOfInterestChoice, endDate: e }, index);
                         }}
                         KeyboardButtonProps={{
-                          'aria-label': 'change date'
+                          'aria-label': 'change date end'
                         }}
                       />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid container item justify="flex-end">
                       <Button
                         variant="contained"
-                        color="primary"
-                        startIcon={<Delete />}
-                        onClick={(e) => {
-                          deletePointOfInterestChoice(index);
-                        }}></Button>
+                        startIcon={<DeleteForever />}
+                        onClick={() => deletePointOfInterestChoice(index)}>
+                        Remove
+                      </Button>
                     </Grid>
                   </Grid>
                 </Paper>
@@ -236,6 +187,21 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
             );
           })}
         </List>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          onClick={() => {
+            addPointOfInterestChoice({
+              pointOfInterestType: '',
+              includePhotos: false,
+              includeForms: false,
+              startDate: null,
+              endDate: null
+            });
+          }}>
+          Add New
+        </Button>
       </MuiPickersUtilsProvider>
     </>
   );

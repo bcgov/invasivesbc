@@ -49,7 +49,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const addZoomControls = () => {
-    const zoomControlOptions = { position: 'bottomright' };
+    const zoomControlOptions = { position: 'bottomleft' };
 
     mapRef.current.addControl(L.control.zoom(zoomControlOptions));
   };

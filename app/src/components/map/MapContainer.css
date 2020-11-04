@@ -1,23 +1,31 @@
-
 .leaflet-draw.leaflet-control {
-  transform: scale(1.5) translate(-5px,40px);
+  transform: scale(1.4) translate(0, 28px);
 }
 
 .leaflet-control-layers.leaflet-control {
-  transform: translate(0, 120px);
+  transform: scale(0.955) translate(7px, 100px);
 }
 
 .leaflet-control-zoom.leaflet-control {
-  transform: scale(1.5) translate(-5px, -5px);
+  transform: scale(1.4) translate(0, -5px);
 }
 
 .leaflet-control-locate.leaflet-control {
-  transform: scale(1.2) translate(5px, 5px);
+  transform: scale(1.2);
 }
+
+.leaflet-control-locate.leaflet-control {
+  transform: scale(1.4);
+}
+
+.savetiles.leaflet-control {
+  transform: scale(1.4) translate(0, 20px);
+}
+
 .leaflet-control-locate.leaflet-control .bullseye {
   background-image: url('/assets/icon/location-button.svg');
   background-repeat: no-repeat;
   width: 60px;
   height: 60px;
-  transform: translate(-22px,-16px) scale(0.4);
+  transform: translate(-22px, -16px) scale(0.4);
 }
