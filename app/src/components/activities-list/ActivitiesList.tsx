@@ -309,6 +309,7 @@ const ActivitiesList: React.FC = (props) => {
           <Button
             disabled={isDisabled}
             variant="contained"
+            color="primary"
             startIcon={<Sync className={clsx(syncing && 'rotating')} />}
             onClick={() => syncActivities()}>
             Sync Activities

@@ -1,53 +1,40 @@
+import DateFnsUtils from '@date-io/date-fns';
 import {
   Button,
-  List,
-  ListItem,
-  Paper,
   Grid,
   InputLabel,
-  Switch,
-  Select,
+  List,
+  ListItem,
+  makeStyles,
   MenuItem,
-  makeStyles
+  Paper,
+  Select,
+  Switch
 } from '@material-ui/core';
+import { Add, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { Delete } from '@material-ui/icons';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useState, useEffect } from 'react';
-import SpeciesTree from './SpeciesInput';
-import DateFnsUtils from '@date-io/date-fns';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import React, { useContext, useEffect, useState } from 'react';
+import SpeciesTree from './SpeciesInput';
 
 interface IActivityChoices {
   activityType: string;
   includePhotos: boolean;
   includeForms: boolean;
-  species: [number];
+  species: number[];
   startDate: string;
   endDate: string;
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1
-  },
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary
   },
-  activityRecordPicker: {
-    height: '100%',
-    width: '100%'
-  },
-  activityRecordQueryParmsRow: {
-    width: '100%'
-  },
-  filterGrid: {
-    flexDirection: 'row',
-    [theme.breakpoints.down('sm')]: {
-      flexDirection: 'column'
-    }
+  activityRecordsChoice: {
+    padding: theme.spacing(2)
   }
 }));
 
@@ -88,8 +75,11 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   };
 
   const updateActivityChoice = (updatedActivity: IActivityChoices, index: number) => {
+    console.log('1', updatedActivity);
     let updatedActivityChoices = [...activityChoices];
+    console.log('2', updatedActivityChoices);
     updatedActivityChoices[index] = updatedActivity;
+    console.log('3', [...updatedActivityChoices]);
     saveChoices([...updatedActivityChoices]);
   };
 
@@ -104,43 +94,23 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   return (
     <>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Button
-          color="primary"
-          onClick={() => {
-            addActivityChoice({
-              activityType: 'Observation',
-              includePhotos: false,
-              includeForms: false,
-              species: [null],
-              startDate: new Date().toISOString(),
-              endDate: new Date().toISOString()
-            });
-          }}>
-          add new
-        </Button>
         <List>
           {activityChoices.map((activityChoice, index) => {
             return (
               <ListItem key={index}>
-                <Paper elevation={5} className={classes.activityRecordQueryParmsRow}>
-                  <Grid className={classes.filterGrid} container spacing={4} alignItems="center" justify="flex-end">
+                <Paper elevation={5} className={classes.activityRecordsChoice}>
+                  <Grid container spacing={3}>
                     <Grid item xs={4}>
-                      <div style={{ padding: 20 }}>
+                      <div>
                         <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          value={activityChoices[index].activityType}
-                          defaultValue="Select an Activity Type"
+                          value={activityChoice.activityType}
                           onChange={(e) => {
-                            updateActivityChoice(
-                              {
-                                ...activityChoices[index],
-                                activityType: e.target.value
-                              },
-                              index
-                            );
+                            updateActivityChoice({ ...activityChoice, activityType: e.target.value }, index);
                           }}>
+                          <MenuItem value={''}>All</MenuItem>
                           <MenuItem value={'Observation'}>Observation</MenuItem>
                           <MenuItem value={'Treatment'}>Treatment</MenuItem>
                           <MenuItem value={'Monitoring'}>Monitoring</MenuItem>
@@ -151,13 +121,11 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                       <InputLabel>Photos</InputLabel>
                       <Switch
                         color="primary"
-                        checked={activityChoices[index].includePhotos}
-                        onChange={(e) => {
+                        checked={activityChoice.includePhotos}
+                        value={activityChoice.includePhotos}
+                        onChange={() => {
                           updateActivityChoice(
-                            {
-                              ...activityChoices[index],
-                              includePhotos: !activityChoices[index].includePhotos
-                            },
+                            { ...activityChoice, includePhotos: !activityChoice.includePhotos },
                             index
                           );
                         }}
@@ -167,79 +135,60 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                       <InputLabel>Forms</InputLabel>
                       <Switch
                         color="primary"
-                        checked={activityChoices[index].includeForms}
-                        onChange={(e) => {
+                        checked={activityChoice.includeForms}
+                        value={activityChoice.includeForms}
+                        onChange={() => {
                           updateActivityChoice(
-                            {
-                              ...activityChoices[index],
-                              includeForms: !activityChoices[index].includeForms
-                            },
+                            { ...activityChoice, includeForms: !activityChoice.includeForms },
                             index
                           );
                         }}
                       />
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                       <KeyboardDatePicker
-                        disableToolbar
+                        autoOk
                         variant="inline"
                         format="MM/dd/yyyy"
                         margin="normal"
                         id="date-picker-inline"
                         label="Earliest Date"
-                        value={activityChoices[index].startDate}
+                        value={activityChoice.startDate}
                         onChange={(e) => {
-                          updateActivityChoice(
-                            {
-                              ...activityChoices[index],
-                              startDate: e
-                            },
-                            index
-                          );
+                          updateActivityChoice({ ...activityChoice, startDate: e }, index);
                         }}
                         KeyboardButtonProps={{
-                          'aria-label': 'change date'
+                          'aria-label': 'change date start'
                         }}
                       />
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                       <KeyboardDatePicker
-                        disableToolbar
+                        autoOk
                         variant="inline"
                         format="MM/dd/yyyy"
                         margin="normal"
                         id="date-picker-inline"
                         label="Latest Date"
-                        value={activityChoices[index].endDate}
+                        value={activityChoice.endDate}
                         onChange={(e) => {
-                          updateActivityChoice(
-                            {
-                              ...activityChoices[index],
-                              endDate: e
-                            },
-                            index
-                          );
+                          updateActivityChoice({ ...activityChoice, endDate: e }, index);
                         }}
                         KeyboardButtonProps={{
-                          'aria-label': 'change date'
+                          'aria-label': 'change date end'
                         }}
                       />
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12}>
+                      <SpeciesTree />
+                    </Grid>
+                    <Grid container item justify="flex-end">
                       <Button
                         variant="contained"
-                        color="primary"
-                        startIcon={<Delete />}
-                        onClick={(e) => {
-                          deleteActivityChoice(index);
-                        }}></Button>
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={4}>
-                    <Grid item xs={9}>
-                      <div style={{ padding: 20 }}>
-                        <SpeciesTree />
-                      </div>
+                        startIcon={<DeleteForever />}
+                        onClick={() => deleteActivityChoice(index)}>
+                        Remove
+                      </Button>
                     </Grid>
                   </Grid>
                 </Paper>
@@ -247,6 +196,22 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
             );
           })}
         </List>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          onClick={() => {
+            addActivityChoice({
+              activityType: '',
+              includePhotos: false,
+              includeForms: false,
+              species: [],
+              startDate: null,
+              endDate: null
+            });
+          }}>
+          Add New
+        </Button>
       </MuiPickersUtilsProvider>
     </>
   );
