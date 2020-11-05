@@ -61,7 +61,7 @@ export interface IActivitySearchCriteria {
 }
 
 /**
- * Create point_of_interest endpoint post body.
+ * Create activity endpoint post body.
  *
  * @export
  * @interface ICreateActivity
