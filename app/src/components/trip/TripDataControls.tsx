@@ -3,7 +3,7 @@ import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
+import { IActivitySearchCriteria, IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 
@@ -108,7 +108,63 @@ export const TripDataControls: React.FC = (props) => {
     notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
   };
 
-  const fetchPointsOfInterest = async () => {};
+  const fetchPointsOfInterest = async () => {
+    if (!trip || !trip.pointOfInterestChoices) {
+      return;
+    }
+
+    let numberPointsOfInterestFetched = 0;
+
+    for (const setOfChoices of trip.pointOfInterestChoices) {
+      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
+
+      const pointOfInterestSearchCriteria: IPointOfInterestSearchCriteria = {
+        ...((setOfChoices.pointOfInterestType && { point_of_interest_type: setOfChoices.pointOfInterestType }) || {}),
+        ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
+        ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
+        ...((geometry && { search_feature: geometry }) || {})
+      };
+
+      let response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
+
+      for (const row of response) {
+        const photos = [];
+
+        if (setOfChoices.includePhotos && row.media_keys && row.media_keys.length) {
+          try {
+            const mediaResults = await invasivesApi.getMedia(row.media_keys);
+
+            mediaResults.forEach((media) => {
+              photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
+            });
+          } catch {
+            // TODO handle errors appropriately
+          }
+        }
+
+        try {
+          await databaseContext.database.upsert(String(row.point_of_interest_id), (existingDoc) => {
+            return {
+              ...existingDoc,
+              docType: DocType.REFERENCE_ACTIVITY,
+              tripID: 'trip',
+              ...row,
+              formData: row.point_of_interest_payload.form_data,
+              pointOfInterestType: row.point_of_interest_type,
+              pointOfInterestSubtype: row.point_of_interest_subtype,
+              geometry: row.point_of_interest_payload.geometry,
+              photos: photos
+            };
+          });
+
+          numberPointsOfInterestFetched++;
+        } catch (error) {
+          // TODO handle errors appropriately
+        }
+      }
+    }
+    notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
+  };
 
   const deleteTripAndFetch = () => {
     //wipe activities associated to that trip here:

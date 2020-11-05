@@ -2,6 +2,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { IActivitySearchCriteria, ICreateActivity } from 'interfaces/useInvasivesApi-interfaces';
+import { IPointOfInterestSearchCriteria, ICreatePointOfInterest } from 'interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
 import { useContext, useMemo } from 'react';
 
@@ -47,6 +48,18 @@ export const useInvasivesApi = () => {
    */
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
     const { data } = await api.post(`/api/activities/`, activitiesSearchCriteria);
+
+    return data;
+  };
+
+  /**
+   * Fetch points of interest by search criteria.
+   *
+   * @param {pointsOfInterestSearchCriteria} activitiesSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
+    const { data } = await api.post(`/api/points-of-interest/`, pointsOfInterestSearchCriteria);
 
     return data;
   };
@@ -131,6 +144,7 @@ export const useInvasivesApi = () => {
     getActivityById,
     createActivity,
     getApiSpec,
-    getCachedApiSpec
+    getCachedApiSpec,
+    getPointsOfInterest
   };
 };
