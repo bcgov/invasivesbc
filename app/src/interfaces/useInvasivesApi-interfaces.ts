@@ -29,14 +29,14 @@ export interface IActivitySearchCriteria {
    * @type {string}
    * @memberof IActivitySearchCriteria
    */
-  point_of_interest_type?: string;
+  activity_type?: string;
   /**
    * Activity sub type filter.
    *
    * @type {string}
    * @memberof IActivitySearchCriteria
    */
-  point_of_interest_subtype?: string;
+  activity_subtype?: string;
   /**
    * Date start filter. Defaults time to start of day.
    *
@@ -67,8 +67,8 @@ export interface IActivitySearchCriteria {
  * @interface ICreateActivity
  */
 export interface ICreateActivity {
-  point_of_interest_type: ActivityType;
-  point_of_interest_subtype: ActivitySubtype;
+  activity_type: ActivityType;
+  activity_subtype: ActivitySubtype;
   geometry: Feature[];
   media: IMedia[];
   form_data: any;
