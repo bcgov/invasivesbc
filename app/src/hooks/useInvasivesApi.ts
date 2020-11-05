@@ -59,7 +59,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
-    const { data } = await api.post(`/api/point-of-interest/`, pointsOfInterestSearchCriteria);
+    const { data } = await api.post(`/api/points-of-interest/`, pointsOfInterestSearchCriteria);
 
     return data;
   };
