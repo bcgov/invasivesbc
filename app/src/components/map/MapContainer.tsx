@@ -21,7 +21,7 @@ export interface IMapContainerProps {
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
   extentState: { extent: any; setExtent: (extent: any) => void };
   contextMenuState: {
-    contextMenuState: MapContextMenuData;
+    state: MapContextMenuData;
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;
   };
 }

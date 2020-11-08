@@ -5,6 +5,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Feature } from 'geojson';
+import { MapContextMenuData } from '../map/MapPageControls';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -38,8 +39,9 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
 
-  // "is it open?", "what coordinates of the mouse?", that kind of thing:
-  const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
+  const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
+  //const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
+  const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
@@ -70,7 +72,7 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
         mapId={doc._id}
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
-        contextMenuState={{ contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+        contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
       />
     </Container>
   );

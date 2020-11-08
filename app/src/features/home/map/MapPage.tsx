@@ -86,10 +86,13 @@ const MapPage: React.FC<IMapProps> = (props) => {
           mapId={'mainMap'}
           geometryState={{ geometry, setGeometry }}
           extentState={{ extent, setExtent }}
-          contextMenuState={{ contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+          contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
         />
       </Container>
-      <MapContextMenu contextMenuState={contextMenuState} handleClose={handleContextMenuClose} />
+      <MapContextMenu
+        contextMenuState={{ state: contextMenuState, setContextMenuState }}
+        handleClose={handleContextMenuClose}
+      />
     </>
   );
 };

@@ -26,7 +26,10 @@ const Transition = React.forwardRef<React.FC, SlideProps>((TransitionProps, ref)
 });
 
 interface MapContextMenuProps {
-  contextMenuState: MapContextMenuData;
+  contextMenuState: {
+    state: MapContextMenuData;
+    setContextMenuState: (contextMenuState: MapContextMenuData) => void;
+  };
   handleClose: Function;
 }
 
@@ -65,7 +68,12 @@ interface MenuItemProps {
 const MenuItem: React.FC<MenuItemProps> = (props) => {
   const classes = useStyles();
   return (
-    <ListItem className={classes.contextMenuItem} button>
+    <ListItem
+      className={classes.contextMenuItem}
+      onClick={(e) => {
+        props.onSelectFunction();
+      }}
+      button>
       <ListItemText primary={props.heading} secondary={props.description} />
     </ListItem>
   );
@@ -75,10 +83,9 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
   const classes = useStyles();
   return (
     <>
-      isOpen?
       <Dialog
         fullScreen
-        open={props.contextMenuState.isOpen}
+        open={props.contextMenuState.state.isOpen}
         onClose={(e) => {
           props.handleClose();
         }}
@@ -95,7 +102,7 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
               <CloseIcon />
             </IconButton>
             <Typography variant="h5" className={classes.title}>
-              Choose something to do here: ({props.contextMenuState.lat}, {props.contextMenuState.lat})
+              Choose something to do here: ({props.contextMenuState.state.lat}, {props.contextMenuState.state.lat})
             </Typography>
             <Button
               autoFocus
@@ -112,6 +119,10 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
             heading="Mark a new point of interest here"
             description="Points of interest can be used to capture something that isn't already in a layer
             and isn't representative of a field activity"
+            onSelectFunction={() => {
+              props.contextMenuState.setContextMenuState({ ...props.contextMenuState.state, isOpen: false });
+              alert('clicked');
+            }}
           />
           <Divider />
           <ListItem className={classes.contextMenuItem} button>
@@ -137,7 +148,6 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
           </ListItem>
         </List>
       </Dialog>
-      : <></>
     </>
   );
 };
