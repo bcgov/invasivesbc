@@ -32,6 +32,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
+  // "is it open?", "what coordinates of the mouse?", that kind of thing:
+  const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
+
+  const handleContextMenuClose = () => {
+    setContextMenuState({ ...contextMenuState, isOpen: false });
+  };
 
   const [doc, setDoc] = useState(null);
 
@@ -105,6 +111,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         mapId={doc._id}
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
+        contextMenuState={{ contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
       />
     </Container>
   );

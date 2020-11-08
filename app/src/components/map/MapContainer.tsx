@@ -1,4 +1,5 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { MapContextMenuData } from 'features/home/map/MapPageControls';
 import { Feature } from 'geojson';
 import * as L from 'leaflet';
 import 'leaflet-draw';
@@ -19,6 +20,10 @@ export interface IMapContainerProps {
   mapId: string;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
   extentState: { extent: any; setExtent: (extent: any) => void };
+  contextMenuState: {
+    contextMenuState: MapContextMenuData;
+    setContextMenuState: (contextMenuState: MapContextMenuData) => void;
+  };
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -27,6 +32,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const mapRef = useRef(null);
 
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
+
+  const addContextMenuClickListener = () => {
+    mapRef.current.on('contextmenu', (e) => {
+      props.contextMenuState.setContextMenuState({ isOpen: true, lat: e.latlng.lat, lng: e.latlng.lng });
+    });
+  };
 
   const getESRIBaseLayer = () => {
     return L.tileLayer.offline(
@@ -120,6 +131,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const initMap = () => {
     mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([55, -128], 10);
+
+    addContextMenuClickListener();
 
     addZoomControls();
 

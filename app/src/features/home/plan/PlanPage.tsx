@@ -74,6 +74,13 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const [tripLoaded, setTripLoaded] = useState(false);
 
+  // "is it open?", "what coordinates of the mouse?", that kind of thing:
+  const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
+
+  const handleContextMenuClose = () => {
+    setContextMenuState({ ...contextMenuState, isOpen: false });
+  };
+
   const getTrip = async () => {
     let docs = await databaseContext.database.find({ selector: { _id: 'trip' } });
 
@@ -188,6 +195,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
               geometryState={{ geometry, setGeometry }}
               extentState={{ extent, setExtent }}
+              contextMenuState={{ contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
             />
           </Paper>
         </Grid>
