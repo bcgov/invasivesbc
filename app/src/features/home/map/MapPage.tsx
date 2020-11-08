@@ -75,6 +75,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
       getEverythingWithAGeo();
     };
 
+    console.dir(geometry)
+
     updateComponent();
   }, [databaseChangesContext]);
 

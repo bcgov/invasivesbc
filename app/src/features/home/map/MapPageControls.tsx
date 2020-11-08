@@ -19,7 +19,11 @@ import AddLocationIcon from '@material-ui/icons/AddLocation';
 import SearchIcon from '@material-ui/icons/Search';
 import DirectionsWalkIcon from '@material-ui/icons/DirectionsWalk';
 import CloseIcon from '@material-ui/icons/Close';
-import React from 'react';
+import React, { useContext } from 'react';
+import { DocType } from 'constants/database';
+import { Feature } from 'geojson';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { notifySuccess } from 'utils/NotificationUtils';
 
 const Transition = React.forwardRef<React.FC, SlideProps>((TransitionProps, ref) => {
   return <Slide direction="up" ref={ref} {...TransitionProps} />;
@@ -63,6 +67,19 @@ interface MenuItemProps {
   onSelectFunction?: Function;
 }
 
+/*
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [125.6, 10.1]
+  },
+  "properties": {
+    "name": "Dinagat Islands"
+  }
+}
+*/
+
 //todo: pass icon
 //todo: make list a grid
 const MenuItem: React.FC<MenuItemProps> = (props) => {
@@ -81,6 +98,36 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
 
 export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
   const classes = useStyles();
+  const databaseContext = useContext(DatabaseContext);
+
+  const coordinatesToGeo: any = (lat: number, lng: number) => {
+    return [
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [parseFloat(lng.toFixed(6)), parseFloat(lat.toFixed(6))]
+        },
+        properties: {
+          name: 'Sasquatch Siting'
+        }
+      }
+    ] as Feature[];
+  };
+
+  /**
+   * Save the point of interest added by the user
+   *
+   * @param {Feature} geoJSON The geometry in GeoJSON format
+   */
+  const savePoint = async (geometry: Feature[]) => {
+    await databaseContext.database.upsert('sasquatch', () => {
+      return { docType: DocType.POINT_OF_INTEREST, geometry: geometry, dateUpdated: new Date() };
+    });
+    notifySuccess(databaseContext, 'Saved New Point of Interest');
+    console.dir(geometry);
+  };
+
   return (
     <>
       <Dialog
@@ -121,7 +168,11 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
             and isn't representative of a field activity"
             onSelectFunction={() => {
               props.contextMenuState.setContextMenuState({ ...props.contextMenuState.state, isOpen: false });
-              alert('clicked');
+              const newPointAsGeo = coordinatesToGeo(
+                props.contextMenuState.state.lat,
+                props.contextMenuState.state.lng
+              );
+              savePoint(newPointAsGeo);
             }}
           />
           <Divider />
