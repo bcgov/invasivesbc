@@ -106,7 +106,7 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
         type: 'Feature',
         geometry: {
           type: 'Point',
-          coordinates: [parseFloat(lng.toFixed(6)), parseFloat(lat.toFixed(6))]
+          coordinates: [parseFloat(lng.toFixed(6)), parseFloat(lat.toFixed(6))] //@popkinj is this ok?
         },
         properties: {
           name: 'Sasquatch Siting'

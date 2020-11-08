@@ -1,5 +1,7 @@
-import { Container, makeStyles, Theme } from '@material-ui/core';
+import { IonSpinner } from '@ionic/react/dist/types/components/proxies';
+import { CircularProgress, Container, makeStyles, Theme } from '@material-ui/core';
 import clsx from 'clsx';
+import { interactiveGeoInputData, MapContext } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
@@ -29,12 +31,23 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
+  const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
+
+  const [isReadyToLoadMap, setIsReadyToLoadMap] = useState(false);
+
   const [extent, setExtent] = useState(null);
 
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   //const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
+
+  // don't load the map until interactive geos ready
+  useEffect(() => {
+    const didInteractiveGeosLoad = interactiveGeometry?.length ? true : false;
+    setIsReadyToLoadMap(didInteractiveGeosLoad);
+  }, [databaseChangesContext, interactiveGeometry]);
+
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
@@ -59,15 +72,55 @@ const MapPage: React.FC<IMapProps> = (props) => {
     }
 
     let geos = [];
+    let interactiveGeos = [];
+
     docs.docs.forEach((row) => {
       if (!row.geometry || !row.geometry.length) {
         return;
       }
 
       geos.push(row.geometry[0]);
+
+      switch (row.docType) {
+        case DocType.POINT_OF_INTEREST:
+          console.dir(row);
+          interactiveGeos.push({
+            //mapContext: MapContext.MAIN_MAP,
+            recordDocID: row._id,
+            recordDocType: row.docType,
+            description: 'test',
+
+            // basic display:
+            geometry: row.geometry[0],
+            color: '#FF5733',
+            zIndex: 1, // need to ask jamie how to implement this
+
+            // interactive
+            onClickCallback: () => {
+              alert('clicked geo');
+            } //try to get this one workign first
+          });
+          /* isSelected?: boolean;
+
+          markerComponent?: FunctionComponent;
+          showMarkerAtZoom?: number;
+          showMarker: boolean;
+
+          popUpComponent?: FunctionComponent;
+          showPopUp: boolean;})*/
+          break;
+        default:
+          break;
+      }
     });
 
+    console.dir(interactiveGeos);
     setGeometry(geos);
+
+    setInteractiveGeometry(
+      interactiveGeos
+    ); /*/todo figure out to have this as a dictionary with only the delta
+        getting written to on updates*/
   };
 
   useEffect(() => {
@@ -75,7 +128,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
       getEverythingWithAGeo();
     };
 
-    console.dir(geometry)
+    console.dir(geometry);
 
     updateComponent();
   }, [databaseChangesContext]);
@@ -83,13 +136,18 @@ const MapPage: React.FC<IMapProps> = (props) => {
   return (
     <>
       <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
-        <MapContainer
-          classes={classes}
-          mapId={'mainMap'}
-          geometryState={{ geometry, setGeometry }}
-          extentState={{ extent, setExtent }}
-          contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-        />
+        {isReadyToLoadMap ? (
+          <MapContainer
+            classes={classes}
+            mapId={'mainMap'}
+            geometryState={{ geometry, setGeometry }}
+            interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+            extentState={{ extent, setExtent }}
+            contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+          />
+        ) : (
+          <CircularProgress />
+        )}
       </Container>
       <MapContextMenu
         contextMenuState={{ state: contextMenuState, setContextMenuState }}
