@@ -266,6 +266,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           },
           onEachFeature: function (feature: any, layer: any) {
             drawnItems.addLayer(layer);
+            layer.on('click', function () {
+              // Fires on click of single feature
+              interactObj.onClickCallback();
+            });
           }
         });
       });
