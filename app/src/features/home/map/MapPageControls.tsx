@@ -148,7 +148,7 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
               <CloseIcon />
             </IconButton>
             <Typography variant="h5" className={classes.title}>
-              Choose something to do here: ({props.contextMenuState.state.lat}, {props.contextMenuState.state.lat})
+              Choose something to do here: ({props.contextMenuState.state.lat}, {props.contextMenuState.state.lng})
             </Typography>
             <Button
               autoFocus
