@@ -17,6 +17,18 @@
 .leaflet-control-locate.leaflet-control {
   transform: scale(1.4);
 }
+/*
+
+.leaflet-popup-content-wrapper {
+
+}
+
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+}
+
+.leaflet-popup-tip-container {
+}
+*/
 
 .savetiles.leaflet-control {
   transform: scale(1.4) translate(0, 20px);

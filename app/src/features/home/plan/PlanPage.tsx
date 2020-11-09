@@ -19,6 +19,7 @@ import TripDataControls from 'components/trip/TripDataControls';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState } from 'react';
+import { MapContextMenuData } from '../map/MapPageControls';
 
 interface IPlanPageProps {
   classes?: any;
@@ -73,6 +74,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [extent, setExtent] = useState(null);
 
   const [tripLoaded, setTripLoaded] = useState(false);
+
+  const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
+  //const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
+  const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
+
+  /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
+  const handleContextMenuClose = () => {
+    setContextMenuState({ ...contextMenuState, isOpen: false });
+  };
+  */
 
   const getTrip = async () => {
     let docs = await databaseContext.database.find({ selector: { _id: 'trip' } });
@@ -188,6 +199,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
               geometryState={{ geometry, setGeometry }}
               extentState={{ extent, setExtent }}
+              contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
             />
           </Paper>
         </Grid>

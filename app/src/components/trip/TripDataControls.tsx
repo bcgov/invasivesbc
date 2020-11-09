@@ -146,7 +146,7 @@ export const TripDataControls: React.FC = (props) => {
           await databaseContext.database.upsert(String(row.point_of_interest_id), (existingDoc) => {
             return {
               ...existingDoc,
-              docType: DocType.REFERENCE_ACTIVITY,
+              docType: DocType.REFERENCE_POINT_OF_INTEREST,
               tripID: 'trip',
               ...row,
               formData: row.point_of_interest_payload.form_data,

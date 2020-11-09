@@ -1,4 +1,5 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { MapContextMenuData } from 'features/home/map/MapPageControls';
 import { Feature } from 'geojson';
 import * as L from 'leaflet';
 import 'leaflet-draw';
@@ -10,6 +11,7 @@ import 'leaflet.offline';
 import 'leaflet/dist/leaflet.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
+import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 
 export type MapControl = (map: any, ...args: any) => void;
@@ -18,7 +20,15 @@ export interface IMapContainerProps {
   classes?: any;
   mapId: string;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
+  interactiveGeometryState?: {
+    interactiveGeometry: any[];
+    setInteractiveGeometry: (interactiveGeometry: interactiveGeoInputData[]) => void;
+  };
   extentState: { extent: any; setExtent: (extent: any) => void };
+  contextMenuState: {
+    state: MapContextMenuData;
+    setContextMenuState: (contextMenuState: MapContextMenuData) => void;
+  };
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -27,6 +37,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const mapRef = useRef(null);
 
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
+
+  const addContextMenuClickListener = () => {
+    mapRef.current.on('contextmenu', (e) => {
+      props.contextMenuState.setContextMenuState({ isOpen: true, lat: e.latlng.lat, lng: e.latlng.lng });
+    });
+  };
 
   const getESRIBaseLayer = () => {
     return L.tileLayer.offline(
@@ -121,6 +137,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const initMap = () => {
     mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([55, -128], 10);
 
+    addContextMenuClickListener();
+
     addZoomControls();
 
     addLocateControls();
@@ -157,6 +175,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: feature.layer.getRadius() } };
       }
 
+      // Note that drawing one wipes all others:
       props.geometryState.setGeometry([aGeo]);
     });
 
@@ -189,34 +208,79 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     // Clear the drawn features
     setDrawnItems(drawnItems.clearLayers());
 
-    // For each geometry, add a new layer to the drawn features
-    props.geometryState.geometry.forEach((collection) => {
-      const style = {
-        // color: '#ff7800',
-        weight: 4,
-        opacity: 0.65
-      };
+    if (props.geometryState) {
+      // For each geometry, add a new layer to the drawn features
+      props.geometryState.geometry.forEach((collection) => {
+        const style = {
+          // color: '#ff7800',
+          weight: 4,
+          opacity: 0.65
+        };
 
-      const markerStyle = {
-        radius: 10,
-        weight: 4,
-        stroke: true
-      };
+        const markerStyle = {
+          radius: 10,
+          weight: 4,
+          stroke: true
+        };
 
-      L.geoJSON(collection, {
-        style: style,
-        pointToLayer: (feature: any, latLng: any) => {
-          if (feature.properties.radius) {
-            return L.circle(latLng, { radius: feature.properties.radius });
-          } else {
-            return L.circleMarker(latLng, markerStyle);
+        L.geoJSON(collection, {
+          style: style,
+          pointToLayer: (feature: any, latLng: any) => {
+            if (feature.properties.radius) {
+              return L.circle(latLng, { radius: feature.properties.radius });
+            } else {
+              return L.circleMarker(latLng, markerStyle);
+            }
+          },
+          onEachFeature: function (feature: any, layer: any) {
+            drawnItems.addLayer(layer);
           }
-        },
-        onEachFeature: function (feature: any, layer: any) {
-          drawnItems.addLayer(layer);
-        }
+        });
       });
-    });
+    }
+    if (props.interactiveGeometryState) {
+      props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
+        console.log(interactObj);
+        console.log('after');
+
+        const style = {
+          color: interactObj.color,
+          weight: 4,
+          opacity: 0.65
+        };
+
+        const markerStyle = {
+          radius: 10,
+          weight: 4,
+          stroke: true
+        };
+
+        L.geoJSON(interactObj.geometry, {
+          style: style,
+          pointToLayer: (feature: any, latLng: any) => {
+            if (feature.properties.radius) {
+              return L.circle(latLng, { radius: feature.properties.radius });
+            } else {
+              return L.circleMarker(latLng, markerStyle);
+            }
+          },
+          onEachFeature: function (feature: any, layer: any) {
+            drawnItems.addLayer(layer);
+            let content = interactObj.popUpComponent(interactObj.description);
+            layer.on('click', function () {
+              // Fires on click of single feature
+              interactObj.onClickCallback();
+              console.dir(interactObj.popUpComponent);
+              L.popup()
+                .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
+                //.setContent(interactObj.popUpComponent)
+                .setContent(content)
+                .openOn(mapRef.current);
+            });
+          }
+        });
+      });
+    }
 
     // Update the drawn featres
     setDrawnItems(drawnItems);
