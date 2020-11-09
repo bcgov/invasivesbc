@@ -1,7 +1,6 @@
-import { IonSpinner } from '@ionic/react/dist/types/components/proxies';
 import { CircularProgress, Container, makeStyles, Theme } from '@material-ui/core';
 import clsx from 'clsx';
-import { interactiveGeoInputData, MapContext } from 'components/map/GeoMeta';
+import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
@@ -115,6 +114,12 @@ const MapPage: React.FC<IMapProps> = (props) => {
           */
           /*
           showPopUp: boolean;})*/
+          break;
+        case DocType.REFERENCE_ACTIVITY:
+          break;
+        case DocType.ACTIVITY:
+          break;
+        case DocType.REFERENCE_POINT_OF_INTEREST:
           break;
         default:
           break;

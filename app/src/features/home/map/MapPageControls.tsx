@@ -15,7 +15,6 @@ import {
 } from '@material-ui/core';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import AddLocationIcon from '@material-ui/icons/AddLocation';
 import SearchIcon from '@material-ui/icons/Search';
 import DirectionsWalkIcon from '@material-ui/icons/DirectionsWalk';
 import CloseIcon from '@material-ui/icons/Close';

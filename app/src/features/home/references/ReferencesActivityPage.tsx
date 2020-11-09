@@ -43,9 +43,11 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
   //const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
+  /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
+  */
   const [doc, setDoc] = useState(null);
 
   useEffect(() => {
