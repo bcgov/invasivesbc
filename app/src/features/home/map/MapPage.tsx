@@ -24,6 +24,11 @@ interface IMapProps {
   classes?: any;
 }
 
+const PointOfInterestPopUp = (name: string) => {
+  //return <div> {props.name} </div>;
+  return '<div>' + name + '</div>';
+};
+
 const MapPage: React.FC<IMapProps> = (props) => {
   const classes = useStyles();
 
@@ -44,10 +49,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
   // don't load the map until interactive geos ready
   useEffect(() => {
-    const didInteractiveGeosLoad = interactiveGeometry?.length ? true : false;
+    const didInteractiveGeosLoad = interactiveGeometry ? true : false;
     setIsReadyToLoadMap(didInteractiveGeosLoad);
   }, [databaseChangesContext, interactiveGeometry]);
-
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
@@ -88,7 +92,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'test',
+            description: 'Point of Interest:\n ' + row._id + '\n' + row.geometry[0].coordinates,
 
             // basic display:
             geometry: row.geometry[0],
@@ -97,8 +101,10 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
             // interactive
             onClickCallback: () => {
-              alert('clicked geo');
-            } //try to get this one workign first
+              //setInteractiveGeometry([interactiveGeos])
+              console.log('clicked geo');
+            }, //try to get this one workign first
+            popUpComponent: PointOfInterestPopUp
           });
           /* isSelected?: boolean;
 
@@ -106,7 +112,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
           showMarkerAtZoom?: number;
           showMarker: boolean;
 
-          popUpComponent?: FunctionComponent;
+          */
+          /*
           showPopUp: boolean;})*/
           break;
         default:
@@ -121,6 +128,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
       interactiveGeos
     ); /*/todo figure out to have this as a dictionary with only the delta
         getting written to on updates*/
+
+    //setIsReadyToLoadMap(true)
   };
 
   useEffect(() => {

@@ -7,6 +7,8 @@ export enum MapContext {
   MAIN_MAP = 'main_map'
 }
 
+// MW:
+// try to keep this agnostic to map lib, I'd like to make a Cesiumjs version of the MapContainer.
 export interface interactiveGeoInputData {
   //meta:
   //mapContext: MapContext;
@@ -23,10 +25,10 @@ export interface interactiveGeoInputData {
   onClickCallback: Function; //try to get this one workign first
   //isSelected?: boolean;
 
-  //markerComponent?: FunctionComponent;
+  markerComponent?: FunctionComponent;
   //showMarkerAtZoom?: number;
   //showMarker: boolean;
 
-  //popUpComponent?: FunctionComponent;
+  popUpComponent?: HTMLElement;
   //showPopUp: boolean;
 }

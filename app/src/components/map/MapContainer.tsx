@@ -237,10 +237,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           }
         });
       });
-    } if (props.interactiveGeometryState) {
+    }
+    if (props.interactiveGeometryState) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
         console.log(interactObj);
-        console.log('after')
+        console.log('after');
 
         const style = {
           color: interactObj.color,
@@ -258,7 +259,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           style: style,
           pointToLayer: (feature: any, latLng: any) => {
             if (feature.properties.radius) {
-        console.log('got here');
               return L.circle(latLng, { radius: feature.properties.radius });
             } else {
               return L.circleMarker(latLng, markerStyle);
@@ -266,9 +266,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           },
           onEachFeature: function (feature: any, layer: any) {
             drawnItems.addLayer(layer);
+            let content = interactObj.popUpComponent(interactObj.description);
             layer.on('click', function () {
               // Fires on click of single feature
               interactObj.onClickCallback();
+              console.dir(interactObj.popUpComponent);
+              L.popup()
+                .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
+                //.setContent(interactObj.popUpComponent)
+                .setContent(content)
+                .openOn(mapRef.current);
             });
           }
         });

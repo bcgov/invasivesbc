@@ -106,7 +106,7 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
         type: 'Feature',
         geometry: {
           type: 'Point',
-          coordinates: [parseFloat(lng.toFixed(6)), parseFloat(lat.toFixed(6))] //@popkinj is this ok?
+          coordinates: [parseFloat(lat.toFixed(6)), parseFloat(lng.toFixed(6))] //@popkinj is this ok?
         },
         properties: {
           name: 'Sasquatch Siting'
@@ -169,8 +169,8 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
             onSelectFunction={() => {
               props.contextMenuState.setContextMenuState({ ...props.contextMenuState.state, isOpen: false });
               const newPointAsGeo = coordinatesToGeo(
-                props.contextMenuState.state.lat,
-                props.contextMenuState.state.lng
+                props.contextMenuState.state.lng,
+                props.contextMenuState.state.lat
               );
               savePoint(newPointAsGeo);
             }}
