@@ -143,7 +143,7 @@ export const TripDataControls: React.FC = (props) => {
         }
 
         try {
-          await databaseContext.database.upsert(String(row.point_of_interest_id), (existingDoc) => {
+          await databaseContext.database.upsert('POI' + String(row.point_of_interest_id), (existingDoc) => {
             return {
               ...existingDoc,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,
@@ -152,7 +152,7 @@ export const TripDataControls: React.FC = (props) => {
               formData: row.point_of_interest_payload.form_data,
               pointOfInterestType: row.point_of_interest_type,
               pointOfInterestSubtype: row.point_of_interest_subtype,
-              geometry: row.point_of_interest_payload.geometry,
+              geometry: [...row.point_of_interest_payload.geometry],
               photos: photos
             };
           });

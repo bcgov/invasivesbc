@@ -86,7 +86,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       switch (row.docType) {
         case DocType.POINT_OF_INTEREST:
-          console.dir(row);
           interactiveGeos.push({
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
@@ -120,13 +119,40 @@ const MapPage: React.FC<IMapProps> = (props) => {
         case DocType.ACTIVITY:
           break;
         case DocType.REFERENCE_POINT_OF_INTEREST:
+          console.log('found point of interest on map page' + JSON.stringify(row))
+          interactiveGeos.push({
+            //mapContext: MapContext.MAIN_MAP,
+            recordDocID: row._id,
+            recordDocType: row.docType,
+            description: 'Point of Interest:\n ' + row._id + '\n' + row.geometry[0].coordinates,
+
+            // basic display:
+            geometry: row.geometry[0],
+            color: '#FF5733',
+            zIndex: 1, // need to ask jamie how to implement this
+
+            // interactive
+            onClickCallback: () => {
+              //setInteractiveGeometry([interactiveGeos])
+              console.log('clicked geo');
+            }, //try to get this one workign first
+            popUpComponent: PointOfInterestPopUp
+          });
+          /* isSelected?: boolean;
+
+          markerComponent?: FunctionComponent;
+          showMarkerAtZoom?: number;
+          showMarker: boolean;
+
+          */
+          /*
+          showPopUp: boolean;})*/
           break;
         default:
           break;
       }
     });
 
-    console.dir(interactiveGeos);
     setGeometry(geos);
 
     setInteractiveGeometry(
@@ -142,7 +168,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
       getEverythingWithAGeo();
     };
 
-    console.dir(geometry);
 
     updateComponent();
   }, [databaseChangesContext]);
