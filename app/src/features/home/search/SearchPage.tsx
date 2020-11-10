@@ -97,12 +97,9 @@ const SearchPage: React.FC<ISearchPagePage> = (props) => {
       (searchFilterCriteria.activityType &&
         searchFilterCriteria.activityType.length && { activity_type: searchFilterCriteria.activityType }) ||
       {};
-    console.log('1+++++', sortBy);
 
     const sortColumn = sortBy.substring(1);
     const sortDirection = sortBy.substring(0, 1);
-
-    console.log('2+++++', sortBy);
 
     const activitySearchCriteria: IActivitySearchCriteria = {
       page: currentPage - 1, // The api starts at page 0, while the UI starts at page 1.
