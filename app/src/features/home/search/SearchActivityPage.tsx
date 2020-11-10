@@ -4,6 +4,7 @@ import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { MapContextMenuData } from '../map/MapPageControls';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -34,6 +35,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
+  const [contextMenuState, setContextMenuState] = useState<MapContextMenuData>({ isOpen: false, lat: 0, lng: 0 });
 
   const [doc, setDoc] = useState(null);
 
@@ -87,6 +89,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
         mapId={doc._id}
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
+        contextMenuState={{ state: contextMenuState, setContextMenuState }}
       />
     </Container>
   );
