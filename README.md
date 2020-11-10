@@ -76,7 +76,7 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
     app/                       - Ionic APP Codebase
     database/                  - Database Codebase
     env_config/                - ENV config files
-    testing/                   - Test scrips, in particular Postman configs
+    testing/                   - Test scripts, in particular Postman configs
     CODE-OF-CONDUCT.md         - Code of Conduct
     CONTRIBUTING.md            - Contributing Guidelines
     LICENSE                    - License

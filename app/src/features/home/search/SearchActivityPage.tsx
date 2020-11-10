@@ -44,7 +44,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       const response = await invasivesApi.getActivityById(urlParams['id']);
 
       if (!response) {
-        // TODO error messagign
+        // TODO error messaging
       }
 
       const photos = [];

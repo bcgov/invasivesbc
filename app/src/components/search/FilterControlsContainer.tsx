@@ -156,7 +156,7 @@ const FilterControlsContainer: React.FC<IFilterControlsContainer> = (props) => {
                   label="Monitoring"
                 />
               </FormGroup>
-              <FormHelperText>Selecting none searchs all</FormHelperText>
+              <FormHelperText>Selecting none searches all</FormHelperText>
             </FormControl>
           </Grid>
         </Grid>
