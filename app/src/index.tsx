@@ -11,7 +11,7 @@ const { Device } = Plugins;
 defineCustomElements(window);
 
 const startApp = (info) => {
-  ReactDOM.render(<App info={info} />, document.getElementById('root'));
+  ReactDOM.render(<App deviceInfo={info} />, document.getElementById('root'));
 
   // If you want your app to work offline and load faster, you can change
   // unregister() to register() below. Note this comes with some pitfalls.
