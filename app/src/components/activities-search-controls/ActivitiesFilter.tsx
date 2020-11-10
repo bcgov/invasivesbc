@@ -75,11 +75,8 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   };
 
   const updateActivityChoice = (updatedActivity: IActivityChoices, index: number) => {
-    console.log('1', updatedActivity);
     let updatedActivityChoices = [...activityChoices];
-    console.log('2', updatedActivityChoices);
     updatedActivityChoices[index] = updatedActivity;
-    console.log('3', [...updatedActivityChoices]);
     saveChoices([...updatedActivityChoices]);
   };
 
@@ -98,7 +95,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
           {activityChoices.map((activityChoice, index) => {
             return (
               <ListItem key={index}>
-                <Paper elevation={5} className={classes.activityRecordsChoice}>
+                <Paper className={classes.activityRecordsChoice}>
                   <Grid container spacing={3}>
                     <Grid item xs={4}>
                       <div>

@@ -12,6 +12,9 @@ export interface IActivitySearchCriteria {
   /**
    * The page of results to return. Starts at 0.
    *
+   * Note: Most UI's start at page 1, but this filter starts at page 0, so adjust accordingly when converting between
+   * the two.
+   *
    * @type {number}
    * @memberof IActivitySearchCriteria
    */
@@ -24,33 +27,54 @@ export interface IActivitySearchCriteria {
    */
   limit?: number;
   /**
-   * Activity type filter.
+   * Column name to sort by.
    *
    * @type {string}
    * @memberof IActivitySearchCriteria
    */
-  activity_type?: string;
+  sort_by?: string;
+  /**
+   * Direction to sort by.
+   *
+   * @type {SORT_DIRECTION}
+   * @memberof IActivitySearchCriteria
+   */
+  sort_direction?: SORT_DIRECTION;
+  /**
+   * Columns to return.
+   *
+   * @type {string[]}
+   * @memberof IActivitySearchCriteria
+   */
+  column_names?: string[];
+  /**
+   * Activity type filter.
+   *
+   * @type {string[]}
+   * @memberof IActivitySearchCriteria
+   */
+  activity_type?: string[];
   /**
    * Activity sub type filter.
    *
-   * @type {string}
+   * @type {string[]}
    * @memberof IActivitySearchCriteria
    */
-  activity_subtype?: string;
+  activity_subtype?: string[];
   /**
    * Date start filter. Defaults time to start of day.
    *
-   * @type {Date}
+   * @type {string} iso date string
    * @memberof IActivitySearchCriteria
    */
-  date_range_start?: Date;
+  date_range_start?: string;
   /**
    * Date end filter. Defaults time to end of day.
    *
-   * @type {Date}
+   * @type {string} iso date string
    * @memberof IActivitySearchCriteria
    */
-  date_range_end?: Date;
+  date_range_end?: string;
   /**
    * GeoJSON feature (of type polygon) to search in.
    *
@@ -157,4 +181,15 @@ export interface ICreatePointOfInterest {
   geometry: Feature[];
   media: IMedia[];
   form_data: any;
+}
+
+/**
+ * Supported search sort directions.
+ *
+ * @export
+ * @enum {number}
+ */
+export enum SORT_DIRECTION {
+  ASC = 'ASC',
+  DESC = 'DESC'
 }

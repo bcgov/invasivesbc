@@ -43,11 +43,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'inline',
       marginRight: '1rem'
     }
-  },
-  actionsBar: {
-    display: 'flex',
-    flexDirection: 'row-reverse',
-    marginBottom: '2rem'
   }
 }));
 
@@ -128,7 +123,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
     <List className={classes.activityList}>
       {docs.map((doc) => {
         return (
-          <Paper elevation={1} key={doc._id}>
+          <Paper key={doc._id}>
             <ListItem button className={classes.activitiyListItem} onClick={() => navigateToActivityPage(doc)}>
               <ListItemIcon>
                 <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
@@ -145,19 +140,14 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
 const ReferenceActivitiesList: React.FC = (props) => {
   const classes = useStyles();
 
-  const databaseContext = useContext(DatabaseContext);
-
   return (
     <>
-      <div>
-        <div className={classes.actionsBar}></div>
-        <div className={classes.activitiesContent}>
-          <div>
-            <Typography variant="h5">Reference Activities</Typography>
-          </div>
-          <div>
-            <ReferenceActivityList disable={true} />
-          </div>
+      <div className={classes.activitiesContent}>
+        <div>
+          <Typography variant="h4">Reference Activities</Typography>
+        </div>
+        <div>
+          <ReferenceActivityList disable={true} />
         </div>
       </div>
     </>

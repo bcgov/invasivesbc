@@ -60,7 +60,7 @@ export const TripDataControls: React.FC = (props) => {
       const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
 
       const activitySearchCriteria: IActivitySearchCriteria = {
-        ...((setOfChoices.activityType && { activity_type: setOfChoices.activityType }) || {}),
+        ...((setOfChoices.activityType && { activity_type: [setOfChoices.activityType] }) || []),
         ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
         ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
         ...((geometry && { search_feature: geometry }) || {})
@@ -68,7 +68,7 @@ export const TripDataControls: React.FC = (props) => {
 
       let response = await invasivesApi.getActivities(activitySearchCriteria);
 
-      for (const row of response) {
+      for (const row of response.rows) {
         const photos = [];
 
         if (setOfChoices.includePhotos && row.media_keys && row.media_keys.length) {

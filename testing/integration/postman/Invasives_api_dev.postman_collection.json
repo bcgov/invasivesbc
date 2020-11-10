@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "74f9fb6c-e5cf-4e8d-a710-1e04b0faf5d2",
+		"_postman_id": "c473d45e-39c2-4926-80c5-f3f183528080",
 		"name": "InvasivesBC-API-DEV",
 		"description": "API for InvasivesBC (Ionic Version)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "8d00faaa-5ed1-4f2a-9b15-fcc15aa1fff8",
+								"id": "b149f760-64d0-4959-bced-447cff3d9adf",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -95,7 +95,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "8da7b236-2900-46a3-9453-31372a06c993",
+								"id": "4519db77-2e33-4f82-8825-e511d16ee402",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
@@ -215,7 +215,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "34f58c6f-6c69-45c2-82c0-53aad415b241",
+								"id": "a47d517e-1931-4a4b-936e-1804eb8e6b8f",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -266,7 +266,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7f92b2c1-a03c-457a-9156-c9337277b548",
+								"id": "98b173c2-d75c-47c1-8cdf-a071804cc2f6",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -285,7 +285,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"page\": 0,\r\n    \"limit\": 1,\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"\",\r\n    \"date_range_start\": \"\",\r\n    \"date_range_end\": \"\",\r\n    \"search_feature\": {\r\n        \"type\": \"Feature\",\r\n        \"geometry\": {\r\n            \"type\": \"Polygon\",\r\n            \"coordinates\": [\r\n                [\r\n                    [\r\n                        -123.40315818786621,\r\n                        48.42094176838064\r\n                    ],\r\n                    [\r\n                        -123.32942962646484,\r\n                        48.42094176838064\r\n                    ],\r\n                    [\r\n                        -123.32942962646484,\r\n                        48.46427120178859\r\n                    ],\r\n                    [\r\n                        -123.40315818786621,\r\n                        48.46427120178859\r\n                    ],\r\n                    [\r\n                        -123.40315818786621,\r\n                        48.42094176838064\r\n                    ]\r\n                ]\r\n            ]\r\n        },\r\n        \"properties\": {}\r\n    }\r\n}",
+							"raw": "{\r\n    \"page\": 0,\r\n    \"limit\": 1,\r\n    \"activity_type\": [\"Treatment\"],\r\n    \"activity_subtype\": [],\r\n    \"date_range_start\": \"\",\r\n    \"date_range_end\": \"\",\r\n    \"search_feature\": {\r\n        \"type\": \"Feature\",\r\n        \"geometry\": {\r\n            \"type\": \"Polygon\",\r\n            \"coordinates\": [\r\n                [\r\n                    [\r\n                        -123.40315818786621,\r\n                        48.42094176838064\r\n                    ],\r\n                    [\r\n                        -123.32942962646484,\r\n                        48.42094176838064\r\n                    ],\r\n                    [\r\n                        -123.32942962646484,\r\n                        48.46427120178859\r\n                    ],\r\n                    [\r\n                        -123.40315818786621,\r\n                        48.46427120178859\r\n                    ],\r\n                    [\r\n                        -123.40315818786621,\r\n                        48.42094176838064\r\n                    ]\r\n                ]\r\n            ]\r\n        },\r\n        \"properties\": {}\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -317,7 +317,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6662180e-5605-47b3-b74f-ffd08427969f",
+								"id": "8ca75669-45b5-4d29-bc9f-6ed965a06a6c",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
@@ -430,7 +430,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "d6d65beb-2761-4308-bf26-b97e78b21df5",
+						"id": "3cc533cc-8bdb-4518-83f6-f65f5975a861",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -507,7 +507,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "87bf1062-8861-454d-82a8-a6c157ffe8e1",
+				"id": "db6d8e16-2ecc-4e8b-a0db-0d63246d4bc3",
 				"type": "text/javascript",
 				"exec": [
 					"const echoPostRequest = {",
@@ -558,7 +558,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "baecca1e-54e6-4aac-b678-ee15ba54a70b",
+				"id": "974a0009-28d8-4bbb-a832-55f982e31c2f",
 				"type": "text/javascript",
 				"exec": [
 					""

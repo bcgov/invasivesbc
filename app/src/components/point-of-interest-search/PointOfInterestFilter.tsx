@@ -92,7 +92,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
           {pointOfInterestChoices.map((pointOfInterestChoice, index) => {
             return (
               <ListItem key={index}>
-                <Paper elevation={5} className={classes.pointOfInterestChoice}>
+                <Paper className={classes.pointOfInterestChoice}>
                   <Grid container spacing={3}>
                     <Grid item xs={4}>
                       <div>

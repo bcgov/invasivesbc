@@ -1,5 +1,5 @@
 import { AppBar, Tab, Tabs } from '@material-ui/core';
-import { Assignment, Bookmarks, Explore, HomeWork, Map } from '@material-ui/icons';
+import { Assignment, Bookmarks, Explore, HomeWork, Map, Search } from '@material-ui/icons';
 import React, { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -24,17 +24,19 @@ const TabsContainer: React.FC<IBaseProps> = (props) => {
   const getActiveTab = useCallback(
     (activeTab: number): number => {
       switch (history.location.pathname) {
-        case urlContainsPath('/home/plan'):
+        case urlContainsPath('/home/search'):
           return 0;
+        case urlContainsPath('/home/plan'):
+          return 1;
         case urlContainsPath('/home/references'):
         case urlContainsPath('/home/references/activity/'):
-          return 1;
-        case urlContainsPath('/home/activities'):
           return 2;
-        case urlContainsPath('/home/map'):
+        case urlContainsPath('/home/activities'):
           return 3;
-        case urlContainsPath('/home/activity'):
+        case urlContainsPath('/home/map'):
           return 4;
+        case urlContainsPath('/home/activity'):
+          return 5;
         default:
           return activeTab;
       }
@@ -56,25 +58,26 @@ const TabsContainer: React.FC<IBaseProps> = (props) => {
     <div className={props.classes.tabBar}>
       <AppBar position="static">
         <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
-          <Tab label="Plan My Trip" icon={<Explore />} onClick={() => history.push('/home/plan')} {...a11yProps(0)} />
+          <Tab label="Search" icon={<Search />} onClick={() => history.push('/home/search')} {...a11yProps(1)} />
+          <Tab label="Plan My Trip" icon={<Explore />} onClick={() => history.push('/home/plan')} {...a11yProps(1)} />
           <Tab
             label="References"
             icon={<Bookmarks />}
             onClick={() => history.push('/home/references')}
-            {...a11yProps(1)}
+            {...a11yProps(2)}
           />
           <Tab
             label="My Activities"
             icon={<HomeWork />}
             onClick={() => history.push('/home/activities')}
-            {...a11yProps(2)}
+            {...a11yProps(3)}
           />
-          <Tab label="Map" icon={<Map />} onClick={() => history.push('/home/map')} {...a11yProps(3)} />
+          <Tab label="Map" icon={<Map />} onClick={() => history.push('/home/map')} {...a11yProps(4)} />
           <Tab
             label="Current Activity"
             icon={<Assignment />}
             onClick={() => history.push('/home/activity')}
-            {...a11yProps(4)}
+            {...a11yProps(5)}
           />
         </Tabs>
       </AppBar>

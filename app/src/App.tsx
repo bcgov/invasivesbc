@@ -1,6 +1,8 @@
 import { DeviceInfo } from '@capacitor/core';
 import { IonReactRouter } from '@ionic/react-router';
 import { CircularProgress, createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core';
+// Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
+import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { KeycloakProvider } from '@react-keycloak/web';
 import { DatabaseChangesContextProvider } from 'contexts/DatabaseChangesContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
@@ -79,7 +81,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface IAppProps {
-  info: DeviceInfo;
+  deviceInfo: DeviceInfo;
 }
 
 const App: React.FC<IAppProps> = (props) => {
