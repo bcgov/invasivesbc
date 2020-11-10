@@ -82,7 +82,7 @@ const PaginationControlsContainer: React.FC<IPaginationControlsContainer> = (pro
               onChange={(event: any) => handleSortByChange(event.target.value)}
               inputProps={{
                 name: 'sortBy',
-                id: 'soryBy'
+                id: 'sortBy'
               }}>
               {Object.entries(props.sortByValues).map((entry) => (
                 <option value={entry[0]} key={entry[0]}>
