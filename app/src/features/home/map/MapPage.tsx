@@ -119,7 +119,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
         case DocType.ACTIVITY:
           break;
         case DocType.REFERENCE_POINT_OF_INTEREST:
-          console.log('found point of interest on map page' + JSON.stringify(row))
           interactiveGeos.push({
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
