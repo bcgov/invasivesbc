@@ -125,8 +125,8 @@ const SearchPage: React.FC<ISearchPagePage> = (props) => {
       const activities = response.rows.map((activity) => {
         return {
           _id: String(activity.activity_id),
-          activityType: activity.activity_type || 'awdawd_awdawd_awdawd',
-          activitySubtype: activity.activity_subtype || 'awdawd_awdawd_awdawd',
+          activityType: activity.activity_type,
+          activitySubtype: activity.activity_subtype,
           dateReceived: activity.received_timestamp
         };
       });

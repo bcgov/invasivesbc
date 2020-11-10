@@ -10,7 +10,7 @@ export interface IPaginationControlsContainer {
   totalItems: number;
   totalPages: number;
   sortByValues: { [key: string]: string };
-  sortByState: { sortBy: string; setSortBy: (soryBy: string) => void };
+  sortByState: { sortBy: string; setSortBy: (sortBy: string) => void };
   isDisabled?: boolean;
 }
 
@@ -82,7 +82,7 @@ const PaginationControlsContainer: React.FC<IPaginationControlsContainer> = (pro
               onChange={(event: any) => handleSortByChange(event.target.value)}
               inputProps={{
                 name: 'sortBy',
-                id: 'soryBy'
+                id: 'sortBy'
               }}>
               {Object.entries(props.sortByValues).map((entry) => (
                 <option value={entry[0]} key={entry[0]}>

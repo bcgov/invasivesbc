@@ -42,7 +42,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface ISearchActivityListItem {
-  disable?: boolean;
   activity: any;
 }
 
