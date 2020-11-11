@@ -270,7 +270,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             layer.on('click', function () {
               // Fires on click of single feature
               interactObj.onClickCallback();
-              console.dir(interactObj.popUpComponent);
               L.popup()
                 .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
                 //.setContent(interactObj.popUpComponent)

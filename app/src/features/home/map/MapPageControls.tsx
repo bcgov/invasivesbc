@@ -124,7 +124,6 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
       return { docType: DocType.POINT_OF_INTEREST, geometry: geometry, dateUpdated: new Date() };
     });
     notifySuccess(databaseContext, 'Saved New Point of Interest');
-    console.dir(geometry);
   };
 
   return (
