@@ -17,30 +17,37 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_incoming_data_id SERIAL PRIMARY KEY;
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.activity_incoming_data_id IS 'Auto generated primary key';
 
-    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_id SERIAL ;
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_id;
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.activity_id IS 'Unique record number. Can occur multiple times with record updates.';
-
-    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN version INTEGER NULL;
-    COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.version IS 'Indicative of the version for each unique record. Calculated server side.';
+    CREATE INDEX activity_incoming_data_activity_id_idx on ${DB_SCHEMA}.activity_incoming_data (activity_id);
 
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_type VARCHAR(200) NULL;
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.activity_type IS 'Type of record';
-    CREATE index type_idx on ${DB_SCHEMA}.activity_incoming_data (activity_type);
+    CREATE INDEX activity_incoming_data_activity_type_idx on ${DB_SCHEMA}.activity_incoming_data (activity_type);
 
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_sub_type VARCHAR(200) NULL;
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.activity_sub_type IS 'Sub Type of record';
-    CREATE index sub_type_idx on ${DB_SCHEMA}.activity_incoming_data (activity_sub_type);
+    CREATE INDEX activity_incoming_data_activity_sub_type_idx on ${DB_SCHEMA}.activity_incoming_data (activity_sub_type);
+
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN created_timestamp timestamp NOT NULL DEFAULT NOW();
+    COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.created_timestamp IS 'The date and time data was created on the users device.';
 
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN received_timestamp timestamp NOT NULL DEFAULT NOW();
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.received_timestamp IS 'The date and time data was received and inserted into the database.';
 
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN deleted_timestamp timestamp DEFAULT NULL;
+    COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.deleted_timestamp IS 'The date and time the record was marked as deleted. Also used to indicate old versions. Calculated server side.';
+
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN geom geometry(Geometry,3005) CHECK (st_isValid(geom));
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.geom IS 'Geometry in Albers projection.';
-    CREATE index activity_incoming_data_gist on ${DB_SCHEMA}.activity_incoming_data using gist ("geom");
+    CREATE INDEX activity_incoming_data_geom_idx on ${DB_SCHEMA}.activity_incoming_data using gist ("geom");
 
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN geog geography(Geometry);
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.geog IS 'Geography type containing a geometry.';
-    CREATE index activity_incoming_data_gist2 on ${DB_SCHEMA}.activity_incoming_data using gist ("geog");
+    CREATE INDEX activity_incoming_data_geog_idx on ${DB_SCHEMA}.activity_incoming_data using gist ("geog");
+
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN media_keys text[];
+    COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.media_keys IS 'Array of keys used to fetch original files from external storage';
 
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_payload JSONB;
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.activity_payload IS 'Raw data upload in compressed JSON format.';
