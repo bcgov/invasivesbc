@@ -17,7 +17,7 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_incoming_data_id SERIAL PRIMARY KEY;
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.activity_incoming_data_id IS 'Auto generated primary key';
 
-    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_id;
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_id UUID;
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.activity_id IS 'Unique record number. Can occur multiple times with record updates.';
     CREATE INDEX activity_incoming_data_activity_id_idx on ${DB_SCHEMA}.activity_incoming_data (activity_id);
 
