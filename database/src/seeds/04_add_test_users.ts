@@ -1,4 +1,4 @@
-import * as Knex from 'knex';
+import Knex from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
 
@@ -94,9 +94,9 @@ export async function seed(knex: Knex): Promise<void> {
  * @return {Promise<void>}
  */
 export async function clean(knex: Knex): Promise<void> {
-  await knex('application_user').withSchema('invasivesbc').del();
-  await knex('user_role').withSchema('invasivesbc').del();
+  await knex('application_user').withSchema(DB_SCHEMA).del();
+  await knex('user_role').withSchema(DB_SCHEMA).del();
 
-  await knex.raw('alter sequence invasivesbc.application_user_user_id_seq restart with 1');
-  await knex.raw('alter sequence invasivesbc.user_role_user_role_id_seq restart with 1');
+  await knex.raw(`alter sequence ${DB_SCHEMA}.application_user_user_id_seq restart with 1`);
+  await knex.raw(`alter sequence ${DB_SCHEMA}.user_role_user_role_id_seq restart with 1`);
 }

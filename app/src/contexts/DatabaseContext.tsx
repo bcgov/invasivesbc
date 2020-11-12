@@ -3,6 +3,8 @@ import PouchDBFind from 'pouchdb-find';
 import PouchDBUpsert from 'pouchdb-upsert';
 import React, { useEffect, useState } from 'react';
 
+const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
+
 export type IDatabaseContext = {
   database: PouchDB.Database<any>;
   resetDatabase: () => void;
@@ -24,7 +26,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
   const createMobileDatabase = (): PouchDB.Database<any> => {
     PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite')); // adds mobile adapter
 
-    return new PouchDB('invasivesbc', {
+    return new PouchDB(DB_SCHEMA, {
       adapter: 'cordova-sqlite',
       // See https://www.npmjs.com/package/cordova-sqlite-storage for details on the below options
       iosDatabaseLocation: 'default',
@@ -38,7 +40,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
   const createDatabase = (): PouchDB.Database<any> => {
     PouchDB.plugin(require('pouchdb-adapter-idb').default); // add sbrowser adapter
 
-    return new PouchDB('invasivesbc', { adapter: 'idb' });
+    return new PouchDB(DB_SCHEMA, { adapter: 'idb' });
   };
 
   /**
