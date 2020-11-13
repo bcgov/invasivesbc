@@ -21,6 +21,9 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.activity_id IS 'Unique record number. Can occur multiple times with record updates.';
     CREATE INDEX activity_incoming_data_activity_id_idx on ${DB_SCHEMA}.activity_incoming_data (activity_id);
 
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN version INTEGER NULL;
+    COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.version IS 'Indicative of the version for each unique record. Calculated server side.';
+
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data ADD COLUMN activity_type VARCHAR(200) NULL;
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.activity_type IS 'Type of record';
     CREATE INDEX activity_incoming_data_activity_type_idx on ${DB_SCHEMA}.activity_incoming_data (activity_type);
