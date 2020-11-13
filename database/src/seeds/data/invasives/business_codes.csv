@@ -1,10 +1,10 @@
 code_header_name,code_name,code_description,sort_order
-pest_management_plan,102-0670-16-21,102-0670-16-21   [South Coastal Mainland of BC],1
-pest_management_plan,FLNR PMP 402-0664-15/20,FLNR PMP 402-0664-15/20   [Central and Northern BC],2
-pest_management_plan,FLNR-PMP 402-0677-19/24,FLNR-PMP 402-0677-19/24   [South Coastal Region of BC],3
-pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24   [Southern Interior of BC],4
-pest_management_plan,KMC Facilities 879-0002-16/21,KMC Facilities 879-0002-16/21   [Kinder Morgan Canada Facilities],5
-pest_management_plan,KMC ROW 879-0001-16/21,KMC ROW 879-0001-16/21   [Kinder Morgan Canada ROW],6
+pest_management_plan,102-0670-16-21,102-0670-16-21 [South Coastal Mainland of BC],1
+pest_management_plan,FLNR PMP 402-0664-15/20,FLNR PMP 402-0664-15/20 [Central and Northern BC],2
+pest_management_plan,FLNR-PMP 402-0677-19/24,FLNR-PMP 402-0677-19/24 [South Coastal Region of BC],3
+pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24 [Southern Interior of BC],4
+pest_management_plan,KMC Facilities 879-0002-16/21,KMC Facilities 879-0002-16/21 [Kinder Morgan Canada Facilities],5
+pest_management_plan,KMC ROW 879-0001-16/21,KMC ROW 879-0001-16/21 [Kinder Morgan Canada ROW],6
 plant_life_stage_code,U,unknown,1
 plant_life_stage_code,SG,Small germinating plants,2
 plant_life_stage_code,RO,Rosettes,3
@@ -20,7 +20,7 @@ plant_life_stage_code,MBD,Mature: in bud,12
 plant_life_stage_code,MFD,Mature: fading,13
 plant_life_stage_code,MDF,Mature: dispersing fruit,14
 plant_life_stage_code,D,Dead,15
-plant_life_stage_code,OTH ,Other - Add notes in comments,16
+plant_life_stage_code,OTH,Other - Add notes in comments,16
 animal_life_stage_code,U,unknown,1
 animal_life_stage_code,E,Egg,2
 animal_life_stage_code,N,Neonate,3
@@ -57,11 +57,11 @@ biological_agent_presence_code,NA,unknown,1
 biological_agent_presence_code,FF,Foliar Feeding Damage,2
 biological_agent_presence_code,EP,Eggs Present,3
 biological_agent_presence_code,SF,Seed Feeding Damage,4
-biological_agent_presence_code,RF,Root Feeding Damageï¿½,5
+biological_agent_presence_code,RF,Root Feeding Damage,5
 biological_agent_presence_code,LP,Larva(e) Present,6
 biological_agent_presence_code,AP,Adults Present,7
 biological_agent_presence_code,OM,Oviposition Marks,8
-biological_agent_presence_code,PP,Pupa(e) Presentï¿½,9
+biological_agent_presence_code,PP,Pupa(e) Present,9
 biological_agent_presence_code,EH,Exit Holes/Tunnels,10
 classified_area_code,X,unknown,1
 classified_area_code,C,Collection,2
@@ -224,489 +224,489 @@ efficacy_code,7,30% - 39%,7
 efficacy_code,8,20% - 29%,8
 efficacy_code,9,10% - 19%,9
 efficacy_code,10,0% - 9%,10
-invasive_plant_code,AR,African rue / harmal   (PEGA HAR Peganum harmala) ,1
-invasive_plant_code,AB,American beachgrass   (AMMO BRE Ammophila breviligulata) ,2
-invasive_plant_code,YC,Amphibious yellow cress   (RORI AMP Rorippa amphibian) ,3
-invasive_plant_code,HB,Annual hawksbeard   (CREP TEC Crepis tectorum) ,4
-invasive_plant_code,AS,Annual sow thistle   (SONC OLE Sonchus oleraceus) ,5
-invasive_plant_code,BY,Baby's breath   (GYPS PAN Gypsophila paniculata) ,6
-invasive_plant_code,BB,Bachelor's button   (CENT CYA Centaurea cyanus) ,7
-invasive_plant_code,BA,Barnyard grass   (ECHI CRU Echinochloa crusgalli) ,8
-invasive_plant_code,KB,Bighead knapweed   (CENT MAC Centaurea macrocephala) ,9
-invasive_plant_code,BP,Bigleaf periwinkle / large periwinkle   (VINC MAJ Vinca major) ,10
-invasive_plant_code,BH,Black henbane   (HYOS NIG Hyoscyamus niger) ,11
-invasive_plant_code,BL,Black knapweed   (CENT NIG Centaurea nigra) ,12
-invasive_plant_code,RB,Black locust   (ROBI PSE Robinia pseudoacacia) ,13
-invasive_plant_code,BC,Bladder campion   (SILE VUL Silene vulgaris) ,14
-invasive_plant_code,BW,Blueweed   (ECHI VUL Echium vulgare) ,15
-invasive_plant_code,RI,Bog bulrush / ricefield bulrush   (SCHO MUC Schoenoplectus mucronatus) ,16
-invasive_plant_code,BO,Bohemian knotweed   (FALL BOH Fallopia x bohemicum) ,17
-invasive_plant_code,ED,Brazilian waterweed   (EGER DEN Egeria densa) ,18
-invasive_plant_code,RA,Bristly locust / rose acacia   (ROBI HIS Robinia hispida) ,19
-invasive_plant_code,BK,Brown knapweed   (CENT JAC Centaurea jacea) ,20
-invasive_plant_code,BT,Bull thistle   (CIRS VUL Cirsium vulgare) ,21
-invasive_plant_code,CB,Bur chervil   (ANTH CAU Anthriscus caucalis) ,22
-invasive_plant_code,BU,Burdock species   (ARCT SPP Arctium spp) ,23
-invasive_plant_code,BD,Butterfly bush   (BUDD DAV Buddleja davidii) ,24
-invasive_plant_code,AM,Camel thorn   (ALHA MAU Alhagi maurorum) ,25
-invasive_plant_code,CT,Canada thistle   (CIRS ARV Cirsium arvense) ,26
-invasive_plant_code,CA,Caraway   (CARU CAR Carum carvi) ,27
-invasive_plant_code,CG,Carpet burweed   (SOLI SES Soliva sessilis) ,28
-invasive_plant_code,DB,Cheatgrass / downy brome   (BROM TEC Bromus tectorum) ,29
-invasive_plant_code,LC,Cherry laurel   (PRUN LAU Prunus laurocerasus) ,30
-invasive_plant_code,CY,Chicory   (CICH INT Cichorium intybus) ,31
-invasive_plant_code,CH,Chilean tarweed   (MADI SAT Madia sativa) ,32
-invasive_plant_code,CE,Clary sage   (SALV SCL Salvia sclarea) ,33
-invasive_plant_code,CF,Coltsfoot   (TUSS FAR Tussilago farfara) ,34
-invasive_plant_code,AO,Common bugloss   (ANCH OFF Anchusa officinalis) ,35
-invasive_plant_code,CO,Common comfrey   (SYMP OFF Symphytum officinale) ,36
-invasive_plant_code,CC,Common crupina   (CRUP VUL Crupina vulgaris) ,37
-invasive_plant_code,FC,Common frogbit   (HYDR MOR Hydrocharis morsus-range) ,38
-invasive_plant_code,CX,Common hawkweed   (HIER VUL Hieracium lanchenalii) ,39
-invasive_plant_code,CP,Common periwinkle   (VINC MIN Vinca minor) ,40
-invasive_plant_code,RC,Common reed   (PHRA AUS Phragmites australis subsp. australis) ,41
-invasive_plant_code,TC,Common tansy   (TANA VUL Tanacetum vulgare) ,42
-invasive_plant_code,CR,Creeping buttercup   (RANU REP Ranunculus repens) ,43
-invasive_plant_code,CU,Cudweed   (GNAP ULI Gnaphalium uliginosum) ,44
-invasive_plant_code,CD,Curled dock   (RUME CRI Rumex crispus) ,45
-invasive_plant_code,UP,Curly leaf pondweed   (POTA CRI Potamogeton crispus) ,46
-invasive_plant_code,CL,Cutleaf blackberry   (RUBU LAC Rubus laciniatus) ,47
-invasive_plant_code,CS,Cypress spurge   (EUPH CYP Euphorbia cyparissias) ,48
-invasive_plant_code,DT,Dalmatian toadflax   (LINA DAL Linaria dalmatica) ,49
-invasive_plant_code,DR,Dame's rocket   (HESP MAT Hesperis matronalis) ,50
-invasive_plant_code,SL,Daphne / spurge laurel   (DAPH LAU Daphne laureola) ,51
-invasive_plant_code,DC,Dense-flowered cordgrass   (SPAR DEN Spartina densiflora) ,52
-invasive_plant_code,DI,Didymo   (DIDY GEM Didymosphenia geminata) ,53
-invasive_plant_code,DK,Diffuse knapweed   (CENT DIF Centaurea diffusa) ,54
-invasive_plant_code,DO,Dodder   (CUSC SPP Cuscuta spp.) ,55
-invasive_plant_code,DE,Dwarf eelgrass   (ZOST JAP Zostera japonica) ,56
-invasive_plant_code,DW,Dyer's woad   (ISAT TIN Isatis tinctoria) ,57
-invasive_plant_code,ES,Eggleaf spurge   (EUPH OBL Euphorbia oblongata) ,58
-invasive_plant_code,EC,English cordgrass   (SPAR ANG Spartina anglica) ,59
-invasive_plant_code,HO,English holly   (ILEX AQU Ilex aquifolium) ,60
-invasive_plant_code,EI,English ivy   (HEDE HEL Hedera helix) ,61
-invasive_plant_code,EW,Eurasian watermilfoil   (MYRI SPI Myriophyllum spicatum) ,62
-invasive_plant_code,EB,European beachgrass   (AMMO ARE Ammophila arenaria) ,63
-invasive_plant_code,EH,European hawkweed   (HIER SAB Hieracium sabaudum) ,64
-invasive_plant_code,EL,European lake sedge   (CARE ACU Carex acutiformis) ,65
-invasive_plant_code,MQ,European water clover   (MARS QUA Marsilea quadrifolia) ,66
-invasive_plant_code,WE,European waterlily   (NYMP ALB Nymphaea alba) ,67
-invasive_plant_code,EY,Eyebright   (EUPH NEM Euphrasia nemorosa) ,68
-invasive_plant_code,BF,False brome   (BRAC SYL Brachypodium sylvaticum) ,69
-invasive_plant_code,FW,Fanwort   (CABO CAR Cabomba caroliniana) ,70
-invasive_plant_code,FM,Feathered mosquito-fern   (AZOL PIN Azolla pinnata) ,71
-invasive_plant_code,FB,Field bindweed   (CONV ARV Convolvulus arvensis) ,72
-invasive_plant_code,FS,Field scabious   (KNAU ARV Knautia arvensis) ,73
-invasive_plant_code,FP,Flat pea / flat peavine   (LATH SYL Lathyrus sylvestris) ,74
-invasive_plant_code,FR,Flowering rush   (BUTO UMB Butomus umbellatus) ,75
-invasive_plant_code,FL,Fragrant water lily   (NYMP ODO Nymphaea odorata subsp. odorata) ,76
-invasive_plant_code,GM,French broom   (GENI MON Genista monspessulana) ,77
-invasive_plant_code,GL,Garden yellow loosestrife   (LYSI VUL Lysimachia vulgaris) ,78
-invasive_plant_code,AP,Garlic mustard   (ALLI PET Alliaria petiolata) ,79
-invasive_plant_code,MA,Giant chickweed   (MYOS AQU Myosoton aquaticum) ,80
-invasive_plant_code,GH,Giant hogweed   (HERA MAN Heracleum mantegazzianum) ,81
-invasive_plant_code,GK,Giant knotweed   (FALL SAC Fallopia sachalinensis) ,82
-invasive_plant_code,SW,Giant mannagrass / reed sweetgrass   (GLYC MAX Glyceria maxima) ,83
-invasive_plant_code,AD,Giant reed / giant cane   (ARUN DON Arundo donax) ,84
-invasive_plant_code,SV,Giant salvinia   (SALV MOL Salvinia molesta) ,85
-invasive_plant_code,RG,Goat's rue / french lilac   (GALE OFF Galega officinalis) ,86
-invasive_plant_code,GO,Gorse   (ULEX EUR Ulex europaeus) ,87
-invasive_plant_code,GW,Goutweed / bishop's weed   (AEGO POD Aegopodium podagraria) ,88
-invasive_plant_code,GC,Greater celandine   (CHEL MAJ Chelidonium majus) ,89
-invasive_plant_code,GN,Greater knapweed   (CENT SCA Centaurea scabiosa) ,90
-invasive_plant_code,GF,Green foxtail / green bristlegrass   (SETA VIR Setaria viridis) ,91
-invasive_plant_code,GS,Groundsel   (SENE VUL Senecio vulgaris) ,92
-invasive_plant_code,HR,Hairy cat's-ear   (HYPO RAD Hypochaeris radicata) ,93
-invasive_plant_code,HS,Hawkweed species   (HIER SPP Hieracium spp) ,94
-invasive_plant_code,BI,Hedge false bindweed   (CALY SEP Calystegia sepium) ,95
-invasive_plant_code,HD,Hedgehog dogtail   (CYNO ECH Cynosurus echinatus) ,96
-invasive_plant_code,GR,Herb robert   (GERA ROB Geranium robertianum) ,97
-invasive_plant_code,HI,Himalayan blackberry   (RUBU ARM Rubus armeniacus) ,98
-invasive_plant_code,PO,Himalayan knotweed   (POLY POL Polygonum polystachyum) ,99
-invasive_plant_code,HA,Hoary alyssum   (BERT INC Berteroa incana) ,100
-invasive_plant_code,HC,Hoary cress   (CARD DRA Cardaria draba) ,101
-invasive_plant_code,HT,Hound's-tongue   (CYNO OFF Cynoglossum officinale) ,102
-invasive_plant_code,HY,Hydrilla   (HYDR VER Hydrilla verticillata) ,103
-invasive_plant_code,IS,Iberian starthistle   (CENT IBE Centaurea iberica) ,104
-invasive_plant_code,IT,Italian plumeless thistle   (CARD PYC Carduus pycnocephalus) ,105
-invasive_plant_code,JK,Japanese knotweed   (FALL JAP Fallopia japonica) ,106
-invasive_plant_code,JW,Japanese wireweed   (SARG MUT Sargassum muticum) ,107
-invasive_plant_code,GJ,Johnsongrass   (SORG HAL Sorghum halepense) ,108
-invasive_plant_code,JG,Jointed goatgrass   (AEGI CYL Aegilops cylindrica) ,109
-invasive_plant_code,KH,King devil hawkweed   (HIER FLO Hieracium floribundum) ,110
-invasive_plant_code,KS,Knapweed species   (CENT SPP Centaurea spp.) ,111
-invasive_plant_code,KO,Kochia   (KOCH SCO Kochia scoparia) ,112
-invasive_plant_code,KU,Kudzu   (PUER MON Pueraria montana) ,113
-invasive_plant_code,LT,Lady's-thumb   (POLY PER Polygonum persicaria) ,114
-invasive_plant_code,LL,Large yellow / spotted loosestrife   (LYSI PUN Lysimachia punctata) ,115
-invasive_plant_code,LS,Leafy spurge   (EUPH ESU Euphorbia esula) ,116
-invasive_plant_code,RF,Lesser celandine / fig buttercup   (RANU FIC Ranunculus ficaria) ,117
-invasive_plant_code,LO,Longspine sandbur   (CENC LON Cenchrus longispinus) ,118
-invasive_plant_code,OW,Major oxygen weed   (LAGA ROS Lagarosiphon) ,119
-invasive_plant_code,MX,Maltese star thistle   (CENT MEL Centaurea melitensis) ,120
-invasive_plant_code,MT,Marsh plume thistle/Marsh thistle   (CIRS PAL Cirsium palustre) ,121
-invasive_plant_code,MB,Meadow buttercup   (RANU ACR Ranunculus acris) ,122
-invasive_plant_code,MC,Meadow clary   (SALV PRA Salvia pratensis) ,123
-invasive_plant_code,MG,Meadow goats-beard   (TRAG PRA Tragopogon pratensis) ,124
-invasive_plant_code,MH,Meadow hawkweed   (HIER CAE Hieracium caespitosum) ,125
-invasive_plant_code,MK,Meadow knapweed   (CENT DEB Centaurea debeauxii) ,126
-invasive_plant_code,MS,Mediterranean sage   (SALV AET Salvia aethiopsis) ,127
-invasive_plant_code,TM,Medusahead   (TAEN CAP Taeniatherum caput-medusae) ,128
-invasive_plant_code,MI,Milk thistle   (SILY MAR Silybum marianum) ,129
-invasive_plant_code,MO,Mountain bluet   (CENT MON Centaurea montana) ,130
-invasive_plant_code,ME,Mouse ear hawkweed   (HIER PIL Hieracium pilosella) ,131
-invasive_plant_code,MU,Mullein   (VERB THA Verbascum thapsis) ,132
-invasive_plant_code,NC,Night-flowering catchfly   (SILE NOC Silene noctiflora) ,133
-invasive_plant_code,NI,Nightshade   (SOLA SPP Solanum spp) ,134
-invasive_plant_code,NT,Nodding thistle   (CARD NUT Carduus nutans) ,135
-invasive_plant_code,NA,North africa grass   (VENT DUB Ventenata dubia) ,136
-invasive_plant_code,OM,Old man's beard / traveller's joy   (CLEM VIT Clematis vitalba) ,137
-invasive_plant_code,OH,Orange hawkweed   (HIER AUR Hieracium aurantiacum) ,138
-invasive_plant_code,OD,Oxeye daisy   (LEUC VUL Leucanthemum vulgare) ,139
-invasive_plant_code,PF,Parrot feather   (MYRI AQU Myriophyllum aquaticum) ,140
-invasive_plant_code,PP,Perennial pepperweed   (LEPI LAT Lepidium latifolium) ,141
-invasive_plant_code,PS,Perennial sow thistle   (SONC ARV Sonchus arvensis) ,142
-invasive_plant_code,PT,Plumeless thistle   (CARD ACA Carduus acanthoides) ,143
-invasive_plant_code,PH,Poison hemlock   (CONI MAC Conium maculatum) ,144
-invasive_plant_code,PA,Polar hawkweed   (HIER ATR Hieracium atratum) ,145
-invasive_plant_code,IM,Policeman's helmet / himalayan balsam   (IMPA GLA Impatiens glandulifera) ,146
-invasive_plant_code,LP,Portugese laurel   (PRUN LUS Prunus lusitanica) ,147
-invasive_plant_code,PR,Portuguese broom   (CYTI STR Cytisus striatus) ,148
-invasive_plant_code,PC,Prickly comfrey   (SYMP ASP Symphytum asperum) ,149
-invasive_plant_code,PV,Puncturevine   (TRIB TER Tribulus terrestris) ,150
-invasive_plant_code,PD,Purple deadnettle   (LAMI PUR Lamium purpureum) ,151
-invasive_plant_code,PL,Purple loosestrife   (LYTH SAL Lythrum salicaria) ,152
-invasive_plant_code,PN,Purple nutsedge   (CYPE ROT Cyperus rotundus) ,153
-invasive_plant_code,PU,Purple starthistle   (CENT CAL Centaurea calcitrapa) ,154
-invasive_plant_code,QA,Queen anne's lace / wild carrot   (DAUC CAR Daucus carota) ,155
-invasive_plant_code,QH,Queen devil hawkweed   (HIER PRE Hieracium praealtum) ,156
-invasive_plant_code,BR,Red bartsia   (ODON SER Odontites serotina) ,157
-invasive_plant_code,RP,Redroot amaranth / rough pigweed   (AMAR RET Amaranthus retroflexus) ,158
-invasive_plant_code,RS,Rush skeletonweed   (CHON JUN Chondrilla juncea) ,159
-invasive_plant_code,RK,Russian knapweed   (ACRO REP Acroptilon repens) ,160
-invasive_plant_code,RO,Russian olive   (ELAE ANG Elaeagnus angustifolia) ,161
-invasive_plant_code,RT,Russian thistle   (SALS KAL Salsola kali) ,162
-invasive_plant_code,TA,Saltcedar / tamarisk   (TAMA RAM Tamarix ramosissima) ,163
-invasive_plant_code,AH,Saltlover / halogeton   (HALO GLO Halogeton glomeratus) ,164
-invasive_plant_code,SN,Salt-meadow cord grass   (SPAR PAT Spartina patens) ,165
-invasive_plant_code,SA,Saltwater cord grass   (SPAR ALT Spartina alterniflora) ,166
-invasive_plant_code,SH,Scentless chamomile   (MATR PER Matricaria perforata) ,167
-invasive_plant_code,SB,Scotch broom   (CYTI SCO Cytisus scoparius) ,168
-invasive_plant_code,ST,Scotch thistle   (ONOP ACA Onopordum acanthium) ,169
-invasive_plant_code,SS,Sheep sorrel   (RUME ACE Rumex acetosella) ,170
-invasive_plant_code,SP,Shepherd's-purse   (CAPS BUR Capsella bursa-pastoris) ,171
-invasive_plant_code,SG,Shiny geranium   (GERA LUC Geranium lucidum) ,172
-invasive_plant_code,CN,Short-fringed knapweed   (CENT NIR Centaurea nigrescens) ,173
-invasive_plant_code,SE,Siberian elm   (ULMU PUM Ulmus pumila) ,174
-invasive_plant_code,NS,Silverleaf nightshade   (SOLA ELA Solanum elaeagnifolium) ,175
-invasive_plant_code,FT,Slender meadow foxtail   (ALOP MYO Alopecurus myosuroides) ,176
-invasive_plant_code,HG,Smooth cat's ear   (HYPO GLA Hypochaeris glabra) ,177
-invasive_plant_code,SM,Smooth hawkweed   (HIER LAE Hieracium laevigatum) ,178
-invasive_plant_code,SO,Sowthistle species   (SONC SPP Sonchus species) ,179
-invasive_plant_code,BS,Spanish bluebells   (HYAC HIS Hyacinthoides hispanica) ,180
-invasive_plant_code,SI,Spanish broom   (SPAR JUN Spartium junceum) ,181
-invasive_plant_code,SX,Spotted hawkweed   (HIER MAC Hieracium maculatum) ,182
-invasive_plant_code,SK,Spotted knapweed   (CENT BIE Centaurea biebersteinii) ,183
-invasive_plant_code,MV,Spring millet grass   (MILI VER Milium vernale) ,184
-invasive_plant_code,TP,Spurge flax   (THYM PAS Thymelaea passerina) ,185
-invasive_plant_code,CV,Squarrose knapweed   (CENT VIR Centaurea virgata ssp. squarrosa) ,186
-invasive_plant_code,SJ,St. John's wort/Saint John's wort/ Goatweed   (HYPE PER Hypericum perforatum) ,187
-invasive_plant_code,SC,Sulphur cinquefoil   (POTE REC Potentilla recta) ,188
-invasive_plant_code,SF,Sweet fennel   (FOEN VUL Foeniculum vulgare) ,189
-invasive_plant_code,SY,Syrian bean-caper   (ZYGO FAB Zygophyllum fabago) ,190
-invasive_plant_code,TH,Tall hawkweed   (HIER OID Hieracium piloselloides) ,191
-invasive_plant_code,TR,Tansy ragwort   (SENE JAC Senecio jacobaea) ,192
-invasive_plant_code,TB,Tartary buckwheat   (FAGO TAT Fagopyrum tataricum) ,193
-invasive_plant_code,TS,Teasel   (DIPS FUL Dipsacus fullonum) ,194
-invasive_plant_code,TX,Texas blueweed   (HELI CIL Helianthus ciliaris) ,195
-invasive_plant_code,AA,Tree of heaven   (AILA ALT Ailanthus altissima) ,196
-invasive_plant_code,LM,Variable leaf milfoil   (MYRI HET Myriophyllum heterophyllum) ,197
-invasive_plant_code,VL,Velvet leaf   (ABUT THE Abutilon theophrasti) ,198
-invasive_plant_code,WA,Wall hawkweed   (HIER MUR Hieracium murorum) ,199
-invasive_plant_code,WL,Wand loosestrife   (LYTH VIR Lythrum virgatum) ,200
-invasive_plant_code,TN,Water chestnut   (TRAP NAT Trapa natans) ,201
-invasive_plant_code,WH,Water hyacinth   (EICH CRA Eichhornia crassipes) ,202
-invasive_plant_code,LW,Water lettuce   (PIST STR Pistia stratiotes) ,203
-invasive_plant_code,AQ,Water soldier   (STRA ALO Stratiotes aloides) ,204
-invasive_plant_code,NO,Watercress   (NAST OFF Nasturtium officinale) ,205
-invasive_plant_code,WG,Western goat's-beard   (TRAG DUB Tragopogon dubius) ,206
-invasive_plant_code,WP,Whiplash hawkweed   (HIER FLA Hieracium flagellare) ,207
-invasive_plant_code,WC,White cockle   (LYCH ALB Lychnis alba) ,208
-invasive_plant_code,WB,Wild buckwheat   (POLY CON Polygonum convolvulus) ,209
-invasive_plant_code,WI,Wild chervil   (ANTH SYL Anthriscus sylvestris) ,210
-invasive_plant_code,WF,Wild four o'clock   (MIRA NYC Mirabilis nyctaginea) ,211
-invasive_plant_code,WM,Wild mustard   (SINA ARV Sinapis arvensis) ,212
-invasive_plant_code,WO,Wild oats   (AVEN FAT Avena fatua) ,213
-invasive_plant_code,PW,Wild parsnip   (PAST SAT Pastinaca sativa) ,214
-invasive_plant_code,WT,Winged thistle / slender-flowered thistle   (CARD TEN Carduus tenuiflorus) ,215
-invasive_plant_code,WS,Wood sage   (SALV NEM Salvia nemorsa) ,216
-invasive_plant_code,WW,Wormwood   (ARTE ABS Artemisia absinthium) ,217
-invasive_plant_code,YA,Yellow archangel   (LAMI GAL Lamiastrum galeobdolon) ,218
-invasive_plant_code,YD,Yellow devil hawkweed   (HIER GLO Hieracium glomeratum) ,219
-invasive_plant_code,YF,Yellow floating heart   (NYMP PEL Nymphoides peltata) ,220
-invasive_plant_code,YH,Yellow hawkweed   (HIER PRA Hieracium pratense) ,221
-invasive_plant_code,YI,Yellow iris   (IRIS PSE Iris pseudachorus) ,222
-invasive_plant_code,YN,Yellow nutsedge   (CYPE ESC Cyperus esculentus) ,223
-invasive_plant_code,YS,Yellow starthistle   (CENT SOL Centaurea solstitialis) ,224
-invasive_plant_code,YT,Yellow/common toadflax   (LINA VUL Linaria vulgaris) ,225
-invasive_animal_code,ABD,American black duck   [Anas rubripes],1
-invasive_animal_code,ABF,American bullfrog   [Lithobates catesbeiana],2
-invasive_animal_code,ASD,American shad   [Alosa sapidissima],3
-invasive_animal_code,AGB,Amur goby   [Rhinogobius brunneus],4
-invasive_animal_code,ASN,Apple snail   [Ampullariidae],5
-invasive_animal_code,AAN,Argentine ant   [Linepithema humile],6
-invasive_animal_code,ACM,Asian clam   [Corbicula fluminea],7
-invasive_animal_code,ANA,Asian needle ant   [Pachycondyla chinensis],8
-invasive_animal_code,AOY,Atlantic oyster   [Crassostrea virginica],9
-invasive_animal_code,ARM,Atlantic ribbed mussel   [Geukensia demissa],10
-invasive_animal_code,ASA,Atlantic salmon   [Salmo salar],11
-invasive_animal_code,BHC,Bighead carp   [Hypophthalmichthys nobilis],12
-invasive_animal_code,BIT,Bitterling   [Rhodius species],13
-invasive_animal_code,BBH,Black bullhead   [Ameiurus melas],14
-invasive_animal_code,BCA,Black carp   [Mylopharyngodon piceus],15
-invasive_animal_code,BCR,Black crappie   [Pomoxis nigromaculatus],16
-invasive_animal_code,BRT,Black rat   [Rattus rattus],17
-invasive_animal_code,BRS,Bloody red shrimp (red mysid)   [Hemimysis anomala],18
-invasive_animal_code,BSK,Blotched snakehead   [Channa maculata],19
-invasive_animal_code,BSN,Bluegill sunfish   [Lepomis macrochirus],20
-invasive_animal_code,BNB,Brown bullhead   [Ameiurus nebulosus],21
-invasive_animal_code,BNR,Brown/Norway rat   [Rattus norvegicus],22
-invasive_animal_code,CQU,California quail   [Callipepla californica],23
-invasive_animal_code,CCF,Channel catfish   [Ictalurus Punctatus],24
-invasive_animal_code,CMC,Chinese mitten crab   [Eriocheir sinensis],25
-invasive_animal_code,CMS,Chinese mystery snail   [Cipangopaludina chinensis],26
-invasive_animal_code,CPT,Chukar partridge   [Alectoris chukar],27
-invasive_animal_code,CTU,Colonial tunicate   [Botrylloides violaceus],28
-invasive_animal_code,CCP,Common carp   [Cyprinus carpio],29
-invasive_animal_code,CWL,Common wall lizard   [Podarcis muralis],30
-invasive_animal_code,CSS,Compound sea squirt   [Didemnum vexillum],31
-invasive_animal_code,CFM,Conrad’s false mussel   [Mytilopsis leucophaeata ],32
-invasive_animal_code,DKA,Drumming katydid   [Meconema thalassinum],33
-invasive_animal_code,ECR,Eastern cottontail rabbit   [Sylvilagus floridanus],34
-invasive_animal_code,EFS,Eastern fox squirrel   [Sciurus niger],35
-invasive_animal_code,EGS,Eastern grey squirrel    [Sciurus carolinensis],36
-invasive_animal_code,EOD,Eastern oyster drill   [Urosalpinx cinerea],37
-invasive_animal_code,ESC,Eastern soft-shell clam   [Mya arenaria],38
-invasive_animal_code,ECD,Eurasian collard dove   [Streptopelia decaocto],39
-invasive_animal_code,EBG,European brown garden snail   [Cornu aspersum],40
-invasive_animal_code,EFA,European fire ant   [Myrmica rubra],41
-invasive_animal_code,EGC,European green crab   [Carcinus maenas],42
-invasive_animal_code,EHS,European house sparrow   [Passer domesticus],43
-invasive_animal_code,EPW,European paper wasp   [Polistes dominula],44
-invasive_animal_code,ERB,European rabbit   [Oryctolagus cuniculus],45
-invasive_animal_code,EST,European Starling   [Sturnus vulgaris],46
-invasive_animal_code,FDR,Fallow deer   [Dama dama],47
-invasive_animal_code,FMW,Fathead minnow   [Pimephales promelas],48
-invasive_animal_code,FSW,Feral swine   [Sus scrofa],49
-invasive_animal_code,FJF,Freshwater jellyfish   [Craspedacusta sowerbyi],50
-invasive_animal_code,GFY,Garden soldier fly   [Exaireta spinigera],51
-invasive_animal_code,GAH,Giant Asian hornet   [Vespa mandarinia],52
-invasive_animal_code,GGS,Giant garden slug   [Limax maximus],53
-invasive_animal_code,GST,Golden star tunicate   [Botryllus schlosseri],54
-invasive_animal_code,GLD,Goldfish   [Carassius auratus],55
-invasive_animal_code,GCP,Grass carp   [Ctenopharyngodon idella],56
-invasive_animal_code,GFG,Green frog   [Lithobates clamitans],57
-invasive_animal_code,GSF,Green sunfish   [Lepomis cyanellus],58
-invasive_animal_code,GMT,Gypsy moth   [Lymantria dispar],59
-invasive_animal_code,HMC,Harris mud crab   [Rhithropanopeus harrisii],60
-invasive_animal_code,HMS,House mouse   [Mus musculus],61
-invasive_animal_code,IFA,Impressive fire ant   [Myrmica specioides],62
-invasive_animal_code,JBE,Japanese bettle   [Popillia japonica],63
-invasive_animal_code,JMS,Japanese mussel / Asian date mussel   [Musculista senhousia],64
-invasive_animal_code,JOD,Japanese oyster drill   [Ocinebrellus inornatus],65
-invasive_animal_code,JSC,Japanese shore crab   [Hemigrapsus sanguineus],66
-invasive_animal_code,LSA,Land slugs   [Arion spp.],67
-invasive_animal_code,LSD,Land slugs   [Deroceras spp],68
-invasive_animal_code,LRS,Large red slug   [Arion rufus],69
-invasive_animal_code,LYU,Large yellow underwing   [Noctua pronuba],70
-invasive_animal_code,LBA,Largemouth bass   [Micropterus salmoides],71
-invasive_animal_code,LBS,Larger branded snail   [Cepaea nemoralis],72
-invasive_animal_code,LFA,Little fire ant   [Wasmannia auropunctata],73
-invasive_animal_code,MGB,Monkey goby   [Neogobius fluviatilis],74
-invasive_animal_code,MSK,Muskellunge   [Esox masquinongy],75
-invasive_animal_code,MSW,Mute swan   [Cygnus olor],76
-invasive_animal_code,NZG,New Zealand green-lipped mussel   [Perna species],77
-invasive_animal_code,NZM,New Zealand mudsnail   [Potamopyrgus antipodarum],78
-invasive_animal_code,NPK,Northern pike   [Esox lucius],79
-invasive_animal_code,NQC,Northern quahog clam   [Mercenaria mercenaria],80
-invasive_animal_code,NSH,Northern snakehead   [Channa argus],81
-invasive_animal_code,NUT,Nutria   [Myocastor coypus],82
-invasive_animal_code,OWF,Oriental weatherfish   [Misgurnus anguillicaudatus],83
-invasive_animal_code,PMT,Praying mantis   [Mantis religiosa],84
-invasive_animal_code,PCP,Prussian carp   [Carassius gibelio],85
-invasive_animal_code,PSF,Pumpkinseed sunfish   [Lepomis gibbosus],86
-invasive_animal_code,QM,Quagga mussel   [Dreissena rostriformis bugensis],87
-invasive_animal_code,RBS,Rainbow snakehead   [Channa bleheri],88
-invasive_animal_code,RBP,Red bellied pacu   [Piaractus brachypomus],89
-invasive_animal_code,RSH,Red shiner   [Cyprinella lutrensis],90
-invasive_animal_code,RSC,Red swamp crayfish   [Procambarus clarkii],91
-invasive_animal_code,RES,Red-eared slider   [Trachemys scripta ],92
-invasive_animal_code,RCF,Ringed crayfish   [Orconectes neglectus],93
-invasive_animal_code,RBA,Rock bass   [Ambloplites rupestris],94
-invasive_animal_code,RPG,Rock pigeon   [Columba livia],95
-invasive_animal_code,RGB,Round goby   [Neogobius melanostomus],96
-invasive_animal_code,RUS,Rusty crayfish   [Orconectes rusticus],97
-invasive_animal_code,SSQ,Sea squirts   [Molgula manhattensis],98
-invasive_animal_code,SSL,Seven-spotted ladybug   [Coccinella septempunctata],99
-invasive_animal_code,SCP,Silver carp   [Hypophthalmichthys molitrix],100
-invasive_animal_code,SBA,Smallmouth bass   [Micropterus dolomieu],101
-invasive_animal_code,SNT,Snapping turtle   [Chelydra serpentina],102
-invasive_animal_code,SOT,Softshell turtle   [Apalone species],103
-invasive_animal_code,SWF,Spiny waterflea   [Bythotrephes longimanus],104
-invasive_animal_code,SSH,Spottail shiner   [Notropis hudsonius],105
-invasive_animal_code,SSS,Stalked sea squirt   [Styela clava],106
-invasive_animal_code,TEN,Tench   [Tinca tinca],107
-invasive_animal_code,TSA,Tropical stinging ant   [Hypoponera punctatissima],108
-invasive_animal_code,TGB,Tubenose goby   [Proterorhinus semilunaris],109
-invasive_animal_code,TCB,Tui chub   [Gila bicolor],110
-invasive_animal_code,VCM,Varnish clam   [Nuttallia obsurata],111
-invasive_animal_code,VOP,Virginia opossum   [Didelphis virginiana],112
-invasive_animal_code,VCF,Virile crayfish   [Orconectes virilis],113
-invasive_animal_code,WAL,Walleye   [Sander vitreus],114
-invasive_animal_code,WAR,Warmouth   [Lepomis gulosus],115
-invasive_animal_code,WFL,Western fence lizard   [Sceloporus occidentalis],116
-invasive_animal_code,WM,Western mosquitofish   [Gambusia affinis],117
-invasive_animal_code,WCM,White cloud mountain minnow   [Tanichthys albonubes],118
-invasive_animal_code,WTK,Wild turkey   [Meleagris gallopavo],119
-invasive_animal_code,WMT,Winter moth   [Operophtera brumata],120
-invasive_animal_code,WSP,Woodlouse spider   [Dysdera crocata],121
-invasive_animal_code,YBH,Yellow bullhead   [Ameiurus natalis],122
-invasive_animal_code,YPC,Yellow perch   [Perca flavescens],123
-invasive_animal_code,YSS,Yellow sea squirt   [Ciona intestinalis],124
-invasive_animal_code,ZMS,Zebra mussel   [Dreissena polymorpha ],125
-biological_agent_code,ACERGEN,ACERGEN   [Aceria genistae],1
-biological_agent_code,ACERMAL,ACERMAL   [Aceria malherbae (Nuzzaci)],2
-biological_agent_code,AGAPZOE,AGAPZOE   [Agapeta zoegana (L.)],3
-biological_agent_code,AGONNER,AGONNER   [Agonopterix nervosa],4
-biological_agent_code,AGRIHYP,AGRIHYP   [Agrilus hyperici (Creutzer)],5
-biological_agent_code,ALTICAR,ALTICAR   [Altica carduorum],6
-biological_agent_code,APHAITA,APHAITA   [Aphalara itadori],7
-biological_agent_code,APHICHL,APHICHL   [Aphis chloris (Koch)],8
-biological_agent_code,APHTCYP,APHTCYP   [Aphthona cyparissiae (Koch)],9
-biological_agent_code,APHTCZW,APHTCZW   [Aphthona czwalinae (Weise)],10
-biological_agent_code,APHTFLA,APHTFLA   [Aphthona flava (Guill.)],11
-biological_agent_code,APHTLAC,APHTLAC   [Aphthona lacertosa (Rosh.)],12
-biological_agent_code,APHTNIG,APHTNIG   [Aphthona nigriscutis (Foudras)],13
-biological_agent_code,APHTSPP,APHTSPP   [Apthona speices],14
-biological_agent_code,APLOPLA,APLOPLA   [Aplocera plagiata (L.)],15
-biological_agent_code,AULAACR,AULAACR   [Aulacidea acroptilonica],16
-biological_agent_code,AULASUB,AULASUB   [Aulacidea subterminalis],17
-biological_agent_code,BOTASEN,BOTASEN   [Botanophila seneciella],18
-biological_agent_code,BRACPUL,BRACPUL   [Brachypterolus pulicarius (L.)],19
-biological_agent_code,BRADGIL,BRADGIL   [Bradyrrhoa gilveolella],20
-biological_agent_code,BRUCVIL,BRUCVIL   [Bruchidius villosus],21
-biological_agent_code,CALOLUN,CALOLUN   [Calophasia lunula (Hufn.)],22
-biological_agent_code,CASSRUB,CASSRUB   [Cassida rubiginosa],23
-biological_agent_code,CHAEACR,CHAEACR   [Chaetorellia acrolophi White & Marq.],24
-biological_agent_code,CHARSEX,CHARSEX   [Charidotella sexpunctata bicolor],25
-biological_agent_code,CHEIURB,CHEIURB   [Cheilosia urbana],26
-biological_agent_code,CHRYHYP,CHRYHYP   [Chrysolina hyperici (Forster)],27
-biological_agent_code,CHRYQUA,CHRYQUA   [Chrysolina quadrigemina (Suffrain)],28
-biological_agent_code,CHRYSPP,CHRYSPP   [Chrysolina species],29
-biological_agent_code,CHRYVAR,CHRYVAR   [Chrysolina varians],30
-biological_agent_code,COCHATR,COCHATR   [Cochylis atricapitana (Stephens)],31
-biological_agent_code,CYPHACH,CYPHACH   [Cyphocleonus achates (Fahr)],32
-biological_agent_code,CYSTSCH,CYSTSCH   [Cystiphora schmidti],33
-biological_agent_code,CYSTSON,CYSTSON   [Cystophora sonchi],34
-biological_agent_code,DELOGUT,DELOGUT   [Deloyala guttata],35
-biological_agent_code,ERIOCHO,ERIOCHO   [Eriophyes chondrillae],36
-biological_agent_code,ETEOINT,ETEOINT   [Eteobalea intermediella (Riedl)],37
-biological_agent_code,ETEOSER,ETEOSER   [Eteobalea serratella (Treit.)],38
-biological_agent_code,EXAPFUS,EXAPFUS   [Exapion fuscirostre],39
-biological_agent_code,GALECAL,GALECAL   [Galerucella calmariensis (Linne)],40
-biological_agent_code,GALEPUS,GALEPUS   [Galerucella pusilla],41
-biological_agent_code,HADRLIT,HADRLIT   [Hadroplontus litura],42
-biological_agent_code,HYLEEUP,HYLEEUP   [Hyles euphorbiae (L.)],43
-biological_agent_code,HYLOTRA,HYLOTRA   [Hylobius transversovittatus],44
-biological_agent_code,LARIMIN,LARIMIN   [Larinus minutus Gyll.],45
-biological_agent_code,LARIOBT,LARIOBT   [Larinus obtusus Gyll.],46
-biological_agent_code,LARIPLA,LARIPLA   [Larinus planus (F.)],47
-biological_agent_code,LARISPP,LARISPP   [Larinus species],48
-biological_agent_code,LOBEEUP,LOBEEUP   [Lobesia euphorbiana (Freyer)],49
-biological_agent_code,LONGFLA,LONGFLA   [Longitarsus flavicornis (Steph.)],50
-biological_agent_code,LONGGRA,LONGGRA   [Longitarsus gracilis],51
-biological_agent_code,LONGJAC,LONGJAC   [Longitarsus jacobaeae (Waterhouse)],52
-biological_agent_code,LONGJAS,LONGJAS   [Longitarsus jacobaeae (Swiss)],53
-biological_agent_code,LONGQUA,LONGQUA   [Longitarsus quadriguttatus (Pont.)],54
-biological_agent_code,MECIJAN,MECIJAN   [Mecinus janthinus (Germar)],55
-biological_agent_code,METZLAP,METZLAP   [Metzneria lappella],56
-biological_agent_code,METZPAU,METZPAU   [Metzneria paucipunctella (Zellar)],57
-biological_agent_code,MICREDE,MICREDE   [Microplontus edentulus],58
-biological_agent_code,MICRLAR,MICRLAR   [Microlarinus lareynii],59
-biological_agent_code,MINOMUR,MINOMUR   [Minoa murinata (Scop.)],60
-biological_agent_code,MOGUCRU,MOGUCRU   [Mogulones cruciger (Hbst.)],61
-biological_agent_code,OMPHHOO,OMPHHOO   [Omphalapion hookeri],62
-biological_agent_code,PELOMED,PELOMED   [Pelochrista medullana (Strig.)],63
-biological_agent_code,PTERINS,PTERINS   [Pterolonche inspersa (Strig.)],64
-biological_agent_code,PUCCACR,PUCCACR   [Puccinia acroptili (P. & H. Syd)],65
-biological_agent_code,PUCCCAR,PUCCCAR   [Puccinia carduorum],66
-biological_agent_code,PUCCCHO,PUCCCHO   [Puccinia chondrillina],67
-biological_agent_code,PUCCJAC,PUCCJAC   [Puccinia jaceae (Otth.)],68
-biological_agent_code,PUCCPUN,PUCCPUN   [Puccinia punctiformis],69
-biological_agent_code,RHINANT,RHINANT   [Rhinusa antirrhini],70
-biological_agent_code,RHINCON,RHINCON   [Rhinocyllus conicus (Froelich)],71
-biological_agent_code,RHINLIN,RHINLIN   [Rhinusa linariae],72
-biological_agent_code,RHINNET,RHINNET   [Rhinusa neta],73
-biological_agent_code,RHINPIL,RHINPIL   [Rhinusa pilosa],74
-biological_agent_code,RHINTET,RHINTET   [Rhinusa tetrum],75
-biological_agent_code,RHOPTRI,RHOPTRI   [Rhopalomyia tripleurospermi],76
-biological_agent_code,SCLESCL,SCLESCL   [Sclerotinia sclerotium],77
-biological_agent_code,SPHEJUG,SPHEJUG   [Sphenoptera jugoslavica (Obend.)],78
-biological_agent_code,SPURESU,SPURESU   [Spurgia esula (Gagne)],79
-biological_agent_code,SUBAPIC,SUBAPIC   [Subanguina picridis],80
-biological_agent_code,TERERUF,TERERUF   [Terellia ruficauda],81
-biological_agent_code,TEREVIR,TEREVIR   [Terellia virens (Loew.)],82
-biological_agent_code,TRICHOR,TRICHOR   [Trichosirocalus horridus (Panzer)],83
-biological_agent_code,TYRIJAC,TYRIJAC   [Tyria jacobeae (L.)],84
-biological_agent_code,UROPAFF,UROPAFF   [Urophora affinis (Frauenfeld)],85
-biological_agent_code,UROPCAR,UROPCAR   [Urophora cardui (F).],86
-biological_agent_code,UROPJAC,UROPJAC   [Urophora jaceana],87
-biological_agent_code,UROPQUA,UROPQUA   [Urophora quadrifasciata (Meigan)],88
-biological_agent_code,UROPSOL,UROPSOL   [Urophora solstitialus (L.)],89
-biological_agent_code,UROPSPP,UROPSPP   [Urophora species],90
-biological_agent_code,UROPSTY,UROPSTY   [Urophora stylata (L.)],91
-biological_agent_code,ZEUXGIA,ZEUXGIA   [Zeuxidiplosis giardi],92
-invasive_species_agency_code,MOF ,"Forests, Lands, Natural Resource Operations & Rural Development",1
-invasive_species_agency_code,MOT ,Ministry of Transportation & Infrastructure,2
+invasive_plant_code,AR,African rue / harmal (PEGA HAR Peganum harmala),1
+invasive_plant_code,AB,American beachgrass (AMMO BRE Ammophila breviligulata),2
+invasive_plant_code,YC,Amphibious yellow cress (RORI AMP Rorippa amphibian),3
+invasive_plant_code,HB,Annual hawksbeard (CREP TEC Crepis tectorum),4
+invasive_plant_code,AS,Annual sow thistle (SONC OLE Sonchus oleraceus),5
+invasive_plant_code,BY,Baby's breath (GYPS PAN Gypsophila paniculata),6
+invasive_plant_code,BB,Bachelor's button (CENT CYA Centaurea cyanus),7
+invasive_plant_code,BA,Barnyard grass (ECHI CRU Echinochloa crusgalli),8
+invasive_plant_code,KB,Bighead knapweed (CENT MAC Centaurea macrocephala),9
+invasive_plant_code,BP,Bigleaf periwinkle / large periwinkle (VINC MAJ Vinca major),10
+invasive_plant_code,BH,Black henbane (HYOS NIG Hyoscyamus niger),11
+invasive_plant_code,BL,Black knapweed (CENT NIG Centaurea nigra),12
+invasive_plant_code,RB,Black locust (ROBI PSE Robinia pseudoacacia),13
+invasive_plant_code,BC,Bladder campion (SILE VUL Silene vulgaris),14
+invasive_plant_code,BW,Blueweed (ECHI VUL Echium vulgare),15
+invasive_plant_code,RI,Bog bulrush / ricefield bulrush (SCHO MUC Schoenoplectus mucronatus),16
+invasive_plant_code,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),17
+invasive_plant_code,ED,Brazilian waterweed (EGER DEN Egeria densa),18
+invasive_plant_code,RA,Bristly locust / rose acacia (ROBI HIS Robinia hispida),19
+invasive_plant_code,BK,Brown knapweed (CENT JAC Centaurea jacea),20
+invasive_plant_code,BT,Bull thistle (CIRS VUL Cirsium vulgare),21
+invasive_plant_code,CB,Bur chervil (ANTH CAU Anthriscus caucalis),22
+invasive_plant_code,BU,Burdock species (ARCT SPP Arctium spp),23
+invasive_plant_code,BD,Butterfly bush (BUDD DAV Buddleja davidii),24
+invasive_plant_code,AM,Camel thorn (ALHA MAU Alhagi maurorum),25
+invasive_plant_code,CT,Canada thistle (CIRS ARV Cirsium arvense),26
+invasive_plant_code,CA,Caraway (CARU CAR Carum carvi),27
+invasive_plant_code,CG,Carpet burweed (SOLI SES Soliva sessilis),28
+invasive_plant_code,DB,Cheatgrass / downy brome (BROM TEC Bromus tectorum),29
+invasive_plant_code,LC,Cherry laurel (PRUN LAU Prunus laurocerasus),30
+invasive_plant_code,CY,Chicory (CICH INT Cichorium intybus),31
+invasive_plant_code,CH,Chilean tarweed (MADI SAT Madia sativa),32
+invasive_plant_code,CE,Clary sage (SALV SCL Salvia sclarea),33
+invasive_plant_code,CF,Coltsfoot (TUSS FAR Tussilago farfara),34
+invasive_plant_code,AO,Common bugloss (ANCH OFF Anchusa officinalis),35
+invasive_plant_code,CO,Common comfrey (SYMP OFF Symphytum officinale),36
+invasive_plant_code,CC,Common crupina (CRUP VUL Crupina vulgaris),37
+invasive_plant_code,FC,Common frogbit (HYDR MOR Hydrocharis morsus-range),38
+invasive_plant_code,CX,Common hawkweed (HIER VUL Hieracium lanchenalii),39
+invasive_plant_code,CP,Common periwinkle (VINC MIN Vinca minor),40
+invasive_plant_code,RC,Common reed (PHRA AUS Phragmites australis subsp. australis),41
+invasive_plant_code,TC,Common tansy (TANA VUL Tanacetum vulgare),42
+invasive_plant_code,CR,Creeping buttercup (RANU REP Ranunculus repens),43
+invasive_plant_code,CU,Cudweed (GNAP ULI Gnaphalium uliginosum),44
+invasive_plant_code,CD,Curled dock (RUME CRI Rumex crispus),45
+invasive_plant_code,UP,Curly leaf pondweed (POTA CRI Potamogeton crispus),46
+invasive_plant_code,CL,Cutleaf blackberry (RUBU LAC Rubus laciniatus),47
+invasive_plant_code,CS,Cypress spurge (EUPH CYP Euphorbia cyparissias),48
+invasive_plant_code,DT,Dalmatian toadflax (LINA DAL Linaria dalmatica),49
+invasive_plant_code,DR,Dame's rocket (HESP MAT Hesperis matronalis),50
+invasive_plant_code,SL,Daphne / spurge laurel (DAPH LAU Daphne laureola),51
+invasive_plant_code,DC,Dense-flowered cordgrass (SPAR DEN Spartina densiflora),52
+invasive_plant_code,DI,Didymo (DIDY GEM Didymosphenia geminata),53
+invasive_plant_code,DK,Diffuse knapweed (CENT DIF Centaurea diffusa),54
+invasive_plant_code,DO,Dodder (CUSC SPP Cuscuta spp.),55
+invasive_plant_code,DE,Dwarf eelgrass (ZOST JAP Zostera japonica),56
+invasive_plant_code,DW,Dyer's woad (ISAT TIN Isatis tinctoria),57
+invasive_plant_code,ES,Eggleaf spurge (EUPH OBL Euphorbia oblongata),58
+invasive_plant_code,EC,English cordgrass (SPAR ANG Spartina anglica),59
+invasive_plant_code,HO,English holly (ILEX AQU Ilex aquifolium),60
+invasive_plant_code,EI,English ivy (HEDE HEL Hedera helix),61
+invasive_plant_code,EW,Eurasian watermilfoil (MYRI SPI Myriophyllum spicatum),62
+invasive_plant_code,EB,European beachgrass (AMMO ARE Ammophila arenaria),63
+invasive_plant_code,EH,European hawkweed (HIER SAB Hieracium sabaudum),64
+invasive_plant_code,EL,European lake sedge (CARE ACU Carex acutiformis),65
+invasive_plant_code,MQ,European water clover (MARS QUA Marsilea quadrifolia),66
+invasive_plant_code,WE,European waterlily (NYMP ALB Nymphaea alba),67
+invasive_plant_code,EY,Eyebright (EUPH NEM Euphrasia nemorosa),68
+invasive_plant_code,BF,False brome (BRAC SYL Brachypodium sylvaticum),69
+invasive_plant_code,FW,Fanwort (CABO CAR Cabomba caroliniana),70
+invasive_plant_code,FM,Feathered mosquito-fern (AZOL PIN Azolla pinnata),71
+invasive_plant_code,FB,Field bindweed (CONV ARV Convolvulus arvensis),72
+invasive_plant_code,FS,Field scabious (KNAU ARV Knautia arvensis),73
+invasive_plant_code,FP,Flat pea / flat peavine (LATH SYL Lathyrus sylvestris),74
+invasive_plant_code,FR,Flowering rush (BUTO UMB Butomus umbellatus),75
+invasive_plant_code,FL,Fragrant water lily (NYMP ODO Nymphaea odorata subsp. odorata),76
+invasive_plant_code,GM,French broom (GENI MON Genista monspessulana),77
+invasive_plant_code,GL,Garden yellow loosestrife (LYSI VUL Lysimachia vulgaris),78
+invasive_plant_code,AP,Garlic mustard (ALLI PET Alliaria petiolata),79
+invasive_plant_code,MA,Giant chickweed (MYOS AQU Myosoton aquaticum),80
+invasive_plant_code,GH,Giant hogweed (HERA MAN Heracleum mantegazzianum),81
+invasive_plant_code,GK,Giant knotweed (FALL SAC Fallopia sachalinensis),82
+invasive_plant_code,SW,Giant mannagrass / reed sweetgrass (GLYC MAX Glyceria maxima),83
+invasive_plant_code,AD,Giant reed / giant cane (ARUN DON Arundo donax),84
+invasive_plant_code,SV,Giant salvinia (SALV MOL Salvinia molesta),85
+invasive_plant_code,RG,Goat's rue / french lilac (GALE OFF Galega officinalis),86
+invasive_plant_code,GO,Gorse (ULEX EUR Ulex europaeus),87
+invasive_plant_code,GW,Goutweed / bishop's weed (AEGO POD Aegopodium podagraria),88
+invasive_plant_code,GC,Greater celandine (CHEL MAJ Chelidonium majus),89
+invasive_plant_code,GN,Greater knapweed (CENT SCA Centaurea scabiosa),90
+invasive_plant_code,GF,Green foxtail / green bristlegrass (SETA VIR Setaria viridis),91
+invasive_plant_code,GS,Groundsel (SENE VUL Senecio vulgaris),92
+invasive_plant_code,HR,Hairy cat's-ear (HYPO RAD Hypochaeris radicata),93
+invasive_plant_code,HS,Hawkweed species (HIER SPP Hieracium spp),94
+invasive_plant_code,BI,Hedge false bindweed (CALY SEP Calystegia sepium),95
+invasive_plant_code,HD,Hedgehog dogtail (CYNO ECH Cynosurus echinatus),96
+invasive_plant_code,GR,Herb robert (GERA ROB Geranium robertianum),97
+invasive_plant_code,HI,Himalayan blackberry (RUBU ARM Rubus armeniacus),98
+invasive_plant_code,PO,Himalayan knotweed (POLY POL Polygonum polystachyum),99
+invasive_plant_code,HA,Hoary alyssum (BERT INC Berteroa incana),100
+invasive_plant_code,HC,Hoary cress (CARD DRA Cardaria draba),101
+invasive_plant_code,HT,Hound's-tongue (CYNO OFF Cynoglossum officinale),102
+invasive_plant_code,HY,Hydrilla (HYDR VER Hydrilla verticillata),103
+invasive_plant_code,IS,Iberian starthistle (CENT IBE Centaurea iberica),104
+invasive_plant_code,IT,Italian plumeless thistle (CARD PYC Carduus pycnocephalus),105
+invasive_plant_code,JK,Japanese knotweed (FALL JAP Fallopia japonica),106
+invasive_plant_code,JW,Japanese wireweed (SARG MUT Sargassum muticum),107
+invasive_plant_code,GJ,Johnsongrass (SORG HAL Sorghum halepense),108
+invasive_plant_code,JG,Jointed goatgrass (AEGI CYL Aegilops cylindrica),109
+invasive_plant_code,KH,King devil hawkweed (HIER FLO Hieracium floribundum),110
+invasive_plant_code,KS,Knapweed species (CENT SPP Centaurea spp.),111
+invasive_plant_code,KO,Kochia (KOCH SCO Kochia scoparia),112
+invasive_plant_code,KU,Kudzu (PUER MON Pueraria montana),113
+invasive_plant_code,LT,Lady's-thumb (POLY PER Polygonum persicaria),114
+invasive_plant_code,LL,Large yellow / spotted loosestrife (LYSI PUN Lysimachia punctata),115
+invasive_plant_code,LS,Leafy spurge (EUPH ESU Euphorbia esula),116
+invasive_plant_code,RF,Lesser celandine / fig buttercup (RANU FIC Ranunculus ficaria),117
+invasive_plant_code,LO,Longspine sandbur (CENC LON Cenchrus longispinus),118
+invasive_plant_code,OW,Major oxygen weed (LAGA ROS Lagarosiphon),119
+invasive_plant_code,MX,Maltese star thistle (CENT MEL Centaurea melitensis),120
+invasive_plant_code,MT,Marsh plume thistle/Marsh thistle (CIRS PAL Cirsium palustre),121
+invasive_plant_code,MB,Meadow buttercup (RANU ACR Ranunculus acris),122
+invasive_plant_code,MC,Meadow clary (SALV PRA Salvia pratensis),123
+invasive_plant_code,MG,Meadow goats-beard (TRAG PRA Tragopogon pratensis),124
+invasive_plant_code,MH,Meadow hawkweed (HIER CAE Hieracium caespitosum),125
+invasive_plant_code,MK,Meadow knapweed (CENT DEB Centaurea debeauxii),126
+invasive_plant_code,MS,Mediterranean sage (SALV AET Salvia aethiopsis),127
+invasive_plant_code,TM,Medusahead (TAEN CAP Taeniatherum caput-medusae),128
+invasive_plant_code,MI,Milk thistle (SILY MAR Silybum marianum),129
+invasive_plant_code,MO,Mountain bluet (CENT MON Centaurea montana),130
+invasive_plant_code,ME,Mouse ear hawkweed (HIER PIL Hieracium pilosella),131
+invasive_plant_code,MU,Mullein (VERB THA Verbascum thapsis),132
+invasive_plant_code,NC,Night-flowering catchfly (SILE NOC Silene noctiflora),133
+invasive_plant_code,NI,Nightshade (SOLA SPP Solanum spp),134
+invasive_plant_code,NT,Nodding thistle (CARD NUT Carduus nutans),135
+invasive_plant_code,NA,North africa grass (VENT DUB Ventenata dubia),136
+invasive_plant_code,OM,Old man's beard / traveller's joy (CLEM VIT Clematis vitalba),137
+invasive_plant_code,OH,Orange hawkweed (HIER AUR Hieracium aurantiacum),138
+invasive_plant_code,OD,Oxeye daisy (LEUC VUL Leucanthemum vulgare),139
+invasive_plant_code,PF,Parrot feather (MYRI AQU Myriophyllum aquaticum),140
+invasive_plant_code,PP,Perennial pepperweed (LEPI LAT Lepidium latifolium),141
+invasive_plant_code,PS,Perennial sow thistle (SONC ARV Sonchus arvensis),142
+invasive_plant_code,PT,Plumeless thistle (CARD ACA Carduus acanthoides),143
+invasive_plant_code,PH,Poison hemlock (CONI MAC Conium maculatum),144
+invasive_plant_code,PA,Polar hawkweed (HIER ATR Hieracium atratum),145
+invasive_plant_code,IM,Policeman's helmet / himalayan balsam (IMPA GLA Impatiens glandulifera),146
+invasive_plant_code,LP,Portugese laurel (PRUN LUS Prunus lusitanica),147
+invasive_plant_code,PR,Portuguese broom (CYTI STR Cytisus striatus),148
+invasive_plant_code,PC,Prickly comfrey (SYMP ASP Symphytum asperum),149
+invasive_plant_code,PV,Puncturevine (TRIB TER Tribulus terrestris),150
+invasive_plant_code,PD,Purple deadnettle (LAMI PUR Lamium purpureum),151
+invasive_plant_code,PL,Purple loosestrife (LYTH SAL Lythrum salicaria),152
+invasive_plant_code,PN,Purple nutsedge (CYPE ROT Cyperus rotundus),153
+invasive_plant_code,PU,Purple starthistle (CENT CAL Centaurea calcitrapa),154
+invasive_plant_code,QA,Queen anne's lace / wild carrot (DAUC CAR Daucus carota),155
+invasive_plant_code,QH,Queen devil hawkweed (HIER PRE Hieracium praealtum),156
+invasive_plant_code,BR,Red bartsia (ODON SER Odontites serotina),157
+invasive_plant_code,RP,Redroot amaranth / rough pigweed (AMAR RET Amaranthus retroflexus),158
+invasive_plant_code,RS,Rush skeletonweed (CHON JUN Chondrilla juncea),159
+invasive_plant_code,RK,Russian knapweed (ACRO REP Acroptilon repens),160
+invasive_plant_code,RO,Russian olive (ELAE ANG Elaeagnus angustifolia),161
+invasive_plant_code,RT,Russian thistle (SALS KAL Salsola kali),162
+invasive_plant_code,TA,Saltcedar / tamarisk (TAMA RAM Tamarix ramosissima),163
+invasive_plant_code,AH,Saltlover / halogeton (HALO GLO Halogeton glomeratus),164
+invasive_plant_code,SN,Salt-meadow cord grass (SPAR PAT Spartina patens),165
+invasive_plant_code,SA,Saltwater cord grass (SPAR ALT Spartina alterniflora),166
+invasive_plant_code,SH,Scentless chamomile (MATR PER Matricaria perforata),167
+invasive_plant_code,SB,Scotch broom (CYTI SCO Cytisus scoparius),168
+invasive_plant_code,ST,Scotch thistle (ONOP ACA Onopordum acanthium),169
+invasive_plant_code,SS,Sheep sorrel (RUME ACE Rumex acetosella),170
+invasive_plant_code,SP,Shepherd's-purse (CAPS BUR Capsella bursa-pastoris),171
+invasive_plant_code,SG,Shiny geranium (GERA LUC Geranium lucidum),172
+invasive_plant_code,CN,Short-fringed knapweed (CENT NIR Centaurea nigrescens),173
+invasive_plant_code,SE,Siberian elm (ULMU PUM Ulmus pumila),174
+invasive_plant_code,NS,Silverleaf nightshade (SOLA ELA Solanum elaeagnifolium),175
+invasive_plant_code,FT,Slender meadow foxtail (ALOP MYO Alopecurus myosuroides),176
+invasive_plant_code,HG,Smooth cat's ear (HYPO GLA Hypochaeris glabra),177
+invasive_plant_code,SM,Smooth hawkweed (HIER LAE Hieracium laevigatum),178
+invasive_plant_code,SO,Sowthistle species (SONC SPP Sonchus species),179
+invasive_plant_code,BS,Spanish bluebells (HYAC HIS Hyacinthoides hispanica),180
+invasive_plant_code,SI,Spanish broom (SPAR JUN Spartium junceum),181
+invasive_plant_code,SX,Spotted hawkweed (HIER MAC Hieracium maculatum),182
+invasive_plant_code,SK,Spotted knapweed (CENT BIE Centaurea biebersteinii),183
+invasive_plant_code,MV,Spring millet grass (MILI VER Milium vernale),184
+invasive_plant_code,TP,Spurge flax (THYM PAS Thymelaea passerina),185
+invasive_plant_code,CV,Squarrose knapweed (CENT VIR Centaurea virgata ssp. squarrosa),186
+invasive_plant_code,SJ,St. John's wort/Saint John's wort/ Goatweed (HYPE PER Hypericum perforatum),187
+invasive_plant_code,SC,Sulphur cinquefoil (POTE REC Potentilla recta),188
+invasive_plant_code,SF,Sweet fennel (FOEN VUL Foeniculum vulgare),189
+invasive_plant_code,SY,Syrian bean-caper (ZYGO FAB Zygophyllum fabago),190
+invasive_plant_code,TH,Tall hawkweed (HIER OID Hieracium piloselloides),191
+invasive_plant_code,TR,Tansy ragwort (SENE JAC Senecio jacobaea),192
+invasive_plant_code,TB,Tartary buckwheat (FAGO TAT Fagopyrum tataricum),193
+invasive_plant_code,TS,Teasel (DIPS FUL Dipsacus fullonum),194
+invasive_plant_code,TX,Texas blueweed (HELI CIL Helianthus ciliaris),195
+invasive_plant_code,AA,Tree of heaven (AILA ALT Ailanthus altissima),196
+invasive_plant_code,LM,Variable leaf milfoil (MYRI HET Myriophyllum heterophyllum),197
+invasive_plant_code,VL,Velvet leaf (ABUT THE Abutilon theophrasti),198
+invasive_plant_code,WA,Wall hawkweed (HIER MUR Hieracium murorum),199
+invasive_plant_code,WL,Wand loosestrife (LYTH VIR Lythrum virgatum),200
+invasive_plant_code,TN,Water chestnut (TRAP NAT Trapa natans),201
+invasive_plant_code,WH,Water hyacinth (EICH CRA Eichhornia crassipes),202
+invasive_plant_code,LW,Water lettuce (PIST STR Pistia stratiotes),203
+invasive_plant_code,AQ,Water soldier (STRA ALO Stratiotes aloides),204
+invasive_plant_code,NO,Watercress (NAST OFF Nasturtium officinale),205
+invasive_plant_code,WG,Western goat's-beard (TRAG DUB Tragopogon dubius),206
+invasive_plant_code,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),207
+invasive_plant_code,WC,White cockle (LYCH ALB Lychnis alba),208
+invasive_plant_code,WB,Wild buckwheat (POLY CON Polygonum convolvulus),209
+invasive_plant_code,WI,Wild chervil (ANTH SYL Anthriscus sylvestris),210
+invasive_plant_code,WF,Wild four o'clock (MIRA NYC Mirabilis nyctaginea),211
+invasive_plant_code,WM,Wild mustard (SINA ARV Sinapis arvensis),212
+invasive_plant_code,WO,Wild oats (AVEN FAT Avena fatua),213
+invasive_plant_code,PW,Wild parsnip (PAST SAT Pastinaca sativa),214
+invasive_plant_code,WT,Winged thistle / slender-flowered thistle (CARD TEN Carduus tenuiflorus),215
+invasive_plant_code,WS,Wood sage (SALV NEM Salvia nemorsa),216
+invasive_plant_code,WW,Wormwood (ARTE ABS Artemisia absinthium),217
+invasive_plant_code,YA,Yellow archangel (LAMI GAL Lamiastrum galeobdolon),218
+invasive_plant_code,YD,Yellow devil hawkweed (HIER GLO Hieracium glomeratum),219
+invasive_plant_code,YF,Yellow floating heart (NYMP PEL Nymphoides peltata),220
+invasive_plant_code,YH,Yellow hawkweed (HIER PRA Hieracium pratense),221
+invasive_plant_code,YI,Yellow iris (IRIS PSE Iris pseudachorus),222
+invasive_plant_code,YN,Yellow nutsedge (CYPE ESC Cyperus esculentus),223
+invasive_plant_code,YS,Yellow starthistle (CENT SOL Centaurea solstitialis),224
+invasive_plant_code,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),225
+invasive_animal_code,ABD,American black duck [Anas rubripes],1
+invasive_animal_code,ABF,American bullfrog [Lithobates catesbeiana],2
+invasive_animal_code,ASD,American shad [Alosa sapidissima],3
+invasive_animal_code,AGB,Amur goby [Rhinogobius brunneus],4
+invasive_animal_code,ASN,Apple snail [Ampullariidae],5
+invasive_animal_code,AAN,Argentine ant [Linepithema humile],6
+invasive_animal_code,ACM,Asian clam [Corbicula fluminea],7
+invasive_animal_code,ANA,Asian needle ant [Pachycondyla chinensis],8
+invasive_animal_code,AOY,Atlantic oyster [Crassostrea virginica],9
+invasive_animal_code,ARM,Atlantic ribbed mussel [Geukensia demissa],10
+invasive_animal_code,ASA,Atlantic salmon [Salmo salar],11
+invasive_animal_code,BHC,Bighead carp [Hypophthalmichthys nobilis],12
+invasive_animal_code,BIT,Bitterling [Rhodius species],13
+invasive_animal_code,BBH,Black bullhead [Ameiurus melas],14
+invasive_animal_code,BCA,Black carp [Mylopharyngodon piceus],15
+invasive_animal_code,BCR,Black crappie [Pomoxis nigromaculatus],16
+invasive_animal_code,BRT,Black rat [Rattus rattus],17
+invasive_animal_code,BRS,Bloody red shrimp (red mysid) [Hemimysis anomala],18
+invasive_animal_code,BSK,Blotched snakehead [Channa maculata],19
+invasive_animal_code,BSN,Bluegill sunfish [Lepomis macrochirus],20
+invasive_animal_code,BNB,Brown bullhead [Ameiurus nebulosus],21
+invasive_animal_code,BNR,Brown/Norway rat [Rattus norvegicus],22
+invasive_animal_code,CQU,California quail [Callipepla californica],23
+invasive_animal_code,CCF,Channel catfish [Ictalurus Punctatus],24
+invasive_animal_code,CMC,Chinese mitten crab [Eriocheir sinensis],25
+invasive_animal_code,CMS,Chinese mystery snail [Cipangopaludina chinensis],26
+invasive_animal_code,CPT,Chukar partridge [Alectoris chukar],27
+invasive_animal_code,CTU,Colonial tunicate [Botrylloides violaceus],28
+invasive_animal_code,CCP,Common carp [Cyprinus carpio],29
+invasive_animal_code,CWL,Common wall lizard [Podarcis muralis],30
+invasive_animal_code,CSS,Compound sea squirt [Didemnum vexillum],31
+invasive_animal_code,CFM,Conrad's false mussel [Mytilopsis leucophaeata],32
+invasive_animal_code,DKA,Drumming katydid [Meconema thalassinum],33
+invasive_animal_code,ECR,Eastern cottontail rabbit [Sylvilagus floridanus],34
+invasive_animal_code,EFS,Eastern fox squirrel [Sciurus niger],35
+invasive_animal_code,EGS,Eastern grey squirrel [Sciurus carolinensis],36
+invasive_animal_code,EOD,Eastern oyster drill [Urosalpinx cinerea],37
+invasive_animal_code,ESC,Eastern soft-shell clam [Mya arenaria],38
+invasive_animal_code,ECD,Eurasian collard dove [Streptopelia decaocto],39
+invasive_animal_code,EBG,European brown garden snail [Cornu aspersum],40
+invasive_animal_code,EFA,European fire ant [Myrmica rubra],41
+invasive_animal_code,EGC,European green crab [Carcinus maenas],42
+invasive_animal_code,EHS,European house sparrow [Passer domesticus],43
+invasive_animal_code,EPW,European paper wasp [Polistes dominula],44
+invasive_animal_code,ERB,European rabbit [Oryctolagus cuniculus],45
+invasive_animal_code,EST,European Starling [Sturnus vulgaris],46
+invasive_animal_code,FDR,Fallow deer [Dama dama],47
+invasive_animal_code,FMW,Fathead minnow [Pimephales promelas],48
+invasive_animal_code,FSW,Feral swine [Sus scrofa],49
+invasive_animal_code,FJF,Freshwater jellyfish [Craspedacusta sowerbyi],50
+invasive_animal_code,GFY,Garden soldier fly [Exaireta spinigera],51
+invasive_animal_code,GAH,Giant Asian hornet [Vespa mandarinia],52
+invasive_animal_code,GGS,Giant garden slug [Limax maximus],53
+invasive_animal_code,GST,Golden star tunicate [Botryllus schlosseri],54
+invasive_animal_code,GLD,Goldfish [Carassius auratus],55
+invasive_animal_code,GCP,Grass carp [Ctenopharyngodon idella],56
+invasive_animal_code,GFG,Green frog [Lithobates clamitans],57
+invasive_animal_code,GSF,Green sunfish [Lepomis cyanellus],58
+invasive_animal_code,GMT,Gypsy moth [Lymantria dispar],59
+invasive_animal_code,HMC,Harris mud crab [Rhithropanopeus harrisii],60
+invasive_animal_code,HMS,House mouse [Mus musculus],61
+invasive_animal_code,IFA,Impressive fire ant [Myrmica specioides],62
+invasive_animal_code,JBE,Japanese bettle [Popillia japonica],63
+invasive_animal_code,JMS,Japanese mussel / Asian date mussel [Musculista senhousia],64
+invasive_animal_code,JOD,Japanese oyster drill [Ocinebrellus inornatus],65
+invasive_animal_code,JSC,Japanese shore crab [Hemigrapsus sanguineus],66
+invasive_animal_code,LSA,Land slugs [Arion spp.],67
+invasive_animal_code,LSD,Land slugs [Deroceras spp],68
+invasive_animal_code,LRS,Large red slug [Arion rufus],69
+invasive_animal_code,LYU,Large yellow underwing [Noctua pronuba],70
+invasive_animal_code,LBA,Largemouth bass [Micropterus salmoides],71
+invasive_animal_code,LBS,Larger branded snail [Cepaea nemoralis],72
+invasive_animal_code,LFA,Little fire ant [Wasmannia auropunctata],73
+invasive_animal_code,MGB,Monkey goby [Neogobius fluviatilis],74
+invasive_animal_code,MSK,Muskellunge [Esox masquinongy],75
+invasive_animal_code,MSW,Mute swan [Cygnus olor],76
+invasive_animal_code,NZG,New Zealand green-lipped mussel [Perna species],77
+invasive_animal_code,NZM,New Zealand mudsnail [Potamopyrgus antipodarum],78
+invasive_animal_code,NPK,Northern pike [Esox lucius],79
+invasive_animal_code,NQC,Northern quahog clam [Mercenaria mercenaria],80
+invasive_animal_code,NSH,Northern snakehead [Channa argus],81
+invasive_animal_code,NUT,Nutria [Myocastor coypus],82
+invasive_animal_code,OWF,Oriental weatherfish [Misgurnus anguillicaudatus],83
+invasive_animal_code,PMT,Praying mantis [Mantis religiosa],84
+invasive_animal_code,PCP,Prussian carp [Carassius gibelio],85
+invasive_animal_code,PSF,Pumpkinseed sunfish [Lepomis gibbosus],86
+invasive_animal_code,QM,Quagga mussel [Dreissena rostriformis bugensis],87
+invasive_animal_code,RBS,Rainbow snakehead [Channa bleheri],88
+invasive_animal_code,RBP,Red bellied pacu [Piaractus brachypomus],89
+invasive_animal_code,RSH,Red shiner [Cyprinella lutrensis],90
+invasive_animal_code,RSC,Red swamp crayfish [Procambarus clarkii],91
+invasive_animal_code,RES,Red-eared slider [Trachemys scripta],92
+invasive_animal_code,RCF,Ringed crayfish [Orconectes neglectus],93
+invasive_animal_code,RBA,Rock bass [Ambloplites rupestris],94
+invasive_animal_code,RPG,Rock pigeon [Columba livia],95
+invasive_animal_code,RGB,Round goby [Neogobius melanostomus],96
+invasive_animal_code,RUS,Rusty crayfish [Orconectes rusticus],97
+invasive_animal_code,SSQ,Sea squirts [Molgula manhattensis],98
+invasive_animal_code,SSL,Seven-spotted ladybug [Coccinella septempunctata],99
+invasive_animal_code,SCP,Silver carp [Hypophthalmichthys molitrix],100
+invasive_animal_code,SBA,Smallmouth bass [Micropterus dolomieu],101
+invasive_animal_code,SNT,Snapping turtle [Chelydra serpentina],102
+invasive_animal_code,SOT,Softshell turtle [Apalone species],103
+invasive_animal_code,SWF,Spiny waterflea [Bythotrephes longimanus],104
+invasive_animal_code,SSH,Spottail shiner [Notropis hudsonius],105
+invasive_animal_code,SSS,Stalked sea squirt [Styela clava],106
+invasive_animal_code,TEN,Tench [Tinca tinca],107
+invasive_animal_code,TSA,Tropical stinging ant [Hypoponera punctatissima],108
+invasive_animal_code,TGB,Tubenose goby [Proterorhinus semilunaris],109
+invasive_animal_code,TCB,Tui chub [Gila bicolor],110
+invasive_animal_code,VCM,Varnish clam [Nuttallia obsurata],111
+invasive_animal_code,VOP,Virginia opossum [Didelphis virginiana],112
+invasive_animal_code,VCF,Virile crayfish [Orconectes virilis],113
+invasive_animal_code,WAL,Walleye [Sander vitreus],114
+invasive_animal_code,WAR,Warmouth [Lepomis gulosus],115
+invasive_animal_code,WFL,Western fence lizard [Sceloporus occidentalis],116
+invasive_animal_code,WM,Western mosquitofish [Gambusia affinis],117
+invasive_animal_code,WCM,White cloud mountain minnow [Tanichthys albonubes],118
+invasive_animal_code,WTK,Wild turkey [Meleagris gallopavo],119
+invasive_animal_code,WMT,Winter moth [Operophtera brumata],120
+invasive_animal_code,WSP,Woodlouse spider [Dysdera crocata],121
+invasive_animal_code,YBH,Yellow bullhead [Ameiurus natalis],122
+invasive_animal_code,YPC,Yellow perch [Perca flavescens],123
+invasive_animal_code,YSS,Yellow sea squirt [Ciona intestinalis],124
+invasive_animal_code,ZMS,Zebra mussel [Dreissena polymorpha],125
+biological_agent_code,ACERGEN,ACERGEN [Aceria genistae],1
+biological_agent_code,ACERMAL,ACERMAL [Aceria malherbae (Nuzzaci)],2
+biological_agent_code,AGAPZOE,AGAPZOE [Agapeta zoegana (L.)],3
+biological_agent_code,AGONNER,AGONNER [Agonopterix nervosa],4
+biological_agent_code,AGRIHYP,AGRIHYP [Agrilus hyperici (Creutzer)],5
+biological_agent_code,ALTICAR,ALTICAR [Altica carduorum],6
+biological_agent_code,APHAITA,APHAITA [Aphalara itadori],7
+biological_agent_code,APHICHL,APHICHL [Aphis chloris (Koch)],8
+biological_agent_code,APHTCYP,APHTCYP [Aphthona cyparissiae (Koch)],9
+biological_agent_code,APHTCZW,APHTCZW [Aphthona czwalinae (Weise)],10
+biological_agent_code,APHTFLA,APHTFLA [Aphthona flava (Guill.)],11
+biological_agent_code,APHTLAC,APHTLAC [Aphthona lacertosa (Rosh.)],12
+biological_agent_code,APHTNIG,APHTNIG [Aphthona nigriscutis (Foudras)],13
+biological_agent_code,APHTSPP,APHTSPP [Apthona speices],14
+biological_agent_code,APLOPLA,APLOPLA [Aplocera plagiata (L.)],15
+biological_agent_code,AULAACR,AULAACR [Aulacidea acroptilonica],16
+biological_agent_code,AULASUB,AULASUB [Aulacidea subterminalis],17
+biological_agent_code,BOTASEN,BOTASEN [Botanophila seneciella],18
+biological_agent_code,BRACPUL,BRACPUL [Brachypterolus pulicarius (L.)],19
+biological_agent_code,BRADGIL,BRADGIL [Bradyrrhoa gilveolella],20
+biological_agent_code,BRUCVIL,BRUCVIL [Bruchidius villosus],21
+biological_agent_code,CALOLUN,CALOLUN [Calophasia lunula (Hufn.)],22
+biological_agent_code,CASSRUB,CASSRUB [Cassida rubiginosa],23
+biological_agent_code,CHAEACR,CHAEACR [Chaetorellia acrolophi White & Marq.],24
+biological_agent_code,CHARSEX,CHARSEX [Charidotella sexpunctata bicolor],25
+biological_agent_code,CHEIURB,CHEIURB [Cheilosia urbana],26
+biological_agent_code,CHRYHYP,CHRYHYP [Chrysolina hyperici (Forster)],27
+biological_agent_code,CHRYQUA,CHRYQUA [Chrysolina quadrigemina (Suffrain)],28
+biological_agent_code,CHRYSPP,CHRYSPP [Chrysolina species],29
+biological_agent_code,CHRYVAR,CHRYVAR [Chrysolina varians],30
+biological_agent_code,COCHATR,COCHATR [Cochylis atricapitana (Stephens)],31
+biological_agent_code,CYPHACH,CYPHACH [Cyphocleonus achates (Fahr)],32
+biological_agent_code,CYSTSCH,CYSTSCH [Cystiphora schmidti],33
+biological_agent_code,CYSTSON,CYSTSON [Cystophora sonchi],34
+biological_agent_code,DELOGUT,DELOGUT [Deloyala guttata],35
+biological_agent_code,ERIOCHO,ERIOCHO [Eriophyes chondrillae],36
+biological_agent_code,ETEOINT,ETEOINT [Eteobalea intermediella (Riedl)],37
+biological_agent_code,ETEOSER,ETEOSER [Eteobalea serratella (Treit.)],38
+biological_agent_code,EXAPFUS,EXAPFUS [Exapion fuscirostre],39
+biological_agent_code,GALECAL,GALECAL [Galerucella calmariensis (Linne)],40
+biological_agent_code,GALEPUS,GALEPUS [Galerucella pusilla],41
+biological_agent_code,HADRLIT,HADRLIT [Hadroplontus litura],42
+biological_agent_code,HYLEEUP,HYLEEUP [Hyles euphorbiae (L.)],43
+biological_agent_code,HYLOTRA,HYLOTRA [Hylobius transversovittatus],44
+biological_agent_code,LARIMIN,LARIMIN [Larinus minutus Gyll.],45
+biological_agent_code,LARIOBT,LARIOBT [Larinus obtusus Gyll.],46
+biological_agent_code,LARIPLA,LARIPLA [Larinus planus (F.)],47
+biological_agent_code,LARISPP,LARISPP [Larinus species],48
+biological_agent_code,LOBEEUP,LOBEEUP [Lobesia euphorbiana (Freyer)],49
+biological_agent_code,LONGFLA,LONGFLA [Longitarsus flavicornis (Steph.)],50
+biological_agent_code,LONGGRA,LONGGRA [Longitarsus gracilis],51
+biological_agent_code,LONGJAC,LONGJAC [Longitarsus jacobaeae (Waterhouse)],52
+biological_agent_code,LONGJAS,LONGJAS [Longitarsus jacobaeae (Swiss)],53
+biological_agent_code,LONGQUA,LONGQUA [Longitarsus quadriguttatus (Pont.)],54
+biological_agent_code,MECIJAN,MECIJAN [Mecinus janthinus (Germar)],55
+biological_agent_code,METZLAP,METZLAP [Metzneria lappella],56
+biological_agent_code,METZPAU,METZPAU [Metzneria paucipunctella (Zellar)],57
+biological_agent_code,MICREDE,MICREDE [Microplontus edentulus],58
+biological_agent_code,MICRLAR,MICRLAR [Microlarinus lareynii],59
+biological_agent_code,MINOMUR,MINOMUR [Minoa murinata (Scop.)],60
+biological_agent_code,MOGUCRU,MOGUCRU [Mogulones cruciger (Hbst.)],61
+biological_agent_code,OMPHHOO,OMPHHOO [Omphalapion hookeri],62
+biological_agent_code,PELOMED,PELOMED [Pelochrista medullana (Strig.)],63
+biological_agent_code,PTERINS,PTERINS [Pterolonche inspersa (Strig.)],64
+biological_agent_code,PUCCACR,PUCCACR [Puccinia acroptili (P. & H. Syd)],65
+biological_agent_code,PUCCCAR,PUCCCAR [Puccinia carduorum],66
+biological_agent_code,PUCCCHO,PUCCCHO [Puccinia chondrillina],67
+biological_agent_code,PUCCJAC,PUCCJAC [Puccinia jaceae (Otth.)],68
+biological_agent_code,PUCCPUN,PUCCPUN [Puccinia punctiformis],69
+biological_agent_code,RHINANT,RHINANT [Rhinusa antirrhini],70
+biological_agent_code,RHINCON,RHINCON [Rhinocyllus conicus (Froelich)],71
+biological_agent_code,RHINLIN,RHINLIN [Rhinusa linariae],72
+biological_agent_code,RHINNET,RHINNET [Rhinusa neta],73
+biological_agent_code,RHINPIL,RHINPIL [Rhinusa pilosa],74
+biological_agent_code,RHINTET,RHINTET [Rhinusa tetrum],75
+biological_agent_code,RHOPTRI,RHOPTRI [Rhopalomyia tripleurospermi],76
+biological_agent_code,SCLESCL,SCLESCL [Sclerotinia sclerotium],77
+biological_agent_code,SPHEJUG,SPHEJUG [Sphenoptera jugoslavica (Obend.)],78
+biological_agent_code,SPURESU,SPURESU [Spurgia esula (Gagne)],79
+biological_agent_code,SUBAPIC,SUBAPIC [Subanguina picridis],80
+biological_agent_code,TERERUF,TERERUF [Terellia ruficauda],81
+biological_agent_code,TEREVIR,TEREVIR [Terellia virens (Loew.)],82
+biological_agent_code,TRICHOR,TRICHOR [Trichosirocalus horridus (Panzer)],83
+biological_agent_code,TYRIJAC,TYRIJAC [Tyria jacobeae (L.)],84
+biological_agent_code,UROPAFF,UROPAFF [Urophora affinis (Frauenfeld)],85
+biological_agent_code,UROPCAR,UROPCAR [Urophora cardui (F).],86
+biological_agent_code,UROPJAC,UROPJAC [Urophora jaceana],87
+biological_agent_code,UROPQUA,UROPQUA [Urophora quadrifasciata (Meigan)],88
+biological_agent_code,UROPSOL,UROPSOL [Urophora solstitialus (L.)],89
+biological_agent_code,UROPSPP,UROPSPP [Urophora species],90
+biological_agent_code,UROPSTY,UROPSTY [Urophora stylata (L.)],91
+biological_agent_code,ZEUXGIA,ZEUXGIA [Zeuxidiplosis giardi],92
+invasive_species_agency_code,MOF,"Forests, Lands, Natural Resource Operations & Rural Development",1
+invasive_species_agency_code,MOT,Ministry of Transportation & Infrastructure,2
 invasive_species_agency_code,MWLA,Environment & Climate Change Strategy,3
 invasive_species_agency_code,MAFF,Ministry of Agriculture,4
-invasive_species_agency_code,MEM ,"Energy, Mines & Petroleum Resources",5
+invasive_species_agency_code,MEM,"Energy, Mines & Petroleum Resources",5
 invasive_species_agency_code,BCTC,British Columbia Transmission Corporation,6
 invasive_species_agency_code,AAFC,Agriculture and Agri-Food Canada,7
-invasive_species_agency_code,DND ,Department of National Defense,8
-invasive_species_agency_code,OGC ,BC Oil and Gas Commission,9
+invasive_species_agency_code,DND,Department of National Defense,8
+invasive_species_agency_code,OGC,BC Oil and Gas Commission,9
 invasive_species_agency_code,PCAN,Parks Canada,10
-invasive_species_agency_code,CPR ,CP Rail,11
+invasive_species_agency_code,CPR,CP Rail,11
 invasive_species_agency_code,HYDR,BC Hydro and Power Authority,12
-invasive_species_agency_code,COQ ,City of Coquitlam,13
+invasive_species_agency_code,COQ,City of Coquitlam,13
 invasive_species_agency_code,SUR,City of Surrey,14
 invasive_species_agency_code,RICH,City of Richmond,15
 invasive_species_agency_code,CPM,City of Port Moody,16
 invasive_species_agency_code,PITT,City of Pitt Meadows,17
-invasive_species_agency_code,BBY ,City of Burnaby,18
+invasive_species_agency_code,BBY,City of Burnaby,18
 invasive_species_agency_code,CABB,City of Abbotsford,19
 invasive_species_agency_code,COLW,City of Colwood,20
-invasive_species_agency_code,NAN ,City of Nanaimo,21
+invasive_species_agency_code,NAN,City of Nanaimo,21
 invasive_species_agency_code,KELO,City of Kelowna,22
-invasive_species_agency_code,KAM ,City of Kamloops,23
-invasive_species_agency_code,PG  ,City of Prince George,24
-invasive_species_agency_code,VIC ,City of Victoria,25
+invasive_species_agency_code,KAM,City of Kamloops,23
+invasive_species_agency_code,PG,City of Prince George,24
+invasive_species_agency_code,VIC,City of Victoria,25
 invasive_species_agency_code,MISS,District of Mission,26
 invasive_species_agency_code,DOT,District of Tofino,27
 invasive_species_agency_code,KENT,District of Kent,28
 invasive_species_agency_code,DSEC,District of Sechelt,29
 invasive_species_agency_code,DWV,District of West Vancouver,30
 invasive_species_agency_code,DSAN,District of Saanich,31
-invasive_species_agency_code,DCS ,District of Central Saanich,32
-invasive_species_agency_code,SID ,Town of Sidney,33
+invasive_species_agency_code,DCS,District of Central Saanich,32
+invasive_species_agency_code,SID,Town of Sidney,33
 invasive_species_agency_code,GIBS,Town of Gibsons,34
-invasive_species_agency_code,DLT ,The Corporation of Delta,35
+invasive_species_agency_code,DLT,The Corporation of Delta,35
 invasive_species_agency_code,LANG,Township of Langley,36
 invasive_species_agency_code,BIM,Bowen Island Municipality,37
 invasive_species_agency_code,NCOW,Municipality of North Cowichan,38
 invasive_species_agency_code,ACRD,Alberni-Clayoquot Regional District,39
 invasive_species_agency_code,RDBN,Regional District of Bulkley-Nechako,40
-invasive_species_agency_code,CRD ,Capital Regional District,41
+invasive_species_agency_code,CRD,Capital Regional District,41
 invasive_species_agency_code,CBRD,Cariboo Regional District,42
 invasive_species_agency_code,CCRD,Central Coast Regional District,43
 invasive_species_agency_code,CKRD,Regional District of Central Kootenay,44
@@ -733,7 +733,7 @@ invasive_species_agency_code,RDS,Strathcona Regional District,64
 invasive_species_agency_code,SCRD,Sunshine Coast Regional District,65
 invasive_species_agency_code,TNRD,Thompson-Nicola Regional District,66
 invasive_species_agency_code,QRD,qathet Regional District,67
-invasive_species_agency_code,IPC ,ISCBC - Invasive Species Council of BC,68
+invasive_species_agency_code,IPC,ISCBC - Invasive Species Council of BC,68
 invasive_species_agency_code,CISC,CISC - Coastal Invasive Species Committee,69
 invasive_species_agency_code,ISCM,ISCMV - Invasive Species Council of Metro Vancouver,70
 invasive_species_agency_code,FVISS,FVISS - Fraser Valley Invasive Species Society,71
@@ -749,232 +749,232 @@ invasive_species_agency_code,NWIPC,NWIPC - Northwest Invasive Plant Council,80
 invasive_species_agency_code,TNIPMC,TNIPMC - Thompson Nicola Invasive Plant Management Committee,81
 invasive_species_agency_code,CRISP,CRISP - Capital Regional Invasive Species Partnership,82
 invasive_species_agency_code,AATR,A & A Trading,83
-invasive_species_agency_code,APO ,Apollo Forest Products Ltd.,84
+invasive_species_agency_code,APO,Apollo Forest Products Ltd.,84
 invasive_species_agency_code,ATCO,ATCO Wood Products Ltd.,85
-invasive_species_agency_code,BEL ,Bella Bella Asset Holdings Ltd.,86
-invasive_species_agency_code,CAN ,Canfor,87
-invasive_species_agency_code,CAR ,Carrier Lumber Ltd.,88
-invasive_species_agency_code,DHC ,Diamond Head Consulting Ltd,89
-invasive_species_agency_code,DUC ,Ducks Unlimited Canada - Canards Illimites Canada,90
-invasive_species_agency_code,FRS ,FortisBC Inc,91
+invasive_species_agency_code,BEL,Bella Bella Asset Holdings Ltd.,86
+invasive_species_agency_code,CAN,Canfor,87
+invasive_species_agency_code,CAR,Carrier Lumber Ltd.,88
+invasive_species_agency_code,DHC,Diamond Head Consulting Ltd,89
+invasive_species_agency_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada,90
+invasive_species_agency_code,FRS,FortisBC Inc,91
 invasive_species_agency_code,FWCP,Fish and Wildlife Compensation Program - Columbia Basin,92
-invasive_species_agency_code,GBL ,Gorman Brothers Lumber Ltd.,93
+invasive_species_agency_code,GBL,Gorman Brothers Lumber Ltd.,93
 invasive_species_agency_code,GIBR,Gibraltar Mines Ltd.,94
-invasive_species_agency_code,KMC ,Kinder Morgan Canada,95
-invasive_species_agency_code,LM  ,Lakeland Mills Ltd.,96
-invasive_species_agency_code,LNT ,Lower North Thompson Community Forest Society,97
-invasive_species_agency_code,LPC ,Louisiana-Pacific Canada Ltd.,98
-invasive_species_agency_code,LKB ,Lower Kootenay Band,99
-invasive_species_agency_code,MC  ,Meadow Creek Cedar Ltd.,100
-invasive_species_agency_code,MTP ,Mill & Timber Products Ltd.,101
-invasive_species_agency_code,NCC ,The Nature Conservancy of Canada,102
+invasive_species_agency_code,KMC,Kinder Morgan Canada,95
+invasive_species_agency_code,LM,Lakeland Mills Ltd.,96
+invasive_species_agency_code,LNT,Lower North Thompson Community Forest Society,97
+invasive_species_agency_code,LPC,Louisiana-Pacific Canada Ltd.,98
+invasive_species_agency_code,LKB,Lower Kootenay Band,99
+invasive_species_agency_code,MC,Meadow Creek Cedar Ltd.,100
+invasive_species_agency_code,MTP,Mill & Timber Products Ltd.,101
+invasive_species_agency_code,NCC,The Nature Conservancy of Canada,102
 invasive_species_agency_code,NTBC,The Nature Trust of BC,103
-invasive_species_agency_code,OIB ,Osoyoos Indian Band,104
+invasive_species_agency_code,OIB,Osoyoos Indian Band,104
 invasive_species_agency_code,POTA,Pope and Talbot Ltd.,105
 invasive_species_agency_code,RBCM,Royal BC Museum,106
-invasive_species_agency_code,RPC ,Richmond Plywood Corporation Limited,107
-invasive_species_agency_code,SIB ,Skeetchestn Indian Band,108
+invasive_species_agency_code,RPC,Richmond Plywood Corporation Limited,107
+invasive_species_agency_code,SIB,Skeetchestn Indian Band,108
 invasive_species_agency_code,SIFC,Slocan Integral Forestry Cooperative,109
 invasive_species_agency_code,SIGD,Sechelt Indian Government District,110
-invasive_species_agency_code,TCP ,Teal Cedar Products Ltd.,111
-invasive_species_agency_code,TER ,Terasen Gas Inc,112
-invasive_species_agency_code,TOL ,Tolko,113
+invasive_species_agency_code,TCP,Teal Cedar Products Ltd.,111
+invasive_species_agency_code,TER,Terasen Gas Inc,112
+invasive_species_agency_code,TOL,Tolko,113
 invasive_species_agency_code,TPIB,Tobacco Plains Indian Band,114
-invasive_species_agency_code,TRU ,Thompson Rivers University,115
-invasive_species_agency_code,TTM ,Ts'elxweyeqw Tribe Management Ltd,116
-invasive_species_agency_code,UBC ,University of British Columbia,117
-invasive_species_agency_code,WBL ,Wynndel Box & Lumber Co. Ltd.,118
-invasive_species_agency_code,WCE ,Spectra Energy,119
+invasive_species_agency_code,TRU,Thompson Rivers University,115
+invasive_species_agency_code,TTM,Ts'elxweyeqw Tribe Management Ltd,116
+invasive_species_agency_code,UBC,University of British Columbia,117
+invasive_species_agency_code,WBL,Wynndel Box & Lumber Co. Ltd.,118
+invasive_species_agency_code,WCE,Spectra Energy,119
 invasive_species_agency_code,WDLT,Woodlots,120
-invasive_species_agency_code,WEY ,Weyerhaeuser Company Limited,121
-invasive_species_agency_code,WFM ,West Fraser Mills,122
-invasive_species_agency_code,WFP ,Western Forest Products Inc.,123
-jurisdiction_code,MOF ,"Ministry of Forests, Lands, Natural Resource Operations & Rural Development",1
-jurisdiction_code,MOT ,Ministry of Transportation and Infrastructure,2
+invasive_species_agency_code,WEY,Weyerhaeuser Company Limited,121
+invasive_species_agency_code,WFM,West Fraser Mills,122
+invasive_species_agency_code,WFP,Western Forest Products Inc.,123
+jurisdiction_code,MOF,"Ministry of Forests, Lands, Natural Resource Operations & Rural Development",1
+jurisdiction_code,MOT,Ministry of Transportation and Infrastructure,2
 jurisdiction_code,HYDR,BC Hydro and Power Authority,3
-jurisdiction_code,MW  ,Ministry of Environment & Climate Change Strategy,4
+jurisdiction_code,MW,Ministry of Environment & Climate Change Strategy,4
 jurisdiction_code,MAFF,Ministry of Agriculture,5
-jurisdiction_code,PP  ,Provincial Parks,6
-jurisdiction_code,P   ,Private Land,7
-jurisdiction_code,MOP ,Municipality owned land,8
+jurisdiction_code,PP,Provincial Parks,6
+jurisdiction_code,P ,Private Land,7
+jurisdiction_code,MOP,Municipality owned land,8
 jurisdiction_code,PCAN,Parks Canada,9
-jurisdiction_code,BCR ,BC Rail,10
+jurisdiction_code,BCR,BC Rail,10
 jurisdiction_code,BCTC,British Columbia Transmission Corporation,11
-jurisdiction_code,TEL ,Telus,12
-jurisdiction_code,TER ,Terasen Gas Inc.,13
-jurisdiction_code,CNR ,CN Rail,14
-jurisdiction_code,CPR ,CP Rail,15
-jurisdiction_code,DFO ,Department of Fisheries and Oceans,16
-jurisdiction_code,DND ,Department of National Defense,17
-jurisdiction_code,DOT ,Department of Transportation,18
+jurisdiction_code,TEL,Telus,12
+jurisdiction_code,TER,Terasen Gas Inc.,13
+jurisdiction_code,CNR,CN Rail,14
+jurisdiction_code,CPR,CP Rail,15
+jurisdiction_code,DFO,Department of Fisheries and Oceans,16
+jurisdiction_code,DND,Department of National Defense,17
+jurisdiction_code,DOT,Department of Transportation,18
 jurisdiction_code,DUKE,Enbridge,19
-jurisdiction_code,GL  ,Grazing Lease,20
-jurisdiction_code,IR  ,First Nations Reserves,21
-jurisdiction_code,MN  ,Mining Companies,22
-jurisdiction_code,MR  ,Military Reserves,23
-jurisdiction_code,MRD ,Regional District owned land,24
+jurisdiction_code,GL,Grazing Lease,20
+jurisdiction_code,IR,First Nations Reserves,21
+jurisdiction_code,MN,Mining Companies,22
+jurisdiction_code,MR,Military Reserves,23
+jurisdiction_code,MRD,Regional District owned land,24
 jurisdiction_code,PIPE,Oil and Gas Companies,25
-jurisdiction_code,PNG ,Pacific Northern Gas,26
-jurisdiction_code,TRP ,TransCanada Pipelines,27
-pesticide_employer_code,19603,19603  A.R.M. CONTRACTORS,1
-pesticide_employer_code,22691,22691  ACCURATEW6 WELLSITE SOLUTIONS LTD.,2
-pesticide_employer_code,00691,00691  ACE VEGETATION CONTROL SERVICE LTD.,3
-pesticide_employer_code,21003,21003  ACTUAL LANDSCAPING INC.,4
-pesticide_employer_code,03921,03921  ADEPT VEGETATION MANAGEMENT INC,5
-pesticide_employer_code,02485,"02485  ASHCROFT, CORPORATION OF THE VILLAGE",6
-pesticide_employer_code,23637,23637  ASPEN TREE SERVICES INC.,7
-pesticide_employer_code,00594,00594  ASPLUNDH CANADA ULC,8
-pesticide_employer_code,19583,19583  B BAR S RANCH,9
-pesticide_employer_code,14062,14062  BACKROAD CONTRACTING LTD,10
-pesticide_employer_code,22026,22026  BACKWOODS RESOURCES INC.,11
-pesticide_employer_code,00235,00235  BARE GROUND VEGETATION SERVICES LTD,12
-pesticide_employer_code,17145,17145  BDK RESOURCE SERVICES LTD.,13
-pesticide_employer_code,17204,17204  BLACKTAIL RESOURCES INC.,14
-pesticide_employer_code,00907,00907  BOULTBEE PEST CONTROL LTD.,15
-pesticide_employer_code,00651,00651  BUGS-GON TREE SERVICE,16
-pesticide_employer_code,25578,25578  BURLEY BOYS TREE SERVICE LTD.,17
-pesticide_employer_code,17406,17406  BUSY BEE SPRAY SERVICES,18
-pesticide_employer_code,08625,08625  CAM CAMPBELL HOLDINGS LTD.,19
-pesticide_employer_code,15462,15462  CAPITAL REGIONAL DISTRICT PARKS,20
-pesticide_employer_code,00458,00458  CARIBOO REGIONAL DISTRICT,21
-pesticide_employer_code,06361,06361  CITY OF CHILLIWACK PUBLIC WORKS DEPARTMENT,22
-pesticide_employer_code,00303,00303  CITY OF COQUITLAM,23
-pesticide_employer_code,24557,24557  CITY OF FORT ST. JOHN,24
-pesticide_employer_code,00267,00267  CITY OF POWELL RIVER,25
-pesticide_employer_code,03142,03142  CITY OF PRINCE GEORGE,26
-pesticide_employer_code,22147,22147  CITY OF WEST KELOWNA,27
-pesticide_employer_code,20444,20444  COLEBRAN VEGETATION LTD,28
-pesticide_employer_code,02986,02986  CORPORATION OF THE CITY OF CRANBROOK,29
-pesticide_employer_code,00271,00271  CORPORATION OF THE CITY OF PENTICTON,30
-pesticide_employer_code,25637,25637  COWICHAN VALLEY REGIONAL DISTRICT,31
-pesticide_employer_code,24817,24817  CRABBE CONTRACTING LTD,32
-pesticide_employer_code,03198,03198  D.C. FORESTRY SERVICES LTD.,33
-pesticide_employer_code,01899,01899  D.J. SILVICULTURE ENTERPRISES ULC,34
-pesticide_employer_code,03616,03616  DAVEY TREE SERVICES LTD.,35
-pesticide_employer_code,19065,19065  DIAMOND HEAD CONSULTING LTD.,36
-pesticide_employer_code,22476,22476  DISTRICT OF HUDSON'S HOPE,37
-pesticide_employer_code,09585,09585  DISTRICT OF TAYLOR RECREATION DEPARTMENT,38
-pesticide_employer_code,21643,21643  DOUGLAS LAKE CATTLE COMPANY,39
-pesticide_employer_code,17824,17824  DRINKWATER ENVIRONMENTAL SERVICES LTD,40
-pesticide_employer_code,00796,00796  DUKA ENVIRONMENTAL SERVICES LTD.,41
-pesticide_employer_code,20484,20484  EAST KOOTENAY INVASIVE SPECIES COUNCIL,42
-pesticide_employer_code,24757,24757  EAST KOOTENAY OUTDOOR SPECIALIST / METCALF LAWN CARE,43
-pesticide_employer_code,02013,02013  EASY FEED FERTILIZER,44
-pesticide_employer_code,23678,23678  ELEVATE ENERGY SERVICES LTD.,45
-pesticide_employer_code,24438,24438  ETHIX CONTRACTING LTD.,46
-pesticide_employer_code,03281,03281  FRASER VALLEY REGIONAL DISTRICT,47
-pesticide_employer_code,15843,15843  GARNER VEGETATION CONTROL,48
-pesticide_employer_code,22229,22229  GREEN ADMIRAL NATURE RESTORATION LTD.,49
-pesticide_employer_code,22389,22389  GREENER THIS SIDE INVASIVE PLANT MANAGEMENT,50
-pesticide_employer_code,02641,02641  H.P. CONTRACTING,51
-pesticide_employer_code,24519,24519  HIGH MOUNTAIN CONTRACTING,52
-pesticide_employer_code,21563,21563  INTEGRITY INDUSTRIAL SERVICES LTD.,53
-pesticide_employer_code,25677,25677  INVASIVE CONTROL SOLUTIONS,54
-pesticide_employer_code,16882,16882  INVASIVE SPECIES COUNCIL OF BRITISH COLUMBIA SOCIETY,55
-pesticide_employer_code,18943,18943  INVASIVE SPECIES COUNCIL OF METRO VANCOUVER SOCIETY,56
-pesticide_employer_code,25117,25117  J. FOX CONSULTING,57
-pesticide_employer_code,08401,"08401  JANZEN ENTERPRISES LIMITED, DBA: LEWY'S LAWNCARE",58
-pesticide_employer_code,19243,19243  JL VEGETATION SOLUTIONS,59
-pesticide_employer_code,03410,03410  K W B CONTRACTING LTD,60
-pesticide_employer_code,18884,18884  KINGSCLERE RANCH LTD.,61
-pesticide_employer_code,23777,23777  KOOTENAY GROUND MAINTENANCE,62
-pesticide_employer_code,11282,11282  KOOTENAY WEED CONTROL,63
-pesticide_employer_code,10041,10041  LATINA LANDSCAPES AND MAINTENANCE,64
-pesticide_employer_code,23573,23573  LOWER NICOLA SITE SERVICES LIMITED PARTNERSHIP,65
-pesticide_employer_code,02620,"02620  MAILLOUX, BRUNO",66
-pesticide_employer_code,20763,20763  MAPLE LEAF FORESTRY LTD.,67
-pesticide_employer_code,03391,03391  MARJORI SUSAN REAY,68
-pesticide_employer_code,08706,08706  MELBERN VEGETATION LTD,69
-pesticide_employer_code,18463,18463  MGP CONTRACTING,70
-pesticide_employer_code,24998,24998  MIKE FADUM AND ASSOCIATES LTD.,71
-pesticide_employer_code,00259,00259  MORROW BIOSCIENCE LTD.,72
-pesticide_employer_code,12682,12682  MOUNTAIN VIEW RESOURCES,73
-pesticide_employer_code,18144,18144  MYRNA JOY GAMMIE,74
-pesticide_employer_code,14042,14042  NORTH ASCENT ENVIRONMENTAL INC.,75
-pesticide_employer_code,23511,23511  NORTH SHORE ENVIRONMENTAL CONSULTANTS INC.,76
-pesticide_employer_code,20824,20824  NORTHERN ROCKY MOUNTAIN ENTERPRISES LTD.,77
-pesticide_employer_code,19044,19044  OKANAGAN AND SIMILKAMEEN INVASIVE SPECIES SOCIETY (OASISS),78
-pesticide_employer_code,02990,02990  PACIFIC WEED SERVICE LTD,79
-pesticide_employer_code,01086,01086  PARA SPACE LANDSCAPING INC.,80
-pesticide_employer_code,00295,00295  PARKS OPERATIONS SECTION,81
-pesticide_employer_code,12045,12045  PATHFINDER ENDEAVOURS LTD.,82
-pesticide_employer_code,23618,23618  PINCHIN LTD.,83
-pesticide_employer_code,03663,03663  PINEVIEW MANAGEMENT LTD,84
-pesticide_employer_code,22606,22606  PRIMROSE LANDSCAPING & HORTICULTURE LTD.,85
-pesticide_employer_code,14322,14322  PRONTO ENTERPRISES LTD,86
-pesticide_employer_code,00902,00902  REGIONAL DISTRICT OF NORTH OKANAGAN,87
-pesticide_employer_code,00491,00491  RICHBAR NURSERY LTD.,88
-pesticide_employer_code,14843,14843  ROCKY MOUNTAIN FORESTRY CONSULTING INC.,89
-pesticide_employer_code,18603,18603  SEA TO SKY INVASIVE SPECIES COUNCIL,90
-pesticide_employer_code,24937,24937  SEA WOLF FORESTRY LTD.,91
-pesticide_employer_code,18243,18243  SELLENTIN'S HABITAT RESTORATION,92
-pesticide_employer_code,22971,22971  SETETKWE ENVIRONMENTAL INC.,93
-pesticide_employer_code,23579,23579  SOUTHERN FRONTIER FORESTRY SERVICES,94
-pesticide_employer_code,03195,03195  SPECTRUM RESOURCE GROUP INC.,95
-pesticide_employer_code,21683,21683  STAT ENERGY SERVICES INC.,96
-pesticide_employer_code,18143,18143  STERLING OPERATIONS,97
-pesticide_employer_code,20063,20063  STRATEGIC NATURAL RESOURCE CONSULTANTS INC.,98
-pesticide_employer_code,11642,11642  SYLVIS ENVIRONMENTAL SERVICES INC,99
-pesticide_employer_code,03573,03573  T & J FORESTRY CONTRACTING LTD.,100
-pesticide_employer_code,03727,03727  THE CITY OF COLWOOD,101
-pesticide_employer_code,01271,01271  THE CORPORATION OF THE CITY OF VICTORIA,102
-pesticide_employer_code,02200,02200  THE CORPORATION OF THE DISTRICT OF SAANICH,103
-pesticide_employer_code,02481,02481  THE CORPORATION OF THE VILLAGE OF KEREMEOS,104
-pesticide_employer_code,25080,25080  THE GRASS GUY,105
-pesticide_employer_code,22086,22086  THOMPSON NICOLA INVASIVES MANAGMENT,106
-pesticide_employer_code,19804,19804  TK' EMLUPSEMC FORESTRY DEVELOPMENT CORPORATION,107
-pesticide_employer_code,00345,00345  TOWN OF OLIVER,108
-pesticide_employer_code,25617,25617  UPPER NICOLA INDIAN BAND,109
-pesticide_employer_code,03873,03873  VILLAGE OF NAKUSP,110
-pesticide_employer_code,20663,20663  WEST FORK RESOURCE MANAGMENT LTD.,111
-pesticide_employer_code,01838,01838  WESTERN WEED CONTROL (1980) LTD.,112
-pesticide_employer_code,23531,23531  YENDOR LOGGING,113
-pesticide_employer_code,15142,15142  ZEDI FIELD SERVICES,114
-liquid_herbicide_code,14725,"AM500a  [2,4-D 2,4-D Amine 500 ]  14725",1
-liquid_herbicide_code,9528,"AM500b  [2,4-D 2,4-D Amine 500 ]  9528",2
-liquid_herbicide_code,5931,"AM600a  [2,4-D 2,4-D Amine 600 ]  5931",3
-liquid_herbicide_code,14726,"AM600b  [2,4-D 2,4-D Amine 600 ]  14726",4
-liquid_herbicide_code,23713,Arsenal  [imazapyr Arsenal ]  23713,5
-liquid_herbicide_code,31641,"Aspect  [picloram/2,4-D Aspect ]  31641",6
-liquid_herbicide_code,23957,Banvel2  [dicamba Banvel II ]  23957,7
-liquid_herbicide_code,29249,BanvelVM  [ Banvel VM ]  29249,8
-liquid_herbicide_code,29888,CreditX  [glyphosate Credit Xtreme ]  29888,9
-liquid_herbicide_code,27856,"Dyvel  [dicamba/2,4-D/mecoprop-p Dyvel DSp ]  27856",10
-liquid_herbicide_code,21053,Garlon4  [triclopyr Garlon 4 ]  21053,11
-liquid_herbicide_code,29334,GarlonRTU  [ Garlon RTU ]  29334,12
-liquid_herbicide_code,28945,GarlonXRT  [ Garlon XRT ]  28945,13
-liquid_herbicide_code,27634,Grazon  [ Grazon ]  27634,14
-liquid_herbicide_code,31642,GrazonXC  [ Grazon XC ]  31642,15
-liquid_herbicide_code,30841,Habitat  [ Habitat ]  30841,16
-liquid_herbicide_code,27801,"Killex  [2,4-D/mecoprop-p/dicamba Killex ]  27801",17
-liquid_herbicide_code,23545,Lontrel360  [ Lontrel 360 ]  23545,18
-liquid_herbicide_code,32957,Method240SL  [ Method 240SL ]  32957,19
-liquid_herbicide_code,28517,Millstone  [aminopyralid Milestone ]  28517,20
-liquid_herbicide_code,26722,Oracle  [ Oracle ]  26722,21
-liquid_herbicide_code,27884,"Par3  [mecoprop-p/2,4-D/dicamba Par III ]  27884",22
-liquid_herbicide_code,30203,PowerLN  [ Powerline ]  30203,23
-liquid_herbicide_code,30063,"ReclaimIIB  [2,4-D Reclaim II B ]  30063",24
-liquid_herbicide_code,28551,RestoreA  [Aminopyralid Restore A ]  28551,25
-liquid_herbicide_code,28552,"RestoreB  [2,4-D Restore B ]  28552",26
-liquid_herbicide_code,26271,Reward  [Diquat ion Reward ]  26271,27
-liquid_herbicide_code,22759,RoundupSC  [ Roundup Super Concentrate ]  22759,28
-liquid_herbicide_code,28198,RoundupTR  [ Roundup Transorb HC ]  28198,29
-liquid_herbicide_code,27487,RoundupWM  [ Roundup Weathermax ]  27487,30
-liquid_herbicide_code,29498,StartUp  [ StartUp ]  29498,31
-liquid_herbicide_code,9007,Tordon101  [ Tordon 101 ]  9007,32
-liquid_herbicide_code,9005,Tordon22K  [picloram Tordon 22K ]  9005,33
-liquid_herbicide_code,27972,"Trillion  [2,4-D/mecoprop-p/dicamba Trillion ]  27972",34
-liquid_herbicide_code,26980,Vanquish  [ Vanquish ]  26980,35
-liquid_herbicide_code,27615,VantagePMs  [ Vantage Plus Max / VPM II ]  27615,36
-liquid_herbicide_code,29994,VantageXRT  [ Vantage XRT ]  29994,37
-liquid_herbicide_code,28840,VP480  [ VP480 ]  28840,38
-granule_herbicide_code,29752,Clearview  [aminopyralid/metsulfuron-methyl Clearview ]  29752,1
-granule_herbicide_code,23005,Escort  [metsulfuron methyl Escort ]  23005,2
-granule_herbicide_code,33128,LongRun  [flazasulfuron LongRun ]  33128,3
-granule_herbicide_code,31559,Torpedo  [flumioxazin and pyroxasulfone Torpedo ]  31559,4
-granule_herbicide_code,31209,Sandea  [halosulfuron Sandea ]  31209,5
-granule_herbicide_code,31382,NaviusVM  [metsulfuron-methyl/Aminocyclopyrachlor Navius VM ]  31382,6
-granule_herbicide_code,30065,Overdrive  [diflufenzopyr Overdrive ]  30065,7
-granule_herbicide_code,30062,ReclaimIIA  [aminopyralid/metsulfuron-methyl Reclaim II A ]  30062,8
-granule_herbicide_code,30920,Truvist  [chlorsulfuron/aminocyclopyrachlor Truvist ]  30920,9
-granule_herbicide_code,30917,Method50SG  [aminocyclopyrachlor Method 50SG ]  30917,10
+jurisdiction_code,PNG,Pacific Northern Gas,26
+jurisdiction_code,TRP,TransCanada Pipelines,27
+pesticide_employer_code,19603,19603 A.R.M. CONTRACTORS,1
+pesticide_employer_code,22691,22691 ACCURATEW6 WELLSITE SOLUTIONS LTD.,2
+pesticide_employer_code,00691,00691 ACE VEGETATION CONTROL SERVICE LTD.,3
+pesticide_employer_code,21003,21003 ACTUAL LANDSCAPING INC.,4
+pesticide_employer_code,03921,03921 ADEPT VEGETATION MANAGEMENT INC,5
+pesticide_employer_code,02485,"02485 ASHCROFT, CORPORATION OF THE VILLAGE",6
+pesticide_employer_code,23637,23637 ASPEN TREE SERVICES INC.,7
+pesticide_employer_code,00594,00594 ASPLUNDH CANADA ULC,8
+pesticide_employer_code,19583,19583 B BAR S RANCH,9
+pesticide_employer_code,14062,14062 BACKROAD CONTRACTING LTD,10
+pesticide_employer_code,22026,22026 BACKWOODS RESOURCES INC.,11
+pesticide_employer_code,00235,00235 BARE GROUND VEGETATION SERVICES LTD,12
+pesticide_employer_code,17145,17145 BDK RESOURCE SERVICES LTD.,13
+pesticide_employer_code,17204,17204 BLACKTAIL RESOURCES INC.,14
+pesticide_employer_code,00907,00907 BOULTBEE PEST CONTROL LTD.,15
+pesticide_employer_code,00651,00651 BUGS-GON TREE SERVICE,16
+pesticide_employer_code,25578,25578 BURLEY BOYS TREE SERVICE LTD.,17
+pesticide_employer_code,17406,17406 BUSY BEE SPRAY SERVICES,18
+pesticide_employer_code,08625,08625 CAM CAMPBELL HOLDINGS LTD.,19
+pesticide_employer_code,15462,15462 CAPITAL REGIONAL DISTRICT PARKS,20
+pesticide_employer_code,00458,00458 CARIBOO REGIONAL DISTRICT,21
+pesticide_employer_code,06361,06361 CITY OF CHILLIWACK PUBLIC WORKS DEPARTMENT,22
+pesticide_employer_code,00303,00303 CITY OF COQUITLAM,23
+pesticide_employer_code,24557,24557 CITY OF FORT ST. JOHN,24
+pesticide_employer_code,00267,00267 CITY OF POWELL RIVER,25
+pesticide_employer_code,03142,03142 CITY OF PRINCE GEORGE,26
+pesticide_employer_code,22147,22147 CITY OF WEST KELOWNA,27
+pesticide_employer_code,20444,20444 COLEBRAN VEGETATION LTD,28
+pesticide_employer_code,02986,02986 CORPORATION OF THE CITY OF CRANBROOK,29
+pesticide_employer_code,00271,00271 CORPORATION OF THE CITY OF PENTICTON,30
+pesticide_employer_code,25637,25637 COWICHAN VALLEY REGIONAL DISTRICT,31
+pesticide_employer_code,24817,24817 CRABBE CONTRACTING LTD,32
+pesticide_employer_code,03198,03198 D.C. FORESTRY SERVICES LTD.,33
+pesticide_employer_code,01899,01899 D.J. SILVICULTURE ENTERPRISES ULC,34
+pesticide_employer_code,03616,03616 DAVEY TREE SERVICES LTD.,35
+pesticide_employer_code,19065,19065 DIAMOND HEAD CONSULTING LTD.,36
+pesticide_employer_code,22476,22476 DISTRICT OF HUDSON'S HOPE,37
+pesticide_employer_code,09585,09585 DISTRICT OF TAYLOR RECREATION DEPARTMENT,38
+pesticide_employer_code,21643,21643 DOUGLAS LAKE CATTLE COMPANY,39
+pesticide_employer_code,17824,17824 DRINKWATER ENVIRONMENTAL SERVICES LTD,40
+pesticide_employer_code,00796,00796 DUKA ENVIRONMENTAL SERVICES LTD.,41
+pesticide_employer_code,20484,20484 EAST KOOTENAY INVASIVE SPECIES COUNCIL,42
+pesticide_employer_code,24757,24757 EAST KOOTENAY OUTDOOR SPECIALIST / METCALF LAWN CARE,43
+pesticide_employer_code,02013,02013 EASY FEED FERTILIZER,44
+pesticide_employer_code,23678,23678 ELEVATE ENERGY SERVICES LTD.,45
+pesticide_employer_code,24438,24438 ETHIX CONTRACTING LTD.,46
+pesticide_employer_code,03281,03281 FRASER VALLEY REGIONAL DISTRICT,47
+pesticide_employer_code,15843,15843 GARNER VEGETATION CONTROL,48
+pesticide_employer_code,22229,22229 GREEN ADMIRAL NATURE RESTORATION LTD.,49
+pesticide_employer_code,22389,22389 GREENER THIS SIDE INVASIVE PLANT MANAGEMENT,50
+pesticide_employer_code,02641,02641 H.P. CONTRACTING,51
+pesticide_employer_code,24519,24519 HIGH MOUNTAIN CONTRACTING,52
+pesticide_employer_code,21563,21563 INTEGRITY INDUSTRIAL SERVICES LTD.,53
+pesticide_employer_code,25677,25677 INVASIVE CONTROL SOLUTIONS,54
+pesticide_employer_code,16882,16882 INVASIVE SPECIES COUNCIL OF BRITISH COLUMBIA SOCIETY,55
+pesticide_employer_code,18943,18943 INVASIVE SPECIES COUNCIL OF METRO VANCOUVER SOCIETY,56
+pesticide_employer_code,25117,25117 J. FOX CONSULTING,57
+pesticide_employer_code,08401,"08401 JANZEN ENTERPRISES LIMITED, DBA: LEWY'S LAWNCARE",58
+pesticide_employer_code,19243,19243 JL VEGETATION SOLUTIONS,59
+pesticide_employer_code,03410,03410 K W B CONTRACTING LTD,60
+pesticide_employer_code,18884,18884 KINGSCLERE RANCH LTD.,61
+pesticide_employer_code,23777,23777 KOOTENAY GROUND MAINTENANCE,62
+pesticide_employer_code,11282,11282 KOOTENAY WEED CONTROL,63
+pesticide_employer_code,10041,10041 LATINA LANDSCAPES AND MAINTENANCE,64
+pesticide_employer_code,23573,23573 LOWER NICOLA SITE SERVICES LIMITED PARTNERSHIP,65
+pesticide_employer_code,02620,"02620 MAILLOUX, BRUNO",66
+pesticide_employer_code,20763,20763 MAPLE LEAF FORESTRY LTD.,67
+pesticide_employer_code,03391,03391 MARJORI SUSAN REAY,68
+pesticide_employer_code,08706,08706 MELBERN VEGETATION LTD,69
+pesticide_employer_code,18463,18463 MGP CONTRACTING,70
+pesticide_employer_code,24998,24998 MIKE FADUM AND ASSOCIATES LTD.,71
+pesticide_employer_code,00259,00259 MORROW BIOSCIENCE LTD.,72
+pesticide_employer_code,12682,12682 MOUNTAIN VIEW RESOURCES,73
+pesticide_employer_code,18144,18144 MYRNA JOY GAMMIE,74
+pesticide_employer_code,14042,14042 NORTH ASCENT ENVIRONMENTAL INC.,75
+pesticide_employer_code,23511,23511 NORTH SHORE ENVIRONMENTAL CONSULTANTS INC.,76
+pesticide_employer_code,20824,20824 NORTHERN ROCKY MOUNTAIN ENTERPRISES LTD.,77
+pesticide_employer_code,19044,19044 OKANAGAN AND SIMILKAMEEN INVASIVE SPECIES SOCIETY (OASISS),78
+pesticide_employer_code,02990,02990 PACIFIC WEED SERVICE LTD,79
+pesticide_employer_code,01086,01086 PARA SPACE LANDSCAPING INC.,80
+pesticide_employer_code,00295,00295 PARKS OPERATIONS SECTION,81
+pesticide_employer_code,12045,12045 PATHFINDER ENDEAVOURS LTD.,82
+pesticide_employer_code,23618,23618 PINCHIN LTD.,83
+pesticide_employer_code,03663,03663 PINEVIEW MANAGEMENT LTD,84
+pesticide_employer_code,22606,22606 PRIMROSE LANDSCAPING & HORTICULTURE LTD.,85
+pesticide_employer_code,14322,14322 PRONTO ENTERPRISES LTD,86
+pesticide_employer_code,00902,00902 REGIONAL DISTRICT OF NORTH OKANAGAN,87
+pesticide_employer_code,00491,00491 RICHBAR NURSERY LTD.,88
+pesticide_employer_code,14843,14843 ROCKY MOUNTAIN FORESTRY CONSULTING INC.,89
+pesticide_employer_code,18603,18603 SEA TO SKY INVASIVE SPECIES COUNCIL,90
+pesticide_employer_code,24937,24937 SEA WOLF FORESTRY LTD.,91
+pesticide_employer_code,18243,18243 SELLENTIN'S HABITAT RESTORATION,92
+pesticide_employer_code,22971,22971 SETETKWE ENVIRONMENTAL INC.,93
+pesticide_employer_code,23579,23579 SOUTHERN FRONTIER FORESTRY SERVICES,94
+pesticide_employer_code,03195,03195 SPECTRUM RESOURCE GROUP INC.,95
+pesticide_employer_code,21683,21683 STAT ENERGY SERVICES INC.,96
+pesticide_employer_code,18143,18143 STERLING OPERATIONS,97
+pesticide_employer_code,20063,20063 STRATEGIC NATURAL RESOURCE CONSULTANTS INC.,98
+pesticide_employer_code,11642,11642 SYLVIS ENVIRONMENTAL SERVICES INC,99
+pesticide_employer_code,03573,03573 T & J FORESTRY CONTRACTING LTD.,100
+pesticide_employer_code,03727,03727 THE CITY OF COLWOOD,101
+pesticide_employer_code,01271,01271 THE CORPORATION OF THE CITY OF VICTORIA,102
+pesticide_employer_code,02200,02200 THE CORPORATION OF THE DISTRICT OF SAANICH,103
+pesticide_employer_code,02481,02481 THE CORPORATION OF THE VILLAGE OF KEREMEOS,104
+pesticide_employer_code,25080,25080 THE GRASS GUY,105
+pesticide_employer_code,22086,22086 THOMPSON NICOLA INVASIVES MANAGMENT,106
+pesticide_employer_code,19804,19804 TK' EMLUPSEMC FORESTRY DEVELOPMENT CORPORATION,107
+pesticide_employer_code,00345,00345 TOWN OF OLIVER,108
+pesticide_employer_code,25617,25617 UPPER NICOLA INDIAN BAND,109
+pesticide_employer_code,03873,03873 VILLAGE OF NAKUSP,110
+pesticide_employer_code,20663,20663 WEST FORK RESOURCE MANAGMENT LTD.,111
+pesticide_employer_code,01838,01838 WESTERN WEED CONTROL (1980) LTD.,112
+pesticide_employer_code,23531,23531 YENDOR LOGGING,113
+pesticide_employer_code,15142,15142 ZEDI FIELD SERVICES,114
+liquid_herbicide_code,14725,"AM500a [2,4-D 2,4-D Amine 500] 14725",1
+liquid_herbicide_code,9528,"AM500b [2,4-D 2,4-D Amine 500] 9528",2
+liquid_herbicide_code,5931,"AM600a [2,4-D 2,4-D Amine 600] 5931",3
+liquid_herbicide_code,14726,"AM600b [2,4-D 2,4-D Amine 600] 14726",4
+liquid_herbicide_code,23713,Arsenal [imazapyr Arsenal] 23713,5
+liquid_herbicide_code,31641,"Aspect [picloram/2,4-D Aspect] 31641",6
+liquid_herbicide_code,23957,Banvel2 [dicamba Banvel II] 23957,7
+liquid_herbicide_code,29249,BanvelVM [Banvel VM] 29249,8
+liquid_herbicide_code,29888,CreditX [glyphosate Credit Xtreme] 29888,9
+liquid_herbicide_code,27856,"Dyvel [dicamba/2,4-D/mecoprop-p Dyvel DSp] 27856",10
+liquid_herbicide_code,21053,Garlon4 [triclopyr Garlon 4] 21053,11
+liquid_herbicide_code,29334,GarlonRTU [Garlon RTU] 29334,12
+liquid_herbicide_code,28945,GarlonXRT [Garlon XRT] 28945,13
+liquid_herbicide_code,27634,Grazon [Grazon] 27634,14
+liquid_herbicide_code,31642,GrazonXC [Grazon XC] 31642,15
+liquid_herbicide_code,30841,Habitat [Habitat] 30841,16
+liquid_herbicide_code,27801,"Killex [2,4-D/mecoprop-p/dicamba Killex] 27801",17
+liquid_herbicide_code,23545,Lontrel360 [Lontrel 360] 23545,18
+liquid_herbicide_code,32957,Method240SL [Method 240SL] 32957,19
+liquid_herbicide_code,28517,Millstone [aminopyralid Milestone] 28517,20
+liquid_herbicide_code,26722,Oracle [Oracle] 26722,21
+liquid_herbicide_code,27884,"Par3 [mecoprop-p/2,4-D/dicamba Par III] 27884",22
+liquid_herbicide_code,30203,PowerLN [Powerline] 30203,23
+liquid_herbicide_code,30063,"ReclaimIIB [2,4-D Reclaim II B] 30063",24
+liquid_herbicide_code,28551,RestoreA [Aminopyralid Restore A] 28551,25
+liquid_herbicide_code,28552,"RestoreB [2,4-D Restore B] 28552",26
+liquid_herbicide_code,26271,Reward [Diquat ion Reward] 26271,27
+liquid_herbicide_code,22759,RoundupSC [Roundup Super Concentrate] 22759,28
+liquid_herbicide_code,28198,RoundupTR [Roundup Transorb HC] 28198,29
+liquid_herbicide_code,27487,RoundupWM [Roundup Weathermax] 27487,30
+liquid_herbicide_code,29498,StartUp [StartUp] 29498,31
+liquid_herbicide_code,9007,Tordon101 [Tordon 101] 9007,32
+liquid_herbicide_code,9005,Tordon22K [picloram Tordon 22K] 9005,33
+liquid_herbicide_code,27972,"Trillion [2,4-D/mecoprop-p/dicamba Trillion] 27972",34
+liquid_herbicide_code,26980,Vanquish [Vanquish] 26980,35
+liquid_herbicide_code,27615,VantagePMs [Vantage Plus Max / VPM II] 27615,36
+liquid_herbicide_code,29994,VantageXRT [Vantage XRT] 29994,37
+liquid_herbicide_code,28840,VP480 [VP480] 28840,38
+granule_herbicide_code,29752,Clearview [aminopyralid/metsulfuron-methyl Clearview] 29752,1
+granule_herbicide_code,23005,Escort [metsulfuron methyl Escort] 23005,2
+granule_herbicide_code,33128,LongRun [flazasulfuron LongRun] 33128,3
+granule_herbicide_code,31559,Torpedo [flumioxazin and pyroxasulfone Torpedo] 31559,4
+granule_herbicide_code,31209,Sandea [halosulfuron Sandea] 31209,5
+granule_herbicide_code,31382,NaviusVM [metsulfuron-methyl/Aminocyclopyrachlor Navius VM] 31382,6
+granule_herbicide_code,30065,Overdrive [diflufenzopyr Overdrive] 30065,7
+granule_herbicide_code,30062,ReclaimIIA [aminopyralid/metsulfuron-methyl Reclaim II A] 30062,8
+granule_herbicide_code,30920,Truvist [chlorsulfuron/aminocyclopyrachlor Truvist] 30920,9
+granule_herbicide_code,30917,Method50SG [aminocyclopyrachlor Method 50SG] 30917,10
