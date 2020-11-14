@@ -85,12 +85,14 @@ export interface IActivitySearchCriteria {
 }
 
 /**
- * Create activity endpoint post body.
+ * Create or Update activity endpoint post body.
  *
  * @export
- * @interface ICreateActivity
+ * @interface ICreateOrUpdateActivity
  */
-export interface ICreateActivity {
+export interface ICreateOrUpdateActivity {
+  activity_id: string;
+  created_timestamp: string;
   activity_type: ActivityType;
   activity_subtype: ActivitySubtype;
   geometry: Feature[];
