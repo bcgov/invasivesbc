@@ -1,6 +1,6 @@
 module.exports = {
   local: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT || 5432,
@@ -22,7 +22,7 @@ module.exports = {
     }
   },
   dev: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT || 5432,
@@ -40,7 +40,7 @@ module.exports = {
     }
   },
   test: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT || 5432,
@@ -58,7 +58,7 @@ module.exports = {
     }
   },
   prod: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT || 5432,
