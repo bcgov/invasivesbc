@@ -6,9 +6,7 @@ import { IPointOfInterestSearchCriteria, ICreatePointOfInterest } from 'interfac
 import qs from 'qs';
 import { useContext, useMemo } from 'react';
 
-const API_URL = 'https://api-mobile-dev-invasivesbc.pathfinder.gov.bc.ca';
-// const API_URL = 'http://localhost:7080'; // docker
-// const API_URL = 'http://localhost:3002'; // local
+const API_URL = `${process.env.API_HOST}:${process.env.API_PORT}`;
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.

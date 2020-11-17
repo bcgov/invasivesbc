@@ -6,7 +6,7 @@ import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapPageControls';
 import { Feature } from 'geojson';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
 
 const useStyles = makeStyles((theme) => ({
@@ -108,17 +108,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} event the form change event
    */
-  const onFormChange = debounced(500, async (event: any) => {
-    await databaseContext.database.upsert(doc._id, (activity) => {
-      return {
-        ...activity,
-        formData: event.formData,
-        status: ActivityStatus.EDITED,
-        dateUpdated: new Date(),
-        formStatus: FormValidationStatus.NOT_VALIDATED
-      };
-    });
-  });
+  const onFormChange = useCallback(
+    debounced(500, async (event: any) => {
+      await databaseContext.database.upsert(doc._id, (activity) => {
+        return {
+          ...activity,
+          formData: event.formData,
+          status: ActivityStatus.EDITED,
+          dateUpdated: new Date(),
+          formStatus: FormValidationStatus.NOT_VALIDATED
+        };
+      });
+    }),
+    []
+  );
 
   useEffect(() => {
     const getActivityData = async () => {
