@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface IReferenceActivityListItem {
-  disable?: boolean;
+  isDisabled?: boolean;
   activity: any;
 }
 
@@ -85,7 +85,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
 };
 
 interface IReferenceActivityList {
-  disable?: boolean;
+  isDisabled?: boolean;
 }
 
 // TODO change any to a type that defines the overall items being displayed
@@ -128,7 +128,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
               <ListItemIcon>
                 <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
               </ListItemIcon>
-              <ReferenceActivityListItem disable={props.disable} activity={doc} />
+              <ReferenceActivityListItem isDisabled={props.isDisabled} activity={doc} />
             </ListItem>
           </Paper>
         );
@@ -147,7 +147,7 @@ const ReferenceActivitiesList: React.FC = (props) => {
           <Typography variant="h4">Reference Activities</Typography>
         </div>
         <div>
-          <ReferenceActivityList disable={true} />
+          <ReferenceActivityList isDisabled={true} />
         </div>
       </div>
     </>

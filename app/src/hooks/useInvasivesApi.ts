@@ -1,7 +1,7 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { IActivitySearchCriteria, ICreateActivity } from 'interfaces/useInvasivesApi-interfaces';
+import { IActivitySearchCriteria, ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
 import { IPointOfInterestSearchCriteria, ICreatePointOfInterest } from 'interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
 import { useContext, useMemo } from 'react';
@@ -96,11 +96,23 @@ export const useInvasivesApi = () => {
   /**
    * Create a new activity record.
    *
-   * @param {ICreateActivity} activity
+   * @param {ICreateOrUpdateActivity} activity
    * @return {*}  {Promise<any>}
    */
-  const createActivity = async (activity: ICreateActivity): Promise<any> => {
+  const createActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
     const { data } = await api.post('/api/activity', activity);
+
+    return data;
+  };
+
+  /**
+   * Update an existing activity record.
+   *
+   * @param {ICreateOrUpdateActivity} activity
+   * @return {*}  {Promise<any>}
+   */
+  const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
+    const { data } = await api.put('/api/activity', activity);
 
     return data;
   };
@@ -143,6 +155,7 @@ export const useInvasivesApi = () => {
     getActivities,
     getActivityById,
     createActivity,
+    updateActivity,
     getApiSpec,
     getCachedApiSpec,
     getPointsOfInterest

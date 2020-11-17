@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Checkbox,
   Divider,
   Grid,
@@ -20,10 +19,11 @@ import { Add, DeleteForever, Sync } from '@material-ui/icons';
 import clsx from 'clsx';
 import {
   ActivityStatus,
+  ActivitySubtype,
   ActivitySyncStatus,
   ActivityType,
-  ActivitySubtype,
-  ActivityTypeIcon
+  ActivityTypeIcon,
+  FormValidationStatus
 } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { MediumDateFormat } from 'constants/misc';
@@ -34,7 +34,7 @@ import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import 'styles/spinners.scss';
-import { notifySuccess, notifyWarning, notifyError } from 'utils/NotificationUtils';
+import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface IActivityListItem {
-  disable?: boolean;
+  isDisabled?: boolean;
   activity: any;
 }
 
@@ -102,7 +102,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
     });
   };
 
-  const isDisabled = props.disable || props.activity.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
+  const isDisabled = props.isDisabled || props.activity.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
@@ -115,8 +115,10 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={2}>
-        <Typography className={classes.activitiyListItem_Typography}>Status</Typography>
-        {props.activity.status}
+        <Typography variant="h6" className={classes.activitiyListItem_Typography}>
+          Form Status
+        </Typography>
+        {props.activity.formStatus}
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={2}>
@@ -149,7 +151,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
 
 interface IActivityList {
   classes?: any;
-  disable?: boolean;
+  isDisabled?: boolean;
   activityType: ActivityType;
 }
 
@@ -185,7 +187,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   };
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
-    await databaseContext.database.upsert('AppState', (appStateDoc) => {
+    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
 
@@ -195,7 +197,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   return (
     <List className={classes.activityList}>
       {docs.map((doc) => {
-        const isDisabled = props.disable || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
+        const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
         return (
           <Paper key={doc._id}>
@@ -214,7 +216,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
                   component={ActivityTypeIcon[props.activityType]}
                 />
               </ListItemIcon>
-              <ActivityListItem disable={props.disable} activity={doc} />
+              <ActivityListItem isDisabled={props.isDisabled} activity={doc} />
               <ListItemSecondaryAction>
                 <IconButton disabled={isDisabled} onClick={() => removeActivity(doc)}>
                   <DeleteForever />
@@ -246,15 +248,18 @@ const ActivitiesList: React.FC = (props) => {
     const activityResult = await databaseContext.database.find({
       selector: {
         docType: DocType.ACTIVITY,
+        formStatus: FormValidationStatus.VALID,
         'sync.ready': true,
         'sync.status': { $ne: ActivitySyncStatus.SYNC_SUCCESSFUL }
       }
     });
 
-    // save each activity one-by-one
+    // sync each activity one-by-one
     for (const activity of activityResult.docs) {
       try {
         await invasivesApi.createActivity({
+          activity_id: activity.activityId,
+          created_timestamp: activity.dateCreated,
           activity_type: activity.activityType,
           activity_subtype: activity.activitySubtype,
           geometry: activity.geometry,
@@ -285,8 +290,11 @@ const ActivitiesList: React.FC = (props) => {
   };
 
   const addNewActivity = async (activityType: ActivityType, activitySubtype: ActivitySubtype) => {
+    const id = uuidv4();
+
     await databaseContext.database.put({
-      _id: uuidv4(),
+      _id: id,
+      activityId: id,
       docType: DocType.ACTIVITY,
       activityType: activityType,
       activitySubtype: activitySubtype,
@@ -298,7 +306,8 @@ const ActivitiesList: React.FC = (props) => {
       },
       dateCreated: new Date(),
       dateUpated: null,
-      formData: null
+      formData: null,
+      formStatus: FormValidationStatus.NOT_VALIDATED
     });
   };
 
@@ -351,7 +360,7 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Aquatic
               </Button>
 
-              <ActivityList disable={isDisabled} activityType={ActivityType.Observation} />
+              <ActivityList isDisabled={isDisabled} activityType={ActivityType.Observation} />
             </div>
           </div>
           <div>
@@ -418,7 +427,7 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Terrestrial Biological
               </Button>
 
-              <ActivityList disable={isDisabled} activityType={ActivityType.Treatment} />
+              <ActivityList isDisabled={isDisabled} activityType={ActivityType.Treatment} />
             </div>
           </div>
           <div>
@@ -482,7 +491,7 @@ const ActivitiesList: React.FC = (props) => {
                 Animal Terrestrial Biological
               </Button>
 
-              <ActivityList disable={isDisabled} activityType={ActivityType.Monitoring} />
+              <ActivityList isDisabled={isDisabled} activityType={ActivityType.Monitoring} />
             </div>
           </div>
           <div>

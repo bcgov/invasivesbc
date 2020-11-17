@@ -44,3 +44,9 @@ export enum ActivitySyncStatus {
   SYNC_SUCCESSFUL = 'Sync Successful',
   SYNC_FAILED = 'Sync Failed'
 }
+
+export enum FormValidationStatus {
+  NOT_VALIDATED = 'Not Validated',
+  INVALID = 'Invalid',
+  VALID = 'Valid'
+}

@@ -1,10 +1,13 @@
 import { CircularProgress, Container, makeStyles } from '@material-ui/core';
 import ActivityComponent from 'components/activity/ActivityComponent';
+import { IPhoto } from 'components/photo/PhotoContainer';
+import { ActivityStatus, FormValidationStatus } from 'constants/activities';
+import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState } from 'react';
-import { ActivityStatus } from 'constants/activities';
+import { MapContextMenuData } from 'features/home/map/MapPageControls';
 import { Feature } from 'geojson';
-import { MapContextMenuData } from '../map/MapPageControls';
+import React, { useContext, useEffect, useState } from 'react';
+import { debounced } from 'utils/FunctionUtils';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -23,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
 
 interface IActivityPageProps {
   classes?: any;
-  activityId?: string;
 }
 
 //why does this page think I need a map context menu ?
@@ -47,6 +49,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const [doc, setDoc] = useState(null);
 
+  const [photos, setPhotos] = useState<IPhoto[]>([]);
+
   /**
    * Save the geometry added by the user
    *
@@ -69,9 +73,56 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     });
   };
 
+  /**
+   * Save the photos.
+   *
+   * @param {IPhoto} photos An array of photo objects.
+   */
+  const savePhotos = async (photos: IPhoto[]) => {
+    await databaseContext.database.upsert(doc._id, (dbDoc) => {
+      return { ...dbDoc, photos: photos, dateUpdated: new Date() };
+    });
+  };
+
+  /**
+   * Save the form when it is submitted.
+   *
+   * @param {*} event the form submit event
+   */
+  const onFormSubmitSuccess = async (event: any) => {
+    await databaseContext.database.upsert(doc._id, (activity) => {
+      return {
+        ...activity,
+        formData: event.formData,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date(),
+        formStatus: FormValidationStatus.VALID
+      };
+    });
+  };
+
+  /**
+   * Save the form whenever it changes.
+   *
+   * Note: debouncing will prevent this from running more than once every `500` milliseconds.
+   *
+   * @param {*} event the form change event
+   */
+  const onFormChange = debounced(500, async (event: any) => {
+    await databaseContext.database.upsert(doc._id, (activity) => {
+      return {
+        ...activity,
+        formData: event.formData,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date(),
+        formStatus: FormValidationStatus.NOT_VALIDATED
+      };
+    });
+  });
+
   useEffect(() => {
     const getActivityData = async () => {
-      const appStateResults = await databaseContext.database.find({ selector: { _id: 'AppState' } });
+      const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
       if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
         return;
@@ -83,6 +134,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       setGeometry(activityResults.docs[0].geometry);
       setExtent(activityResults.docs[0].extent);
+      setPhotos(activityResults.docs[0].photos || []);
       setDoc(activityResults.docs[0]);
     };
 
@@ -105,6 +157,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     saveExtent(extent);
   }, [extent]);
 
+  useEffect(() => {
+    if (!doc) {
+      return;
+    }
+
+    savePhotos(photos);
+  }, [photos]);
+
   if (!doc) {
     return <CircularProgress />;
   }
@@ -114,6 +174,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       <ActivityComponent
         classes={classes}
         activity={doc}
+        onFormChange={onFormChange}
+        onFormSubmitSuccess={onFormSubmitSuccess}
+        photoState={{ photos, setPhotos }}
         mapId={doc._id}
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}

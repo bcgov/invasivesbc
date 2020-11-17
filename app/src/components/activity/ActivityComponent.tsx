@@ -1,11 +1,11 @@
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
-import FormContainer from 'components/form/FormContainer';
+import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
-import PhotoContainer from 'components/photo/PhotoContainer';
+import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
 import React from 'react';
 
-export interface IActivityComponentProps extends IMapContainerProps {
+export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
   activity: any;
 }
