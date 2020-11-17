@@ -12,9 +12,11 @@ export const getUserWithRolesSQL = (email: string): SQLStatement => {
   }
 
   return SQL`
-    SELECT * FROM application_user
-    LEFT JOIN user_role USING (user_id)
-    LEFT JOIN app_role_code USING (role_code_id)
-    WHERE email = ${email.toLowerCase()};
+    SELECT * FROM application_user au
+    LEFT JOIN user_role ur
+      USING (user_id)
+    LEFT JOIN code cc
+      ON cc.code_id = ur.role_code_id
+    WHERE au.email = ${email.toLowerCase()};
   `;
 };

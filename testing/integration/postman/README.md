@@ -5,7 +5,7 @@ It's primary goal is to run against oour PR and Dev code.
 
 How to run the PostMan Tests:
 - [Get Postman](https://www.postman.com/downloads/)
-- Import `lucy-api-mobile.postman_collection.json`
+- Import `invasives_api_dev.postman_collection.json`
 - Go to *Manage environments*, gear ison at top right hand corner
 - Import DEV.postman_environment.json
 - Change the following settings in Postman environment DEV:

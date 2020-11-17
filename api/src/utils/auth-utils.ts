@@ -200,7 +200,7 @@ export const verifyUser = async function (req: any, scopes: string[]) {
     return null;
   }
 
-  const userHasRole = verifyUserRoles(scopes, response['role_code']);
+  const userHasRole = verifyUserRoles(scopes, response['code_name']);
 
   if (!userHasRole) {
     defaultLog.warn({ label: 'verifyUser', message: 'user verification error: insufficient roles' });
@@ -256,26 +256,40 @@ export const getUserWithRoles = async function (email: string) {
   defaultLog.debug({ label: 'getUserWithRoles', message: 'email', email });
 
   if (!email) {
-    return null;
+    throw {
+      status: 503,
+      message: 'Missing required email'
+    };
   }
 
   const connection = await getDBConnection();
 
   if (!connection) {
-    return null;
+    throw {
+      status: 503,
+      message: 'Failed to establish database connection'
+    };
   }
 
-  const sqlStatement: SQLStatement = getUserWithRolesSQL(email);
+  try {
+    const sqlStatement: SQLStatement = getUserWithRolesSQL(email);
 
-  if (!sqlStatement) {
-    return null;
+    if (!sqlStatement) {
+      throw {
+        status: 400,
+        message: 'Failed to build SQL statement'
+      };
+    }
+
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+    const result = (response && response.rowCount && response.rows[0]) || null;
+
+    return result;
+  } catch (error) {
+    defaultLog.debug({ label: 'getUserWithRoles', message: 'error', error });
+    throw error;
+  } finally {
+    connection.release();
   }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rowCount && response.rows[0]) || null;
-
-  connection.release();
-
-  return result;
 };

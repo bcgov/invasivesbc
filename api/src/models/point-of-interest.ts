@@ -1,5 +1,5 @@
-import { SEARCH_LIMIT_MAX, SORT_DIRECTION } from '../constants/misc';
-import { parseBase64DataURLString } from './../utils/file-utils';
+import { SEARCH_LIMIT_MAX } from '../constants/misc';
+import { parseBase64DataURLString } from '../utils/file-utils';
 
 /**
  * A single media item.
@@ -55,41 +55,37 @@ export class MediaBase64 {
 }
 
 /**
- * Activity post request body.
+ * PointOfInterest post request body.
  *
  * @export
- * @class ActivityPostRequestBody
+ * @class PointOfInterestPostRequestBody
  */
-export class ActivityPostRequestBody {
-  activityPostBody: object;
-  activityResponseBody: object;
+export class PointOfInterestPostRequestBody {
+  pontOfInterestPostBody: object;
+  pontOfInterestResponseBody: object;
 
-  activity_id: string;
+  pontOfInterest_type: string;
+  pontOfInterest_subtype: string;
 
-  activity_type: string;
-  activity_subtype: string;
+  pontOfInterest_data: object;
+  pontOfInterest_type_data: object;
+  pontOfInterest_subtype_data: object;
 
-  activity_data: object;
-  activity_type_data: object;
-  activity_subtype_data: object;
-
-  created_timestamp: string; // ISO string
   received_timestamp: string;
-  deleted_timestamp: string; // ISO string
 
   geoJSONFeature: GeoJSON.Feature[];
 
   mediaKeys: string[];
 
   /**
-   * Creates an instance of ActivityPostRequestBody.
+   * Creates an instance of PointOfInterestPostRequestBody.
    *
    * @param {*} [obj]
-   * @memberof ActivityPostRequestBody
+   * @memberof PointOfInterestPostRequestBody
    */
   constructor(obj?: any) {
     // Add whole original object for auditing
-    this.activityPostBody = {
+    this.pontOfInterestPostBody = {
       ...obj,
       // Strip out any media base64 strings which would convolute the record
       media:
@@ -101,18 +97,14 @@ export class ActivityPostRequestBody {
         []
     };
 
-    this.activity_id = (obj && obj.activity_id) || null;
+    this.pontOfInterest_type = (obj && obj.pontOfInterest_type) || null;
+    this.pontOfInterest_subtype = (obj && obj.pontOfInterest_subtype) || null;
 
-    this.activity_type = (obj && obj.activity_type) || null;
-    this.activity_subtype = (obj && obj.activity_subtype) || null;
+    this.pontOfInterest_data = (obj && obj.form_data && obj.form_data.pontOfInterest_data) || null;
+    this.pontOfInterest_type_data = (obj && obj.form_data && obj.form_data.pontOfInterest_type_data) || null;
+    this.pontOfInterest_subtype_data = (obj && obj.form_data && obj.form_data.pontOfInterest_subtype_data) || null;
 
-    this.activity_data = (obj && obj.form_data && obj.form_data.activity_data) || null;
-    this.activity_type_data = (obj && obj.form_data && obj.form_data.activity_type_data) || null;
-    this.activity_subtype_data = (obj && obj.form_data && obj.form_data.activity_subtype_data) || null;
-
-    this.created_timestamp = (obj && obj.created_timestamp) || null;
     this.received_timestamp = new Date().toISOString();
-    this.deleted_timestamp = (obj && obj.deleted_timestamp) || null;
 
     this.geoJSONFeature = (obj && obj.geometry) || [];
 
@@ -121,48 +113,40 @@ export class ActivityPostRequestBody {
 }
 
 /**
- * Activity search filter criteria object.
+ * PointOfInterest search filter criteria object.
  *
  * @export
- * @class ActivitySearchCriteria
+ * @class PointOfInterestSearchCriteria
  */
-export class ActivitySearchCriteria {
+export class PointOfInterestSearchCriteria {
   page: number;
   limit: number;
-  sort_by: string;
-  sort_direction: string;
 
-  activity_type: string[];
-  activity_subtype: string[];
+  pontOfInterest_type: string;
+  pontOfInterest_subtype: string;
 
   date_range_start: Date;
   date_range_end: Date;
 
   search_feature: GeoJSON.Feature;
 
-  column_names: string[];
-
   /**
-   * Creates an instance of ActivitySearchCriteria.
+   * Creates an instance of PointOfInterestSearchCriteria.
    *
    * @param {*} [obj]
-   * @memberof ActivitySearchCriteria
+   * @memberof PointOfInterestSearchCriteria
    */
   constructor(obj?: any) {
     this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
     this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;
-    this.sort_by = (obj && obj.sort_by) || '';
-    this.sort_direction = (obj && obj.sort_direction) || SORT_DIRECTION.ASC;
 
-    this.activity_type = (obj && obj.activity_type) || [];
-    this.activity_subtype = (obj && obj.activity_subtype) || [];
+    this.pontOfInterest_type = (obj && obj.pontOfInterest_type) || null;
+    this.pontOfInterest_subtype = (obj && obj.pontOfInterest_subtype) || null;
 
     this.date_range_start = (obj && obj.date_range_start) || null;
     this.date_range_end = (obj && obj.date_range_end) || null;
 
     this.search_feature = (obj && obj.search_feature) || null;
-
-    this.column_names = (obj && obj.column_names) || [];
   }
 
   setPage(page: number): number {

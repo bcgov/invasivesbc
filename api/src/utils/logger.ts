@@ -12,6 +12,7 @@ import winston from 'winston';
 export interface ILoggerMessage extends winston.Logform.TransformableInfo {
   timestamp?: string; // Optionally overwrite the default timestamp
   label: string; // Add a label to this message (generally the name of the parent function)
+  error?: Error; // An optional error to display
 }
 
 /**
@@ -68,10 +69,12 @@ export const getLogger = function (logLabel: string) {
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
           winston.format.errors({ stack: true }),
           winston.format.colorize(),
-          winston.format.printf(({ timestamp, level, label, message, ...other }: ILoggerMessage) => {
-            const namespace = label ? ` ${label} -` : '';
-            const otherMeta = other && Object.keys(other).length ? `\n${JSON.stringify(other, undefined, 2)}` : '';
-            return `[${timestamp}] (${level}) (${logLabel}):${namespace} ${message} ${otherMeta}`;
+          winston.format.printf(({ timestamp, level, label, message, error, ...other }: ILoggerMessage) => {
+            const optionalLabel = (label && ` ${label} -`) || '';
+            const optionalError = (error && `\n${error}`) || '';
+            const optionalOther =
+              (other && Object.keys(other).length && `\n${JSON.stringify(other, undefined, 2)}`) || '';
+            return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${message} ${optionalError} ${optionalOther}`;
           })
         )
       })
