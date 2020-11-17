@@ -6,7 +6,7 @@ import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapPageControls';
@@ -124,15 +124,18 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    *
    * @param {*} event the form change event
    */
-  const onFormChange = debounced(500, (event: any) => {
-    return setActivity({
-      ...activity,
-      formData: event.formData,
-      status: ActivityStatus.EDITED,
-      dateUpdated: new Date(),
-      formStatus: FormValidationStatus.NOT_VALIDATED
-    });
-  });
+  const onFormChange = useCallback(
+    debounced(500, (event: any) => {
+      return setActivity({
+        ...activity,
+        formData: event.formData,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date(),
+        formStatus: FormValidationStatus.NOT_VALIDATED
+      });
+    }),
+    []
+  );
 
   useEffect(() => {
     const getActivityData = async () => {

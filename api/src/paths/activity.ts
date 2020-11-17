@@ -4,166 +4,21 @@ import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, WRITE_ROLES } from './../constants/misc';
-import { getDBConnection } from './../database/db';
-import { ActivityPostRequestBody, ActivitySearchCriteria, IMediaItem, MediaBase64 } from './../models/activity';
-import { getActivitiesSQL, postActivitySQL } from './../queries/activity-queries';
-import { uploadFileToS3 } from './../utils/file-utils';
-import { getLogger } from './../utils/logger';
+import { WRITE_ROLES } from '../constants/misc';
+import { getDBConnection } from '../database/db';
+import { ActivityPostRequestBody, IMediaItem, MediaBase64 } from '../models/activity';
+import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
+import { IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
+import { uploadFileToS3 } from '../utils/file-utils';
+import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('activity-controller');
-
-export const GET: Operation = [getAllActivities()];
-
-GET.apiDoc = {
-  description: 'Fetches all activities based on search criteria.',
-  tags: ['activity'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
-  requestBody: {
-    description: 'Activities search criteria object.',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {
-            activity_type: {
-              type: 'string'
-            },
-            activity_sub_type: {
-              type: 'string'
-            },
-            page: {
-              type: 'number',
-              default: 0,
-              minimum: 0
-            },
-            limit: {
-              type: 'number',
-              default: 25,
-              minimum: 0,
-              maximum: 100
-            },
-            date_range_start: {
-              type: 'string',
-              description: 'Date range start, in YYYY-MM-DD format'
-            },
-            date_range_end: {
-              type: 'string',
-              description: 'Date range end, in YYYY-MM-DD format'
-            }
-          }
-        }
-      }
-    }
-  },
-  responses: {
-    200: {
-      description: 'Activity get response object array.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                activity_type: {
-                  type: 'string'
-                },
-                activityTypeData: {
-                  type: 'object'
-                },
-                activity_sub_type: {
-                  type: 'string'
-                },
-                activitySubTypeData: {
-                  type: 'object'
-                },
-                date: {
-                  type: 'string',
-                  description: 'Date in YYYY-MM-DD format'
-                },
-                locationAndGeometry: {
-                  type: 'object',
-                  description: 'Location and geometry information',
-                  properties: {
-                    anchorPointY: {
-                      type: 'number'
-                    },
-                    anchorPointX: {
-                      type: 'number'
-                    },
-                    area: {
-                      type: 'number'
-                    },
-                    geometry: {
-                      type: 'object',
-                      description: 'A geoJSON object'
-                    },
-                    jurisdiction: {
-                      type: 'string'
-                    },
-                    agency: {
-                      type: 'string'
-                    },
-                    observer1FirstName: {
-                      type: 'string'
-                    },
-                    observer1LastName: {
-                      type: 'string'
-                    },
-                    locationComment: {
-                      type: 'string'
-                    },
-                    generalComment: {
-                      type: 'string'
-                    },
-                    photoTaken: {
-                      type: 'boolean'
-                    }
-                  }
-                },
-                media: {
-                  type: 'array',
-                  description: 'An array of media objects associated to the activity record',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      fileName: {
-                        type: 'string'
-                      },
-                      encodedFile: {
-                        type: 'string',
-                        format: 'base64',
-                        description: 'A Data URL base64 encoded image',
-                        example: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/4REy...'
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
+const defaultLog = getLogger('activity');
 
 export const POST: Operation = [uploadMedia(), createActivity()];
 
-POST.apiDoc = {
+export const PUT: Operation = [uploadMedia(), updateActivity()];
+
+const post_put_apiDoc = {
   description: 'Create a new activity.',
   tags: ['activity'],
   security: [
@@ -172,95 +27,67 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Activity post response object.',
+    description: 'Activity post request object.',
     content: {
       'application/json': {
         schema: {
-          required: [
-            'activity_type',
-            'activityTypeData',
-            'activity_sub_type',
-            'activitySubTypeData',
-            'date',
-            'locationAndGeometry'
-          ],
+          required: ['activity_type', 'activity_subtype'],
           properties: {
-            activity_type: {
-              type: 'string'
-            },
-            activityTypeData: {
-              type: 'object'
-            },
-            activity_sub_type: {
-              type: 'string'
-            },
-            activitySubTypeData: {
-              type: 'object'
-            },
-            date: {
+            activity_id: {
               type: 'string',
-              description: 'Date in YYYY-MM-DD format'
+              format: 'uuid',
+              example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+              description: 'An RFC4122 UUID'
             },
-            locationAndGeometry: {
-              type: 'object',
-              additionalProperties: false,
-              description: 'Location and geometry information',
-              properties: {
-                anchorPointY: {
-                  type: 'number'
-                },
-                anchorPointX: {
-                  type: 'number'
-                },
-                area: {
-                  type: 'number'
-                },
-                geometry: {
-                  type: 'object',
-                  description: 'A geoJSON object'
-                },
-                jurisdiction: {
-                  type: 'string'
-                },
-                agency: {
-                  type: 'string'
-                },
-                observer1FirstName: {
-                  type: 'string'
-                },
-                observer1LastName: {
-                  type: 'string'
-                },
-                locationComment: {
-                  type: 'string'
-                },
-                generalComment: {
-                  type: 'string'
-                },
-                photoTaken: {
-                  type: 'boolean'
-                }
-              }
+            created_timestamp: {
+              type: 'string',
+              format: 'date-time',
+              example: '2018-11-13T20:20:39+00:00',
+              description: 'Date created on user device. Must be in ISO8601 format.'
+            },
+            activity_type: {
+              type: 'string',
+              title: 'Activity type'
+            },
+            activity_subtype: {
+              type: 'string',
+              title: 'Activity subtype'
             },
             media: {
               type: 'array',
-              description: 'An array of media objects to upload and associate to the activity record',
+              title: 'Media',
               items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['fileName', 'encodedFile'],
-                properties: {
-                  fileName: {
-                    type: 'string'
-                  },
-                  encodedFile: {
-                    type: 'string',
-                    format: 'base64',
-                    description: 'A Data URL base64 encoded image',
-                    example: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/4REy...'
-                  }
-                }
+                $ref: '#/components/schemas/Media'
               }
+            },
+            geometry: {
+              type: 'array',
+              title: 'Geometries',
+              items: {
+                ...geoJSON_Feature_Schema
+              },
+              description: 'An array of GeoJSON Features'
+            },
+            form_data: {
+              oneOf: [
+                { $ref: '#/components/schemas/Activity_Observation_PlantTerrestial' },
+                { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
+                { $ref: '#/components/schemas/Activity_Observation_AnimalTerrestrial' },
+                { $ref: '#/components/schemas/Activity_Observation_AnimalAquatic' },
+                { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
+                { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
+                { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
+                { $ref: '#/components/schemas/Activity_Treatment_BiologicalDispersalPlant' },
+                { $ref: '#/components/schemas/Activity_Treatment_MechanicalTerrestrialAnimal' },
+                { $ref: '#/components/schemas/Activity_Treatment_ChemicalTerrestrialAnimal' },
+                { $ref: '#/components/schemas/Activity_Treatment_BiologicalTerrestrialAnimal' },
+                { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
+                { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
+                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+                { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAnimal' },
+                { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAnimal' },
+                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialAnimal' }
+              ]
             }
           }
         }
@@ -295,6 +122,14 @@ POST.apiDoc = {
   }
 };
 
+POST.apiDoc = {
+  ...post_put_apiDoc
+};
+
+PUT.apiDoc = {
+  ...post_put_apiDoc
+};
+
 /**
  * Uploads any media in the request to S3, adding their keys to the request, and calling next().
  *
@@ -304,6 +139,8 @@ POST.apiDoc = {
  */
 function uploadMedia(): RequestHandler {
   return async (req, res, next) => {
+    defaultLog.debug({ label: 'activity', message: 'uploadMedia', body: req.body });
+
     if (!req.body.media || !req.body.media.length) {
       // no media objects included, skipping media upload step
       return next();
@@ -318,19 +155,21 @@ function uploadMedia(): RequestHandler {
         return;
       }
 
-      let media;
+      let media: MediaBase64;
       try {
         media = new MediaBase64(rawMedia);
       } catch (error) {
+        defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
         throw {
           status: 400,
-          message: 'Included media was invalid/encoded incorrectly',
-          errors: [error]
+          message: 'Included media was invalid/encoded incorrectly'
         };
       }
 
       const metadata = {
-        filename: media.fileName,
+        filename: media.mediaName || '',
+        description: media.mediaDescription || '',
+        date: media.mediaDate || '',
         username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
@@ -340,7 +179,7 @@ function uploadMedia(): RequestHandler {
 
     const results = await Promise.all(s3UploadPromises);
 
-    req['mediaKeys'] = results.map((result) => result.Key);
+    req['mediaKeys'] = results.map(result => result.Key);
 
     next();
   };
@@ -353,9 +192,9 @@ function uploadMedia(): RequestHandler {
  */
 function createActivity(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'activity', message: 'body', body: req.body });
+    defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
 
-    const data: ActivityPostRequestBody = { ...req.body, mediaKeys: req['mediaKeys'] };
+    const data = { ...req.body, mediaKeys: req['mediaKeys'] };
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
 
@@ -368,35 +207,44 @@ function createActivity(): RequestHandler {
       };
     }
 
-    const sqlStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
+    try {
+      const sqlStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
 
-    if (!sqlStatement) {
-      throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
-      };
+      if (!sqlStatement) {
+        throw {
+          status: 400,
+          message: 'Failed to build SQL statement'
+        };
+      }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      const result = (response && response.rows && response.rows[0]) || null;
+
+      return res.status(200).json(result);
+    } catch (error) {
+      defaultLog.debug({ label: 'createActivity', message: 'error', error });
+      throw error;
+    } finally {
+      connection.release();
     }
-
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-    connection.release();
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    return res.status(200).json(result);
   };
 }
 
 /**
- * Fetches all activity records based on request search criteria.
+ * Updates an activity record.
  *
- * @return {RequestHandler}
+ * Note: An update consists of marking the existing record as 'deleted' and creating a new record with the updated data.
+ *
+ * @returns {RequestHandler}
  */
-function getAllActivities(): RequestHandler {
+function updateActivity(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'activity', message: 'body', body: req.body });
+    defaultLog.debug({ label: 'activity', message: 'updateActivity', body: req.params });
 
-    const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
+    const data = { ...req.body, mediaKeys: req['mediaKeys'] };
+
+    const sanitizedActivityData = new ActivityPostRequestBody(data);
 
     const connection = await getDBConnection();
 
@@ -407,21 +255,39 @@ function getAllActivities(): RequestHandler {
       };
     }
 
-    const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria);
+    try {
+      const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData);
 
-    if (!sqlStatement) {
-      throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
-      };
+      if (!sqlStatements || !sqlStatements.updateSQL || !sqlStatements.createSQL) {
+        throw {
+          status: 400,
+          message: 'Failed to build SQL statements'
+        };
+      }
+
+      let createResponse = null;
+
+      try {
+        // Perform both update and create operations as a single transaction
+        await connection.query('BEGIN');
+
+        await connection.query(sqlStatements.updateSQL.text, sqlStatements.updateSQL.values);
+        createResponse = await connection.query(sqlStatements.createSQL.text, sqlStatements.createSQL.values);
+
+        await connection.query('COMMIT');
+      } catch (error) {
+        await connection.query('ROLLBACK');
+        throw error;
+      }
+
+      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+
+      return res.status(200).json(result);
+    } catch (error) {
+      defaultLog.debug({ label: 'updateActivity', message: 'error', error });
+      throw error;
+    } finally {
+      connection.release();
     }
-
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-    connection.release();
-
-    const result = (response && response.rows) || null;
-
-    return res.status(200).json(result);
   };
 }

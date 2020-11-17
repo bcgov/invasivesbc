@@ -19,8 +19,8 @@ const poolConfig: PoolConfig = {
   port: DB_PORT,
   host: DB_HOST,
   max: 20,
-  connectionTimeoutMillis: 10000,
-  idleTimeoutMillis: 45000
+  connectionTimeoutMillis: 0, // default
+  idleTimeoutMillis: 10000 // default
 };
 
 defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });

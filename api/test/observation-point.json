@@ -1,16 +1,21 @@
 {
   "activity_type": "Observation",
-  "activity_sub_type": "Terrestrial Invasive Plant",
+  "activity_subtype": "Terrestrial Invasive Plant",
   "date": "2019-04-12",
   "deviceRequestUID": "string",
+  "geometry": [
+    {
+      "type": "Point",
+      "coordinates": [
+        -125.6,
+        48.3
+      ]
+    }
+  ],
   "locationAndGeometry": {
     "anchorPointY": 48.3,
     "anchorPointX": -125.6,
     "area": 0,
-    "geometry": {
-      "type": "Point",
-      "coordinates": [-125.6, 48.3]
-    },
     "jurisdiction": "string",
     "agency": "string",
     "observer1FirstName": "string",
@@ -19,7 +24,10 @@
     "generalComment": "string",
     "photoTaken": true
   },
-  "activityTypeData": {
+  "activity_data": {
+    "species_id": 123
+  },
+  "activity_type_data": {
     "negative_observation_ind": false,
     "aquatic_observation_ind": false,
     "primary_user_last_name": "mike",
@@ -33,7 +41,7 @@
     "sample_taken_ind": true,
     "sample_label_number": "string"
   },
-  "activitySubTypeData": {
+  "activity_subtype_data": {
     "species": "banana",
     "distribution": 123,
     "density": 123,

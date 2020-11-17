@@ -1,7 +1,7 @@
 import { Operation } from 'express-openapi';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('observation-controller');
+const defaultLog = getLogger('misc/version');
 
 export const GET: Operation = [
   (req, res, next) => {
