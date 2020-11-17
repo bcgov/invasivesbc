@@ -25,7 +25,13 @@ export async function up(knex: Knex): Promise<void> {
     alter table activity_incoming_data
     add column elevation integer;
 
-    COMMENT ON COLUMN ${DB_SCHEMA}.application_user.elevation IS 'Meters above sea level. Abstracted from the Federal Government API for the Canadian Digital Elevation Model (CDEM).';
+    COMMENT ON COLUMN ${DB_SCHEMA}.application_user.elevation IS 'Metres above sea level. Abstracted from the Federal Government API for the Canadian Digital Elevation Model (CDEM).';
+
+
+    alter table activity_incoming_data
+    add column biogeoclimatic_zones varchar(30);
+
+    COMMENT ON COLUMN ${DB_SCHEMA}.application_user.elevation IS 'Corporate provincial digital Biogeoclimatic Ecosystem Classification (BEC) Zone/Subzone/Variant/Phase map';
   `);
 }
 
