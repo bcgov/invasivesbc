@@ -84,7 +84,7 @@ export const TripDataControls: React.FC = (props) => {
         }
 
         try {
-          await databaseContext.database.upsert(String(row.activity_id), (existingDoc) => {
+          await databaseContext.database.upsert(row.activity_id, (existingDoc) => {
             return {
               ...existingDoc,
               docType: DocType.REFERENCE_ACTIVITY,
@@ -143,7 +143,7 @@ export const TripDataControls: React.FC = (props) => {
         }
 
         try {
-          await databaseContext.database.upsert('POI' + String(row.point_of_interest_id), (existingDoc) => {
+          await databaseContext.database.upsert('POI' + row.point_of_interest_id, (existingDoc) => {
             return {
               ...existingDoc,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,

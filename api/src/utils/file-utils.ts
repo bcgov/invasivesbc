@@ -48,11 +48,11 @@ export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}
     return null;
   }
 
-  const key = `${uuidv4()}-${media.fileName}`;
+  const key = `${uuidv4()}-${media.mediaName}`;
 
   return S3.upload({
     Bucket: OBJECT_STORE_BUCKET_NAME,
-    Body: media.fileBuffer,
+    Body: media.mediaBuffer,
     ContentType: media.contentType,
     Key: key,
     ACL: S3ACLRole.AUTH_READ,

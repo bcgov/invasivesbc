@@ -6,6 +6,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from '../map/MapPageControls';
+import { IPhoto } from 'components/photo/PhotoContainer';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -49,12 +50,15 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
   */
   const [doc, setDoc] = useState(null);
 
+  const [photos, setPhotos] = useState<IPhoto[]>([]);
+
   useEffect(() => {
     const getActivityData = async () => {
       const activityResults = await databaseContext.database.find({ selector: { _id: urlParams['id'] } });
 
       // TODO these are reference activities, so do we really have an extent to set? Or are we just zooming to where the geometry is?
       setGeometry(activityResults.docs[0].geometry);
+      setPhotos(activityResults.docs[0].photos);
       setDoc(activityResults.docs[0]);
     };
 
@@ -71,6 +75,7 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
         classes={classes}
         activity={doc}
         mapId={doc._id}
+        photoState={{ photos, setPhotos }}
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y

@@ -3,7 +3,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import { initialize } from 'express-openapi';
-import swaggerUi from 'swagger-ui-express';
+import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate } from './utils/auth-utils';
 import { getLogger } from './utils/logger';
 
@@ -29,10 +29,10 @@ app.use(function (req: any, res: any, next: any) {
 });
 
 // Initialize express-openapi framework
-const openAPIFramework = initialize({
-  apiDoc: './src/openapi/api-doc.yaml', // base open api spec, relative to node root
+initialize({
+  apiDoc: './src/openapi/api-doc.json', // base open api spec
   app: app, // express app to initialize
-  paths: './src/paths', // base folder for endpoint routes, relative to node root
+  paths: './src/paths', // base folder for endpoint routes
   routesGlob: '**/*.{ts,js}', // updated default to allow .ts
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/, // updated default to allow .ts
   promiseMode: true, // allow endpoint handlers to return promises
@@ -45,6 +45,10 @@ const openAPIFramework = initialize({
       // return true // bypass authentication
       return authenticate(req, scopes);
     }
+  },
+  securityFilter: async (req, res) => {
+    const updatedReq = await applyApiDocSecurityFilters(req);
+    res.status(200).json(updatedReq['apiDoc']);
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
@@ -60,9 +64,6 @@ const openAPIFramework = initialize({
     res.status(error.status || 500).json(error);
   }
 });
-
-// Serve pretty api docs
-app.use('/api/docs/', swaggerUi.serve, swaggerUi.setup(openAPIFramework.apiDoc));
 
 // Start api
 try {
