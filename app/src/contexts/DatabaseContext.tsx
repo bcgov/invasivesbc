@@ -3,7 +3,7 @@ import PouchDBFind from 'pouchdb-find';
 import PouchDBUpsert from 'pouchdb-upsert';
 import React, { useEffect, useState } from 'react';
 
-const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
+const DB_SCHEMA = process.env.REACT_APP_DB_SCHEMA || 'invasivesbc';
 
 export type IDatabaseContext = {
   database: PouchDB.Database<any>;
