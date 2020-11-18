@@ -73,6 +73,9 @@ const request = require('request');
     route.all('*', express.static(resourcePath));
     app.use('*', route);
 
+    // Log environment variables for debugging
+    console.log(process.env);
+
     // Logging
     console.log(`Starting express web server on port with resource path => ${port}: ${resourcePath}`);
     // Listing to port
