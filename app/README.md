@@ -45,3 +45,13 @@ On MacOS, in the app directory:
 6. `npx cap open ios`
 
 xCode will open and, after a short delay, will allow you to run the application in the simulator.
+
+# React
+
+## Environment Variables
+- With the exception of `NODE_ENV`, any environment variable that needs to be accessible by the react app (via `process.env.<var>`) must be prefixed with `REACT_APP_`.  If it is not prefixed, react will not read it, and it will be `undefined` when you try to access it.
+  - See: https://create-react-app.dev/docs/adding-custom-environment-variables
+
+## .env
+- React will read a `.env` or similar file by default, and will read any variables prefixed with `REACT_APP_`.
+  - See: https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used
