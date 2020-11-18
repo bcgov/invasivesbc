@@ -6,7 +6,10 @@ import { IPointOfInterestSearchCriteria, ICreatePointOfInterest } from 'interfac
 import qs from 'qs';
 import { useContext, useMemo } from 'react';
 
-const API_URL = `${process.env.API_HOST}:${process.env.API_PORT}`;
+const API_HOST = process.env.API_HOST;
+const API_PORT = process.env.API_PORT;
+
+const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST;
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
