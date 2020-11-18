@@ -134,7 +134,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
         formStatus: FormValidationStatus.NOT_VALIDATED
       });
     }),
-    []
+    [activity]
   );
 
   useEffect(() => {
