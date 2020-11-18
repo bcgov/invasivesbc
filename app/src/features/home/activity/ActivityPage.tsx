@@ -120,7 +120,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         };
       });
     }),
-    []
+    [doc]
   );
 
   useEffect(() => {
