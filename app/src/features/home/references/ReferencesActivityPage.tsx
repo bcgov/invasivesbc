@@ -5,7 +5,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Feature } from 'geojson';
-import { MapContextMenuData } from '../map/MapPageControls';
+import { MapContextMenuData } from '../map/MapContextMenu';
 
 const useStyles = makeStyles((theme) => ({
   heading: {

@@ -4,7 +4,7 @@ import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { MapContextMenuData } from '../map/MapPageControls';
+import { MapContextMenuData } from '../map/MapContextMenu';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
