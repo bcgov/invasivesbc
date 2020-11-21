@@ -3,7 +3,7 @@ import * as Knex from "knex";
 const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
 
 /**
- * Add an elevation column to the activity_incoming_data table.
+ * Add an new columns for contextual data to the activity_incoming_data table.
  * Also rename the 'forest_cover_ownership' column to just 'ownership'.
  *
  * @export
