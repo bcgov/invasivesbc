@@ -376,10 +376,8 @@
         "required": [
           "species_agency_code",
           "jurisdiction_code",
-          "activity_status",
           "species_id",
           "access_description",
-          "media_indicator",
           "created_date_on_device",
           "updated_date_on_device"
         ],
@@ -406,16 +404,6 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "activity_status": {
-            "type": "string",
-            "title": "Activity status",
-            "enum": [
-              "sync",
-              "done",
-              "pending",
-              "errors"
-            ]
-          },
           "species_id": {
             "type": "string",
             "title": "Species"
@@ -429,10 +417,6 @@
             "type": "string",
             "title": "Access Description",
             "maximum": 300
-          },
-          "media_indicator": {
-            "type": "boolean",
-            "title": "Photo"
           },
           "created_date_on_device": {
             "type": "string",

@@ -36,16 +36,12 @@ const Treatment_ChemicalPlant = {
 const Activity = {
   species_agency_code: {},
   jurisdiction_code: {},
-  activity_status: {},
   species_id: {},
   general_comment: {
     'ui:widget': 'textarea'
   },
   access_description: {
     'ui:widget': 'textarea'
-  },
-  media_indicator: {
-    'ui:widget': 'radio'
   },
   created_date_on_device: {
     'ui:widget': 'date'
