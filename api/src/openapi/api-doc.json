@@ -377,9 +377,7 @@
           "species_agency_code",
           "jurisdiction_code",
           "species_id",
-          "access_description",
-          "created_date_on_device",
-          "updated_date_on_device"
+          "access_description"
         ],
         "properties": {
           "species_agency_code": {
@@ -418,17 +416,9 @@
             "title": "Access Description",
             "maximum": 300
           },
-          "created_date_on_device": {
-            "type": "string",
-            "title": "Created date on device"
-          },
-          "updated_date_on_device": {
-            "type": "string",
-            "title": "Updated date on device"
-          },
           "paper_file": {
             "type": "array",
-            "title": "Paper file",
+            "title": "Paper File ID",
             "items": {
               "$ref": "#/components/schemas/PaperFile"
             }
@@ -442,7 +432,6 @@
         "required": [
           "observation_date",
           "observation_time",
-          "observation_type",
           "observer_first_name",
           "observer_last_name",
           "reported_area",
@@ -457,10 +446,6 @@
           "observation_time": {
             "type": "string",
             "title": "Time"
-          },
-          "observation_type": {
-            "type": "string",
-            "title": "Type"
           },
           "observer_first_name": {
             "type": "string",
@@ -1376,8 +1361,8 @@
         }
       },
       "PaperFile": {
-        "title": "Paper file",
-        "description": "Paper files",
+        "title": "Paper File ID",
+        "description": "Paper Files",
         "type": "object",
         "required": [
           "description"

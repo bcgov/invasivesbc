@@ -13,7 +13,6 @@ const Observation = {
     'ui:widget': 'date'
   },
   observation_time: {},
-  observation_type: {},
   observer_first_name: {},
   observer_last_name: {},
   reported_area: {},

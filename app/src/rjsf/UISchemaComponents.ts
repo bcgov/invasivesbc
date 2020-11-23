@@ -43,12 +43,6 @@ const Activity = {
   access_description: {
     'ui:widget': 'textarea'
   },
-  created_date_on_device: {
-    'ui:widget': 'date'
-  },
-  updated_date_on_device: {
-    'ui:widget': 'date'
-  },
   paper_file: {
     items: {
       ...BaseUISchemaComponents.PaperFile
