@@ -41,9 +41,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASEURLMOBILE}}/misc/version",
+							"raw": "{{BASEURL}}/misc/version",
 							"host": [
-								"{{BASEURLMOBILE}}"
+								"{{BASEURL}}"
 							],
 							"path": [
 								"misc",
@@ -133,9 +133,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASEURLMOBILE}}/activity/2",
+							"raw": "{{BASEURL}}/activity/2",
 							"host": [
-								"{{BASEURLMOBILE}}"
+								"{{BASEURL}}"
 							],
 							"path": [
 								"activity",
@@ -145,37 +145,6 @@
 						"description": "Get a single activity by its ID.\r\nAlso fetches any media associated with the activity."
 					},
 					"response": [
-						{
-							"name": "Unauthorized user",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/activity",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"activity"
-									]
-								}
-							},
-							"status": "Unauthorized",
-							"code": 401,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
-						},
 						{
 							"name": "Created",
 							"originalRequest": {
@@ -206,6 +175,37 @@
 							],
 							"cookie": [],
 							"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
+						},
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
 						}
 					]
 				},
@@ -242,9 +242,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASEURLMOBILE}}/activity",
+							"raw": "{{BASEURL}}/activity",
 							"host": [
-								"{{BASEURLMOBILE}}"
+								"{{BASEURL}}"
 							],
 							"path": [
 								"activity"
@@ -293,9 +293,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASEURLMOBILE}}/activities",
+							"raw": "{{BASEURL}}/activities",
 							"host": [
-								"{{BASEURLMOBILE}}"
+								"{{BASEURL}}"
 							],
 							"path": [
 								"activities"
@@ -345,9 +345,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{BASEURLMOBILE}}/media/0981685c-d2b1-47e0-91a4-099d97a91676-BunnyPNG.png",
+							"raw": "{{BASEURL}}/media/0981685c-d2b1-47e0-91a4-099d97a91676-BunnyPNG.png",
 							"host": [
-								"{{BASEURLMOBILE}}"
+								"{{BASEURL}}"
 							],
 							"path": [
 								"media",
@@ -462,7 +462,7 @@
 						},
 						{
 							"key": "client_id",
-							"value": "invasives-bc",
+							"value": "{{KEYCLOAK_CLIENT_ID}}",
 							"type": "text"
 						},
 						{
@@ -472,7 +472,7 @@
 						},
 						{
 							"key": "password",
-							"value": "{{POSTMAN_PW}}",
+							"value": "{{POSTMAN_PASSWORD}}",
 							"type": "text"
 						},
 						{
@@ -518,9 +518,9 @@
 					"        mode: 'urlencoded',",
 					"        urlencoded: [",
 					"            { key: 'username', value: pm.environment.get('POSTMAN_USERNAME') },",
-					"            { key: 'password', value: pm.environment.get('POSTMAN_PW') },",
+					"            { key: 'password', value: pm.environment.get('POSTMAN_PASSWORD') },",
 					"            { key: 'scope', value: 'openid' },",
-					"            { key: 'client_id', value: 'invasives-bc' },",
+					"            { key: 'client_id', value: pm.environment.get('KEYCLOAK_CLIENT_ID') },",
 					"            { key: 'grant_type', value: 'password' }",
 					"        ]",
 					"    }",

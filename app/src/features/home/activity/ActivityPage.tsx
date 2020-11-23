@@ -34,6 +34,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const databaseContext = useContext(DatabaseContext);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
@@ -48,6 +50,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
 
   const [doc, setDoc] = useState(null);
+  const docId = doc && doc._id;
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
@@ -93,13 +96,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} event the form submit event
    */
   const onFormSubmitSuccess = async (event: any) => {
+    const updatedFormValues = {
+      formData: event.formData,
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
+      formStatus: FormValidationStatus.VALID
+    };
+
+    setDoc({ ...doc, ...updatedFormValues });
+
     await databaseContext.database.upsert(doc._id, (activity) => {
       return {
         ...activity,
-        formData: event.formData,
-        status: ActivityStatus.EDITED,
-        dateUpdated: new Date(),
-        formStatus: FormValidationStatus.VALID
+        ...updatedFormValues
       };
     });
   };
@@ -112,21 +121,24 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} event the form change event
    */
   const onFormChange = useCallback(
-    debounced(500, async (event: any) => {
-      await databaseContext.database.upsert(doc._id, (activity) => {
+    debounced(100, async (event: any) => {
+      const updatedFormValues = {
+        formData: event.formData,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date(),
+        formStatus: FormValidationStatus.VALID
+      };
 
-        console.log('test', event.formData);
+      setDoc({ ...doc, ...updatedFormValues });
 
+      await databaseContext.database.upsert(docId, (activity) => {
         return {
           ...activity,
-          formData: event.formData,
-          status: ActivityStatus.EDITED,
-          dateUpdated: new Date(),
-          formStatus: FormValidationStatus.NOT_VALIDATED
+          ...updatedFormValues
         };
       });
     }),
-    [doc]
+    [docId]
   );
 
   useEffect(() => {
@@ -145,13 +157,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       setExtent(activityResults.docs[0].extent);
       setPhotos(activityResults.docs[0].photos || []);
       setDoc(activityResults.docs[0]);
+
+      setIsLoading(false);
     };
 
     getActivityData();
   }, [databaseContext]);
 
   useEffect(() => {
-    if (!doc) {
+    if (isLoading) {
       return;
     }
 
@@ -159,7 +173,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   }, [geometry]);
 
   useEffect(() => {
-    if (!doc) {
+    if (isLoading) {
       return;
     }
 
@@ -167,14 +181,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   }, [extent]);
 
   useEffect(() => {
-    if (!doc) {
+    if (isLoading) {
       return;
     }
 
     savePhotos(photos);
   }, [photos]);
 
-  if (!doc) {
+  if (isLoading) {
     return <CircularProgress />;
   }
 

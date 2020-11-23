@@ -14,7 +14,7 @@ import FormControlsComponent, { IFormControlsComponentProps } from './FormContro
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
   activity: any;
-  isReadOnly?: boolean;
+  isDisabled?: boolean;
   /**
    * A function executed everytime the form changes.
    *
@@ -57,7 +57,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     return <CircularProgress />;
   }
 
-  const isDisabled = props.isReadOnly || props.activity?.sync?.status === ActivitySyncStatus.SYNC_SUCCESSFUL || false;
+  const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SYNC_SUCCESSFUL || false;
 
   return (
     <Box>
