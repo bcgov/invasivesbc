@@ -416,11 +416,11 @@
             "title": "Access Description",
             "maximum": 300
           },
-          "paper_file": {
+          "paper_file_id": {
             "type": "array",
             "title": "Paper File ID",
             "items": {
-              "$ref": "#/components/schemas/PaperFile"
+              "$ref": "#/components/schemas/PaperFileID"
             }
           }
         }
@@ -435,7 +435,6 @@
           "observer_first_name",
           "observer_last_name",
           "reported_area",
-          "sample_taken",
           "negative_obs_ind"
         ],
         "properties": {
@@ -463,10 +462,6 @@
             "minimum": 1,
             "maximum": 100
           },
-          "sample_taken": {
-            "type": "boolean",
-            "title": "Sample Taken"
-          },
           "sample_number": {
             "type": "string",
             "title": "Sample Number",
@@ -474,7 +469,8 @@
           },
           "negative_obs_ind": {
             "type": "boolean",
-            "title": "Negative Observation"
+            "title": "Negative Observation",
+            "default": false
           }
         }
       },
@@ -581,7 +577,8 @@
           },
           "flowering": {
             "type": "boolean",
-            "title": "Flowering"
+            "title": "Flowering",
+            "default": false
           },
           "plant_life_stage": {
             "type": "string",
@@ -605,27 +602,33 @@
           },
           "legacy_site_ind": {
             "type": "boolean",
-            "title": "Legacy site"
+            "title": "Legacy site",
+            "default": false
           },
           "early_detection_rapid_resp_ind": {
             "type": "boolean",
-            "title": "Early Detection"
+            "title": "Early Detection",
+            "default": false
           },
           "research_detection_ind": {
             "type": "boolean",
-            "title": "Research Detection"
+            "title": "Research Detection",
+            "default": false
           },
           "well_ind": {
             "type": "boolean",
-            "title": "Visible well nearby"
+            "title": "Visible well nearby",
+            "default": false
           },
           "special_care_ind": {
             "type": "boolean",
-            "title": "Special Care"
+            "title": "Special Care",
+            "default": false
           },
           "biological_ind": {
             "type": "boolean",
-            "title": "Biological"
+            "title": "Biological",
+            "default": false
           }
         }
       },
@@ -643,7 +646,6 @@
           "legacy_site_ind",
           "early_detection_rapid_resp_ind",
           "research_detection_ind",
-          "sample_taken",
           "special_care_ind",
           "biological_ind",
           "secchi_depth",
@@ -700,10 +702,6 @@
           "research_detection_ind": {
             "type": "boolean",
             "title": "Research Detection"
-          },
-          "sample_taken": {
-            "type": "boolean",
-            "title": "Sample Taken"
           },
           "sample_point_number": {
             "type": "string",
@@ -1360,9 +1358,8 @@
           }
         }
       },
-      "PaperFile": {
+      "PaperFileID": {
         "title": "Paper File ID",
-        "description": "Paper Files",
         "type": "object",
         "required": [
           "description"
@@ -1463,11 +1460,11 @@
             "type": "string",
             "title": "Updated date on device"
           },
-          "paper_file": {
+          "paper_file_id": {
             "type": "array",
-            "title": "Paper file",
+            "title": "Paper File ID",
             "items": {
-              "$ref": "#/components/schemas/PaperFile"
+              "$ref": "#/components/schemas/PaperFileID"
             }
           }
         }

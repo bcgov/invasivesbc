@@ -57,6 +57,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
   const saveGeometry = async (geometry: Feature[]) => {
+
+    console.log(geometry);
+
     await databaseContext.database.upsert(doc._id, (dbDoc) => {
       return { ...dbDoc, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
@@ -111,6 +114,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormChange = useCallback(
     debounced(500, async (event: any) => {
       await databaseContext.database.upsert(doc._id, (activity) => {
+
+        console.log('test', event.formData);
+
         return {
           ...activity,
           formData: event.formData,

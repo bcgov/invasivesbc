@@ -10,15 +10,12 @@
 
 const Observation = {
   observation_date: {
-    'ui:widget': 'date'
+    'ui:widget': 'date-time'
   },
   observation_time: {},
   observer_first_name: {},
   observer_last_name: {},
   reported_area: {},
-  sample_taken: {
-    'ui:widget': 'radio'
-  },
   sample_number: {},
   negative_obs_ind: {
     'ui:widget': 'radio'
@@ -77,9 +74,6 @@ const Observation_PlantAquatic = {
     'ui:widget': 'radio'
   },
   research_detection_ind: {
-    'ui:widget': 'radio'
-  },
-  sample_taken: {
     'ui:widget': 'radio'
   },
   sample_point_number: {},
@@ -227,7 +221,7 @@ const Monitoring_BiologicalTerrestrialAnimal = {
   monitoring_details: {}
 };
 
-const PaperFile = {
+const PaperFileID = {
   description: {}
 };
 
@@ -256,7 +250,7 @@ const BaseUISchemaComponents = {
   Monitoring_MechanicalTerrestrialAnimal,
   Monitoring_ChemicalTerrestrialAnimal,
   Monitoring_BiologicalTerrestrialAnimal,
-  PaperFile,
+  PaperFileID,
   Herbicide
 };
 

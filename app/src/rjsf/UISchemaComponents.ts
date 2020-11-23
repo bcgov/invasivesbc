@@ -43,9 +43,9 @@ const Activity = {
   access_description: {
     'ui:widget': 'textarea'
   },
-  paper_file: {
+  paper_file_id: {
     items: {
-      ...BaseUISchemaComponents.PaperFile
+      ...BaseUISchemaComponents.PaperFileID
     }
   }
 };
