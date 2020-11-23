@@ -5,16 +5,20 @@
   "deviceRequestUID": "string",
   "geometry": [
     {
-      "type": "Point",
-      "coordinates": [
-        -125.6,
-        48.3
-      ]
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -124.95511,
+          49.29153
+        ]
+      },
+      "properties": {}
     }
   ],
   "locationAndGeometry": {
-    "anchorPointY": 48.3,
-    "anchorPointX": -125.6,
+    "anchorPointY": 49.29153,
+    "anchorPointX": -124.95511,
     "area": 0,
     "jurisdiction": "string",
     "agency": "string",
