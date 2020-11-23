@@ -32,7 +32,7 @@ services:
       - nginx
     environment:
       - APP_PORT=${APP_PORT}
-      - LOCAL_API_HOST=app_api:${API_PORT}
+      - LOCAL_API_HOST=app_api:${REACT_APP_API_PORT}
       - ENVIRONMENT=local
       - VERSION=${VERSION}
 

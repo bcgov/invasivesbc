@@ -38,7 +38,7 @@ const request = require('request');
     // Setting configure path
     app.use('/config', (req, resp) => {
         const config = {
-            apiHost: process.env.API_HOST || 'localhost',
+            apiHost: process.env.REACT_APP_API_HOST || 'localhost',
             changeId: process.env.CHANGE_VERSION || 'NA',
             env: process.env.ENVIRONMENT || 'local',
             version: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
@@ -53,7 +53,7 @@ const request = require('request');
     // Health check
     app.use('/healthcheck', (_, resp) => {
         // Request server api
-        const host = process.env.API_HOST || process.env.LOCAL_API_HOST || 'localhost'
+        const host = process.env.REACT_APP_API_HOST || process.env.LOCAL_API_HOST || 'localhost'
         request(`https://${host}/`, (err, res) => {
             if (err) {
                 console.log(`Error: ${err}, host: ${host}`);
@@ -72,6 +72,9 @@ const request = require('request');
     const route = express.Router();
     route.all('*', express.static(resourcePath));
     app.use('*', route);
+
+    // Log environment variables for debugging
+    console.log(process.env);
 
     // Logging
     console.log(`Starting express web server on port with resource path => ${port}: ${resourcePath}`);

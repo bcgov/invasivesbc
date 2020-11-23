@@ -38,6 +38,8 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
 
   const invasivesApi = useInvasivesApi();
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
   const [contextMenuState, setContextMenuState] = useState<MapContextMenuData>({ isOpen: false, lat: 0, lng: 0 });
@@ -125,7 +127,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    * @param {*} event the form change event
    */
   const onFormChange = useCallback(
-    debounced(500, (event: any) => {
+    debounced(100, (event: any) => {
       return setActivity({
         ...activity,
         formData: event.formData,
@@ -134,7 +136,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
         formStatus: FormValidationStatus.NOT_VALIDATED
       });
     }),
-    []
+    [activity]
   );
 
   useEffect(() => {
@@ -167,13 +169,15 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       setGeometry(activityDoc.geometry);
       setPhotos(activityDoc.photos);
       setActivity(activityDoc);
+
+      setIsLoading(false);
     };
 
     getActivityData();
   }, []);
 
   useEffect(() => {
-    if (!activity) {
+    if (isLoading) {
       return;
     }
 
@@ -181,14 +185,14 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
   }, [geometry]);
 
   useEffect(() => {
-    if (!activity) {
+    if (isLoading) {
       return;
     }
 
     savePhotos(photos);
   }, [photos]);
 
-  if (!activity) {
+  if (isLoading) {
     return <CircularProgress />;
   }
 
