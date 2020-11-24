@@ -117,7 +117,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     setDoc({ ...doc, formData: updatedFormData });
 
     await databaseContext.database.upsert(doc._id, (dbDoc) => {
-      return { ...dbDoc, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+      return { ...dbDoc, formData: updatedFormData, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
   };
 
