@@ -430,21 +430,16 @@
         "description": "Basic information captured for all observations",
         "type": "object",
         "required": [
-          "observation_date",
-          "observation_time",
           "observer_first_name",
           "observer_last_name",
           "reported_area",
           "negative_obs_ind"
         ],
         "properties": {
-          "observation_date": {
+          "observation_date_time": {
             "type": "string",
-            "title": "Date"
-          },
-          "observation_time": {
-            "type": "string",
-            "title": "Time"
+            "format": "date-time",
+            "title": "Date and Time"
           },
           "observer_first_name": {
             "type": "string",
@@ -592,10 +587,6 @@
             "type": "string",
             "title": "Seed Stage"
           },
-          "sample_identifier": {
-            "type": "string",
-            "title": "Sample ID"
-          },
           "range_unit_number": {
             "type": "string",
             "title": "Range Unit"
@@ -683,10 +674,6 @@
           "plant_seed_stage": {
             "type": "string",
             "title": "Seed Stage"
-          },
-          "sample_identifier": {
-            "type": "string",
-            "title": "Sample ID"
           },
           "range_unit_number": {
             "type": "string",

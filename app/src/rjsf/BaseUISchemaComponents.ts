@@ -9,13 +9,14 @@
  */
 
 const Observation = {
-  observation_date: {
-    'ui:widget': 'date-time'
+  observation_date_time: {
+    'ui:widget': 'datetime'
   },
-  observation_time: {},
   observer_first_name: {},
   observer_last_name: {},
-  reported_area: {},
+  reported_area: {
+    'ui:readonly': true
+  },
   sample_number: {},
   negative_obs_ind: {
     'ui:widget': 'radio'
@@ -36,7 +37,6 @@ const Observation_PlantTerrestial = {
   plant_life_stage: {},
   plant_health: {},
   plant_seed_stage: {},
-  sample_identifier: {},
   range_unit_number: {},
   legacy_site_ind: {
     'ui:widget': 'radio'
@@ -65,7 +65,6 @@ const Observation_PlantAquatic = {
   plant_life_stage: {},
   plant_health: {},
   plant_seed_stage: {},
-  sample_identifier: {},
   range_unit_number: {},
   legacy_site_ind: {
     'ui:widget': 'radio'
