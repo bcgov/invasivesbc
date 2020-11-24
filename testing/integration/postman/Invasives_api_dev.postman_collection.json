@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "82de4be2-8576-48df-bbda-c7f63bc68f71",
+		"_postman_id": "2dcd7ca5-18ff-4b45-9065-893b958969d9",
 		"name": "InvasivesBC-API-DEV",
 		"description": "API for InvasivesBC (Ionic Version)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,14 +15,14 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3b7e6747-04ff-446e-8c02-1a36ea9eb16d",
+								"id": "b9032189-cb0f-4b86-b7e6-e4e6081c729b",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Body matches 'dev-'\", function () {\r",
@@ -95,14 +95,14 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "521d6389-b96c-4114-bd27-752ba90daa6f",
+								"id": "707f9683-bf56-45f2-9700-5057b81bd026",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -133,13 +133,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASEURL}}/activity/2",
+							"raw": "{{BASEURL}}/activity/fa4777a2-7c52-4674-8885-7f1b6816e584",
 							"host": [
 								"{{BASEURL}}"
 							],
 							"path": [
 								"activity",
-								"2"
+								"fa4777a2-7c52-4674-8885-7f1b6816e584"
 							]
 						},
 						"description": "Get a single activity by its ID.\r\nAlso fetches any media associated with the activity."
@@ -215,14 +215,14 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "dfb86ba5-110b-4416-9ba8-f007ce93892e",
+								"id": "4350465d-0b27-4841-a12e-cc6bb19e6e69",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -234,7 +234,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"media\": [],\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ],\r\n                        [\r\n                            -123.3797264099121,\r\n                            48.441842443378555\r\n                        ],\r\n                        [\r\n                            -123.36264610290526,\r\n                            48.435692728712105\r\n                        ],\r\n                        [\r\n                            -123.3467674255371,\r\n                            48.448333001219005\r\n                        ],\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ]\r\n                    ]\r\n                ]\r\n            },\r\n            \"properties\": {}\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"species_id\": \"123456\",\r\n            \"activity_status\": \"pending\",\r\n            \"media_indicator\": true,\r\n            \"jurisdiction_code\": \"MOT\",\r\n            \"access_description\": \"fence\",\r\n            \"species_agency_code\": \"CPR\",\r\n            \"created_date_on_device\": \"2020-10-15\",\r\n            \"updated_date_on_device\": \"2020-10-15\"\r\n        },\r\n        \"activity_type_data\": {},\r\n        \"activity_subtype_data\": {\r\n            \"plant_count\": 3,\r\n            \"biological_agent\": \"bioAgent\",\r\n            \"duration_of_count\": 4,\r\n            \"treatment_contractor\": \"contractorName\",\r\n            \"applicator1_last_name\": \"lastName\",\r\n            \"applicator1_first_name\": \"firsTName\",\r\n            \"biological_agent_count\": 3,\r\n            \"biological_agent_presence\": \"yes\"\r\n        }\r\n    },\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"Activity_Treatment_BiologicalDispersalPlant\"\r\n}",
+							"raw": "{\r\n    \"activity_id\": \"fa4777a2-7c52-4674-8885-7f1b6816e584\",\r\n    \"created_timestamp\": \"2020-11-24T17:55:33+0000\",\r\n    \"media\": [],\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ],\r\n                        [\r\n                            -123.3797264099121,\r\n                            48.441842443378555\r\n                        ],\r\n                        [\r\n                            -123.36264610290526,\r\n                            48.435692728712105\r\n                        ],\r\n                        [\r\n                            -123.3467674255371,\r\n                            48.448333001219005\r\n                        ],\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ]\r\n                    ]\r\n                ]\r\n            },\r\n            \"properties\": {}\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"species_id\": \"123456\",\r\n            \"activity_status\": \"pending\",\r\n            \"media_indicator\": true,\r\n            \"jurisdiction_code\": \"MOT\",\r\n            \"access_description\": \"fence\",\r\n            \"species_agency_code\": \"CPR\",\r\n            \"created_date_on_device\": \"2020-10-15\",\r\n            \"updated_date_on_device\": \"2020-10-15\"\r\n        },\r\n        \"activity_type_data\": {},\r\n        \"activity_subtype_data\": {\r\n            \"plant_count\": 3,\r\n            \"biological_agent\": \"bioAgent\",\r\n            \"duration_of_count\": 4,\r\n            \"treatment_contractor\": \"contractorName\",\r\n            \"applicator1_last_name\": \"lastName\",\r\n            \"applicator1_first_name\": \"firsTName\",\r\n            \"biological_agent_count\": 3,\r\n            \"biological_agent_presence\": \"yes\"\r\n        }\r\n    },\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"Activity_Treatment_BiologicalDispersalPlant\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -253,6 +253,51 @@
 						"description": "Create a new activitiy, and upload any included media to S3."
 					},
 					"response": []
+				},
+				{
+					"name": "/activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "25342b72-11af-4377-8416-7fcf8d6976ea",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"activity_id\": \"fa4777a2-7c52-4674-8885-7f1b6816e584\",\r\n    \"created_timestamp\": \"2020-11-25T17:55:33+0000\",\r\n    \"media\": [],\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ],\r\n                        [\r\n                            -123.3797264099121,\r\n                            48.441842443378555\r\n                        ],\r\n                        [\r\n                            -123.36264610290526,\r\n                            48.435692728712105\r\n                        ],\r\n                        [\r\n                            -123.3467674255371,\r\n                            48.448333001219005\r\n                        ],\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ]\r\n                    ]\r\n                ]\r\n            },\r\n            \"properties\": {}\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"species_id\": \"1234567\",\r\n            \"activity_status\": \"done\",\r\n            \"media_indicator\": false,\r\n            \"jurisdiction_code\": \"MOT\",\r\n            \"access_description\": \"fence\",\r\n            \"species_agency_code\": \"CPR\",\r\n            \"created_date_on_device\": \"2020-10-16\",\r\n            \"updated_date_on_device\": \"2020-10-16\"\r\n        },\r\n        \"activity_type_data\": {},\r\n        \"activity_subtype_data\": {\r\n            \"plant_count\": 3,\r\n            \"biological_agent\": \"bioAgentOrange\",\r\n            \"duration_of_count\": 4,\r\n            \"treatment_contractor\": \"contractorName2\",\r\n            \"applicator1_last_name\": \"lastName2\",\r\n            \"applicator1_first_name\": \"firsTName2\",\r\n            \"biological_agent_count\": 3,\r\n            \"biological_agent_presence\": \"yes\"\r\n        }\r\n    },\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"Activity_Treatment_BiologicalDispersalPlant\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURL}}/activity",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"activity"
+							]
+						},
+						"description": "Update an existing activitiy, and upload any included media to S3."
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -266,14 +311,14 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9cdfaf12-0a25-4e85-b34d-be0dd01884bd",
+								"id": "aaa55be1-1d1d-4a47-8b9c-d710a9eec822",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -312,19 +357,19 @@
 			"name": "media",
 			"item": [
 				{
-					"name": "/media/{key}",
+					"name": "/media",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "082f9822-b4d7-41f1-84bc-f5cc9183b294",
+								"id": "c9a5e221-933c-4a32-a12b-ee1b9eb7591f",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -345,16 +390,22 @@
 							}
 						],
 						"url": {
-							"raw": "{{BASEURL}}/media/0981685c-d2b1-47e0-91a4-099d97a91676-BunnyPNG.png",
+							"raw": "{{BASEURL}}/media/?key[0]=860f95b6-cd79-4e09-970e-aa87d7cacdd2-1606241258870.jpeg",
 							"host": [
 								"{{BASEURL}}"
 							],
 							"path": [
 								"media",
-								"0981685c-d2b1-47e0-91a4-099d97a91676-BunnyPNG.png"
+								""
+							],
+							"query": [
+								{
+									"key": "key[0]",
+									"value": "860f95b6-cd79-4e09-970e-aa87d7cacdd2-1606241258870.jpeg"
+								}
 							]
 						},
-						"description": "Fetch a single media item based on its S3 key."
+						"description": "Fetch one ore more media items based on their S3 keys.\r\n\r\nKeys need to be in the query.\r\n\r\nExample: .../api/media/?key[0]=123&key[1]=456"
 					},
 					"response": [
 						{
@@ -420,6 +471,116 @@
 							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
 						}
 					]
+				},
+				{
+					"name": "/media/{key}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a7e8effd-a582-4119-b6d3-b690256f61e1",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+								"key": "Authorization",
+								"value": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BASEURL}}/media/860f95b6-cd79-4e09-970e-aa87d7cacdd2-1606241258870.jpeg",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"media",
+								"860f95b6-cd79-4e09-970e-aa87d7cacdd2-1606241258870.jpeg"
+							]
+						},
+						"description": "Fetch a signed url for a single media item based on its S3 key.\r\n\r\nKey needs to be in the path.\r\n\r\nExample: .../api/media/123"
+					},
+					"response": [
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+						},
+						{
+							"name": "Created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
+						}
+					]
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -430,7 +591,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "1e2b798a-a356-41aa-afa7-6286d56722b5",
+						"id": "370b1f21-1472-437f-af3f-9d93e8c59ce2",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -507,7 +668,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "4a0184bc-b929-494c-ae0f-ffebf764fecc",
+				"id": "f25a48d1-4081-465e-9ff7-fc9e110f2aad",
 				"type": "text/javascript",
 				"exec": [
 					"const echoPostRequest = {",
@@ -558,7 +719,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "0b011284-f4cb-4a9d-adfb-6a8769d015af",
+				"id": "fbb36e9a-9daf-4105-81bd-94921ea4e5c2",
 				"type": "text/javascript",
 				"exec": [
 					""
