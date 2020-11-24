@@ -13,7 +13,7 @@ import { getFileFromS3 } from '../utils/file-utils';
 export const GET: Operation = [getMedia()];
 
 GET.apiDoc = {
-  description: 'Fetches a signed url for a single media item based on its key.',
+  description: 'Fetches one or more media items based on their keys.',
   tags: ['media'],
   security: [
     {
