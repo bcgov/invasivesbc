@@ -9,7 +9,7 @@ import { ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounced } from 'utils/FunctionUtils';
-import { MapContextMenuData } from '../map/MapPageControls';
+import { MapContextMenuData } from '../map/MapContextMenu';
 
 const useStyles = makeStyles((theme) => ({
   heading: {

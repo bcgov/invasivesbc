@@ -19,7 +19,7 @@ import TripDataControls from 'components/trip/TripDataControls';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState } from 'react';
-import { MapContextMenuData } from '../map/MapPageControls';
+import { MapContextMenuData } from '../map/MapContextMenu';
 
 interface IPlanPageProps {
   classes?: any;
