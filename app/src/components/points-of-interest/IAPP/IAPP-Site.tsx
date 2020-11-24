@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
-import { ExpandMore, FormatAlignCenter } from '@material-ui/icons';
+import { ExpandMore } from '@material-ui/icons';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({

@@ -1,6 +1,5 @@
 import { Button, CircularProgress, Container, Grid, makeStyles, Theme } from '@material-ui/core';
 import clsx from 'clsx';
-import ActivityComponent from 'components/activity/ActivityComponent';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
 import { IAPPSite } from 'components/points-of-interest/IAPP/IAPP-Site';
@@ -8,8 +7,7 @@ import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
-import React, { ReactChildren, useContext, useEffect, useState } from 'react';
-import ActivityPage from '../activity/ActivityPage';
+import React, {  useContext, useEffect, useState } from 'react';
 import { contextMenuType, MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
