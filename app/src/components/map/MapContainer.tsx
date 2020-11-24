@@ -1,5 +1,5 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { MapContextMenuData } from 'features/home/map/MapPageControls';
+import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature } from 'geojson';
 import * as L from 'leaflet';
 import 'leaflet-draw';
@@ -240,8 +240,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
     if (props.interactiveGeometryState) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-        console.log(interactObj);
-        console.log('after');
 
         const style = {
           color: interactObj.color,

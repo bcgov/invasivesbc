@@ -4,10 +4,10 @@ import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { MapContextMenuData } from 'features/home/map/MapPageControls';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
+import { MapContextMenuData } from '../map/MapContextMenu';
 
 const useStyles = makeStyles((theme) => ({
   heading: {

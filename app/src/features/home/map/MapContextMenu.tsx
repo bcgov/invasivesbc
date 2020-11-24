@@ -28,6 +28,11 @@ const Transition = React.forwardRef<React.FC, SlideProps>((TransitionProps, ref)
   return <Slide direction="up" ref={ref} {...TransitionProps} />;
 });
 
+export enum contextMenuType {
+  default = 'default',
+  passThrough = 'passThrough'
+}
+
 interface MapContextMenuProps {
   contextMenuState: {
     state: MapContextMenuData;
