@@ -430,6 +430,7 @@
         "description": "Basic information captured for all observations",
         "type": "object",
         "required": [
+          "observation_date_time",
           "observer_first_name",
           "observer_last_name",
           "reported_area",
