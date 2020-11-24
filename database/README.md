@@ -69,5 +69,8 @@ pg_restore dumpFileName
 
 `Error: knex: Required configuration option 'client' is missing.`
 
+Run from database/src/:
+npx knex --knexfile ./knexfile.ts migrate:make <insert name here> --env local
+
 - Double check that your environment variables have been set correctly.
 - Double check that the line endings of the `.env` file are `LF` and not `CLRF`
