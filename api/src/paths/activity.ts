@@ -11,6 +11,7 @@ import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
 import { uploadFileToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
+import { commit as commitContext} from '../utils/context-queries';
 
 const defaultLog = getLogger('activity');
 
@@ -220,6 +221,9 @@ function createActivity(): RequestHandler {
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
       const result = (response && response.rows && response.rows[0]) || null;
+
+      // kick of asynchronous context collection activities
+      commitContext(result);
 
       return res.status(200).json(result);
     } catch (error) {
