@@ -527,6 +527,7 @@
           "specific_use_code",
           "slope_code",
           "aspect_code",
+          "invasive_plant_code",
           "proposed_treatment_code",
           "flowering",
           "plant_life_stage_code",
@@ -718,6 +719,7 @@
           "biological_ind",
           "secchi_depth",
           "water_depth",
+          "invasive_plant_code",
           "voucher_submitted_ind"
         ],
         "properties": {
@@ -853,7 +855,8 @@
         "required": [
           "number_of_individuals_observed",
           "animal_life_stage_code",
-          "animal_behaviour_code"
+          "animal_behaviour_code",
+          "invasive_animal_code"
         ],
         "properties": {
           "invasive_animal_code": {
@@ -900,7 +903,8 @@
         "description": "Animal Observation Aquatic",
         "type": "object",
         "required": [
-          "observation_details"
+          "observation_details",
+          "invasive_animal_code"
         ],
         "properties": {
           "invasive_animal_code": {
@@ -940,6 +944,9 @@
           "mix_delivery_rate",
           "application_rate",
           "area_treated",
+          "pest_management_plan",
+          "invasive_plant_code",
+          "treatment_issues_code",
           "herbicide"
         ],
         "properties": {
@@ -1065,7 +1072,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "default": "NA"
           },
           "herbicide": {
             "type": "array",
@@ -1088,7 +1096,9 @@
           "mechanical_disposal_code",
           "root_removal_code",
           "soil_disturbance_code",
-          "signage_on_site"
+          "invasive_plant_code",
+          "signage_on_site",
+          "treatment_issues_code"
         ],
         "properties": {
           "invasive_plant_code": {
@@ -1179,7 +1189,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "default": "NA"
           }
         }
       },
@@ -1196,6 +1207,8 @@
           "agent_source",
           "biological_agent_code",
           "biological_agent_stage_code",
+          "treatment_issues_code",
+          "invasive_plant_code",
           "bioagent_maturity_status_code"
         ],
         "properties": {
@@ -1291,7 +1304,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "default": "NA"
           }
         }
       },
@@ -1307,6 +1321,8 @@
           "biological_agent_code",
           "plant_count",
           "biological_agent_count",
+          "treatment_issues_code",
+          "invasive_plant_code",
           "biological_agent_presence_code"
         ],
         "properties": {
@@ -1384,7 +1400,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "default": "NA"
           }
         }
       },
@@ -1393,7 +1410,8 @@
         "description": "Mechanical treament for terrestrial animals",
         "type": "object",
         "required": [
-          "treatment_details"
+          "treatment_details",
+          "invasive_animal_code"
         ],
         "properties": {
           "invasive_animal_code": {
@@ -1418,7 +1436,8 @@
         "description": "Chemical treament for terrestrial animals",
         "type": "object",
         "required": [
-          "treatment_details"
+          "treatment_details",
+          "invasive_animal_code"
         ],
         "properties": {
           "invasive_animal_code": {
@@ -1443,7 +1462,8 @@
         "description": "Biological treament for terrestrial animals",
         "type": "object",
         "required": [
-          "treatment_details"
+          "treatment_details",
+          "invasive_animal_code"
         ],
         "properties": {
           "invasive_animal_code": {
@@ -1504,7 +1524,8 @@
         "description": "Chemical monitoring for terrestrial plants",
         "type": "object",
         "required": [
-          "monitoring_details"
+          "monitoring_details",
+          "invasive_plant_code"
         ],
         "properties": {
           "invasive_plant_code": {
@@ -1529,7 +1550,8 @@
         "description": "Mechanical monitoring for terrestrial plants",
         "type": "object",
         "required": [
-          "monitoring_details"
+          "monitoring_details",
+          "invasive_plant_code"
         ],
         "properties": {
           "invasive_plant_code": {
@@ -1565,6 +1587,7 @@
           "eggs_present_ind",
           "larvae_present_ind",
           "pupae_present_ind",
+          "invasive_plant_code",
           "adults_present_ind",
           "tunnels_present_ind"
         ],
@@ -1643,7 +1666,8 @@
         "description": "Mechanical monitoring for terrestrial plants",
         "type": "object",
         "required": [
-          "monitoring_details"
+          "monitoring_details",
+          "invasive_animal_code"
         ],
         "properties": {
           "invasive_animal_code": {
@@ -1668,7 +1692,8 @@
         "description": "Chemical monitoring for terrestrial plants",
         "type": "object",
         "required": [
-          "monitoring_details"
+          "monitoring_details",
+          "invasive_animal_code"
         ],
         "properties": {
           "invasive_animal_code": {
@@ -1693,7 +1718,8 @@
         "description": "Biological monitoring for terrestrial plants",
         "type": "object",
         "required": [
-          "monitoring_details"
+          "monitoring_details",
+          "invasive_animal_code"
         ],
         "properties": {
           "invasive_animal_code": {
