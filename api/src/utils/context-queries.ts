@@ -27,6 +27,18 @@ const saveBCGW = (id: any,req: any) => {
 
   const ownershipUrl = `${api}/context/databc/WHSE_CADASTRE.CBM_CADASTRAL_FABRIC_PUB_SVW?lon=${x}&lat=${y}`
 
+  const layers = [
+    {
+      tableName: 'WHSE_CADASTRE.CBM_CADASTRAL_FABRIC_PUB_SVW',
+      targetAttribute: 'OWNERSHIP_CLASS',
+      targetColumn: 'ownership'
+    }
+  ];
+
+  for (let layer of layers) {
+    console.log(layer);
+  }
+
 
   axios.get(ownershipUrl,config)
     .then(async (response) => {
