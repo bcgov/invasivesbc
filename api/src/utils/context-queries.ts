@@ -6,13 +6,14 @@ const defaultLog = getLogger('activity');
 
 
 /**
- * Insert contextual data for the new activity record.
+ * Insert contextual data for the new activity record from
+ * the BC Geographic Warehouse (BCGW)
  *
  * @param id {integar} The record ID for the activity recently
  *   entered in the database.
- * @param geom {object} The location object containing the way point.
+ * @param req {object} The express request object
  */
-const saveContextData = (id: any,req: any) => {
+const saveBCGW = (id: any,req: any) => {
   const geom = req.body.locationAndGeometry;
   const x = geom.anchorPointX;
   const y = geom.anchorPointY;
@@ -46,5 +47,5 @@ const saveContextData = (id: any,req: any) => {
 
 export const commit = function (record:any,req:any) {
   const id = record.activity_incoming_data_id;
-  saveContextData(id,req);
+  saveBCGW(id,req);
 };
