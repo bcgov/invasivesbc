@@ -458,7 +458,7 @@
         "required": [
           "observation_date",
           "observation_time",
-          "observation_type",
+          "observation_type_code",
           "observer_first_name",
           "observer_last_name",
           "reported_area",
@@ -474,9 +474,16 @@
             "type": "string",
             "title": "Time"
           },
-          "observation_type": {
+          "observation_type_code": {
             "type": "string",
-            "title": "Type"
+            "title": "Type",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "observer_first_name": {
             "type": "string",
@@ -522,9 +529,9 @@
           "aspect_code",
           "proposed_action_code",
           "flowering",
-          "plant_life_stage",
-          "plant_health",
-          "plant_seed_stage",
+          "life_stage_code",
+          "health_code",
+          "seed_stage_code",
           "legacy_site_ind",
           "early_detection_rapid_resp_ind",
           "research_detection_ind",
@@ -614,17 +621,38 @@
             "type": "boolean",
             "title": "Flowering"
           },
-          "plant_life_stage": {
+          "life_stage_code": {
             "type": "string",
-            "title": "Life Stage"
+            "title": "Life Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_life_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
-          "plant_health": {
+          "health_code": {
             "type": "string",
-            "title": "Health"
+            "title": "Health",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_health_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
-          "plant_seed_stage": {
+          "seed_stage_code": {
             "type": "string",
-            "title": "Seed Stage"
+            "title": "Seed Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_seed_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "sample_identifier": {
             "type": "string",
@@ -668,9 +696,9 @@
           "specific_use_code",
           "proposed_action_code",
           "flowering",
-          "plant_life_stage",
-          "plant_health",
-          "plant_seed_stage",
+          "life_stage_code",
+          "health_code",
+          "seed_stage_code",
           "legacy_site_ind",
           "early_detection_rapid_resp_ind",
           "research_detection_ind",
@@ -701,17 +729,38 @@
             "type": "boolean",
             "title": "Flowering"
           },
-          "plant_life_stage": {
+          "life_stage_code": {
             "type": "string",
-            "title": "Life Stage"
+            "title": "Life Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_life_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
-          "plant_health": {
+          "health_code": {
             "type": "string",
-            "title": "Health"
+            "title": "Health",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_health_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
-          "plant_seed_stage": {
+          "seed_stage_code": {
             "type": "string",
-            "title": "Seed Stage"
+            "title": "Seed Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_seed_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "sample_identifier": {
             "type": "string",
@@ -834,7 +883,7 @@
           "secondary_applicator_employee_code",
           "pesticide_employer_code",
           "project_management_plan_PMP",
-          "chemical_treatment_method",
+          "chemical_treatment_method_code",
           "temperature",
           "humidity",
           "mix_delivery_rate",
@@ -870,9 +919,16 @@
             "type": "string",
             "title": "Pesticide use permit"
           },
-          "chemical_treatment_method": {
+          "chemical_treatment_method_code": {
             "type": "string",
-            "title": "Chemical treatment method"
+            "title": "Chemical treatment method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "chemical_treatment_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "temperature": {
             "type": "number",
@@ -1029,12 +1085,12 @@
           "applicator1_first_name",
           "applicator1_last_name",
           "treatment_contractor",
-          "classified_area",
+          "classified_area_code",
           "release_quantity",
           "agent_source",
-          "biological_agent",
-          "biological_agent_stage",
-          "bioagent_maturity_status"
+          "biological_agent_code",
+          "biological_agent_stage_code",
+          "bioagent_maturity_status_code"
         ],
         "properties": {
           "applicator1_first_name": {
@@ -1057,9 +1113,16 @@
             "type": "string",
             "title": "Treatment contractor"
           },
-          "classified_area": {
+          "classified_area_code": {
             "type": "string",
-            "title": "Classified area"
+            "title": "Classified area",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "classified_area_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "release_quantity": {
             "type": "number",
@@ -1069,17 +1132,38 @@
             "type": "string",
             "title": "Agent source"
           },
-          "biological_agent": {
+          "biological_agent_code": {
             "type": "string",
-            "title": "Biological agent"
+            "title": "Biological agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
-          "biological_agent_stage": {
+          "biological_agent_stage_code": {
             "type": "string",
-            "title": "Biological agent stage"
+            "title": "Biological agent stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
-          "bioagent_maturity_status": {
+          "bioagent_maturity_status_code": {
             "type": "string",
-            "title": "Bioagent maturity status"
+            "title": "Bioagent maturity status",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "bioagent_maturity_status_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           }
         }
       },
@@ -1092,10 +1176,10 @@
           "applicator1_last_name",
           "treatment_contractor",
           "duration_of_count",
-          "biological_agent",
+          "biological_agent_code",
           "plant_count",
           "biological_agent_count",
-          "biological_agent_presence"
+          "biological_agent_presence_code"
         ],
         "properties": {
           "applicator1_first_name": {
@@ -1122,9 +1206,16 @@
             "type": "number",
             "title": "Duration of count"
           },
-          "biological_agent": {
+          "biological_agent_code": {
             "type": "string",
-            "title": "Biological agent"
+            "title": "Biological agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "plant_count": {
             "type": "number",
@@ -1134,9 +1225,16 @@
             "type": "number",
             "title": "Biological agent count"
           },
-          "biological_agent_presence": {
+          "biological_agent_presence_code": {
             "type": "string",
-            "title": "Biological agent presence"
+            "title": "Biological agent presence",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_presence_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           }
         }
       },
