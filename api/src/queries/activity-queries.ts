@@ -64,7 +64,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
   sqlStatement.append(SQL`
     )
     RETURNING
-      activity_incoming_data_id;
+      activity_id;
   `);
 
   return sqlStatement;
