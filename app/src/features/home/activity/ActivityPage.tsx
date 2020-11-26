@@ -59,12 +59,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /**
    * Calculate the net area for the total geometry
    * 
-   * @param {Feature} geoJSON The geometry in GeoJSON format 
+   * @param {Feature[]} geoJSON The geometry in GeoJSON format 
    */
-  const calculateGeometryArea = (geometry: Feature []) => {
+  const calculateGeometryArea = (geometry: Feature[]) => {
     let totalArea = 0;
 
-    if (!geometry || geometry.length === 0) return totalArea.toFixed(2);
+    if (!geometry || !geometry.length) {
+      return totalArea.toFixed(2);
+    }
 
     const geo = geometry[0];
     totalArea = geo.geometry.type === "Point"
@@ -83,9 +85,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const { activity_type_data } = doc.formData || {};
 
     const areaOfGeometry = calculateGeometryArea(doc.geometry);
-    const observationDateTime = activity_type_data && activity_type_data.observation_date_time
-      ? activity_type_data.observation_date_time
-      : moment(new Date()).format();
+    const observationDateTime = activity_type_data && activity_type_data.observation_date_time || moment(new Date()).format();
 
     return {
       ...doc.formData,
