@@ -38,6 +38,14 @@ const saveBCGW = (id: any,req: any) => {
       tableName: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
       targetAttribute: 'ADMIN_AREA_NAME',
       targetColumn: 'regional_districts'
+    },{
+      tableName: 'WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
+      targetAttribute: 'DISTRICT_NAME',
+      targetColumn: 'flnro_districts'
+    },{
+      tableName: 'WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY',
+      targetAttribute: 'DISTRICT_NAME',
+      targetColumn: 'moti_districts'
     }
   ];
 
