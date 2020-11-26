@@ -30,23 +30,32 @@ const saveBCGW = (id: any,req: any) => {
       tableName: 'WHSE_CADASTRE.CBM_CADASTRAL_FABRIC_PUB_SVW', // BCGW table
       targetAttribute: 'OWNERSHIP_CLASS', // The attribute to collect
       targetColumn: 'ownership' // The column in our database table
+    },{
+      tableName: 'WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY',
+      targetAttribute: 'BGC_LABEL',
+      targetColumn: 'biogeoclimatic_zones'
+    },{
+      tableName: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
+      targetAttribute: 'ADMIN_AREA_NAME',
+      targetColumn: 'regional_districts'
     }
   ];
 
   /* For each layer run an asynchronous request */
   for (let layer of layers) {
-    const url = `${api}/context/databc/${layer.tableName}?lon=${x}&lat=${y}`
+    const url = `${api}/context/databc/${layer.tableName}?lon=${x}&lat=${y}`;
 
     axios.get(url,config)
       .then(async (response) => {
-        const ownership = response.data.target[layer.targetAttribute];
+        const attribute = response.data.target[layer.targetAttribute];
         const column = layer.targetColumn;
         const connection = await getDBConnection();
         const sql = `
           update activity_incoming_data
-          set (${column}) = ('${ownership}')
+          set (${column}) = ('${attribute}')
           where activity_incoming_data_id = ${id}
         `;
+
 
         await connection.query(sql);
 
