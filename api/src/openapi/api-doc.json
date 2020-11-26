@@ -454,7 +454,7 @@
           },
           "reported_area": {
             "type": "number",
-            "title": "Area",
+            "title": "Area (m\u00B2)",
             "minimum": 1,
             "maximum": 100
           },
