@@ -9,16 +9,13 @@
  */
 
 const Observation = {
-  observation_date: {
-    'ui:widget': 'date'
+  observation_date_time: {
+    'ui:widget': 'datetime'
   },
-  observation_time: {},
-  observation_type: {},
   observer_first_name: {},
   observer_last_name: {},
-  reported_area: {},
-  sample_taken: {
-    'ui:widget': 'radio'
+  reported_area: {
+    'ui:readonly': true
   },
   sample_number: {},
   negative_obs_ind: {
@@ -40,7 +37,6 @@ const Observation_PlantTerrestial = {
   plant_life_stage: {},
   plant_health: {},
   plant_seed_stage: {},
-  sample_identifier: {},
   range_unit_number: {},
   legacy_site_ind: {
     'ui:widget': 'radio'
@@ -69,7 +65,6 @@ const Observation_PlantAquatic = {
   plant_life_stage: {},
   plant_health: {},
   plant_seed_stage: {},
-  sample_identifier: {},
   range_unit_number: {},
   legacy_site_ind: {
     'ui:widget': 'radio'
@@ -78,9 +73,6 @@ const Observation_PlantAquatic = {
     'ui:widget': 'radio'
   },
   research_detection_ind: {
-    'ui:widget': 'radio'
-  },
-  sample_taken: {
     'ui:widget': 'radio'
   },
   sample_point_number: {},
@@ -228,7 +220,7 @@ const Monitoring_BiologicalTerrestrialAnimal = {
   monitoring_details: {}
 };
 
-const PaperFile = {
+const PaperFileID = {
   description: {}
 };
 
@@ -257,7 +249,7 @@ const BaseUISchemaComponents = {
   Monitoring_MechanicalTerrestrialAnimal,
   Monitoring_ChemicalTerrestrialAnimal,
   Monitoring_BiologicalTerrestrialAnimal,
-  PaperFile,
+  PaperFileID,
   Herbicide
 };
 
