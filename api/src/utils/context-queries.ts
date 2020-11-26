@@ -24,40 +24,44 @@ const saveBCGW = (id: any,req: any) => {
     }
   }
 
-
-  const ownershipUrl = `${api}/context/databc/WHSE_CADASTRE.CBM_CADASTRAL_FABRIC_PUB_SVW?lon=${x}&lat=${y}`
-
+  /* All the layers to get queried */
   const layers = [
     {
-      tableName: 'WHSE_CADASTRE.CBM_CADASTRAL_FABRIC_PUB_SVW',
-      targetAttribute: 'OWNERSHIP_CLASS',
-      targetColumn: 'ownership'
+      tableName: 'WHSE_CADASTRE.CBM_CADASTRAL_FABRIC_PUB_SVW', // BCGW table
+      targetAttribute: 'OWNERSHIP_CLASS', // The attribute to collect
+      targetColumn: 'ownership' // The column in our database table
     }
   ];
 
+  /* For each layer run an asynchronous request */
   for (let layer of layers) {
-    console.log(layer);
+    const url = `${api}/context/databc/${layer.tableName}?lon=${x}&lat=${y}`
+
+    axios.get(url,config)
+      .then(async (response) => {
+        const ownership = response.data.target[layer.targetAttribute];
+        const column = layer.targetColumn;
+        const connection = await getDBConnection();
+        const sql = `
+          update activity_incoming_data
+          set (${column}) = ('${ownership}')
+          where activity_incoming_data_id = ${id}
+        `;
+
+        await connection.query(sql);
+
+        connection.release();
+      })
+      .catch((error) => {
+        defaultLog.debug({ label: 'addingContext', message: 'error', error });
+      });
   }
 
 
-  axios.get(ownershipUrl,config)
-    .then(async (response) => {
-      const ownership = response.data.target.OWNERSHIP_CLASS;
-      console.log('Resposne: ',response.data)
-      const column = 'ownership'
-      const connection = await getDBConnection();
-      const sql = `update activity_incoming_data set (${column}) = ('${ownership}') where activity_incoming_data_id = ${id}`;
-      console.log(sql);
-      await connection.query(sql);
-      connection.release();
-    })
-    .catch((error) => {
-      defaultLog.debug({ label: 'addingContext', message: 'error', error });
-    });
 };
 
 
 export const commit = function (record:any,req:any) {
   const id = record.activity_incoming_data_id;
-  saveBCGW(id,req);
+  saveBCGW(id,req); // Insert DataBC BCGW attributes
 };
