@@ -106,8 +106,8 @@ const getPlanningArea = async (
 
   try {
     const response = await connection.query(sql);
-    const payload = {target: response.rows[0].target};
-    res.status(200).json(payload);
+    const target = response.rows[0]?.target || '';
+    res.status(200).json({target});
   } catch (error) {
     defaultLog.debug({ label: 'getContext', message: 'error', error });
     throw error;
@@ -136,6 +136,7 @@ function getContext(): RequestHandler {
     }
 
     const target = req.params.target;
+
 
     switch(target) {
       case 'ipma':
