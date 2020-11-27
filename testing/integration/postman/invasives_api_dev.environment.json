@@ -9,7 +9,7 @@
 		},
 		{
 			"key": "BASEURL",
-			"value": "https://api-dev-invasivesbci.pathfinder.gov.bc.ca/api",
+			"value": "https://<location>.pathfinder.gov.bc.ca/api",
 			"enabled": true
 		},
 		{
