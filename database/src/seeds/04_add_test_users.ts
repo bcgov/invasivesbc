@@ -57,7 +57,18 @@ const TestUsers = [
     user_role: {
       role_code_id: 2
     }
-  }
+  },
+  {
+    application_users: {
+      email: 'rstens@stens.ca',
+      preferred_username: 'postman',
+      first_name: 'Postman',
+      last_name: 'Newman'
+    },
+    user_role: {
+      role_code_id: 1
+    }
+  },
 ];
 
 /**

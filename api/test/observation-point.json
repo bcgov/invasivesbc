@@ -44,7 +44,6 @@
     "secondary_file_id": "test",
     "location_comment": "test",
     "general_observation_comment": "general comment",
-    "sample_taken_ind": true,
     "sample_label_number": "string"
   },
   "activity_subtype_data": {

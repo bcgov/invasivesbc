@@ -32,7 +32,7 @@ const post_put_apiDoc = {
     content: {
       'application/json': {
         schema: {
-          required: ['activity_type', 'activity_subtype'],
+          required: ['activity_id', 'created_timestamp', 'activity_type', 'activity_subtype'],
           properties: {
             activity_id: {
               type: 'string',
@@ -180,7 +180,7 @@ function uploadMedia(): RequestHandler {
 
     const results = await Promise.all(s3UploadPromises);
 
-    req['mediaKeys'] = results.map(result => result.Key);
+    req['mediaKeys'] = results.map((result) => result.Key);
 
     next();
   };

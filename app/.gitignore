@@ -18,6 +18,7 @@ coverage
 
 # env file used by local and docker builds/runs
 .env
+.env.development
 
 # misc
 .DS_Store
