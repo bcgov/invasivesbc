@@ -376,12 +376,8 @@
         "required": [
           "invasive_species_agency_code",
           "jurisdiction_code",
-          "activity_status",
           "species_id",
-          "access_description",
-          "media_indicator",
-          "created_date_on_device",
-          "updated_date_on_device"
+          "access_description"
         ],
         "properties": {
           "invasive_species_agency_code": {
@@ -406,16 +402,6 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "activity_status": {
-            "type": "string",
-            "title": "Activity status",
-            "enum": [
-              "sync",
-              "done",
-              "pending",
-              "errors"
-            ]
-          },
           "species_id": {
             "type": "string",
             "title": "Species"
@@ -430,23 +416,11 @@
             "title": "Access Description",
             "maximum": 300
           },
-          "media_indicator": {
-            "type": "boolean",
-            "title": "Photo"
-          },
-          "created_date_on_device": {
-            "type": "string",
-            "title": "Created date on device"
-          },
-          "updated_date_on_device": {
-            "type": "string",
-            "title": "Updated date on device"
-          },
-          "paper_file": {
+          "paper_file_id": {
             "type": "array",
-            "title": "Paper file",
+            "title": "Paper File ID",
             "items": {
-              "$ref": "#/components/schemas/PaperFile"
+              "$ref": "#/components/schemas/PaperFileID"
             }
           }
         }
@@ -456,23 +430,18 @@
         "description": "Basic information captured for all observations",
         "type": "object",
         "required": [
-          "observation_date",
-          "observation_time",
           "observation_type_code",
+          "observation_date_time",
           "observer_first_name",
           "observer_last_name",
           "reported_area",
-          "sample_taken",
           "negative_obs_ind"
         ],
         "properties": {
-          "observation_date": {
+          "observation_date_time": {
             "type": "string",
-            "title": "Date"
-          },
-          "observation_time": {
-            "type": "string",
-            "title": "Time"
+            "format": "date-time",
+            "title": "Date and Time"
           },
           "observation_type_code": {
             "type": "string",
@@ -497,13 +466,9 @@
           },
           "reported_area": {
             "type": "number",
-            "title": "Area",
+            "title": "Area (m\u00B2)",
             "minimum": 1,
             "maximum": 100
-          },
-          "sample_taken": {
-            "type": "boolean",
-            "title": "Sample Taken"
           },
           "sample_number": {
             "type": "string",
@@ -512,7 +477,8 @@
           },
           "negative_obs_ind": {
             "type": "boolean",
-            "title": "Negative Observation"
+            "title": "Negative Observation",
+            "default": false
           }
         }
       },
@@ -631,7 +597,8 @@
           },
           "flowering": {
             "type": "boolean",
-            "title": "Flowering"
+            "title": "Flowering",
+            "default": false
           },
           "plant_life_stage_code": {
             "type": "string",
@@ -666,37 +633,39 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "sample_identifier": {
-            "type": "string",
-            "title": "Sample ID"
-          },
           "range_unit_number": {
             "type": "string",
             "title": "Range Unit"
           },
           "legacy_site_ind": {
             "type": "boolean",
-            "title": "Legacy site"
+            "title": "Legacy site",
+            "default": false
           },
           "early_detection_rapid_resp_ind": {
             "type": "boolean",
-            "title": "Early Detection"
+            "title": "Early Detection",
+            "default": false
           },
           "research_detection_ind": {
             "type": "boolean",
-            "title": "Research Detection"
+            "title": "Research Detection",
+            "default": false
           },
           "well_ind": {
             "type": "boolean",
-            "title": "Visible well nearby"
+            "title": "Visible well nearby",
+            "default": false
           },
           "special_care_ind": {
             "type": "boolean",
-            "title": "Special Care"
+            "title": "Special Care",
+            "default": false
           },
           "biological_ind": {
             "type": "boolean",
-            "title": "Biological"
+            "title": "Biological",
+            "default": false
           }
         }
       },
@@ -714,7 +683,6 @@
           "legacy_site_ind",
           "early_detection_rapid_resp_ind",
           "research_detection_ind",
-          "sample_taken",
           "special_care_ind",
           "biological_ind",
           "secchi_depth",
@@ -793,10 +761,6 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "sample_identifier": {
-            "type": "string",
-            "title": "Sample ID"
-          },
           "range_unit_number": {
             "type": "string",
             "title": "Range Unit"
@@ -811,10 +775,6 @@
           "research_detection_ind": {
             "type": "boolean",
             "title": "Research Detection"
-          },
-          "sample_taken": {
-            "type": "boolean",
-            "title": "Sample Taken"
           },
           "sample_point_number": {
             "type": "string",
@@ -1764,9 +1724,8 @@
           }
         }
       },
-      "PaperFile": {
-        "title": "Paper file",
-        "description": "Paper files",
+      "PaperFileID": {
+        "title": "Paper File ID",
         "type": "object",
         "required": [
           "description"
@@ -1885,11 +1844,11 @@
             "type": "string",
             "title": "Updated date on device"
           },
-          "paper_file": {
+          "paper_file_id": {
             "type": "array",
-            "title": "Paper file",
+            "title": "Paper File ID",
             "items": {
-              "$ref": "#/components/schemas/PaperFile"
+              "$ref": "#/components/schemas/PaperFileID"
             }
           }
         }

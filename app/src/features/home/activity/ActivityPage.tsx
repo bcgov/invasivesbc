@@ -6,6 +6,8 @@ import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import moment from 'moment';
+import area from '@turf/area';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 
@@ -55,13 +57,67 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
   /**
+   * Calculate the net area for the total geometry
+   * 
+   * @param {Feature[]} geoJSON The geometry in GeoJSON format 
+   */
+  const calculateGeometryArea = (geometry: Feature[]) => {
+    let totalArea = 0;
+
+    if (!geometry || !geometry.length) {
+      return totalArea.toFixed(2);
+    }
+
+    const geo = geometry[0];
+    totalArea = geo.geometry.type === "Point"
+      ? (Math.PI * Math.pow(geo.properties.radius, 2))
+      : area(geo);
+
+    return totalArea.toFixed(2);
+  };
+
+  /**
+   * Set the default form data values
+   * 
+   * @param {*} doc The doc/activity object
+   */
+  const getDefaultFormDataValues = (doc: any) => {
+    const { activity_type_data } = doc.formData || {};
+
+    const areaOfGeometry = calculateGeometryArea(doc.geometry);
+    const observationDateTime = activity_type_data && activity_type_data.observation_date_time || moment(new Date()).format();
+
+    return {
+      ...doc.formData,
+      activity_type_data: {
+        ...activity_type_data,
+        observation_date_time: observationDateTime,
+        reported_area: areaOfGeometry
+      }
+    };
+  };
+
+  /**
    * Save the geometry added by the user
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
   const saveGeometry = async (geometry: Feature[]) => {
+    const formData = doc.formData;
+    const areaOfGeometry = calculateGeometryArea(geometry);
+
+    const updatedFormData = {
+      ...formData,
+      activity_type_data: {
+        ...formData.activity_type_data,
+        reported_area: areaOfGeometry
+      }
+    };
+
+    setDoc({ ...doc, formData: updatedFormData });
+
     await databaseContext.database.upsert(doc._id, (dbDoc) => {
-      return { ...dbDoc, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+      return { ...dbDoc, formData: updatedFormData, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
   };
 
@@ -150,10 +206,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         selector: { _id: appStateResults.docs[0].activeActivity }
       });
 
-      setGeometry(activityResults.docs[0].geometry);
-      setExtent(activityResults.docs[0].extent);
-      setPhotos(activityResults.docs[0].photos || []);
-      setDoc(activityResults.docs[0]);
+      const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
+      const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
+
+      setGeometry(updatedDoc.geometry);
+      setExtent(updatedDoc.extent);
+      setPhotos(updatedDoc.photos || []);
+      setDoc(updatedDoc);
 
       setIsLoading(false);
     };
