@@ -12,6 +12,7 @@ const getKeycloakEventHandler = (keycloak: KeycloakInstance) => {
         break;
       case 'onAuthError':
         console.log('keycloak onAuthError', error);
+        console.log('stringified err', JSON.stringify(error));
         break;
       case 'onAuthLogout':
         console.log('keycloak onAuthLogout');

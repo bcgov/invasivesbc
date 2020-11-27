@@ -1,6 +1,6 @@
 {
     "realm": "dfmlcg7z",
-    "auth-server-url": "https://dev.oidc.gov.bc.ca/auth/",
+    "auth-server-url": "https://test.oidc.gov.bc.ca/auth/",
     "ssl-required": "external",
     "resource": "invasives-bc",
     "public-client": true,

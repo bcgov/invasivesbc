@@ -17,6 +17,8 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
 
   let { component: Component, layout: Layout, ...rest } = props;
 
+  console.log("In here", props)
+
   return (
     <Route
       {...rest}

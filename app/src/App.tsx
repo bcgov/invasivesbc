@@ -85,11 +85,13 @@ interface IAppProps {
 }
 
 const App: React.FC<IAppProps> = (props) => {
+  console.log('device info: ', props.deviceInfo);
+
   const classes = useStyles();
 
   const keycloakConfig: KeycloakConfig = {
     realm: 'dfmlcg7z',
-    url: 'https://dev.oidc.gov.bc.ca/auth/',
+    url: 'https://test.oidc.gov.bc.ca/auth/',
     clientId: 'invasives-bc'
   };
 
@@ -109,26 +111,32 @@ const App: React.FC<IAppProps> = (props) => {
       }
     };
   } else {
-    initConfig = { onLoad: 'login-required' };
+    initConfig = { onLoad: 'login-required', checkLoginIframe: false };
   }
+
+  const appRouterProps = { // make sure all required component's inputs/Props keys&types match
+    deviceInfo: props.deviceInfo,
+    keycloak,
+    initConfig
+  };
 
   return (
     <div className={classes.root}>
       <ThemeProvider theme={theme}>
-        <KeycloakProvider
+        {/* <KeycloakProvider
           keycloak={keycloak}
           initConfig={initConfig}
           LoadingComponent={<CircularProgress />}
           onEvent={getKeycloakEventHandler(keycloak)}>
-          <AuthStateContextProvider>
+          <AuthStateContextProvider> */}
             <IonReactRouter>
-              <AuthStateContext.Consumer>
+              {/* <AuthStateContext.Consumer>
                 {(context: IAuthState) => {
                   if (!context.ready) {
                     // authentication not ready, delay loading app
                     return <CircularProgress />;
                   }
-                  return (
+                  console.log('context: ', context); */}
                     <DatabaseContextProvider>
                       <DatabaseContext.Consumer>
                         {(databaseContext: IDatabaseContext) => {
@@ -138,18 +146,17 @@ const App: React.FC<IAppProps> = (props) => {
                           }
                           return (
                             <DatabaseChangesContextProvider>
-                              <AppRouter />
+                              <AppRouter { ...appRouterProps } />
                             </DatabaseChangesContextProvider>
                           );
                         }}
                       </DatabaseContext.Consumer>
                     </DatabaseContextProvider>
-                  );
-                }}
-              </AuthStateContext.Consumer>
+                {/* }}
+              </AuthStateContext.Consumer> */}
             </IonReactRouter>
-          </AuthStateContextProvider>
-        </KeycloakProvider>
+          {/* </AuthStateContextProvider>
+        </KeycloakProvider> */}
       </ThemeProvider>
     </div>
   );
