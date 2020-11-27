@@ -86,7 +86,7 @@ const App: React.FC<IAppProps> = (props) => {
 
   const keycloakConfig: KeycloakConfig = {
     realm: 'dfmlcg7z',
-    url: 'https://test.oidc.gov.bc.ca/auth/',
+    url: 'https://dev.oidc.gov.bc.ca/auth/',
     clientId: 'invasives-bc'
   };
 
