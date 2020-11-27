@@ -3,14 +3,11 @@ import { IonReactRouter } from '@ionic/react-router';
 import { CircularProgress, createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
-import { KeycloakProvider } from '@react-keycloak/web';
 import { DatabaseChangesContextProvider } from 'contexts/DatabaseChangesContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
 import AppRouter from './AppRouter';
-import { AuthStateContext, AuthStateContextProvider, IAuthState } from './contexts/authStateContext';
 import { DatabaseContext, DatabaseContextProvider, IDatabaseContext } from './contexts/DatabaseContext';
-import getKeycloakEventHandler from './utils/KeycloakEventHandler';
 
 const theme = createMuiTheme({
   palette: {
@@ -85,8 +82,6 @@ interface IAppProps {
 }
 
 const App: React.FC<IAppProps> = (props) => {
-  console.log('device info: ', props.deviceInfo);
-
   const classes = useStyles();
 
   const keycloakConfig: KeycloakConfig = {
@@ -114,7 +109,7 @@ const App: React.FC<IAppProps> = (props) => {
     initConfig = { onLoad: 'login-required', checkLoginIframe: false };
   }
 
-  const appRouterProps = { // make sure all required component's inputs/Props keys&types match
+  const appRouterProps = {
     deviceInfo: props.deviceInfo,
     keycloak,
     initConfig
@@ -123,40 +118,23 @@ const App: React.FC<IAppProps> = (props) => {
   return (
     <div className={classes.root}>
       <ThemeProvider theme={theme}>
-        {/* <KeycloakProvider
-          keycloak={keycloak}
-          initConfig={initConfig}
-          LoadingComponent={<CircularProgress />}
-          onEvent={getKeycloakEventHandler(keycloak)}>
-          <AuthStateContextProvider> */}
-            <IonReactRouter>
-              {/* <AuthStateContext.Consumer>
-                {(context: IAuthState) => {
-                  if (!context.ready) {
-                    // authentication not ready, delay loading app
-                    return <CircularProgress />;
-                  }
-                  console.log('context: ', context); */}
-                    <DatabaseContextProvider>
-                      <DatabaseContext.Consumer>
-                        {(databaseContext: IDatabaseContext) => {
-                          if (!databaseContext.database) {
-                            // database not ready, delay loading app
-                            return <CircularProgress />;
-                          }
-                          return (
-                            <DatabaseChangesContextProvider>
-                              <AppRouter { ...appRouterProps } />
-                            </DatabaseChangesContextProvider>
-                          );
-                        }}
-                      </DatabaseContext.Consumer>
-                    </DatabaseContextProvider>
-                {/* }}
-              </AuthStateContext.Consumer> */}
-            </IonReactRouter>
-          {/* </AuthStateContextProvider>
-        </KeycloakProvider> */}
+        <IonReactRouter>
+          <DatabaseContextProvider>
+            <DatabaseContext.Consumer>
+              {(databaseContext: IDatabaseContext) => {
+                if (!databaseContext.database) {
+                  // database not ready, delay loading app
+                  return <CircularProgress />;
+                }
+                return (
+                  <DatabaseChangesContextProvider>
+                    <AppRouter { ...appRouterProps } />
+                  </DatabaseChangesContextProvider>
+                );
+              }}
+            </DatabaseContext.Consumer>
+          </DatabaseContextProvider>
+        </IonReactRouter>
       </ThemeProvider>
     </div>
   );
