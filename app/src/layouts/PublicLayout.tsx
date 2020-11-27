@@ -25,6 +25,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const PublicLayout: React.FC = (props) => {
+  console.log("also here", props)
+
   const classes = useStyles();
 
   return (

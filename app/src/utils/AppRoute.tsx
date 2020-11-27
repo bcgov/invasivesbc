@@ -8,6 +8,7 @@ export type IAppRouteProps = RouteProps & {
   title: string;
   keycloak?: any;
   initConfig?: any;
+  componentProps?: any;
 };
 
 const AppRoute: React.FC<IAppRouteProps> = ({
@@ -33,7 +34,7 @@ const AppRoute: React.FC<IAppRouteProps> = ({
       {...rest}
       render={(props) => (
         <Layout { ...layoutProps } >
-          <Component {...props} />
+          <Component {...props} {...rest.componentProps} />
         </Layout>
       )}
     />

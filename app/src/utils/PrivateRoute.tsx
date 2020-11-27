@@ -21,13 +21,13 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
     <Route
       {...rest}
       render={(props) => {
-        if (!!keycloak.obj?.authenticated) {
+        // if (!!keycloak.obj?.authenticated) {
           return (
             <Layout>
               <Component {...props} {...rest.componentProps} />
             </Layout>
           );
-        }
+        // }
       }}
     />
   );
