@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9aecb651-1855-4d76-87f8-70ead2a2f0b6",
+		"_postman_id": "02f22d34-1011-4f56-87aa-bb584e07218c",
 		"name": "InvasivesBC-API-DEV",
 		"description": "API for InvasivesBC (Ionic Version)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6a519939-2d87-4bea-9074-5722adcb1cbb",
+								"id": "4e4c7e1a-b809-4001-8a27-c6abde6ef33e",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -95,7 +95,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "eed28e55-bbdd-4848-a5e0-4a434c1f50de",
+								"id": "2f81e8c1-b11e-455d-ba99-68ae697001a7",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -140,7 +140,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7e7007fd-1906-4806-aa66-a6fa5b276d6f",
+								"id": "dd0b7a1d-ca9f-4b1f-a171-67e09430508a",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
@@ -260,7 +260,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "bfe3f7e4-a825-4904-b712-5534bb79dc42",
+								"id": "bc708580-03a1-4b05-b39e-eaf59194e246",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -279,7 +279,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"activity_id\": \"fa4777a2-7c52-4674-8885-7f1b6816e584\",\r\n    \"created_timestamp\": \"2020-11-25T17:55:33+0000\",\r\n    \"media\": [],\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ],\r\n                        [\r\n                            -123.3797264099121,\r\n                            48.441842443378555\r\n                        ],\r\n                        [\r\n                            -123.36264610290526,\r\n                            48.435692728712105\r\n                        ],\r\n                        [\r\n                            -123.3467674255371,\r\n                            48.448333001219005\r\n                        ],\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ]\r\n                    ]\r\n                ]\r\n            },\r\n            \"properties\": {}\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"species_id\": \"1234567\",\r\n            \"activity_status\": \"done\",\r\n            \"media_indicator\": false,\r\n            \"jurisdiction_code\": \"MOT\",\r\n            \"access_description\": \"fence\",\r\n            \"species_agency_code\": \"CPR\",\r\n            \"created_date_on_device\": \"2020-10-16\",\r\n            \"updated_date_on_device\": \"2020-10-16\"\r\n        },\r\n        \"activity_type_data\": {},\r\n        \"activity_subtype_data\": {\r\n            \"plant_count\": 3,\r\n            \"biological_agent_code\": \"ACERGEN\",\r\n            \"duration_of_count\": 4,\r\n            \"treatment_contractor\": \"contractorName2\",\r\n            \"applicator1_last_name\": \"lastName2\",\r\n            \"applicator1_first_name\": \"firsTName2\",\r\n            \"biological_agent_count\": 3,\r\n            \"biological_agent_presence\": \"yes\"\r\n        }\r\n    },\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"Activity_Treatment_BiologicalDispersalPlant\"\r\n}",
+							"raw": "{\r\n    \"activity_id\": \"fa4777a2-7c52-4674-8885-7f1b6816e584\",\r\n    \"created_timestamp\": \"2020-11-25T17:55:33+0000\",\r\n    \"media\": [],\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ],\r\n                        [\r\n                            -123.3797264099121,\r\n                            48.441842443378555\r\n                        ],\r\n                        [\r\n                            -123.36264610290526,\r\n                            48.435692728712105\r\n                        ],\r\n                        [\r\n                            -123.3467674255371,\r\n                            48.448333001219005\r\n                        ],\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ]\r\n                    ]\r\n                ]\r\n            },\r\n            \"properties\": {}\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"species_id\": \"1234567\",\r\n            \"jurisdiction_code\": \"MOT\",\r\n            \"access_description\": \"fence\",\r\n            \"species_agency_code\": \"CPR\"\r\n        },\r\n        \"activity_type_data\": {},\r\n        \"activity_subtype_data\": {\r\n            \"plant_count\": 3,\r\n            \"biological_agent_code\": \"ACERGEN\",\r\n            \"duration_of_count\": 4,\r\n            \"treatment_contractor\": \"contractorName2\",\r\n            \"applicator1_last_name\": \"lastName2\",\r\n            \"applicator1_first_name\": \"firsTName2\",\r\n            \"biological_agent_count\": 3,\r\n            \"biological_agent_presence\": \"yes\"\r\n        }\r\n    },\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"Activity_Treatment_BiologicalDispersalPlant\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -311,7 +311,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3c3c71fc-9a26-4f8b-92a9-be524614804a",
+								"id": "85a3627e-9974-4cee-b0c2-312f6e107693",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -362,7 +362,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "1ca37462-bd85-47a8-a5e5-e9ca8d408669",
+								"id": "e70e9929-f511-4d22-a879-8be517356f1d",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
@@ -481,7 +481,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "e2fdc15c-94c6-4f4b-a428-875232620e4c",
+						"id": "64d9986b-7991-4311-94e5-2f3caeab76d1",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -558,7 +558,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "6bbd487c-8f23-43dd-a5bf-2459117592f0",
+				"id": "a04394f1-74d4-45b8-af0d-aad4266fa6c9",
 				"type": "text/javascript",
 				"exec": [
 					"const echoPostRequest = {",
@@ -609,7 +609,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "f30683df-b90b-4e3e-8e41-2321523a8200",
+				"id": "883c0e46-f9d5-4d32-ad0c-da534445af44",
 				"type": "text/javascript",
 				"exec": [
 					""
