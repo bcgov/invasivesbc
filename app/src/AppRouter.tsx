@@ -14,8 +14,6 @@ interface IAppRouterProps {
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
-  console.log('hey props', props);
-
   const layout = props.deviceInfo ? PublicLayout : AuthLayout;
 
   const getTitle = (page: string) => {
@@ -37,7 +35,14 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         component={NotFoundPage}
         layout={PublicLayout}
       />
-      <AppRoute path="/home" component={HomeRouter} layout={layout} title={getTitle('Home')} keycloak={props.keycloak} initConfig={props.initConfig} />
+      <AppRoute
+        path="/home"
+        component={HomeRouter}
+        layout={layout}
+        title={getTitle('Home')}
+        keycloak={props.keycloak}
+        initConfig={props.initConfig}
+      />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );

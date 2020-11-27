@@ -11,8 +11,6 @@ interface IAuthLayoutProps {
 }
 
 const AuthLayout: React.FC<IAuthLayoutProps> = (props) => {
-  console.log('props in auth layoutttt', props);
-
   return (
     <KeycloakProvider
       keycloak={props.keycloak}
