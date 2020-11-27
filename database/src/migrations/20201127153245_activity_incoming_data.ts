@@ -8,6 +8,9 @@ export async function up(knex: Knex): Promise<void> {
 
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
+
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data alter COLUMN regional_invasive_species_organization_areas varchar(100);
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data alter COLUMN invasive_plant_management_areas varchar(100);
   `);
 }
 
@@ -16,6 +19,9 @@ export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
+
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data alter COLUMN regional_invasive_species_organization_areas varchar(10);
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data alter COLUMN invasive_plant_management_areas varchar(50);
   `);
 }
 
