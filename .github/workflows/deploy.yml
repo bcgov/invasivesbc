@@ -320,7 +320,7 @@ jobs:
         working-directory: ./testing/integration/postman
         run: |
           sed -i "s/<postman pw>/${{ secrets.POSTMAN_PW }}/g" invasives_api_dev.environment.json
-          sed -i "s/<location>/invasivesbci-api-${{ github.event.number }}-8ecbmv-dev/g" invasives_api_dev.environment.json
+          sed -i "s/<location>/api-dev-invasivesbci/g" invasives_api_dev.environment.json
           newman run InvasivesBC-API-DEV.postman_collection.json -e invasives_api_dev.environment.json
 
   # Clean build/deployment artifacts
