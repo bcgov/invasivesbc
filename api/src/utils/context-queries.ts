@@ -60,7 +60,7 @@ const saveBCGW = (id: any,req: any) => {
         const sql = `
           update activity_incoming_data
           set (${column}) = ('${attribute}')
-          where activity_incoming_data_id = ${id}
+          where activity_id = '${id}'
         `;
 
         await connection.query(sql);
@@ -120,7 +120,7 @@ const saveInternal = (id: any,req: any) => {
         const sql = `
           update activity_incoming_data
           set (${column}) = ('${attribute}')
-          where activity_incoming_data_id = ${id}
+          where activity_id = '${id}'
         `;
 
         await connection.query(sql);
@@ -134,7 +134,7 @@ const saveInternal = (id: any,req: any) => {
 };
 
 export const commit = function (record:any,req:any) {
-  const id = record.activity_incoming_data_id;
+  const id = record.activity_id;
   saveBCGW(id,req); // Insert DataBC BCGW attributes
   saveInternal(id,req); // Insert local attributes
 };

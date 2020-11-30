@@ -222,7 +222,7 @@ function createActivity(): RequestHandler {
 
       const result = (response && response.rows && response.rows[0]) || null;
 
-      // kick of asynchronous context collection activities
+      // kick off asynchronous context collection activities
       commitContext(result,req);
 
       return res.status(200).json(result);
