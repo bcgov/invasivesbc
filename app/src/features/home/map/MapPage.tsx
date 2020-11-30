@@ -27,16 +27,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%'
   },
   mapGridItemShrunk: {
-    height: '100%',
-    width: '66.66%'
+    height: '60%',
+    width: '100%'
   },
   popOutGridItemExpanded: {
-    height: '100%',
-    width: '33.33%'
+    height: '40%',
+    width: '100%'
   },
   popOutGridItemShrunk: {
-    height: '100%',
-    width: '0%'
+    height: '0%',
+    width: '100%'
   },
   popOutComponent: {
     height: '100%',
@@ -149,6 +149,12 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
+  //testing
+  const handleContextMenuOpen = () => {
+    setContextMenuState({ ...contextMenuState, isOpen: true });
+  };
+  //end testing
+
   const changeContextMenu = (targetContextMenu: contextMenuType) => {};
 
   // todo: handle closing of popup, this does not work:
@@ -191,13 +197,15 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       geos.push(row.geometry[0]);
 
+      const coordinatesString = `(${row.geometry[0].geometry.coordinates[1].toFixed(2)}, ${row.geometry[0].geometry.coordinates[0].toFixed(2)})`;
+
       switch (row.docType) {
         case DocType.POINT_OF_INTEREST:
           interactiveGeos.push({
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'New Point of Interest:\n ' + row._id + '\n' + row.geometry[0].coordinates,
+            description: 'New Point of Interest:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -209,7 +217,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
               //setInteractiveGeometry([interactiveGeos])
               console.log('clicked geo');
               handleGeoClick(row);
-            }, //try to get this one workign first
+            }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
           /* isSelected?: boolean;
@@ -227,7 +235,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Past Activity:\n ' + row._id + '\n' + row.geometry[0].coordinates,
+            description: 'Past Activity:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -240,7 +248,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
               console.log('before handle  geo');
               handleGeoClick(row);
               //console.log('clicked geo');
-            }, //try to get this one workign first
+            }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
           break;
@@ -249,7 +257,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Activity:\n ' + row._id + '\n' + row.geometry[0].coordinates,
+            description: 'Activity:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -262,7 +270,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
               console.log('before handle  geo');
               handleGeoClick(row);
               //console.log('clicked geo');
-            }, //try to get this one workign first
+            }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
           /* isSelected?: boolean;
@@ -280,7 +288,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Point of Interest:\n ' + row._id + '\n' + row.geometry[0].coordinates,
+            description: 'Point of Interest:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -293,7 +301,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
               console.log('before handle  geo');
               handleGeoClick(row);
               //console.log('clicked geo');
-            }, //try to get this one workign first
+            }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
           /* isSelected?: boolean;
