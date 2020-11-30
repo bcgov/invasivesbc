@@ -149,8 +149,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
-  const changeContextMenu = (targetContextMenu: contextMenuType) => {};
-
   // todo: handle closing of popup, this does not work:
   /*
   const togglePopup = async () => {
