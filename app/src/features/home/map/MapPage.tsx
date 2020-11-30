@@ -8,7 +8,7 @@ import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, {  useContext, useEffect, useState } from 'react';
-import { contextMenuType, MapContextMenu, MapContextMenuData } from './MapContextMenu';
+import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -50,7 +50,6 @@ interface IMapProps {
 }
 
 const PointOfInterestPopUp = (name: string) => {
-  //return <div> {props.name} </div>;
   return '<div>' + name + '</div>';
 };
 
@@ -136,7 +135,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
-  //const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
   // don't load the map until interactive geos ready
@@ -148,13 +146,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
-
-  // todo: handle closing of popup, this does not work:
-  /*
-  const togglePopup = async () => {
-    setShowPopOut(!showPopOut);
-  };
-  */
 
   const handleGeoClick = (geo: any) => {
     setShowPopOut(true);
@@ -239,7 +230,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
               //setInteractiveGeometry([interactiveGeos])
               console.log('before handle  geo');
               handleGeoClick(row);
-              //console.log('clicked geo');
             }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
@@ -261,7 +251,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
               //setInteractiveGeometry([interactiveGeos])
               console.log('before handle  geo');
               handleGeoClick(row);
-              //console.log('clicked geo');
             }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
@@ -290,9 +279,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle  geo');
+              console.log('before handle geo');
               handleGeoClick(row);
-              //console.log('clicked geo');
             }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
