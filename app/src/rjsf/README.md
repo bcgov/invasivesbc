@@ -27,4 +27,4 @@ Rjsf specific react components used by custom templates and widgets.
 
 [rjsf uiSchema](https://react-jsonschema-form.readthedocs.io/en/latest/api-reference/uiSchema/) config objects.
 
-These are used by rjsf to determine what widgets a given fields uses, as well as display order, and visibility, etc.
+These are used by rjsf to determine what widgets a given field uses, as well as display order, and visibility, etc.
