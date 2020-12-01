@@ -44,10 +44,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '100%',
     width: '100%',
     backgroundColor: theme.palette.background.paper
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightRegular
   }
 }));
 

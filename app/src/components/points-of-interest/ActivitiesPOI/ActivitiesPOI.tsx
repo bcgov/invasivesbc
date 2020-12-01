@@ -20,8 +20,6 @@ export const ActivitiesPOI: React.FC<ActivityPOIPropType> = (props) => {
 
   const { containerProps } = props;
 
-  console.log(containerProps)
-
   return (
     <>
       <Typography align="center" className={classes.heading}>
