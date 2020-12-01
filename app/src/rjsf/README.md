@@ -11,7 +11,7 @@ Contains config and components used by rjsf.
 
 ## Folders
 
-### templates
+### Templates
 
 The 3 base [rjsf templates](https://react-jsonschema-form.readthedocs.io/en/latest/advanced-customization/custom-templates/) used by rjsf when rendering form elements.
 
