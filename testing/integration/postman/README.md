@@ -1,38 +1,24 @@
-#API Testing with Postman (POC)
+# API Testing with Postman (POC)
 
-This is the Postman Setup for testing for testing the Mobile API. 
-It's primary goal is to run against oour PR and Dev code.
+This is the Postman Setup for testing for testing the Mobile API. Its primary goal is to run against oour PR and Dev code.
 
 How to run the PostMan Tests:
 - [Get Postman](https://www.postman.com/downloads/)
-- Import `invasives_api_dev.postman_collection.json`
-- Go to *Manage environments*, gear ison at top right hand corner
-- Import DEV.postman_environment.json
+- Import `invasives_api_dev.postman_collection.json` and `invasives_api_dev.environment.json`
 - Change the following settings in Postman environment DEV:
 
 ```json
 		{
-			"key": "baseUrlMobile",
-			"value": "Change to PR API base url",
-			"enabled": true
-		},
-		{
-			"key": "prNumber",
-			"value": "<<change to PR#>>",
-			"enabled": true
-		},
-		{
-			"key": "postman_pw",
+			"key": "POSTMAN_PASSWORD",
 			"value": "<<Change to istest1 pwd>>",
 			"enabled": true
-        }
+    }
 ```
 
-**baseUrlMobile** Is used to point to the Mobile API, we would typically point that either to Dev API or our Pull Request API instance
-**prNumber** Is the current PR code we are pointing at
-**postman_pw** is the password for our test user *istest1*
+**POSTMAN_PASSWORD** is the password for our test user *istest1*
 
-##Running Tests
+## Running Tests
+
 - Tests can be run within the Postman application either one by one or with the *Runner* option, which allows for the complete suite to run.
 - Tests can also run from the command line (and therefore the CI) with [Newman](https://learning.postman.com/docs/running-collections/using-newman-cli/command-line-integration-with-newman/)
 
