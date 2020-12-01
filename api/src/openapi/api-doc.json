@@ -530,7 +530,7 @@
             }
           },
           "invasive_plant_distribution_code": {
-            "type": "number",
+            "type": "string",
             "title": "Distribution",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",

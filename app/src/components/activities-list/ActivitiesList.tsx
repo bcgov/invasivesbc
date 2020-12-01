@@ -263,7 +263,7 @@ const ActivitiesList: React.FC = (props) => {
           activity_type: activity.activityType,
           activity_subtype: activity.activitySubtype,
           geometry: activity.geometry,
-          media: activity.photos.map((photo) => {
+          media: activity.photos && activity.photos.map((photo) => {
             return { file_name: photo.filepath, encoded_file: photo.dataUrl };
           }),
           form_data: activity.formData
