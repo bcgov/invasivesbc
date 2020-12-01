@@ -1,8 +1,10 @@
 import { Button, CircularProgress, Container, Grid, makeStyles, Theme } from '@material-ui/core';
 import clsx from 'clsx';
+import { IPhoto } from 'components/photo/PhotoContainer';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
 import { IAPPSite } from 'components/points-of-interest/IAPP/IAPP-Site';
+import { ActivitiesPOI } from 'components/points-of-interest/ActivitiesPOI/ActivitiesPOI';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -42,6 +44,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '100%',
     width: '100%',
     backgroundColor: theme.palette.background.paper
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(18),
+    fontWeight: theme.typography.fontWeightRegular
   }
 }));
 
@@ -132,6 +138,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const [showPopOut, setShowPopOut] = useState(false);
 
   const [extent, setExtent] = useState(null);
+  const [formActivityData, setFormActivityData] = useState(null);
+  const [photos, setPhotos] = useState<IPhoto[]>([]);
 
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
@@ -151,6 +159,23 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setShowPopOut(true);
     setSelectedInteractiveGeometry(geo);
   };
+
+  const getActivityData = async () => {
+    const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
+
+    if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
+      return;
+    }
+
+    const activityResults = await databaseContext.database.find({
+      selector: { _id: appStateResults.docs[0].activeActivity }
+    });
+
+    if (activityResults && activityResults.docs[0]) {
+      setFormActivityData(activityResults.docs[0]);
+      setPhotos(activityResults.docs[0].photos || []);
+    }
+  }
 
   const getEverythingWithAGeo = async () => {
     let docs = await databaseContext.database.find({
@@ -231,7 +256,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle  geo');
+              console.log('before handle geo');
               handleGeoClick(row);
             }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
@@ -252,7 +277,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle  geo');
+              console.log('before handle geo');
               handleGeoClick(row);
             }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
@@ -325,6 +350,20 @@ const MapPage: React.FC<IMapProps> = (props) => {
     console.dir(selectedInteractiveGeometry);
   }, [selectedInteractiveGeometry]);
 
+  useEffect(() => {
+    getActivityData();
+  }, []);
+
+  const photoState = {
+    photos,
+    setPhotos
+  };
+
+  const containerProps = {
+    activity: formActivityData,
+    photoState
+  };
+
   return (
     <>
       <Grid className={classes.mainGrid} container>
@@ -353,7 +392,11 @@ const MapPage: React.FC<IMapProps> = (props) => {
             {(selectedInteractiveGeometry as any)?.docType === DocType.REFERENCE_POINT_OF_INTEREST ? (
               <IAPPSite record={selectedInteractiveGeometry} />
             ) : (
-              <></>
+              <>
+                {formActivityData && (
+                  <ActivitiesPOI containerProps={containerProps} />
+                )}
+              </>
             )}
             {/*<ActivityPage activityId={selectedInteractiveGeometry?.recordDocID} />*/}
           </PopOutComponent>
