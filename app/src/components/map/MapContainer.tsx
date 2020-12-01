@@ -268,11 +268,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             layer.on('click', function () {
               // Fires on click of single feature
               interactObj.onClickCallback();
-              L.popup()
-                .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
-                //.setContent(interactObj.popUpComponent)
-                .setContent(content)
-                .openOn(mapRef.current);
+              if (feature.geometry.type !== 'Polygon') {
+                L.popup()
+                  .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
+                  //.setContent(interactObj.popUpComponent)
+                  .setContent(content)
+                  .openOn(mapRef.current);
+              }
             });
           }
         });
