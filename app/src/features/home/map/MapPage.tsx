@@ -148,7 +148,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
   };
 
   const handleGeoClick = (geo: any) => {
-    console.log('GEO', geo);
     setShowPopOut(true);
     setSelectedInteractiveGeometry(geo);
   };
@@ -348,7 +347,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
         <Grid className={showPopOut ? classes.popOutGridItemExpanded : classes.popOutGridItemShrunk} item>
           <PopOutComponent
             buttonCloseCallback={() => {
-              console.log("hey")
               setShowPopOut(false);
             }}
             selectedGeo={selectedInteractiveGeometry}>
