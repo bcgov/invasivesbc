@@ -1,15 +1,16 @@
-import { Box, CircularProgress, Typography } from '@material-ui/core';
+import { Box, CircularProgress, ThemeProvider, Typography } from '@material-ui/core';
 import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { ActivitySyncStatus } from 'constants/activities';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { JSONSchema7 } from 'json-schema';
 import React, { useEffect, useState } from 'react';
-import RootUISchemas from 'rjsf/RootUISchemas';
+import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
+import FieldTemplate from 'rjsf/templates/FieldTemplate';
+import ObjectFieldTemplate from 'rjsf/templates/ObjectFieldTemplate';
+import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
+import rjsfTheme from 'themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
-
-// Custom themed `Form` component, using @rjsf/material-ui as default base theme
-// const Form = withTheme({ ...rjsfMaterialTheme });
 
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -65,58 +66,63 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         <FormControlsComponent onSubmit={() => formRef.submit()} isDisabled={isDisabled} />
       </Box>
 
-      <Form
-        key={props.activity?._id}
-        disabled={isDisabled}
-        formData={props.activity?.formData || null}
-        schema={schemas.schema as JSONSchema7}
-        uiSchema={schemas.uiSchema}
-        liveValidate={false}
-        showErrorList={true}
-        ErrorList={() => {
-          return (
-            <div>
-              <Typography color="error" variant="h5">
-                The form contains one or more errors!
-              </Typography>
-              <Typography color="error" variant="h6">
-                Incorrect fields are highlighted below.
-              </Typography>
-            </div>
-          );
-        }}
-        onChange={(event) => {
-          if (!props.onFormChange) {
-            return;
-          }
+      <ThemeProvider theme={rjsfTheme}>
+        <Form
+          ObjectFieldTemplate={ObjectFieldTemplate}
+          FieldTemplate={FieldTemplate}
+          ArrayFieldTemplate={ArrayFieldTemplate}
+          key={props.activity?._id}
+          disabled={isDisabled}
+          formData={props.activity?.formData || null}
+          schema={schemas.schema as JSONSchema7}
+          uiSchema={schemas.uiSchema}
+          liveValidate={false}
+          showErrorList={true}
+          ErrorList={() => {
+            return (
+              <div>
+                <Typography color="error" variant="h5">
+                  The form contains one or more errors!
+                </Typography>
+                <Typography color="error" variant="h6">
+                  Incorrect fields are highlighted below.
+                </Typography>
+              </div>
+            );
+          }}
+          onChange={(event) => {
+            if (!props.onFormChange) {
+              return;
+            }
 
-          props.onFormChange(event, formRef);
-        }}
-        onError={(error) => {
-          if (!props.onFormSubmitError) {
-            return;
-          }
+            props.onFormChange(event, formRef);
+          }}
+          onError={(error) => {
+            if (!props.onFormSubmitError) {
+              return;
+            }
 
-          props.onFormSubmitError(error, formRef);
-        }}
-        onSubmit={(event) => {
-          if (!props.onFormSubmitSuccess) {
-            return;
-          }
+            props.onFormSubmitError(error, formRef);
+          }}
+          onSubmit={(event) => {
+            if (!props.onFormSubmitSuccess) {
+              return;
+            }
 
-          props.onFormSubmitSuccess(event, formRef);
-        }}
-        // `ref` does exist, but currently is missing from the `index.d.ts` types file.
-        // @ts-ignore: No overload matches this call ts(2769)
-        ref={(form) => {
-          if (!form) {
-            return;
-          }
+            props.onFormSubmitSuccess(event, formRef);
+          }}
+          // `ref` does exist, but currently is missing from the `index.d.ts` types file.
+          // @ts-ignore: No overload matches this call ts(2769)
+          ref={(form) => {
+            if (!form) {
+              return;
+            }
 
-          setFormRef(form);
-        }}>
-        <React.Fragment />
-      </Form>
+            setFormRef(form);
+          }}>
+          <React.Fragment />
+        </Form>
+      </ThemeProvider>
 
       <Box mt={3}>
         <FormControlsComponent onSubmit={() => formRef.submit()} isDisabled={isDisabled} />
