@@ -73,7 +73,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       ? (Math.PI * Math.pow(geo.properties.radius, 2))
       : area(geo);
 
-    return totalArea.toFixed(2);
+    return parseFloat(totalArea.toFixed(2));
   };
 
   /**
