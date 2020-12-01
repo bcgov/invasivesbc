@@ -148,6 +148,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   };
 
   const handleGeoClick = (geo: any) => {
+    console.log('GEO', geo);
     setShowPopOut(true);
     setSelectedInteractiveGeometry(geo);
   };
@@ -180,7 +181,10 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       geos.push(row.geometry[0]);
 
-      const coordinatesString = `(${row.geometry[0].geometry.coordinates[1].toFixed(2)}, ${row.geometry[0].geometry.coordinates[0].toFixed(2)})`;
+      let coordinatesString = 'Polygon';
+      if (row.geometry[0].geometry.type !== 'Polygon') {
+        coordinatesString = `(${row.geometry[0]?.geometry.coordinates[1]?.toFixed(2)}, ${row.geometry[0]?.geometry.coordinates[0]?.toFixed(2)})`;
+      }
 
       switch (row.docType) {
         case DocType.POINT_OF_INTEREST:
@@ -344,6 +348,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
         <Grid className={showPopOut ? classes.popOutGridItemExpanded : classes.popOutGridItemShrunk} item>
           <PopOutComponent
             buttonCloseCallback={() => {
+              console.log("hey")
               setShowPopOut(false);
             }}
             selectedGeo={selectedInteractiveGeometry}>
