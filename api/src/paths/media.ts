@@ -107,7 +107,7 @@ function getMedia(): RequestHandler {
  *
  * @returns {RequestHandler}
  */
-export function uploadMedia(label: String): RequestHandler {
+export function uploadMedia(label: string): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label, message: 'uploadMedia', body: req.body });
 
