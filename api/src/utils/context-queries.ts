@@ -194,7 +194,7 @@ const saveElevation = (id: any,req: any) => {
     .catch((error) => {
       defaultLog.debug({ label: 'addingContext', message: 'error', error });
     });
-}
+};
 
 export const commit = function (record:any,req:any) {
   const id = record.activity_id;
