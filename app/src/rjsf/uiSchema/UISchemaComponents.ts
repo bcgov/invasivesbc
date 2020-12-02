@@ -10,7 +10,7 @@
  * }
  */
 
-import BaseUISchemaComponents from 'rjsf/BaseUISchemaComponents';
+import BaseUISchemaComponents from 'rjsf/uiSchema/BaseUISchemaComponents';
 
 const Treatment_ChemicalPlant = {
   primary_applicator_employee_code: {},

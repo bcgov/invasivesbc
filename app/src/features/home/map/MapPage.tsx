@@ -1,14 +1,16 @@
 import { Button, CircularProgress, Container, Grid, makeStyles, Theme } from '@material-ui/core';
 import clsx from 'clsx';
+import { IPhoto } from 'components/photo/PhotoContainer';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
 import { IAPPSite } from 'components/points-of-interest/IAPP/IAPP-Site';
+import { ActivitiesPOI } from 'components/points-of-interest/ActivitiesPOI/ActivitiesPOI';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, {  useContext, useEffect, useState } from 'react';
-import { contextMenuType, MapContextMenu, MapContextMenuData } from './MapContextMenu';
+import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -27,16 +29,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%'
   },
   mapGridItemShrunk: {
-    height: '100%',
-    width: '66.66%'
+    height: '60%',
+    width: '100%'
   },
   popOutGridItemExpanded: {
-    height: '100%',
-    width: '33.33%'
+    height: '40%',
+    width: '100%'
   },
   popOutGridItemShrunk: {
-    height: '100%',
-    width: '0%'
+    height: '0%',
+    width: '100%'
   },
   popOutComponent: {
     height: '100%',
@@ -50,7 +52,6 @@ interface IMapProps {
 }
 
 const PointOfInterestPopUp = (name: string) => {
-  //return <div> {props.name} </div>;
   return '<div>' + name + '</div>';
 };
 
@@ -133,10 +134,11 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const [showPopOut, setShowPopOut] = useState(false);
 
   const [extent, setExtent] = useState(null);
+  const [formActivityData, setFormActivityData] = useState(null);
+  const [photos, setPhotos] = useState<IPhoto[]>([]);
 
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
-  //const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
   // don't load the map until interactive geos ready
@@ -149,19 +151,27 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
-  const changeContextMenu = (targetContextMenu: contextMenuType) => {};
-
-  // todo: handle closing of popup, this does not work:
-  /*
-  const togglePopup = async () => {
-    setShowPopOut(!showPopOut);
-  };
-  */
-
   const handleGeoClick = (geo: any) => {
     setShowPopOut(true);
     setSelectedInteractiveGeometry(geo);
   };
+
+  const getActivityData = async () => {
+    const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
+
+    if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
+      return;
+    }
+
+    const activityResults = await databaseContext.database.find({
+      selector: { _id: appStateResults.docs[0].activeActivity }
+    });
+
+    if (activityResults && activityResults.docs[0]) {
+      setFormActivityData(activityResults.docs[0]);
+      setPhotos(activityResults.docs[0].photos || []);
+    }
+  }
 
   const getEverythingWithAGeo = async () => {
     let docs = await databaseContext.database.find({
@@ -191,13 +201,18 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       geos.push(row.geometry[0]);
 
+      let coordinatesString = 'Polygon';
+      if (row.geometry[0].geometry.type !== 'Polygon') {
+        coordinatesString = `(${row.geometry[0]?.geometry.coordinates[1]?.toFixed(2)}, ${row.geometry[0]?.geometry.coordinates[0]?.toFixed(2)})`;
+      }
+
       switch (row.docType) {
         case DocType.POINT_OF_INTEREST:
           interactiveGeos.push({
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'New Point of Interest:\n ' + row._id + '\n' + row.geometry[0].coordinates,
+            description: 'New Point of Interest:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -209,7 +224,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
               //setInteractiveGeometry([interactiveGeos])
               console.log('clicked geo');
               handleGeoClick(row);
-            }, //try to get this one workign first
+            }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
           /* isSelected?: boolean;
@@ -227,7 +242,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Past Activity:\n ' + row._id + '\n' + row.geometry[0].coordinates,
+            description: 'Past Activity:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -237,10 +252,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle  geo');
+              console.log('before handle geo');
               handleGeoClick(row);
-              //console.log('clicked geo');
-            }, //try to get this one workign first
+            }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
           break;
@@ -249,7 +263,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Activity:\n ' + row._id + '\n' + row.geometry[0].coordinates,
+            description: 'Activity:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -259,10 +273,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle  geo');
+              console.log('before handle geo');
               handleGeoClick(row);
-              //console.log('clicked geo');
-            }, //try to get this one workign first
+            }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
           /* isSelected?: boolean;
@@ -280,7 +293,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Point of Interest:\n ' + row._id + '\n' + row.geometry[0].coordinates,
+            description: 'Point of Interest:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -290,10 +303,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle  geo');
+              console.log('before handle geo');
               handleGeoClick(row);
-              //console.log('clicked geo');
-            }, //try to get this one workign first
+            }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
           });
           /* isSelected?: boolean;
@@ -334,6 +346,20 @@ const MapPage: React.FC<IMapProps> = (props) => {
     console.dir(selectedInteractiveGeometry);
   }, [selectedInteractiveGeometry]);
 
+  useEffect(() => {
+    getActivityData();
+  }, []);
+
+  const photoState = {
+    photos,
+    setPhotos
+  };
+
+  const containerProps = {
+    activity: formActivityData,
+    photoState
+  };
+
   return (
     <>
       <Grid className={classes.mainGrid} container>
@@ -362,7 +388,11 @@ const MapPage: React.FC<IMapProps> = (props) => {
             {(selectedInteractiveGeometry as any)?.docType === DocType.REFERENCE_POINT_OF_INTEREST ? (
               <IAPPSite record={selectedInteractiveGeometry} />
             ) : (
-              <></>
+              <>
+                {formActivityData && (
+                  <ActivitiesPOI containerProps={containerProps} />
+                )}
+              </>
             )}
             {/*<ActivityPage activityId={selectedInteractiveGeometry?.recordDocID} />*/}
           </PopOutComponent>

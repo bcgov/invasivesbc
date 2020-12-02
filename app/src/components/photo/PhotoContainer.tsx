@@ -79,7 +79,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
             </Grid>
             <Grid item>
               <Button variant="contained" startIcon={<DeleteForever />} onClick={() => deletePhotos()}>
-                Remvoe All Photos
+                Remove All Photos
               </Button>
             </Grid>
           </Grid>

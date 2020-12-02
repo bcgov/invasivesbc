@@ -92,6 +92,16 @@
           }
         }
       },
+      "409": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
       "503": {
         "description": "Service unavailable",
         "content": {
@@ -530,7 +540,7 @@
             }
           },
           "invasive_plant_distribution_code": {
-            "type": "number",
+            "type": "string",
             "title": "Distribution",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
