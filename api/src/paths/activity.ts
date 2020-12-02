@@ -3,12 +3,13 @@
 import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import { WRITE_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivityPostRequestBody, IMediaItem, MediaBase64 } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
+import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
 import { uploadFileToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 
@@ -18,8 +19,8 @@ export const POST: Operation = [uploadMedia(), createActivity()];
 
 export const PUT: Operation = [uploadMedia(), updateActivity()];
 
+// Api doc common to both the POST and PUT endpoints
 const post_put_apiDoc = {
-  description: 'Create a new activity.',
   tags: ['activity'],
   security: [
     {
@@ -96,22 +97,31 @@ const post_put_apiDoc = {
   },
   responses: {
     200: {
-      description: 'Activity post response object.',
+      description: 'Activity response object.',
       content: {
         'application/json': {
           schema: {
-            required: ['activity_incoming_data_id'],
+            required: ['activity_id'],
             properties: {
-              activity_incoming_data_id: {
-                type: 'number'
+              activity_id: {
+                type: 'string',
+                format: 'uuid',
+                example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+                description: 'An RFC4122 UUID'
               }
             }
           }
         }
       }
     },
+    400: {
+      $ref: '#/components/responses/400'
+    },
     401: {
       $ref: '#/components/responses/401'
+    },
+    409: {
+      $ref: '#/components/responses/409'
     },
     503: {
       $ref: '#/components/responses/503'
@@ -123,10 +133,12 @@ const post_put_apiDoc = {
 };
 
 POST.apiDoc = {
+  description: 'Create a new activity.',
   ...post_put_apiDoc
 };
 
 PUT.apiDoc = {
+  description: 'Update an existing activity.',
   ...post_put_apiDoc
 };
 
@@ -208,18 +220,46 @@ function createActivity(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
+      const getActivitySQLStatement: SQLStatement = getActivitySQL(sanitizedActivityData.activity_id);
+      const createActivitySQLStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
 
-      if (!sqlStatement) {
+      if (!getActivitySQLStatement || !createActivitySQLStatement) {
         throw {
           status: 400,
           message: 'Failed to build SQL statement'
         };
       }
 
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      let createResponse: QueryResult = null;
 
-      const result = (response && response.rows && response.rows[0]) || null;
+      try {
+        // Perform both get and create operations as a single transaction
+        await connection.query('BEGIN');
+
+        const getResponse: QueryResult = await connection.query(
+          getActivitySQLStatement.text,
+          getActivitySQLStatement.values
+        );
+
+        if (getResponse && getResponse.rowCount) {
+          // Found 1 or more rows with matching activity_id (which are not marked as deleted), expecting 0
+          await connection.query('COMMIT');
+
+          throw {
+            status: 409,
+            message: 'Resource with matching activity_id already exists.'
+          };
+        }
+
+        createResponse = await connection.query(createActivitySQLStatement.text, createActivitySQLStatement.values);
+
+        await connection.query('COMMIT');
+      } catch (error) {
+        await connection.query('ROLLBACK');
+        throw error;
+      }
+
+      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       return res.status(200).json(result);
     } catch (error) {
