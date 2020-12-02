@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Container, makeStyles, Paper } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, makeStyles } from '@material-ui/core';
 import { Save } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';

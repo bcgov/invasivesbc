@@ -2,7 +2,7 @@ import React from 'react';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const StatusContainer: React.FC = (props) => {
-  const invasivesApi = useInvasivesApi();
+  useInvasivesApi();
 
   return <div></div>;
 };

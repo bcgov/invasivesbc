@@ -1,6 +1,6 @@
 'use strict';
 
-import { RequestHandler, Response } from 'express';
+import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
