@@ -110,7 +110,43 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Survey Details on Site {site_id}</Typography>
         </AccordionSummary>
-        <AccordionDetails className={classes.siteContainer}>{JSON.stringify(props?.record)}</AccordionDetails>
+        <AccordionDetails className={classes.surveyContainer}>
+          {!surveys || surveys.length === 0 && <Container>No Surveys</Container>}
+          {surveys && surveys.length !== 0 &&
+            <TableContainer component={Paper}>
+              <Table className={classes.table} aria-label="surveys">
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classes.cell}>Survey ID</TableCell>
+                    <TableCell className={classes.cell}>Common Name</TableCell>
+                    <TableCell className={classes.cell}>Species</TableCell>
+                    <TableCell className={classes.cell}>Survey Date</TableCell>
+                    <TableCell className={classes.cell}>Agency</TableCell>
+                    <TableCell className={classes.cell}>Hectares</TableCell>
+                    <TableCell align="center" className={classes.cell}>Density</TableCell>
+                    <TableCell align="center" className={classes.cell}>Distribution</TableCell>
+                    <TableCell className={classes.wideCell}>Comments</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {surveys.map((row) => (
+                    <TableRow key={row.SurveyID}>
+                      <TableCell className={classes.cell}>{ifApplicable(row.SurveyID)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(row.CommonName)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(row.Species)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(row.SurveyDate)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(row.SurveyAgency)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(row.EstArea)}</TableCell>
+                      <TableCell align="center" className={classes.cell}>{ifApplicable(row.Density)}</TableCell>
+                      <TableCell align="center" className={classes.cell}>{ifApplicable(row.Distribution)}</TableCell>
+                      <TableCell className={classes.wideCell}>{ifApplicable(row.Comment)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          }
+        </AccordionDetails>
       </Accordion>
       <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
