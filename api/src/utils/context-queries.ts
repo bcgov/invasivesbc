@@ -8,7 +8,7 @@ const defaultLog = getLogger('activity');
  * Insert contextual data for the new activity record from
  * the BC Geographic Warehouse (BCGW)
  *
- * @param id {integar} The record ID for the activity recently
+ * @param id {integer} The record ID for the activity recently
  *   entered in the database.
  * @param req {object} The express request object
  */
@@ -86,7 +86,7 @@ const saveBCGW = (id: any,req: any) => {
  * Insert contextual data for the new activity record from
  * local datasets housed in the PostGres database.
  *
- * @param id {integar} The record ID for the activity recently
+ * @param id {integer} The record ID for the activity recently
  *   entered in the database.
  * @param req {object} The express request object
  */
@@ -152,7 +152,7 @@ const saveInternal = (id: any,req: any) => {
  * Insert contextual data for the new activity record from
  * local datasets housed in the PostGres database.
  *
- * @param id {integar} The record ID for the activity recently
+ * @param id {integer} The record ID for the activity recently
  *   entered in the database.
  * @param req {object} The express request object
  */
