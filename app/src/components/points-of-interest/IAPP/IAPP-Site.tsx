@@ -152,7 +152,41 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Treatment Details</Typography>
         </AccordionSummary>
-        <AccordionDetails className={classes.siteContainer}>{JSON.stringify(props?.record)}</AccordionDetails>
+        <AccordionDetails className={classes.treatmentContainer}>
+          {!mechanical_treatments || mechanical_treatments.length === 0 && <Container>No Treatments</Container>}
+          {mechanical_treatments && mechanical_treatments.length !== 0 &&
+            <TableContainer component={Paper}>
+              <Table className={classes.table} aria-label="surveys">
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classes.cell}>Mechanical ID</TableCell>
+                    <TableCell className={classes.cell}>Common Name</TableCell>
+                    <TableCell className={classes.cell}>Treatment Date</TableCell>
+                    <TableCell className={classes.cell}>Agency</TableCell>
+                    <TableCell className={classes.cell}>Hectares</TableCell>
+                    <TableCell align="center" className={classes.cell}>Mech Method</TableCell>
+                    <TableCell align="center" className={classes.cell}>PaperFile ID</TableCell>
+                    <TableCell className={classes.wideCell}>Comments</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {mechanical_treatments.map((row) => (
+                    <TableRow key={row.MechanicalID}>
+                      <TableCell className={classes.cell}>{ifApplicable(row.MechanicalID)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(row.CommonName)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(row.TreatmentDate)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(row.TreatmentAgency)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(row.AreaTreated)}</TableCell>
+                      <TableCell align="center" className={classes.cell}>{ifApplicable(row.MechanicalMethod)}</TableCell>
+                      <TableCell align="center" className={classes.cell}>{ifApplicable(row.PaperFileID)}</TableCell>
+                      <TableCell className={classes.wideCell}>{ifApplicable(row.Comment)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          }
+        </AccordionDetails>
       </Accordion>
     </Container>
   );
