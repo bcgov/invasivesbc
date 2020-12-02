@@ -107,9 +107,9 @@ function getMedia(): RequestHandler {
  *
  * @returns {RequestHandler}
  */
-export function uploadMedia(label: string): RequestHandler {
+export function uploadMedia(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label, message: 'uploadMedia', body: req.body });
+    defaultLog.debug({ label: "uploadMedia", message: 'uploadMedia', body: req.body });
 
     if (!req.body.media || !req.body.media.length) {
       // no media objects included, skipping media upload step

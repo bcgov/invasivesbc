@@ -13,7 +13,7 @@ import { uploadMedia } from './media';
 
 const defaultLog = getLogger('point-of-interest');
 
-export const POST: Operation = [uploadMedia('point-of-interest'), createPointOfInterest()];
+export const POST: Operation = [uploadMedia(), createPointOfInterest()];
 
 POST.apiDoc = {
   description: 'Create a new point of interest.',

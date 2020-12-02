@@ -14,9 +14,9 @@ import { uploadMedia } from './media';
 
 const defaultLog = getLogger('activity');
 
-export const POST: Operation = [uploadMedia('activity'), createActivity()];
+export const POST: Operation = [uploadMedia(), createActivity()];
 
-export const PUT: Operation = [uploadMedia('activity'), updateActivity()];
+export const PUT: Operation = [uploadMedia(), updateActivity()];
 
 // Api doc common to both the POST and PUT endpoints
 const post_put_apiDoc = {
