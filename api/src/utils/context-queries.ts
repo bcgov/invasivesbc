@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getDBConnection } from '../database/db';
 import { getLogger } from './logger';
 
-const defaultLog = getLogger('activity');
+const defaultLog = getLogger('context-queries');
 
 /**
  * Insert contextual data for the new activity record from
