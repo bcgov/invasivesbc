@@ -1,5 +1,9 @@
-import { Accordion, AccordionDetails, AccordionSummary, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Container, Accordion, AccordionDetails, AccordionSummary, Grid, makeStyles, Paper, Typography,
+  TableContainer, TableCell, TableRow, TableHead, Table, TableBody } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
+import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
+import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
+import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -8,14 +12,31 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightRegular,
     align: 'center'
   },
-  siteContainer: {
-    height: '600px'
+  container: {
+    maxWidth: 'x'
   },
+  siteContainer: {},
+  surveyContainer: {},
+  treatmentContainer: {},
   photoContainer: {},
   paper: {
     padding: theme.spacing(2),
     textAlign: 'left',
     color: theme.palette.text.primary
+  },
+  table: {
+    width: "auto",
+    tableLayout: 'auto'
+  },
+  cell: {
+    whiteSpace: 'nowrap'
+  },
+  wideCell: {
+    whiteSpace: 'nowrap'
+  },
+  missingValue: {
+    fontStyle: 'italic',
+    color: '#777'
   }
 }));
 
@@ -25,113 +46,69 @@ export interface IAPPSitePropType {
 export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const classes = useStyles();
 
-  const getSiteID = () => {
-    return props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data?.site_id;
-  };
+  const {site_id, map_sheet, slope, aspect, elevation, specific_use, soil_texture, surveys, mechanical_treatments, comments}
+     = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data;
+  const {access_description, created_date_on_device}
+     = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data;
+  const paper_file = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data?.paper_file[0]?.description;
+  const longitude = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0];
+  const latitude = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1];
+  const {Jur1, Jur1pct, Jur2, Jur2pct, Jur3, Jur3pct} = surveys ? surveys[0] : {Jur1: 'Not Specified', Jur1pct: '100', Jur2: '', Jur2pct: '0', Jur3: '', Jur3pct: '0'};
+  // Tester: {Jur1:'A', Jur1pct:'50', Jur2:'B', Jur2pct:'20', Jur3:'C', Jur3pct:'30'};
 
-  const getCreated = () => {
-    return props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data?.created_date_on_device;
-  };
+  const ifApplicable = (value) => (value && String(value).trim() != '') ? value : <div className={classes.missingValue}>N/A</div>;
 
-  const getPaper = () => {
-    return props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data?.paper_file[0]?.description;
-  };
-
-  const getLong = () => {
-    return props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0];
-  };
-
-  const getLat = () => {
-    return props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1];
-  };
-
-  const getMapsheet = () => {
-    return props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data?.map_sheet;
-  };
-
-  const getSlope = () => {
-    return props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data?.slope;
-  };
-
-  const getAspect = () => {
-    return props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data?.aspect;
-  };
-
-  const getElevation = () => {
-    return props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data?.elevation;
-  };
-
-  const getSpecificUse = () => {
-    return props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data?.specific_use;
-  };
-
-  const getSoilTexture = () => {
-    return props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data?.soil_texture;
-  };
   return (
-    <>
-      <Typography align="center" className={classes.heading}>
-        Legacy IAPP Site {getSiteID()}
-      </Typography>
-      <Accordion defaultExpanded={true}>
+    <Container style={{maxWidth: 1200}}>
+      <Accordion defaultExpanded={true} className={classes.container}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography align="center" className={classes.heading}>
-            Site {getSiteID()} Details
+          <Typography className={classes.heading}>
+            Legacy IAPP Site: {site_id}
           </Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.siteContainer}>
-          <Paper className={classes.paper} elevation={5}>
-            <Grid container xs={8} spacing={5}>
-              <Grid item xs={4}>
-                SiteID: {getSiteID()}
-              </Grid>
-              <Grid item xs={4}>
-                Created: {getCreated()}
-              </Grid>
-              <Grid item xs={4}>
-                PaperFile: {getPaper()}
-              </Grid>
-              <Grid item xs={4}>
-                Longitude: {getLong()}
-              </Grid>
-              <Grid item xs={4}>
-                Latitude: {getLat()}
-              </Grid>
-              <Grid item xs={4}>
-                Mapsheet: {getMapsheet()}
-              </Grid>
-              <Grid item xs={4}>
-                Slope: {getSlope()}
-              </Grid>
-              <Grid item xs={4}>
-                Aspect: {getAspect()}
-              </Grid>
-              <Grid item xs={4}>
-                Elevation: {getElevation()}
-              </Grid>
-              <Grid item xs={4}>
-                Specific Use: {getSpecificUse()}
-              </Grid>
-              <Grid item xs={4}>
-                Soil Texture: {getSoilTexture()}
-              </Grid>
-              <Grid item xs={4}>
-                All species found:
-              </Grid>
-              <Grid item xs={4}>
-                All species treated:
-              </Grid>
-              <Grid item xs={4}>
-                Species to be treated:
-              </Grid>
-            </Grid>
-          </Paper>
-          <br></br>
+          <Grid container spacing={1}>
+            <Grid item xs={3} sm={2}>Created</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(created_date_on_device)}</Grid>
+            <Grid item xs={3} sm={2}>Slope</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(slope)}</Grid>
+
+            <Grid item xs={3} sm={2}>PaperFile</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(paper_file)}</Grid>
+            <Grid item xs={3} sm={2}>Aspect</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(aspect)}</Grid>
+
+            <Grid item xs={3} sm={2}>Longitude</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(longitude)}</Grid>
+            <Grid item xs={3} sm={2}>Latitude</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(latitude)}</Grid>
+
+            <Grid item xs={3} sm={2}>Elevation</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(latitude)}</Grid>
+            <Grid item xs={3} sm={2}>Specific Use</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(specific_use)}</Grid>
+
+            <Grid item xs={3} sm={2}>Mapsheet</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(map_sheet)}</Grid>
+            <Grid item xs={3} sm={2}>Soil Texture</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(soil_texture)}</Grid>
+
+            <Grid item xs={3} sm={2}>Jurisdiction</Grid>
+            <Grid item xs={3}>{ifApplicable(Jur1)}{Jur1pct && Jur1pct != '0' ? ' (' + Jur1pct + '%)' : ''}</Grid>
+            <Grid item xs={3}>{Jur2 ?? ''}{Jur2pct && Jur2pct != '0' ? ' (' + Jur2pct + '%)' : ''}</Grid>
+            <Grid item xs={3}>{Jur3 ?? ''}{Jur3pct && Jur3pct != '0' ? ' (' + Jur3pct + '%)' : ''}</Grid>
+
+            <Grid item xs={3} sm={2}>Location</Grid>
+            <Grid item xs={9} sm={10}>{ifApplicable(access_description)}</Grid>
+
+            <Grid item xs={3} sm={2}>Comments</Grid>
+            <Grid item xs={9} sm={10}>{ifApplicable(comments)}</Grid>
+          </Grid>
         </AccordionDetails>
       </Accordion>
       <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={classes.heading}>Survey Details</Typography>
+          <Typography className={classes.heading}>Survey Details on Site {site_id}</Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.siteContainer}>{JSON.stringify(props?.record)}</AccordionDetails>
       </Accordion>
@@ -141,7 +118,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         </AccordionSummary>
         <AccordionDetails className={classes.siteContainer}>{JSON.stringify(props?.record)}</AccordionDetails>
       </Accordion>
-      ;
-    </>
+    </Container>
   );
 };

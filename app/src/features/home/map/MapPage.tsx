@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%'
   },
   popOutComponent: {
-    height: '100%',
     width: '100%',
     backgroundColor: theme.palette.background.paper
   }
