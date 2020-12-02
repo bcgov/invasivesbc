@@ -462,7 +462,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "default": "OP"
           },
           "observer_first_name": {
             "type": "string",
@@ -605,10 +606,9 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "flowering": {
-            "type": "boolean",
-            "title": "Flowering",
-            "default": false
+          "range_unit_number": {
+            "type": "string",
+            "title": "Range Unit"
           },
           "plant_life_stage_code": {
             "type": "string",
@@ -643,9 +643,10 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "range_unit_number": {
-            "type": "string",
-            "title": "Range Unit"
+          "flowering": {
+            "type": "boolean",
+            "title": "Flowering",
+            "default": false
           },
           "legacy_site_ind": {
             "type": "boolean",
