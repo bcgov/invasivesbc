@@ -1,11 +1,14 @@
 'use strict';
 
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
+import { GetObjectOutput, ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { IMediaItem } from '../models/media';
+import { IMediaItem, MediaBase64 } from '../models/media';
 import { ALL_ROLES } from '../constants/misc';
-import { getFileFromS3 } from '../utils/file-utils';
+import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils';
+import { getLogger } from '../utils/logger';
+
+const defaultLog = getLogger('media');
 
 /**
  * GET api/media?key=123;key=456;key=789
@@ -92,5 +95,62 @@ function getMedia(): RequestHandler {
     });
 
     return res.status(200).json(mediaItems);
+  };
+}
+
+/**
+ * Uploads any media in the request to S3, adding their keys to the request, and calling next().
+ *
+ * Does nothing if no media is present in the request.
+ *
+ * TODO: make media handling an extension that can be added to different endpoints/record types
+ *
+ * @returns {RequestHandler}
+ */
+export function uploadMedia(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: "uploadMedia", message: 'uploadMedia', body: req.body });
+
+    if (!req.body.media || !req.body.media.length) {
+      // no media objects included, skipping media upload step
+      return next();
+    }
+
+    const rawMediaArray: IMediaItem[] = req.body.media;
+
+    const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
+
+    rawMediaArray.forEach((rawMedia: IMediaItem) => {
+      if (!rawMedia) {
+        return;
+      }
+
+      let media: MediaBase64;
+      try {
+        media = new MediaBase64(rawMedia);
+      } catch (error) {
+        defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
+        throw {
+          status: 400,
+          message: 'Included media was invalid/encoded incorrectly'
+        };
+      }
+
+      const metadata = {
+        filename: media.mediaName || '',
+        description: media.mediaDescription || '',
+        date: media.mediaDate || '',
+        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
+        email: (req['auth_payload'] && req['auth_payload'].email) || ''
+      };
+
+      s3UploadPromises.push(uploadFileToS3(media, metadata));
+    });
+
+    const results = await Promise.all(s3UploadPromises);
+
+    req['mediaKeys'] = results.map(result => result.Key);
+
+    next();
   };
 }
