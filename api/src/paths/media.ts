@@ -3,7 +3,7 @@
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { IMediaItem } from '../models/activity';
+import { IMediaItem } from '../models/media';
 import { ALL_ROLES } from '../constants/misc';
 import { getFileFromS3 } from '../utils/file-utils';
 
