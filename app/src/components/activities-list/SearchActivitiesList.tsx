@@ -16,6 +16,7 @@ import { MediumDateFormat } from 'constants/misc';
 import moment from 'moment';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import ActivityListItem from './ActivityListItem';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiyListItem: {
@@ -58,19 +59,7 @@ const SearchActivityListItem: React.FC<ISearchActivityListItem> = (props) => {
         </Box>
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={3}>
-        <Box overflow="hidden" textOverflow="ellipsis" title={props.activity.activityType}>
-          <Typography className={classes.activitiyListItem_Typography}>Type</Typography>
-          {props.activity.activityType}
-        </Box>
-      </Grid>
-      <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={3}>
-        <Box overflow="hidden" textOverflow="ellipsis" title={props.activity.activitySubtype.split('_')[2]}>
-          <Typography className={classes.activitiyListItem_Typography}>Subtype</Typography>
-          {props.activity.activitySubtype.split('_')[2]}
-        </Box>
-      </Grid>
+      <ActivityListItem activity={props.activity} classes={classes} />
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={3}>
         <Typography className={classes.activitiyListItem_Typography}>Date</Typography>
