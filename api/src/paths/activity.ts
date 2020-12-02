@@ -326,6 +326,10 @@ function updateActivity(): RequestHandler {
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
+      // kick off asynchronous context collection activities
+      commitContext(result,req);
+
+
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.debug({ label: 'updateActivity', message: 'error', error });
