@@ -62,8 +62,15 @@ const saveBCGW = (id: any,req: any) => {
           set (${column}) = ('${attribute}')
           where activity_id = '${id}'
         `;
+        console.log(sql);
 
-        await connection.query(sql);
+        await connection.query(sql)
+          .then(() => {
+            console.log(`Successfully entered ${attribute} into column ${column}`)
+          })
+          .catch((err) => {
+            console.error('Error inserting into the database',err);
+          });
 
         connection.release();
       })
@@ -123,7 +130,13 @@ const saveInternal = (id: any,req: any) => {
           where activity_id = '${id}'
         `;
 
-        await connection.query(sql);
+        await connection.query(sql)
+          .then(() => {
+            console.log(`Successfully entered ${attribute} into column ${column}`)
+          })
+          .catch((err) => {
+            console.error('Error inserting into the database',err);
+          });
 
         connection.release();
       })
@@ -133,8 +146,59 @@ const saveInternal = (id: any,req: any) => {
   }
 };
 
+
+/**
+ * ## saveElevation
+ * Insert contextual data for the new activity record from
+ * local datasets housed in the PostGres database.
+ *
+ * @param id {integar} The record ID for the activity recently
+ *   entered in the database.
+ * @param req {object} The express request object
+ */
+const saveElevation = (id: any,req: any) => {
+  console.log("id:",id);
+  const geom = req.body.locationAndGeometry;
+  const x = geom.anchorPointX;
+  const y = geom.anchorPointY;
+  const api = `${req.protocol}://${req.get('host')}/api`
+  const config = {
+    headers: {
+      authorization: req.headers.authorization
+    }
+  }
+
+  /* For each layer run an asynchronous request */
+  const url = `${api}/context/elevation?lon=${x}&lat=${y}`;
+
+  axios.get(url,config)
+    .then(async (response) => {
+      const elevation = response.data.elevation;
+      const connection = await getDBConnection();
+      const sql = `
+        update activity_incoming_data
+        set (elevation) = (round(${elevation},0))
+        where activity_id = '${id}'
+      `;
+
+      await connection.query(sql)
+        .then(() => {
+          console.log('Successfully entered elevation')
+        })
+        .catch((err) => {
+          console.error('Error inserting into the database',err);
+        });
+
+      connection.release();
+    })
+    .catch((error) => {
+      defaultLog.debug({ label: 'addingContext', message: 'error', error });
+    });
+}
+
 export const commit = function (record:any,req:any) {
   const id = record.activity_id;
   saveBCGW(id,req); // Insert DataBC BCGW attributes
   saveInternal(id,req); // Insert local attributes
+  saveElevation(id,req); // Insert elevation
 };
