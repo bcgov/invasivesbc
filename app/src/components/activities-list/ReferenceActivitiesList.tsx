@@ -1,5 +1,4 @@
 import {
-  Box,
   Divider,
   Grid,
   List,
@@ -19,6 +18,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import ActivityListItem from './ActivityListItem';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -57,19 +57,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={3}>
-        <Box overflow="hidden" textOverflow="ellipsis" title={props.activity.activityType}>
-          <Typography className={classes.activitiyListItem_Typography}>Type</Typography>
-          {props.activity.activityType}
-        </Box>
-      </Grid>
-      <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={3}>
-        <Box overflow="hidden" textOverflow="ellipsis" title={props.activity.activitySubtype.split('_')[2]}>
-          <Typography className={classes.activitiyListItem_Typography}>Subtype</Typography>
-          {props.activity.activitySubtype.split('_')[2]}
-        </Box>
-      </Grid>
+      <ActivityListItem activity={props.activity} classes={classes} />
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={2}>
         <Typography className={classes.activitiyListItem_Typography}>Created</Typography>
