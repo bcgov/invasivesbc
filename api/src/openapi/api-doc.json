@@ -386,10 +386,31 @@
         "required": [
           "invasive_species_agency_code",
           "jurisdiction_code",
-          "species_id",
-          "access_description"
+          "access_description",
+          "activity_date_time",
+          "latitude",
+          "longitude",
+          "reported_area"
         ],
         "properties": {
+          "activity_date_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date and Time"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "reported_area": {
+            "type": "number",
+            "title": "Area (m\u00B2)",
+            "minimum": 1
+          },
           "invasive_species_agency_code": {
             "type": "string",
             "title": "Agency",
@@ -411,10 +432,6 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
-          },
-          "species_id": {
-            "type": "string",
-            "title": "Species"
           },
           "general_comment": {
             "type": "string",
@@ -441,18 +458,11 @@
         "type": "object",
         "required": [
           "observation_type_code",
-          "observation_date_time",
           "observer_first_name",
           "observer_last_name",
-          "reported_area",
           "negative_obs_ind"
         ],
         "properties": {
-          "observation_date_time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Date and Time"
-          },
           "observation_type_code": {
             "type": "string",
             "title": "Type",
@@ -474,12 +484,6 @@
             "type": "string",
             "title": "Last Name",
             "maximum": 50
-          },
-          "reported_area": {
-            "type": "number",
-            "title": "Area (m\u00B2)",
-            "minimum": 1,
-            "maximum": 100
           },
           "sample_number": {
             "type": "string",
