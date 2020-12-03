@@ -34,10 +34,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   popOutGridItemExpanded: {
     height: '40%',
+    display: 'inherit',
     width: '100%'
   },
   popOutGridItemShrunk: {
     height: '0%',
+    display: 'none',
     width: '100%'
   },
   popOutComponent: {
