@@ -1,9 +1,6 @@
 import { Container, Accordion, AccordionDetails, AccordionSummary, Grid, makeStyles, Paper, Typography,
   TableContainer, TableCell, TableRow, TableHead, Table, TableBody } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
-import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
-import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
-import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -45,7 +42,7 @@ export interface IAPPSitePropType {
 export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const classes = useStyles();
 
-  const {site_id, map_sheet, slope, aspect, elevation, specific_use, soil_texture, surveys, mechanical_treatments, comments}
+  const {site_id, map_sheet, slope, aspect, specific_use, soil_texture, surveys, mechanical_treatments, comments}
      = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data;
   const {access_description, created_date_on_device}
      = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data;
@@ -58,8 +55,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const ifApplicable = (value) => (value && String(value).trim() != '') ? value : <div className={classes.missingValue}>N/A</div>;
 
   return (
-    <Container style={{maxWidth: 1200}}>
-      <Accordion defaultExpanded={true} className={classes.container}>
+    <Container className={classes.container}>
+      <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>
             Legacy IAPP Site: {site_id}
