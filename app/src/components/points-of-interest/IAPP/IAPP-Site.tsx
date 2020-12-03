@@ -13,7 +13,6 @@ const useStyles = makeStyles((theme) => ({
     align: 'center'
   },
   container: {
-    maxWidth: 'x'
   },
   siteContainer: {},
   surveyContainer: {},
