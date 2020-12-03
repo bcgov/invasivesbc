@@ -11,16 +11,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -124.95511,
-          49.29153
+          -123.66,
+          56.83
         ]
       },
       "properties": {}
     }
   ],
   "locationAndGeometry": {
-    "anchorPointY": 49.29153,
-    "anchorPointX": -124.95511,
+    "anchorPointY": 56.83,
+    "anchorPointX": -123.66,
     "area": 0,
     "jurisdiction": "string",
     "agency": "string",
