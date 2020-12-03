@@ -41,7 +41,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%'
   },
   popOutComponent: {
-    height: '100%',
     width: '100%',
     backgroundColor: theme.palette.background.paper
   }
@@ -203,7 +202,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       let coordinatesString = 'Polygon';
       if (row.geometry[0].geometry.type !== 'Polygon') {
-        coordinatesString = `(${row.geometry[0]?.geometry.coordinates[1]?.toFixed(2)}, ${row.geometry[0]?.geometry.coordinates[0]?.toFixed(2)})`;
+        const coords = [Number(row.geometry[0]?.geometry.coordinates[1]).toFixed(2), Number(row.geometry[0]?.geometry.coordinates[0]).toFixed(2)];
+        coordinatesString = `(${coords[0]}, ${coords[1]})`;
       }
 
       switch (row.docType) {
