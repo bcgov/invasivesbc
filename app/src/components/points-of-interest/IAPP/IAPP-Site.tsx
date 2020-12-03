@@ -42,17 +42,19 @@ export interface IAPPSitePropType {
 export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const classes = useStyles();
 
-  const {site_id, map_sheet, slope, aspect, specific_use, soil_texture, surveys, mechanical_treatments, comments}
+  const {site_id, map_sheet, aspect, specific_use, soil_texture, surveys, mechanical_treatments, comments}
      = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data;
   const {access_description, created_date_on_device}
      = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data;
   const paper_file = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data?.paper_file[0]?.description;
   const longitude = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0];
   const latitude = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1];
+  const {slope, elevation} = props?.record?.point_of_interest_payload?.geometry[0].properties;
   const {Jur1, Jur1pct, Jur2, Jur2pct, Jur3, Jur3pct} = surveys ? surveys[0] : {Jur1: 'Not Specified', Jur1pct: '100', Jur2: '', Jur2pct: '0', Jur3: '', Jur3pct: '0'};
   // Tester: {Jur1:'A', Jur1pct:'50', Jur2:'B', Jur2pct:'20', Jur3:'C', Jur3pct:'30'};
 
   const ifApplicable = (value) => (value && String(value).trim() != '') ? value : <div className={classes.missingValue}>N/A</div>;
+  const toDecimalPlaces = (n, decimals = 4) => Number.parseFloat(n).toFixed(decimals);
 
   return (
     <Container className={classes.container}>
@@ -80,7 +82,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             <Grid item xs={9} sm={4}>{ifApplicable(latitude)}</Grid>
 
             <Grid item xs={3} sm={2}>Elevation</Grid>
-            <Grid item xs={9} sm={4}>{ifApplicable(latitude)}</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(elevation)}</Grid>
             <Grid item xs={3} sm={2}>Specific Use</Grid>
             <Grid item xs={9} sm={4}>{ifApplicable(specific_use)}</Grid>
 
@@ -132,7 +134,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       <TableCell className={classes.cell}>{ifApplicable(row.Species)}</TableCell>
                       <TableCell className={classes.cell}>{ifApplicable(row.SurveyDate)}</TableCell>
                       <TableCell className={classes.cell}>{ifApplicable(row.SurveyAgency)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(row.EstArea)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(toDecimalPlaces(row.EstArea))}</TableCell>
                       <TableCell align="center" className={classes.cell}>{ifApplicable(row.Density)}</TableCell>
                       <TableCell align="center" className={classes.cell}>{ifApplicable(row.Distribution)}</TableCell>
                       <TableCell className={classes.wideCell}>{ifApplicable(row.Comment)}</TableCell>
@@ -172,7 +174,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       <TableCell className={classes.cell}>{ifApplicable(row.CommonName)}</TableCell>
                       <TableCell className={classes.cell}>{ifApplicable(row.TreatmentDate)}</TableCell>
                       <TableCell className={classes.cell}>{ifApplicable(row.TreatmentAgency)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(row.AreaTreated)}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(toDecimalPlaces(row.AreaTreated))}</TableCell>
                       <TableCell align="center" className={classes.cell}>{ifApplicable(row.MechanicalMethod)}</TableCell>
                       <TableCell align="center" className={classes.cell}>{ifApplicable(row.PaperFileID)}</TableCell>
                       <TableCell className={classes.wideCell}>{ifApplicable(row.Comment)}</TableCell>
