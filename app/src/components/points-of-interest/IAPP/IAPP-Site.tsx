@@ -54,7 +54,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   // Tester: {Jur1:'A', Jur1pct:'50', Jur2:'B', Jur2pct:'20', Jur3:'C', Jur3pct:'30'};
 
   const ifApplicable = (value) => (value && String(value).trim() != '') ? value : <div className={classes.missingValue}>N/A</div>;
-  const toDecimalPlaces = (n, decimals = 4) => Number.parseFloat(n).toFixed(decimals);
 
   return (
     <Container className={classes.container}>
@@ -77,9 +76,9 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             <Grid item xs={9} sm={4}>{ifApplicable(aspect)}</Grid>
 
             <Grid item xs={3} sm={2}>Longitude</Grid>
-            <Grid item xs={9} sm={4}>{ifApplicable(longitude)}</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(parseFloat(longitude).toFixed(2))}</Grid>
             <Grid item xs={3} sm={2}>Latitude</Grid>
-            <Grid item xs={9} sm={4}>{ifApplicable(latitude)}</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(parseFloat(latitude).toFixed(2))}</Grid>
 
             <Grid item xs={3} sm={2}>Elevation</Grid>
             <Grid item xs={9} sm={4}>{ifApplicable(elevation)}</Grid>
@@ -134,7 +133,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       <TableCell className={classes.cell}>{ifApplicable(row.Species)}</TableCell>
                       <TableCell className={classes.cell}>{ifApplicable(row.SurveyDate)}</TableCell>
                       <TableCell className={classes.cell}>{ifApplicable(row.SurveyAgency)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(toDecimalPlaces(row.EstArea))}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(parseFloat(row.EstArea).toFixed(4))}</TableCell>
                       <TableCell align="center" className={classes.cell}>{ifApplicable(row.Density)}</TableCell>
                       <TableCell align="center" className={classes.cell}>{ifApplicable(row.Distribution)}</TableCell>
                       <TableCell className={classes.wideCell}>{ifApplicable(row.Comment)}</TableCell>
@@ -174,7 +173,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       <TableCell className={classes.cell}>{ifApplicable(row.CommonName)}</TableCell>
                       <TableCell className={classes.cell}>{ifApplicable(row.TreatmentDate)}</TableCell>
                       <TableCell className={classes.cell}>{ifApplicable(row.TreatmentAgency)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(toDecimalPlaces(row.AreaTreated))}</TableCell>
+                      <TableCell className={classes.cell}>{ifApplicable(parseFloat(row.AreaTreated).toFixed(4))}</TableCell>
                       <TableCell align="center" className={classes.cell}>{ifApplicable(row.MechanicalMethod)}</TableCell>
                       <TableCell align="center" className={classes.cell}>{ifApplicable(row.PaperFileID)}</TableCell>
                       <TableCell className={classes.wideCell}>{ifApplicable(row.Comment)}</TableCell>
