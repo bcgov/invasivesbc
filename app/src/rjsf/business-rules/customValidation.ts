@@ -1,24 +1,33 @@
-import { FormValidation } from '@rjsf/core';
+import { FormValidation } from "@rjsf/core";
 
-let areaLimit = 0;
+type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
 // keep track of all business rules for custom form validation logic
-export function customValidation(activitySubtype: string) {
-  if (activitySubtype === 'Activity_Observation_PlantTerrestial') {
-    areaLimit = 10000;
-  } else {
-    areaLimit = Number.POSITIVE_INFINITY;
-  }
+export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    for (const validator of validators) {
+      errors = validator(formData, errors);
+    }
 
-  return validate;
+    return errors;
+  };
 }
 
-function validate(formData: any, errors: FormValidation) : FormValidation {
-  // validate reported area limit
-  errors.activity_data['reported_area'].__errors = [];
-  if (formData.activity_data['reported_area'] > areaLimit) { 
-    errors.activity_data['reported_area'].addError("Area is too large for given activity type");
-  }
+export function getAreaValidator(activitySubtype: string): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    let areaLimit = Number.POSITIVE_INFINITY;
+    if (activitySubtype === "Activity_Observation_PlantTerrestial") {
+      areaLimit = 10000;
+    }
 
-  return errors;
-}
+    // validate reported area limit
+    errors.activity_data["reported_area"].__errors = [];
+    if (formData.activity_data["reported_area"] > areaLimit) {
+      errors.activity_data["reported_area"].addError(
+        `Area cannot exceed ${areaLimit} m\u00B2`
+      );
+    }
+
+    return errors;
+  };
+};
