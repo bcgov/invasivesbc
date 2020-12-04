@@ -109,8 +109,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     const latlng = {
-      latitude: latitude.toFixed(2),
-      longitude: longitude.toFixed(2)
+      latitude: parseFloat(latitude.toFixed(2)),
+      longitude: parseFloat(longitude.toFixed(2))
     }
 
     return latlng;
