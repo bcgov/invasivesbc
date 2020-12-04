@@ -84,10 +84,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * 
    * @param {Feature[]} geoJSON The geometry in GeoJSON format
    */
-  const calculateLatLng = (geometry: Feature[]) => {
-    if (!geometry[0] || !geometry[0].geometry) return;
+  const calculateLatLng = (geom: Feature[]) => {
+    if (!geom[0] || !geom[0].geometry) return;
 
-    const geo = geometry[0].geometry;
+    const geo = geom[0].geometry;
     const firstCoord = geo['coordinates'][0];
 
     let latitude = null;
@@ -99,7 +99,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     } else if (geo.type === 'LineString') {
       latitude = firstCoord[1];
       longitude = firstCoord[0];
-    } else if (!geometry[0].properties.isRectangle) {
+    } else if (!geom[0].properties.isRectangle) {
       latitude = firstCoord[0][1];
       longitude = firstCoord[0][0];
     } else {
