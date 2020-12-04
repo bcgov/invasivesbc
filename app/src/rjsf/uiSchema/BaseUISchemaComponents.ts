@@ -9,14 +9,8 @@
  */
 
 const Observation = {
-  observation_date_time: {
-    'ui:widget': 'datetime'
-  },
   observer_first_name: {},
   observer_last_name: {},
-  reported_area: {
-    'ui:readonly': true
-  },
   sample_number: {},
   negative_obs_ind: {
     'ui:widget': 'radio'

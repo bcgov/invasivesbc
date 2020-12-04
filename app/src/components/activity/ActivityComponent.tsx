@@ -8,6 +8,7 @@ import React from 'react';
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
   activity: any;
+  customValidation?: any;
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {

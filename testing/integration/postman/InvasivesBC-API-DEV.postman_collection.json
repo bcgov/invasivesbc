@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "873004be-7b90-4df6-bce4-ee85f090d847",
+		"_postman_id": "8e358b65-20ba-42d4-9764-1614135b4e4d",
 		"name": "InvasivesBC-API-DEV",
 		"description": "API for InvasivesBC (Ionic Version)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "81a394d9-34bf-4028-a8ef-08d06673e846",
+								"id": "980073da-8af3-4b13-b974-06d6a83a549a",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -95,7 +95,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "02b307a1-be0b-4e35-9427-85d863903e37",
+								"id": "783125a0-c353-47c8-a0de-b4d233628aec",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -111,7 +111,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "20b6cebd-7935-4f2e-92f2-b00c67c16939",
+								"id": "6dae9395-bce7-446e-b874-7ef153cfcec3",
 								"exec": [
 									"const uuid = require('uuid');\r",
 									"const activity_id = uuid.v4();\r",
@@ -129,7 +129,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"activity_id\": \"{{ACTIVITY_ID}}\",\r\n    \"created_timestamp\": \"2020-11-24T17:55:33+0000\",\r\n    \"media\": [],\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ],\r\n                        [\r\n                            -123.3797264099121,\r\n                            48.441842443378555\r\n                        ],\r\n                        [\r\n                            -123.36264610290526,\r\n                            48.435692728712105\r\n                        ],\r\n                        [\r\n                            -123.3467674255371,\r\n                            48.448333001219005\r\n                        ],\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ]\r\n                    ]\r\n                ]\r\n            },\r\n            \"properties\": {}\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"invasive_species_agency_code\": \"CCCIPC\",\r\n            \"jurisdiction_code\": \"DOT\",\r\n            \"species_id\": \"test\",\r\n            \"access_description\": \"123\"\r\n        },\r\n        \"activity_type_data\": {\r\n            \"negative_obs_ind\": false,\r\n            \"observation_date_time\": \"2020-11-30T16:36:51-08:00\",\r\n            \"reported_area\": 3.99,\r\n            \"observation_type_code\": \"OP\",\r\n            \"observer_first_name\": \"wwwe\",\r\n            \"observer_last_name\": \"wewew\"\r\n        },\r\n        \"activity_subtype_data\": {\r\n            \"flowering\": false,\r\n            \"legacy_site_ind\": false,\r\n            \"early_detection_rapid_resp_ind\": false,\r\n            \"research_detection_ind\": false,\r\n            \"well_ind\": false,\r\n            \"special_care_ind\": false,\r\n            \"biological_ind\": false,\r\n            \"invasive_plant_code\": \"BA\",\r\n            \"invasive_plant_density_code\": \"M\",\r\n            \"invasive_plant_distribution_code\": \"RS\",\r\n            \"soil_texture_code\": \"F\",\r\n            \"specific_use_code\": \"PL\",\r\n            \"slope_code\": \"SS\",\r\n            \"aspect_code\": \"SE\",\r\n            \"proposed_treatment_code\": \"BT\",\r\n            \"plant_life_stage_code\": \"MIF\",\r\n            \"plant_health_code\": \"GH\",\r\n            \"plant_seed_stage_code\": \"SF\"\r\n        }\r\n    },\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"Activity_Treatment_BiologicalDispersalPlant\"\r\n}",
+							"raw": "{\r\n    \"activity_id\": \"{{ACTIVITY_ID}}\",\r\n    \"created_timestamp\": \"2020-12-03T23:51:18.757Z\",\r\n    \"activity_type\": \"Observation\",\r\n    \"activity_subtype\": \"Activity_Observation_PlantTerrestial\",\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"properties\": {\r\n                \"isRectangle\": true\r\n            },\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -127.608347,\r\n                            55.084312\r\n                        ],\r\n                        [\r\n                            -127.608347,\r\n                            55.084378\r\n                        ],\r\n                        [\r\n                            -127.608175,\r\n                            55.084378\r\n                        ],\r\n                        [\r\n                            -127.608175,\r\n                            55.084312\r\n                        ],\r\n                        [\r\n                            -127.608347,\r\n                            55.084312\r\n                        ]\r\n                    ]\r\n                ]\r\n            }\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"activity_date_time\": \"2020-12-03T15:51:19-08:00\",\r\n            \"reported_area\": 80.52,\r\n            \"latitude\": 55.08,\r\n            \"longitude\": -127.61,\r\n            \"invasive_species_agency_code\": \"CISC\",\r\n            \"jurisdiction_code\": \"MR\",\r\n            \"general_comment\": \"testing\",\r\n            \"access_description\": \"hshshs\"\r\n        },\r\n        \"activity_type_data\": {\r\n            \"observation_type_code\": \"OP\",\r\n            \"negative_obs_ind\": false,\r\n            \"observer_first_name\": \"s\",\r\n            \"observer_last_name\": \"c\"\r\n        },\r\n        \"activity_subtype_data\": {\r\n            \"flowering\": false,\r\n            \"legacy_site_ind\": false,\r\n            \"early_detection_rapid_resp_ind\": false,\r\n            \"research_detection_ind\": false,\r\n            \"well_ind\": false,\r\n            \"special_care_ind\": false,\r\n            \"biological_ind\": false,\r\n            \"invasive_plant_code\": \"KB\",\r\n            \"invasive_plant_density_code\": \"L\",\r\n            \"invasive_plant_distribution_code\": \"CO\",\r\n            \"soil_texture_code\": \"F\",\r\n            \"specific_use_code\": \"RC\",\r\n            \"slope_code\": \"MS\",\r\n            \"aspect_code\": \"NE\",\r\n            \"proposed_treatment_code\": \"BM\",\r\n            \"plant_life_stage_code\": \"MV\",\r\n            \"plant_health_code\": \"OT\",\r\n            \"plant_seed_stage_code\": \"OT\"\r\n        }\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -155,7 +155,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e0644ea3-4d9c-4e1a-9a0d-5096698334ac",
+								"id": "f12333e2-9508-42fe-98e1-ab977d67b85c",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
@@ -275,7 +275,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "60f1300e-3ca3-437a-b814-9724342503c9",
+								"id": "3734773c-03e4-4d3d-9948-b1ef9dc83f2a",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -294,7 +294,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"activity_id\": \"{{ACTIVITY_ID}}\",\r\n    \"created_timestamp\": \"2020-11-25T17:55:33+0000\",\r\n    \"media\": [],\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ],\r\n                        [\r\n                            -123.3797264099121,\r\n                            48.441842443378555\r\n                        ],\r\n                        [\r\n                            -123.36264610290526,\r\n                            48.435692728712105\r\n                        ],\r\n                        [\r\n                            -123.3467674255371,\r\n                            48.448333001219005\r\n                        ],\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ]\r\n                    ]\r\n                ]\r\n            },\r\n            \"properties\": {}\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"invasive_species_agency_code\": \"CCCIPC\",\r\n            \"jurisdiction_code\": \"DOT\",\r\n            \"species_id\": \"test\",\r\n            \"access_description\": \"123\"\r\n        },\r\n        \"activity_type_data\": {\r\n            \"negative_obs_ind\": false,\r\n            \"observation_date_time\": \"2020-11-30T16:36:51-08:00\",\r\n            \"reported_area\": 3.99,\r\n            \"observation_type_code\": \"OP\",\r\n            \"observer_first_name\": \"wwwe\",\r\n            \"observer_last_name\": \"wewew\"\r\n        },\r\n        \"activity_subtype_data\": {\r\n            \"flowering\": false,\r\n            \"legacy_site_ind\": false,\r\n            \"early_detection_rapid_resp_ind\": false,\r\n            \"research_detection_ind\": false,\r\n            \"well_ind\": false,\r\n            \"special_care_ind\": false,\r\n            \"biological_ind\": false,\r\n            \"invasive_plant_code\": \"BA\",\r\n            \"invasive_plant_density_code\": \"M\",\r\n            \"invasive_plant_distribution_code\": \"RS\",\r\n            \"soil_texture_code\": \"F\",\r\n            \"specific_use_code\": \"PL\",\r\n            \"slope_code\": \"SS\",\r\n            \"aspect_code\": \"SE\",\r\n            \"proposed_treatment_code\": \"BT\",\r\n            \"plant_life_stage_code\": \"MIF\",\r\n            \"plant_health_code\": \"GH\",\r\n            \"plant_seed_stage_code\": \"SF\"\r\n        }\r\n    },\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"Activity_Treatment_BiologicalDispersalPlant\"\r\n}",
+							"raw": "{\r\n    \"activity_id\": \"{{ACTIVITY_ID}}\",\r\n    \"created_timestamp\": \"2020-12-03T23:51:18.757Z\",\r\n    \"activity_type\": \"Observation\",\r\n    \"activity_subtype\": \"Activity_Observation_PlantTerrestial\",\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"properties\": {\r\n                \"isRectangle\": true\r\n            },\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -127.608347,\r\n                            55.084312\r\n                        ],\r\n                        [\r\n                            -127.608347,\r\n                            55.084378\r\n                        ],\r\n                        [\r\n                            -127.608175,\r\n                            55.084378\r\n                        ],\r\n                        [\r\n                            -127.608175,\r\n                            55.084312\r\n                        ],\r\n                        [\r\n                            -127.608347,\r\n                            55.084312\r\n                        ]\r\n                    ]\r\n                ]\r\n            }\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"activity_date_time\": \"2020-12-03T15:51:19-08:00\",\r\n            \"reported_area\": 80.52,\r\n            \"latitude\": 55.08,\r\n            \"longitude\": -127.61,\r\n            \"invasive_species_agency_code\": \"CISC\",\r\n            \"jurisdiction_code\": \"MR\",\r\n            \"general_comment\": \"testing\",\r\n            \"access_description\": \"hshshs\"\r\n        },\r\n        \"activity_type_data\": {\r\n            \"observation_type_code\": \"OP\",\r\n            \"negative_obs_ind\": false,\r\n            \"observer_first_name\": \"s\",\r\n            \"observer_last_name\": \"c\"\r\n        },\r\n        \"activity_subtype_data\": {\r\n            \"flowering\": false,\r\n            \"legacy_site_ind\": false,\r\n            \"early_detection_rapid_resp_ind\": false,\r\n            \"research_detection_ind\": false,\r\n            \"well_ind\": false,\r\n            \"special_care_ind\": false,\r\n            \"biological_ind\": false,\r\n            \"invasive_plant_code\": \"KB\",\r\n            \"invasive_plant_density_code\": \"L\",\r\n            \"invasive_plant_distribution_code\": \"CO\",\r\n            \"soil_texture_code\": \"F\",\r\n            \"specific_use_code\": \"RC\",\r\n            \"slope_code\": \"MS\",\r\n            \"aspect_code\": \"NE\",\r\n            \"proposed_treatment_code\": \"BM\",\r\n            \"plant_life_stage_code\": \"MV\",\r\n            \"plant_health_code\": \"OT\",\r\n            \"plant_seed_stage_code\": \"OT\"\r\n        }\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -326,7 +326,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "cf7b91c0-8030-4186-9f6e-0257944f0c15",
+								"id": "ae66c91b-921b-4dc8-b273-3fb4b2f22dd7",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -377,7 +377,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2beb9382-c093-4a32-a6fe-0a9f807ad762",
+								"id": "2643c430-3d72-4a91-b46a-dfb5ade5292f",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
@@ -496,7 +496,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "068a7628-ae10-4340-b57f-b3fd299e1c48",
+						"id": "1e969b18-f2dc-42dc-ac8b-3cfdc55c40b5",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -573,7 +573,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "782d934b-66af-4b48-af4e-85a06038c485",
+				"id": "a1a0387c-2d4b-4661-9c05-b69fe4c36b1a",
 				"type": "text/javascript",
 				"exec": [
 					"const echoPostRequest = {",
@@ -624,7 +624,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "edb8055c-c065-48d8-a010-0bf244700892",
+				"id": "42a30710-1ee2-4ee4-aa6a-d59b2793b94e",
 				"type": "text/javascript",
 				"exec": [
 					""
