@@ -143,7 +143,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
   const saveGeometry = async (geometry: Feature[]) => {
-    console.log('GEOMETRY: ', geometry[0]);
     const { latitude, longitude } = calculateLatLng(geometry) || {};
 
     const formData = doc.formData;
