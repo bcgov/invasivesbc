@@ -21,7 +21,7 @@
   "activity_data": {
     "latitude": 49.29153,
     "longitude": -124.95511,
-    "reported_area": 0
+    "reported_area": 10
   },
   "activity_type_data": {
     "negative_observation_ind": false,
