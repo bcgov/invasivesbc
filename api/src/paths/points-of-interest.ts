@@ -7,7 +7,7 @@ import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getPointOfInterestSQL, getPointsOfInterestSQL } from '../queries/point-of-interest-queries';
+import { getPointsOfInterestSQL } from '../queries/point-of-interest-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('point-of-interest');

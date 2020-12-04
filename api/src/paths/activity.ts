@@ -1,17 +1,17 @@
 'use strict';
 
-import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import { WRITE_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
-import { ActivityPostRequestBody, IMediaItem, MediaBase64 } from '../models/activity';
+import { ActivityPostRequestBody } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
-import { uploadFileToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
+import { commit as commitContext} from '../utils/context-queries';
+import { uploadMedia } from './media';
 
 const defaultLog = getLogger('activity');
 
@@ -143,61 +143,6 @@ PUT.apiDoc = {
 };
 
 /**
- * Uploads any media in the request to S3, adding their keys to the request, and calling next().
- *
- * Does nothing if no media is present in the request.
- *
- * @returns {RequestHandler}
- */
-function uploadMedia(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'activity', message: 'uploadMedia', body: req.body });
-
-    if (!req.body.media || !req.body.media.length) {
-      // no media objects included, skipping media upload step
-      return next();
-    }
-
-    const rawMediaArray: IMediaItem[] = req.body.media;
-
-    const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
-
-    rawMediaArray.forEach((rawMedia: IMediaItem) => {
-      if (!rawMedia) {
-        return;
-      }
-
-      let media: MediaBase64;
-      try {
-        media = new MediaBase64(rawMedia);
-      } catch (error) {
-        defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
-        throw {
-          status: 400,
-          message: 'Included media was invalid/encoded incorrectly'
-        };
-      }
-
-      const metadata = {
-        filename: media.mediaName || '',
-        description: media.mediaDescription || '',
-        date: media.mediaDate || '',
-        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
-        email: (req['auth_payload'] && req['auth_payload'].email) || ''
-      };
-
-      s3UploadPromises.push(uploadFileToS3(media, metadata));
-    });
-
-    const results = await Promise.all(s3UploadPromises);
-
-    req['mediaKeys'] = results.map((result) => result.Key);
-
-    next();
-  };
-}
-
-/**
  * Creates a new activity record.
  *
  * @returns {RequestHandler}
@@ -261,6 +206,9 @@ function createActivity(): RequestHandler {
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
+      // kick off asynchronous context collection activities
+      commitContext(result,req);
+
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.debug({ label: 'createActivity', message: 'error', error });
@@ -321,6 +269,10 @@ function updateActivity(): RequestHandler {
       }
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+
+      // kick off asynchronous context collection activities
+      commitContext(result,req);
+
 
       return res.status(200).json(result);
     } catch (error) {

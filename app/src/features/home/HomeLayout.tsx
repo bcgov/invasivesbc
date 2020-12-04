@@ -1,4 +1,4 @@
-import { Collapse, IconButton, makeStyles, Snackbar, Theme, withWidth } from '@material-ui/core';
+import { Collapse, IconButton, makeStyles, Theme } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
 import TabsContainer from 'components/tabs/TabsContainer';
