@@ -125,11 +125,11 @@ export function applyCodeEnumFilter(obj: object, allCodeEntities: IAllCodeEntiti
           // the column that contains the human readable name of this code
           title: codeRow[codeText],
           // the column that contains the sort order
-          code_sort_order: codeRow[codeSortOrder]
+          "x-code_sort_order": codeRow[codeSortOrder]
         };
       })
       // sort by code sort order, and secondarily by title
-      .sort(getAscObjectSorter([codeSortOrder, 'title']))
+      .sort(getAscObjectSorter([`x-${codeSortOrder}`, 'title']))
   };
 
   return obj;
