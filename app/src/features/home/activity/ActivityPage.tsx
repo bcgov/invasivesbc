@@ -66,7 +66,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     let totalArea = 0;
 
     if (!geometry || !geometry.length || geometry[0].geometry.type === "LineString") {
-      return parseFloat(totalArea.toFixed(2));
+      return parseFloat(totalArea.toFixed(0));
     }
 
     const geo = geometry[0];
@@ -76,7 +76,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       totalArea = turf.area(turf.polygon(geo.geometry['coordinates']));
     }
 
-    return parseFloat(totalArea.toFixed(2));
+    return parseFloat(totalArea.toFixed(0));
   };
 
   /**
@@ -109,8 +109,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     const latlng = {
-      latitude: parseFloat(latitude.toFixed(2)),
-      longitude: parseFloat(longitude.toFixed(2))
+      latitude: parseFloat(latitude.toFixed(6)),
+      longitude: parseFloat(longitude.toFixed(6))
     }
 
     return latlng;

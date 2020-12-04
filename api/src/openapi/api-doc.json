@@ -524,7 +524,7 @@
         "properties": {
           "invasive_plant_code": {
             "type": "string",
-            "title": "Invasive plant",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
@@ -654,7 +654,7 @@
           },
           "legacy_site_ind": {
             "type": "boolean",
-            "title": "Legacy site",
+            "title": "Legacy Site",
             "default": false
           },
           "early_detection_rapid_resp_ind": {
@@ -664,12 +664,12 @@
           },
           "research_detection_ind": {
             "type": "boolean",
-            "title": "Research Detection",
+            "title": "Research Observation",
             "default": false
           },
           "well_ind": {
             "type": "boolean",
-            "title": "Visible well nearby",
+            "title": "Visible Well Nearby",
             "default": false
           },
           "special_care_ind": {
@@ -679,7 +679,7 @@
           },
           "biological_ind": {
             "type": "boolean",
-            "title": "Biological",
+            "title": "Biological Release",
             "default": false
           }
         }
@@ -708,7 +708,7 @@
         "properties": {
           "invasive_plant_code": {
             "type": "string",
-            "title": "Invasive plant",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
@@ -789,7 +789,7 @@
           },
           "research_detection_ind": {
             "type": "boolean",
-            "title": "Research Detection"
+            "title": "Research Observation"
           },
           "sample_point_number": {
             "type": "string",
@@ -801,25 +801,25 @@
           },
           "biological_ind": {
             "type": "boolean",
-            "title": "Biological"
+            "title": "Biological Release"
           },
           "secchi_depth": {
             "type": "number",
             "format": "float",
-            "title": "secchi depth"
+            "title": "Secchi Depth"
           },
           "water_depth": {
             "type": "number",
             "format": "float",
-            "title": "water depth"
+            "title": "Water Depth"
           },
           "voucher_submitted_ind": {
             "type": "boolean",
-            "title": "Voucher submitted"
+            "title": "Voucher Submitted"
           },
           "voucher_submission_detail": {
             "type": "string",
-            "title": "Voucher submission details"
+            "title": "Voucher Submission Details"
           }
         }
       },
