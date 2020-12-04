@@ -30,4 +30,4 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
 
     return errors;
   };
-};
+}
