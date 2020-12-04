@@ -386,10 +386,31 @@
         "required": [
           "invasive_species_agency_code",
           "jurisdiction_code",
-          "species_id",
-          "access_description"
+          "access_description",
+          "activity_date_time",
+          "latitude",
+          "longitude",
+          "reported_area"
         ],
         "properties": {
+          "activity_date_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date and Time"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "reported_area": {
+            "type": "number",
+            "title": "Area (m\u00B2)",
+            "minimum": 1
+          },
           "invasive_species_agency_code": {
             "type": "string",
             "title": "Agency",
@@ -411,10 +432,6 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
-          },
-          "species_id": {
-            "type": "string",
-            "title": "Species"
           },
           "general_comment": {
             "type": "string",
@@ -441,18 +458,11 @@
         "type": "object",
         "required": [
           "observation_type_code",
-          "observation_date_time",
           "observer_first_name",
           "observer_last_name",
-          "reported_area",
           "negative_obs_ind"
         ],
         "properties": {
-          "observation_date_time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Date and Time"
-          },
           "observation_type_code": {
             "type": "string",
             "title": "Type",
@@ -462,7 +472,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "default": "OP"
           },
           "observer_first_name": {
             "type": "string",
@@ -473,12 +484,6 @@
             "type": "string",
             "title": "Last Name",
             "maximum": 50
-          },
-          "reported_area": {
-            "type": "number",
-            "title": "Area (m\u00B2)",
-            "minimum": 1,
-            "maximum": 100
           },
           "sample_number": {
             "type": "string",
@@ -519,7 +524,7 @@
         "properties": {
           "invasive_plant_code": {
             "type": "string",
-            "title": "Invasive plant",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
@@ -605,10 +610,9 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "flowering": {
-            "type": "boolean",
-            "title": "Flowering",
-            "default": false
+          "range_unit_number": {
+            "type": "string",
+            "title": "Range Unit"
           },
           "plant_life_stage_code": {
             "type": "string",
@@ -643,13 +647,14 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "range_unit_number": {
-            "type": "string",
-            "title": "Range Unit"
+          "flowering": {
+            "type": "boolean",
+            "title": "Flowering",
+            "default": false
           },
           "legacy_site_ind": {
             "type": "boolean",
-            "title": "Legacy site",
+            "title": "Legacy Site",
             "default": false
           },
           "early_detection_rapid_resp_ind": {
@@ -659,12 +664,12 @@
           },
           "research_detection_ind": {
             "type": "boolean",
-            "title": "Research Detection",
+            "title": "Research Observation",
             "default": false
           },
           "well_ind": {
             "type": "boolean",
-            "title": "Visible well nearby",
+            "title": "Visible Well Nearby",
             "default": false
           },
           "special_care_ind": {
@@ -674,7 +679,7 @@
           },
           "biological_ind": {
             "type": "boolean",
-            "title": "Biological",
+            "title": "Biological Release",
             "default": false
           }
         }
@@ -703,7 +708,7 @@
         "properties": {
           "invasive_plant_code": {
             "type": "string",
-            "title": "Invasive plant",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
@@ -784,7 +789,7 @@
           },
           "research_detection_ind": {
             "type": "boolean",
-            "title": "Research Detection"
+            "title": "Research Observation"
           },
           "sample_point_number": {
             "type": "string",
@@ -796,25 +801,25 @@
           },
           "biological_ind": {
             "type": "boolean",
-            "title": "Biological"
+            "title": "Biological Release"
           },
           "secchi_depth": {
             "type": "number",
             "format": "float",
-            "title": "secchi depth"
+            "title": "Secchi Depth"
           },
           "water_depth": {
             "type": "number",
             "format": "float",
-            "title": "water depth"
+            "title": "Water Depth"
           },
           "voucher_submitted_ind": {
             "type": "boolean",
-            "title": "Voucher submitted"
+            "title": "Voucher Submitted"
           },
           "voucher_submission_detail": {
             "type": "string",
-            "title": "Voucher submission details"
+            "title": "Voucher Submission Details"
           }
         }
       },

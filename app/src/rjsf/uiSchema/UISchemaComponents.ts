@@ -34,9 +34,20 @@ const Treatment_ChemicalPlant = {
 };
 
 const Activity = {
+  activity_date_time: {
+    'ui:widget': 'datetime'
+  },
+  latitude: {
+    'ui:readonly': true
+  },
+  longitude: {
+    'ui:readonly': true
+  },
+  reported_area: {
+    'ui:readonly': true
+  },
   species_agency_code: {},
   jurisdiction_code: {},
-  species_id: {},
   general_comment: {
     'ui:widget': 'textarea'
   },

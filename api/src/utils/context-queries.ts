@@ -13,9 +13,8 @@ const defaultLog = getLogger('context-queries');
  * @param req {object} The express request object
  */
 const saveBCGW = (id: any,req: any) => {
-  const geom = req.body.locationAndGeometry;
-  const x = geom.anchorPointX;
-  const y = geom.anchorPointY;
+  const x = req.body.form_data.activity_data.latitude;
+  const y = req.body.form_data.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`
   const config = {
     headers: {
@@ -91,9 +90,8 @@ const saveBCGW = (id: any,req: any) => {
  * @param req {object} The express request object
  */
 const saveInternal = (id: any,req: any) => {
-  const geom = req.body.locationAndGeometry;
-  const x = geom.anchorPointX;
-  const y = geom.anchorPointY;
+  const x = req.body.form_data.activity_data.latitude;
+  const y = req.body.form_data.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`
   const config = {
     headers: {
@@ -157,10 +155,8 @@ const saveInternal = (id: any,req: any) => {
  * @param req {object} The express request object
  */
 const saveElevation = (id: any,req: any) => {
-  console.log("id:",id);
-  const geom = req.body.locationAndGeometry;
-  const x = geom.anchorPointX;
-  const y = geom.anchorPointY;
+  const x = req.body.form_data.activity_data.latitude;
+  const y = req.body.form_data.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`
   const config = {
     headers: {
