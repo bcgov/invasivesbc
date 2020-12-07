@@ -94,18 +94,21 @@ const Observation_AnimalAquatic = {
   observation_details: {}
 };
 
-const Treatment = {};
-
-const Treatment_MechanicalPlant = {
+const Treatment = {
   applicator1_first_name: {},
   applicator1_last_name: {},
   applicator2_first_name: {},
   applicator2_last_name: {},
   treatment_contractor: {},
+  treatment_issues_code: {}
+};
+
+const Treatment_MechanicalPlant = {
+  invasive_plant_code: {},
   mechanical_method_code: {},
-  mechanical_disposal_method_code: {},
-  mechanical_root_removal_code: {},
-  mechanical_soil_disturbance_code: {},
+  mechanical_disposal_code: {},
+  root_removal_code: {},
+  soil_disturbance_code: {},
   signage_on_site: {
     'ui:widget': 'radio'
   }
