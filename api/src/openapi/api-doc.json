@@ -941,9 +941,12 @@
         "title": "Chemical Treatment Information",
         "type": "object",
         "required": [
-          "treatment_contractor",
-          "primary_applicator_employee_code",
-          "secondary_applicator_employee_code",
+          "applicator1_first_name",
+          "applicator1_last_name",
+          "applicator1_licence_number",
+          "applicator2_first_name",
+          "applicator2_last_name",
+          "applicator2_licence_number",
           "pesticide_employer_code",
           "chemical_method_code",
           "temperature",
@@ -951,35 +954,51 @@
           "pest_management_plan",
           "invasive_plant_code",
           "treatment_issues_code",
-          "herbicide"
+          "herbicide",
+          "wind_speed",
+          "wind_direction_code",
+          "pesticide_use_permit_PUP"
         ],
         "properties": {
-          "invasive_plant_code": {
+          "applicator1_first_name": {
             "type": "string",
-            "title": "Invasive Plant",
+            "title": "Applicator 1 First Name"
+          },
+          "applicator1_last_name": {
+            "type": "string",
+            "title": "Applicator 1 Last Name"
+          },
+          "applicator1_licence_number": {
+            "type": "number",
+            "title": "Applicator 1 Licence"
+          },
+          "applicator2_first_name": {
+            "type": "string",
+            "title": "Applicator 2 First Name"
+          },
+          "applicator2_last_name": {
+            "type": "string",
+            "title": "Applicator 2 Last Name"
+          },
+          "applicator2_licence_number": {
+            "type": "number",
+            "title": "Applicator 2 Licence"
+          },
+          "pesticide_employer_code": {
+            "type": "string",
+            "title": "Pesticide Employer Code",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-header-name": "pesticide_employer_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "treatment_contractor": {
-            "type": "string",
-            "title": "Treatment Contractor"
-          },
           "pesticide_use_permit_PUP": {
             "type": "string",
-            "title": "Pesticide Use Permit"
-          },
-          "primary_applicator_employee_code": {
-            "type": "string",
-            "title": "Primary Applicator Employee"
-          },
-          "secondary_applicator_employee_code": {
-            "type": "string",
-            "title": "Secondary Applicator Employee"
+            "title": "Pesticide Use Permit",
+            "default": "none"
           },
           "pest_management_plan": {
             "type": "string",
@@ -992,16 +1011,17 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "pesticide_employer_code": {
+          "treatment_issues_code": {
             "type": "string",
-            "title": "Pesticide Employer Code",
+            "title": "Treatment Issue",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "pesticide_employer_code",
+              "x-enum-code-header-name": "treatment_issues_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "default": "NA"
           },
           "chemical_method_code": {
             "type": "string",
@@ -1016,24 +1036,30 @@
           },
           "temperature": {
             "type": "number",
-            "title": "Temperature",
-            "minimum": 10,
+            "title": "Temperature (C)",
+            "minimum": 15,
             "maximum": 30
           },
           "wind_speed": {
             "type": "number",
-            "title": "Wind Speed"
+            "title": "Wind Speed (km/h)",
+            "minimum": 0,
+            "maximum": 25
           },
           "wind_direction_code": {
             "type": "string",
             "title": "Wind Direction",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "wind_direction_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
+            "enum": [
+              "No Wind",
+              "N",
+              "NE",
+              "E",
+              "SE",
+              "S",
+              "SW",
+              "W",
+              "NW"
+            ]
           },
           "humidity": {
             "type": "number",
@@ -1052,17 +1078,16 @@
               100
             ]
           },
-          "treatment_issues_code": {
+          "invasive_plant_code": {
             "type": "string",
-            "title": "Treatment Issue",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "treatment_issues_code",
+              "x-enum-code-header-name": "invasive_plant_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            },
-            "default": "NA"
+            }
           },
           "herbicide": {
             "type": "array",
@@ -1718,7 +1743,6 @@
         }
       },
       "PaperFileID": {
-        "title": "Paper File ID",
         "type": "object",
         "required": [
           "description"
@@ -1732,7 +1756,6 @@
         }
       },
       "Herbicide": {
-        "title": "Herbicide",
         "type": "object",
         "required": [
           "liquid_herbicide_code",
