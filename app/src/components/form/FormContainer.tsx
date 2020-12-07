@@ -15,6 +15,7 @@ import FormControlsComponent, { IFormControlsComponentProps } from './FormContro
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
   activity: any;
+  customValidation?: any;
   isDisabled?: boolean;
   /**
    * A function executed everytime the form changes.
@@ -78,6 +79,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           uiSchema={schemas.uiSchema}
           liveValidate={false}
           showErrorList={true}
+          validate={props.customValidation}
           ErrorList={() => {
             return (
               <div>

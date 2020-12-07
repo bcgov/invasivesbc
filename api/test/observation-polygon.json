@@ -28,20 +28,10 @@
       ]
     }
   ],
-  "locationAndGeometry": {
-    "anchorPointY": 48.3,
-    "anchorPointX": -125.6,
-    "area": 0,
-    "jurisdiction": "string",
-    "agency": "string",
-    "observer1FirstName": "string",
-    "observer1LastName": "string",
-    "locationComment": "string",
-    "generalComment": "string",
-    "photoTaken": true
-  },
   "activity_data": {
-    "species_id": 123
+    "latitude": 49.29153,
+    "longitude": -124.95511,
+    "reported_area": 10
   },
   "activity_type_data": {
     "negative_observation_ind": false,
