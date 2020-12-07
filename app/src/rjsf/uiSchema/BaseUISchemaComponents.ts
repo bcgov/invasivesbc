@@ -229,6 +229,10 @@ const Herbicide = {
   application_rate: {}
 };
 
+const InvasivePlants = {
+  invasive_plant_code: {}
+};
+
 const BaseUISchemaComponents = {
   Observation,
   Observation_PlantTerrestial,
@@ -250,7 +254,8 @@ const BaseUISchemaComponents = {
   Monitoring_ChemicalTerrestrialAnimal,
   Monitoring_BiologicalTerrestrialAnimal,
   PaperFileID,
-  Herbicide
+  Herbicide,
+  InvasivePlants
 };
 
 export default BaseUISchemaComponents;

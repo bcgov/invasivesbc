@@ -952,7 +952,7 @@
           "temperature",
           "humidity",
           "pest_management_plan",
-          "invasive_plant_code",
+          "invasive_plants",
           "treatment_issues_code",
           "herbicide",
           "wind_speed",
@@ -1078,15 +1078,11 @@
               100
             ]
           },
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
             }
           },
           "herbicide": {
@@ -1789,6 +1785,25 @@
             "type": "number",
             "title": "Mix Delivery Rate",
             "format": "float"
+          }
+        }
+      },
+      "InvasivePlants": {
+        "type": "object",
+        "required": [
+          "invasive_plant_code"
+        ],
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           }
         }
       },
