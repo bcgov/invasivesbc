@@ -13,25 +13,24 @@
 import BaseUISchemaComponents from 'rjsf/uiSchema/BaseUISchemaComponents';
 
 const Treatment_ChemicalPlant = {
+  invasive_plant_code: {},
   primary_applicator_employee_code: {},
   secondary_applicator_employee_code: {},
+  pest_management_plan: {},
   pesticide_employer_code: {},
-  project_management_plan_PMP: {},
   pesticide_use_permit_PUP: {},
-  chemical_treatment_method: {},
+  chemical_method_code: {},
+  treatment_contractor: {},
   temperature: {},
   wind_speed: {},
   wind_direction_code: {},
   humidity: {},
-  mix_delivery_rate: {},
-  application_rate: {},
-  area_treated: {},
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide
-    },
-    'ui:column-xs': 12
-  }
+    }
+  },
+  treatment_issues_code: {}
 };
 
 const Activity = {

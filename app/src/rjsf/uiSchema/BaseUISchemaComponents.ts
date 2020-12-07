@@ -224,7 +224,9 @@ const PaperFileID = {
 
 const Herbicide = {
   herbicide_name: {},
-  herbicide_amount: {}
+  herbicide_amount: {},
+  mix_delivery_rate: {},
+  application_rate: {}
 };
 
 const BaseUISchemaComponents = {

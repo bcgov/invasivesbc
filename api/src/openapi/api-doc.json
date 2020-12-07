@@ -971,19 +971,19 @@
           },
           "pesticide_use_permit_PUP": {
             "type": "string",
-            "title": "Pesticide use permit"
+            "title": "Pesticide Use Permit"
           },
           "primary_applicator_employee_code": {
             "type": "string",
-            "title": "Primary Applicator employee code"
+            "title": "Primary Applicator Employee"
           },
           "secondary_applicator_employee_code": {
             "type": "string",
-            "title": "Secondary Applicator employee code"
+            "title": "Secondary Applicator Employee"
           },
           "pest_management_plan": {
             "type": "string",
-            "title": "Pesticide management plan",
+            "title": "Pesticide Management Plan",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "pest_management_plan",
@@ -994,7 +994,7 @@
           },
           "pesticide_employer_code": {
             "type": "string",
-            "title": "Pesticide employer code",
+            "title": "Pesticide Employer Code",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "pesticide_employer_code",
@@ -1005,7 +1005,7 @@
           },
           "chemical_method_code": {
             "type": "string",
-            "title": "Chemical treatment method",
+            "title": "Chemical Treatment Method",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "chemical_method_code",
@@ -1022,11 +1022,11 @@
           },
           "wind_speed": {
             "type": "number",
-            "title": "Wind speed"
+            "title": "Wind Speed"
           },
           "wind_direction_code": {
             "type": "string",
-            "title": "Wind direction",
+            "title": "Wind Direction",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "wind_direction_code",
