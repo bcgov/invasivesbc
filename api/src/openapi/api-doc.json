@@ -453,7 +453,6 @@
       },
       "Observation": {
         "title": "Observation Information",
-        "description": "Basic information captured for all observations",
         "type": "object",
         "required": [
           "observation_type_code",
@@ -498,7 +497,6 @@
       },
       "Observation_PlantTerrestial": {
         "title": "Terrestrial Plant Information",
-        "description": "Plant Observation Terrestrial",
         "type": "object",
         "required": [
           "invasive_plant_density_code",

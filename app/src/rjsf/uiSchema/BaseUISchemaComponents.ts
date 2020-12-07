@@ -18,20 +18,21 @@ const Observation = {
 };
 
 const Observation_PlantTerrestial = {
-  species_density_code: {},
-  species_distribution_code: {},
+  invasive_plant_density_code: {},
+  invasive_plant_distribution_code: {},
   soil_texture_code: {},
   specific_use_code: {},
   slope_code: {},
   aspect_code: {},
-  proposed_action_code: {},
+  invasive_plant_code: {},
+  proposed_treatment_code: {},
   flowering: {
     'ui:widget': 'radio'
   },
-  plant_life_stage: {},
-  plant_health: {},
-  plant_seed_stage: {},
   range_unit_number: {},
+  plant_life_stage_code: {},
+  plant_health_code: {},
+  plant_seed_stage_code: {},
   legacy_site_ind: {
     'ui:widget': 'radio'
   },
