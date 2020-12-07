@@ -16,7 +16,12 @@ export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
 export function getAreaValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     let areaLimit = Number.POSITIVE_INFINITY;
-    if (activitySubtype === "Activity_Observation_PlantTerrestial") {
+    const tenThousandAreaLimitSubtypes = [
+      'Activity_Treatment_MechanicalPlant',
+      'Activity_Observation_PlantTerrestial'
+    ];
+
+    if (tenThousandAreaLimitSubtypes.includes(activitySubtype)) {
       areaLimit = 10000;
     }
 
