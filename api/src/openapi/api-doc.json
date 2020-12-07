@@ -203,9 +203,6 @@
           "activity_data": {
             "$ref": "#/components/schemas/Activity"
           },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Treatment"
-          },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Treatment_ChemicalPlant"
           }
@@ -897,7 +894,7 @@
         }
       },
       "Treatment": {
-        "title": "Treatment Information",
+        "title": "Basic Treatment Information",
         "type": "object",
         "required": [
           "applicator1_first_name",
@@ -944,15 +941,13 @@
         "title": "Chemical Treatment Information",
         "type": "object",
         "required": [
+          "treatment_contractor",
           "primary_applicator_employee_code",
           "secondary_applicator_employee_code",
           "pesticide_employer_code",
-          "project_management_plan_PMP",
           "chemical_method_code",
           "temperature",
           "humidity",
-          "mix_delivery_rate",
-          "application_rate",
           "pest_management_plan",
           "invasive_plant_code",
           "treatment_issues_code",
@@ -969,6 +964,14 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
+          },
+          "treatment_contractor": {
+            "type": "string",
+            "title": "Treatment Contractor"
+          },
+          "pesticide_use_permit_PUP": {
+            "type": "string",
+            "title": "Pesticide use permit"
           },
           "primary_applicator_employee_code": {
             "type": "string",
@@ -999,14 +1002,6 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
-          },
-          "project_management_plan_PMP": {
-            "type": "string",
-            "title": "Project Management Plan"
-          },
-          "pesticide_use_permit_PUP": {
-            "type": "string",
-            "title": "Pesticide use permit"
           },
           "chemical_method_code": {
             "type": "string",
@@ -1056,16 +1051,6 @@
               90,
               100
             ]
-          },
-          "mix_delivery_rate": {
-            "type": "number",
-            "format": "float",
-            "title": "Mix delivery rate"
-          },
-          "application_rate": {
-            "type": "number",
-            "format": "float",
-            "title": "Application rate"
           },
           "treatment_issues_code": {
             "type": "string",
@@ -1748,16 +1733,17 @@
       },
       "Herbicide": {
         "title": "Herbicide",
-        "description": "herbicide",
         "type": "object",
         "required": [
           "liquid_herbicide_code",
-          "herbicide_amount"
+          "application_rate",
+          "herbicide_amount",
+          "mix_delivery_rate"
         ],
         "properties": {
           "liquid_herbicide_code": {
             "type": "string",
-            "title": "Liquid herbicide",
+            "title": "Liquid Herbicide",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "liquid_herbicide_code",
@@ -1766,9 +1752,19 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
+          "application_rate": {
+            "type": "number",
+            "title": "Application Rate",
+            "format": "float"
+          },
           "herbicide_amount": {
             "type": "number",
-            "title": "Herbicide amount",
+            "title": "Amount of Herbicide",
+            "format": "float"
+          },
+          "mix_delivery_rate": {
+            "type": "number",
+            "title": "Mix Delivery Rate",
             "format": "float"
           }
         }

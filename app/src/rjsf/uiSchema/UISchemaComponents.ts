@@ -29,7 +29,8 @@ const Treatment_ChemicalPlant = {
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide
-    }
+    },
+    'ui:column-xs': 12
   }
 };
 
