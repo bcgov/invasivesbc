@@ -253,8 +253,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
 
-      console.log(updatedDoc)
-
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
