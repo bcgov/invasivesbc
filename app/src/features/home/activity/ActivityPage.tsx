@@ -10,7 +10,7 @@ import moment from 'moment';
 import * as turf from '@turf/turf';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
-import { getCustomValidator, getAreaValidator } from 'rjsf/business-rules/customValidation';
+import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -295,7 +295,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   return (
     <Container className={props.classes.container}>
       <ActivityComponent
-        customValidation={getCustomValidator([getAreaValidator(doc.activitySubtype)])}
+        customValidation={getCustomValidator([getAreaValidator(doc.activitySubtype), getWindValidator(doc.activitySubtype)])}
         classes={classes}
         activity={doc}
         onFormChange={onFormChange}
