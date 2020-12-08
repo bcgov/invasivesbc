@@ -226,7 +226,13 @@ const PaperFileID = {
 
 const Herbicide = {
   herbicide_name: {},
-  herbicide_amount: {}
+  herbicide_amount: {},
+  mix_delivery_rate: {},
+  application_rate: {}
+};
+
+const InvasivePlants = {
+  invasive_plant_code: {}
 };
 
 const BaseUISchemaComponents = {
@@ -250,7 +256,8 @@ const BaseUISchemaComponents = {
   Monitoring_ChemicalTerrestrialAnimal,
   Monitoring_BiologicalTerrestrialAnimal,
   PaperFileID,
-  Herbicide
+  Herbicide,
+  InvasivePlants
 };
 
 export default BaseUISchemaComponents;
