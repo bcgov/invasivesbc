@@ -34,6 +34,7 @@
     "@testing-library/user-event": "^8.0.3",
     "@tmcw/togeojson": "^4.2.0",
     "@turf/area": "^6.0.1",
+    "@turf/turf": "^5.1.6",
     "axios": "^0.20.0",
     "clsx": "~1.1.1",
     "cordova-plugin-inappbrowser": "^4.0.0",

@@ -30,6 +30,21 @@
 }
 */
 
+/* need to generate these overlay divs and tell leaflet about them to disable
+   through.
+   */
+.overlay {
+  /*height: 536px;*/
+  width: 500px;
+  position: absolute;
+  /*right: 0px;*/
+  bottom: 300px;
+  right: 500px;
+  z-index: 2000;
+/*  background-color: rgba(255, 50, 50, 0.5);*/
+  pointer-events: auto;
+}
+
 .savetiles.leaflet-control {
   transform: scale(1.4) translate(0, 20px);
 }

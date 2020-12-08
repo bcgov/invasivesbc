@@ -1,3 +1,4 @@
+import { Button, Grid, Input, makeStyles, Slider, Zoom } from '@material-ui/core';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature } from 'geojson';
@@ -13,6 +14,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
+
+import * as turf from '@turf/turf';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -34,9 +37,28 @@ export interface IMapContainerProps {
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
+  const useStyles = makeStyles((theme) => ({
+    button: {
+      //padding: theme.spacing(2),
+      color: theme.palette.text.secondary,
+      height: 100
+      // width: 80
+    },
+    buttonGrid: {
+      //      flexGrow: 5,
+      display: 'flex',
+      padding: theme.spacing(2),
+      width: 520,
+      height: 500,
+      color: theme.palette.text.secondary
+    }
+  }));
+  const classes = useStyles();
+
   const mapRef = useRef(null);
 
-  const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
+  const [readOnlyDrawnItems, setReadOnlyDrawnItems] = useState(new L.FeatureGroup());
+  const [editableDrawnItems, setEditableDrawnItems] = useState(new L.FeatureGroup());
 
   const addContextMenuClickListener = () => {
     mapRef.current.on('contextmenu', (e) => {
@@ -78,7 +100,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         circle: true
       },
       edit: {
-        featureGroup: drawnItems,
+        featureGroup: readOnlyDrawnItems,
         remove: true,
         edit: true
       }
@@ -180,16 +202,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     mapRef.current.on('draw:drawstart', function () {
-      props.geometryState.setGeometry([]);
+      //props.geometryState.setGeometry([]);
     });
 
     mapRef.current.on('draw:editstop', async function (layerGroup) {
       // The current feature isn't passed to this function, so grab it from the acetate layer
-      let aGeo = drawnItems?.toGeoJSON()?.features[0];
+      let aGeo = editableDrawnItems?.toGeoJSON()?.features[0];
 
       // If this is a circle feature... Grab the radius and store in the GeoJSON
-      if (drawnItems.getLayers()[0]._mRadius) {
-        const radius = drawnItems.getLayers()[0]?.getRadius();
+      if (editableDrawnItems.getLayers()[0]._mRadius) {
+        const radius = editableDrawnItems.getLayers()[0]?.getRadius();
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
       }
 
@@ -206,7 +228,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const updateMapOnGeometryChange = () => {
     // Clear the drawn features
-    setDrawnItems(drawnItems.clearLayers());
+    setReadOnlyDrawnItems(readOnlyDrawnItems.clearLayers());
 
     if (props.geometryState) {
       // For each geometry, add a new layer to the drawn features
@@ -233,14 +255,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             }
           },
           onEachFeature: function (feature: any, layer: any) {
-            drawnItems.addLayer(layer);
+            readOnlyDrawnItems.addLayer(layer);
           }
         });
       });
     }
     if (props.interactiveGeometryState) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-
         const style = {
           color: interactObj.color,
           weight: 4,
@@ -263,7 +284,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             }
           },
           onEachFeature: function (feature: any, layer: any) {
-            drawnItems.addLayer(layer);
+            if(interactObj.isEditable)
+            {
+              editableDrawnItems.addLayer(layer);
+            }
+            else
+            {
+              readOnlyDrawnItems.addLayer(layer);
+            }
             let content = interactObj.popUpComponent(interactObj.description);
             layer.on('click', function () {
               // Fires on click of single feature
@@ -282,10 +310,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     // Update the drawn featres
-    setDrawnItems(drawnItems);
+    setReadOnlyDrawnItems(readOnlyDrawnItems);
 
     // Update the map with the new drawn feaures
-    mapRef.current = mapRef.current.addLayer(drawnItems);
+    mapRef.current = mapRef.current.addLayer(readOnlyDrawnItems);
   };
 
   useEffect(() => {
@@ -324,7 +352,164 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
-  return <div id={props.mapId} className={props.classes.map} />;
+  var div = L.DomUtil.get('overlay'); // this must be an ID, not class!
+  //L.DomEvent.on(div, 'mousewheel', L.DomEvent.stopPropagation);
+  //L.DomEvent.on(div, 'click', L.DomEvent.stopPropagation);
+
+  // this var is used to keep track of draw handler so we can cancel
+  const [currentDrawingHandler, setCurrentDrawingHandler] = useState(null);
+
+  // because we use the same types for some actions we need to track our intent:
+  const [currentActionType, setCurrentActionType] = useState(null);
+
+  const startDrawingAndSetHandler = (drawType: any) => {
+    let poly = new L.Draw.Polyline(mapRef.current);
+    if (currentDrawingHandler) {
+      currentDrawingHandler.disable();
+    }
+
+    setCurrentDrawingHandler(poly);
+    poly.enable();
+  };
+
+  const polyline = () => {
+    let poly = new L.Draw.Polyline(mapRef.current);
+    if (currentDrawingHandler) {
+      currentDrawingHandler.disable();
+    }
+
+    setCurrentDrawingHandler(poly);
+    poly.enable();
+  };
+
+  const polygon = () => {
+    let poly = new L.Draw.Polygon(mapRef.current);
+    setCurrentDrawingHandler(poly);
+    poly.enable();
+  };
+
+  const square = () => {
+    let poly = new L.Draw.Rectangle(mapRef.current);
+    setCurrentDrawingHandler(poly);
+    poly.enable();
+  };
+
+  const waypoint = () => {
+    let poly = new L.Draw.Polyline(mapRef.current);
+    setCurrentDrawingHandler(poly);
+    setCurrentActionType('waypoint');
+    mapRef.current.on('draw:drawstop', (e) => {
+      console.dir(e);
+      console.dir(props.geometryState.geometry);
+      //var buffered = turf.buffer(props.geometryState.geometry as unknown as Feature, 500, {units: 'miles'});
+      //console.dir(buffered)
+    });
+    poly.enable();
+  };
+
+  const cancel = () => {
+    if (currentDrawingHandler) {
+      currentDrawingHandler.disable();
+    }
+  };
+
+  return (
+    <>
+      <div id="overlay" className="overlay">
+        {/*</div><Grid direction="row" alignContent="flex-start" alignItems="stretch" className={classes.buttonGrid} spacing={2}>*/}
+        <Grid className={classes.buttonGrid} spacing={2}>
+          <Grid xs={3} className={classes.button} item>
+            <Button
+              //disabled={isDisabled}:w
+
+              variant="contained"
+              color="primary"
+              //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
+              onClick={polyline}>
+              PolyLine
+            </Button>
+          </Grid>
+          <Grid xs={3} className={classes.button} item>
+            <Button
+              //disabled={isDisabled}
+              variant="contained"
+              color="primary"
+              //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
+              onClick={waypoint}>
+              Waypoint
+            </Button>
+            <Slider
+            step={10}
+            marks
+            min={10}
+            max={110}
+              ></Slider>
+          </Grid>
+          <Grid xs={3} className={classes.button} item>
+            <Button
+              //disabled={isDisabled}
+              variant="contained"
+              color="primary"
+              //startIcon={<Sync className={clsx(syncing && 'rotating')}
+              onClick={polygon}>
+              Polygon
+            </Button>
+          </Grid>
+          <Grid xs={3} className={classes.button} item>
+            <Button
+              //disabled={isDisabled}
+              variant="contained"
+              color="primary"
+              //startIcon={<Sync className={clsx(syncing && 'rotating')}
+              onClick={square}>
+              Square
+            </Button>
+          </Grid>
+          <Grid xs={3} className={classes.button} item>
+            <Button
+              disabled={true}
+              variant="contained"
+              color="primary"
+              //startIcon={<Sync className={clsx(syncing && 'rotating')}
+              onClick={cancel}>
+              New Parent Activity
+            </Button>
+          </Grid>
+          <Grid xs={3} className={classes.button} item>
+            <Button
+              disabled={true}
+              variant="contained"
+              color="primary"
+              //startIcon={<Sync className={clsx(syncing && 'rotating')}
+              onClick={cancel}>
+              New Child Activity
+            </Button>
+          </Grid>
+          <Grid xs={3} className={classes.button} item>
+            <Button
+              disabled={false}
+              variant="contained"
+              color="primary"
+              //startIcon={<Sync className={clsx(syncing && 'rotating')}
+              onClick={cancel}>
+              Choose Tools
+            </Button>
+          </Grid>
+          <Grid xs={3} className={classes.button} item>
+            <Button
+              //disabled={isDisabled}
+              variant="contained"
+              color="primary"
+              //startIcon={<Sync className={clsx(syncing && 'rotating')}
+              onClick={cancel}>
+              Cancel
+            </Button>
+          </Grid>
+        </Grid>
+      </div>
+      <div id={props.mapId} className={props.classes.map} />;
+    </>
+  );
 };
 
 export default MapContainer;

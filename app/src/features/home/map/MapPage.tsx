@@ -9,7 +9,7 @@ import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
-import React, {  useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -148,6 +148,14 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setIsReadyToLoadMap(didInteractiveGeosLoad);
   }, [databaseChangesContext, interactiveGeometry]);
 
+  useEffect(() => {
+    // update the interactive geo array so that the one selected shows as editable
+    if (isReadyToLoadMap) {
+      const removeGeo = interactiveGeometry.filter((geo) => geo.recordDocID != selectedInteractiveGeometry.recordDocID);
+      setInteractiveGeometry([...removeGeo, selectedInteractiveGeometry]);
+    }
+  }, [selectedInteractiveGeometry]);
+
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
@@ -172,7 +180,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
       setFormActivityData(activityResults.docs[0]);
       setPhotos(activityResults.docs[0].photos || []);
     }
-  }
+  };
 
   const getEverythingWithAGeo = async () => {
     let docs = await databaseContext.database.find({
@@ -204,7 +212,10 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       let coordinatesString = 'Polygon';
       if (row.geometry[0].geometry.type !== 'Polygon') {
-        const coords = [Number(row.geometry[0]?.geometry.coordinates[1]).toFixed(2), Number(row.geometry[0]?.geometry.coordinates[0]).toFixed(2)];
+        const coords = [
+          Number(row.geometry[0]?.geometry.coordinates[1]).toFixed(2),
+          Number(row.geometry[0]?.geometry.coordinates[0]).toFixed(2)
+        ];
         coordinatesString = `(${coords[0]}, ${coords[1]})`;
       }
 
@@ -390,11 +401,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             {(selectedInteractiveGeometry as any)?.docType === DocType.REFERENCE_POINT_OF_INTEREST ? (
               <IAPPSite record={selectedInteractiveGeometry} />
             ) : (
-              <>
-                {formActivityData && (
-                  <ActivitiesPOI containerProps={containerProps} />
-                )}
-              </>
+              <>{formActivityData && <ActivitiesPOI containerProps={containerProps} />}</>
             )}
             {/*<ActivityPage activityId={selectedInteractiveGeometry?.recordDocID} />*/}
           </PopOutComponent>
