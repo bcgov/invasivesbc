@@ -87,8 +87,9 @@ const Observation_PlantAquatic = {
 
 const Observation_AnimalTerrestrial = {
   number_of_individuals_observed: {},
-  life_stage_code: {},
-  behaviour_code: {}
+  invasive_animal_code: {},
+  animal_behavior_code: {},
+  animal_life_stage_code: {}
 };
 
 const Observation_AnimalAquatic = {
@@ -137,19 +138,22 @@ const Treatment_BiologicalDispersalPlant = {
 const Treatment_MechanicalTerrestrialAnimal = {
   treatment_details: {
     'ui:widget': 'textarea'
-  }
+  },
+  invasive_animal_code: {}
 };
 
 const Treatment_ChemicalTerrestrialAnimal = {
   treatment_details: {
     'ui:widget': 'textarea'
-  }
+  },
+  invasive_animal_code: {}
 };
 
 const Treatment_BiologicalTerrestrialAnimal = {
   treatment_details: {
     'ui:widget': 'textarea'
-  }
+  },
+  invasive_animal_code: {}
 };
 
 const Monitoring = {

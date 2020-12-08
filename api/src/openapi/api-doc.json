@@ -826,7 +826,7 @@
         "required": [
           "number_of_individuals_observed",
           "animal_life_stage_code",
-          "animal_behaviour_code",
+          "animal_behavior_code",
           "invasive_animal_code"
         ],
         "properties": {
