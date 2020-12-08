@@ -87,8 +87,9 @@ const Observation_PlantAquatic = {
 
 const Observation_AnimalTerrestrial = {
   number_of_individuals_observed: {},
-  life_stage_code: {},
-  behaviour_code: {}
+  invasive_animal_code: {},
+  animal_behavior_code: {},
+  animal_life_stage_code: {}
 };
 
 const Observation_AnimalAquatic = {
@@ -116,42 +117,43 @@ const Treatment_MechanicalPlant = {
 };
 
 const Treatment_BiologicalPlant = {
-  applicator1_first_name: {},
-  applicator1_last_name: {},
-  applicator2_first_name: {},
-  applicator2_last_name: {},
-  treatment_contractor: {},
-  classified_area: {},
+  classified_area_code: {},
   release_quantity: {},
   agent_source: {},
-  biological_agent: {},
-  biological_agent_stage: {},
-  bioagent_maturity_status: {}
+  biological_agent_code: {},
+  biological_agent_stage_code: {},
+  invasive_plant_code: {},
+  bioagent_maturity_status_code: {}
 };
 
 const Treatment_BiologicalDispersalPlant = {
-  applicator1_first_name: {},
-  applicator1_last_name: {},
-  applicator2_first_name: {},
-  applicator2_last_name: {},
-  treatment_contractor: {},
   duration_of_count: {},
-  biological_agent: {},
+  biological_agent_code: {},
   plant_count: {},
   biological_agent_count: {},
-  biological_agent_presence: {}
+  invasive_plant_code: {},
+  biological_agent_presence_code: {}
 };
 
 const Treatment_MechanicalTerrestrialAnimal = {
-  treatment_details: {}
+  treatment_details: {
+    'ui:widget': 'textarea'
+  },
+  invasive_animal_code: {}
 };
 
 const Treatment_ChemicalTerrestrialAnimal = {
-  treatment_details: {}
+  treatment_details: {
+    'ui:widget': 'textarea'
+  },
+  invasive_animal_code: {}
 };
 
 const Treatment_BiologicalTerrestrialAnimal = {
-  treatment_details: {}
+  treatment_details: {
+    'ui:widget': 'textarea'
+  },
+  invasive_animal_code: {}
 };
 
 const Monitoring = {
