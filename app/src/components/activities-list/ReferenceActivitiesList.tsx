@@ -12,13 +12,12 @@ import {
 } from '@material-ui/core';
 import { ActivityTypeIcon } from 'constants/activities';
 import { DocType } from 'constants/database';
-import { MediumDateFormat } from 'constants/misc';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ActivityListItem from './ActivityListItem';
+import ActivityListDate from './ActivityListDate';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -58,16 +57,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
       <ActivityListItem activity={props.activity} classes={classes} />
-      <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={2}>
-        <Typography className={classes.activitiyListItem_Typography}>Created</Typography>
-        {moment(props.activity.dateCreated).format(MediumDateFormat)}
-      </Grid>
-      <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={2}>
-        <Typography className={classes.activitiyListItem_Typography}>Last Updated</Typography>
-        {(props.activity.dateUpdated && moment(props.activity.dateUpdated).format(MediumDateFormat)) || 'n/a'}
-      </Grid>
+      <ActivityListDate classes={classes} activity={props.activity} />
     </Grid>
   );
 };
