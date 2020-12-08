@@ -822,7 +822,6 @@
       },
       "Observation_AnimalTerrestrial": {
         "title": "Terrestrial Animal Information",
-        "description": "Animal Observation Terrestrial",
         "type": "object",
         "required": [
           "number_of_individuals_observed",
@@ -833,7 +832,7 @@
         "properties": {
           "invasive_animal_code": {
             "type": "string",
-            "title": "Invasive animal",
+            "title": "Invasive Animal",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_animal_code",
@@ -844,7 +843,9 @@
           },
           "number_of_individuals_observed": {
             "type": "number",
-            "title": "Number of individuals"
+            "title": "Number of Individuals (n > 0)",
+            "minimum": 1,
+            "default": 1
           },
           "animal_life_stage_code": {
             "type": "string",
@@ -857,12 +858,12 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "animal_behaviour_code": {
+          "animal_behavior_code": {
             "type": "string",
             "title": "Behaviour",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "animal_behaviour_code",
+              "x-enum-code-header-name": "animal_behavior_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
@@ -1199,7 +1200,10 @@
           },
           "release_quantity": {
             "type": "number",
-            "title": "Release Quantity"
+            "title": "Release Quantity",
+            "minimum": 1,
+            "maximum": 100000,
+            "default": 1
           },
           "agent_source": {
             "type": "string",
@@ -1265,7 +1269,9 @@
           },
           "duration_of_count": {
             "type": "number",
-            "title": "Duration of Count"
+            "title": "Duration of Count (min)",
+            "minimum": 1,
+            "default": 1
           },
           "biological_agent_code": {
             "type": "string",
@@ -1280,11 +1286,15 @@
           },
           "plant_count": {
             "type": "number",
-            "title": "Plant Count"
+            "title": "Plant Count (n > 0)",
+            "minimum": 1,
+            "default": 1
           },
           "biological_agent_count": {
             "type": "number",
-            "title": "Biological Agent Count"
+            "title": "Biological Agent Count (n > 0)",
+            "minimum": 1,
+            "default": 1
           },
           "biological_agent_presence_code": {
             "type": "string",
@@ -1295,13 +1305,13 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "default": "NA"
           }
         }
       },
       "Treatment_MechanicalTerrestrialAnimal": {
-        "title": "Mechanical treatment for terrestrial animals",
-        "description": "Mechanical treament for terrestrial animals",
+        "title": "Mechanical Treatment Information",
         "type": "object",
         "required": [
           "treatment_details",
@@ -1310,7 +1320,7 @@
         "properties": {
           "invasive_animal_code": {
             "type": "string",
-            "title": "Invasive animal",
+            "title": "Invasive Animal",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_animal_code",
@@ -1321,13 +1331,13 @@
           },
           "treatment_details": {
             "type": "string",
-            "title": "Treatment details"
+            "title": "Treatment Details",
+            "maximum": 300
           }
         }
       },
       "Treatment_ChemicalTerrestrialAnimal": {
-        "title": "Chemical treatment for terrestrial animals",
-        "description": "Chemical treament for terrestrial animals",
+        "title": "Chemical Treatment Information",
         "type": "object",
         "required": [
           "treatment_details",
@@ -1336,7 +1346,7 @@
         "properties": {
           "invasive_animal_code": {
             "type": "string",
-            "title": "Invasive animal",
+            "title": "Invasive Animal",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_animal_code",
@@ -1347,13 +1357,13 @@
           },
           "treatment_details": {
             "type": "string",
-            "title": "Treatment details"
+            "title": "Treatment Details",
+            "maximum": 300
           }
         }
       },
       "Treatment_BiologicalTerrestrialAnimal": {
-        "title": "Biological treatment for terrestrial animals",
-        "description": "Biological treament for terrestrial animals",
+        "title": "Biological Treatment Information",
         "type": "object",
         "required": [
           "treatment_details",
@@ -1362,7 +1372,7 @@
         "properties": {
           "invasive_animal_code": {
             "type": "string",
-            "title": "Invasive animal",
+            "title": "Invasive Animal",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_animal_code",
@@ -1373,7 +1383,8 @@
           },
           "treatment_details": {
             "type": "string",
-            "title": "Treatment details"
+            "title": "Treatment Details",
+            "maximum": 300
           }
         }
       },

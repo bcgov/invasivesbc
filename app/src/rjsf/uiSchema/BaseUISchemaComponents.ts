@@ -135,15 +135,21 @@ const Treatment_BiologicalDispersalPlant = {
 };
 
 const Treatment_MechanicalTerrestrialAnimal = {
-  treatment_details: {}
+  treatment_details: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const Treatment_ChemicalTerrestrialAnimal = {
-  treatment_details: {}
+  treatment_details: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const Treatment_BiologicalTerrestrialAnimal = {
-  treatment_details: {}
+  treatment_details: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const Monitoring = {
