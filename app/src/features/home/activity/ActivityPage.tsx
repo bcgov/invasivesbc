@@ -11,6 +11,7 @@ import * as turf from '@turf/turf';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
+import { populateHerbicideRate } from 'rjsf/business-rules/populateCalculatedFields';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -219,8 +220,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
+
+console.log(event)
+
+      // populate herbicide application rate
+      const updatedActivitySubtypeData = populateHerbicideRate(
+        doc.formData.activity_subtype_data,
+        event.formData.activity_subtype_data
+      );
+
       const updatedFormValues = {
-        formData: event.formData,
+        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.VALID
@@ -256,6 +266,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
+
+      console.log(updatedDoc)
+
       setDoc(updatedDoc);
 
       setIsLoading(false);
