@@ -24,11 +24,17 @@ export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any)
 
       differenceInHerbicides.removed.forEach((removedHerbicide: any) => {
         if (herbicideToUpdate.liquid_herbicide_code !== removedHerbicide.liquid_herbicide_code) {
-          herbicideToUpdate.application_rate = parseFloat((Herbicides[herbicideToUpdate.liquid_herbicide_code]).toFixed(3));
+          const applicationRate = (Herbicides[herbicideToUpdate.liquid_herbicide_code]).toFixed(3);
+
+          herbicideToUpdate.application_rate = parseFloat(applicationRate);
         }
       });
 
-      upsertArrayValues(updatedHerbicides, herbicideToUpdate);
+      upsertArrayValues(
+        updatedHerbicides,
+        herbicideToUpdate,
+        updatedHerbicides.findIndex((h: any) => h.liquid_herbicide_code === herbicideToUpdate.liquid_herbicide_code)
+      );
     });
   }
 
@@ -40,21 +46,17 @@ export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any)
   return updatedActivitySubtypeData;
 }
 
-function compareHerbicides(herbicideA: any, herbicideB: any) {
+function compareHerbicides(herbicideA: any, herbicideB: any): boolean {
   return (
     herbicideA.liquid_herbicide_code === herbicideB.liquid_herbicide_code &&
     herbicideA.application_rate === herbicideB.application_rate
   );
 }
 
-function upsertArrayValues(array: any, value: any): [] {
-  const index = array.findIndex((h: any) => h.liquid_herbicide_code === value.liquid_herbicide_code);
-
+function upsertArrayValues(array: any, value: any, index: number): void {
   if (index === -1) {
     array.push(value);
   } else {
     array[index] = value;
   }
-
-  return array;
 }
