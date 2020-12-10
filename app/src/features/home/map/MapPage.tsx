@@ -121,6 +121,12 @@ const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
   );
 };
 
+// todo:  copy area, lat, long (like activity page)
+// todo:  save form on change
+// todo:  save geo on change
+
+
+
 const MapPage: React.FC<IMapProps> = (props) => {
   const classes = useStyles();
 
@@ -151,10 +157,16 @@ const MapPage: React.FC<IMapProps> = (props) => {
   useEffect(() => {
     // update the interactive geo array so that the one selected shows as editable
     if (isReadyToLoadMap) {
-      const removeGeo = interactiveGeometry.filter((geo) => geo.recordDocID != selectedInteractiveGeometry.recordDocID);
-      setInteractiveGeometry([...removeGeo, selectedInteractiveGeometry]);
+      //const removeGeo = interactiveGeometry.filter((geo) => geo.recordDocID != selectedInteractiveGeometry.recordDocID);
+      //setInteractiveGeometry([...removeGeo, selectedInteractiveGeometry]);
     }
   }, [selectedInteractiveGeometry]);
+
+
+  useEffect(()=>{
+    console.log('the geo')
+    console.dir(geometry)
+  },[geometry])
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
@@ -181,6 +193,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
       setPhotos(activityResults.docs[0].photos || []);
     }
   };
+
+
 
   const getEverythingWithAGeo = async () => {
     let docs = await databaseContext.database.find({
@@ -277,6 +291,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             recordDocID: row._id,
             recordDocType: row.docType,
             description: 'Activity:\n ' + row._id + '\n' + coordinatesString,
+            isEditable: true,
 
             // basic display:
             geometry: row.geometry[0],
@@ -336,7 +351,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
       }
     });
 
-    setGeometry(geos);
+    //setGeometry(geos);
 
     setInteractiveGeometry(
       interactiveGeos

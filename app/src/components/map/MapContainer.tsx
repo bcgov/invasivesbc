@@ -33,9 +33,24 @@ export interface IMapContainerProps {
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;
   };
 }
+enum mapMode  {
+  default = 'default',
+  editGeo = 'editGeo'
+}
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
+  //other state:
+
+  //nfg:
+  //const [mode, setMode] = useState(null)
+  //for some reason works:
+  let mode = null
+  const setMode = (aMode: mapMode) => {mode = aMode}
+
+  const [layerBeingEdited, setLayerBeingEdited] = useState(null)
+  const [geoBeingEdited, setGeoBeingEdited] = useState(null)
+  const [editHandler, setEditHandler] = useState(null);
 
   const useStyles = makeStyles((theme) => ({
     button: {
@@ -49,7 +64,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       display: 'flex',
       padding: theme.spacing(2),
       width: 520,
-      height: 500,
+      height: 100,
       color: theme.palette.text.secondary
     }
   }));
@@ -57,8 +72,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const mapRef = useRef(null);
 
+  //do we need these?
   const [readOnlyDrawnItems, setReadOnlyDrawnItems] = useState(new L.FeatureGroup());
   const [editableDrawnItems, setEditableDrawnItems] = useState(new L.FeatureGroup());
+  const [editedDrawnItems, setEditedDrawnItems] = useState(new L.FeatureGroup());
 
   const addContextMenuClickListener = () => {
     mapRef.current.on('contextmenu', (e) => {
@@ -208,6 +225,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('draw:editstop', async function (layerGroup) {
       // The current feature isn't passed to this function, so grab it from the acetate layer
       let aGeo = editableDrawnItems?.toGeoJSON()?.features[0];
+      console.log('i finished editing')
 
       // If this is a circle feature... Grab the radius and store in the GeoJSON
       if (editableDrawnItems.getLayers()[0]._mRadius) {
@@ -221,8 +239,55 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     });
 
+    /*
+    mapRef.current.on((e) =>  {
+      console.log('event!')
+      console.dir(e)
+
+    })
+    */
+
     mapRef.current.on('draw:deleted', function () {
       props.geometryState.setGeometry([]);
+    });
+    // event fired on disabling edit
+    mapRef.current.on('layeradd', async function (layerGroup) {
+      // The current feature isn't passed to this function, so grab it from the acetate layer
+      if(mode && mode === mapMode.editGeo)
+      {
+        let aGeo = editedDrawnItems?.toGeoJSON()?.features[0];
+        console.dir(aGeo)
+
+        // If this is a circle feature... Grab the radius and store in the GeoJSON
+        if (editedDrawnItems.getLayers()[0]._mRadius) {
+          const radius = editableDrawnItems.getLayers()[0]?.getRadius();
+          aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
+        }
+
+        // Save edited feature
+        if (aGeo) {
+          props.geometryState.setGeometry([aGeo]);
+        }
+
+      }
+    });
+
+    // event fired on disabling edit
+    mapRef.current.on('editable:disable', async function (layerGroup) {
+      // The current feature isn't passed to this function, so grab it from the acetate layer
+      let aGeo = editableDrawnItems?.toGeoJSON()?.features[0];
+      console.log('i finished editing!')
+
+      // If this is a circle feature... Grab the radius and store in the GeoJSON
+      if (editableDrawnItems.getLayers()[0]._mRadius) {
+        const radius = editableDrawnItems.getLayers()[0]?.getRadius();
+        aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
+      }
+
+      // Save edited feature
+      if (aGeo) {
+        props.geometryState.setGeometry([aGeo]);
+      }
     });
   };
 
@@ -230,7 +295,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     // Clear the drawn features
     setReadOnlyDrawnItems(readOnlyDrawnItems.clearLayers());
 
-    if (props.geometryState) {
+    /*if (props.geometryState) {
       // For each geometry, add a new layer to the drawn features
       props.geometryState.geometry.forEach((collection) => {
         const style = {
@@ -260,6 +325,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         });
       });
     }
+    */
     if (props.interactiveGeometryState) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
         const style = {
@@ -284,16 +350,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             }
           },
           onEachFeature: function (feature: any, layer: any) {
-            if(interactObj.isEditable)
-            {
+            if (interactObj.isEditable) {
               editableDrawnItems.addLayer(layer);
-            }
-            else
-            {
+            } else {
               readOnlyDrawnItems.addLayer(layer);
             }
             let content = interactObj.popUpComponent(interactObj.description);
-            layer.on('click', function () {
+            layer.on('click', function (e) {
               // Fires on click of single feature
               interactObj.onClickCallback();
               if (feature.geometry.type !== 'Polygon') {
@@ -302,6 +365,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   //.setContent(interactObj.popUpComponent)
                   .setContent(content)
                   .openOn(mapRef.current);
+              }
+
+              console.log('1')
+              if (interactObj.isEditable) {
+                console.log('2')
+                //only allow one edit at a time:
+                if (editHandler) {
+                  console.log('disabling old handler')
+                  editHandler.editing.disable();
+              setMode(mapMode.default)
+                }
+                console.log('setting mode to edit')
+              setMode(mapMode.editGeo)
+              editedDrawnItems.addLayer(layer)
+                //set the new handler and enable
+                let handler = e.target;
+                handler.editing.enable();
+                setEditHandler(handler);
               }
             });
           }
@@ -314,6 +395,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     // Update the map with the new drawn feaures
     mapRef.current = mapRef.current.addLayer(readOnlyDrawnItems);
+    mapRef.current = mapRef.current.addLayer(editableDrawnItems);
   };
 
   useEffect(() => {
@@ -338,7 +420,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     updateMapOnGeometryChange();
-  }, [props.geometryState.geometry]);
+    //this geo is now a one way push back to parent container
+  //}, [props.geometryState.geometry, editHandler]);
+  }, [editHandler]);
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -399,8 +483,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setCurrentDrawingHandler(poly);
     setCurrentActionType('waypoint');
     mapRef.current.on('draw:drawstop', (e) => {
-      console.dir(e);
-      console.dir(props.geometryState.geometry);
+      //console.dir(e);
+      //console.dir(props.geometryState.geometry);
       //var buffered = turf.buffer(props.geometryState.geometry as unknown as Feature, 500, {units: 'miles'});
       //console.dir(buffered)
     });
@@ -438,12 +522,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               onClick={waypoint}>
               Waypoint
             </Button>
-            <Slider
-            step={10}
-            marks
-            min={10}
-            max={110}
-              ></Slider>
+            <Slider step={10} marks min={10} max={110}></Slider>
           </Grid>
           <Grid xs={3} className={classes.button} item>
             <Button
