@@ -214,20 +214,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /**
    * Save the form whenever it changes.
    *
-   * Note: debouncing will prevent this from running more than once every `500` milliseconds.
+   * Note: debouncing will prevent this from running more than once every `100` milliseconds.
    *
    * @param {*} event the form change event
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
-
-console.log(event)
-
       // populate herbicide application rate
       const updatedActivitySubtypeData = populateHerbicideRate(
         doc.formData.activity_subtype_data,
         event.formData.activity_subtype_data
       );
+
+      console.log('updatedsubtypedta', updatedActivitySubtypeData);
 
       const updatedFormValues = {
         formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
@@ -245,7 +244,7 @@ console.log(event)
         };
       });
     }),
-    [docId]
+    [doc]
   );
 
   useEffect(() => {
@@ -267,7 +266,7 @@ console.log(event)
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
 
-      console.log(updatedDoc)
+      console.log('doc in useeffect', updatedDoc)
 
       setDoc(updatedDoc);
 
