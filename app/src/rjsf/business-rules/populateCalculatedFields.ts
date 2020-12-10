@@ -1,9 +1,6 @@
 import * as diff from 'fast-array-diff';
 
-const herbicideApplicationRates = {
-  '23713': 5,
-  '21053': 10
-};
+import { Herbicides } from 'constants/herbicides';
 
 export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any): any {
   let updatedActivitySubtypeData = { ...newSubtypeData };
@@ -27,7 +24,7 @@ export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any)
 
       differenceInHerbicides.removed.forEach((removedHerbicide: any) => {
         if (herbicideToUpdate.liquid_herbicide_code !== removedHerbicide.liquid_herbicide_code) {
-          herbicideToUpdate.application_rate = herbicideApplicationRates[herbicideToUpdate.liquid_herbicide_code];
+          herbicideToUpdate.application_rate = (Herbicides[herbicideToUpdate.liquid_herbicide_code]).toFixed(3);
         }
       });
 
