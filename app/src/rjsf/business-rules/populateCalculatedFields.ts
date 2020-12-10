@@ -24,7 +24,7 @@ export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any)
 
       differenceInHerbicides.removed.forEach((removedHerbicide: any) => {
         if (herbicideToUpdate.liquid_herbicide_code !== removedHerbicide.liquid_herbicide_code) {
-          herbicideToUpdate.application_rate = (Herbicides[herbicideToUpdate.liquid_herbicide_code]).toFixed(3);
+          herbicideToUpdate.application_rate = parseFloat((Herbicides[herbicideToUpdate.liquid_herbicide_code]).toFixed(3));
         }
       });
 
