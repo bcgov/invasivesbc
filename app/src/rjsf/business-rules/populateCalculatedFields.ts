@@ -2,15 +2,22 @@ import * as diff from 'fast-array-diff';
 
 import { HerbicideApplicationRates } from 'rjsf/business-rules/constants/herbicideApplicationRates';
 
+/*
+  Function that sets a default application rate for a given herbicide
+  Only triggers if the liquid_herbicide_code field changes, not if the user manually edits the rate or any other form field
+*/
 export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any): any {
   let updatedActivitySubtypeData = { ...newSubtypeData };
 
-  // if herbicide field is not edited at all
+  // If herbicide field is not edited at all just return existing activity subtype data
   if (!newSubtypeData.herbicide || JSON.stringify(newSubtypeData.herbicide[0]) === '{}') {
     return newSubtypeData;
   }
 
-  // otherwise, check to see if herbicide field has been changed (ie; code or application rate)
+  /*
+    Otherwise, check to see if herbicide field has been changed (ie; code or application rate)
+    Get the difference in old and new subtype data and analyze the added and removed herbicide fields
+  */
   const differenceInHerbicides = diff.diff(
     oldSubtypeData && oldSubtypeData.herbicide || [],
     newSubtypeData && newSubtypeData.herbicide || [],
@@ -18,6 +25,11 @@ export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any)
   );
   const updatedHerbicides = [ ...newSubtypeData.herbicide ];
 
+  /*
+    If new herbicide has been added, go through the added herbicide fields and
+    for each removed herbicide field, if they are not the same (meaning that the actual liquid herbicide code changed)
+    set the preset default value. If they are the same, this means that the rate is being manually edited so don't override
+  */
   if (differenceInHerbicides.added.length > 0) {
     differenceInHerbicides.added.forEach((addedHerbicide: any) => {
       const herbicideToUpdate = { ...addedHerbicide };
@@ -30,6 +42,10 @@ export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any)
         }
       });
 
+      /*
+        If the herbicide we are updating already exists in the subtype data, update it
+        If it is a new herbicide being added, insert it
+      */
       upsertArrayValues(
         updatedHerbicides,
         herbicideToUpdate,
@@ -38,6 +54,9 @@ export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any)
     });
   }
 
+  /*
+    Update the activity subtype data with the new herbicides
+  */
   updatedActivitySubtypeData = {
     ...newSubtypeData,
     herbicide: JSON.stringify(updatedHerbicides[0]) !== '{}' && updatedHerbicides || newSubtypeData.herbicide
