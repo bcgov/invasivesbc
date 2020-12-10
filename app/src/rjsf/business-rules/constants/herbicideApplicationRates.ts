@@ -1,4 +1,10 @@
-export const Herbicides = {
+/*
+  Herbicides and their respective application rates
+  For custom business rule that when user selects a herbicide, the application rate should autopopulate
+  Editing should still be allowed, but autopopulation is the main requirement
+*/
+
+export const HerbicideApplicationRates = {
   '14725': 9.5,
   '9528': 4.75,
   '5931': 4,
