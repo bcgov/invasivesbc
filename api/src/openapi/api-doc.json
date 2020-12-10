@@ -1710,7 +1710,7 @@
           },
           "application_rate": {
             "type": "number",
-            "title": "Application Rate",
+            "title": "Application Rate (L/ha)",
             "format": "float"
           },
           "herbicide_amount": {
