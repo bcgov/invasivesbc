@@ -5,7 +5,7 @@ const herbicideApplicationRates = {
   '21053': 10
 };
 
-export function populateHerbicideRate(oldSubtypeData: any, newSubtypeData: any): any {
+export function populateHerbicideRates(oldSubtypeData: any, newSubtypeData: any): any {
   let updatedActivitySubtypeData = { ...newSubtypeData };
 
   // if herbicide field is not edited at all
