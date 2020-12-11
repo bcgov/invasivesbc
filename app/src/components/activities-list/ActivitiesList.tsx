@@ -26,15 +26,14 @@ import {
   FormValidationStatus
 } from 'constants/activities';
 import { DocType } from 'constants/database';
-import { MediumDateFormat } from 'constants/misc';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import 'styles/spinners.scss';
 import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
+import ActivityListDate from './ActivityListDate';
 import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -125,16 +124,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
         <Typography className={classes.activitiyListItem_Typography}>Sync Status</Typography>
         {props.activity.sync.status}
       </Grid>
-      <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={2}>
-        <Typography className={classes.activitiyListItem_Typography}>Created</Typography>
-        {moment(props.activity.dateCreated).format(MediumDateFormat)}
-      </Grid>
-      <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={2}>
-        <Typography className={classes.activitiyListItem_Typography}>Last Updated</Typography>
-        {(props.activity.dateUpdated && moment(props.activity.dateUpdated).format(MediumDateFormat)) || 'n/a'}
-      </Grid>
+      <ActivityListDate classes={classes} activity={props.activity} />
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={1}>
         <Typography className={classes.activitiyListItem_Typography}>Reviewed</Typography>

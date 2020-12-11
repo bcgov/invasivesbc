@@ -208,6 +208,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       if (feature.layerType === 'circle') {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: feature.layer.getRadius() } };
+      } else if (feature.layerType === 'rectangle') {
+        aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
       }
 
       // Note that drawing one wipes all others:
