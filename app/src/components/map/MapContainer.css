@@ -36,11 +36,11 @@
 .overlay {
   /*height: 536px;*/
   width: 500px;
-  position: absolute;
+ /* position: absolute;*/
   /*right: 0px;*/
   bottom: 800px;
   right: 500px;
-  z-index: 2000;
+  z-index: 2500;
 /*  background-color: rgba(255, 50, 50, 0.5);*/
   pointer-events: auto;
 }

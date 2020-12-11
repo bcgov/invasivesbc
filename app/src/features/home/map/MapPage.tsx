@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '100%'
   },
   map: {
-    height: '100%',
+    height: '90%',
     width: '100%'
   },
   mainGrid: {
@@ -249,7 +249,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('clicked geo');
               handleGeoClick(row);
             }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
@@ -279,7 +278,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
               handleGeoClick(row);
             }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
@@ -301,7 +299,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
               handleGeoClick(row);
             }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
@@ -331,7 +328,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // interactive
             onClickCallback: () => {
               //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
               handleGeoClick(row);
             }, //try to get this one working first
             popUpComponent: PointOfInterestPopUp
@@ -370,8 +366,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
   }, [databaseChangesContext, showPopOut]);
 
   useEffect(() => {
-    console.log('chosen geo');
-    console.dir(selectedInteractiveGeometry);
   }, [selectedInteractiveGeometry]);
 
   useEffect(() => {

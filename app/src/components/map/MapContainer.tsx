@@ -1,4 +1,4 @@
-import { Button, Grid, Input, makeStyles, Slider, Zoom } from '@material-ui/core';
+import { Button, Grid, IconButton, Input, makeStyles, Paper, Slider, Zoom } from '@material-ui/core';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature } from 'geojson';
@@ -15,7 +15,13 @@ import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 
+import EditIcon from '@material-ui/icons/Edit';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff'
+import LinearScaleIcon from '@material-ui/icons/LinearScale';
+import RoomIcon from '@material-ui/icons/Room';
+import Crop169Icon from '@material-ui/icons/Crop169';
 import * as turf from '@turf/turf';
+import DoneIcon from '@material-ui/icons/Done';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -42,7 +48,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   //other state:
 
-  const [mode, setMode] = useState(mapMode.default)
+  //  const [mode, setMode] = useState(() => mapMode.default)
+
+  //  const [mode, setMode] = useState(null)
+  let mode = mapMode.default;
+  const setMode = (aMode: mapMode) => {
+    mode = aMode;
+  };
 
   const [layerBeingEdited, setLayerBeingEdited] = useState(null);
   const [geoBeingEdited, setGeoBeingEdited] = useState(null);
@@ -52,15 +64,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     button: {
       //padding: theme.spacing(2),
       color: theme.palette.text.secondary,
-      height: 100
       // width: 80
     },
     buttonGrid: {
       //      flexGrow: 5,
       display: 'flex',
+      justifyContent: 'center',
       padding: theme.spacing(2),
-      width: 520,
-      height: 100,
       color: theme.palette.text.secondary
     }
   }));
@@ -234,30 +244,30 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     });
 
-
     mapRef.current.on('draw:deleted', function () {
       props.geometryState.setGeometry([]);
     });
     // event fired on disabling edit
-    mapRef.current.on('layeradd', async function (layerGroup) {
+    mapRef.current.on('layerremove', async function (layerGroup) {
       // The current feature isn't passed to this function, so grab it from the acetate layer
-      if (mode && mode === mapMode.editGeo) {
+      if (sessionStorage.getItem('mode') === 'edit') {
         let aGeo = editedDrawnItems?.toGeoJSON()?.features[0];
-        console.dir(aGeo);
 
+        console.log('new edited drawn items')
+        console.dir(editedDrawnItems)
         // If this is a circle feature... Grab the radius and store in the GeoJSON
         if (editedDrawnItems.getLayers()[0]._mRadius) {
           const radius = editableDrawnItems.getLayers()[0]?.getRadius();
           aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
         }
 
+        console.dir(aGeo)
         // Save edited feature
         if (aGeo) {
           props.geometryState.setGeometry([aGeo]);
         }
       }
     });
-
   };
 
   const updateMapOnGeometryChange = () => {
@@ -305,19 +315,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   .openOn(mapRef.current);
               }
 
-              console.log('1');
               if (interactObj.isEditable) {
-                console.log('2');
                 //only allow one edit at a time:
                 if (editHandler) {
                   editHandler.editing.disable();
                   //                  setMode(mapMode.default);
                 }
-                //               setMode(mapMode.editGeo);
+                //setMode(mapMode.editGeo);
 
-                if (mode === mapMode.editGeo) {
-                  console.log('lets edit');
+                //if (mode === mapMode.editGeo) {
+                if (sessionStorage.getItem('mode') === 'edit') {
                   editedDrawnItems.addLayer(layer);
+                  console.log('old drawn items')
+                  console.dir(editedDrawnItems)
                   //set the new handler and enable
                   let handler = e.target;
                   handler.editing.enable();
@@ -362,7 +372,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     updateMapOnGeometryChange();
     //this geo is now a one way push back to parent container
     //}, [props.geometryState.geometry, editHandler]);
-  }, [editHandler, mode]);
+    console.log('rerender')
+  }, [editHandler]);
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -425,6 +436,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     poly.enable();
   };
 
+
+  const acceptChange = () => {
+
+    console.dir(editedDrawnItems)
+
+
+    let layer = editedDrawnItems.getLayers()[0]
+    console.dir(layer)
+    editedDrawnItems.removeLayer(layer)
+
+  }
+
   const cancel = () => {
     if (currentDrawingHandler) {
       currentDrawingHandler.disable();
@@ -433,116 +456,75 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   return (
     <>
-      <div id="overlay" className="overlay">
+      <div id={props.mapId} className={props.classes.map} />
+      {/*<div id="overlay" className="overlay">*/}
+      <div id="overlay">
         {/*</div><Grid direction="row" alignContent="flex-start" alignItems="stretch" className={classes.buttonGrid} spacing={2}>*/}
-        <Grid className={classes.buttonGrid} spacing={2}>
-          <Grid xs={3} className={classes.button} item>
-            <Button
+        <Grid alignItems="center" className={classes.buttonGrid} xs={12} spacing={2} container>
+          <Grid className={classes.button} item>
+            <Paper elevation={10}>
+            <IconButton
               //disabled={isDisabled}:w
 
-              variant="contained"
               color="primary"
               //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
               onClick={() => {
-                if (mode === mapMode.default) {
-                  console.log('here')
-                  setMode(mapMode.editGeo);
-                  //todo change cursor
-                } else {
-                  setMode(mapMode.default);
-                  if (editHandler) {
-                    editHandler.editing.disable();
-                  }
-                }
+                setMode(mapMode.editGeo);
+                sessionStorage.setItem('mode', 'edit');
               }}>
-              {mode === mapMode.default ? 'Enable Single Geo Edit' : 'Finish Edit'}
-            </Button>
+              <EditIcon />
+            </IconButton>
+            </Paper>
           </Grid>
-          <Grid xs={3} className={classes.button} item>
-            <Button
+          <Grid className={classes.button} item>
+            <Paper elevation={10}>
+            <IconButton
               //disabled={isDisabled}:w
 
-              variant="contained"
               color="primary"
               //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
-              onClick={polyline}>
-              PolyLine
-            </Button>
+              onClick={() => {
+                setMode(mapMode.default);
+                sessionStorage.removeItem('mode');
+                acceptChange();
+              }}>
+              <DoneIcon />
+            </IconButton>
+            </Paper>
           </Grid>
-          <Grid xs={3} className={classes.button} item>
-            <Button
-              //disabled={isDisabled}
-              variant="contained"
+          <Grid className={classes.button} item>
+            <Paper elevation={10}>
+            <IconButton
+              //disabled={isDisabled}:w
+
               color="primary"
               //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
-              onClick={waypoint}>
-              Waypoint
-            </Button>
-            <Slider step={10} marks min={10} max={110}></Slider>
+              onClick={() => {
+                console.log('stop edit')
+                setMode(mapMode.default);
+                sessionStorage.removeItem('mode')
+              }}>
+              <HighlightOffIcon />
+            </IconButton>
+            </Paper>
           </Grid>
-          <Grid xs={3} className={classes.button} item>
-            <Button
-              //disabled={isDisabled}
-              variant="contained"
+          <Grid className={classes.button} item>
+            <Paper elevation={10}>
+            <IconButton
+              //disabled={isDisabled}:w
+
               color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}
-              onClick={polygon}>
-              Polygon
-            </Button>
-          </Grid>
-          <Grid xs={3} className={classes.button} item>
-            <Button
-              //disabled={isDisabled}
-              variant="contained"
-              color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}
-              onClick={square}>
-              Square
-            </Button>
-          </Grid>
-          <Grid xs={3} className={classes.button} item>
-            <Button
-              disabled={true}
-              variant="contained"
-              color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}
-              onClick={cancel}>
-              New Parent Activity
-            </Button>
-          </Grid>
-          <Grid xs={3} className={classes.button} item>
-            <Button
-              disabled={true}
-              variant="contained"
-              color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}
-              onClick={cancel}>
-              New Child Activity
-            </Button>
-          </Grid>
-          <Grid xs={3} className={classes.button} item>
-            <Button
-              disabled={false}
-              variant="contained"
-              color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}
-              onClick={cancel}>
-              Choose Tools
-            </Button>
-          </Grid>
-          <Grid xs={3} className={classes.button} item>
-            <Button
-              //disabled={isDisabled}
-              variant="contained"
-              color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}
-              onClick={cancel}>
-              Cancel
-            </Button>
+              //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
+              onClick={() => {
+                setMode(mapMode.editGeo);
+                sessionStorage.setItem('mode', 'edit');
+              }}>
+              <RoomIcon />
+            </IconButton>
+            </Paper>
           </Grid>
         </Grid>
       </div>
-      <div id={props.mapId} className={props.classes.map} />;
     </>
   );
 };
