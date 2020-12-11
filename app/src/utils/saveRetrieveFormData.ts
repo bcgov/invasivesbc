@@ -17,7 +17,7 @@ export function saveFormDataToSession(formData: any, activitySubtype: string): v
 
   sessionStorage.setItem('copiedFormData', JSON.stringify(formDataToCopy));
   sessionStorage.setItem('activitySubtype', activitySubtype);
-};
+}
 
 /*
   Function to get the saved form data from session storage
@@ -33,4 +33,4 @@ export function retrieveFormDataFromSession(activity: any): any {
     ...JSON.parse(sessionStorage.getItem('copiedFormData')),
     activity_data: newActivityData
   };
-};
+}
