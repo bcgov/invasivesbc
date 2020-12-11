@@ -97,8 +97,7 @@ function getWell(): RequestHandler {
     const url = `${base}?service=WFS&version=2.0.0&request=GetFeature&typeName=${typeName}&outputFormat=json&maxFeatures=1000&srsName=epsg:4326&${cql}`;
 
     const getClosest = (response) => {
-      console.log('response: ',response);
-      console.log('res: ',res);
+      console.log('response: ',response.data);
     }
 
     axios.get(url)
