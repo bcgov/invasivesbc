@@ -222,9 +222,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
-
-      console.log("inside form change event", event);
-
       // populate herbicide application rate
       const updatedActivitySubtypeData = populateHerbicideRates(
         doc.formData.activity_subtype_data,
