@@ -17,7 +17,7 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
   const [databaseChanges, setDatabaseChanges] = useState<IDatabaseChanges>(null);
   const [changesListener, setChangesListener] = useState<PouchDB.Core.Changes<any>>(null);
 
-  const setupDatabase = async () => {
+  const setupDatabaseChanges = async () => {
     if (!changesListener || changesListener['isCancelled']) {
       const listener = databaseContext.database
         .changes({ live: true, since: 'now' })
@@ -31,18 +31,17 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
     }
   };
 
-  const cleanupDatabase = () => {
+  const cleanupDatabaseChanges = () => {
     if (changesListener) {
       changesListener.cancel();
     }
   };
 
-  // TODO Update [] dependencies to properly run cleanup (if keycloak expires?)
   useEffect(() => {
-    setupDatabase();
+    setupDatabaseChanges();
 
     return () => {
-      cleanupDatabase();
+      cleanupDatabaseChanges();
     };
   }, [databaseContext]);
 
