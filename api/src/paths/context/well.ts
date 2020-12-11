@@ -86,7 +86,6 @@ function getWell(): RequestHandler {
 
     const alb = proj4(albers,[Number(lon),Number(lat)]);
     const coords = `${alb[0]}+${alb[1]}`
-    console.log(coords);
 
 
     // TODO: URL encode the lon and lat
@@ -97,14 +96,16 @@ function getWell(): RequestHandler {
     // Formulate the url.
     const url = `${base}?service=WFS&version=2.0.0&request=GetFeature&typeName=${typeName}&outputFormat=json&maxFeatures=1000&srsName=epsg:4326&${cql}`;
 
-    res.send(url);
+    const getClosest = (response) => {
+      console.log('response: ',response);
+      console.log('res: ',res);
+    }
 
-    // axios.get(url)
-    //   .then((response) => {
-    //     return res.status(200).json({target: response.data?.features[0]?.properties});
-    //   })
-    //   .catch((error) => {
-    //     return defaultLog.debug({ label: 'getWell', message: 'error', error });
-    //   });
+    axios.get(url)
+      .then(getClosest)
+      .catch((error) => {
+        return defaultLog.debug({ label: 'getWell', message: 'error', error });
+      });
+
   };
 }
