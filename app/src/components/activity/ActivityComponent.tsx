@@ -9,6 +9,7 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
   classes?: any;
   activity: any;
   customValidation?: any;
+  pasteFormData?: Function;
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {

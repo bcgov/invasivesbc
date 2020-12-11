@@ -1,22 +1,26 @@
 import { Box, CircularProgress, ThemeProvider, Typography } from '@material-ui/core';
 import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
+import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ActivitySyncStatus } from 'constants/activities';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { JSONSchema7 } from 'json-schema';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
 import ObjectFieldTemplate from 'rjsf/templates/ObjectFieldTemplate';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import rjsfTheme from 'themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
+import { notifySuccess } from 'utils/NotificationUtils';
+import { saveFormDataToSession } from 'utils/saveRetrieveFormData';
 
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
   activity: any;
   customValidation?: any;
   isDisabled?: boolean;
+  pasteFormData?: Function;
   /**
    * A function executed everytime the form changes.
    *
@@ -42,6 +46,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const [formRef, setFormRef] = useState(null);
 
+  const databaseContext = useContext(DatabaseContext);
+
   useEffect(() => {
     const getApiSpec = async () => {
       const response = await invasivesApi.getCachedApiSpec();
@@ -59,12 +65,25 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     return <CircularProgress />;
   }
 
+  const copyFormData = () => {
+    const { activity: { formData, activitySubtype } } = props;
+
+    saveFormDataToSession(formData, activitySubtype);
+    notifySuccess(databaseContext, 'Successfully copied form data.');
+  };
+
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SYNC_SUCCESSFUL || false;
 
   return (
     <Box>
       <Box mb={3}>
-        <FormControlsComponent onSubmit={() => formRef.submit()} isDisabled={isDisabled} />
+        <FormControlsComponent
+          onSubmit={() => formRef.submit()}
+          isDisabled={isDisabled}
+          onCopy={() => copyFormData()}
+          onPaste={() => props.pasteFormData()}
+          activitySubtype={props.activity.activitySubtype}
+        />
       </Box>
 
       <ThemeProvider theme={rjsfTheme}>

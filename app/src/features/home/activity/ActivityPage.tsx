@@ -12,6 +12,8 @@ import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
+import { notifySuccess } from 'utils/NotificationUtils';
+import { retrieveFormDataFromSession } from 'utils/saveRetrieveFormData';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -220,6 +222,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
+
+      console.log("inside form change event", event);
+
       // populate herbicide application rate
       const updatedActivitySubtypeData = populateHerbicideRates(
         doc.formData.activity_subtype_data,
@@ -244,6 +249,32 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }),
     [doc]
   );
+
+  /**
+   * Paste copied form data saved in session storage
+   * Update the doc (activity) with the latest form data and store it in DB
+   */
+  const pasteFormData = async () => {
+    const formDataToPaste = retrieveFormDataFromSession(doc);
+
+    const updatedFormValues = {
+      formData: formDataToPaste,
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
+      formStatus: FormValidationStatus.VALID
+    };
+
+    setDoc({ ...doc, ...updatedFormValues });
+
+    notifySuccess(databaseContext, 'Successfully pasted form data.');
+
+    await databaseContext.database.upsert(docId, (activity) => {
+      return {
+        ...activity,
+        ...updatedFormValues
+      };
+    });
+  };
 
   useEffect(() => {
     const getActivityData = async () => {
@@ -312,6 +343,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+        pasteFormData={() => pasteFormData()}
       />
     </Container>
   );
