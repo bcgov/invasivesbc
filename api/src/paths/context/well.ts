@@ -5,6 +5,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
+import proj4 from 'proj4';
 
 const defaultLog = getLogger('activity');
 
@@ -78,15 +79,23 @@ function getWell(): RequestHandler {
 
     defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
 
-    // Convert point coordinates into a bounding box
-    const coords = `${lon},${lat},${parseFloat(lon as string) + 0.00001},${parseFloat(lat as string) + 0.00001}`
+    // Make the coordinates url friendly
+    // const coords = encodeURIComponent(`${lon},${lat}`);
+    // const coords = `${lon},${lat}`;
+    const albers = '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
 
+    const alb = proj4(albers,[Number(lon),Number(lat)]);
+    const coords = `${alb[0]}+${alb[1]}`
+    console.log(coords);
+
+
+    // TODO: URL encode the lon and lat
     const base = 'https://openmaps.gov.bc.ca/geo/pub/wfs';
     const typeName = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
-    const cql = `CQL_FILTER=DWITHIN(GEOMETRY,POINT(${lon}&#44;${lat}),1000,meters)`
+    const cql = `CQL_FILTER=DWITHIN(GEOMETRY,POINT(${coords}),500,meters)`
 
     // Formulate the url.
-    const url = `${base}?service=WFS&version=2.0.0&request=GetFeature&typeName=${typeName}:&outputFormat=json&maxFeatures=1000&srsName=epsg:4326&${cql}`;
+    const url = `${base}?service=WFS&version=2.0.0&request=GetFeature&typeName=${typeName}&outputFormat=json&maxFeatures=1000&srsName=epsg:4326&${cql}`;
 
     res.send(url);
 
