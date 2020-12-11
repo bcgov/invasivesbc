@@ -11,6 +11,7 @@ import * as turf from '@turf/turf';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
+import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -213,14 +214,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /**
    * Save the form whenever it changes.
    *
-   * Note: debouncing will prevent this from running more than once every `500` milliseconds.
+   * Note: debouncing will prevent this from running more than once every `100` milliseconds.
    *
    * @param {*} event the form change event
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
+      // populate herbicide application rate
+      const updatedActivitySubtypeData = populateHerbicideRates(
+        doc.formData.activity_subtype_data,
+        event.formData.activity_subtype_data
+      );
+
       const updatedFormValues = {
-        formData: event.formData,
+        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.VALID
@@ -235,7 +242,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         };
       });
     }),
-    [docId]
+    [doc]
   );
 
   useEffect(() => {
