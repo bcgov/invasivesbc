@@ -6,6 +6,9 @@ import { Operation } from 'express-openapi';
 import { ALL_ROLES } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 import proj4 from 'proj4';
+import {point} from '@turf/helpers';
+import nearestPoint from '@turf/nearest-point';
+import distance from '@turf/distance';
 
 const defaultLog = getLogger('activity');
 
@@ -13,7 +16,7 @@ const defaultLog = getLogger('activity');
 export const GET: Operation = [getWell()];
 
 GET.apiDoc = {
-  description: 'Fetches the distance to the closest well in meters from a given location.',
+  description: 'Fetches the distance to the closest well in meters from a given location. An object is return containing the closest feature along with the distance to the provided point.',
   tags: ['activity','databc'],
   security: [
     {
@@ -34,12 +37,18 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'GeoJSON feature from DataBC Layer',
+      description: 'GeoJSON feature from DataBC Layer and distance to it in meters',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             properties: {
+              well: {
+                type: 'object'
+              },
+              distance: {
+                type: 'number'
+              }
             }
           }
         }
@@ -59,8 +68,16 @@ GET.apiDoc = {
 
 
 /**
- * Fetches a single feature of a DataBC WFS layer from a geographic point location.
+ * Given a point location all wells within 500 meters are requests
+ * The closest well is extracted and returned along with the distance.
  *
+ * If this function 
+ * @param req {object} Either the express object...
+ *   or if called as a module it must be in the format of:
+ *   {query: {
+ *     lon: xxx.xxxxx,
+ *     lat: xx.xxxxx
+ *    }}
  * @return {RequestHandler}
  */
 function getWell(): RequestHandler {
@@ -79,9 +96,10 @@ function getWell(): RequestHandler {
 
     defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
 
-    // Make the coordinates url friendly
-    // const coords = encodeURIComponent(`${lon},${lat}`);
-    // const coords = `${lon},${lat}`;
+    /*
+     Here is the projection definition of the well layer 
+     stored in the BCGW
+    */
     const albers = '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
 
     const alb = proj4(albers,[Number(lon),Number(lat)]);
@@ -96,15 +114,59 @@ function getWell(): RequestHandler {
     // Formulate the url.
     const url = `${base}?service=WFS&version=2.0.0&request=GetFeature&typeName=${typeName}&outputFormat=json&maxFeatures=1000&srsName=epsg:4326&${cql}`;
 
+    /* ### getClosest
+      Get the closest well feature and distance to location
+      @param response {object} Response from BCGW
+      @return {object} The express response object or the axios return
+     */
     const getClosest = (response) => {
-      console.log('response: ',response.data);
+      var bundle = {};
+      // There should be at least one well.
+      if (response?.data?.features?.length > 0) {
+        const loc = point([Number(lon), Number(lat)])
+        const closestWell = nearestPoint(loc,response.data);
+        const dist =  Math.round(distance(loc,closestWell) * 1000);
+
+        bundle = {
+          distance: dist,
+          well: closestWell
+        }
+      } else { // Otherwise there are no wells
+        bundle = {
+          distance: null,
+          well: {}
+        }
+      }
+
+      if (res) { //If an ajax reqest
+        return res.status(201).json(bundle);
+      } else { // Otherwise just a module request
+        return bundle;
+      }
     }
 
+    /* ### failure
+      Handle a failure of requesting well from BCGW
+      @param error {object} The axios error object
+      @return {object} The express response object or the axios return
+     */
+    const failure = (error) => {
+      defaultLog.debug({ label: 'getWell', message: 'error', error });
+      const err = {error};
+      if (res) {
+        return res.status(501).json(err);
+      } else {
+        return err;
+      }
+    };
+
+    // Everything ready to for our request
     axios.get(url)
       .then(getClosest)
-      .catch((error) => {
-        return defaultLog.debug({ label: 'getWell', message: 'error', error });
-      });
+      .catch(failure);
 
   };
 }
+
+// Make available as a model as well.
+export {getWell};
