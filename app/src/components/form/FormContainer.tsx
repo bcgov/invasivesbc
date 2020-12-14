@@ -1,11 +1,10 @@
 import { Box, CircularProgress, ThemeProvider, Typography } from '@material-ui/core';
 import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ActivitySyncStatus } from 'constants/activities';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { JSONSchema7 } from 'json-schema';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
 import ObjectFieldTemplate from 'rjsf/templates/ObjectFieldTemplate';
@@ -44,8 +43,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
 
   const [formRef, setFormRef] = useState(null);
-
-  const databaseContext = useContext(DatabaseContext);
 
   useEffect(() => {
     const getApiSpec = async () => {
