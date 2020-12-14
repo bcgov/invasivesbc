@@ -203,8 +203,6 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       {sortActivitiesBySubtype(docs).map((doc) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
-        console.log(doc);
-
         return (
           <Paper key={doc._id}>
             <ListItem
