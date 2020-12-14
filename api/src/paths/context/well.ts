@@ -13,7 +13,7 @@ import distance from '@turf/distance';
 const defaultLog = getLogger('activity');
 
 
-export const GET: Operation = [getWell()];
+export const GET: Operation = [proxyWell()];
 
 GET.apiDoc = {
   description: 'Fetches the distance to the closest well in meters from a given location. An object is return containing the closest feature along with the distance to the provided point.',
@@ -66,12 +66,10 @@ GET.apiDoc = {
   }
 };
 
-
 /**
  * Given a point location all wells within 500 meters are requests
  * The closest well is extracted and returned along with the distance.
  *
- * If this function 
  * @param req {object} Either the express object...
  *   or if called as a module it must be in the format of:
  *   {query: {
@@ -80,93 +78,100 @@ GET.apiDoc = {
  *    }}
  * @return {RequestHandler}
  */
-function getWell(): RequestHandler {
-  return async (req, res, next) => {
+function getWell(req, res, next) {
 
-    // Grab coordinates from the query string
-    const {lon,lat} = req.query;
+  // Grab coordinates from the query string
+  const {lon,lat} = req.query;
 
-    // Error if no coordinates
-    if (!lon || !lat) {
-      throw {
-        status: 400,
-        message: 'Did not supply valid coordinates'
-      }
+  // Error if no coordinates
+  if (!lon || !lat) {
+    throw {
+      status: 400,
+      message: 'Did not supply valid coordinates'
     }
+  }
 
-    defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
+  defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
 
-    /*
-     Here is the projection definition of the well layer 
-     stored in the BCGW
+  /*
+    Here is the projection definition of the well layer 
+    stored in the BCGW
+  */
+  const albers = '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
+
+  const alb = proj4(albers,[Number(lon),Number(lat)]);
+  const coords = `${alb[0]}+${alb[1]}`
+
+
+  // TODO: URL encode the lon and lat
+  const base = 'https://openmaps.gov.bc.ca/geo/pub/wfs';
+  const typeName = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
+  const cql = `CQL_FILTER=DWITHIN(GEOMETRY,POINT(${coords}),500,meters)`
+
+  // Formulate the url.
+  const url = `${base}?service=WFS&version=2.0.0&request=GetFeature&typeName=${typeName}&outputFormat=json&maxFeatures=1000&srsName=epsg:4326&${cql}`;
+
+  var bundle = {};
+  /* ### getClosest
+    Get the closest well feature and distance to location
+    @param response {object} Response from BCGW
+    @return {object} The express response object or the axios return
     */
-    const albers = '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
+  const getClosest = (response) => {
+    // There should be at least one well.
+    if (response?.data?.features?.length > 0) {
+      const loc = point([Number(lon), Number(lat)])
+      const closestWell = nearestPoint(loc,response.data);
+      const dist =  Math.round(distance(loc,closestWell) * 1000);
 
-    const alb = proj4(albers,[Number(lon),Number(lat)]);
-    const coords = `${alb[0]}+${alb[1]}`
-
-
-    // TODO: URL encode the lon and lat
-    const base = 'https://openmaps.gov.bc.ca/geo/pub/wfs';
-    const typeName = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
-    const cql = `CQL_FILTER=DWITHIN(GEOMETRY,POINT(${coords}),500,meters)`
-
-    // Formulate the url.
-    const url = `${base}?service=WFS&version=2.0.0&request=GetFeature&typeName=${typeName}&outputFormat=json&maxFeatures=1000&srsName=epsg:4326&${cql}`;
-
-    /* ### getClosest
-      Get the closest well feature and distance to location
-      @param response {object} Response from BCGW
-      @return {object} The express response object or the axios return
-     */
-    const getClosest = (response) => {
-      var bundle = {};
-      // There should be at least one well.
-      if (response?.data?.features?.length > 0) {
-        const loc = point([Number(lon), Number(lat)])
-        const closestWell = nearestPoint(loc,response.data);
-        const dist =  Math.round(distance(loc,closestWell) * 1000);
-
-        bundle = {
-          distance: dist,
-          well: closestWell
-        }
-      } else { // Otherwise there are no wells
-        bundle = {
-          distance: null,
-          well: {}
-        }
+      bundle = {
+        distance: dist,
+        well: closestWell
       }
-
-      if (res) { //If an ajax reqest
-        return res.status(201).json(bundle);
-      } else { // Otherwise just a module request
-        return bundle;
+    } else { // Otherwise there are no wells
+      bundle = {
+        distance: null,
+        well: {}
       }
     }
 
-    /* ### failure
-      Handle a failure of requesting well from BCGW
-      @param error {object} The axios error object
-      @return {object} The express response object or the axios return
-     */
-    const failure = (error) => {
-      defaultLog.debug({ label: 'getWell', message: 'error', error });
-      const err = {error};
-      if (res) {
-        return res.status(501).json(err);
-      } else {
-        return err;
-      }
-    };
+    if (res) { //If an ajax reqest
+      return res.status(201).json(bundle);
+    } else { // Otherwise just a module request
+      return bundle;
+    }
+  }
 
-    // Everything ready to for our request
-    axios.get(url)
-      .then(getClosest)
-      .catch(failure);
-
+  /* ### failure
+    Handle a failure of requesting well from BCGW
+    @param error {object} The axios error object
+    @return {object} The express response object or the axios return
+    */
+  const failure = (error) => {
+    defaultLog.debug({ label: 'getWell', message: 'error', error });
+    const err = {error};
+    if (res) {
+      return res.status(501).json(err);
+    } else {
+      return err;
+    }
   };
+
+  // Everything ready to for our request
+  axios.get(url)
+    .then(getClosest)
+    .catch(failure);
+
+  return 'yo';
 }
+
+
+function proxyWell(): RequestHandler {
+  return async (req, res, next) => {
+    getWell(req,res,next);
+  }
+};
+
 
 // Make available as a model as well.
 export {getWell};

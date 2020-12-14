@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { getDBConnection } from '../database/db';
 import { getLogger } from './logger';
+import { getWell } from '../paths/context/well';
 
 const defaultLog = getLogger('context-queries');
 
@@ -192,9 +193,34 @@ const saveElevation = (id: any,req: any) => {
     });
 };
 
+
+/**
+ * ## saveWell
+ * Insert contextual well data for the new activity record from
+ * local datasets housed in the PostGres database.
+ *
+ * @param id {integer} The record ID for the activity recently
+ *   entered in the database.
+ * @param req {object} The express request object
+ */
+const saveWell = (id: any,req: any) => {
+  const a = req.body.activity_data;
+  const payload = {
+    query: {
+      lon: a.longitude,
+      lat: a.latitude
+    }
+  };
+
+  const well = getWell(payload,null,null);
+  console.log('well:',well);
+};
+
+
 export const commit = function (record:any,req:any) {
   const id = record.activity_id;
-  saveBCGW(id,req); // Insert DataBC BCGW attributes
-  saveInternal(id,req); // Insert local attributes
-  saveElevation(id,req); // Insert elevation
+  // saveBCGW(id,req); // Insert DataBC BCGW attributes
+  // saveInternal(id,req); // Insert local attributes
+  // saveElevation(id,req); // Insert elevation
+  saveWell(id,req); // Insert the closest well
 };
