@@ -36,6 +36,7 @@ import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUti
 import ActivityListDate from './ActivityListDate';
 import { v4 as uuidv4 } from 'uuid';
 import NetworkStatusComponent from 'components/network/NetworkStatusComponent';
+import { getErrorMessages } from 'utils/errorHandling';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -189,7 +190,6 @@ const ActivityList: React.FC<IActivityList> = (props) => {
           <Paper key={doc._id}>
             <ListItem
               button
-              // disabled={isDisabled}
               className={classes.activitiyListItem}
               onClick={() => setActiveActivityAndNavigateToActivityPage(doc)}>
               <ListItemIcon>
@@ -240,6 +240,8 @@ const ActivitiesList: React.FC = (props) => {
       }
     });
 
+    let errorMessages = [];
+
     // sync each activity one-by-one
     for (const activity of activityResult.docs) {
       try {
@@ -257,6 +259,8 @@ const ActivitiesList: React.FC = (props) => {
           form_data: activity.formData
         });
 
+        notifySuccess(databaseContext, `Syncing ${activity.activitySubtype.split('_')[2]} activity has succeeded.`);
+
         await databaseContext.database.upsert(activity._id, (activityDoc) => {
           return {
             ...activityDoc,
@@ -264,6 +268,10 @@ const ActivitiesList: React.FC = (props) => {
           };
         });
       } catch (error) {
+        const errorMessage = getErrorMessages(error.response.status, 'formSync');
+
+        errorMessages.push(`Syncing ${activity.activitySubtype.split('_')[2]} activity has failed: ${errorMessage}`);
+
         await databaseContext.database.upsert(activity._id, (activityDoc) => {
           return {
             ...activityDoc,
@@ -272,6 +280,10 @@ const ActivitiesList: React.FC = (props) => {
         });
       }
     }
+
+    errorMessages.forEach((err: string) => {
+      notifyError(databaseContext, err);
+    });
 
     setSyncing(false);
     setIsDisable(false);
