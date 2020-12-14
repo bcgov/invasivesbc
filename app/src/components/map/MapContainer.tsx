@@ -256,7 +256,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         console.log('new edited drawn items')
         console.dir(editedDrawnItems)
         // If this is a circle feature... Grab the radius and store in the GeoJSON
-        if (editedDrawnItems.getLayers()[0]._mRadius) {
+        if (editedDrawnItems.getLayers()[0]?._mRadius) {
           const radius = editableDrawnItems.getLayers()[0]?.getRadius();
           aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
         }
