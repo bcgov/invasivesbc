@@ -17,33 +17,6 @@
 .leaflet-control-locate.leaflet-control {
   transform: scale(1.4);
 }
-/*
-
-.leaflet-popup-content-wrapper {
-
-}
-
-.leaflet-popup-content-wrapper .leaflet-popup-content {
-}
-
-.leaflet-popup-tip-container {
-}
-*/
-
-/* need to generate these overlay divs and tell leaflet about them to disable
-   through.
-   */
-.overlay {
-  /*height: 536px;*/
-  width: 500px;
- /* position: absolute;*/
-  /*right: 0px;*/
-  bottom: 800px;
-  right: 500px;
-  z-index: 2500;
-/*  background-color: rgba(255, 50, 50, 0.5);*/
-  pointer-events: auto;
-}
 
 .savetiles.leaflet-control {
   transform: scale(1.4) translate(0, 20px);
