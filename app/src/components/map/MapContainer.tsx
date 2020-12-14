@@ -57,8 +57,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   //do we need these?
   const [readOnlyDrawnItems, setReadOnlyDrawnItems] = useState(new L.FeatureGroup());
-  const [editableDrawnItems, setEditableDrawnItems] = useState(new L.FeatureGroup());
-  const [editedDrawnItems, setEditedDrawnItems] = useState(new L.FeatureGroup());
+  const editableDrawnItems = new L.FeatureGroup();
+  const editedDrawnItems = new L.FeatureGroup();
 
   const addContextMenuClickListener = () => {
     mapRef.current.on('contextmenu', (e) => {

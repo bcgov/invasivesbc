@@ -197,15 +197,12 @@ const MapPage: React.FC<IMapProps> = (props) => {
       return;
     }
 
-    let geos = [];
     let interactiveGeos = [];
 
     docs.docs.forEach((row) => {
       if (!row.geometry || !row.geometry.length) {
         return;
       }
-
-      geos.push(row.geometry[0]);
 
       let coordinatesString = 'Polygon';
       if (row.geometry[0].geometry.type !== 'Polygon') {
