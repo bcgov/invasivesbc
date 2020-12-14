@@ -4,6 +4,7 @@ import { Route, RouteProps } from 'react-router-dom';
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
   layout: React.ComponentType<any>;
+  title: string;
   componentProps?: any;
 }
 
@@ -13,6 +14,8 @@ interface IPrivateRouteProps extends RouteProps {
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   let { component: Component, layout: Layout, ...rest } = props;
+
+  document.title = props.title;
 
   return (
     <Route

@@ -17,27 +17,48 @@ interface IHomeRouterProps {
 }
 
 const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
+  const getTitle = (page: string) => {
+    return `InvasivesBC - ${page}`;
+  };
+
   return (
     <Switch>
       <Redirect exact from="/home" to="/home/activities" />
-      <PrivateRoute exact layout={HomeLayout} path="/home/search" component={SearchPage} componentProps={props} />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/search"
+        title={getTitle('Search')}
+        component={SearchPage}
+        componentProps={props}
+      />
       <PrivateRoute
         layout={HomeLayout}
         path="/home/search/activity/:id?"
+        title={getTitle('Edit')}
         component={SearchActivityPage}
         componentProps={props}
       />
-      <PrivateRoute exact layout={HomeLayout} path="/home/plan" component={PlanPage} componentProps={props} />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/plan"
+        title={getTitle('Plan')}
+        component={PlanPage}
+        componentProps={props}
+      />
       <PrivateRoute
         exact
         layout={HomeLayout}
         path="/home/references"
+        title={getTitle('Reference')}
         component={ReferencesPage}
         componentProps={props}
       />
       <PrivateRoute
         layout={HomeLayout}
         path="/home/references/activity/:id?"
+        title={getTitle('Activity')}
         component={ReferencesActivityPage}
         componentProps={props}
       />
@@ -45,11 +66,26 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         exact
         layout={HomeLayout}
         path="/home/activities"
+        title={getTitle('Activities')}
         component={ActivitiesPage}
         componentProps={props}
       />
-      <PrivateRoute exact layout={HomeLayout} path="/home/map" component={MapPage} componentProps={props} />
-      <PrivateRoute exact layout={HomeLayout} path="/home/activity" component={ActivityPage} componentProps={props} />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/map"
+        title={getTitle('Map')}
+        component={MapPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/activity"
+        title={getTitle('Activity')}
+        component={ActivityPage}
+        componentProps={props}
+      />
       {/*  Catch any unknown routes, and re-direct to the not found page */}
       <AppRoute title="*" path="/home/*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>

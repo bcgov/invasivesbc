@@ -35,6 +35,7 @@ import 'styles/spinners.scss';
 import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
 import ActivityListDate from './ActivityListDate';
 import { v4 as uuidv4 } from 'uuid';
+import NetworkStatusComponent from 'components/network/NetworkStatusComponent';
 import { getErrorMessages } from 'utils/errorHandling';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -72,11 +73,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'inline',
       marginRight: '1rem'
     }
-  },
-  actionsBar: {
-    display: 'flex',
-    flexDirection: 'row-reverse',
-    marginBottom: '2rem'
   }
 }));
 
@@ -255,9 +251,11 @@ const ActivitiesList: React.FC = (props) => {
           activity_type: activity.activityType,
           activity_subtype: activity.activitySubtype,
           geometry: activity.geometry,
-          media: activity.photos && activity.photos.map((photo) => {
-            return { file_name: photo.filepath, encoded_file: photo.dataUrl };
-          }),
+          media:
+            activity.photos &&
+            activity.photos.map((photo) => {
+              return { file_name: photo.filepath, encoded_file: photo.dataUrl };
+            }),
           form_data: activity.formData
         });
 
@@ -315,8 +313,8 @@ const ActivitiesList: React.FC = (props) => {
 
   return (
     <>
-      <div>
-        <div className={classes.actionsBar}>
+      <Box>
+        <Box mb={3} display="flex" flexDirection="row-reverse">
           <Button
             disabled={isDisabled}
             variant="contained"
@@ -325,13 +323,13 @@ const ActivitiesList: React.FC = (props) => {
             onClick={() => syncActivities()}>
             Sync Activities
           </Button>
-        </div>
-        <div className={classes.activitiesContent}>
-          <div>
-            <div>
+        </Box>
+        <Box className={classes.activitiesContent}>
+          <Box>
+            <Box>
               <Typography variant="h5">Observations</Typography>
-            </div>
-            <div className={classes.newActivityButtonsRow}>
+            </Box>
+            <Box className={classes.newActivityButtonsRow}>
               <Button
                 disabled={isDisabled}
                 variant="contained"
@@ -363,13 +361,13 @@ const ActivitiesList: React.FC = (props) => {
               </Button>
 
               <ActivityList isDisabled={isDisabled} activityType={ActivityType.Observation} />
-            </div>
-          </div>
-          <div>
-            <div>
+            </Box>
+          </Box>
+          <Box>
+            <Box>
               <Typography variant="h5">Treatments</Typography>
-            </div>
-            <div className={classes.newActivityButtonsRow}>
+            </Box>
+            <Box className={classes.newActivityButtonsRow}>
               <Button
                 disabled={isDisabled}
                 variant="contained"
@@ -430,13 +428,13 @@ const ActivitiesList: React.FC = (props) => {
               </Button>
 
               <ActivityList isDisabled={isDisabled} activityType={ActivityType.Treatment} />
-            </div>
-          </div>
-          <div>
-            <div>
+            </Box>
+          </Box>
+          <Box>
+            <Box>
               <Typography variant="h5">Monitorings</Typography>
-            </div>
-            <div className={classes.newActivityButtonsRow}>
+            </Box>
+            <Box className={classes.newActivityButtonsRow}>
               <Button
                 disabled={isDisabled}
                 variant="contained"
@@ -494,13 +492,13 @@ const ActivitiesList: React.FC = (props) => {
               </Button>
 
               <ActivityList isDisabled={isDisabled} activityType={ActivityType.Monitoring} />
-            </div>
-          </div>
-          <div>
-            <div>
+            </Box>
+          </Box>
+          <Box>
+            <Box>
               <Typography variant="h5">Development/Testing</Typography>
-            </div>
-            <div className={classes.newActivityButtonsRow}>
+            </Box>
+            <Box className={classes.newActivityButtonsRow}>
               <Button
                 disabled={isDisabled}
                 variant="contained"
@@ -522,10 +520,10 @@ const ActivitiesList: React.FC = (props) => {
                 onClick={() => notifyWarning(databaseContext, 'A Warning message!')}>
                 Simulate Warning
               </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
     </>
   );
 };
