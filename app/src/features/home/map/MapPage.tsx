@@ -64,7 +64,7 @@ interface popOutComponentProps {
 
 const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
   const classes = useStyles();
-  //very quick and dirty style for demo:
+
   return (
     <div className={classes.popOutComponent}>
       <br />
@@ -148,19 +148,10 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setIsReadyToLoadMap(didInteractiveGeosLoad);
   }, [databaseChangesContext, interactiveGeometry]);
 
-  useEffect(() => {
-    // update the interactive geo array so that the one selected shows as editable
-    if (isReadyToLoadMap) {
-      //const removeGeo = interactiveGeometry.filter((geo) => geo.recordDocID != selectedInteractiveGeometry.recordDocID);
-      //setInteractiveGeometry([...removeGeo, selectedInteractiveGeometry]);
-    }
-  }, [selectedInteractiveGeometry]);
-
-
   useEffect(()=>{
     console.log('the geo')
     console.dir(geometry)
-  },[geometry])
+  }, [geometry]);
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
@@ -187,8 +178,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
       setPhotos(activityResults.docs[0].photos || []);
     }
   };
-
-
 
   const getEverythingWithAGeo = async () => {
     let docs = await databaseContext.database.find({
@@ -230,125 +219,69 @@ const MapPage: React.FC<IMapProps> = (props) => {
       switch (row.docType) {
         case DocType.POINT_OF_INTEREST:
           interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
             description: 'New Point of Interest:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
+            geometry: row.geometry[0], // basic display
             color: '#99E472',
             zIndex: 1, // need to ask jamie how to implement this
-
-            // interactive
             onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              handleGeoClick(row);
-            }, //try to get this one working first
+              handleGeoClick(row); // interactive
+            },
             popUpComponent: PointOfInterestPopUp
           });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          */
-          /*
-          showPopUp: boolean;})*/
           break;
         case DocType.REFERENCE_ACTIVITY:
           interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
             description: 'Past Activity:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
+            geometry: row.geometry[0], // basic display
             color: '#F3C911',
             zIndex: 1, // need to ask jamie how to implement this
-
-            // interactive
             onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              handleGeoClick(row);
-            }, //try to get this one working first
+              handleGeoClick(row); // interactive
+            },
             popUpComponent: PointOfInterestPopUp
           });
           break;
         case DocType.ACTIVITY:
           interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
             description: 'Activity:\n ' + row._id + '\n' + coordinatesString,
             isEditable: true,
-
-            // basic display:
-            geometry: row.geometry[0],
+            geometry: row.geometry[0], // basic display
             color: '#E044A7',
             zIndex: 1, // need to ask jamie how to implement this
-
-            // interactive
             onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              handleGeoClick(row);
-            }, //try to get this one working first
+              handleGeoClick(row); // interactive
+            },
             popUpComponent: PointOfInterestPopUp
           });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          */
-          /*
-          showPopUp: boolean;})*/
           break;
         case DocType.REFERENCE_POINT_OF_INTEREST:
           interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
             description: 'Point of Interest:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
+            geometry: row.geometry[0], // basic display
             color: '#FF5733',
             zIndex: 1, // need to ask jamie how to implement this
-
-            // interactive
             onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              handleGeoClick(row);
-            }, //try to get this one working first
+              handleGeoClick(row); // interactive
+            },
             popUpComponent: PointOfInterestPopUp
           });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          */
-          /*
-          showPopUp: boolean;})*/
           break;
         default:
           break;
       }
     });
 
-    //setGeometry(geos);
-
     setInteractiveGeometry(
       interactiveGeos
-    ); /*/todo figure out to have this as a dictionary with only the delta
-        getting written to on updates*/
-
-    //setIsReadyToLoadMap(true)
+    );
   };
 
   useEffect(() => {
