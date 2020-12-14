@@ -13,7 +13,7 @@ import { MapContextMenuData } from '../map/MapContextMenu';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
 import { notifySuccess } from 'utils/NotificationUtils';
-import { retrieveFormDataFromSession } from 'utils/saveRetrieveFormData';
+import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -273,6 +273,16 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     });
   };
 
+  /**
+   * Copy form data into session storage
+   */
+  const copyFormData = () => {
+    const { formData, activitySubtype } = doc;
+
+    saveFormDataToSession(formData, activitySubtype);
+    notifySuccess(databaseContext, 'Successfully copied form data.');
+  };
+
   useEffect(() => {
     const getActivityData = async () => {
       const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
@@ -341,6 +351,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         extentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
         pasteFormData={() => pasteFormData()}
+        copyFormData={() => copyFormData()}
       />
     </Container>
   );

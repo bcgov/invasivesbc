@@ -12,8 +12,6 @@ import ObjectFieldTemplate from 'rjsf/templates/ObjectFieldTemplate';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import rjsfTheme from 'themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
-import { notifySuccess } from 'utils/NotificationUtils';
-import { saveFormDataToSession } from 'utils/saveRetrieveFormData';
 
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -21,6 +19,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   customValidation?: any;
   isDisabled?: boolean;
   pasteFormData?: Function;
+  copyFormData?: Function;
   /**
    * A function executed everytime the form changes.
    *
@@ -65,13 +64,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     return <CircularProgress />;
   }
 
-  const copyFormData = () => {
-    const { activity: { formData, activitySubtype } } = props;
-
-    saveFormDataToSession(formData, activitySubtype);
-    notifySuccess(databaseContext, 'Successfully copied form data.');
-  };
-
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SYNC_SUCCESSFUL || false;
 
   return (
@@ -80,7 +72,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         <FormControlsComponent
           onSubmit={() => formRef.submit()}
           isDisabled={isDisabled}
-          onCopy={() => copyFormData()}
+          onCopy={() => props.copyFormData()}
           onPaste={() => props.pasteFormData()}
           activitySubtype={props.activity.activitySubtype}
         />
