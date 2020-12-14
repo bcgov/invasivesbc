@@ -31,10 +31,10 @@
       "properties": {}
     }
   ],
-  "locationAndGeometry": {
-    "anchorPointY": 48.3,
-    "anchorPointX": -125.6,
-    "area": 0,
+  "activity_data": {
+    "latitude": 49.29153,
+    "longitude": -124.95511,
+    "reported_area": 10
   },
   "activity_type_data": {
     "pokiness": 17

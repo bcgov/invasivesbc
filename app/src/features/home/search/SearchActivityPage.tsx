@@ -122,7 +122,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
   /**
    * Save the form whenever it changes.
    *
-   * Note: debouncing will prevent this from running more than once per `500` milliseconds.
+   * Note: debouncing will prevent this from running more than once per `100` milliseconds.
    *
    * @param {*} event the form change event
    */
