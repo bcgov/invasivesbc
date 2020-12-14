@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Container, Grid, makeStyles, Theme } from '@material-ui/core';
+import { Button, CircularProgress, Container, Grid, makeStyles, Theme, Box } from '@material-ui/core';
 import clsx from 'clsx';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
@@ -377,7 +377,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   };
 
   return (
-    <>
+    <Box height="100vh" width="100vw" display="flex" overflow="hidden"> 
       <Grid className={classes.mainGrid} container>
         <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
           <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
@@ -414,7 +414,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
         contextMenuState={{ state: contextMenuState, setContextMenuState }}
         handleClose={handleContextMenuClose}
       />
-    </>
+    </Box>
   );
 };
 
