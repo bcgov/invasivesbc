@@ -51,11 +51,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       color: theme.palette.text.secondary
     }
   }));
+
   const classes = useStyles();
-
   const mapRef = useRef(null);
-
-  //do we need these?
   const [readOnlyDrawnItems, setReadOnlyDrawnItems] = useState(new L.FeatureGroup());
   const editableDrawnItems = new L.FeatureGroup();
   const editedDrawnItems = new L.FeatureGroup();
@@ -203,10 +201,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       props.geometryState.setGeometry([aGeo]);
     });
 
-    mapRef.current.on('draw:drawstart', function () {
-      //props.geometryState.setGeometry([]);
-    });
-
     mapRef.current.on('draw:editstop', async function (layerGroup) {
       // The current feature isn't passed to this function, so grab it from the acetate layer
       let aGeo = editableDrawnItems?.toGeoJSON()?.features[0];
@@ -245,6 +239,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         }
       }
     });
+
+    /* keeping for later use
+      mapRef.current.on('draw:drawstart', function () {
+        props.geometryState.setGeometry([]);
+      });
+    */
   };
 
   const updateMapOnGeometryChange = () => {
