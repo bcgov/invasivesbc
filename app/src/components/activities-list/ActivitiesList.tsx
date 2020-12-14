@@ -181,10 +181,29 @@ const ActivityList: React.FC<IActivityList> = (props) => {
     history.push(`/home/activity`);
   };
 
+  /*
+    Sort activities to show plant activities before animal
+  */
+  const sortActivitiesBySubtype = (activities: any[]): any[] => {
+    const sortedActivities = [];
+
+    activities.forEach((activity: any) => {
+      if (activity.activitySubtype.includes('Plant')) {
+        sortedActivities.unshift(activity);
+      } else {
+        sortedActivities.push(activity);
+      }
+    });
+
+    return sortedActivities;
+  };
+
   return (
     <List className={classes.activityList}>
-      {docs.map((doc) => {
+      {sortActivitiesBySubtype(docs).map((doc) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
+
+        console.log(doc);
 
         return (
           <Paper key={doc._id}>
