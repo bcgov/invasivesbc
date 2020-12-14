@@ -7,21 +7,21 @@ import getKeycloakEventHandler from '../utils/KeycloakEventHandler';
 
 interface IAuthLayoutProps {
   keycloak: any;
-  initConfig: any;
+  keycloakConfig: any;
 }
 
 const AuthLayout: React.FC<IAuthLayoutProps> = (props) => {
   return (
     <KeycloakProvider
       keycloak={props.keycloak}
-      initConfig={props.initConfig}
+      initConfig={props.keycloakConfig}
       LoadingComponent={<CircularProgress />}
       onEvent={getKeycloakEventHandler(props.keycloak)}>
       <AuthStateContextProvider>
         <AuthStateContext.Consumer>
           {(context) => {
             if (!context.ready) {
-              return <CircularProgress></CircularProgress>;
+              return <CircularProgress />;
             }
 
             return <PublicLayout>{props.children}</PublicLayout>;
