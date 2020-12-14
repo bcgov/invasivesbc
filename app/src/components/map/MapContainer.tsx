@@ -1,4 +1,4 @@
-import { Button, Grid, IconButton, Input, makeStyles, Paper, Slider, Zoom } from '@material-ui/core';
+import { Grid, IconButton, makeStyles, Paper } from '@material-ui/core';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature } from 'geojson';
@@ -14,13 +14,9 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
-
 import EditIcon from '@material-ui/icons/Edit';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff'
-import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import RoomIcon from '@material-ui/icons/Room';
-import Crop169Icon from '@material-ui/icons/Crop169';
-import * as turf from '@turf/turf';
 import DoneIcon from '@material-ui/icons/Done';
 
 export type MapControl = (map: any, ...args: any) => void;
@@ -39,35 +35,16 @@ export interface IMapContainerProps {
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;
   };
 }
-enum mapMode {
-  default = 'default',
-  editGeo = 'editGeo'
-}
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  //other state:
-
-  //  const [mode, setMode] = useState(() => mapMode.default)
-
-  //  const [mode, setMode] = useState(null)
-  let mode = mapMode.default;
-  const setMode = (aMode: mapMode) => {
-    mode = aMode;
-  };
-
-  const [layerBeingEdited, setLayerBeingEdited] = useState(null);
-  const [geoBeingEdited, setGeoBeingEdited] = useState(null);
   const [editHandler, setEditHandler] = useState(null);
 
   const useStyles = makeStyles((theme) => ({
     button: {
-      //padding: theme.spacing(2),
       color: theme.palette.text.secondary,
-      // width: 80
     },
     buttonGrid: {
-      //      flexGrow: 5,
       display: 'flex',
       justifyContent: 'center',
       padding: theme.spacing(2),
@@ -249,21 +226,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('draw:deleted', function () {
       props.geometryState.setGeometry([]);
     });
-    // event fired on disabling edit
+
+    // Event fired on disabling edit
     mapRef.current.on('layerremove', async function (layerGroup) {
       // The current feature isn't passed to this function, so grab it from the acetate layer
       if (sessionStorage.getItem('mode') === 'edit') {
         let aGeo = editedDrawnItems?.toGeoJSON()?.features[0];
 
-        console.log('new edited drawn items')
-        console.dir(editedDrawnItems)
         // If this is a circle feature... Grab the radius and store in the GeoJSON
         if (editedDrawnItems.getLayers()[0]?._mRadius) {
           const radius = editableDrawnItems.getLayers()[0]?.getRadius();
           aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
         }
 
-        console.dir(aGeo)
         // Save edited feature
         if (aGeo) {
           props.geometryState.setGeometry([aGeo]);
@@ -312,26 +287,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               if (feature.geometry.type !== 'Polygon') {
                 L.popup()
                   .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
-                  //.setContent(interactObj.popUpComponent)
                   .setContent(content)
                   .openOn(mapRef.current);
               }
 
               if (interactObj.isEditable) {
-                //only allow one edit at a time:
+                // only allow one edit at a time
                 if (editHandler) {
                   editHandler.editing.disable();
-                  //                  setMode(mapMode.default);
                 }
-                //setMode(mapMode.editGeo);
 
-                //if (mode === mapMode.editGeo) {
                 if (sessionStorage.getItem('mode') === 'edit') {
                   editedDrawnItems.addLayer(layer);
-                  console.log('old drawn items')
-                  console.dir(editedDrawnItems)
-                  //set the new handler and enable
-                  let handler = e.target;
+                  // set the new handler and enable
+                  const handler = e.target;
                   handler.editing.enable();
                   setEditHandler(handler);
                 }
@@ -372,9 +341,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     updateMapOnGeometryChange();
-    //this geo is now a one way push back to parent container
-    //}, [props.geometryState.geometry, editHandler]);
-    console.log('rerender')
   }, [editHandler]);
 
   useEffect(() => {
@@ -389,89 +355,23 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
-  var div = L.DomUtil.get('overlay'); // this must be an ID, not class!
-  //L.DomEvent.on(div, 'mousewheel', L.DomEvent.stopPropagation);
-  //L.DomEvent.on(div, 'click', L.DomEvent.stopPropagation);
-
-  // this var is used to keep track of draw handler so we can cancel
-  const [currentDrawingHandler, setCurrentDrawingHandler] = useState(null);
-
-  // because we use the same types for some actions we need to track our intent:
-  const [currentActionType, setCurrentActionType] = useState(null);
-
-  const startDrawingAndSetHandler = (drawType: any) => {
-    let poly = new L.Draw.Polyline(mapRef.current);
-    if (currentDrawingHandler) {
-      currentDrawingHandler.disable();
-    }
-
-    setCurrentDrawingHandler(poly);
-    poly.enable();
-  };
-
-  const polyline = () => {
-    let poly = new L.Draw.Polyline(mapRef.current);
-    if (currentDrawingHandler) {
-      currentDrawingHandler.disable();
-    }
-
-    setCurrentDrawingHandler(poly);
-    poly.enable();
-  };
-
-  const polygon = () => {
-    let poly = new L.Draw.Polygon(mapRef.current);
-    setCurrentDrawingHandler(poly);
-    poly.enable();
-  };
-
-  const square = () => {
-    let poly = new L.Draw.Rectangle(mapRef.current);
-    setCurrentDrawingHandler(poly);
-    poly.enable();
-  };
-
-  const waypoint = () => {
-    let poly = new L.Draw.Polyline(mapRef.current);
-    setCurrentDrawingHandler(poly);
-    setCurrentActionType('waypoint');
-    poly.enable();
-  };
-
-
   const acceptChange = () => {
+    console.dir(editedDrawnItems);
 
-    console.dir(editedDrawnItems)
-
-
-    let layer = editedDrawnItems.getLayers()[0]
-    console.dir(layer)
-    editedDrawnItems.removeLayer(layer)
-
+    const layer = editedDrawnItems.getLayers()[0];
+    editedDrawnItems.removeLayer(layer);
   }
-
-  const cancel = () => {
-    if (currentDrawingHandler) {
-      currentDrawingHandler.disable();
-    }
-  };
 
   return (
     <>
       <div id={props.mapId} className={props.classes.map} />
-      {/*<div id="overlay" className="overlay">*/}
       <div id="overlay">
-        {/*</div><Grid direction="row" alignContent="flex-start" alignItems="stretch" className={classes.buttonGrid} spacing={2}>*/}
         <Grid alignItems="center" className={classes.buttonGrid} xs={12} spacing={2} container>
           <Grid className={classes.button} item>
             <Paper elevation={10}>
             <IconButton
-              //disabled={isDisabled}:w
-
               color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
               onClick={() => {
-                setMode(mapMode.editGeo);
                 sessionStorage.setItem('mode', 'edit');
               }}>
               <EditIcon />
@@ -481,12 +381,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           <Grid className={classes.button} item>
             <Paper elevation={10}>
             <IconButton
-              //disabled={isDisabled}:w
-
               color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
               onClick={() => {
-                setMode(mapMode.default);
                 sessionStorage.removeItem('mode');
                 acceptChange();
               }}>
@@ -497,14 +393,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           <Grid className={classes.button} item>
             <Paper elevation={10}>
             <IconButton
-              //disabled={isDisabled}:w
-
               color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
               onClick={() => {
-                console.log('stop edit')
-                setMode(mapMode.default);
-                sessionStorage.removeItem('mode')
+                sessionStorage.removeItem('mode');
               }}>
               <HighlightOffIcon />
             </IconButton>
@@ -513,12 +404,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           <Grid className={classes.button} item>
             <Paper elevation={10}>
             <IconButton
-              //disabled={isDisabled}:w
-
               color="primary"
-              //startIcon={<Sync className={clsx(syncing && 'rotating')}></Sync>
               onClick={() => {
-                setMode(mapMode.editGeo);
                 sessionStorage.setItem('mode', 'edit');
               }}>
               <RoomIcon />

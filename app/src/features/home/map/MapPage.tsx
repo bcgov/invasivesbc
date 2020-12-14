@@ -121,12 +121,6 @@ const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
   );
 };
 
-// todo:  copy area, lat, long (like activity page)
-// todo:  save form on change
-// todo:  save geo on change
-
-
-
 const MapPage: React.FC<IMapProps> = (props) => {
   const classes = useStyles();
 
