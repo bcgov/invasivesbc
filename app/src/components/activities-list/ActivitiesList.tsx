@@ -479,7 +479,7 @@ const ActivitiesList: React.FC = (props) => {
           {selectedActivityType !== 'Other' && (
             <Box>
               <Box>
-                <Typography variant="h5">Monitorings</Typography>
+                <Typography variant="h5">Efficacy Monitorings</Typography>
               </Box>
               <Box className={classes.newActivityButtonsRow}>
                 {selectedActivityType === 'Plant' && (
