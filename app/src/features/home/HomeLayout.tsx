@@ -92,7 +92,7 @@ const HomeLayout = (props: any) => {
           <strong>{notification == null ? null : notification.text}</strong>
         </Alert>
       </Collapse>
-      <Box mb="43px" display="flex" overflow="auto">
+      <Box mb="43px" height="inherit" width="inherit" overflow="auto">
         {props.children}
       </Box>
       <Box
