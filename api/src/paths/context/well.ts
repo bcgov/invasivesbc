@@ -157,12 +157,26 @@ function getWell(req, res, next) {
     }
   };
 
-  // Everything ready to for our request
+  /*
+    TODO: If there is a callback then it's a module.
+    Run it to populate the database
+  */
+  const moduleReturn = (data) => {
+    // console.log('data',data);
+    // console.log('res',!res);
+    // console.log('next',next);
+    // console.log('test',next && !res);
+    if (next && !res) {
+      console.log(data);
+    }
+  }
+
+  // Everything ready to go for our request
   axios.get(url)
     .then(getClosest)
+    .then(moduleReturn)
     .catch(failure);
-
-  return 'yo';
+  
 }
 
 

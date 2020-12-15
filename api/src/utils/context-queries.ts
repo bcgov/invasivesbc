@@ -212,8 +212,11 @@ const saveWell = (id: any,req: any) => {
     }
   };
 
-  const well = getWell(payload,null,null);
-  console.log('well:',well);
+  const callback = (bundle) => {
+    console.log(bundle);
+  }
+
+  const well = getWell(payload,false,callback);
 };
 
 
