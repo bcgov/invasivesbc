@@ -12,6 +12,7 @@ import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
+import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -228,6 +229,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       </Box>
 
       <ActivityComponent
+        customValidation={getCustomValidator([getAreaValidator(activity.activitySubtype), getWindValidator(activity.activitySubtype)])}
         classes={classes}
         activity={activity}
         onFormChange={onFormChange}
