@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '100%'
   },
   map: {
-    height: '90%',
+    height: '85%',
     width: '100%'
   },
   mainGrid: {
@@ -307,7 +307,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   };
 
   return (
-    <Box height="100vh" width="100vw" display="flex" overflow="hidden"> 
+    <Box height="88.5vh" width="100vw" display="flex" overflow="hidden">
       <Grid className={classes.mainGrid} container>
         <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
           <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>

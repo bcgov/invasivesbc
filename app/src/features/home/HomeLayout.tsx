@@ -96,7 +96,6 @@ const HomeLayout = (props: any) => {
         {props.children}
       </Box>
       <Box
-        height="43px"
         position="absolute"
         bottom="0"
         left="0"

@@ -35,7 +35,6 @@ import 'styles/spinners.scss';
 import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
 import ActivityListDate from './ActivityListDate';
 import { v4 as uuidv4 } from 'uuid';
-import NetworkStatusComponent from 'components/network/NetworkStatusComponent';
 import { getErrorMessages } from 'utils/errorHandling';
 
 const useStyles = makeStyles((theme: Theme) => ({

@@ -49,6 +49,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       justifyContent: 'center',
       padding: theme.spacing(2),
       color: theme.palette.text.secondary
+    },
+    containerHeight: {
+      height: "100%"
     }
   }));
 
@@ -363,7 +366,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }
 
   return (
-    <>
+    <div className={classes.containerHeight}>
       <div id={props.mapId} className={props.classes.map} />
       <div id="overlay">
         <Grid alignItems="center" className={classes.buttonGrid} xs={12} spacing={2} container>
@@ -414,7 +417,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           </Grid>
         </Grid>
       </div>
-    </>
+    </div>
   );
 };
 
