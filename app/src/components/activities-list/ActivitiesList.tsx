@@ -13,7 +13,11 @@ import {
   Paper,
   SvgIcon,
   Theme,
-  Typography
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@material-ui/core';
 import { Add, DeleteForever, Sync } from '@material-ui/icons';
 import clsx from 'clsx';
@@ -39,8 +43,6 @@ import NetworkStatusComponent from 'components/network/NetworkStatusComponent';
 import { getErrorMessages } from 'utils/errorHandling';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  activitiesContent: {},
-  activityList: {},
   newActivityButtonsRow: {
     '& Button': {
       marginRight: '0.5rem',
@@ -73,6 +75,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'inline',
       marginRight: '1rem'
     }
+  },
+  formControl: {
+    marginRight: 20,
+    minWidth: 150
   }
 }));
 
@@ -140,6 +146,7 @@ interface IActivityList {
   classes?: any;
   isDisabled?: boolean;
   activityType: ActivityType;
+  selectedActivityType: string;
 }
 
 // TODO change any to a type that defines the overall items being displayed
@@ -182,9 +189,13 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   };
 
   return (
-    <List className={classes.activityList}>
+    <List>
       {docs.map((doc) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
+
+        if (!doc.activitySubtype.includes(props.selectedActivityType)) {
+          return;
+        }
 
         return (
           <Paper key={doc._id}>
@@ -225,6 +236,7 @@ const ActivitiesList: React.FC = (props) => {
 
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);
+  const [selectedActivityType, setSelectedActivityType] = useState('Plant');
 
   const syncActivities = async () => {
     setIsDisable(true);
@@ -311,6 +323,10 @@ const ActivitiesList: React.FC = (props) => {
     });
   };
 
+  const handleActivityTypeChange = (event: any) => {
+    setSelectedActivityType(event.target.value);
+  };
+
   return (
     <>
       <Box>
@@ -323,205 +339,246 @@ const ActivitiesList: React.FC = (props) => {
             onClick={() => syncActivities()}>
             Sync Activities
           </Button>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel>Activity Type</InputLabel>
+            <Select
+              value={selectedActivityType}
+              onChange={handleActivityTypeChange}
+              label="Select Activity Type"
+            >
+              <MenuItem value='Plant'>Plant</MenuItem>
+              <MenuItem value='Animal'>Animal</MenuItem>
+              <MenuItem value='Other'>Other</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
-        <Box className={classes.activitiesContent}>
-          <Box>
+        <Box>
+          {selectedActivityType !== 'Other' && (
             <Box>
-              <Typography variant="h5">Observations</Typography>
-            </Box>
-            <Box className={classes.newActivityButtonsRow}>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_PlantTerrestial)}>
-                Plant Terrestrial
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_PlantAquatic)}>
-                Plant Aquatic
-              </Button>
+              <Box>
+                <Typography variant="h5">Observations</Typography>
+              </Box>
+              <Box className={classes.newActivityButtonsRow}>
+                {selectedActivityType === 'Plant' && (
+                  <>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_PlantTerrestial)}>
+                      Plant Terrestrial
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_PlantAquatic)}>
+                      Plant Aquatic
+                    </Button>
+                  </>
+                )}
+                {selectedActivityType === 'Animal' && (
+                  <>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_AnimalTerrestrial)}>
+                      Animal Terrestrial
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_AnimalAquatic)}>
+                      Animal Aquatic
+                    </Button>
+                  </>
+                )}
 
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_AnimalTerrestrial)}>
-                Animal Terrestrial
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_AnimalAquatic)}>
-                Animal Aquatic
-              </Button>
-
-              <ActivityList isDisabled={isDisabled} activityType={ActivityType.Observation} />
+                <ActivityList selectedActivityType={selectedActivityType} isDisabled={isDisabled} activityType={ActivityType.Observation} />
+              </Box>
             </Box>
-          </Box>
-          <Box>
+          )}
+          {selectedActivityType !== 'Other' && (
             <Box>
-              <Typography variant="h5">Treatments</Typography>
-            </Box>
-            <Box className={classes.newActivityButtonsRow}>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalPlant)}>
-                Plant Chemical
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalPlant)}>
-                Plant Mechanical
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant)}>
-                Plant Biological
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalDispersalPlant)
-                }>
-                Plant Biological Dispersal
-              </Button>
+              <Box>
+                <Typography variant="h5">Treatments</Typography>
+              </Box>
+              <Box className={classes.newActivityButtonsRow}>
+                {selectedActivityType === 'Plant' && (
+                  <>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalPlant)}>
+                      Plant Chemical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalPlant)}>
+                      Plant Mechanical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant)}>
+                      Plant Biological
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalDispersalPlant)
+                      }>
+                      Plant Biological Dispersal
+                    </Button>
+                  </>
+                )}
+                {selectedActivityType === 'Animal' && (
+                  <>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalTerrestrialAnimal)
+                      }>
+                      Animal Terrestrial Mechanical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalTerrestrialAnimal)
+                      }>
+                      Animal Terrestrial Chemical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalTerrestrialAnimal)
+                      }>
+                      Animal Terrestrial Biological
+                    </Button>
+                  </>
+                )}
 
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalTerrestrialAnimal)
-                }>
-                Animal Terrestrial Mechanical
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalTerrestrialAnimal)
-                }>
-                Animal Terrestrial Chemical
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalTerrestrialAnimal)
-                }>
-                Animal Terrestrial Biological
-              </Button>
-
-              <ActivityList isDisabled={isDisabled} activityType={ActivityType.Treatment} />
+                <ActivityList selectedActivityType={selectedActivityType} isDisabled={isDisabled} activityType={ActivityType.Treatment} />
+              </Box>
             </Box>
-          </Box>
-          <Box>
+          )}
+          {selectedActivityType !== 'Other' && (
             <Box>
-              <Typography variant="h5">Monitorings</Typography>
-            </Box>
-            <Box className={classes.newActivityButtonsRow}>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant)
-                }>
-                Plant Terrestrial/Aquatic Chemical
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant)
-                }>
-                Plant Terrestrial/Aquatic Mechanical
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant)
-                }>
-                Plant Terrestrial Biological
-              </Button>
+              <Box>
+                <Typography variant="h5">Monitorings</Typography>
+              </Box>
+              <Box className={classes.newActivityButtonsRow}>
+                {selectedActivityType === 'Plant' && (
+                  <>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant)
+                      }>
+                      Plant Terrestrial/Aquatic Chemical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant)
+                      }>
+                      Plant Terrestrial/Aquatic Mechanical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant)
+                      }>
+                      Plant Terrestrial Biological
+                    </Button>
+                  </>
+                )}
+                {selectedActivityType === 'Animal' && (
+                  <>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAnimal)
+                      }>
+                      Animal Terrestrial Mechanical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAnimal)
+                      }>
+                      Animal Terrestrial Chemical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialAnimal)
+                      }>
+                      Animal Terrestrial Biological
+                    </Button>
+                  </>
+                )}
 
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAnimal)
-                }>
-                Animal Terrestrial Mechanical
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAnimal)
-                }>
-                Animal Terrestrial Chemical
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() =>
-                  addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialAnimal)
-                }>
-                Animal Terrestrial Biological
-              </Button>
-
-              <ActivityList isDisabled={isDisabled} activityType={ActivityType.Monitoring} />
+                <ActivityList selectedActivityType={selectedActivityType} isDisabled={isDisabled} activityType={ActivityType.Monitoring} />
+              </Box>
             </Box>
-          </Box>
-          <Box>
+          )}
+          {selectedActivityType === 'Other' && (
             <Box>
-              <Typography variant="h5">Development/Testing</Typography>
+              <Box>
+                <Typography variant="h5">Development/Testing</Typography>
+              </Box>
+              <Box className={classes.newActivityButtonsRow}>
+                <Button
+                  disabled={isDisabled}
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={() => notifyError(databaseContext, 'An error message!')}>
+                  Simulate Error
+                </Button>
+                <Button
+                  disabled={isDisabled}
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={() => notifySuccess(databaseContext, 'A Success message!')}>
+                  Simulate Success
+                </Button>
+                <Button
+                  disabled={isDisabled}
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={() => notifyWarning(databaseContext, 'A Warning message!')}>
+                  Simulate Warning
+                </Button>
+              </Box>
             </Box>
-            <Box className={classes.newActivityButtonsRow}>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => notifyError(databaseContext, 'An error message!')}>
-                Simulate Error
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => notifySuccess(databaseContext, 'A Success message!')}>
-                Simulate Success
-              </Button>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => notifyWarning(databaseContext, 'A Warning message!')}>
-                Simulate Warning
-              </Button>
-            </Box>
-          </Box>
+          )}
         </Box>
       </Box>
     </>
