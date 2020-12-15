@@ -21,7 +21,7 @@ export function calculateGeometryArea(geometry: Feature[]) {
   }
 
   return parseFloat(totalArea.toFixed(0));
-};
+}
 
 /**
  * Calculate the anchor point lat/lng for the geometry
@@ -58,4 +58,4 @@ export function calculateLatLng(geom: Feature[]) {
   }
 
   return latlng;
-};
+}
