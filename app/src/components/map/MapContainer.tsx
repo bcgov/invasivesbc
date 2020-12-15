@@ -13,6 +13,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
+import '@turf/buffer'
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -193,6 +194,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       if (drawnItems.getLayers()[0]._mRadius) {
         const radius = drawnItems.getLayers()[0]?.getRadius();
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
+      }
+
+
+      console.log('is it a polyline?')
+      console.dir(aGeo)
+      if(aGeo.geometry.type == 'LineString') // test for mode too
+      {
+        var unit = 'miles';
+
+        var buffered = turf.buffer(pt, 500, unit);
+        var result = turf.featurecollection([buffered, pt]);
+        console.log('its a polyline')
       }
 
       // Save edited feature
