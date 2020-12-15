@@ -50,8 +50,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       padding: theme.spacing(2),
       color: theme.palette.text.secondary
     },
-    containerHeight: {
-      height: "100%"
+    container: {
+      height: "100%",
+      width: "100%"
+    },
+    iconText: {
+      fontSize: "1rem"
     }
   }));
 
@@ -366,57 +370,67 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }
 
   return (
-    <div className={classes.containerHeight}>
+    <div className={classes.container}>
       <div id={props.mapId} className={props.classes.map} />
-      <div id="overlay">
-        <Grid alignItems="center" className={classes.buttonGrid} xs={12} spacing={2} container>
-          <Grid className={classes.button} item>
-            <Paper elevation={10}>
-            <IconButton
-              color="primary"
-              onClick={() => {
-                sessionStorage.setItem('mode', 'edit');
-              }}>
-              <EditIcon />
-            </IconButton>
-            </Paper>
+      {props.mapId === 'mainMap' && (
+        <div id="overlay">
+          <Grid alignItems="center" className={classes.buttonGrid} xs={12} spacing={2} container>
+            <Grid className={classes.button} item>
+              <Paper elevation={10}>
+              <IconButton
+                className={classes.iconText}
+                color="primary"
+                onClick={() => {
+                  sessionStorage.setItem('mode', 'edit');
+                }}>
+                <EditIcon />
+                &nbsp;Edit
+              </IconButton>
+              </Paper>
+            </Grid>
+            <Grid className={classes.button} item>
+              <Paper elevation={10}>
+              <IconButton
+                className={classes.iconText}
+                color="primary"
+                onClick={() => {
+                  sessionStorage.removeItem('mode');
+                  acceptChange();
+                }}>
+                <DoneIcon />
+                &nbsp;Finish
+              </IconButton>
+              </Paper>
+            </Grid>
+            <Grid className={classes.button} item>
+              <Paper elevation={10}>
+              <IconButton
+                className={classes.iconText}
+                color="primary"
+                onClick={() => {
+                  sessionStorage.removeItem('mode');
+                }}>
+                <HighlightOffIcon />
+                &nbsp;Waypoint
+              </IconButton>
+              </Paper>
+            </Grid>
+            <Grid className={classes.button} item>
+              <Paper elevation={10}>
+              <IconButton
+                className={classes.iconText}
+                color="primary"
+                onClick={() => {
+                  sessionStorage.setItem('mode', 'edit');
+                }}>
+                <RoomIcon />
+                &nbsp;Point
+              </IconButton>
+              </Paper>
+            </Grid>
           </Grid>
-          <Grid className={classes.button} item>
-            <Paper elevation={10}>
-            <IconButton
-              color="primary"
-              onClick={() => {
-                sessionStorage.removeItem('mode');
-                acceptChange();
-              }}>
-              <DoneIcon />
-            </IconButton>
-            </Paper>
-          </Grid>
-          <Grid className={classes.button} item>
-            <Paper elevation={10}>
-            <IconButton
-              color="primary"
-              onClick={() => {
-                sessionStorage.removeItem('mode');
-              }}>
-              <HighlightOffIcon />
-            </IconButton>
-            </Paper>
-          </Grid>
-          <Grid className={classes.button} item>
-            <Paper elevation={10}>
-            <IconButton
-              color="primary"
-              onClick={() => {
-                sessionStorage.setItem('mode', 'edit');
-              }}>
-              <RoomIcon />
-            </IconButton>
-            </Paper>
-          </Grid>
-        </Grid>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

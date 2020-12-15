@@ -314,7 +314,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             {isReadyToLoadMap ? (
               <MapContainer
                 classes={classes}
-                mapId={'mainMap'}
+                mapId='mainMap'
                 geometryState={{ geometry, setGeometry }}
                 interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
                 extentState={{ extent, setExtent }}
