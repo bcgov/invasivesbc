@@ -157,17 +157,14 @@ function getWell(req, res, next) {
     }
   };
 
-  /*
-    TODO: If there is a callback then it's a module.
-    Run it to populate the database
+  /* ### moduleReturn
+    The module implementation accepts a callback as the third parameter
+    Make sure it's run with the data.
+    @param data {object} The well data object recieved from the BCTW
   */
   const moduleReturn = (data) => {
-    // console.log('data',data);
-    // console.log('res',!res);
-    // console.log('next',next);
-    // console.log('test',next && !res);
     if (next && !res) {
-      console.log(data);
+      next(data);
     }
   }
 

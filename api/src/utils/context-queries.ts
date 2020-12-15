@@ -212,6 +212,9 @@ const saveWell = (id: any,req: any) => {
     }
   };
 
+  /* TODO:
+    Insert the well distance into the database.
+   */
   const callback = (bundle) => {
     console.log(bundle);
   }
