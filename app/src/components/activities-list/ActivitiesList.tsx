@@ -146,7 +146,7 @@ interface IActivityList {
   classes?: any;
   isDisabled?: boolean;
   activityType: ActivityType;
-  selectedActivityType: string;
+  workflowFunction: string;
 }
 
 // TODO change any to a type that defines the overall items being displayed
@@ -193,7 +193,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       {docs.map((doc) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
-        if (!doc.activitySubtype.includes(props.selectedActivityType)) {
+        if (!doc.activitySubtype.includes(props.workflowFunction)) {
           return;
         }
 
@@ -236,7 +236,7 @@ const ActivitiesList: React.FC = (props) => {
 
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);
-  const [selectedActivityType, setSelectedActivityType] = useState('Plant');
+  const [workflowFunction, setWorkflowFunction] = useState('Plant');
 
   const syncActivities = async () => {
     setIsDisable(true);
@@ -323,8 +323,8 @@ const ActivitiesList: React.FC = (props) => {
     });
   };
 
-  const handleActivityTypeChange = (event: any) => {
-    setSelectedActivityType(event.target.value);
+  const handleWorkflowFunctionChange = (event: any) => {
+    setWorkflowFunction(event.target.value);
   };
 
   return (
@@ -332,15 +332,15 @@ const ActivitiesList: React.FC = (props) => {
       <Box>
         <Box mb={3} display="flex" justifyContent="space-between">
           <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel>Activity Type</InputLabel>
+            <InputLabel>Workflow Functions</InputLabel>
             <Select
-              value={selectedActivityType}
-              onChange={handleActivityTypeChange}
-              label="Select Activity Type"
+              value={workflowFunction}
+              onChange={handleWorkflowFunctionChange}
+              label="Select Workflow Function"
             >
               <MenuItem value='Plant'>Plant</MenuItem>
               <MenuItem value='Animal'>Animal</MenuItem>
-              <MenuItem value='Other'>Other</MenuItem>
+              <MenuItem value='Special'>Special</MenuItem>
             </Select>
           </FormControl>
           <Button
@@ -353,13 +353,13 @@ const ActivitiesList: React.FC = (props) => {
           </Button>
         </Box>
         <Box>
-          {selectedActivityType !== 'Other' && (
+          {workflowFunction !== 'Special' && (
             <Box>
               <Box>
                 <Typography variant="h5">Observations</Typography>
               </Box>
               <Box className={classes.newActivityButtonsRow}>
-                {selectedActivityType === 'Plant' && (
+                {workflowFunction === 'Plant' && (
                   <>
                     <Button
                       disabled={isDisabled}
@@ -377,7 +377,7 @@ const ActivitiesList: React.FC = (props) => {
                     </Button>
                   </>
                 )}
-                {selectedActivityType === 'Animal' && (
+                {workflowFunction === 'Animal' && (
                   <>
                     <Button
                       disabled={isDisabled}
@@ -396,17 +396,17 @@ const ActivitiesList: React.FC = (props) => {
                   </>
                 )}
 
-                <ActivityList selectedActivityType={selectedActivityType} isDisabled={isDisabled} activityType={ActivityType.Observation} />
+                <ActivityList workflowFunction={workflowFunction} isDisabled={isDisabled} activityType={ActivityType.Observation} />
               </Box>
             </Box>
           )}
-          {selectedActivityType !== 'Other' && (
+          {workflowFunction !== 'Special' && (
             <Box>
               <Box>
                 <Typography variant="h5">Treatments</Typography>
               </Box>
               <Box className={classes.newActivityButtonsRow}>
-                {selectedActivityType === 'Plant' && (
+                {workflowFunction === 'Plant' && (
                   <>
                     <Button
                       disabled={isDisabled}
@@ -440,7 +440,7 @@ const ActivitiesList: React.FC = (props) => {
                     </Button>
                   </>
                 )}
-                {selectedActivityType === 'Animal' && (
+                {workflowFunction === 'Animal' && (
                   <>
                     <Button
                       disabled={isDisabled}
@@ -472,17 +472,17 @@ const ActivitiesList: React.FC = (props) => {
                   </>
                 )}
 
-                <ActivityList selectedActivityType={selectedActivityType} isDisabled={isDisabled} activityType={ActivityType.Treatment} />
+                <ActivityList workflowFunction={workflowFunction} isDisabled={isDisabled} activityType={ActivityType.Treatment} />
               </Box>
             </Box>
           )}
-          {selectedActivityType !== 'Other' && (
+          {workflowFunction !== 'Special' && (
             <Box>
               <Box>
                 <Typography variant="h5">Efficacy Monitorings</Typography>
               </Box>
               <Box className={classes.newActivityButtonsRow}>
-                {selectedActivityType === 'Plant' && (
+                {workflowFunction === 'Plant' && (
                   <>
                     <Button
                       disabled={isDisabled}
@@ -513,7 +513,7 @@ const ActivitiesList: React.FC = (props) => {
                     </Button>
                   </>
                 )}
-                {selectedActivityType === 'Animal' && (
+                {workflowFunction === 'Animal' && (
                   <>
                     <Button
                       disabled={isDisabled}
@@ -545,39 +545,84 @@ const ActivitiesList: React.FC = (props) => {
                   </>
                 )}
 
-                <ActivityList selectedActivityType={selectedActivityType} isDisabled={isDisabled} activityType={ActivityType.Monitoring} />
+                <ActivityList workflowFunction={workflowFunction} isDisabled={isDisabled} activityType={ActivityType.Monitoring} />
               </Box>
             </Box>
           )}
-          {selectedActivityType === 'Other' && (
-            <Box>
+          {workflowFunction === 'Special' && (
+            <>
               <Box>
-                <Typography variant="h5">Development/Testing</Typography>
+                <Box>
+                  <Typography variant="h5">Special Activities</Typography>
+                </Box>
+                <Box className={classes.newActivityButtonsRow}>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                  >
+                    Fire Monitoring
+                  </Button>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                  >
+                    Invasive Plant Density Transects
+                  </Button>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                  >
+                    Vegetation Transect (Full Vegetation)
+                  </Button>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                  >
+                    Vegetation Transect (Lumped Species)
+                  </Button>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                  >
+                    Biocontrol Efficacy
+                  </Button>
+                </Box>
               </Box>
-              <Box className={classes.newActivityButtonsRow}>
-                <Button
-                  disabled={isDisabled}
-                  variant="contained"
-                  startIcon={<Add />}
-                  onClick={() => notifyError(databaseContext, 'An error message!')}>
-                  Simulate Error
-                </Button>
-                <Button
-                  disabled={isDisabled}
-                  variant="contained"
-                  startIcon={<Add />}
-                  onClick={() => notifySuccess(databaseContext, 'A Success message!')}>
-                  Simulate Success
-                </Button>
-                <Button
-                  disabled={isDisabled}
-                  variant="contained"
-                  startIcon={<Add />}
-                  onClick={() => notifyWarning(databaseContext, 'A Warning message!')}>
-                  Simulate Warning
-                </Button>
+              <br />
+              <Box>
+                <Box>
+                  <Typography variant="h5">Development/Testing</Typography>
+                </Box>
+                <Box className={classes.newActivityButtonsRow}>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => notifyError(databaseContext, 'An error message!')}>
+                    Simulate Error
+                  </Button>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => notifySuccess(databaseContext, 'A Success message!')}>
+                    Simulate Success
+                  </Button>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => notifyWarning(databaseContext, 'A Warning message!')}>
+                    Simulate Warning
+                  </Button>
+                </Box>
               </Box>
-            </Box>
+            </>
           )}
         </Box>
       </Box>
