@@ -32,37 +32,30 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
               Check Form For Errors
             </Button>
           </Grid>
-          <Grid item>
-            <Button
-              disabled={isDisabled}
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                if (!props.onCopy) {
-                  return;
-                }
-
-                props.onCopy();
-              }}>
-              Copy Form Data
-            </Button>
-          </Grid>
+          {props.onCopy && (
+            <Grid item>
+              <Button
+                disabled={isDisabled}
+                variant="contained"
+                color="primary"
+                onClick={() => props.onCopy()}
+              >
+                Copy Form Data
+              </Button>
+            </Grid>
+          )}
           {
             sessionStorage.getItem('copiedFormData') &&
             sessionStorage.getItem('activitySubtype') === props.activitySubtype &&
+            props.onPaste &&
             (
               <Grid item>
                 <Button
                   disabled={isDisabled}
                   variant="contained"
                   color="primary"
-                  onClick={() => {
-                    if (!props.onPaste) {
-                      return;
-                    }
-
-                    props.onPaste();
-                  }}>
+                  onClick={() => props.onPaste()}
+                >
                   Paste Form Data
                 </Button>
               </Grid>

@@ -10,6 +10,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
+import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
+import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
+import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -75,7 +78,22 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
   const saveGeometry = async (geometry: Feature[]) => {
-    setActivity({ ...activity, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() });
+    const { latitude, longitude } = calculateLatLng(geometry) || {};
+
+    const formData = activity.formData;
+    const areaOfGeometry = calculateGeometryArea(geometry);
+
+    const updatedFormData = {
+      ...formData,
+      activity_data: {
+        ...formData.activity_data,
+        latitude,
+        longitude,
+        reported_area: areaOfGeometry
+      }
+    };
+
+    setActivity({ ...activity, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date(), formData: updatedFormData });
   };
 
   /**
@@ -128,9 +146,15 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
+      // populate herbicide application rate
+      const updatedActivitySubtypeData = populateHerbicideRates(
+        activity.formData.activity_subtype_data,
+        event.formData.activity_subtype_data
+      );
+
       return setActivity({
         ...activity,
-        formData: event.formData,
+        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.NOT_VALIDATED
@@ -205,6 +229,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       </Box>
 
       <ActivityComponent
+        customValidation={getCustomValidator([getAreaValidator(activity.activitySubtype), getWindValidator(activity.activitySubtype)])}
         classes={classes}
         activity={activity}
         onFormChange={onFormChange}
