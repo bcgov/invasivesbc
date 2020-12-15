@@ -330,15 +330,7 @@ const ActivitiesList: React.FC = (props) => {
   return (
     <>
       <Box>
-        <Box mb={3} display="flex" flexDirection="row-reverse">
-          <Button
-            disabled={isDisabled}
-            variant="contained"
-            color="primary"
-            startIcon={<Sync className={clsx(syncing && 'rotating')} />}
-            onClick={() => syncActivities()}>
-            Sync Activities
-          </Button>
+        <Box mb={3} display="flex" justifyContent="space-between">
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>Activity Type</InputLabel>
             <Select
@@ -351,6 +343,14 @@ const ActivitiesList: React.FC = (props) => {
               <MenuItem value='Other'>Other</MenuItem>
             </Select>
           </FormControl>
+          <Button
+            disabled={isDisabled}
+            variant="contained"
+            color="primary"
+            startIcon={<Sync className={clsx(syncing && 'rotating')} />}
+            onClick={() => syncActivities()}>
+            Sync Activities
+          </Button>
         </Box>
         <Box>
           {selectedActivityType !== 'Other' && (
