@@ -26,9 +26,9 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
 
   useEffect(() => {
     // If on mobile and have no internet connection, then bypass keycloak
-    const layout = window['cordova'] && !networkContext?.connected ? PublicLayout : AuthLayout;
+    const newLayout = window['cordova'] && !networkContext?.connected ? PublicLayout : AuthLayout;
 
-    setLayout(() => layout);
+    setLayout(() => newLayout);
   }, [networkContext]);
 
   if (!layout) {

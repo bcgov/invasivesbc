@@ -363,7 +363,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   };
 
   return (
-    <Box height="100vh" width="100vw" display="flex" overflow="hidden"> 
+    <Box height="inherit" width="inherit"> 
       <Grid className={classes.mainGrid} container>
         <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
           <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
