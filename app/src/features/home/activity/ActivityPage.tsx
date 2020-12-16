@@ -14,7 +14,6 @@ import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFi
 import { notifySuccess } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -208,8 +207,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         event.formData.activity_subtype_data
       );
 
-      console.log(event);
-
       const updatedFormValues = {
         formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
@@ -283,8 +280,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const treatmentId = '3f6b816f-d250-4003-af22-55fe4fffc3d3';
         updatedFormData = await getTreatmentBasedFormDataValues(treatmentId, activityResults.docs[0]);
       }
-
-      console.log(updatedFormData);
 
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
 
