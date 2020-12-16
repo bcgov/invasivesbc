@@ -177,6 +177,10 @@ function getWell(req, res, next) {
 }
 
 
+/* ## proxyWell
+  This allows us to export the getWell function for 
+  ECMAScript module usage.
+ */
 function proxyWell(): RequestHandler {
   return async (req, res, next) => {
     getWell(req,res,next);

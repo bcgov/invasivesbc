@@ -215,8 +215,25 @@ const saveWell = (id: any,req: any) => {
   /* TODO:
     Insert the well distance into the database.
    */
-  const callback = (bundle) => {
-    console.log(bundle);
+  const callback = async (bundle) => {
+    console.log('id',id)
+    console.log('distance',bundle.distance);
+    const connection = await getDBConnection();
+    const sql = `
+      update activity_incoming_data
+      set (well_proximity) = (round(${bundle.distance},0))
+      where activity_id = '${id}'
+    `;
+
+    await connection.query(sql)
+      .then(() => {
+        console.log('Successfully entered well proximity')
+      })
+      .catch((err) => {
+        console.error('Error inserting into the database',err);
+      });
+
+    connection.release();
   }
 
   const well = getWell(payload,false,callback);
