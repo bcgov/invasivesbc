@@ -13,7 +13,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
-import * as  turf from 'turf'
+import * as turf from 'turf';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -176,19 +176,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       } else if (feature.layerType === 'rectangle') {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
       }
-      else if(aGeo.geometry.type == 'LineString')
-      {
-        const shouldConvertToPoly = window.confirm('Convert to buffered polygon?');
-        if(shouldConvertToPoly)
-        {
-          var buffer = prompt("Enter buffer width (total) in meters", "5");
 
-          var unit = 'kilometers';
-          var buffered = turf.buffer(aGeo.geometry, parseInt(buffer)/1000, unit, 8);
-          var result = turf.featureCollection([buffered, aGeo.geometry]);
-          aGeo = {...aGeo, geometry: result.features[0].geometry}
-        }
-      }
+      aGeo = convertLineStringToPoly(aGeo);
 
       // Note that drawing one wipes all others:
       props.geometryState.setGeometry([aGeo]);
@@ -197,6 +186,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('draw:drawstart', function () {
       props.geometryState.setGeometry([]);
     });
+
+    const convertLineStringToPoly = (aGeo: any) => {
+      if (aGeo.geometry.type == 'LineString') {
+        const shouldConvertToPoly = window.confirm('Convert to buffered polygon?');
+        if (shouldConvertToPoly) {
+          var buffer = prompt('Enter buffer width (total) in meters', '5');
+
+          var unit = 'kilometers';
+          var buffered = turf.buffer(aGeo.geometry, parseInt(buffer) / 1000, unit, 8);
+          var result = turf.featureCollection([buffered, aGeo.geometry]);
+          return (aGeo = { ...aGeo, geometry: result.features[0].geometry });
+        } else {
+          return aGeo;
+        }
+      } else {
+        return aGeo;
+      }
+    };
 
     mapRef.current.on('draw:editstop', async function (layerGroup) {
       // The current feature isn't passed to this function, so grab it from the acetate layer
@@ -208,19 +215,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
       }
 
-      if(aGeo.geometry.type == 'LineString')
-      {
-        const shouldConvertToPoly = window.confirm('Convert to buffered polygon?');
-        if(shouldConvertToPoly)
-        {
-          var buffer = prompt("Enter buffer width (total) in meters", "5");
-
-          var unit = 'kilometers';
-          var buffered = turf.buffer(aGeo.geometry, parseInt(buffer)/1000, unit, 8);
-          var result = turf.featureCollection([buffered, aGeo.geometry]);
-          aGeo = {...aGeo, geometry: result.features[0].geometry}
-        }
-      }
+      aGeo = convertLineStringToPoly(aGeo);
 
       // Save edited feature
       if (aGeo) {
@@ -269,7 +264,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
     if (props.interactiveGeometryState) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-
         const style = {
           color: interactObj.color,
           weight: 4,
