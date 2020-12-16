@@ -160,15 +160,9 @@ const Monitoring = {
   activity_id: {},
   observer_first_name: {},
   observer_last_name: {},
-  efficacy_rating_code: {}
-};
-
-const Monitoring_ChemicalTerrestrialAquaticPlant = {
-  monitoring_details: {}
-};
-
-const Monitoring_MechanicalTerrestrialAquaticPlant = {
-  monitoring_details: {}
+  efficacy_code: {},
+  monitoring_details: {},
+  invasive_plant_code: {}
 };
 
 const Monitoring_BiologicalTerrestrialPlant = {
