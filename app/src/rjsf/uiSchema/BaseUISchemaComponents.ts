@@ -243,8 +243,6 @@ const BaseUISchemaComponents = {
   Treatment_ChemicalTerrestrialAnimal,
   Treatment_BiologicalTerrestrialAnimal,
   Monitoring,
-  Monitoring_ChemicalTerrestrialAquaticPlant,
-  Monitoring_MechanicalTerrestrialAquaticPlant,
   Monitoring_BiologicalTerrestrialPlant,
   Monitoring_MechanicalTerrestrialAnimal,
   Monitoring_ChemicalTerrestrialAnimal,
