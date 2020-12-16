@@ -13,7 +13,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
-import * as turf from 'turf';
+import * as turf from '@turf/turf';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -193,8 +193,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         if (shouldConvertToPoly) {
           var buffer = prompt('Enter buffer width (total) in meters', '5');
 
-          var unit = 'kilometers';
-          var buffered = turf.buffer(aGeo.geometry, parseInt(buffer) / 1000, unit, 8);
+          var buffered = turf.buffer(aGeo.geometry, parseInt(buffer) / 1000, { units: 'kilometers', steps: 1 });
+
           var result = turf.featureCollection([buffered, aGeo.geometry]);
           return (aGeo = { ...aGeo, geometry: result.features[0].geometry });
         } else {
