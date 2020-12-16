@@ -13,7 +13,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
-import '@turf/buffer'
+import * as  turf from 'turf'
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -84,7 +84,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         edit: true
       }
     });
-
     mapRef.current.addControl(drawControlOptions);
   };
 
@@ -177,6 +176,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       } else if (feature.layerType === 'rectangle') {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
       }
+      else if(aGeo.geometry.type == 'LineString')
+      {
+        var buffer = prompt("Enter buffer width (total) in meters", "5");
+
+        var unit = 'kilometers';
+        var buffered = turf.buffer(aGeo.geometry, parseInt(buffer)/1000, unit, 8);
+        var result = turf.featureCollection([buffered, aGeo.geometry]);
+        aGeo = {...aGeo, geometry: result.features[0].geometry}
+      }
 
       // Note that drawing one wipes all others:
       props.geometryState.setGeometry([aGeo]);
@@ -196,16 +204,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
       }
 
-
-      console.log('is it a polyline?')
-      console.dir(aGeo)
-      if(aGeo.geometry.type == 'LineString') // test for mode too
+      if(aGeo.geometry.type == 'LineString')
       {
-        var unit = 'miles';
-
-        var buffered = turf.buffer(pt, 500, unit);
-        var result = turf.featurecollection([buffered, pt]);
-        console.log('its a polyline')
+        var buffer = prompt("Enter buffer width (total) in meters", "5");
+        var unit = 'kilometers';
+        var buffered = turf.buffer(aGeo.geometry, parseInt(buffer)/1000, unit);
+        var result = turf.featureCollection([buffered, aGeo.geometry]);
+        aGeo = {...aGeo, geometry: result.features[0].geometry}
       }
 
       // Save edited feature
