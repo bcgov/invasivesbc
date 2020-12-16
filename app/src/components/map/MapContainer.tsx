@@ -178,12 +178,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
       else if(aGeo.geometry.type == 'LineString')
       {
-        var buffer = prompt("Enter buffer width (total) in meters", "5");
+        const shouldConvertToPoly = window.confirm('Convert to buffered polygon?');
+        if(shouldConvertToPoly)
+        {
+          var buffer = prompt("Enter buffer width (total) in meters", "5");
 
-        var unit = 'kilometers';
-        var buffered = turf.buffer(aGeo.geometry, parseInt(buffer)/1000, unit, 8);
-        var result = turf.featureCollection([buffered, aGeo.geometry]);
-        aGeo = {...aGeo, geometry: result.features[0].geometry}
+          var unit = 'kilometers';
+          var buffered = turf.buffer(aGeo.geometry, parseInt(buffer)/1000, unit, 8);
+          var result = turf.featureCollection([buffered, aGeo.geometry]);
+          aGeo = {...aGeo, geometry: result.features[0].geometry}
+        }
       }
 
       // Note that drawing one wipes all others:
@@ -206,11 +210,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       if(aGeo.geometry.type == 'LineString')
       {
-        var buffer = prompt("Enter buffer width (total) in meters", "5");
-        var unit = 'kilometers';
-        var buffered = turf.buffer(aGeo.geometry, parseInt(buffer)/1000, unit);
-        var result = turf.featureCollection([buffered, aGeo.geometry]);
-        aGeo = {...aGeo, geometry: result.features[0].geometry}
+        const shouldConvertToPoly = window.confirm('Convert to buffered polygon?');
+        if(shouldConvertToPoly)
+        {
+          var buffer = prompt("Enter buffer width (total) in meters", "5");
+
+          var unit = 'kilometers';
+          var buffered = turf.buffer(aGeo.geometry, parseInt(buffer)/1000, unit, 8);
+          var result = turf.featureCollection([buffered, aGeo.geometry]);
+          aGeo = {...aGeo, geometry: result.features[0].geometry}
+        }
       }
 
       // Save edited feature
