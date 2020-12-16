@@ -13,7 +13,7 @@ import distance from '@turf/distance';
 const defaultLog = getLogger('activity');
 
 
-export const GET: Operation = [proxyWell()];
+export const GET: Operation = proxyWell();
 
 GET.apiDoc = {
   description: 'Fetches the distance to the closest well in meters from a given location. An object is return containing the closest feature along with the distance to the provided point.',
