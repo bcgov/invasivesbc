@@ -891,7 +891,7 @@
         }
       },
       "Treatment": {
-        "title": "Basic Treatment Information",
+        "title": "Treatment Information",
         "type": "object",
         "required": [
           "applicator1_first_name",
@@ -1392,7 +1392,6 @@
       },
       "Monitoring": {
         "title": "Monitoring Information",
-        "description": "Basic information captured for all monitorings",
         "type": "object",
         "required": [
           "activity_id",
@@ -1439,7 +1438,9 @@
           },
           "monitoring_details": {
             "type": "string",
-            "title": "Monitoring Details"
+            "title": "Monitoring Details",
+            "maximum": 300,
+            "default": ""
           }
         }
       },

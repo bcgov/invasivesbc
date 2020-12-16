@@ -161,7 +161,9 @@ const Monitoring = {
   observer_first_name: {},
   observer_last_name: {},
   efficacy_code: {},
-  monitoring_details: {},
+  monitoring_details: {
+    'ui:widget': 'textarea'
+  },
   invasive_plant_code: {}
 };
 
