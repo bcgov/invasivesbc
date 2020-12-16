@@ -238,7 +238,7 @@ const saveWell = (id: any,req: any) => {
     connection.release();
   }
 
-  const well = getWell(payload,false,callback);
+  getWell(payload,false,callback);
 };
 
 
