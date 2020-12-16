@@ -432,12 +432,14 @@
           "general_comment": {
             "type": "string",
             "title": "Comment",
-            "maximum": 300
+            "maximum": 300,
+            "default": ""
           },
           "access_description": {
             "type": "string",
             "title": "Access Description",
-            "maximum": 300
+            "maximum": 300,
+            "default": ""
           },
           "paper_file_id": {
             "type": "array",

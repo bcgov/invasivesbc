@@ -6,7 +6,7 @@ export type IAppRouteProps = RouteProps & {
   layout?: React.ComponentType<any>;
   title: string;
   keycloak?: any;
-  initConfig?: any;
+  keycloakConfig?: any;
 };
 
 const AppRoute: React.FC<IAppRouteProps> = ({
@@ -14,23 +14,18 @@ const AppRoute: React.FC<IAppRouteProps> = ({
   layout,
   title,
   keycloak,
-  initConfig,
+  keycloakConfig,
   ...rest
 }) => {
   const Layout = layout === undefined ? (props: any) => <>{props.children}</> : layout;
 
   document.title = title;
 
-  const layoutProps = {
-    keycloak,
-    initConfig
-  };
-
   return (
     <Route
       {...rest}
       render={(props) => (
-        <Layout { ...layoutProps } >
+        <Layout keycloak={keycloak} keycloakConfig={keycloakConfig}>
           <Component {...props} />
         </Layout>
       )}

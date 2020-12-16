@@ -53,7 +53,8 @@ const appTheme = createMuiTheme({
     MuiContainer: {
       // https://material-ui.com/api/container/
       root: {
-        maxWidth: 'xl'
+        maxWidth: 'xl',
+        margin: 'auto'
       }
     }
   }

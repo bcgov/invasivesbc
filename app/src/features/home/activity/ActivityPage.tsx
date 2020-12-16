@@ -7,11 +7,13 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import moment from 'moment';
-import * as turf from '@turf/turf';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
+import { notifySuccess } from 'utils/NotificationUtils';
+import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
+import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -57,65 +59,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const docId = doc && doc._id;
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
-
-  /**
-   * Calculate the net area for the total geometry
-   * 
-   * @param {Feature[]} geoJSON The geometry in GeoJSON format
-   */
-  const calculateGeometryArea = (geometry: Feature[]) => {
-    let totalArea = 0;
-
-    if (!geometry || !geometry.length || geometry[0].geometry.type === "LineString") {
-      return parseFloat(totalArea.toFixed(0));
-    }
-
-    const geo = geometry[0];
-    if (geo.geometry.type === "Point" && geo.properties.hasOwnProperty('radius')) {
-      totalArea = (Math.PI * Math.pow(geo.properties.radius, 2));
-    } else if (geo.geometry.type === "Polygon") {
-      totalArea = turf.area(turf.polygon(geo.geometry['coordinates']));
-    }
-
-    return parseFloat(totalArea.toFixed(0));
-  };
-
-  /**
-   * Calculate the anchor point lat/lng for the geometry
-   * 
-   * @param {Feature[]} geoJSON The geometry in GeoJSON format
-   */
-  const calculateLatLng = (geom: Feature[]) => {
-    if (!geom[0] || !geom[0].geometry) return;
-
-    const geo = geom[0].geometry;
-    const firstCoord = geo['coordinates'][0];
-
-    let latitude = null;
-    let longitude = null;
-
-    if (geo.type === 'Point') {
-      latitude = geo.coordinates[1];
-      longitude = firstCoord;
-    } else if (geo.type === 'LineString') {
-      latitude = firstCoord[1];
-      longitude = firstCoord[0];
-    } else if (!geom[0].properties.isRectangle) {
-      latitude = firstCoord[0][1];
-      longitude = firstCoord[0][0];
-    } else {
-      const centerPoint = turf.center(turf.polygon(geo['coordinates'])).geometry;
-      latitude = centerPoint.coordinates[1];
-      longitude = centerPoint.coordinates[0];
-    }
-
-    const latlng = {
-      latitude: parseFloat(latitude.toFixed(6)),
-      longitude: parseFloat(longitude.toFixed(6))
-    }
-
-    return latlng;
-  };
 
   /**
    * Set the default form data values
@@ -245,6 +188,42 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     [doc]
   );
 
+  /**
+   * Paste copied form data saved in session storage
+   * Update the doc (activity) with the latest form data and store it in DB
+   */
+  const pasteFormData = async () => {
+    const formDataToPaste = retrieveFormDataFromSession(doc);
+
+    const updatedFormValues = {
+      formData: formDataToPaste,
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
+      formStatus: FormValidationStatus.VALID
+    };
+
+    setDoc({ ...doc, ...updatedFormValues });
+
+    notifySuccess(databaseContext, 'Successfully pasted form data.');
+
+    await databaseContext.database.upsert(docId, (activity) => {
+      return {
+        ...activity,
+        ...updatedFormValues
+      };
+    });
+  };
+
+  /**
+   * Copy form data into session storage
+   */
+  const copyFormData = () => {
+    const { formData, activitySubtype } = doc;
+
+    saveFormDataToSession(formData, activitySubtype);
+    notifySuccess(databaseContext, 'Successfully copied form data.');
+  };
+
   useEffect(() => {
     const getActivityData = async () => {
       const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
@@ -312,6 +291,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+        pasteFormData={() => pasteFormData()}
+        copyFormData={() => copyFormData()}
       />
     </Container>
   );
