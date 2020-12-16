@@ -76,7 +76,9 @@ GET.apiDoc = {
  *     lon: xxx.xxxxx,
  *     lat: xx.xxxxx
  *    }}
- * @return {RequestHandler}
+ * @param res {object} Express response object. If missing it is a module call
+ * @param next {function} Callback function. Gets passed the data from the API
+ * @return {object} The closest well object. Including a distance to the supplied location.
  */
 function getWell(req, res, next) {
 

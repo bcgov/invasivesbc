@@ -2,6 +2,8 @@ import axios from 'axios';
 import { getDBConnection } from '../database/db';
 import { getLogger } from './logger';
 import { getWell } from '../paths/context/well';
+import { insertWellDistanceSQL } from './../queries/context-queries';
+import { SQLStatement } from 'sql-template-strings';
 
 const defaultLog = getLogger('context-queries');
 
@@ -212,20 +214,20 @@ const saveWell = (id: any,req: any) => {
     }
   };
 
-  /* TODO:
-    Insert the well distance into the database.
+  /* ### callback
+    Use a callback to insert the data
+    @param bundle {object} The well object containing well data and distance.
    */
   const callback = async (bundle) => {
-    console.log('id',id)
-    console.log('distance',bundle.distance);
     const connection = await getDBConnection();
-    const sql = `
-      update activity_incoming_data
-      set (well_proximity) = (round(${bundle.distance},0))
-      where activity_id = '${id}'
-    `;
+    const params = {
+      distance: bundle.distance,
+      id: id
+    }
 
-    await connection.query(sql)
+    const sql: SQLStatement = insertWellDistanceSQL(params);
+
+    await connection.query(sql.text,sql.values)
       .then(() => {
         console.log('Successfully entered well proximity')
       })
@@ -242,8 +244,8 @@ const saveWell = (id: any,req: any) => {
 
 export const commit = function (record:any,req:any) {
   const id = record.activity_id;
-  saveBCGW(id,req); // Insert DataBC BCGW attributes
-  saveInternal(id,req); // Insert local attributes
-  saveElevation(id,req); // Insert elevation
+  // saveBCGW(id,req); // Insert DataBC BCGW attributes
+  // saveInternal(id,req); // Insert local attributes
+  // saveElevation(id,req); // Insert elevation
   saveWell(id,req); // Insert the closest well
 };
