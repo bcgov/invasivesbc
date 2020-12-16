@@ -187,7 +187,7 @@ function proxyWell(): RequestHandler {
   return async (req, res, next) => {
     getWell(req,res,next);
   }
-};
+}
 
 
 // Make available as a model as well.
