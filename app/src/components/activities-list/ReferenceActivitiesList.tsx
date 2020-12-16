@@ -8,8 +8,11 @@ import {
   Paper,
   SvgIcon,
   Theme,
-  Typography
+  Typography,
+  Button,
+  Box
 } from '@material-ui/core';
+import { Add } from '@material-ui/icons';
 import { ActivityTypeIcon } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
@@ -32,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: '6px'
   },
   activityListItem_Grid: {
+    flexWrap: 'nowrap',
     flexDirection: 'row',
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'column'
@@ -58,7 +62,50 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
       <Divider flexItem={true} orientation="vertical" />
       <ActivityListItem activity={props.activity} classes={classes} />
       <ActivityListDate classes={classes} activity={props.activity} />
+      {props.activity.activityType === 'Treatment' && (
+        <>
+          <Divider flexItem={true} orientation="vertical" />
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              startIcon={<Add />}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}>
+              Create Monitoring
+            </Button>
+          </Grid>
+        </>
+      )}
     </Grid>
+  );
+};
+
+interface IReferenceActivityListComponent {
+  doc: any;
+  isDisabled?: boolean;
+}
+
+const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> = (props) => {
+  const classes = useStyles();
+  const history = useHistory();
+  const { doc, isDisabled } = props;
+
+  const navigateToActivityPage = async (doc: any) => {
+    history.push(`/home/references/activity/${doc._id}`);
+  };
+
+  return (
+    <Paper key={doc._id}>
+      <ListItem button className={classes.activitiyListItem} onClick={() => navigateToActivityPage(doc)}>
+        <ListItemIcon>
+          <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
+        </ListItemIcon>
+        <ReferenceActivityListItem isDisabled={isDisabled} activity={doc} />
+      </ListItem>
+    </Paper>
   );
 };
 
@@ -69,9 +116,6 @@ interface IReferenceActivityList {
 // TODO change any to a type that defines the overall items being displayed
 const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
   const classes = useStyles();
-
-  const history = useHistory();
-
   const databaseContext = useContext(DatabaseContext);
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
@@ -93,29 +137,43 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
     updateComponent();
   }, [databaseChangesContext]);
 
-  const navigateToActivityPage = async (doc: any) => {
-    history.push(`/home/references/activity/${doc._id}`);
-  };
+  const observations = docs.filter(doc => doc.activityType === 'Observation');
+  const treatments = docs.filter(doc => doc.activityType === 'Treatment');
+  const monitorings = docs.filter(doc => doc.activityType === 'Monitoring');
 
   return (
     <List className={classes.activityList}>
-      {docs.map((doc) => {
-        return (
-          <Paper key={doc._id}>
-            <ListItem button className={classes.activitiyListItem} onClick={() => navigateToActivityPage(doc)}>
-              <ListItemIcon>
-                <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
-              </ListItemIcon>
-              <ReferenceActivityListItem isDisabled={props.isDisabled} activity={doc} />
-            </ListItem>
-          </Paper>
-        );
-      })}
+      {observations.length > 0 && (
+        <Box>
+          <Typography variant="h5">Observations</Typography>
+        </Box>
+      )}
+      {observations.map((doc) => (
+        <ReferenceActivityListComponent key={doc._id} doc={doc} isDisabled={props.isDisabled} />
+      ))}
+      {treatments.length > 0 && (
+        <Box>
+          <br />
+          <Typography variant="h5">Treatments</Typography>
+        </Box>
+      )}
+      {treatments.map((doc) => (
+        <ReferenceActivityListComponent key={doc._id} doc={doc} isDisabled={props.isDisabled} />
+      ))}
+      {monitorings.length > 0 && (
+        <Box>
+          <br />
+          <Typography variant="h5">Monitorings</Typography>
+        </Box>
+      )}
+      {monitorings.map((doc) => (
+        <ReferenceActivityListComponent key={doc._id} doc={doc} isDisabled={props.isDisabled} />
+      ))}
     </List>
   );
 };
 
-const ReferenceActivitiesList: React.FC = (props) => {
+const ReferenceActivitiesList: React.FC = () => {
   const classes = useStyles();
 
   return (
@@ -124,6 +182,7 @@ const ReferenceActivitiesList: React.FC = (props) => {
         <div>
           <Typography variant="h4">Reference Activities</Typography>
         </div>
+        <br />
         <div>
           <ReferenceActivityList isDisabled={true} />
         </div>
