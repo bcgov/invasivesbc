@@ -300,9 +300,6 @@
           },
           "activity_type_data": {
             "$ref": "#/components/schemas/Monitoring"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Monitoring_ChemicalTerrestrialAquaticPlant"
           }
         }
       },
@@ -314,9 +311,6 @@
           },
           "activity_type_data": {
             "$ref": "#/components/schemas/Monitoring"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Monitoring_MechanicalTerrestrialAquaticPlant"
           }
         }
       },
@@ -1404,12 +1398,14 @@
           "activity_id",
           "observer_first_name",
           "observer_last_name",
-          "efficacy_code"
+          "efficacy_code",
+          "monitoring_details",
+          "invasive_plant_code"
         ],
         "properties": {
           "activity_id": {
-            "type": "number",
-            "title": "Treatment id"
+            "type": "string",
+            "title": "Treatment Id"
           },
           "observer_first_name": {
             "type": "string",
@@ -1421,7 +1417,7 @@
           },
           "efficacy_code": {
             "type": "string",
-            "title": "Efficacy rating",
+            "title": "Efficacy Rating",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "efficacy_code",
@@ -1429,21 +1425,10 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
-          }
-        }
-      },
-      "Monitoring_ChemicalTerrestrialAquaticPlant": {
-        "title": "Monitoring a chemical treament for terrestrial and aquatic plants",
-        "description": "Chemical monitoring for terrestrial plants",
-        "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_plant_code"
-        ],
-        "properties": {
+          },
           "invasive_plant_code": {
             "type": "string",
-            "title": "Invasive plant",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
@@ -1454,33 +1439,7 @@
           },
           "monitoring_details": {
             "type": "string",
-            "title": "Monitoring details"
-          }
-        }
-      },
-      "Monitoring_MechanicalTerrestrialAquaticPlant": {
-        "title": "Monitoring a mechanical treatment for terrestrial and aquatic plants",
-        "description": "Mechanical monitoring for terrestrial plants",
-        "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_plant_code"
-        ],
-        "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "monitoring_details": {
-            "type": "string",
-            "title": "Monitoring details"
+            "title": "Monitoring Details"
           }
         }
       },
