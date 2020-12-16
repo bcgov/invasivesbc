@@ -6,10 +6,12 @@ import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
+import { notifySuccess, notifyError } from 'utils/NotificationUtils';
+import { DatabaseContext } from 'contexts/DatabaseContext';
 import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
@@ -41,14 +43,12 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
 
   const invasivesApi = useInvasivesApi();
 
+  const databaseContext = useContext(DatabaseContext);
   const [isLoading, setIsLoading] = useState(true);
-
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
   const [contextMenuState, setContextMenuState] = useState<MapContextMenuData>({ isOpen: false, lat: 0, lng: 0 });
-
   const [activity, setActivity] = useState(null);
-
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
   const handleUpdate = async () => {
@@ -66,9 +66,9 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       };
 
       await invasivesApi.updateActivity(updatedActivity);
-      // TODO success messaging
+      notifySuccess(databaseContext, 'Successfully updated activity.');
     } catch (error) {
-      // TODO error messaging
+      notifyError(databaseContext, 'Failed to update activity.');
     }
   };
 
