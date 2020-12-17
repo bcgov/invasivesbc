@@ -160,15 +160,11 @@ const Monitoring = {
   activity_id: {},
   observer_first_name: {},
   observer_last_name: {},
-  efficacy_rating_code: {}
-};
-
-const Monitoring_ChemicalTerrestrialAquaticPlant = {
-  monitoring_details: {}
-};
-
-const Monitoring_MechanicalTerrestrialAquaticPlant = {
-  monitoring_details: {}
+  efficacy_code: {},
+  monitoring_details: {
+    'ui:widget': 'textarea'
+  },
+  invasive_plant_code: {}
 };
 
 const Monitoring_BiologicalTerrestrialPlant = {
@@ -249,8 +245,6 @@ const BaseUISchemaComponents = {
   Treatment_ChemicalTerrestrialAnimal,
   Treatment_BiologicalTerrestrialAnimal,
   Monitoring,
-  Monitoring_ChemicalTerrestrialAquaticPlant,
-  Monitoring_MechanicalTerrestrialAquaticPlant,
   Monitoring_BiologicalTerrestrialPlant,
   Monitoring_MechanicalTerrestrialAnimal,
   Monitoring_ChemicalTerrestrialAnimal,

@@ -300,9 +300,6 @@
           },
           "activity_type_data": {
             "$ref": "#/components/schemas/Monitoring"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Monitoring_ChemicalTerrestrialAquaticPlant"
           }
         }
       },
@@ -314,9 +311,6 @@
           },
           "activity_type_data": {
             "$ref": "#/components/schemas/Monitoring"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Monitoring_MechanicalTerrestrialAquaticPlant"
           }
         }
       },
@@ -897,7 +891,7 @@
         }
       },
       "Treatment": {
-        "title": "Basic Treatment Information",
+        "title": "Treatment Information",
         "type": "object",
         "required": [
           "applicator1_first_name",
@@ -1398,18 +1392,19 @@
       },
       "Monitoring": {
         "title": "Monitoring Information",
-        "description": "Basic information captured for all monitorings",
         "type": "object",
         "required": [
           "activity_id",
           "observer_first_name",
           "observer_last_name",
-          "efficacy_code"
+          "efficacy_code",
+          "monitoring_details",
+          "invasive_plant_code"
         ],
         "properties": {
           "activity_id": {
-            "type": "number",
-            "title": "Treatment id"
+            "type": "string",
+            "title": "Treatment Id"
           },
           "observer_first_name": {
             "type": "string",
@@ -1421,7 +1416,7 @@
           },
           "efficacy_code": {
             "type": "string",
-            "title": "Efficacy rating",
+            "title": "Efficacy Rating",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "efficacy_code",
@@ -1429,21 +1424,10 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
-          }
-        }
-      },
-      "Monitoring_ChemicalTerrestrialAquaticPlant": {
-        "title": "Monitoring a chemical treament for terrestrial and aquatic plants",
-        "description": "Chemical monitoring for terrestrial plants",
-        "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_plant_code"
-        ],
-        "properties": {
+          },
           "invasive_plant_code": {
             "type": "string",
-            "title": "Invasive plant",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
@@ -1454,39 +1438,14 @@
           },
           "monitoring_details": {
             "type": "string",
-            "title": "Monitoring details"
-          }
-        }
-      },
-      "Monitoring_MechanicalTerrestrialAquaticPlant": {
-        "title": "Monitoring a mechanical treatment for terrestrial and aquatic plants",
-        "description": "Mechanical monitoring for terrestrial plants",
-        "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_plant_code"
-        ],
-        "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "monitoring_details": {
-            "type": "string",
-            "title": "Monitoring details"
+            "title": "Monitoring Details",
+            "maximum": 300,
+            "default": ""
           }
         }
       },
       "Monitoring_BiologicalTerrestrialPlant": {
-        "title": "Monitoring a biological treatment for terrestrial plants",
-        "description": "Biological monitoring for terrestrial plants",
+        "title": "Biological Monitoring Information",
         "type": "object",
         "required": [
           "plant_count",
@@ -1507,7 +1466,7 @@
         "properties": {
           "invasive_plant_code": {
             "type": "string",
-            "title": "Invasive plant",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
@@ -1518,59 +1477,59 @@
           },
           "plant_count": {
             "type": "number",
-            "title": "Plant count"
+            "title": "Plant Count"
           },
           "agent_count": {
             "type": "number",
-            "title": "Agent count"
+            "title": "Agent Count"
           },
           "count_duration": {
             "type": "number",
-            "title": "Count duration"
+            "title": "Count Duration"
           },
           "agent_destroyed_ind": {
             "type": "boolean",
-            "title": "Agent destroyed"
+            "title": "Agent Destroyed"
           },
           "legacy_presence_ind": {
             "type": "boolean",
-            "title": "Legacy presence"
+            "title": "Legacy Presence"
           },
           "foliar_feeding_damage_ind": {
             "type": "boolean",
-            "title": "Foliar feeding damage"
+            "title": "Foliar Feeding Damage"
           },
           "root_feeding_damage_ind": {
             "type": "boolean",
-            "title": "Root feeding damage"
+            "title": "Root Feeding Damage"
           },
           "oviposition_marks_ind": {
             "type": "boolean",
-            "title": "Oviposition marks"
+            "title": "Oviposition Marks"
           },
           "eggs_present_ind": {
             "type": "boolean",
-            "title": "Eggs present"
+            "title": "Eggs Present"
           },
           "larvae_present_ind": {
             "type": "boolean",
-            "title": "Larvae present"
+            "title": "Larvae Present"
           },
           "pupae_present_ind": {
             "type": "boolean",
-            "title": "Pupae present"
+            "title": "Pupae Present"
           },
           "adults_present_ind": {
             "type": "boolean",
-            "title": "Adults present"
+            "title": "Adults Present"
           },
           "tunnels_present_ind": {
             "type": "boolean",
-            "title": "Tunnels present"
+            "title": "Tunnels Present"
           },
           "biological_agent_spread": {
             "type": "string",
-            "title": "Biological agent spread"
+            "title": "Biological Agent Spread"
           }
         }
       },
