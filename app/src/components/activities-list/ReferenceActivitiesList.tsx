@@ -166,8 +166,8 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
   const history = useHistory();
   const { doc, databaseContext } = props;
 
-  const navigateToActivityPage = async (doc: any) => {
-    history.push(`/home/references/activity/${doc._id}`);
+  const navigateToActivityPage = async (activity: any) => {
+    history.push(`/home/references/activity/${activity._id}`);
   };
 
   return (
