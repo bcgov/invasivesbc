@@ -6,7 +6,6 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES } from './../../constants/misc';
 import { getDBConnection } from './../../database/db';
-import { IMediaItem } from './../../models/media';
 import { getActivitySQL } from './../../queries/activity-queries';
 import { getFileFromS3 } from './../../utils/file-utils';
 import { getLogger } from './../../utils/logger';
