@@ -126,8 +126,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
 
     await databaseContext.database.put(doc);
 
-    console.log(doc);
-
     setActiveActivityAndNavigateToActivityPage(doc);
   };
 
