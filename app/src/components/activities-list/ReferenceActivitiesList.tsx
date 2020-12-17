@@ -13,8 +13,17 @@ import {
   Box
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
-import { ActivityTypeIcon } from 'constants/activities';
+import {
+  ActivityStatus,
+  ActivitySubtype,
+  ActivitySyncStatus,
+  ActivityType,
+  ActivityTypeIcon,
+  FormValidationStatus
+} from 'constants/activities';
 import { DocType } from 'constants/database';
+import moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
@@ -50,19 +59,65 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface IReferenceActivityListItem {
-  isDisabled?: boolean;
   activity: any;
+  databaseContext: any;
 }
 
 const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
   const classes = useStyles();
+  const history = useHistory();
+  const { activity, databaseContext } = props;
+
+  const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
+    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+      return { ...appStateDoc, activeActivity: doc._id };
+    });
+
+    history.push(`/home/activity`);
+  };
+
+  const addNewActivity = async (activityType: ActivityType, activitySubtype: ActivitySubtype, treatmentId: string) => {
+    console.log(activityType, activitySubtype);
+    const id = uuidv4();
+
+    const doc = {
+      _id: id,
+      activityId: id,
+      docType: DocType.ACTIVITY,
+      activityType: activityType,
+      activitySubtype: activitySubtype,
+      status: ActivityStatus.NEW,
+      sync: {
+        ready: false,
+        status: ActivitySyncStatus.NOT_SYNCED,
+        error: null
+      },
+      dateCreated: new Date(),
+      dateUpdated: null,
+      formData: {
+        activity_data: {
+          activity_date_time: moment(new Date()).format(),
+        },
+        activity_type_data: {
+          activity_id: treatmentId
+        }
+      },
+      formStatus: FormValidationStatus.NOT_VALIDATED
+    };
+
+    await databaseContext.database.put(doc);
+
+    console.log(doc);
+
+    setActiveActivityAndNavigateToActivityPage(doc);
+  };
 
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
-      <ActivityListItem activity={props.activity} classes={classes} />
-      <ActivityListDate classes={classes} activity={props.activity} />
-      {props.activity.activityType === 'Treatment' && (
+      <ActivityListItem activity={activity} classes={classes} />
+      <ActivityListDate classes={classes} activity={activity} />
+      {activity.activityType === 'Treatment' && (
         <>
           <Divider flexItem={true} orientation="vertical" />
           <Grid item>
@@ -73,6 +128,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
               startIcon={<Add />}
               onClick={(e) => {
                 e.stopPropagation();
+                addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalPlant, activity._id);
               }}>
               Create Monitoring
             </Button>
@@ -85,13 +141,13 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
 
 interface IReferenceActivityListComponent {
   doc: any;
-  isDisabled?: boolean;
+  databaseContext: any;
 }
 
 const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { doc, isDisabled } = props;
+  const { doc, databaseContext } = props;
 
   const navigateToActivityPage = async (doc: any) => {
     history.push(`/home/references/activity/${doc._id}`);
@@ -103,19 +159,15 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
         <ListItemIcon>
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
-        <ReferenceActivityListItem isDisabled={isDisabled} activity={doc} />
+        <ReferenceActivityListItem databaseContext={databaseContext} activity={doc} />
       </ListItem>
     </Paper>
   );
 };
 
-interface IReferenceActivityList {
-  isDisabled?: boolean;
-}
-
-// TODO change any to a type that defines the overall items being displayed
-const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
+const ReferenceActivityList: React.FC = () => {
   const classes = useStyles();
+
   const databaseContext = useContext(DatabaseContext);
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
@@ -149,7 +201,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {observations.map((doc) => (
-        <ReferenceActivityListComponent key={doc._id} doc={doc} isDisabled={props.isDisabled} />
+        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
       ))}
       {treatments.length > 0 && (
         <Box>
@@ -158,7 +210,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {treatments.map((doc) => (
-        <ReferenceActivityListComponent key={doc._id} doc={doc} isDisabled={props.isDisabled} />
+        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
       ))}
       {monitorings.length > 0 && (
         <Box>
@@ -167,7 +219,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {monitorings.map((doc) => (
-        <ReferenceActivityListComponent key={doc._id} doc={doc} isDisabled={props.isDisabled} />
+        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
       ))}
     </List>
   );
@@ -184,7 +236,7 @@ const ReferenceActivitiesList: React.FC = () => {
         </div>
         <br />
         <div>
-          <ReferenceActivityList isDisabled={true} />
+          <ReferenceActivityList />
         </div>
       </div>
     </>

@@ -316,7 +316,7 @@ const ActivitiesList: React.FC = (props) => {
         error: null
       },
       dateCreated: new Date(),
-      dateUpated: null,
+      dateUpdated: null,
       formData: null,
       formStatus: FormValidationStatus.NOT_VALIDATED
     });

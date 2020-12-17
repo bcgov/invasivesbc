@@ -61,18 +61,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
   /**
-   * 
-   * @param {string} activityId The activity id to try and pull data for
-   */
-  const getActivityDataById = async (activityId: string) => {
-    const activityResults = await databaseContext.database.find({
-      selector: { _id: activityId }
-    });
-
-    return activityResults;
-  };
-
-  /**
    * Set the default form data values
    * 
    * @param {*} doc The doc/activity object
@@ -91,32 +79,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         reported_area: areaOfGeometry
       }
     };
-  };
-
-  /**
-   * Set the form data values based on the given treatment id
-   * 
-   * @param {string} treatmentId The treatment id for the treatment the monitoring is based on
-   * @param {*} doc The doc/activity object
-   */
-  const getTreatmentBasedFormDataValues = async (treatmentId: string, doc: any) => {
-    const { activity_data, activity_type_data } = doc.formData || {};
-    const activityResults = await getActivityDataById(treatmentId);
-    const activityDateTime = activity_data && activity_data.activity_date_time || moment(new Date()).format();
-
-    const updatedFormData = {
-      ...doc.formData,
-      activity_data: {
-        ...activityResults.docs[0].formData.activity_data,
-        activity_date_time: activityDateTime,
-      },
-      activity_type_data: {
-        ...activity_type_data,
-        activity_id: treatmentId
-      }
-    }
-
-    return updatedFormData;
   };
 
   /**
@@ -270,20 +232,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         return;
       }
 
-      const activityResults = await getActivityDataById(appStateResults.docs[0].activeActivity);
-      let updatedFormData: any;
+      const activityResults = await databaseContext.database.find({
+        selector: { _id: appStateResults.docs[0].activeActivity }
+      });
 
-      if (activityResults.docs[0].activityType !== 'Monitoring') {
-        updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
-      } else {
-        // Hard coding the treatment id for local dev/testing purposes
-        const treatmentId = '3f6b816f-d250-4003-af22-55fe4fffc3d3';
-        updatedFormData = await getTreatmentBasedFormDataValues(treatmentId, activityResults.docs[0]);
-      }
-
+      const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
-
-      console.log(updatedDoc);
 
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
