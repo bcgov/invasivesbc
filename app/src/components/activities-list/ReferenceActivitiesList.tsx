@@ -81,12 +81,13 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
 interface IReferenceActivityListItem {
   activity: any;
   databaseContext: any;
+  setOnReferencesListPage: Function;
 }
 
 const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { activity, databaseContext } = props;
+  const { activity, databaseContext, setOnReferencesListPage } = props;
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
     await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
@@ -114,6 +115,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
                 e.stopPropagation();
                 const addedActivity = await addActivityToDB(databaseContext, ActivityType.Monitoring, calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype), activity._id);
                 setActiveActivityAndNavigateToActivityPage(addedActivity);
+                setOnReferencesListPage(false);
               }}>
               Create Monitoring
             </Button>
@@ -127,12 +129,13 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
 interface IReferenceActivityListComponent {
   doc: any;
   databaseContext: any;
+  setOnReferencesListPage: Function;
 }
 
 const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { doc, databaseContext } = props;
+  const { doc, databaseContext, setOnReferencesListPage } = props;
 
   const navigateToActivityPage = async (activity: any) => {
     history.push(`/home/references/activity/${activity._id}`);
@@ -144,7 +147,7 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
         <ListItemIcon>
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
-        <ReferenceActivityListItem databaseContext={databaseContext} activity={doc} />
+        <ReferenceActivityListItem setOnReferencesListPage={setOnReferencesListPage} databaseContext={databaseContext} activity={doc} />
       </ListItem>
     </Paper>
   );
@@ -155,6 +158,7 @@ const ReferenceActivityList: React.FC = () => {
 
   const databaseContext = useContext(DatabaseContext);
   const databaseChangesContext = useContext(DatabaseChangesContext);
+  const [onReferencesListPage, setOnReferencesListPage] = useState(true);
 
   const [docs, setDocs] = useState<any[]>([]);
 
@@ -168,7 +172,10 @@ const ReferenceActivityList: React.FC = () => {
 
   useEffect(() => {
     const updateComponent = () => {
-      updateActivityList();
+      // Used to fix react state update unmounted component error
+      if (onReferencesListPage) {
+        updateActivityList();
+      }
     };
 
     updateComponent();
@@ -186,7 +193,7 @@ const ReferenceActivityList: React.FC = () => {
         </Box>
       )}
       {observations.map((doc) => (
-        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
+        <ReferenceActivityListComponent setOnReferencesListPage={setOnReferencesListPage} databaseContext={databaseContext} key={doc._id} doc={doc} />
       ))}
       {treatments.length > 0 && (
         <Box>
@@ -195,7 +202,7 @@ const ReferenceActivityList: React.FC = () => {
         </Box>
       )}
       {treatments.map((doc) => (
-        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
+        <ReferenceActivityListComponent setOnReferencesListPage={setOnReferencesListPage} databaseContext={databaseContext} key={doc._id} doc={doc} />
       ))}
       {monitorings.length > 0 && (
         <Box>
@@ -204,7 +211,7 @@ const ReferenceActivityList: React.FC = () => {
         </Box>
       )}
       {monitorings.map((doc) => (
-        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
+        <ReferenceActivityListComponent setOnReferencesListPage={setOnReferencesListPage} databaseContext={databaseContext} key={doc._id} doc={doc} />
       ))}
     </List>
   );
@@ -216,13 +223,9 @@ const ReferenceActivitiesList: React.FC = () => {
   return (
     <>
       <div className={classes.activitiesContent}>
-        <div>
-          <Typography variant="h4">Reference Activities</Typography>
-        </div>
+        <Typography variant="h4">Reference Activities</Typography>
         <br />
-        <div>
-          <ReferenceActivityList />
-        </div>
+        <ReferenceActivityList />
       </div>
     </>
   );

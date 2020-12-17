@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import moment from 'moment';
 import {
   ActivityStatus,
   ActivitySyncStatus,
@@ -9,14 +8,16 @@ import {
 } from 'constants/activities';
 import { DocType } from 'constants/database';
 
+/*
+  Function to create a new activity and save it to DB
+  Newly created activity can be free-standing or linked to another activity
+  If linked, the activity_id field which is present in the activity_type_data is populated to reference the linked activity record's id
+*/
 export async function addActivityToDB(databaseContext: any, activityType: ActivityType, activitySubtype: ActivitySubtype, linkedRecordId?: string) {
   const id = uuidv4();
   const formData = !linkedRecordId
     ? null
     : {
-        activity_data: {
-          activity_date_time: moment(new Date()).format(),
-        },
         activity_type_data: {
           activity_id: linkedRecordId
         }
