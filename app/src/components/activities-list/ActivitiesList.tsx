@@ -255,7 +255,6 @@ const ActivitiesList: React.FC = (props) => {
 
     // sync each activity one-by-one
     for (const activity of activityResult.docs) {
-      console.log(activity);
       try {
         await invasivesApi.createActivity({
           activity_id: activity.activityId,
