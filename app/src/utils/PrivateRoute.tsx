@@ -20,9 +20,9 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   return (
     <Route
       {...rest}
-      render={(props) => (
+      render={(prop) => (
         <Layout>
-          <Component {...props} {...rest.componentProps} />
+          <Component {...prop} {...rest.componentProps} />
         </Layout>
       )}
     />

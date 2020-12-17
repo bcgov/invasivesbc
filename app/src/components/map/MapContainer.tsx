@@ -188,21 +188,21 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     const convertLineStringToPoly = (aGeo: any) => {
-      if (aGeo.geometry.type == 'LineString') {
+      if (aGeo.geometry.type === 'LineString') {
         const shouldConvertToPoly = window.confirm('Convert to buffered polygon?');
-        if (shouldConvertToPoly) {
-          var buffer = prompt('Enter buffer width (total) in meters', '5');
 
-          var buffered = turf.buffer(aGeo.geometry, parseInt(buffer) / 1000, { units: 'kilometers', steps: 1 });
-
-          var result = turf.featureCollection([buffered, aGeo.geometry]);
-          return (aGeo = { ...aGeo, geometry: result.features[0].geometry });
-        } else {
+        if (!shouldConvertToPoly) {
           return aGeo;
         }
-      } else {
-        return aGeo;
+
+        const buffer = prompt('Enter buffer width (total) in meters', '5');
+        const buffered = turf.buffer(aGeo.geometry, parseInt(buffer) / 1000, { units: 'kilometers', steps: 1 });
+        const result = turf.featureCollection([buffered, aGeo.geometry]);
+
+        return { ...aGeo, geometry: result.features[0].geometry };
       }
+
+      return aGeo;
     };
 
     mapRef.current.on('draw:editstop', async function (layerGroup) {
@@ -294,7 +294,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               if (feature.geometry.type !== 'Polygon') {
                 L.popup()
                   .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
-                  //.setContent(interactObj.popUpComponent)
                   .setContent(content)
                   .openOn(mapRef.current);
               }
