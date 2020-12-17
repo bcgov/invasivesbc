@@ -97,7 +97,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
   };
 
   const addNewActivity = async (activityType: ActivityType, activitySubtype: ActivitySubtype, treatmentId: string) => {
-    console.log(activityType, activitySubtype);
     const id = uuidv4();
 
     const doc = {
