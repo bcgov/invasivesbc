@@ -4,10 +4,10 @@ import {
   ActivitySyncStatus,
   FormValidationStatus,
   ActivitySubtype,
-  ActivityType,
-  IActivity
+  ActivityType
 } from 'constants/activities';
 import { DocType } from 'constants/database';
+import { IActivity } from 'interfaces/activity-interfaces';
 
 /*
   Function to create a new activity and save it to DB
