@@ -14,22 +14,18 @@ import {
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import {
-  ActivityStatus,
   ActivitySubtype,
-  ActivitySyncStatus,
   ActivityType,
-  ActivityTypeIcon,
-  FormValidationStatus
+  ActivityTypeIcon
 } from 'constants/activities';
 import { DocType } from 'constants/database';
-import moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ActivityListItem from './ActivityListItem';
 import ActivityListDate from './ActivityListDate';
+import { addActivityToDB } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -58,6 +54,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+/**
+ * 
+ * @param {ActivitySubtype} treatmentSubtype The treatment subtype for which to get the associated monitoring subtype
+ */
 const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: ActivitySubtype): ActivitySubtype => {
   /*
     Note: There is no explicit subtype for biological dispersal plant monitoring
@@ -96,39 +96,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
     history.push(`/home/activity`);
   };
 
-  const addNewActivity = async (activityType: ActivityType, activitySubtype: ActivitySubtype, treatmentId: string) => {
-    const id = uuidv4();
-
-    const doc = {
-      _id: id,
-      activityId: id,
-      docType: DocType.ACTIVITY,
-      activityType: activityType,
-      activitySubtype: activitySubtype,
-      status: ActivityStatus.NEW,
-      sync: {
-        ready: false,
-        status: ActivitySyncStatus.NOT_SYNCED,
-        error: null
-      },
-      dateCreated: new Date(),
-      dateUpdated: null,
-      formData: {
-        activity_data: {
-          activity_date_time: moment(new Date()).format(),
-        },
-        activity_type_data: {
-          activity_id: treatmentId
-        }
-      },
-      formStatus: FormValidationStatus.NOT_VALIDATED
-    };
-
-    await databaseContext.database.put(doc);
-
-    setActiveActivityAndNavigateToActivityPage(doc);
-  };
-
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
@@ -143,9 +110,10 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
               color="primary"
               size="small"
               startIcon={<Add />}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
-                addNewActivity(ActivityType.Monitoring, calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype), activity._id);
+                const addedActivity = await addActivityToDB(databaseContext, ActivityType.Monitoring, calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype), activity._id);
+                setActiveActivityAndNavigateToActivityPage(addedActivity);
               }}>
               Create Monitoring
             </Button>

@@ -22,7 +22,6 @@ import {
 import { Add, DeleteForever, Sync } from '@material-ui/icons';
 import clsx from 'clsx';
 import {
-  ActivityStatus,
   ActivitySubtype,
   ActivitySyncStatus,
   ActivityType,
@@ -38,8 +37,8 @@ import { useHistory } from 'react-router-dom';
 import 'styles/spinners.scss';
 import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
 import ActivityListDate from './ActivityListDate';
-import { v4 as uuidv4 } from 'uuid';
 import { getErrorMessages } from 'utils/errorHandling';
+import { addActivityToDB } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -300,28 +299,6 @@ const ActivitiesList: React.FC = (props) => {
     setIsDisable(false);
   };
 
-  const addNewActivity = async (activityType: ActivityType, activitySubtype: ActivitySubtype) => {
-    const id = uuidv4();
-
-    await databaseContext.database.put({
-      _id: id,
-      activityId: id,
-      docType: DocType.ACTIVITY,
-      activityType: activityType,
-      activitySubtype: activitySubtype,
-      status: ActivityStatus.NEW,
-      sync: {
-        ready: false,
-        status: ActivitySyncStatus.NOT_SYNCED,
-        error: null
-      },
-      dateCreated: new Date(),
-      dateUpdated: null,
-      formData: null,
-      formStatus: FormValidationStatus.NOT_VALIDATED
-    });
-  };
-
   const handleWorkflowFunctionChange = (event: any) => {
     setWorkflowFunction(event.target.value);
   };
@@ -364,14 +341,14 @@ const ActivitiesList: React.FC = (props) => {
                       disabled={isDisabled}
                       variant="contained"
                       startIcon={<Add />}
-                      onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_PlantTerrestial)}>
+                      onClick={() => addActivityToDB(databaseContext, ActivityType.Observation, ActivitySubtype.Observation_PlantTerrestial)}>
                       Plant Terrestrial
                     </Button>
                     <Button
                       disabled={isDisabled}
                       variant="contained"
                       startIcon={<Add />}
-                      onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_PlantAquatic)}>
+                      onClick={() => addActivityToDB(databaseContext, ActivityType.Observation, ActivitySubtype.Observation_PlantAquatic)}>
                       Plant Aquatic
                     </Button>
                   </>
@@ -382,14 +359,14 @@ const ActivitiesList: React.FC = (props) => {
                       disabled={isDisabled}
                       variant="contained"
                       startIcon={<Add />}
-                      onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_AnimalTerrestrial)}>
+                      onClick={() => addActivityToDB(databaseContext, ActivityType.Observation, ActivitySubtype.Observation_AnimalTerrestrial)}>
                       Animal Terrestrial
                     </Button>
                     <Button
                       disabled={isDisabled}
                       variant="contained"
                       startIcon={<Add />}
-                      onClick={() => addNewActivity(ActivityType.Observation, ActivitySubtype.Observation_AnimalAquatic)}>
+                      onClick={() => addActivityToDB(databaseContext, ActivityType.Observation, ActivitySubtype.Observation_AnimalAquatic)}>
                       Animal Aquatic
                     </Button>
                   </>
@@ -411,21 +388,21 @@ const ActivitiesList: React.FC = (props) => {
                       disabled={isDisabled}
                       variant="contained"
                       startIcon={<Add />}
-                      onClick={() => addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalPlant)}>
+                      onClick={() => addActivityToDB(databaseContext, ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalPlant)}>
                       Plant Chemical
                     </Button>
                     <Button
                       disabled={isDisabled}
                       variant="contained"
                       startIcon={<Add />}
-                      onClick={() => addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalPlant)}>
+                      onClick={() => addActivityToDB(databaseContext, ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalPlant)}>
                       Plant Mechanical
                     </Button>
                     <Button
                       disabled={isDisabled}
                       variant="contained"
                       startIcon={<Add />}
-                      onClick={() => addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant)}>
+                      onClick={() => addActivityToDB(databaseContext, ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant)}>
                       Plant Biological
                     </Button>
                     <Button
@@ -433,7 +410,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalDispersalPlant)
+                        addActivityToDB(databaseContext, ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalDispersalPlant)
                       }>
                       Plant Biological Dispersal
                     </Button>
@@ -446,7 +423,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalTerrestrialAnimal)
+                        addActivityToDB(databaseContext, ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalTerrestrialAnimal)
                       }>
                       Animal Terrestrial Mechanical
                     </Button>
@@ -455,7 +432,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalTerrestrialAnimal)
+                        addActivityToDB(databaseContext, ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalTerrestrialAnimal)
                       }>
                       Animal Terrestrial Chemical
                     </Button>
@@ -464,7 +441,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalTerrestrialAnimal)
+                        addActivityToDB(databaseContext, ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalTerrestrialAnimal)
                       }>
                       Animal Terrestrial Biological
                     </Button>
@@ -488,7 +465,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant)
+                        addActivityToDB(databaseContext, ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant)
                       }>
                       Plant Terrestrial/Aquatic Chemical
                     </Button>
@@ -497,7 +474,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant)
+                        addActivityToDB(databaseContext, ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant)
                       }>
                       Plant Terrestrial/Aquatic Mechanical
                     </Button>
@@ -506,7 +483,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant)
+                        addActivityToDB(databaseContext, ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant)
                       }>
                       Plant Terrestrial Biological
                     </Button>
@@ -519,7 +496,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAnimal)
+                        addActivityToDB(databaseContext, ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAnimal)
                       }>
                       Animal Terrestrial Mechanical
                     </Button>
@@ -528,7 +505,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAnimal)
+                        addActivityToDB(databaseContext, ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAnimal)
                       }>
                       Animal Terrestrial Chemical
                     </Button>
@@ -537,7 +514,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addNewActivity(ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialAnimal)
+                        addActivityToDB(databaseContext, ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialAnimal)
                       }>
                       Animal Terrestrial Biological
                     </Button>

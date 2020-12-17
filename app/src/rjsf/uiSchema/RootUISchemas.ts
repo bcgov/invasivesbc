@@ -250,6 +250,11 @@ const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
     'ui:column-md': 6,
     'ui:column-lg': 4,
     ...BaseUISchemaComponents.Monitoring
+  },
+  activity_subtype_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4
   }
 };
 
@@ -265,6 +270,11 @@ const Activity_Monitoring_MechanicalTerrestrialAquaticPlant = {
     'ui:column-md': 6,
     'ui:column-lg': 4,
     ...BaseUISchemaComponents.Monitoring
+  },
+  activity_subtype_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4
   }
 };
 
