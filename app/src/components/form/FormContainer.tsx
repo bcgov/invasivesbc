@@ -46,7 +46,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
+      console.log('inside get api spec function');
       const response = await invasivesApi.getCachedApiSpec();
+
+      console.log(props.activity);
 
       setSchemas({
         schema: { ...response.components.schemas[props.activity.activitySubtype], components: response.components },
@@ -56,6 +59,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
     getApiSpec();
   }, []);
+
+  console.log(props.activity)
 
   if (!schemas.schema || !schemas.uiSchema) {
     return <CircularProgress />;

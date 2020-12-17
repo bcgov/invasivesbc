@@ -1445,8 +1445,7 @@
         }
       },
       "Monitoring_BiologicalTerrestrialPlant": {
-        "title": "Monitoring a biological treatment for terrestrial plants",
-        "description": "Biological monitoring for terrestrial plants",
+        "title": "Biological Monitoring Information",
         "type": "object",
         "required": [
           "plant_count",
@@ -1467,7 +1466,7 @@
         "properties": {
           "invasive_plant_code": {
             "type": "string",
-            "title": "Invasive plant",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
@@ -1478,59 +1477,59 @@
           },
           "plant_count": {
             "type": "number",
-            "title": "Plant count"
+            "title": "Plant Count"
           },
           "agent_count": {
             "type": "number",
-            "title": "Agent count"
+            "title": "Agent Count"
           },
           "count_duration": {
             "type": "number",
-            "title": "Count duration"
+            "title": "Count Duration"
           },
           "agent_destroyed_ind": {
             "type": "boolean",
-            "title": "Agent destroyed"
+            "title": "Agent Destroyed"
           },
           "legacy_presence_ind": {
             "type": "boolean",
-            "title": "Legacy presence"
+            "title": "Legacy Presence"
           },
           "foliar_feeding_damage_ind": {
             "type": "boolean",
-            "title": "Foliar feeding damage"
+            "title": "Foliar Feeding Damage"
           },
           "root_feeding_damage_ind": {
             "type": "boolean",
-            "title": "Root feeding damage"
+            "title": "Root Feeding Damage"
           },
           "oviposition_marks_ind": {
             "type": "boolean",
-            "title": "Oviposition marks"
+            "title": "Oviposition Marks"
           },
           "eggs_present_ind": {
             "type": "boolean",
-            "title": "Eggs present"
+            "title": "Eggs Present"
           },
           "larvae_present_ind": {
             "type": "boolean",
-            "title": "Larvae present"
+            "title": "Larvae Present"
           },
           "pupae_present_ind": {
             "type": "boolean",
-            "title": "Pupae present"
+            "title": "Pupae Present"
           },
           "adults_present_ind": {
             "type": "boolean",
-            "title": "Adults present"
+            "title": "Adults Present"
           },
           "tunnels_present_ind": {
             "type": "boolean",
-            "title": "Tunnels present"
+            "title": "Tunnels Present"
           },
           "biological_agent_spread": {
             "type": "string",
-            "title": "Biological agent spread"
+            "title": "Biological Agent Spread"
           }
         }
       },

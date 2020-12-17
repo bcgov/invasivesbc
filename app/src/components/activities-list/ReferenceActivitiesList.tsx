@@ -58,6 +58,26 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: ActivitySubtype): ActivitySubtype => {
+  /*
+    Note: There is no explicit subtype for biological dispersal plant monitoring
+    If this needs to be present, it needs to be created and defined in API spec
+  */
+  let monitoringSubtype: ActivitySubtype;
+
+  if (treatmentSubtype.includes('ChemicalPlant')) {
+    monitoringSubtype = ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant;
+  } else if (treatmentSubtype.includes('MechanicalPlant')) {
+    monitoringSubtype = ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant;
+  } else if (treatmentSubtype.includes('BiologicalPlant') || treatmentSubtype.includes('BiologicalDispersalPlant')) {
+    monitoringSubtype = ActivitySubtype.Monitoring_BiologicalTerrestrialPlant;
+  } else {
+    monitoringSubtype = ActivitySubtype[`Monitoring_${treatmentSubtype.split('_')[2]}`];
+  }
+
+  return monitoringSubtype;
+};
+
 interface IReferenceActivityListItem {
   activity: any;
   databaseContext: any;
@@ -128,7 +148,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
               startIcon={<Add />}
               onClick={(e) => {
                 e.stopPropagation();
-                addNewActivity(ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalPlant, activity._id);
+                addNewActivity(ActivityType.Monitoring, calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype), activity._id);
               }}>
               Create Monitoring
             </Button>
