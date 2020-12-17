@@ -77,11 +77,11 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
-  const saveGeometry = async (geometry: Feature[]) => {
-    const { latitude, longitude } = calculateLatLng(geometry) || {};
+  const saveGeometry = async (geom: Feature[]) => {
+    const { latitude, longitude } = calculateLatLng(geom) || {};
 
     const formData = activity.formData;
-    const areaOfGeometry = calculateGeometryArea(geometry);
+    const areaOfGeometry = calculateGeometryArea(geom);
 
     const updatedFormData = {
       ...formData,
@@ -93,16 +93,16 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       }
     };
 
-    setActivity({ ...activity, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date(), formData: updatedFormData });
+    setActivity({ ...activity, geometry: geom, status: ActivityStatus.EDITED, dateUpdated: new Date(), formData: updatedFormData });
   };
 
   /**
    * Save the photos.
    *
-   * @param {IPhoto} photos An array of photo objects.
+   * @param {IPhoto} photosArr An array of photo objects.
    */
-  const savePhotos = async (photos: IPhoto[]) => {
-    setActivity({ ...activity, photos: photos, dateUpdated: new Date() });
+  const savePhotos = async (photosArr: IPhoto[]) => {
+    setActivity({ ...activity, photos: photosArr, dateUpdated: new Date() });
   };
 
   /**
