@@ -63,16 +63,16 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /**
    * Set the default form data values
    * 
-   * @param {*} doc The doc/activity object
+   * @param {*} activity The doc/activity object
    */
-  const getDefaultFormDataValues = (doc: any) => {
-    const { activity_data } = doc.formData || {};
+  const getDefaultFormDataValues = (activity: any) => {
+    const { activity_data } = activity.formData || {};
 
-    const areaOfGeometry = calculateGeometryArea(doc.geometry);
+    const areaOfGeometry = calculateGeometryArea(activity.geometry);
     const activityDateTime = activity_data && activity_data.activity_date_time || moment(new Date()).format();
 
     return {
-      ...doc.formData,
+      ...activity.formData,
       activity_data: {
         ...activity_data,
         activity_date_time: activityDateTime,
@@ -86,11 +86,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
-  const saveGeometry = async (geometry: Feature[]) => {
-    const { latitude, longitude } = calculateLatLng(geometry) || {};
+  const saveGeometry = async (geom: Feature[]) => {
+    const { latitude, longitude } = calculateLatLng(geom) || {};
 
     const formData = doc.formData;
-    const areaOfGeometry = calculateGeometryArea(geometry);
+    const areaOfGeometry = calculateGeometryArea(geom);
 
     const updatedFormData = {
       ...formData,
@@ -105,7 +105,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     setDoc({ ...doc, formData: updatedFormData });
 
     await databaseContext.database.upsert(doc._id, (dbDoc) => {
-      return { ...dbDoc, formData: updatedFormData, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+      return { ...dbDoc, formData: updatedFormData, geometry: geom, status: ActivityStatus.EDITED, dateUpdated: new Date() };
     });
   };
 
@@ -123,11 +123,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /**
    * Save the photos.
    *
-   * @param {IPhoto} photos An array of photo objects.
+   * @param {IPhoto} photosArr An array of photo objects.
    */
-  const savePhotos = async (photos: IPhoto[]) => {
+  const savePhotos = async (photosArr: IPhoto[]) => {
     await databaseContext.database.upsert(doc._id, (dbDoc) => {
-      return { ...dbDoc, photos: photos, dateUpdated: new Date() };
+      return { ...dbDoc, photos: photosArr, dateUpdated: new Date() };
     });
   };
 

@@ -77,24 +77,7 @@ function getMedia(): RequestHandler {
 
     const response = await Promise.all(s3GetPromises);
 
-    const mediaItems: IMediaItem[] = response.map((s3Object: GetObjectOutput) => {
-      // Encode image buffer as base64
-      const contentString = Buffer.from(s3Object.Body as Buffer).toString('base64');
-
-      // Append DATA Url string
-      const encodedFile = `data:${s3Object.ContentType};base64,${contentString}`;
-
-      const mediaItem: IMediaItem = {
-        file_name: (s3Object && s3Object.Metadata && s3Object.Metadata.filename) || null,
-        encoded_file: encodedFile,
-        description: (s3Object && s3Object.Metadata && s3Object.Metadata.description) || null,
-        media_date: (s3Object && s3Object.Metadata && s3Object.Metadata.date) || null
-      };
-
-      return mediaItem;
-    });
-
-    return res.status(200).json(mediaItems);
+    return res.status(200).json(getMediaItemsList(response));
   };
 }
 
@@ -153,4 +136,28 @@ export function uploadMedia(): RequestHandler {
 
     next();
   };
+}
+
+/*
+  Function to get list of media items from s3 object list
+*/
+export function getMediaItemsList(s3ObjectList: GetObjectOutput[]) {
+  const mediaItems: IMediaItem[] = s3ObjectList.map((s3Object: GetObjectOutput) => {
+    // Encode image buffer as base64
+    const contentString = Buffer.from(s3Object.Body as Buffer).toString('base64');
+
+    // Append DATA Url string
+    const encodedFile = `data:${s3Object.ContentType};base64,${contentString}`;
+
+    const mediaItem: IMediaItem = {
+      file_name: (s3Object && s3Object.Metadata && s3Object.Metadata.filename) || null,
+      encoded_file: encodedFile,
+      description: (s3Object && s3Object.Metadata && s3Object.Metadata.description) || null,
+      media_date: (s3Object && s3Object.Metadata && s3Object.Metadata.date) || null
+    };
+
+    return mediaItem;
+  });
+
+  return mediaItems;
 }

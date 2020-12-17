@@ -3,11 +3,7 @@ import { Assignment, Bookmarks, Explore, HomeWork, Map, Search } from '@material
 import React, { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-interface ITabsContainerProps {
-  classes?: any;
-}
-
-const TabsContainer: React.FC<ITabsContainerProps> = (props) => {
+const TabsContainer: React.FC = () => {
   const history = useHistory();
 
   const urlContainsPath = (path: string): string => {
@@ -15,7 +11,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props) => {
   };
 
   const getActiveTab = useCallback(
-    (activeTab: number): number => {
+    (activeTabNumber: number): number => {
       switch (history.location.pathname) {
         case urlContainsPath('/home/search'):
           return 0;
@@ -31,7 +27,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props) => {
         case urlContainsPath('/home/activity'):
           return 5;
         default:
-          return activeTab;
+          return activeTabNumber;
       }
     },
     [history.location.pathname]
@@ -44,7 +40,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props) => {
   };
 
   useEffect(() => {
-    setActiveTab((activeTab) => getActiveTab(activeTab));
+    setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
   }, [history.location.pathname, getActiveTab]);
 
   return (
