@@ -4,7 +4,8 @@ import {
   ActivitySyncStatus,
   FormValidationStatus,
   ActivitySubtype,
-  ActivityType
+  ActivityType,
+  IActivity
 } from 'constants/activities';
 import { DocType } from 'constants/database';
 
@@ -13,7 +14,7 @@ import { DocType } from 'constants/database';
   Newly created activity can be free-standing or linked to another activity
   If linked, the activity_id field which is present in the activity_type_data is populated to reference the linked activity record's id
 */
-export async function addActivityToDB(databaseContext: any, activityType: ActivityType, activitySubtype: ActivitySubtype, linkedRecordId?: string) {
+export async function addActivityToDB(databaseContext: any, activityType: ActivityType, activitySubtype: ActivitySubtype, linkedRecordId?: string): Promise<IActivity> {
   const id = uuidv4();
   const formData = !linkedRecordId
     ? null
@@ -23,7 +24,7 @@ export async function addActivityToDB(databaseContext: any, activityType: Activi
         }
       };
 
-  const doc = {
+  const doc: IActivity = {
     _id: id,
     activityId: id,
     docType: DocType.ACTIVITY,
