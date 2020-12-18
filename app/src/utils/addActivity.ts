@@ -22,8 +22,9 @@ export async function addActivityToDB(databaseContext: any, activityType: Activi
   const formData = !linkedRecord
     ? null
     : {
-        activity_data: getFieldsToCopy(linkedRecord.formData.activity_data, 'Activity'),
+        activity_data: getFieldsToCopy(linkedRecord.formData.activity_data, 'activity_data'),
         activity_type_data: {
+          ...getFieldsToCopy(linkedRecord.formData.activity_subtype_data, 'activity_subtype_data', linkedRecord.activitySubtype),
           activity_id: linkedRecord._id
         }
       };

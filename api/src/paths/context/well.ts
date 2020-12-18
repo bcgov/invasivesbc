@@ -12,7 +12,6 @@ import distance from '@turf/distance';
 
 const defaultLog = getLogger('activity');
 
-
 export const GET: Operation = proxyWell();
 
 GET.apiDoc = {

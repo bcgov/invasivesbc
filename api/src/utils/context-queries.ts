@@ -206,7 +206,7 @@ const saveElevation = (id: any,req: any) => {
  * @param req {object} The express request object
  */
 const saveWell = (id: any,req: any) => {
-  const a = req.body.activity_data;
+  const a = req.body.form_data.activity_data;
   const payload = {
     query: {
       lon: a.longitude,
