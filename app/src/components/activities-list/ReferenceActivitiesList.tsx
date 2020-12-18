@@ -113,7 +113,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
               startIcon={<Add />}
               onClick={async (e) => {
                 e.stopPropagation();
-                const addedActivity = await addActivityToDB(databaseContext, ActivityType.Monitoring, calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype), activity._id);
+                const addedActivity = await addActivityToDB(databaseContext, ActivityType.Monitoring, calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype), activity);
                 setActiveActivityAndNavigateToActivityPage(addedActivity);
                 setOnReferencesListPage(false);
               }}>

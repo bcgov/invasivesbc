@@ -8,19 +8,23 @@ import {
 } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { IActivity } from 'interfaces/activity-interfaces';
+import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 
 /*
   Function to create a new activity and save it to DB
   Newly created activity can be free-standing or linked to another activity
   If linked, the activity_id field which is present in the activity_type_data is populated to reference the linked activity record's id
+  Also, the activity_data is populated based on business logic rules which specify which fields to copy
 */
-export async function addActivityToDB(databaseContext: any, activityType: ActivityType, activitySubtype: ActivitySubtype, linkedRecordId?: string): Promise<IActivity> {
+export async function addActivityToDB(databaseContext: any, activityType: ActivityType, activitySubtype: ActivitySubtype, linkedRecord?: any): Promise<IActivity> {
   const id = uuidv4();
-  const formData = !linkedRecordId
+
+  const formData = !linkedRecord
     ? null
     : {
+        activity_data: getFieldsToCopy(linkedRecord.formData.activity_data, 'Activity'),
         activity_type_data: {
-          activity_id: linkedRecordId
+          activity_id: linkedRecord._id
         }
       };
 
