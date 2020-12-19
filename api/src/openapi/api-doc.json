@@ -1399,7 +1399,7 @@
           "observer_last_name",
           "efficacy_code",
           "monitoring_details",
-          "invasive_plant_code"
+          "invasive_plants"
         ],
         "properties": {
           "activity_id": {
@@ -1425,22 +1425,18 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
           "monitoring_details": {
             "type": "string",
             "title": "Monitoring Details",
             "maximum": 300,
             "default": ""
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
+            }
           }
         }
       },
