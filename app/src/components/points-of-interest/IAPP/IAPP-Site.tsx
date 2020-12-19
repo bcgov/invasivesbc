@@ -1,5 +1,7 @@
 import { Container, Accordion, AccordionDetails, AccordionSummary, Grid, makeStyles, Paper, Typography,
-  TableContainer, TableCell, TableRow, TableHead, Table, TableBody } from '@material-ui/core';
+  TableContainer, TableCell, TableRow, TableHead, Table, TableBody, Box, Collapse, TablePagination,
+  IconButton } from '@material-ui/core';
+import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import { ExpandMore } from '@material-ui/icons';
 import React from 'react';
 
@@ -24,25 +26,44 @@ const useStyles = makeStyles((theme) => ({
     width: "auto",
     tableLayout: 'auto'
   },
+  tableContainer: {
+    display: 'table-row'
+  },
   cell: {
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    width: '1px'
   },
   wideCell: {
-    whiteSpace: 'nowrap'
+    whiteSpace: 'normal',
+    minWidth: '500px'
   },
   missingValue: {
     fontStyle: 'italic',
     color: '#777'
+  },
+  header: {
+    backgroundColor: 'rgba(0, 0, 0, 0.06)'  // TODO pull from theme
+  },
+  dropdown: {
+    paddingBottom: 0,
+    paddingTop: 0,
+    paddingLeft: '1em'
+  },
+  dropdownCol: {
+    maxWidth: '2em'
   }
 }));
 
 export interface IAPPSitePropType {
   record: any;
 }
+
+
 export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const classes = useStyles();
+  const ifApplicable = (value) => (value && String(value).trim() != '') ? value : <div className={classes.missingValue}>N/A</div>;
 
-  const {site_id, map_sheet, aspect, specific_use, soil_texture, surveys, mechanical_treatments, comments}
+  const {site_id, map_sheet, aspect, specific_use, soil_texture, surveys, mechanical_treatments, chemical_treatments, comments}
      = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data;
   const {access_description, created_date_on_device}
      = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data;
@@ -53,16 +74,16 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const {Jur1, Jur1pct, Jur2, Jur2pct, Jur3, Jur3pct} = surveys ? surveys[0] : {Jur1: 'Not Specified', Jur1pct: '100', Jur2: '', Jur2pct: '0', Jur3: '', Jur3pct: '0'};
   // Tester: {Jur1:'A', Jur1pct:'50', Jur2:'B', Jur2pct:'20', Jur3:'C', Jur3pct:'30'};
 
-  const ifApplicable = (value) => (value && String(value).trim() != '') ? value : <div className={classes.missingValue}>N/A</div>;
-
   return (
     <Container className={classes.container}>
+
       <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>
             Legacy IAPP Site: {site_id}
           </Typography>
         </AccordionSummary>
+
         <AccordionDetails className={classes.siteContainer}>
           <Grid container spacing={1}>
             <Grid item xs={3} sm={2}>Created</Grid>
@@ -76,9 +97,9 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             <Grid item xs={9} sm={4}>{ifApplicable(aspect)}</Grid>
 
             <Grid item xs={3} sm={2}>Longitude</Grid>
-            <Grid item xs={9} sm={4}>{ifApplicable(parseFloat(longitude).toFixed(2))}</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(parseFloat(longitude).toFixed(6))}</Grid>
             <Grid item xs={3} sm={2}>Latitude</Grid>
-            <Grid item xs={9} sm={4}>{ifApplicable(parseFloat(latitude).toFixed(2))}</Grid>
+            <Grid item xs={9} sm={4}>{ifApplicable(parseFloat(latitude).toFixed(6))}</Grid>
 
             <Grid item xs={3} sm={2}>Elevation</Grid>
             <Grid item xs={9} sm={4}>{ifApplicable(elevation)}</Grid>
@@ -103,89 +124,347 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           </Grid>
         </AccordionDetails>
       </Accordion>
-      <Accordion defaultExpanded={true}>
+
+      <Accordion defaultExpanded={false}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Survey Details on Site {site_id}</Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.surveyContainer}>
-          {!surveys || surveys.length === 0 && <Container>No Surveys</Container>}
-          {surveys && surveys.length !== 0 &&
-            <TableContainer component={Paper}>
-              <Table className={classes.table} aria-label="surveys">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.cell}>Survey ID</TableCell>
-                    <TableCell className={classes.cell}>Common Name</TableCell>
-                    <TableCell className={classes.cell}>Species</TableCell>
-                    <TableCell className={classes.cell}>Survey Date</TableCell>
-                    <TableCell className={classes.cell}>Agency</TableCell>
-                    <TableCell className={classes.cell}>Hectares</TableCell>
-                    <TableCell align="center" className={classes.cell}>Density</TableCell>
-                    <TableCell align="center" className={classes.cell}>Distribution</TableCell>
-                    <TableCell className={classes.wideCell}>Comments</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {surveys.map((row) => (
-                    <TableRow key={row.SurveyID}>
-                      <TableCell className={classes.cell}>{ifApplicable(row.SurveyID)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(row.CommonName)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(row.Species)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(row.SurveyDate)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(row.SurveyAgency)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(parseFloat(row.EstArea).toFixed(4))}</TableCell>
-                      <TableCell align="center" className={classes.cell}>{ifApplicable(row.Density)}</TableCell>
-                      <TableCell align="center" className={classes.cell}>{ifApplicable(row.Distribution)}</TableCell>
-                      <TableCell className={classes.wideCell}>{ifApplicable(row.Comment)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          }
+          <IAPPTable
+            headers={[
+              "Survey ID",
+              "Common Name",
+              "Species",
+              "Genus",
+              "Survey Date",
+              "Agency",
+              "Hectares",
+              {
+                align: 'center',
+                children: "Density"
+              },
+              {
+                align: 'center',
+                children: "Distribution"
+              },
+              {
+                className: classes.wideCell,
+                children: "Comments"
+              },
+            ]}
+            rows={surveys.map((row) => ([
+              row.SurveyID,
+              row.CommonName,
+              row.Species,
+              row.Genus,
+              row.SurveyDate,
+              row.SurveyAgency,
+              parseFloat(row.EstArea).toFixed(4),
+              {
+                align: 'center',
+                children: row.Density
+              },
+              {
+                align: 'center',
+                children: row.Distribution
+              },
+              {
+                className: classes.wideCell,
+                children: row.Comment
+              }
+            ]))}
+            pagination={true}
+          />
         </AccordionDetails>
       </Accordion>
-      <Accordion defaultExpanded={true}>
+
+      <Accordion defaultExpanded={false}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={classes.heading}>Treatment Details</Typography>
+          <Typography className={classes.heading}>Mechanical Treatments and Efficacy Monitoring</Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.treatmentContainer}>
-          {!mechanical_treatments || mechanical_treatments.length === 0 && <Container>No Treatments</Container>}
-          {mechanical_treatments && mechanical_treatments.length !== 0 &&
-            <TableContainer component={Paper}>
-              <Table className={classes.table} aria-label="surveys">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.cell}>Mechanical ID</TableCell>
-                    <TableCell className={classes.cell}>Common Name</TableCell>
-                    <TableCell className={classes.cell}>Treatment Date</TableCell>
-                    <TableCell className={classes.cell}>Agency</TableCell>
-                    <TableCell className={classes.cell}>Hectares</TableCell>
-                    <TableCell align="center" className={classes.cell}>Mech Method</TableCell>
-                    <TableCell align="center" className={classes.cell}>PaperFile ID</TableCell>
-                    <TableCell className={classes.wideCell}>Comments</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {mechanical_treatments.map((row) => (
-                    <TableRow key={row.MechanicalID}>
-                      <TableCell className={classes.cell}>{ifApplicable(row.MechanicalID)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(row.CommonName)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(row.TreatmentDate)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(row.TreatmentAgency)}</TableCell>
-                      <TableCell className={classes.cell}>{ifApplicable(parseFloat(row.AreaTreated).toFixed(4))}</TableCell>
-                      <TableCell align="center" className={classes.cell}>{ifApplicable(row.MechanicalMethod)}</TableCell>
-                      <TableCell align="center" className={classes.cell}>{ifApplicable(row.PaperFileID)}</TableCell>
-                      <TableCell className={classes.wideCell}>{ifApplicable(row.Comment)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          }
+          <IAPPTable
+            headers={[
+              "Mechanical ID",
+              "Common Name",
+              "Treatment Date",
+              "Agency",
+              "Hectares",
+              "Mech Method",
+              "PaperFile ID",
+              {
+                className: classes.wideCell,
+                children: "Comments"
+              }
+            ]}
+            rows={mechanical_treatments ? mechanical_treatments.map((row) => ([
+              row.MechanicalID,
+              row.CommonName,
+              row.TreatmentDate,
+              row.TreatmentAgency,
+              parseFloat(row.AreaTreated).toFixed(4),
+              row.MechanicalMethod,
+              row.PaperFileID,
+              {
+                className: classes.wideCell,
+                children: row.Comment
+              }
+            ])) : []}
+            dropdown={(i) =>
+              mechanical_treatments[i].monitoring === undefined || mechanical_treatments[i].monitoring.length === 0
+                ? null
+                : <IAPPTable
+                    key={'dropdown_' + i}
+                    headers={[
+                      'Monitoring ID',
+                      'Monitoring Date',
+                      'Agency',
+                      'Efficacy',
+                      'PaperFile ID',
+                      {
+                        className: classes.wideCell,
+                        children: 'Comments'
+                      }
+                    ]}
+                    rows={mechanical_treatments[i].monitoring.map((row, i) => ([
+                      row.monitoring_id,
+                      row.monitoring_date,
+                      row.agency_code,
+                      row.efficacy_percent,
+                      row.paper_file_id,
+                      {
+                        className: classes.wideCell,
+                        children: row.comment
+                      }
+                    ]))}
+                  />
+            }
+            pagination={true}
+          />
         </AccordionDetails>
       </Accordion>
+
+      <Accordion defaultExpanded={false}>
+        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
+          <Typography className={classes.heading}>Chemical Treatments and Efficacy Monitoring</Typography>
+        </AccordionSummary>
+        <AccordionDetails className={classes.treatmentContainer}>
+          <IAPPTable
+            headers={[
+              "Treatment ID",
+              "Common Name",
+              "Treatment Date",
+              "Agency",
+              "Hectares",
+              "Chem Method",
+              "PaperFile ID",
+              {
+                className: classes.wideCell,
+                children: "Comments"
+              }
+            ]}
+            rows={chemical_treatments ? chemical_treatments.map((row) => ([
+              row.TreatmentID,
+              row.MapCommon,
+              row.TreatmentDate,
+              row.TreatmentAgency,
+              parseFloat(row.AreaTreated).toFixed(4),
+              row.ChemicalMethod,
+              row.PaperFileID,
+              {
+                className: classes.wideCell,
+                children: row.Comment
+              }
+            ])) : []}
+            dropdown={(i) =>
+              <React.Fragment key={'dropdown_' + i}>
+                <IAPPTable
+                  headers={[
+                    'PMP Confirmation #', 'Description', 'PMRA Reg #', 'Temperature', 'Humidity',
+                    'Wind Velocity', 'Wind Direction', 'Application Rate', 'Amount Used', 'Dilution Rate'
+                  ]}
+                  rows={[[
+                    chemical_treatments[i].Pmp_Confirmation_Number,
+                    chemical_treatments[i].Description,
+                    chemical_treatments[i].Pmra_Reg_Number,
+                    chemical_treatments[i].Temperature,
+                    chemical_treatments[i].Humidity,
+                    chemical_treatments[i].Wind_Velocity,
+                    chemical_treatments[i].Wind_Direction,
+                    chemical_treatments[i].Application_Rate,
+                    chemical_treatments[i].Amount_Used,
+                    chemical_treatments[i].Dilution_Rate
+                  ]]}
+                />
+                <br/>
+                {chemical_treatments[i].monitoring === undefined || chemical_treatments[i].monitoring.length === 0
+                  ? null
+                  : <IAPPTable
+                      headers={[
+                        'Monitoring ID',
+                        'Monitoring Date',
+                        'Agency',
+                        'Efficacy',
+                        'PaperFile ID',
+                        {
+                          className: classes.wideCell,
+                          children: 'Comments'
+                        }
+                      ]}
+                      rows={chemical_treatments[i].monitoring.map((row, i) => ([
+                        row.monitoring_id,
+                        row.monitoring_date,
+                        row.agency_code,
+                        row.efficacy_percent,
+                        row.paper_file_id,
+                        {
+                          className: classes.wideCell,
+                          children: row.comment
+                        }
+                      ]))}
+                    />
+                }
+              </React.Fragment>
+            }
+            pagination={true}
+          />
+        </AccordionDetails>
+      </Accordion>
+
       <br/><br/><br/><br/>
+
     </Container>
   );
 };
+
+
+export interface IAPPTablePropType {
+  headers: Array<any|object>;
+  rows: Array<Array<string|object>|object>;
+  dropdown?: (index: number) => any;
+  pagination?: boolean|object;
+  startsOpen?: boolean;
+}
+
+/*
+  headers: an array of (string/numeric) values (or objects if you want to get fancy and define other object cell properties)
+  rows: an array of arrays of columns, which can each contain (string/numeric) values or objects defining overrides to each cell
+  dropdown: if defined, gives a function to build the content of a dropdown section for each row, based on the 'source' and the current column index
+  pagination: object defining pagination settings, or just boolean true to use defaults.  No pagination if undefined/false
+  startsOpen: boolean to set the dropdown to open by default or not (default closed)
+*/
+// general table with pagination
+const IAPPTable: React.FC<IAPPTablePropType> = (props) => {
+  const {
+    headers,
+    rows,
+    dropdown = undefined,
+    pagination = undefined,
+    startsOpen = undefined
+  } = props;
+
+  const classes = useStyles();
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const startingRow = page * rowsPerPage;
+
+  const ifApplicable = (value) => (value && String(value).trim() != '') ? value : <div className={classes.missingValue}>N/A</div>;
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  const IAPPBodyRow = ({row, index}) => {
+    const [open, setOpen] = React.useState(startsOpen);
+
+    const renderedDropdown = dropdown ? dropdown(index) : null;
+    // allow the row to override standard rendering if it is a string or element
+    const renderedCells = typeof row === 'string' || React.isValidElement(row)
+      ? row
+      : row.map((cell, j) => renderCell(cell, j));
+
+    return (
+      <React.Fragment key={index}>
+        <TableRow onClick={() => setOpen(!open)}>
+          {dropdown &&
+            <TableCell className={classes.dropdownCol}>
+              {renderedDropdown !== null &&
+                <IconButton aria-label="expand row" size="small">
+                  {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                </IconButton>
+              }
+            </TableCell>
+          }
+          {renderedCells}
+        </TableRow>
+        {dropdown && renderedDropdown !== null && (
+          <TableRow>
+            <TableCell className={classes.dropdown} colSpan={9}>
+              <Collapse in={open} timeout="auto">
+                <Box margin={2}>
+                  {renderedDropdown}
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+        )}
+      </React.Fragment>
+    );
+  }
+
+  const renderCell = (cell, i) => {
+    if (typeof cell === 'string')
+      return <TableCell key={i} className={classes.cell}>{ifApplicable(cell)}</TableCell>;
+    if (typeof cell === 'object') {
+      return React.createElement(
+        TableCell,
+        {
+          key: i,
+          className: classes.cell,
+          ...cell
+        }
+      );
+    }
+  };
+
+  const renderedHeaders = headers.map((cell, i) => renderCell(cell, i));
+  const renderedRows = rows
+    .slice(startingRow, startingRow + rowsPerPage)
+    .map((row, i) => <IAPPBodyRow row={row} index={startingRow + i} key={startingRow + i} />);
+
+  return (
+    (!rows || rows.length === 0)
+      ? <div>No Data</div>
+      : (
+        <React.Fragment>
+          <TableContainer component={Paper} className={classes.tableContainer}>
+            <Table className={classes.table} aria-label="mechanical treatments">
+              <TableHead className={classes.header}>
+                <TableRow>
+                  {dropdown && <TableCell className={classes.dropdownCol}/>}
+                  {renderedHeaders}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {renderedRows}
+              </TableBody>
+            </Table>
+            {pagination && rows && rows.length > rowsPerPage && <TablePagination
+              rowsPerPageOptions={[rowsPerPage]}
+              component="div"
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />}
+          </TableContainer>
+        </React.Fragment>
+    )
+  );
+}
