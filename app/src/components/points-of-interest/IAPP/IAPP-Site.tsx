@@ -64,15 +64,17 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     access_description,
     created_date_on_device
   } = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data;
-  const paper_file = props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data?.paper_file[0]?.description;
+  const paper_file =
+    props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data?.paper_file[0]?.description;
   const longitude = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0];
   const latitude = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1];
   const { slope, elevation } = props?.record?.point_of_interest_payload?.geometry[0].properties;
   const { Jur1, Jur1pct, Jur2, Jur2pct, Jur3, Jur3pct } = surveys
     ? surveys[0]
-    : {Jur1: 'Not Specified', Jur1pct: '100', Jur2: '', Jur2pct: '0', Jur3: '', Jur3pct: '0'};
+    : { Jur1: 'Not Specified', Jur1pct: '100', Jur2: '', Jur2pct: '0', Jur3: '', Jur3pct: '0' };
 
-  const ifApplicable = (value) => (value && String(value).trim() != '') ? value : <div className={classes.missingValue}>N/A</div>;
+  const ifApplicable = (value) =>
+    value && String(value).trim() !== '' ? value : <div className={classes.missingValue}>N/A</div>;
   const toDecimalPlaces = (n, decimals = 4) => Number.parseFloat(n).toFixed(decimals);
 
   return (
@@ -152,13 +154,16 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Jurisdiction
             </Grid>
             <Grid item xs={3}>
-              {ifApplicable(Jur1)}{Jur1pct && Jur1pct != '0' ? ' (' + Jur1pct + '%)' : ''}
+              {ifApplicable(Jur1)}
+              {Jur1pct && Jur1pct !== '0' ? ' (' + Jur1pct + '%)' : ''}
             </Grid>
             <Grid item xs={3}>
-              {Jur2 ?? ''}{Jur2pct && Jur2pct != '0' ? ' (' + Jur2pct + '%)' : ''}
+              {Jur2 ?? ''}
+              {Jur2pct && Jur2pct !== '0' ? ' (' + Jur2pct + '%)' : ''}
             </Grid>
             <Grid item xs={3}>
-              {Jur3 ?? ''}{Jur3pct && Jur3pct != '0' ? ' (' + Jur3pct + '%)' : ''}
+              {Jur3 ?? ''}
+              {Jur3pct && Jur3pct !== '0' ? ' (' + Jur3pct + '%)' : ''}
             </Grid>
 
             <Grid item xs={3} sm={2}>
@@ -275,10 +280,10 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           )}
         </AccordionDetails>
       </Accordion>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
+      <br />
+      <br />
+      <br />
+      <br />
     </Container>
   );
 };

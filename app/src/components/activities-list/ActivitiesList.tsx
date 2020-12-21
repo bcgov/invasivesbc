@@ -192,7 +192,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
         if (!doc.activitySubtype.includes(props.workflowFunction)) {
-          return;
+          return null;
         }
 
         return (
@@ -310,9 +310,9 @@ const ActivitiesList: React.FC = (props) => {
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>Workflow Functions</InputLabel>
             <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Workflow Function">
-              <MenuItem value='Plant'>Plant</MenuItem>
-              <MenuItem value='Animal'>Animal</MenuItem>
-              <MenuItem value='Special'>Special</MenuItem>
+              <MenuItem value="Plant">Plant</MenuItem>
+              <MenuItem value="Animal">Animal</MenuItem>
+              <MenuItem value="Special">Special</MenuItem>
             </Select>
           </FormControl>
           <Button
