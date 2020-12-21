@@ -228,7 +228,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                         children: 'Comments'
                       }
                     ]}
-                    rows={mechanical_treatments[i].monitoring.map((row, i) => ([
+                    rows={mechanical_treatments[i].monitoring.map((row, j) => ([
                       row.monitoring_id,
                       row.monitoring_date,
                       row.agency_code,
@@ -313,7 +313,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                           children: 'Comments'
                         }
                       ]}
-                      rows={chemical_treatments[i].monitoring.map((row, i) => ([
+                      rows={chemical_treatments[i].monitoring.map((row, j) => ([
                         row.monitoring_id,
                         row.inspection_date,
                         row.invasive_plant_agency_code,
