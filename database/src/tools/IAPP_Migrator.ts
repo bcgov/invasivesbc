@@ -297,6 +297,12 @@ const main = async () => {
 
     count1++;
 
+
+    // Go/No-Go Rules:
+    // only import POIs which have Survey data:
+    if (!surveys || surveys.length === 0)
+      continue;
+
     const requestBody: any = {
       point_of_interest_type: 'IAPP Site',
       point_of_interest_subtype: 'First Load',
