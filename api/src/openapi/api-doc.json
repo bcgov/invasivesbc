@@ -1429,6 +1429,13 @@
             "title": "Monitoring Details",
             "maximum": 300,
             "default": ""
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
+            }
           }
         }
       },
