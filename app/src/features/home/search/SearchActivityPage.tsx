@@ -93,7 +93,13 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       }
     };
 
-    setActivity({ ...activity, geometry: geom, status: ActivityStatus.EDITED, dateUpdated: new Date(), formData: updatedFormData });
+    setActivity({
+      ...activity,
+      geometry: geom,
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
+      formData: updatedFormData
+    });
   };
 
   /**
@@ -229,7 +235,10 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       </Box>
 
       <ActivityComponent
-        customValidation={getCustomValidator([getAreaValidator(activity.activitySubtype), getWindValidator(activity.activitySubtype)])}
+        customValidation={getCustomValidator([
+          getAreaValidator(activity.activitySubtype),
+          getWindValidator(activity.activitySubtype)
+        ])}
         classes={classes}
         activity={activity}
         onFormChange={onFormChange}

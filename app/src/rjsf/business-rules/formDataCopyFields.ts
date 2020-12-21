@@ -20,7 +20,7 @@ export function getFieldsToCopy(data: any, dataField: string, activitySubtype?: 
       check if plant type, copy over the invasive plant(s) field
     */
     if (activitySubtype.includes('Treatment') && activitySubtype.includes('Plant')) {
-      return { 'invasive_plants': data.invasive_plants || [{ 'invasive_plant_code': data.invasive_plant_code }] };
+      return { invasive_plants: data.invasive_plants || [{ invasive_plant_code: data.invasive_plant_code }] };
     }
   }
 

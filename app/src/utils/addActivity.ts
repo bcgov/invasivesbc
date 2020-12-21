@@ -16,7 +16,12 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
   If linked, the activity_id field which is present in the activity_type_data is populated to reference the linked activity record's id
   Also, the activity_data is populated based on business logic rules which specify which fields to copy
 */
-export async function addActivityToDB(databaseContext: any, activityType: ActivityType, activitySubtype: ActivitySubtype, linkedRecord?: any): Promise<IActivity> {
+export async function addActivityToDB(
+  databaseContext: any,
+  activityType: ActivityType,
+  activitySubtype: ActivitySubtype,
+  linkedRecord?: any
+): Promise<IActivity> {
   const id = uuidv4();
 
   const formData = !linkedRecord
@@ -24,7 +29,11 @@ export async function addActivityToDB(databaseContext: any, activityType: Activi
     : {
         activity_data: getFieldsToCopy(linkedRecord.formData.activity_data, 'activity_data'),
         activity_type_data: {
-          ...getFieldsToCopy(linkedRecord.formData.activity_subtype_data, 'activity_subtype_data', linkedRecord.activitySubtype),
+          ...getFieldsToCopy(
+            linkedRecord.formData.activity_subtype_data,
+            'activity_subtype_data',
+            linkedRecord.activitySubtype
+          ),
           activity_id: linkedRecord._id
         }
       };

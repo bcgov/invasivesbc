@@ -3,20 +3,20 @@ import * as turf from '@turf/turf';
 
 /**
  * Calculate the net area for the total geometry
- * 
+ *
  * @param {Feature[]} geoJSON The geometry in GeoJSON format
  */
 export function calculateGeometryArea(geometry: Feature[]) {
   let totalArea = 0;
 
-  if (!geometry || !geometry.length || geometry[0].geometry.type === "LineString") {
+  if (!geometry || !geometry.length || geometry[0].geometry.type === 'LineString') {
     return parseFloat(totalArea.toFixed(0));
   }
 
   const geo = geometry[0];
-  if (geo.geometry.type === "Point" && geo.properties.hasOwnProperty('radius')) {
-    totalArea = (Math.PI * Math.pow(geo.properties.radius, 2));
-  } else if (geo.geometry.type === "Polygon") {
+  if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
+    totalArea = Math.PI * Math.pow(geo.properties.radius, 2);
+  } else if (geo.geometry.type === 'Polygon') {
     totalArea = turf.area(turf.polygon(geo.geometry['coordinates']));
   }
 
@@ -25,7 +25,7 @@ export function calculateGeometryArea(geometry: Feature[]) {
 
 /**
  * Calculate the anchor point lat/lng for the geometry
- * 
+ *
  * @param {Feature[]} geoJSON The geometry in GeoJSON format
  */
 export function calculateLatLng(geom: Feature[]) {
@@ -55,7 +55,7 @@ export function calculateLatLng(geom: Feature[]) {
   const latlng = {
     latitude: parseFloat(latitude.toFixed(6)),
     longitude: parseFloat(longitude.toFixed(6))
-  }
+  };
 
   return latlng;
 }
