@@ -74,9 +74,6 @@ const MonitoringActivity = {
     ...Activity.access_description,
     'ui:readonly': true
   },
-  invasive_species_agency_code: {
-    'ui:disabled': true
-  },
   jurisdiction_code: {
     'ui:disabled': true
   }
