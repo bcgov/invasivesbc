@@ -71,7 +71,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const longitude = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0];
   const latitude = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1];
   const {slope, elevation} = props?.record?.point_of_interest_payload?.geometry[0].properties;
-  const {Jur1, Jur1pct, Jur2, Jur2pct, Jur3, Jur3pct} = surveys ? surveys[0] : {Jur1: 'Not Specified', Jur1pct: '100', Jur2: '', Jur2pct: '0', Jur3: '', Jur3pct: '0'};
+  const {Jur1, Jur1pct, Jur2, Jur2pct, Jur3, Jur3pct} = surveys && surveys.length > 0 ? surveys[0] : {Jur1: 'Not Specified', Jur1pct: '100', Jur2: '', Jur2pct: '0', Jur3: '', Jur3pct: '0'};
   // Tester: {Jur1:'A', Jur1pct:'50', Jur2:'B', Jur2pct:'20', Jur3:'C', Jur3pct:'30'};
 
   return (
@@ -185,6 +185,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         <AccordionDetails className={classes.treatmentContainer}>
           <IAPPTable
             headers={[
+              "Treatment ID",
               "Mechanical ID",
               "Common Name",
               "Treatment Date",
@@ -198,6 +199,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }
             ]}
             rows={mechanical_treatments ? mechanical_treatments.map((row) => ([
+              row.TreatmentID,
               row.MechanicalID,
               row.CommonName,
               row.TreatmentDate,
@@ -313,13 +315,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       ]}
                       rows={chemical_treatments[i].monitoring.map((row, i) => ([
                         row.monitoring_id,
-                        row.monitoring_date,
-                        row.agency_code,
-                        row.efficacy_percent,
-                        row.paper_file_id,
+                        row.inspection_date,
+                        row.invasive_plant_agency_code,
+                        row.EFFICACY_RATING_CODE,
+                        row.PAPER_FILE_ID,
                         {
                           className: classes.wideCell,
-                          children: row.comment
+                          children: row.comments
                         }
                       ]))}
                     />
