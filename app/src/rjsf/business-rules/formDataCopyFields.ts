@@ -12,12 +12,18 @@ export function getFieldsToCopy(data: any, dataField: string, activitySubtype?: 
       However, for monitorings, we do copy these fields over as well because they are identical to
       the treatment record they are referencing
     */
+    const activityDataToCopy = { ...data };
+
+    delete activityDataToCopy.activity_date_time;
+
     if (activitySubtype && activitySubtype.includes('Treatment')) {
-      const { activity_date_time, ...activityDataToCopy } = data;
       return activityDataToCopy;
     }
 
-    const { activity_date_time, latitude, longitude, reported_area, ...activityDataToCopy } = data;
+    delete activityDataToCopy.latitude;
+    delete activityDataToCopy.longitude;
+    delete activityDataToCopy.reported_area;
+
     return activityDataToCopy;
   }
 
