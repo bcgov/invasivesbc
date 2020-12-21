@@ -1398,8 +1398,7 @@
           "observer_first_name",
           "observer_last_name",
           "efficacy_code",
-          "monitoring_details",
-          "invasive_plants"
+          "monitoring_details"
         ],
         "properties": {
           "activity_id": {
@@ -1430,13 +1429,6 @@
             "title": "Monitoring Details",
             "maximum": 300,
             "default": ""
-          },
-          "invasive_plants": {
-            "type": "array",
-            "title": "Invasive Plants",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlants"
-            }
           }
         }
       },

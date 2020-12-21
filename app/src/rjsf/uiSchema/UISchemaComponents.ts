@@ -53,7 +53,7 @@ const Activity = {
   reported_area: {
     'ui:readonly': true
   },
-  species_agency_code: {},
+  invasive_species_agency_code: {},
   jurisdiction_code: {},
   general_comment: {
     'ui:widget': 'textarea'
@@ -68,9 +68,24 @@ const Activity = {
   }
 };
 
+const MonitoringActivity = {
+  ...Activity,
+  access_description: {
+    ...Activity.access_description,
+    'ui:readonly': true
+  },
+  invasive_species_agency_code: {
+    'ui:disabled': true
+  },
+  jurisdiction_code: {
+    'ui:disabled': true
+  }
+};
+
 const UISchemaComponents = {
   Treatment_ChemicalPlant,
-  Activity
+  Activity,
+  MonitoringActivity
 };
 
 export default UISchemaComponents;

@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import moment from 'moment';
 import {
   ActivityStatus,
   ActivitySyncStatus,
@@ -19,15 +20,23 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 export async function addActivityToDB(databaseContext: any, activityType: ActivityType, activitySubtype: ActivitySubtype, linkedRecord?: any): Promise<IActivity> {
   const id = uuidv4();
 
-  const formData = !linkedRecord
-    ? null
-    : {
-        activity_data: getFieldsToCopy(linkedRecord.formData.activity_data, 'activity_data'),
-        activity_type_data: {
-          ...getFieldsToCopy(linkedRecord.formData.activity_subtype_data, 'activity_subtype_data', linkedRecord.activitySubtype),
-          activity_id: linkedRecord._id
-        }
-      };
+  const formData = !linkedRecord ?
+    {
+      activity_data: {
+        activity_date_time: moment(new Date()).format()
+      }
+    } :
+    {
+      activity_data: {
+        ...getFieldsToCopy(linkedRecord.formData.activity_data, 'activity_data', linkedRecord.activitySubtype),
+        activity_date_time: moment(new Date()).format()
+      },
+      activity_type_data: {
+        ...getFieldsToCopy(linkedRecord.formData.activity_subtype_data, 'activity_subtype_data', linkedRecord.activitySubtype),
+        activity_id: linkedRecord._id
+      }
+    };
+  const geometry = !linkedRecord ? null : linkedRecord.geometry;
 
   const doc: IActivity = {
     _id: id,
@@ -44,7 +53,8 @@ export async function addActivityToDB(databaseContext: any, activityType: Activi
     dateCreated: new Date(),
     dateUpdated: null,
     formData,
-    formStatus: FormValidationStatus.NOT_VALIDATED
+    formStatus: FormValidationStatus.NOT_VALIDATED,
+    geometry
   };
 
   await databaseContext.database.put(doc);

@@ -6,7 +6,6 @@ import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import moment from 'moment';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
@@ -68,15 +67,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const getDefaultFormDataValues = (activity: any) => {
     const { activity_data } = activity.formData || {};
 
-    const areaOfGeometry = calculateGeometryArea(activity.geometry);
-    const activityDateTime = activity_data && activity_data.activity_date_time || moment(new Date()).format();
-
     return {
       ...activity.formData,
       activity_data: {
         ...activity_data,
-        activity_date_time: activityDateTime,
-        reported_area: areaOfGeometry
+        reported_area: calculateGeometryArea(activity.geometry)
       }
     };
   };
@@ -238,6 +233,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
+
+      console.log(updatedDoc);
 
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
