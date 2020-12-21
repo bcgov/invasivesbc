@@ -10,36 +10,40 @@ const formatDateToISO = (d) => d.getFullYear() + '-'
   + ('0' + (d.getMonth() + 1)).slice(-2) + '-'
   + ('0' + d.getDate()).slice(-2);
 
-
 // return items matching field value in an array of objects sorted by field
 // https://www.w3resource.com/javascript-exercises/javascript-array-exercise-18.php
 const binarySearchValues = (items, field, value) => {
-    if (items === undefined)
-      return [];
-    let firstIndex  = 0;
-    let lastIndex   = items.length - 1;
-    let middleIndex = Math.floor((lastIndex + firstIndex)/2);
+    try {
+      if (items === undefined)
+        return [];
+      let firstIndex  = 0;
+      let lastIndex   = items.length - 1;
+      let middleIndex = Math.floor((lastIndex + firstIndex)/2);
 
-    while(items[middleIndex][field] != value && firstIndex < lastIndex) {
-      if (value < items[middleIndex][field]) {
-        lastIndex = middleIndex - 1;
-      } else if (value > items[middleIndex][field]){
-        firstIndex = middleIndex + 1;
+      while (items[middleIndex][field] != value && firstIndex < lastIndex) {
+        if (value < items[middleIndex][field]) {
+          lastIndex = Math.max(middleIndex - 1, 0);
+        } else if (value > items[middleIndex][field]){
+          firstIndex = Math.min(middleIndex + 1, items.length - 1);
+        }
+        middleIndex = Math.floor((lastIndex + firstIndex)/2);
       }
-      middleIndex = Math.floor((lastIndex + firstIndex)/2);
-    }
 
-    if (items[middleIndex][field] != value)
+      if (items[middleIndex][field] != value)
+        return [];
+
+      // get multiple matches:
+      firstIndex = lastIndex = middleIndex;
+      while (firstIndex > 0 && items[firstIndex - 1][field] == value)
+        firstIndex = firstIndex - 1;
+      while (lastIndex < items.length - 1 && items[lastIndex + 1][field] == value)
+        lastIndex = lastIndex + 1;
+
+      return items.slice(firstIndex, lastIndex + 1);
+    } catch (error) {
+      console.log(error);
       return [];
-
-    // get multiple matches:
-    firstIndex = lastIndex = middleIndex;
-    while (firstIndex > 0 && items[firstIndex - 1][field] == value)
-      firstIndex = firstIndex - 1;
-    while (lastIndex < items.length - 1 && items[lastIndex + 1][field] == value)
-      lastIndex = lastIndex + 1;
-
-    return items.slice(firstIndex, lastIndex + 1);
+    }
 }
 
 const cli = meow(
@@ -218,8 +222,8 @@ const loadAllData = async () => {
 
   if (cli.flags.chemicalTreatment) {
     console.log('Loading chemical treatments...');
-    results.mechanicalTreatmentData = await loadACSV(cli.flags.chemicalTreatment);
-    console.log(results.mechanicalTreatmentData.length + ' chem mechanical treatments loaded.');
+    results.chemicalTreatmentData = await loadACSV(cli.flags.chemicalTreatment);
+    console.log(results.chemicalTreatmentData.length + ' chem mechanical treatments loaded.');
   }
 
   if (cli.flags.chemicalMonitoring) {
@@ -254,6 +258,8 @@ const main = async () => {
   // assumes site CSV sorted by SiteID DESC
   while (count1 < 10000) {
     const siteRecord = IAPPData.siteData[count1];
+    if (IAPPData.siteData[count1] === undefined)
+      break;
     const siteRecordID = siteRecord['SiteID'];
 
     // assumes surveys CSV sorted by SiteID ASC
