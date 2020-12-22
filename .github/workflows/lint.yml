@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   build:
-    name: Lint App
+    name: Lint InvasivesBC
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
