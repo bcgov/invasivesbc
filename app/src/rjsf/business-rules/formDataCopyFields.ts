@@ -32,13 +32,8 @@ export function getFieldsToCopy(data: any, dataField: string, activitySubtype?: 
       If we are copying fields from treatment subtype to monitoring
       check if plant type, copy over the invasive plant(s) field
     */
-<<<<<<< HEAD
     if (activitySubtype && activitySubtype.includes('Treatment') && activitySubtype.includes('Plant')) {
-      return { 'invasive_plants': data.invasive_plants || [{ 'invasive_plant_code': data.invasive_plant_code }] };
-=======
-    if (activitySubtype.includes('Treatment') && activitySubtype.includes('Plant')) {
       return { invasive_plants: data.invasive_plants || [{ invasive_plant_code: data.invasive_plant_code }] };
->>>>>>> dev
     }
   }
 
