@@ -67,9 +67,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const { activity_data } = activity.formData || {};
 
     return {
-      ...activity_data,
-      reported_area: calculateGeometryArea(activity.geometry)
-    };
+      ...activity.formData,
+      activity_data: {
+        ...activity_data,
+        reported_area: calculateGeometryArea(activity.geometry)
+      }
   };
 
   /**
