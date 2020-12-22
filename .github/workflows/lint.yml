@@ -18,3 +18,18 @@ jobs:
       - name: Run linter
         run: CI=true npm run lint
         working-directory: app
+  build:
+    name: Lint Api
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10"
+      - name: Install dependencies
+        run: npm install
+        working-directory: api
+      - name: Run linter
+        run: CI=true npm run lint
+        working-directory: api
