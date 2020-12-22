@@ -104,7 +104,7 @@ function getActivity(): RequestHandler {
 }
 
 function getMedia(): RequestHandler {
-  return async (req, _, next) => {
+  return async (req, res, next) => {
     defaultLog.debug({ label: '{activityId}', message: 'getMedia', body: req.body });
 
     const activity = req['activity'];
