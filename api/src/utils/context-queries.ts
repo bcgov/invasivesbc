@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { getDBConnection } from '../database/db';
 import { getLogger } from './logger';
+import { getWell } from '../paths/context/well';
+import { insertWellDistanceSQL } from './../queries/context-queries';
+import { SQLStatement } from 'sql-template-strings';
 
 const defaultLog = getLogger('context-queries');
 
@@ -192,9 +195,57 @@ const saveElevation = (id: any,req: any) => {
     });
 };
 
+
+/**
+ * ## saveWell
+ * Insert contextual well data for the new activity record from
+ * local datasets housed in the PostGres database.
+ *
+ * @param id {integer} The record ID for the activity recently
+ *   entered in the database.
+ * @param req {object} The express request object
+ */
+const saveWell = (id: any,req: any) => {
+  const a = req.body.form_data.activity_data;
+  const payload = {
+    query: {
+      lon: a.longitude,
+      lat: a.latitude
+    }
+  };
+
+  /* ### callback
+    Use a callback to insert the data
+    @param bundle {object} The well object containing well data and distance.
+   */
+  const callback = async (bundle) => {
+    const connection = await getDBConnection();
+    const params = {
+      distance: bundle.distance,
+      id: id
+    }
+
+    const sql: SQLStatement = insertWellDistanceSQL(params);
+
+    await connection.query(sql.text,sql.values)
+      .then(() => {
+        console.log('Successfully entered well proximity')
+      })
+      .catch((err) => {
+        console.error('Error inserting into the database',err);
+      });
+
+    connection.release();
+  }
+
+  getWell(payload,false,callback);
+};
+
+
 export const commit = function (record:any,req:any) {
   const id = record.activity_id;
-  saveBCGW(id,req); // Insert DataBC BCGW attributes
-  saveInternal(id,req); // Insert local attributes
-  saveElevation(id,req); // Insert elevation
+  // saveBCGW(id,req); // Insert DataBC BCGW attributes
+  // saveInternal(id,req); // Insert local attributes
+  // saveElevation(id,req); // Insert elevation
+  saveWell(id,req); // Insert the closest well
 };

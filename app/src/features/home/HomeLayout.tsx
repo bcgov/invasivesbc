@@ -1,34 +1,15 @@
-import { Collapse, IconButton, makeStyles, Theme } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-import { Alert } from '@material-ui/lab';
-import TabsContainer from 'components/tabs/TabsContainer';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState } from 'react';
-import MarkunreadMailboxIcon from '@material-ui/icons/MarkunreadMailbox';
+import { Box, Collapse, IconButton } from '@material-ui/core';
 import Badge from '@material-ui/core/Badge';
+import { Close, MarkunreadMailbox } from '@material-ui/icons';
+import { Alert } from '@material-ui/lab';
+import NetworkStatusComponent from 'components/network/NetworkStatusComponent';
+import TabsContainer from 'components/tabs/TabsContainer';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  homeLayoutRoot: {
-    width: 'inherit',
-    height: '100%',
-    display: 'flex',
-    flex: '1',
-    flexDirection: 'column'
-  },
-  tabsContainer: {
-    flexGrow: 1,
-    width: '100%'
-  },
-  homeContainer: {
-    flex: '1',
-    overflow: 'auto'
-  }
-}));
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import React, { useContext, useEffect, useState } from 'react';
 
 const HomeLayout = (props: any) => {
-  const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
@@ -88,8 +69,8 @@ const HomeLayout = (props: any) => {
   };
 
   return (
-    <div className={classes.homeLayoutRoot}>
-      <TabsContainer classes={classes.tabsContainer} />
+    <Box width="inherit" height="100%" display="flex" flex="1" flexDirection="column">
+      <TabsContainer />
       <Collapse timeout={50} in={isOpen}>
         <Alert
           // severity can't be null so this is a workaround
@@ -103,16 +84,28 @@ const HomeLayout = (props: any) => {
                 acknowledgeNotification(notification._id);
               }}>
               <Badge badgeContent={notificationCount}>
-                <MarkunreadMailboxIcon></MarkunreadMailboxIcon>
+                <MarkunreadMailbox />
               </Badge>
-              <CloseIcon fontSize="inherit" />
+              <Close fontSize="inherit" />
             </IconButton>
           }>
           <strong>{notification == null ? null : notification.text}</strong>
         </Alert>
       </Collapse>
-      <div className={classes.homeContainer}>{props.children}</div>
-    </div>
+      <Box mb="43px" height="inherit" width="inherit" overflow="auto">
+        {props.children}
+      </Box>
+      <Box
+        height="43px"
+        position="absolute"
+        bottom="0"
+        left="0"
+        right="0"
+        bgcolor="primary.main"
+        color="primary.contrastText">
+        <NetworkStatusComponent />
+      </Box>
+    </Box>
   );
 };
 

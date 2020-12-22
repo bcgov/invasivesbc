@@ -13,6 +13,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
+import * as turf from '@turf/turf';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -83,7 +84,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         edit: true
       }
     });
-
     mapRef.current.addControl(drawControlOptions);
   };
 
@@ -177,6 +177,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
       }
 
+      aGeo = convertLineStringToPoly(aGeo);
+
       // Note that drawing one wipes all others:
       props.geometryState.setGeometry([aGeo]);
     });
@@ -184,6 +186,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('draw:drawstart', function () {
       props.geometryState.setGeometry([]);
     });
+
+    const convertLineStringToPoly = (aGeo: any) => {
+      if (aGeo.geometry.type === 'LineString') {
+        const shouldConvertToPoly = window.confirm('Convert to buffered polygon?');
+
+        if (!shouldConvertToPoly) {
+          return aGeo;
+        }
+
+        const buffer = prompt('Enter buffer width (total) in meters', '5');
+        const buffered = turf.buffer(aGeo.geometry, parseInt(buffer) / 1000, { units: 'kilometers', steps: 1 });
+        const result = turf.featureCollection([buffered, aGeo.geometry]);
+
+        return { ...aGeo, geometry: result.features[0].geometry };
+      }
+
+      return aGeo;
+    };
 
     mapRef.current.on('draw:editstop', async function (layerGroup) {
       // The current feature isn't passed to this function, so grab it from the acetate layer
@@ -194,6 +214,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         const radius = drawnItems.getLayers()[0]?.getRadius();
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
       }
+
+      aGeo = convertLineStringToPoly(aGeo);
 
       // Save edited feature
       if (aGeo) {
@@ -242,7 +264,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
     if (props.interactiveGeometryState) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-
         const style = {
           color: interactObj.color,
           weight: 4,
@@ -273,7 +294,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               if (feature.geometry.type !== 'Polygon') {
                 L.popup()
                   .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
-                  //.setContent(interactObj.popUpComponent)
                   .setContent(content)
                   .openOn(mapRef.current);
               }

@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Container, Grid, makeStyles, Theme } from '@material-ui/core';
+import { Button, CircularProgress, Container, Grid, makeStyles, Theme, Box } from '@material-ui/core';
 import clsx from 'clsx';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
@@ -9,7 +9,7 @@ import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
-import React, {  useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -172,7 +172,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
       setFormActivityData(activityResults.docs[0]);
       setPhotos(activityResults.docs[0].photos || []);
     }
-  }
+  };
 
   const getEverythingWithAGeo = async () => {
     let docs = await databaseContext.database.find({
@@ -204,7 +204,10 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       let coordinatesString = 'Polygon';
       if (row.geometry[0].geometry.type !== 'Polygon') {
-        const coords = [Number(row.geometry[0]?.geometry.coordinates[1]).toFixed(2), Number(row.geometry[0]?.geometry.coordinates[0]).toFixed(2)];
+        const coords = [
+          Number(row.geometry[0]?.geometry.coordinates[1]).toFixed(2),
+          Number(row.geometry[0]?.geometry.coordinates[0]).toFixed(2)
+        ];
         coordinatesString = `(${coords[0]}, ${coords[1]})`;
       }
 
@@ -363,7 +366,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   };
 
   return (
-    <>
+    <Box height="inherit" width="inherit">
       <Grid className={classes.mainGrid} container>
         <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
           <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
@@ -390,11 +393,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             {(selectedInteractiveGeometry as any)?.docType === DocType.REFERENCE_POINT_OF_INTEREST ? (
               <IAPPSite record={selectedInteractiveGeometry} />
             ) : (
-              <>
-                {formActivityData && (
-                  <ActivitiesPOI containerProps={containerProps} />
-                )}
-              </>
+              <>{formActivityData && <ActivitiesPOI containerProps={containerProps} />}</>
             )}
             {/*<ActivityPage activityId={selectedInteractiveGeometry?.recordDocID} />*/}
           </PopOutComponent>
@@ -404,7 +403,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
         contextMenuState={{ state: contextMenuState, setContextMenuState }}
         handleClose={handleContextMenuClose}
       />
-    </>
+    </Box>
   );
 };
 

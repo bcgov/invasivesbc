@@ -5,6 +5,9 @@ export interface IFormControlsComponentProps {
   classes?: any;
   isDisabled?: boolean;
   onSubmit?: Function;
+  onCopy?: Function;
+  onPaste?: Function;
+  activitySubtype?: string;
 }
 
 const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
@@ -29,6 +32,22 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
               Check Form For Errors
             </Button>
           </Grid>
+          {props.onCopy && (
+            <Grid item>
+              <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onCopy()}>
+                Copy Form Data
+              </Button>
+            </Grid>
+          )}
+          {sessionStorage.getItem('copiedFormData') &&
+            sessionStorage.getItem('activitySubtype') === props.activitySubtype &&
+            props.onPaste && (
+              <Grid item>
+                <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onPaste()}>
+                  Paste Form Data
+                </Button>
+              </Grid>
+            )}
         </Grid>
       </Grid>
     </>

@@ -18,20 +18,21 @@ const Observation = {
 };
 
 const Observation_PlantTerrestial = {
-  species_density_code: {},
-  species_distribution_code: {},
+  invasive_plant_density_code: {},
+  invasive_plant_distribution_code: {},
   soil_texture_code: {},
   specific_use_code: {},
   slope_code: {},
   aspect_code: {},
-  proposed_action_code: {},
+  invasive_plant_code: {},
+  proposed_treatment_code: {},
   flowering: {
     'ui:widget': 'radio'
   },
-  plant_life_stage: {},
-  plant_health: {},
-  plant_seed_stage: {},
   range_unit_number: {},
+  plant_life_stage_code: {},
+  plant_health_code: {},
+  plant_seed_stage_code: {},
   legacy_site_ind: {
     'ui:widget': 'radio'
   },
@@ -86,83 +87,84 @@ const Observation_PlantAquatic = {
 
 const Observation_AnimalTerrestrial = {
   number_of_individuals_observed: {},
-  life_stage_code: {},
-  behaviour_code: {}
+  invasive_animal_code: {},
+  animal_behavior_code: {},
+  animal_life_stage_code: {}
 };
 
 const Observation_AnimalAquatic = {
   observation_details: {}
 };
 
-const Treatment = {};
-
-const Treatment_MechanicalPlant = {
+const Treatment = {
   applicator1_first_name: {},
   applicator1_last_name: {},
   applicator2_first_name: {},
   applicator2_last_name: {},
   treatment_contractor: {},
+  treatment_issues_code: {}
+};
+
+const Treatment_MechanicalPlant = {
+  invasive_plant_code: {},
   mechanical_method_code: {},
-  mechanical_disposal_method_code: {},
-  mechanical_root_removal_code: {},
-  mechanical_soil_disturbance_code: {},
+  mechanical_disposal_code: {},
+  root_removal_code: {},
+  soil_disturbance_code: {},
   signage_on_site: {
     'ui:widget': 'radio'
   }
 };
 
 const Treatment_BiologicalPlant = {
-  applicator1_first_name: {},
-  applicator1_last_name: {},
-  applicator2_first_name: {},
-  applicator2_last_name: {},
-  treatment_contractor: {},
-  classified_area: {},
+  classified_area_code: {},
   release_quantity: {},
   agent_source: {},
-  biological_agent: {},
-  biological_agent_stage: {},
-  bioagent_maturity_status: {}
+  biological_agent_code: {},
+  biological_agent_stage_code: {},
+  invasive_plant_code: {},
+  bioagent_maturity_status_code: {}
 };
 
 const Treatment_BiologicalDispersalPlant = {
-  applicator1_first_name: {},
-  applicator1_last_name: {},
-  applicator2_first_name: {},
-  applicator2_last_name: {},
-  treatment_contractor: {},
   duration_of_count: {},
-  biological_agent: {},
+  biological_agent_code: {},
   plant_count: {},
   biological_agent_count: {},
-  biological_agent_presence: {}
+  invasive_plant_code: {},
+  biological_agent_presence_code: {}
 };
 
 const Treatment_MechanicalTerrestrialAnimal = {
-  treatment_details: {}
+  treatment_details: {
+    'ui:widget': 'textarea'
+  },
+  invasive_animal_code: {}
 };
 
 const Treatment_ChemicalTerrestrialAnimal = {
-  treatment_details: {}
+  treatment_details: {
+    'ui:widget': 'textarea'
+  },
+  invasive_animal_code: {}
 };
 
 const Treatment_BiologicalTerrestrialAnimal = {
-  treatment_details: {}
+  treatment_details: {
+    'ui:widget': 'textarea'
+  },
+  invasive_animal_code: {}
 };
 
 const Monitoring = {
   activity_id: {},
   observer_first_name: {},
   observer_last_name: {},
-  efficacy_rating_code: {}
-};
-
-const Monitoring_ChemicalTerrestrialAquaticPlant = {
-  monitoring_details: {}
-};
-
-const Monitoring_MechanicalTerrestrialAquaticPlant = {
-  monitoring_details: {}
+  efficacy_code: {},
+  monitoring_details: {
+    'ui:widget': 'textarea'
+  },
+  invasive_plant_code: {}
 };
 
 const Monitoring_BiologicalTerrestrialPlant = {
@@ -220,7 +222,13 @@ const PaperFileID = {
 
 const Herbicide = {
   herbicide_name: {},
-  herbicide_amount: {}
+  herbicide_amount: {},
+  mix_delivery_rate: {},
+  application_rate: {}
+};
+
+const InvasivePlants = {
+  invasive_plant_code: {}
 };
 
 const BaseUISchemaComponents = {
@@ -237,14 +245,13 @@ const BaseUISchemaComponents = {
   Treatment_ChemicalTerrestrialAnimal,
   Treatment_BiologicalTerrestrialAnimal,
   Monitoring,
-  Monitoring_ChemicalTerrestrialAquaticPlant,
-  Monitoring_MechanicalTerrestrialAquaticPlant,
   Monitoring_BiologicalTerrestrialPlant,
   Monitoring_MechanicalTerrestrialAnimal,
   Monitoring_ChemicalTerrestrialAnimal,
   Monitoring_BiologicalTerrestrialAnimal,
   PaperFileID,
-  Herbicide
+  Herbicide,
+  InvasivePlants
 };
 
 export default BaseUISchemaComponents;

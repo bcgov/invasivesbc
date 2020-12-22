@@ -25,6 +25,9 @@
     "npm": ">= 6.0.0"
   },
   "dependencies": {
+    "@turf/distance": "^6.0.1",
+    "@turf/helpers": "^6.1.4",
+    "@turf/nearest-point": "^6.0.1",
     "aws-sdk": "~2.742.0",
     "axios": "~0.19.2",
     "body-parser": "~1.19.0",
@@ -41,6 +44,7 @@
     "memory-cache": "~0.2.0",
     "moment": "~2.27.0",
     "pg": "~8.3.0",
+    "proj4": "^2.6.3",
     "qs": "~6.9.4",
     "sql-template-strings": "~2.2.2",
     "swagger-object-validator": "^1.2.2",

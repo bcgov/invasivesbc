@@ -7,7 +7,7 @@ import PhotoContainer from 'components/photo/PhotoContainer';
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightRegular,
+    fontWeight: theme.typography.fontWeightRegular
   }
 }));
 
@@ -44,4 +44,4 @@ export const ActivitiesPOI: React.FC<ActivityPOIPropType> = (props) => {
       </Accordion>
     </>
   );
-}
+};

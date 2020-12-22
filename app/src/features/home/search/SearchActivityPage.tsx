@@ -6,10 +6,15 @@ import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
+import { notifySuccess, notifyError } from 'utils/NotificationUtils';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
+import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
+import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -38,14 +43,12 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
 
   const invasivesApi = useInvasivesApi();
 
+  const databaseContext = useContext(DatabaseContext);
   const [isLoading, setIsLoading] = useState(true);
-
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
   const [contextMenuState, setContextMenuState] = useState<MapContextMenuData>({ isOpen: false, lat: 0, lng: 0 });
-
   const [activity, setActivity] = useState(null);
-
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
   const handleUpdate = async () => {
@@ -63,9 +66,9 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       };
 
       await invasivesApi.updateActivity(updatedActivity);
-      // TODO success messaging
+      notifySuccess(databaseContext, 'Successfully updated activity.');
     } catch (error) {
-      // TODO error messaging
+      notifyError(databaseContext, 'Failed to update activity.');
     }
   };
 
@@ -74,17 +77,38 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
-  const saveGeometry = async (geometry: Feature[]) => {
-    setActivity({ ...activity, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() });
+  const saveGeometry = async (geom: Feature[]) => {
+    const { latitude, longitude } = calculateLatLng(geom) || {};
+
+    const formData = activity.formData;
+    const areaOfGeometry = calculateGeometryArea(geom);
+
+    const updatedFormData = {
+      ...formData,
+      activity_data: {
+        ...formData.activity_data,
+        latitude,
+        longitude,
+        reported_area: areaOfGeometry
+      }
+    };
+
+    setActivity({
+      ...activity,
+      geometry: geom,
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
+      formData: updatedFormData
+    });
   };
 
   /**
    * Save the photos.
    *
-   * @param {IPhoto} photos An array of photo objects.
+   * @param {IPhoto} photosArr An array of photo objects.
    */
-  const savePhotos = async (photos: IPhoto[]) => {
-    setActivity({ ...activity, photos: photos, dateUpdated: new Date() });
+  const savePhotos = async (photosArr: IPhoto[]) => {
+    setActivity({ ...activity, photos: photosArr, dateUpdated: new Date() });
   };
 
   /**
@@ -122,15 +146,21 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
   /**
    * Save the form whenever it changes.
    *
-   * Note: debouncing will prevent this from running more than once per `500` milliseconds.
+   * Note: debouncing will prevent this from running more than once per `100` milliseconds.
    *
    * @param {*} event the form change event
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
+      // populate herbicide application rate
+      const updatedActivitySubtypeData = populateHerbicideRates(
+        activity.formData.activity_subtype_data,
+        event.formData.activity_subtype_data
+      );
+
       return setActivity({
         ...activity,
-        formData: event.formData,
+        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.NOT_VALIDATED
@@ -205,6 +235,10 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       </Box>
 
       <ActivityComponent
+        customValidation={getCustomValidator([
+          getAreaValidator(activity.activitySubtype),
+          getWindValidator(activity.activitySubtype)
+        ])}
         classes={classes}
         activity={activity}
         onFormChange={onFormChange}

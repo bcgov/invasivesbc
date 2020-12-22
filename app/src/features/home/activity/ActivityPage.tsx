@@ -7,10 +7,13 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import moment from 'moment';
-import * as turf from '@turf/turf';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
-import { getCustomValidator, getAreaValidator } from 'rjsf/business-rules/customValidation';
+import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
+import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
+import { notifySuccess } from 'utils/NotificationUtils';
+import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
+import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -58,77 +61,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
   /**
-   * Calculate the net area for the total geometry
-   * 
-   * @param {Feature[]} geoJSON The geometry in GeoJSON format
-   */
-  const calculateGeometryArea = (geometry: Feature[]) => {
-    let totalArea = 0;
-
-    if (!geometry || !geometry.length || geometry[0].geometry.type === "LineString") {
-      return parseFloat(totalArea.toFixed(0));
-    }
-
-    const geo = geometry[0];
-    if (geo.geometry.type === "Point" && geo.properties.hasOwnProperty('radius')) {
-      totalArea = (Math.PI * Math.pow(geo.properties.radius, 2));
-    } else if (geo.geometry.type === "Polygon") {
-      totalArea = turf.area(turf.polygon(geo.geometry['coordinates']));
-    }
-
-    return parseFloat(totalArea.toFixed(0));
-  };
-
-  /**
-   * Calculate the anchor point lat/lng for the geometry
-   * 
-   * @param {Feature[]} geoJSON The geometry in GeoJSON format
-   */
-  const calculateLatLng = (geom: Feature[]) => {
-    if (!geom[0] || !geom[0].geometry) return;
-
-    const geo = geom[0].geometry;
-    const firstCoord = geo['coordinates'][0];
-
-    let latitude = null;
-    let longitude = null;
-
-    if (geo.type === 'Point') {
-      latitude = geo.coordinates[1];
-      longitude = firstCoord;
-    } else if (geo.type === 'LineString') {
-      latitude = firstCoord[1];
-      longitude = firstCoord[0];
-    } else if (!geom[0].properties.isRectangle) {
-      latitude = firstCoord[0][1];
-      longitude = firstCoord[0][0];
-    } else {
-      const centerPoint = turf.center(turf.polygon(geo['coordinates'])).geometry;
-      latitude = centerPoint.coordinates[1];
-      longitude = centerPoint.coordinates[0];
-    }
-
-    const latlng = {
-      latitude: parseFloat(latitude.toFixed(6)),
-      longitude: parseFloat(longitude.toFixed(6))
-    }
-
-    return latlng;
-  };
-
-  /**
    * Set the default form data values
-   * 
-   * @param {*} doc The doc/activity object
+   *
+   * @param {*} activity The doc/activity object
    */
-  const getDefaultFormDataValues = (doc: any) => {
-    const { activity_data } = doc.formData || {};
+  const getDefaultFormDataValues = (activity: any) => {
+    const { activity_data } = activity.formData || {};
 
-    const areaOfGeometry = calculateGeometryArea(doc.geometry);
-    const activityDateTime = activity_data && activity_data.activity_date_time || moment(new Date()).format();
+    const areaOfGeometry = calculateGeometryArea(activity.geometry);
+    const activityDateTime = (activity_data && activity_data.activity_date_time) || moment(new Date()).format();
 
     return {
-      ...doc.formData,
+      ...activity.formData,
       activity_data: {
         ...activity_data,
         activity_date_time: activityDateTime,
@@ -142,11 +86,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
-  const saveGeometry = async (geometry: Feature[]) => {
-    const { latitude, longitude } = calculateLatLng(geometry) || {};
+  const saveGeometry = async (geom: Feature[]) => {
+    const { latitude, longitude } = calculateLatLng(geom) || {};
 
     const formData = doc.formData;
-    const areaOfGeometry = calculateGeometryArea(geometry);
+    const areaOfGeometry = calculateGeometryArea(geom);
 
     const updatedFormData = {
       ...formData,
@@ -161,7 +105,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     setDoc({ ...doc, formData: updatedFormData });
 
     await databaseContext.database.upsert(doc._id, (dbDoc) => {
-      return { ...dbDoc, formData: updatedFormData, geometry: geometry, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+      return {
+        ...dbDoc,
+        formData: updatedFormData,
+        geometry: geom,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date()
+      };
     });
   };
 
@@ -179,11 +129,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /**
    * Save the photos.
    *
-   * @param {IPhoto} photos An array of photo objects.
+   * @param {IPhoto} photosArr An array of photo objects.
    */
-  const savePhotos = async (photos: IPhoto[]) => {
+  const savePhotos = async (photosArr: IPhoto[]) => {
     await databaseContext.database.upsert(doc._id, (dbDoc) => {
-      return { ...dbDoc, photos: photos, dateUpdated: new Date() };
+      return { ...dbDoc, photos: photosArr, dateUpdated: new Date() };
     });
   };
 
@@ -213,14 +163,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /**
    * Save the form whenever it changes.
    *
-   * Note: debouncing will prevent this from running more than once every `500` milliseconds.
+   * Note: debouncing will prevent this from running more than once every `100` milliseconds.
    *
    * @param {*} event the form change event
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
+      // populate herbicide application rate
+      const updatedActivitySubtypeData = populateHerbicideRates(
+        doc.formData.activity_subtype_data,
+        event.formData.activity_subtype_data
+      );
+
       const updatedFormValues = {
-        formData: event.formData,
+        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.VALID
@@ -235,8 +191,44 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         };
       });
     }),
-    [docId]
+    [doc]
   );
+
+  /**
+   * Paste copied form data saved in session storage
+   * Update the doc (activity) with the latest form data and store it in DB
+   */
+  const pasteFormData = async () => {
+    const formDataToPaste = retrieveFormDataFromSession(doc);
+
+    const updatedFormValues = {
+      formData: formDataToPaste,
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
+      formStatus: FormValidationStatus.VALID
+    };
+
+    setDoc({ ...doc, ...updatedFormValues });
+
+    notifySuccess(databaseContext, 'Successfully pasted form data.');
+
+    await databaseContext.database.upsert(docId, (activity) => {
+      return {
+        ...activity,
+        ...updatedFormValues
+      };
+    });
+  };
+
+  /**
+   * Copy form data into session storage
+   */
+  const copyFormData = () => {
+    const { formData, activitySubtype } = doc;
+
+    saveFormDataToSession(formData, activitySubtype);
+    notifySuccess(databaseContext, 'Successfully copied form data.');
+  };
 
   useEffect(() => {
     const getActivityData = async () => {
@@ -295,7 +287,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   return (
     <Container className={props.classes.container}>
       <ActivityComponent
-        customValidation={getCustomValidator([getAreaValidator(doc.activitySubtype)])}
+        customValidation={getCustomValidator([
+          getAreaValidator(doc.activitySubtype),
+          getWindValidator(doc.activitySubtype)
+        ])}
         classes={classes}
         activity={doc}
         onFormChange={onFormChange}
@@ -305,6 +300,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+        pasteFormData={() => pasteFormData()}
+        copyFormData={() => copyFormData()}
       />
     </Container>
   );

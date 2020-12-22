@@ -17,6 +17,8 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   activity: any;
   customValidation?: any;
   isDisabled?: boolean;
+  pasteFormData?: Function;
+  copyFormData?: Function;
   /**
    * A function executed everytime the form changes.
    *
@@ -64,7 +66,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   return (
     <Box>
       <Box mb={3}>
-        <FormControlsComponent onSubmit={() => formRef.submit()} isDisabled={isDisabled} />
+        <FormControlsComponent
+          onSubmit={() => formRef.submit()}
+          isDisabled={isDisabled}
+          onCopy={props.copyFormData ? () => props.copyFormData() : null}
+          onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
+          activitySubtype={props.activity.activitySubtype}
+        />
       </Box>
 
       <ThemeProvider theme={rjsfTheme}>
@@ -80,6 +88,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           liveValidate={false}
           showErrorList={true}
           validate={props.customValidation}
+          autoComplete="off"
           ErrorList={() => {
             return (
               <div>

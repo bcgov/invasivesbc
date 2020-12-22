@@ -6,10 +6,10 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES } from './../../constants/misc';
 import { getDBConnection } from './../../database/db';
-import { IMediaItem } from './../../models/media';
 import { getActivitySQL } from './../../queries/activity-queries';
 import { getFileFromS3 } from './../../utils/file-utils';
 import { getLogger } from './../../utils/logger';
+import { getMediaItemsList } from './../media';
 
 const defaultLog = getLogger('activity/{activityId}');
 
@@ -122,25 +122,8 @@ function getMedia(): RequestHandler {
 
     const response = await Promise.all(s3GetPromises);
 
-    const result: IMediaItem[] = response.map((s3Object: GetObjectOutput) => {
-      // Encode image buffer as base64
-      const contentString = Buffer.from(s3Object.Body).toString('base64');
-
-      // Append DATA Url string
-      const encodedFile = `data:${s3Object.ContentType};base64,${contentString}`;
-
-      const mediaItem: IMediaItem = {
-        file_name: (s3Object && s3Object.Metadata && s3Object.Metadata.filename) || null,
-        encoded_file: encodedFile,
-        description: (s3Object && s3Object.Metadata && s3Object.Metadata.description) || null,
-        media_date: (s3Object && s3Object.Metadata && s3Object.Metadata.date) || null
-      };
-
-      return mediaItem;
-    });
-
     // Add encoded media to activity
-    req['activity'].media = result;
+    req['activity'].media = getMediaItemsList(response);
 
     return next();
   };
