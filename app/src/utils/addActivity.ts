@@ -19,14 +19,10 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 */
 export async function addActivityToDB(databaseContext: any, activityType: ActivityType, activitySubtype: ActivitySubtype, linkedRecord?: any): Promise<IActivity> {
   const id = uuidv4();
+  let formData: any;
 
-  const formData = !linkedRecord ?
-    {
-      activity_data: {
-        activity_date_time: moment(new Date()).format()
-      }
-    } :
-    {
+  if (linkedRecord) {
+    formData = {
       activity_data: {
         ...getFieldsToCopy(linkedRecord.formData.activity_data, 'activity_data', linkedRecord.activitySubtype),
         activity_date_time: moment(new Date()).format()
@@ -36,7 +32,15 @@ export async function addActivityToDB(databaseContext: any, activityType: Activi
         activity_id: linkedRecord._id
       }
     };
-  const geometry = !linkedRecord ? null : linkedRecord.geometry;
+  } else {
+    formData = {
+      activity_data: {
+        activity_date_time: moment(new Date()).format()
+      }
+    };
+  }
+
+  const geometry = linkedRecord ? linkedRecord.geometry : null;
 
   const doc: IActivity = {
     _id: id,
