@@ -18,7 +18,6 @@ jobs:
       - name: Run linter
         run: CI=true npm run lint
         working-directory: app
-  build:
     name: Lint Api
     runs-on: ubuntu-latest
     steps:
