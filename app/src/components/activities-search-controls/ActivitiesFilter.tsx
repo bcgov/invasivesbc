@@ -15,7 +15,7 @@ import { Add, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import SpeciesTree from './SpeciesInput';
 
 interface IActivityChoices {
@@ -43,7 +43,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   const databaseChangesContext = useContext(DatabaseChangesContext);
   const [activityChoices, setActivityChoices] = useState([]);
 
-  const getActivityChoicesFromTrip = async () => {
+  const getActivityChoicesFromTrip = useCallback(async () => {
     let docs = await databaseContext.database.find({
       selector: {
         _id: 'trip'
@@ -55,14 +55,14 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
         setActivityChoices([...tripDoc.activityChoices]);
       }
     }
-  };
+  }, [databaseContext.database]);
 
   useEffect(() => {
     const updateComponent = () => {
       getActivityChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext]);
+  }, [databaseChangesContext, getActivityChoicesFromTrip]);
 
   const saveChoices = async (newActivityChoices) => {
     await databaseContext.database.upsert('trip', (tripDoc) => {
