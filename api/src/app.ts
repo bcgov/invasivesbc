@@ -55,7 +55,7 @@ initialize({
     // Transform openapi-request-validator and openapi-response-validator errors
     return ajvError;
   },
-  errorMiddleware: function (error, req, res, next) {
+  errorMiddleware: function (error, _, res) {
     if (!error.status) {
       // TODO some unplanned errors do have a status, maybe change status to code for intentional errors?
       // log any unintentionally thrown errors (where no status has been set)

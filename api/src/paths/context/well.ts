@@ -6,7 +6,7 @@ import { Operation } from 'express-openapi';
 import { ALL_ROLES } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 import proj4 from 'proj4';
-import {point} from '@turf/helpers';
+import { point } from '@turf/helpers';
 import nearestPoint from '@turf/nearest-point';
 import distance from '@turf/distance';
 
@@ -15,8 +15,9 @@ const defaultLog = getLogger('activity');
 export const GET: Operation = proxyWell();
 
 GET.apiDoc = {
-  description: 'Fetches the distance to the closest well in meters from a given location. An object is return containing the closest feature along with the distance to the provided point.',
-  tags: ['activity','databc'],
+  description:
+    'Fetches the distance to the closest well in meters from a given location. An object is return containing the closest feature along with the distance to the provided point.',
+  tags: ['activity', 'databc'],
   security: [
     {
       Bearer: ALL_ROLES
@@ -80,16 +81,15 @@ GET.apiDoc = {
  * @return {object} The closest well object. Including a distance to the supplied location.
  */
 function getWell(req, res, next) {
-
   // Grab coordinates from the query string
-  const {lon,lat} = req.query;
+  const { lon, lat } = req.query;
 
   // Error if no coordinates
   if (!lon || !lat) {
     throw {
       status: 400,
       message: 'Did not supply valid coordinates'
-    }
+    };
   }
 
   defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
@@ -98,21 +98,21 @@ function getWell(req, res, next) {
     Here is the projection definition of the well layer 
     stored in the BCGW
   */
-  const albers = '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
+  const albers =
+    '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs';
 
-  const alb = proj4(albers,[Number(lon),Number(lat)]);
-  const coords = `${alb[0]}+${alb[1]}`
-
+  const alb = proj4(albers, [Number(lon), Number(lat)]);
+  const coords = `${alb[0]}+${alb[1]}`;
 
   // TODO: URL encode the lon and lat
   const base = 'https://openmaps.gov.bc.ca/geo/pub/wfs';
   const typeName = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
-  const cql = `CQL_FILTER=DWITHIN(GEOMETRY,POINT(${coords}),500,meters)`
+  const cql = `CQL_FILTER=DWITHIN(GEOMETRY,POINT(${coords}),500,meters)`;
 
   // Formulate the url.
   const url = `${base}?service=WFS&version=2.0.0&request=GetFeature&typeName=${typeName}&outputFormat=json&maxFeatures=1000&srsName=epsg:4326&${cql}`;
 
-  var bundle = {};
+  let bundle = {};
   /* ### getClosest
     Get the closest well feature and distance to location
     @param response {object} Response from BCGW
@@ -121,27 +121,30 @@ function getWell(req, res, next) {
   const getClosest = (response) => {
     // There should be at least one well.
     if (response?.data?.features?.length > 0) {
-      const loc = point([Number(lon), Number(lat)])
-      const closestWell = nearestPoint(loc,response.data);
-      const dist =  Math.round(distance(loc,closestWell) * 1000);
+      const loc = point([Number(lon), Number(lat)]);
+      const closestWell = nearestPoint(loc, response.data);
+      const dist = Math.round(distance(loc, closestWell) * 1000);
 
       bundle = {
         distance: dist,
         well: closestWell
-      }
-    } else { // Otherwise there are no wells
+      };
+    } else {
+      // Otherwise there are no wells
       bundle = {
         distance: null,
         well: {}
-      }
+      };
     }
 
-    if (res) { //If an ajax reqest
+    if (res) {
+      // If an ajax reqest
       return res.status(201).json(bundle);
-    } else { // Otherwise just a module request
+    } else {
+      // Otherwise just a module request
       return bundle;
     }
-  }
+  };
 
   /* ### failure
     Handle a failure of requesting well from BCGW
@@ -150,7 +153,7 @@ function getWell(req, res, next) {
     */
   const failure = (error) => {
     defaultLog.debug({ label: 'getWell', message: 'error', error });
-    const err = {error};
+    const err = { error };
     if (res) {
       return res.status(501).json(err);
     } else {
@@ -167,16 +170,11 @@ function getWell(req, res, next) {
     if (next && !res) {
       next(data);
     }
-  }
+  };
 
   // Everything ready to go for our request
-  axios.get(url)
-    .then(getClosest)
-    .then(moduleReturn)
-    .catch(failure);
-  
+  axios.get(url).then(getClosest).then(moduleReturn).catch(failure);
 }
-
 
 /* ## proxyWell
   This allows us to export the getWell function for 
@@ -184,10 +182,9 @@ function getWell(req, res, next) {
  */
 function proxyWell(): RequestHandler {
   return async (req, res, next) => {
-    getWell(req,res,next);
-  }
+    getWell(req, res, next);
+  };
 }
 
-
 // Make available as a model as well.
-export {getWell};
+export { getWell };

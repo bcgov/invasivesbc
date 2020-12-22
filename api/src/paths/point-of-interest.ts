@@ -94,7 +94,7 @@ POST.apiDoc = {
  * @returns {RequestHandler}
  */
 function createPointOfInterest(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
 
     const data = { ...req.body, mediaKeys: req['mediaKeys'] };

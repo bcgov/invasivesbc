@@ -63,7 +63,7 @@ GET.apiDoc = {
  * @return {RequestHandler}
  */
 function getActivity(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, _, next) => {
     defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
 
     const activityId = req.params.activityId;
@@ -104,7 +104,7 @@ function getActivity(): RequestHandler {
 }
 
 function getMedia(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, _, next) => {
     defaultLog.debug({ label: '{activityId}', message: 'getMedia', body: req.body });
 
     const activity = req['activity'];
@@ -135,7 +135,7 @@ function getMedia(): RequestHandler {
  * @return {RequestHandler}
  */
 function returnActivity(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     return res.status(200).json(req['activity']);
   };
 }

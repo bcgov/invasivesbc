@@ -84,7 +84,7 @@ export function applyCodeEnumFilter(obj: object, allCodeEntities: IAllCodeEntiti
   }
 
   // Get the matching code category row
-  const codeCategoryRow = allCodeEntities.categories.find(item => {
+  const codeCategoryRow = allCodeEntities.categories.find((item) => {
     return item['code_category_name'] === codeCategoryName;
   });
 
@@ -93,7 +93,7 @@ export function applyCodeEnumFilter(obj: object, allCodeEntities: IAllCodeEntiti
   }
 
   // Get the matching code header row
-  const codeHeaderRow = allCodeEntities.headers.find(item => {
+  const codeHeaderRow = allCodeEntities.headers.find((item) => {
     return (
       item['code_category_id'] === codeCategoryRow['code_category_id'] && item['code_header_name'] === codeHeaderName
     );
@@ -104,7 +104,7 @@ export function applyCodeEnumFilter(obj: object, allCodeEntities: IAllCodeEntiti
   }
 
   // Get all of the matching code rows
-  const codeRows = allCodeEntities.codes.filter(item => {
+  const codeRows = allCodeEntities.codes.filter((item) => {
     return item['code_header_id'] === codeHeaderRow['code_header_id'];
   });
 
@@ -116,7 +116,7 @@ export function applyCodeEnumFilter(obj: object, allCodeEntities: IAllCodeEntiti
   obj = {
     ...obj,
     anyOf: codeRows
-      .map(codeRow => {
+      .map((codeRow) => {
         return {
           // the `type` specified by the parent object that contains this enum object (their types must match)
           type: obj['type'],

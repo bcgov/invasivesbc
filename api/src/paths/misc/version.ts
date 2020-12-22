@@ -4,7 +4,7 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('misc/version');
 
 export const GET: Operation = [
-  (req, res, next) => {
+  (req, res) => {
     defaultLog.debug({ label: 'misc-version-get' });
 
     const versionInfo = {
