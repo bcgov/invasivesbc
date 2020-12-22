@@ -12,33 +12,28 @@ const formatDateToISO = (d) =>
 // return items matching field value in an array of objects sorted by field
 // https://www.w3resource.com/javascript-exercises/javascript-array-exercise-18.php
 const binarySearchValues = (items, field, value) => {
-  try {
-    if (!items) return [];
-    let firstIndex = 0;
-    let lastIndex = items.length - 1;
-    let middleIndex = Math.floor((lastIndex + firstIndex) / 2);
+  if (!items) return [];
+  let firstIndex = 0;
+  let lastIndex = items.length - 1;
+  let middleIndex = Math.floor((lastIndex + firstIndex) / 2);
 
-    while (items[middleIndex][field] !== value && firstIndex < lastIndex) {
-      if (value < items[middleIndex][field]) {
-        lastIndex = Math.max(middleIndex - 1, 0);
-      } else if (value > items[middleIndex][field]) {
-        firstIndex = Math.min(middleIndex + 1, items.length - 1);
-      }
-      middleIndex = Math.floor((lastIndex + firstIndex) / 2);
+  while (items[middleIndex][field] !== value && firstIndex < lastIndex) {
+    if (value < items[middleIndex][field]) {
+      lastIndex = Math.max(middleIndex - 1, 0);
+    } else if (value > items[middleIndex][field]) {
+      firstIndex = Math.min(middleIndex + 1, items.length - 1);
     }
-
-    if (items[middleIndex][field] !== value) return [];
-
-    // get multiple matches:
-    firstIndex = lastIndex = middleIndex;
-    while (firstIndex > 0 && items[firstIndex - 1][field] === value) firstIndex = firstIndex - 1;
-    while (lastIndex < items.length - 1 && items[lastIndex + 1][field] === value) lastIndex = lastIndex + 1;
-
-    return items.slice(firstIndex, lastIndex + 1);
-  } catch (error) {
-    console.log(error);
-    return [];
+    middleIndex = Math.floor((lastIndex + firstIndex) / 2);
   }
+
+  if (items[middleIndex][field] !== value) return [];
+
+  // get multiple matches:
+  firstIndex = lastIndex = middleIndex;
+  while (firstIndex > 0 && items[firstIndex - 1][field] === value) firstIndex = firstIndex - 1;
+  while (lastIndex < items.length - 1 && items[lastIndex + 1][field] === value) lastIndex = lastIndex + 1;
+
+  return items.slice(firstIndex, lastIndex + 1);
 };
 
 const cli = meow(
