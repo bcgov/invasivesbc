@@ -18,3 +18,9 @@ jobs:
       - name: Run linter
         run: CI=true npm run lint
         working-directory: app
+      - name: Install database dependencies
+        run: npm install
+        working-directory: database
+      - name: Run database linter
+        run: CI=true npm run lint
+        working-directory: database
