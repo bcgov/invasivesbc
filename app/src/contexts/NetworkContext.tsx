@@ -23,7 +23,7 @@ export const NetworkContextProvider: React.FC = (props) => {
     return () => {
       Network.removeAllListeners();
     };
-  }, [Network]);
+  }, []);
 
   return <NetworkContext.Provider value={networkContext}>{props.children}</NetworkContext.Provider>;
 };

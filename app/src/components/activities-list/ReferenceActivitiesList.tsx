@@ -13,11 +13,7 @@ import {
   Box
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
-import {
-  ActivitySubtype,
-  ActivityType,
-  ActivityTypeIcon
-} from 'constants/activities';
+import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -55,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * 
+ *
  * @param {ActivitySubtype} treatmentSubtype The treatment subtype for which to get the associated monitoring subtype
  */
 const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: ActivitySubtype): ActivitySubtype => {
@@ -113,7 +109,12 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
               startIcon={<Add />}
               onClick={async (e) => {
                 e.stopPropagation();
-                const addedActivity = await addActivityToDB(databaseContext, ActivityType.Monitoring, calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype), activity);
+                const addedActivity = await addActivityToDB(
+                  databaseContext,
+                  ActivityType.Monitoring,
+                  calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
+                  activity
+                );
                 setActiveActivityAndNavigateToActivityPage(addedActivity);
                 setOnReferencesListPage(false);
               }}>
@@ -147,7 +148,11 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
         <ListItemIcon>
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
-        <ReferenceActivityListItem setOnReferencesListPage={setOnReferencesListPage} databaseContext={databaseContext} activity={doc} />
+        <ReferenceActivityListItem
+          setOnReferencesListPage={setOnReferencesListPage}
+          databaseContext={databaseContext}
+          activity={doc}
+        />
       </ListItem>
     </Paper>
   );
@@ -181,9 +186,9 @@ const ReferenceActivityList: React.FC = () => {
     updateComponent();
   }, [databaseChangesContext]);
 
-  const observations = docs.filter(doc => doc.activityType === 'Observation');
-  const treatments = docs.filter(doc => doc.activityType === 'Treatment');
-  const monitorings = docs.filter(doc => doc.activityType === 'Monitoring');
+  const observations = docs.filter((doc) => doc.activityType === 'Observation');
+  const treatments = docs.filter((doc) => doc.activityType === 'Treatment');
+  const monitorings = docs.filter((doc) => doc.activityType === 'Monitoring');
 
   return (
     <List className={classes.activityList}>
@@ -193,7 +198,12 @@ const ReferenceActivityList: React.FC = () => {
         </Box>
       )}
       {observations.map((doc) => (
-        <ReferenceActivityListComponent setOnReferencesListPage={setOnReferencesListPage} databaseContext={databaseContext} key={doc._id} doc={doc} />
+        <ReferenceActivityListComponent
+          setOnReferencesListPage={setOnReferencesListPage}
+          databaseContext={databaseContext}
+          key={doc._id}
+          doc={doc}
+        />
       ))}
       {treatments.length > 0 && (
         <Box>
@@ -202,7 +212,12 @@ const ReferenceActivityList: React.FC = () => {
         </Box>
       )}
       {treatments.map((doc) => (
-        <ReferenceActivityListComponent setOnReferencesListPage={setOnReferencesListPage} databaseContext={databaseContext} key={doc._id} doc={doc} />
+        <ReferenceActivityListComponent
+          setOnReferencesListPage={setOnReferencesListPage}
+          databaseContext={databaseContext}
+          key={doc._id}
+          doc={doc}
+        />
       ))}
       {monitorings.length > 0 && (
         <Box>
@@ -211,7 +226,12 @@ const ReferenceActivityList: React.FC = () => {
         </Box>
       )}
       {monitorings.map((doc) => (
-        <ReferenceActivityListComponent setOnReferencesListPage={setOnReferencesListPage} databaseContext={databaseContext} key={doc._id} doc={doc} />
+        <ReferenceActivityListComponent
+          setOnReferencesListPage={setOnReferencesListPage}
+          databaseContext={databaseContext}
+          key={doc._id}
+          doc={doc}
+        />
       ))}
     </List>
   );

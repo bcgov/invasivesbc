@@ -25,8 +25,7 @@ const useStyles = makeStyles((theme) => ({
   map: {
     height: '100%',
     width: '100%'
-  },
-  photoContainer: {}
+  }
 }));
 
 interface IActivityPageProps {
@@ -61,18 +60,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   /**
    * Set the default form data values
-   * 
+   *
    * @param {*} activity The doc/activity object
    */
   const getDefaultFormDataValues = (activity: any) => {
     const { activity_data } = activity.formData || {};
 
     return {
-      ...activity.formData,
-      activity_data: {
-        ...activity_data,
-        reported_area: calculateGeometryArea(activity.geometry)
-      }
+      ...activity_data,
+      reported_area: calculateGeometryArea(activity.geometry)
     };
   };
 
@@ -100,7 +96,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     setDoc({ ...doc, formData: updatedFormData });
 
     await databaseContext.database.upsert(doc._id, (dbDoc) => {
-      return { ...dbDoc, formData: updatedFormData, geometry: geom, status: ActivityStatus.EDITED, dateUpdated: new Date() };
+      return {
+        ...dbDoc,
+        formData: updatedFormData,
+        geometry: geom,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date()
+      };
     });
   };
 
@@ -276,7 +278,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   return (
     <Container className={props.classes.container}>
       <ActivityComponent
-        customValidation={getCustomValidator([getAreaValidator(doc.activitySubtype), getWindValidator(doc.activitySubtype)])}
+        customValidation={getCustomValidator([
+          getAreaValidator(doc.activitySubtype),
+          getWindValidator(doc.activitySubtype)
+        ])}
         classes={classes}
         activity={doc}
         onFormChange={onFormChange}
