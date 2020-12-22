@@ -82,9 +82,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const saveGeometry = useCallback(
     (geom: Feature[]) => {
-      setDoc((doc: any) => {
+      setDoc((activity: any) => {
         const { latitude, longitude } = calculateLatLng(geom) || {};
-        const formData = doc.formData;
+        const formData = activity.formData;
         const areaOfGeometry = calculateGeometryArea(geom);
 
         const updatedFormData = {
@@ -97,7 +97,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           }
         };
 
-        databaseContext.database.upsert(doc._id, (dbDoc) => {
+        databaseContext.database.upsert(activity._id, (dbDoc) => {
           return {
             ...dbDoc,
             formData: updatedFormData,
@@ -107,7 +107,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           };
         });
 
-        return { ...doc, formData: updatedFormData };
+        return { ...activity, formData: updatedFormData };
       });
     },
     [databaseContext.database]
