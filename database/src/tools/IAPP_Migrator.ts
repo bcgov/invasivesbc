@@ -3,11 +3,14 @@ import { AxiosRequestConfig } from 'axios';
 import csv from 'csvtojson';
 import axios from 'axios';
 import qs from 'qs';
+import moment from 'moment';
 
 const meow = require('meow');
 
-const formatDateToISO = (d) =>
-  d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+const formatDateToISO = (d) => {
+  if (!d) return undefined;
+  return moment(d).format('YYYY-MM-DD');
+}
 
 // return items matching field value in an array of objects sorted by field
 // https://www.w3resource.com/javascript-exercises/javascript-array-exercise-18.php
@@ -255,7 +258,7 @@ const main = async () => {
     let surveys = binarySearchValues(IAPPData.surveyData, 'SiteID', siteRecordID);
     surveys = surveys.map((survey) => ({
       ...survey,
-      SurveyDate: formatDateToISO(new Date(survey.surveyDate))
+      SurveyDate: formatDateToISO(survey.surveyDate)
     }));
     // restore desired sorting order by MechanicalID DESC (latest first)
     surveys.sort((a, b) => Number(b.MechanicalID) - Number(a.MechanicalID));
