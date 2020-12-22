@@ -9,7 +9,7 @@ import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -157,7 +157,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setSelectedInteractiveGeometry(geo);
   };
 
-  const getActivityData = async () => {
+  const getActivityData = useCallback(async () => {
     const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
     if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
@@ -172,9 +172,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
       setFormActivityData(activityResults.docs[0]);
       setPhotos(activityResults.docs[0].photos || []);
     }
-  };
+  }, [databaseContext.database]);
 
-  const getEverythingWithAGeo = async () => {
+  const getEverythingWithAGeo = useCallback(async () => {
     let docs = await databaseContext.database.find({
       selector: {
         docType: {
@@ -336,7 +336,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
         getting written to on updates*/
 
     //setIsReadyToLoadMap(true)
-  };
+  }, [databaseContext.database]);
 
   useEffect(() => {
     const updateComponent = () => {
@@ -344,7 +344,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
     };
 
     updateComponent();
-  }, [databaseChangesContext, showPopOut]);
+  }, [databaseChangesContext, showPopOut, getEverythingWithAGeo]);
 
   useEffect(() => {
     console.log('chosen geo');
@@ -353,7 +353,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
   useEffect(() => {
     getActivityData();
-  }, []);
+  }, [getActivityData]);
 
   const photoState = {
     photos,
