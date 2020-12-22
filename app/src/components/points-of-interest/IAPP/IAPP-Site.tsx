@@ -96,7 +96,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
 
   const ifApplicable = (value) =>
     value && String(value).trim() !== '' ? value : <div className={classes.missingValue}>N/A</div>;
-  const toDecimalPlaces = (n, decimals = 4) => Number.parseFloat(n).toFixed(decimals);
 
   return (
     <Container>
