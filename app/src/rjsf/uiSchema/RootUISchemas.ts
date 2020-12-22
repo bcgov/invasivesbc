@@ -243,7 +243,7 @@ const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
     'ui:column-xs': 12,
     'ui:column-md': 6,
     'ui:column-lg': 4,
-    ...UISchemaComponents.Activity
+    ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
     'ui:column-xs': 12,
@@ -258,7 +258,7 @@ const Activity_Monitoring_MechanicalTerrestrialAquaticPlant = {
     'ui:column-xs': 12,
     'ui:column-md': 6,
     'ui:column-lg': 4,
-    ...UISchemaComponents.Activity
+    ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
     'ui:column-xs': 12,
@@ -273,7 +273,7 @@ const Activity_Monitoring_BiologicalTerrestrialPlant = {
     'ui:column-xs': 12,
     'ui:column-md': 6,
     'ui:column-lg': 4,
-    ...UISchemaComponents.Activity
+    ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
     'ui:column-xs': 12,
@@ -294,7 +294,7 @@ const Activity_Monitoring_MechanicalTerrestrialAnimal = {
     'ui:column-xs': 12,
     'ui:column-md': 6,
     'ui:column-lg': 4,
-    ...UISchemaComponents.Activity
+    ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
     'ui:column-xs': 12,
@@ -315,7 +315,7 @@ const Activity_Monitoring_ChemicalTerrestrialAnimal = {
     'ui:column-xs': 12,
     'ui:column-md': 6,
     'ui:column-lg': 4,
-    ...UISchemaComponents.Activity
+    ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
     'ui:column-xs': 12,
@@ -336,7 +336,7 @@ const Activity_Monitoring_BiologicalTerrestrialAnimal = {
     'ui:column-xs': 12,
     'ui:column-md': 6,
     'ui:column-lg': 4,
-    ...UISchemaComponents.Activity
+    ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
     'ui:column-xs': 12,

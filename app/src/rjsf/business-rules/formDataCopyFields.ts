@@ -8,8 +8,21 @@ export function getFieldsToCopy(data: any, dataField: string, activitySubtype?: 
       These fields are not being included because they are either read-only fields that are generated
       based on the geometry or editable fields that get autopopulated based on when the activity
       was created
+
+      However, for monitorings, we do copy these fields over as well because they are identical to
+      the treatment record they are referencing
     */
-    const { activity_date_time, latitude, longitude, reported_area, ...activityDataToCopy } = data;
+    const activityDataToCopy = { ...data };
+
+    delete activityDataToCopy.activity_date_time;
+
+    if (activitySubtype && activitySubtype.includes('Treatment')) {
+      return activityDataToCopy;
+    }
+
+    delete activityDataToCopy.latitude;
+    delete activityDataToCopy.longitude;
+    delete activityDataToCopy.reported_area;
 
     return activityDataToCopy;
   }
@@ -19,7 +32,7 @@ export function getFieldsToCopy(data: any, dataField: string, activitySubtype?: 
       If we are copying fields from treatment subtype to monitoring
       check if plant type, copy over the invasive plant(s) field
     */
-    if (activitySubtype.includes('Treatment') && activitySubtype.includes('Plant')) {
+    if (activitySubtype && activitySubtype.includes('Treatment') && activitySubtype.includes('Plant')) {
       return { invasive_plants: data.invasive_plants || [{ invasive_plant_code: data.invasive_plant_code }] };
     }
   }

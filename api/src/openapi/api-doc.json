@@ -1398,8 +1398,7 @@
           "observer_first_name",
           "observer_last_name",
           "efficacy_code",
-          "monitoring_details",
-          "invasive_plants"
+          "monitoring_details"
         ],
         "properties": {
           "activity_id": {
