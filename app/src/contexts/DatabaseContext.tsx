@@ -65,12 +65,12 @@ export const DatabaseContextProvider: React.FC = (props) => {
     /**
      * Destroy and re-create the database.
      */
-    const resetDatabase = async (db) => {
-      if (!db) {
+    const resetDatabase = async (database) => {
+      if (!database) {
         return;
       }
 
-      await db.destroy();
+      await database.destroy();
       await setupDatabase();
     };
 
