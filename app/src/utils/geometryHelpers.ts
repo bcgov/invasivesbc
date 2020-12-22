@@ -29,7 +29,7 @@ export function calculateGeometryArea(geometry: Feature[]) {
  * @param {Feature[]} geoJSON The geometry in GeoJSON format
  */
 export function calculateLatLng(geom: Feature[]) {
-  if (!geom[0] || !geom[0].geometry) return;
+  if (!geom || !geom[0] || !geom[0].geometry) return;
 
   const geo = geom[0].geometry;
   const firstCoord = geo['coordinates'][0];
