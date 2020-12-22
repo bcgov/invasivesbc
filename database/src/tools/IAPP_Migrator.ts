@@ -6,45 +6,40 @@ import qs from 'qs';
 
 const meow = require('meow');
 
-const formatDateToISO = (d) => d.getFullYear() + '-'
-  + ('0' + (d.getMonth() + 1)).slice(-2) + '-'
-  + ('0' + d.getDate()).slice(-2);
+const formatDateToISO = (d) =>
+  d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
 
 // return items matching field value in an array of objects sorted by field
 // https://www.w3resource.com/javascript-exercises/javascript-array-exercise-18.php
 const binarySearchValues = (items, field, value) => {
-    try {
-      if (items === undefined)
-        return [];
-      let firstIndex  = 0;
-      let lastIndex   = items.length - 1;
-      let middleIndex = Math.floor((lastIndex + firstIndex)/2);
+  try {
+    if (items === undefined) return [];
+    let firstIndex = 0;
+    let lastIndex = items.length - 1;
+    let middleIndex = Math.floor((lastIndex + firstIndex) / 2);
 
-      while (items[middleIndex][field] != value && firstIndex < lastIndex) {
-        if (value < items[middleIndex][field]) {
-          lastIndex = Math.max(middleIndex - 1, 0);
-        } else if (value > items[middleIndex][field]){
-          firstIndex = Math.min(middleIndex + 1, items.length - 1);
-        }
-        middleIndex = Math.floor((lastIndex + firstIndex)/2);
+    while (items[middleIndex][field] != value && firstIndex < lastIndex) {
+      if (value < items[middleIndex][field]) {
+        lastIndex = Math.max(middleIndex - 1, 0);
+      } else if (value > items[middleIndex][field]) {
+        firstIndex = Math.min(middleIndex + 1, items.length - 1);
       }
-
-      if (items[middleIndex][field] != value)
-        return [];
-
-      // get multiple matches:
-      firstIndex = lastIndex = middleIndex;
-      while (firstIndex > 0 && items[firstIndex - 1][field] == value)
-        firstIndex = firstIndex - 1;
-      while (lastIndex < items.length - 1 && items[lastIndex + 1][field] == value)
-        lastIndex = lastIndex + 1;
-
-      return items.slice(firstIndex, lastIndex + 1);
-    } catch (error) {
-      console.log(error);
-      return [];
+      middleIndex = Math.floor((lastIndex + firstIndex) / 2);
     }
-}
+
+    if (items[middleIndex][field] != value) return [];
+
+    // get multiple matches:
+    firstIndex = lastIndex = middleIndex;
+    while (firstIndex > 0 && items[firstIndex - 1][field] == value) firstIndex = firstIndex - 1;
+    while (lastIndex < items.length - 1 && items[lastIndex + 1][field] == value) lastIndex = lastIndex + 1;
+
+    return items.slice(firstIndex, lastIndex + 1);
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
 
 const cli = meow(
   /*
@@ -258,8 +253,7 @@ const main = async () => {
   // assumes site CSV sorted by SiteID DESC
   while (count1 < 10000) {
     const siteRecord = IAPPData.siteData[count1];
-    if (IAPPData.siteData[count1] === undefined)
-      break;
+    if (IAPPData.siteData[count1] === undefined) break;
     const siteRecordID = siteRecord['SiteID'];
 
     // assumes surveys CSV sorted by SiteID ASC
@@ -269,19 +263,23 @@ const main = async () => {
       SurveyDate: formatDateToISO(new Date(survey.surveyDate))
     }));
     // restore desired sorting order by MechanicalID DESC (latest first)
-    surveys.sort((a,b) => Number(b.MechanicalID) - Number(a.MechanicalID));
+    surveys.sort((a, b) => Number(b.MechanicalID) - Number(a.MechanicalID));
 
     // assumes mechtreatements CSV sorted by SiteID ASC
     let mechanical_treatments = binarySearchValues(IAPPData.mechanicalTreatmentData, 'SiteID', siteRecordID);
     mechanical_treatments = mechanical_treatments.map((treatment) => {
       // assumes monitoring CSV sorted by treatment_id ASC
-      treatment.monitoring = binarySearchValues(IAPPData.mechanicalMonitoringData, 'treatment_id', treatment.TreatmentID);
+      treatment.monitoring = binarySearchValues(
+        IAPPData.mechanicalMonitoringData,
+        'treatment_id',
+        treatment.TreatmentID
+      );
       // restore desired sorting order by monitoring_id DESC (latest first)
-      treatment.monitoring.sort((a,b) => Number(b.monitoring_id) - Number(a.monitoring_id));
+      treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
       return treatment;
     });
     // restore desired sorting order by TreatmentID DESC (latest first)
-    mechanical_treatments.sort((a,b) => Number(b.TreatmentID) - Number(a.TreatmentID));
+    mechanical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
 
     // assumes chemtreatements CSV sorted by SiteID ASC
     let chemical_treatments = binarySearchValues(IAPPData.chemicalTreatmentData, 'SiteID', siteRecordID);
@@ -289,19 +287,17 @@ const main = async () => {
       // assumes monitoring CSV sorted by treatment_id ASC
       treatment.monitoring = binarySearchValues(IAPPData.chemicalMonitoringData, 'treatment_id', treatment.TreatmentID);
       // restore desired sorting order by treatment_id DESC (latest first)
-      treatment.monitoring.sort((a,b) => Number(b.monitoring_id) - Number(a.monitoring_id));
+      treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
       return treatment;
     });
     // restore desired sorting order by TreatmentID DESC (latest first)
-    chemical_treatments.sort((a,b) => Number(b.TreatmentID) - Number(a.TreatmentID));
+    chemical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
 
     count1++;
 
-
     // Go/No-Go Rules:
     // only import POIs which have Survey data:
-    if (!surveys || surveys.length === 0)
-      continue;
+    if (!surveys || surveys.length === 0) continue;
 
     const requestBody: any = {
       point_of_interest_type: 'IAPP Site',
