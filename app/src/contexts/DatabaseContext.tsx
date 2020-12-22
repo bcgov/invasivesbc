@@ -1,7 +1,7 @@
 import PouchDB from 'pouchdb-core';
 import PouchDBFind from 'pouchdb-find';
 import PouchDBUpsert from 'pouchdb-upsert';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 const DB_SCHEMA = process.env.REACT_APP_DB_SCHEMA || 'invasivesbc';
 
@@ -46,7 +46,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
   /**
    * Create the database.
    */
-  const setupDatabase = async () => {
+  const setupDatabase = useCallback(async () => {
     let db = databaseContext.database;
 
     if (db) {
@@ -62,27 +62,27 @@ export const DatabaseContextProvider: React.FC = (props) => {
       db = createDatabase();
     }
 
+    /**
+     * Destroy and re-create the database.
+     */
+    const resetDatabase = async (db) => {
+      if (!db) {
+        return;
+      }
+
+      await db.destroy();
+      await setupDatabase();
+    };
+
     setDatabaseContext({ database: db, resetDatabase: () => resetDatabase(db) });
-  };
-
-  /**
-   * Destroy and re-create the database.
-   */
-  const resetDatabase = async (db) => {
-    if (!db) {
-      return;
-    }
-
-    await db.destroy();
-    await setupDatabase();
-  };
+  }, [databaseContext.database]);
 
   /**
    * Close the database.
    *
    * Note: This only closes any active connections/listeners, and does not destory the actual database or its content.
    */
-  const cleanupDatabase = async () => {
+  const cleanupDatabase = useCallback(async () => {
     let db = databaseContext.database;
 
     if (!db) {
@@ -90,7 +90,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
     }
 
     await db.close();
-  };
+  }, []);
 
   useEffect(() => {
     setupDatabase();
@@ -98,7 +98,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
     return async () => {
       await cleanupDatabase();
     };
-  }, []);
+  }, [setupDatabase, cleanupDatabase]);
 
   return <DatabaseContext.Provider value={databaseContext}>{props.children}</DatabaseContext.Provider>;
 };
