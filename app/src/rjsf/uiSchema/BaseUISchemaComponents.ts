@@ -160,11 +160,7 @@ const Monitoring = {
   activity_id: {},
   observer_first_name: {},
   observer_last_name: {},
-  efficacy_code: {},
-  monitoring_details: {
-    'ui:widget': 'textarea'
-  },
-  invasive_plant_code: {}
+  efficacy_code: {}
 };
 
 const Monitoring_BiologicalTerrestrialPlant = {
