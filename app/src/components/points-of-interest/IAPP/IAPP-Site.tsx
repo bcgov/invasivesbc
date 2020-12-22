@@ -41,18 +41,18 @@ const useStyles = makeStyles((theme) => ({
   },
   cell: {
     whiteSpace: 'nowrap',
-    width: '1px'
+    width: 1
   },
   wideCell: {
     whiteSpace: 'normal',
-    minWidth: '500px'
+    minWidth: '500'
   },
   missingValue: {
     fontStyle: 'italic',
     color: '#777'
   },
   header: {
-    backgroundColor: 'rgba(0, 0, 0, 0.06)' // TODO pull from theme
+    backgroundColor: 'rgba(0, 0, 0, 0.06)'
   },
   dropdown: {
     paddingBottom: 0,
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: '1em'
   },
   dropdownCol: {
-    maxWidth: '2em'
+    width: '1%'
   }
 }));
 
@@ -70,9 +70,6 @@ export interface IAPPSitePropType {
 
 export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const classes = useStyles();
-  const ifApplicable = (value) =>
-    value && String(value).trim() != '' ? value : <div className={classes.missingValue}>N/A</div>;
-
   const {
     aspect,
     chemical_treatments,
@@ -102,12 +99,12 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const toDecimalPlaces = (n, decimals = 4) => Number.parseFloat(n).toFixed(decimals);
 
   return (
-    <Container className={classes.container}>
+    <Container>
       <Accordion defaultExpanded={true}>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Legacy IAPP Site: {site_id}</Typography>
         </AccordionSummary>
-        <AccordionDetails className={classes.siteContainer}>
+        <AccordionDetails>
           <Grid container spacing={1}>
             <Grid item xs={3} sm={2}>
               Created
@@ -211,7 +208,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Survey Details on Site {site_id}</Typography>
         </AccordionSummary>
-        <AccordionDetails className={classes.surveyContainer}>
+        <AccordionDetails>
           <IAPPTable
             headers={[
               'Survey ID',
@@ -264,7 +261,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Mechanical Treatments and Efficacy Monitoring</Typography>
         </AccordionSummary>
-        <AccordionDetails className={classes.treatmentContainer}>
+        <AccordionDetails>
           <IAPPTable
             headers={[
               'Treatment ID',
@@ -274,7 +271,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               'Agency',
               'Hectares',
               'Mech Method',
-              'PaperFile ID',
+              'Paper File ID',
               {
                 className: classes.wideCell,
                 children: 'Comments'
@@ -299,7 +296,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 : []
             }
             dropdown={(i) =>
-              mechanical_treatments[i].monitoring === undefined ||
+              mechanical_treatments[i].monitoring ||
               mechanical_treatments[i].monitoring.length === 0 ? null : (
                 <IAPPTable
                   key={'dropdown_' + i}
@@ -308,7 +305,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     'Monitoring Date',
                     'Agency',
                     'Efficacy',
-                    'PaperFile ID',
+                    'Paper File ID',
                     {
                       className: classes.wideCell,
                       children: 'Comments'
@@ -337,7 +334,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={classes.heading}>Chemical Treatments and Efficacy Monitoring</Typography>
         </AccordionSummary>
-        <AccordionDetails className={classes.treatmentContainer}>
+        <AccordionDetails>
           <IAPPTable
             headers={[
               'Treatment ID',
@@ -346,7 +343,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               'Agency',
               'Hectares',
               'Chem Method',
-              'PaperFile ID',
+              'Paper File ID',
               {
                 className: classes.wideCell,
                 children: 'Comments'
@@ -361,7 +358,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.TreatmentAgency,
                     parseFloat(row.AreaTreated).toFixed(4),
                     row.ChemicalMethod,
-                    row.PaperFileID,
+                    row.PAPER_FILE_ID,
                     {
                       className: classes.wideCell,
                       children: row.Comment
@@ -400,7 +397,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   ]}
                 />
                 <br />
-                {chemical_treatments[i].monitoring === undefined ||
+                {chemical_treatments[i].monitoring ||
                 chemical_treatments[i].monitoring.length === 0 ? null : (
                   <IAPPTable
                     headers={[
@@ -408,7 +405,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       'Monitoring Date',
                       'Agency',
                       'Efficacy',
-                      'PaperFile ID',
+                      'Paper File ID',
                       {
                         className: classes.wideCell,
                         children: 'Comments'
@@ -467,7 +464,7 @@ const IAPPTable: React.FC<IAPPTablePropType> = (props) => {
   const startingRow = page * rowsPerPage;
 
   const ifApplicable = (value) =>
-    value && String(value).trim() != '' ? value : <div className={classes.missingValue}>N/A</div>;
+    value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

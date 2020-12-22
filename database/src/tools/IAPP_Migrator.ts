@@ -13,12 +13,12 @@ const formatDateToISO = (d) =>
 // https://www.w3resource.com/javascript-exercises/javascript-array-exercise-18.php
 const binarySearchValues = (items, field, value) => {
   try {
-    if (items === undefined) return [];
+    if (!items) return [];
     let firstIndex = 0;
     let lastIndex = items.length - 1;
     let middleIndex = Math.floor((lastIndex + firstIndex) / 2);
 
-    while (items[middleIndex][field] != value && firstIndex < lastIndex) {
+    while (items[middleIndex][field] !== value && firstIndex < lastIndex) {
       if (value < items[middleIndex][field]) {
         lastIndex = Math.max(middleIndex - 1, 0);
       } else if (value > items[middleIndex][field]) {
@@ -27,12 +27,12 @@ const binarySearchValues = (items, field, value) => {
       middleIndex = Math.floor((lastIndex + firstIndex) / 2);
     }
 
-    if (items[middleIndex][field] != value) return [];
+    if (items[middleIndex][field] !== value) return [];
 
     // get multiple matches:
     firstIndex = lastIndex = middleIndex;
-    while (firstIndex > 0 && items[firstIndex - 1][field] == value) firstIndex = firstIndex - 1;
-    while (lastIndex < items.length - 1 && items[lastIndex + 1][field] == value) lastIndex = lastIndex + 1;
+    while (firstIndex > 0 && items[firstIndex - 1][field] === value) firstIndex = firstIndex - 1;
+    while (lastIndex < items.length - 1 && items[lastIndex + 1][field] === value) lastIndex = lastIndex + 1;
 
     return items.slice(firstIndex, lastIndex + 1);
   } catch (error) {
@@ -248,12 +248,12 @@ const urlstring = 'https://api-dev-invasivesbci.pathfinder.gov.bc.ca/api/point-o
 const main = async () => {
   const IAPPData = await loadAllData();
 
-  let count1 = 0;
+  let siteCount = 0;
 
   // assumes site CSV sorted by SiteID DESC
-  while (count1 < 10000) {
-    const siteRecord = IAPPData.siteData[count1];
-    if (IAPPData.siteData[count1] === undefined) break;
+  while (siteCount < 10000) {
+    const siteRecord = IAPPData.siteData[siteCount];
+    if (!IAPPData.siteData[siteCount]) break;
     const siteRecordID = siteRecord['SiteID'];
 
     // assumes surveys CSV sorted by SiteID ASC
@@ -293,7 +293,7 @@ const main = async () => {
     // restore desired sorting order by TreatmentID DESC (latest first)
     chemical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
 
-    count1++;
+    siteCount++;
 
     // Go/No-Go Rules:
     // only import POIs which have Survey data:
