@@ -63,7 +63,7 @@ GET.apiDoc = {
  * @return {RequestHandler}
  */
 function getActivity(): RequestHandler {
-  return async (req, _, next) => {
+  return async (req, res, next) => {
     defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
 
     const activityId = req.params.activityId;
