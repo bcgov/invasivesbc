@@ -63,7 +63,7 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
     };
 
     getActivityData();
-  }, [databaseChangesContext]);
+  }, [databaseChangesContext, databaseContext.database, urlParams]);
 
   if (!doc) {
     return <CircularProgress />;

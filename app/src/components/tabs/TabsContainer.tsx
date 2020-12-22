@@ -6,9 +6,12 @@ import { useHistory } from 'react-router-dom';
 const TabsContainer: React.FC = () => {
   const history = useHistory();
 
-  const urlContainsPath = (path: string): string => {
-    return (history.location.pathname.includes(path) && history.location.pathname) || null;
-  };
+  const urlContainsPath = useCallback(
+    (path: string): string => {
+      return (history.location.pathname.includes(path) && history.location.pathname) || null;
+    },
+    [history.location.pathname]
+  );
 
   const getActiveTab = useCallback(
     (activeTabNumber: number): number => {
@@ -30,7 +33,7 @@ const TabsContainer: React.FC = () => {
           return activeTabNumber;
       }
     },
-    [history.location.pathname]
+    [history.location.pathname, urlContainsPath]
   );
 
   const [activeTab, setActiveTab] = React.useState(getActiveTab(0));

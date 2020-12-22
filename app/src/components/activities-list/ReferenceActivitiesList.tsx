@@ -17,7 +17,7 @@ import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activ
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import ActivityListItem from './ActivityListItem';
 import ActivityListDate from './ActivityListDate';
@@ -167,13 +167,13 @@ const ReferenceActivityList: React.FC = () => {
 
   const [docs, setDocs] = useState<any[]>([]);
 
-  const updateActivityList = async () => {
+  const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
       selector: { docType: DocType.REFERENCE_ACTIVITY }
     });
 
     setDocs([...activityResult.docs]);
-  };
+  }, [databaseContext.database]);
 
   useEffect(() => {
     const updateComponent = () => {
@@ -184,7 +184,7 @@ const ReferenceActivityList: React.FC = () => {
     };
 
     updateComponent();
-  }, [databaseChangesContext]);
+  }, [databaseChangesContext, onReferencesListPage, updateActivityList]);
 
   const observations = docs.filter((doc) => doc.activityType === 'Observation');
   const treatments = docs.filter((doc) => doc.activityType === 'Treatment');

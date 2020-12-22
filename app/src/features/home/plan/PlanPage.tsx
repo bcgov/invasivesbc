@@ -122,7 +122,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     databaseContext.database.upsert('trip', (tripDoc) => {
       return { ...tripDoc, geometry: geometry };
     });
-  }, [geometry, tripLoaded]);
+  }, [geometry, tripLoaded, databaseContext.database]);
 
   // persist extent changes
   useEffect(() => {
@@ -133,7 +133,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     databaseContext.database.upsert('trip', (tripDoc) => {
       return { ...tripDoc, extent: extent };
     });
-  }, [extent, tripLoaded]);
+  }, [extent, tripLoaded, databaseContext.database]);
 
   return (
     <Container className={props.classes.container}>

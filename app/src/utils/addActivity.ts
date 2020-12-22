@@ -33,7 +33,11 @@ export async function addActivityToDB(
         activity_date_time: moment(new Date()).format()
       },
       activity_type_data: {
-        ...getFieldsToCopy(linkedRecord.formData.activity_subtype_data, 'activity_subtype_data', linkedRecord.activitySubtype),
+        ...getFieldsToCopy(
+          linkedRecord.formData.activity_subtype_data,
+          'activity_subtype_data',
+          linkedRecord.activitySubtype
+        ),
         activity_id: linkedRecord._id
       }
     };
