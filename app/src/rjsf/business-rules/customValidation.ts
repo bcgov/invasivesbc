@@ -1,4 +1,4 @@
-import { FormValidation } from "@rjsf/core";
+import { FormValidation } from '@rjsf/core';
 
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
@@ -27,11 +27,9 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
     }
 
     // validate reported area limit
-    errors.activity_data["reported_area"].__errors = [];
-    if (formData.activity_data["reported_area"] > areaLimit) {
-      errors.activity_data["reported_area"].addError(
-        `Area cannot exceed ${areaLimit} m\u00B2`
-      );
+    errors.activity_data['reported_area'].__errors = [];
+    if (formData.activity_data['reported_area'] > areaLimit) {
+      errors.activity_data['reported_area'].addError(`Area cannot exceed ${areaLimit} m\u00B2`);
     }
 
     return errors;
@@ -45,17 +43,17 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
     }
 
     // validate wind speed with wind direction
-    errors.activity_subtype_data["wind_direction_code"].__errors = [];
+    errors.activity_subtype_data['wind_direction_code'].__errors = [];
     const { wind_speed, wind_direction_code } = formData.activity_subtype_data;
 
     if (wind_speed > 0 && wind_direction_code === 'No Wind') {
-      errors.activity_subtype_data["wind_direction_code"].addError(
+      errors.activity_subtype_data['wind_direction_code'].addError(
         'Must specify a wind direction when wind speed is > 0'
       );
     }
 
     if (wind_speed === 0 && wind_direction_code !== 'No Wind') {
-      errors.activity_subtype_data["wind_direction_code"].addError(
+      errors.activity_subtype_data['wind_direction_code'].addError(
         'Cannot specify a wind direction when wind speed is 0'
       );
     }
