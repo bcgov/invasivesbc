@@ -4,7 +4,7 @@ import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { IActivitySearchCriteria, IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +31,7 @@ export const TripDataControls: React.FC = (props) => {
 
   const [trip, setTrip] = useState(null);
 
-  const getTrip = async () => {
+  const getTrip = useCallback(async () => {
     let docs = await databaseContext.database.find({ selector: { _id: 'trip' } });
 
     if (!docs || !docs.docs || !docs.docs.length) {
@@ -39,7 +39,7 @@ export const TripDataControls: React.FC = (props) => {
     }
 
     setTrip(docs.docs[0]);
-  };
+  }, [databaseContext.database]);
 
   useEffect(() => {
     const updateComponent = () => {
@@ -47,7 +47,7 @@ export const TripDataControls: React.FC = (props) => {
     };
 
     updateComponent();
-  }, [databaseChangesContext]);
+  }, [databaseChangesContext, getTrip]);
 
   const fetchActivities = async () => {
     if (!trip || !trip.activityChoices) {
