@@ -7,7 +7,7 @@ import TabsContainer from 'components/tabs/TabsContainer';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 
 const HomeLayout = (props: any) => {
   const databaseContext = useContext(DatabaseContext);
@@ -17,15 +17,7 @@ const HomeLayout = (props: any) => {
   const [notification, setNotification] = useState(null);
   const [notificationCount, setNotificationCount] = useState(0);
 
-  useEffect(() => {
-    const updateComponent = () => {
-      addNotificationsToPage();
-    };
-
-    updateComponent();
-  }, [databaseChangesContext]);
-
-  const addNotificationsToPage = async () => {
+  const addNotificationsToPage = useCallback(async () => {
     await databaseContext.database.createIndex({
       index: {
         name: 'notifyIndex',
@@ -58,7 +50,15 @@ const HomeLayout = (props: any) => {
       setNotification(notifications.docs[0]);
       setIsOpen(true);
     }
-  };
+  }, [databaseContext.database]);
+
+  useEffect(() => {
+    const updateComponent = () => {
+      addNotificationsToPage();
+    };
+
+    updateComponent();
+  }, [databaseChangesContext, addNotificationsToPage]);
 
   const acknowledgeNotification = (docId: string) => {
     databaseContext.database.upsert(docId, (doc) => {
