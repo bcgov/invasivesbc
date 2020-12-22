@@ -1,4 +1,5 @@
 import { ActivitySubtype, ActivityType } from 'constants/activities';
+import { Feature } from 'geojson';
 
 export interface IActivity {
   _id: string;
@@ -16,4 +17,5 @@ export interface IActivity {
   dateUpdated: Date;
   formData: any;
   formStatus: string;
+  geometry: Feature[];
 }
