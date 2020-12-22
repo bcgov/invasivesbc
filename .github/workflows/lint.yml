@@ -12,23 +12,15 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "10"
-      - name: Install dependencies
+      - name: Install app dependencies
         run: npm install
         working-directory: app
-      - name: Run linter
+      - name: Run app linter
         run: CI=true npm run lint
         working-directory: app
-    name: Lint Api
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Setup node
-        uses: actions/setup-node@v1
-        with:
-          node-version: "10"
-      - name: Install dependencies
+      - name: Install api dependencies
         run: npm install
         working-directory: api
-      - name: Run linter
+      - name: Run api linter
         run: CI=true npm run lint
         working-directory: api
