@@ -68,7 +68,7 @@ const TestUsers = [
     user_role: {
       role_code_id: 1
     }
-  },
+  }
 ];
 
 /**

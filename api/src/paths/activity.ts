@@ -10,7 +10,7 @@ import { ActivityPostRequestBody } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
-import { commit as commitContext} from '../utils/context-queries';
+import { commit as commitContext } from '../utils/context-queries';
 import { uploadMedia } from './media';
 
 const defaultLog = getLogger('activity');
@@ -148,7 +148,7 @@ PUT.apiDoc = {
  * @returns {RequestHandler}
  */
 function createActivity(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
 
     const data = { ...req.body, mediaKeys: req['mediaKeys'] };
@@ -207,7 +207,7 @@ function createActivity(): RequestHandler {
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       // kick off asynchronous context collection activities
-      commitContext(result,req);
+      commitContext(result, req);
 
       return res.status(200).json(result);
     } catch (error) {
@@ -227,7 +227,7 @@ function createActivity(): RequestHandler {
  * @returns {RequestHandler}
  */
 function updateActivity(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     defaultLog.debug({ label: 'activity', message: 'updateActivity', body: req.params });
 
     const data = { ...req.body, mediaKeys: req['mediaKeys'] };
@@ -271,8 +271,7 @@ function updateActivity(): RequestHandler {
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       // kick off asynchronous context collection activities
-      commitContext(result,req);
-
+      commitContext(result, req);
 
       return res.status(200).json(result);
     } catch (error) {

@@ -32,7 +32,7 @@ import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import 'styles/spinners.scss';
 import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
@@ -158,13 +158,13 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
   const [docs, setDocs] = useState<any[]>([]);
 
-  const updateActivityList = async () => {
+  const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
       selector: { docType: DocType.ACTIVITY, activityType: props.activityType }
     });
 
     setDocs([...activityResult.docs]);
-  };
+  }, [databaseContext.database, props.activityType]);
 
   useEffect(() => {
     const updateComponent = () => {
@@ -172,7 +172,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
     };
 
     updateComponent();
-  }, [databaseChangesContext]);
+  }, [databaseChangesContext, updateActivityList]);
 
   const removeActivity = async (activity: PouchDB.Core.RemoveDocument) => {
     databaseContext.database.remove(activity);

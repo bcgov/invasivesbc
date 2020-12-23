@@ -4,8 +4,7 @@ import csv from 'csvtojson';
 import axios from 'axios';
 import qs from 'qs';
 import moment from 'moment';
-
-const meow = require('meow');
+import meow from 'meow';
 
 const formatDateToISO = (d) => {
   if (!d) return;
@@ -159,7 +158,7 @@ const getToken = () => {
 
 const loadACSV = async (fileName: string) => {
   return new Promise<any[]>((resolve, reject) => {
-    let results = [];
+    const results = [];
     fs.createReadStream(fileName)
       .pipe(csv({ trim: true }))
       .on('data', (data) => {
@@ -346,9 +345,9 @@ const main = async () => {
       }
     };
 
-    let tokenResp = await getToken();
-    let token = tokenResp.data.access_token;
-    let postconfig: AxiosRequestConfig = {
+    const tokenResp = await getToken();
+    const token = tokenResp.data.access_token;
+    const postconfig: AxiosRequestConfig = {
       headers: {
         Authorization: `Bearer ${token}`
       }

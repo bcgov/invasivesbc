@@ -129,7 +129,7 @@ POST.apiDoc = {
  * @return {RequestHandler}
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);

@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 
 /**
- * SQL insert for inserting the distance to the closest 
+ * SQL insert for inserting the distance to the closest
  *
  * @param {string} email user email
  * @returns {SQLStatement} sql query object

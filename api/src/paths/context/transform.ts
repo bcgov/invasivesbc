@@ -12,7 +12,7 @@ export const GET: Operation = [getContext()];
 
 GET.apiDoc = {
   description: 'Transform from geographic coordinates to any EPSG codded coordinate',
-  tags: ['activity','transform','projection'],
+  tags: ['activity', 'transform', 'projection'],
   security: [
     {
       Bearer: ALL_ROLES
@@ -67,7 +67,6 @@ GET.apiDoc = {
   }
 };
 
-
 /**
  * ## getContext
  * Relay function for all context functions
@@ -85,14 +84,14 @@ function getContext(): RequestHandler {
     }
 
     // Grab coordinates and epsg from the query string
-    const {lon,lat,epsg} = req.query;
+    const { lon, lat, epsg } = req.query;
 
     // Error if no coordinates
     if (!lon || !lat || !epsg) {
       throw {
         status: 400,
         message: 'Did not supply valid coordinates or epsg code'
-      }
+      };
     }
 
     const sql = `
@@ -115,7 +114,7 @@ function getContext(): RequestHandler {
 
     try {
       const response = await connection.query(sql);
-      const payload = {target: response.rows[0]};
+      const payload = { target: response.rows[0] };
       res.status(200).json(payload);
     } catch (error) {
       defaultLog.debug({ label: 'getContext', message: 'error', error });
@@ -125,6 +124,5 @@ function getContext(): RequestHandler {
     }
 
     defaultLog.debug({ label: 'context', message: 'getContext', body: req.body });
-
   };
 }

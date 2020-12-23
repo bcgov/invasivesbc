@@ -1,4 +1,4 @@
-import * as Knex from "knex";
+import * as Knex from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
 
@@ -14,7 +14,6 @@ export async function up(knex: Knex): Promise<void> {
   `);
 }
 
-
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema '${DB_SCHEMA}';
@@ -24,4 +23,3 @@ export async function down(knex: Knex): Promise<void> {
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data alter COLUMN invasive_plant_management_areas type varchar(50);
   `);
 }
-

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { DatabaseContext } from './DatabaseContext';
 
 export type IDatabaseChanges = PouchDB.Core.ChangesResponseChange<any> | PouchDB.Core.ChangesResponse<any> | any;
@@ -17,7 +17,7 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
   const [databaseChanges, setDatabaseChanges] = useState<IDatabaseChanges>(null);
   const [changesListener, setChangesListener] = useState<PouchDB.Core.Changes<any>>(null);
 
-  const setupDatabaseChanges = async () => {
+  const setupDatabaseChanges = useCallback(async () => {
     if (!changesListener || changesListener['isCancelled']) {
       const listener = databaseContext.database
         .changes({ live: true, since: 'now' })
@@ -29,13 +29,13 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
 
       setChangesListener(listener);
     }
-  };
+  }, [changesListener, databaseContext.database]);
 
-  const cleanupDatabaseChanges = () => {
+  const cleanupDatabaseChanges = useCallback(() => {
     if (changesListener) {
       changesListener.cancel();
     }
-  };
+  }, [changesListener]);
 
   useEffect(() => {
     setupDatabaseChanges();
@@ -43,7 +43,7 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
     return () => {
       cleanupDatabaseChanges();
     };
-  }, [databaseContext]);
+  }, [databaseContext, setupDatabaseChanges, cleanupDatabaseChanges]);
 
   return <DatabaseChangesContext.Provider value={databaseChanges}>{props.children}</DatabaseChangesContext.Provider>;
 };
