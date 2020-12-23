@@ -8,7 +8,7 @@ import moment from 'moment';
 const meow = require('meow');
 
 const formatDateToISO = (d) => {
-  if (!d) return undefined;
+  if (!d) return;
   return moment(d).format('YYYY-MM-DD');
 }
 

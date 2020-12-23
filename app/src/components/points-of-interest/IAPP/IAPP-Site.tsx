@@ -95,7 +95,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     : { Jur1: 'Not Specified', Jur1pct: '100', Jur2: '', Jur2pct: '0', Jur3: '', Jur3pct: '0' };
 
   const ifApplicable = (value) =>
-    value && String(value).trim() !== '' ? value : <div className={classes.missingValue}>N/A</div>;
+    value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
 
   return (
     <Container>
@@ -533,29 +533,27 @@ const IAPPTable: React.FC<IAPPTablePropType> = (props) => {
   return !rows || rows.length === 0 ? (
     <div>No Data</div>
   ) : (
-    <React.Fragment>
-      <TableContainer component={Paper} className={classes.tableContainer}>
-        <Table className={classes.table} aria-label="mechanical treatments">
-          <TableHead className={classes.header}>
-            <TableRow>
-              {dropdown && <TableCell className={classes.dropdownCol} />}
-              {renderedHeaders}
-            </TableRow>
-          </TableHead>
-          <TableBody>{renderedRows}</TableBody>
-        </Table>
-        {pagination && rows && rows.length > rowsPerPage && (
-          <TablePagination
-            rowsPerPageOptions={[rowsPerPage]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-          />
-        )}
-      </TableContainer>
-    </React.Fragment>
+    <TableContainer component={Paper} className={classes.tableContainer}>
+      <Table className={classes.table} aria-label="mechanical treatments">
+        <TableHead className={classes.header}>
+          <TableRow>
+            {dropdown && <TableCell className={classes.dropdownCol} />}
+            {renderedHeaders}
+          </TableRow>
+        </TableHead>
+        <TableBody>{renderedRows}</TableBody>
+      </Table>
+      {pagination && rows && rows.length > rowsPerPage && (
+        <TablePagination
+          rowsPerPageOptions={[rowsPerPage]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      )}
+    </TableContainer>
   );
 };
