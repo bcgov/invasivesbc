@@ -47,7 +47,7 @@ GET.apiDoc = {
 };
 
 function getSignedURL(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     if (!req.params.key) {
       throw {
         status: 400,

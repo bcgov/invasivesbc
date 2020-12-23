@@ -12,7 +12,7 @@ export const GET: Operation = [getContext()];
 
 GET.apiDoc = {
   description: 'Fetch internal contextual data for a single point.',
-  tags: ['activity','RISO','IPMA'],
+  tags: ['activity', 'RISO', 'IPMA'],
   security: [
     {
       Bearer: ALL_ROLES
@@ -63,7 +63,6 @@ GET.apiDoc = {
   }
 };
 
-
 /**
  * ## getPlanningArea
  * Get the Invasive Plant Management Area
@@ -73,13 +72,7 @@ GET.apiDoc = {
  * @param attr {string} The postgres table attribute to target
  * @param table {string} The postgres table to target
  */
-const getPlanningArea = async (
-  lon: any,
-  lat: any,
-  res: Response,
-  attr: string,
-  table: string
-) => {
+const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, table: string) => {
   const connection = await getDBConnection();
 
   if (!connection) {
@@ -107,7 +100,7 @@ const getPlanningArea = async (
   try {
     const response = await connection.query(sql);
     const target = response.rows[0]?.target || '';
-    res.status(200).json({target});
+    res.status(200).json({ target });
   } catch (error) {
     defaultLog.debug({ label: 'getContext', message: 'error', error });
     throw error;
@@ -123,37 +116,33 @@ const getPlanningArea = async (
  */
 function getContext(): RequestHandler {
   return async (req, res) => {
-
     // Grab coordinates from the query string
-    const {lon,lat} = req.query;
+    const { lon, lat } = req.query;
 
     // Error if no coordinates
     if (!lon || !lat) {
       throw {
         status: 400,
         message: 'Did not supply valid coordinates'
-      }
+      };
     }
 
     const target = req.params.target;
 
-
-    switch(target) {
+    switch (target) {
       case 'ipma':
-        getPlanningArea(lon,lat,res,'ipma','invasive_plant_management_areas');
+        getPlanningArea(lon, lat, res, 'ipma', 'invasive_plant_management_areas');
         break;
       case 'riso':
-        getPlanningArea(lon,lat,res,'agency','regional_invasive_species_organization_areas');
+        getPlanningArea(lon, lat, res, 'agency', 'regional_invasive_species_organization_areas');
         break;
       case 'utm':
-        getPlanningArea(lon,lat,res,'utm_zone','utm_zones');
+        getPlanningArea(lon, lat, res, 'utm_zone', 'utm_zones');
         break;
       default:
         res.status(401).send('Please specify a target dataset');
     }
 
-
     defaultLog.debug({ label: 'context', message: 'getContext', body: req.body });
-
   };
 }

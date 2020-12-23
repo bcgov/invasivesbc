@@ -135,7 +135,7 @@ function getMedia(): RequestHandler {
  * @return {RequestHandler}
  */
 function returnActivity(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     return res.status(200).json(req['activity']);
   };
 }

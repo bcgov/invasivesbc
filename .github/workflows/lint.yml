@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   build:
-    name: Lint App
+    name: Lint InvasivesBC
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -12,10 +12,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "10"
-      - name: Install dependencies
+      - name: Install app dependencies
         run: npm install
         working-directory: app
-      - name: Run linter
+      - name: Run app linter
         run: CI=true npm run lint
         working-directory: app
       - name: Install database dependencies
@@ -24,3 +24,9 @@ jobs:
       - name: Run database linter
         run: CI=true npm run lint
         working-directory: database
+      - name: Install api dependencies
+        run: npm install
+        working-directory: api
+      - name: Run api linter
+        run: CI=true npm run lint
+        working-directory: api

@@ -15,15 +15,15 @@ const defaultLog = getLogger('context-queries');
  *   entered in the database.
  * @param req {object} The express request object
  */
-const saveBCGW = (id: any,req: any) => {
+const saveBCGW = (id: any, req: any) => {
   const x = req.body.form_data.activity_data.latitude;
   const y = req.body.form_data.activity_data.longitude;
-  const api = `${req.protocol}://${req.get('host')}/api`
+  const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
       authorization: req.headers.authorization
     }
-  }
+  };
 
   /* All the layers to get queried */
   const layers = [
@@ -31,19 +31,23 @@ const saveBCGW = (id: any,req: any) => {
       tableName: 'WHSE_CADASTRE.CBM_CADASTRAL_FABRIC_PUB_SVW', // BCGW table
       targetAttribute: 'OWNERSHIP_CLASS', // The attribute to collect
       targetColumn: 'ownership' // The column in our database table
-    },{
+    },
+    {
       tableName: 'WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY',
       targetAttribute: 'BGC_LABEL',
       targetColumn: 'biogeoclimatic_zones'
-    },{
+    },
+    {
       tableName: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
       targetAttribute: 'ADMIN_AREA_NAME',
       targetColumn: 'regional_districts'
-    },{
+    },
+    {
       tableName: 'WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
       targetAttribute: 'DISTRICT_NAME',
       targetColumn: 'flnro_districts'
-    },{
+    },
+    {
       tableName: 'WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY',
       targetAttribute: 'DISTRICT_NAME',
       targetColumn: 'moti_districts'
@@ -51,10 +55,11 @@ const saveBCGW = (id: any,req: any) => {
   ];
 
   /* For each layer run an asynchronous request */
-  for (let layer of layers) {
+  for (const layer of layers) {
     const url = `${api}/context/databc/${layer.tableName}?lon=${x}&lat=${y}`;
 
-    axios.get(url,config)
+    axios
+      .get(url, config)
       .then(async (response) => {
         const attribute = response.data.target[layer.targetAttribute];
         const column = layer.targetColumn;
@@ -66,12 +71,13 @@ const saveBCGW = (id: any,req: any) => {
         `;
         console.log(sql);
 
-        await connection.query(sql)
+        await connection
+          .query(sql)
           .then(() => {
-            console.log(`Successfully entered ${attribute} into column ${column}`)
+            console.log(`Successfully entered ${attribute} into column ${column}`);
           })
           .catch((err) => {
-            console.error('Error inserting into the database',err);
+            console.error('Error inserting into the database', err);
           });
 
         connection.release();
@@ -81,7 +87,6 @@ const saveBCGW = (id: any,req: any) => {
       });
   }
 };
-
 
 /**
  * ## saveInternal
@@ -92,35 +97,38 @@ const saveBCGW = (id: any,req: any) => {
  *   entered in the database.
  * @param req {object} The express request object
  */
-const saveInternal = (id: any,req: any) => {
+const saveInternal = (id: any, req: any) => {
   const x = req.body.form_data.activity_data.latitude;
   const y = req.body.form_data.activity_data.longitude;
-  const api = `${req.protocol}://${req.get('host')}/api`
+  const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
       authorization: req.headers.authorization
     }
-  }
+  };
 
   /* All the layers to get queried */
   const layers = [
     {
       targetAttribute: 'ipma', // The attribute to collect
       targetColumn: 'invasive_plant_management_areas' // The column in our database table
-    },{
+    },
+    {
       targetAttribute: 'riso',
       targetColumn: 'regional_invasive_species_organization_areas'
-    },{
+    },
+    {
       targetAttribute: 'utm',
       targetColumn: 'utm_zone'
     }
   ];
 
   /* For each layer run an asynchronous request */
-  for (let layer of layers) {
+  for (const layer of layers) {
     const url = `${api}/context/internal/${layer.targetAttribute}?lon=${x}&lat=${y}`;
 
-    axios.get(url,config)
+    axios
+      .get(url, config)
       .then(async (response) => {
         const attribute = response.data.target;
         const column = layer.targetColumn;
@@ -131,12 +139,13 @@ const saveInternal = (id: any,req: any) => {
           where activity_id = '${id}'
         `;
 
-        await connection.query(sql)
+        await connection
+          .query(sql)
           .then(() => {
-            console.log(`Successfully entered ${attribute} into column ${column}`)
+            console.log(`Successfully entered ${attribute} into column ${column}`);
           })
           .catch((err) => {
-            console.error('Error inserting into the database',err);
+            console.error('Error inserting into the database', err);
           });
 
         connection.release();
@@ -147,7 +156,6 @@ const saveInternal = (id: any,req: any) => {
   }
 };
 
-
 /**
  * ## saveElevation
  * Insert contextual data for the new activity record from
@@ -157,20 +165,21 @@ const saveInternal = (id: any,req: any) => {
  *   entered in the database.
  * @param req {object} The express request object
  */
-const saveElevation = (id: any,req: any) => {
+const saveElevation = (id: any, req: any) => {
   const x = req.body.form_data.activity_data.latitude;
   const y = req.body.form_data.activity_data.longitude;
-  const api = `${req.protocol}://${req.get('host')}/api`
+  const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
       authorization: req.headers.authorization
     }
-  }
+  };
 
   /* For each layer run an asynchronous request */
   const url = `${api}/context/elevation?lon=${x}&lat=${y}`;
 
-  axios.get(url,config)
+  axios
+    .get(url, config)
     .then(async (response) => {
       const elevation = response.data.elevation;
       const connection = await getDBConnection();
@@ -180,12 +189,13 @@ const saveElevation = (id: any,req: any) => {
         where activity_id = '${id}'
       `;
 
-      await connection.query(sql)
+      await connection
+        .query(sql)
         .then(() => {
-          console.log('Successfully entered elevation')
+          console.log('Successfully entered elevation');
         })
         .catch((err) => {
-          console.error('Error inserting into the database',err);
+          console.error('Error inserting into the database', err);
         });
 
       connection.release();
@@ -194,7 +204,6 @@ const saveElevation = (id: any,req: any) => {
       defaultLog.debug({ label: 'addingContext', message: 'error', error });
     });
 };
-
 
 /**
  * ## saveWell
@@ -205,7 +214,7 @@ const saveElevation = (id: any,req: any) => {
  *   entered in the database.
  * @param req {object} The express request object
  */
-const saveWell = (id: any,req: any) => {
+const saveWell = (id: any, req: any) => {
   const a = req.body.form_data.activity_data;
   const payload = {
     query: {
@@ -223,29 +232,29 @@ const saveWell = (id: any,req: any) => {
     const params = {
       distance: bundle.distance,
       id: id
-    }
+    };
 
     const sql: SQLStatement = insertWellDistanceSQL(params);
 
-    await connection.query(sql.text,sql.values)
+    await connection
+      .query(sql.text, sql.values)
       .then(() => {
-        console.log('Successfully entered well proximity')
+        console.log('Successfully entered well proximity');
       })
       .catch((err) => {
-        console.error('Error inserting into the database',err);
+        console.error('Error inserting into the database', err);
       });
 
     connection.release();
-  }
+  };
 
-  getWell(payload,false,callback);
+  getWell(payload, false, callback);
 };
 
-
-export const commit = function (record:any,req:any) {
+export const commit = function (record: any, req: any) {
   const id = record.activity_id;
   // saveBCGW(id,req); // Insert DataBC BCGW attributes
   // saveInternal(id,req); // Insert local attributes
   // saveElevation(id,req); // Insert elevation
-  saveWell(id,req); // Insert the closest well
+  saveWell(id, req); // Insert the closest well
 };

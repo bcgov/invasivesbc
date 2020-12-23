@@ -99,7 +99,7 @@ POST.apiDoc = {
  * @return {RequestHandler}
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     defaultLog.debug({
       label: 'point-of-interest',
       message: 'getPointsOfInterestBySearchFilterCriteria',

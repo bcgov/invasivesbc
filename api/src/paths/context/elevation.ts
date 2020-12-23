@@ -12,7 +12,7 @@ export const GET: Operation = [getElevation()];
 
 GET.apiDoc = {
   description: 'Fetches elevation for a single point',
-  tags: ['activity','elevation'],
+  tags: ['activity', 'elevation'],
   security: [
     {
       Bearer: ALL_ROLES
@@ -58,33 +58,32 @@ GET.apiDoc = {
   }
 };
 
-
 /**
  * Fetches all activity records based on request search filter criteria.
  *
  * @return {RequestHandler}
  */
 function getElevation(): RequestHandler {
-  return async (req, res, next) => {
-
+  return async (req, res) => {
     // Grab coordinates from the query string
-    const {lon,lat} = req.query;
+    const { lon, lat } = req.query;
 
     // Error if no coordinates
     if (!lon || !lat) {
       throw {
         status: 400,
         message: 'Did not supply valid coordinates'
-      }
+      };
     }
 
     defaultLog.debug({ label: 'elevation', message: 'getElevation', body: req.body });
 
-    var url = `https://geogratis.gc.ca/services/elevation/cdem/altitude?lat=${lat}&lon=${lon}`;
+    const url = `https://geogratis.gc.ca/services/elevation/cdem/altitude?lat=${lat}&lon=${lon}`;
 
-    axios.get(url)
+    axios
+      .get(url)
       .then((response) => {
-        return res.status(200).json({elevation: response.data?.altitude});
+        return res.status(200).json({ elevation: response.data?.altitude });
       })
       .catch((error) => {
         return defaultLog.debug({ label: 'getElevation', message: 'error', error });
