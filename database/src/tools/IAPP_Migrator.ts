@@ -3,7 +3,40 @@ import { AxiosRequestConfig } from 'axios';
 import csv from 'csvtojson';
 import axios from 'axios';
 import qs from 'qs';
+import moment from 'moment';
 import meow from 'meow';
+
+const formatDateToISO = (d) => {
+  if (!d) return;
+  return moment(d).format('YYYY-MM-DD');
+};
+
+// return items matching field value in an array of objects sorted by field
+// https://www.w3resource.com/javascript-exercises/javascript-array-exercise-18.php
+const binarySearchValues = (items, field, value) => {
+  if (!items) return [];
+  let firstIndex = 0;
+  let lastIndex = items.length - 1;
+  let middleIndex = Math.floor((lastIndex + firstIndex) / 2);
+
+  while (items[middleIndex][field] !== value && firstIndex < lastIndex) {
+    if (value < items[middleIndex][field]) {
+      lastIndex = Math.max(middleIndex - 1, 0);
+    } else if (value > items[middleIndex][field]) {
+      firstIndex = Math.min(middleIndex + 1, items.length - 1);
+    }
+    middleIndex = Math.floor((lastIndex + firstIndex) / 2);
+  }
+
+  if (items[middleIndex][field] !== value) return [];
+
+  // get multiple matches:
+  firstIndex = lastIndex = middleIndex;
+  while (firstIndex > 0 && items[firstIndex - 1][field] === value) firstIndex = firstIndex - 1;
+  while (lastIndex < items.length - 1 && items[lastIndex + 1][field] === value) lastIndex = lastIndex + 1;
+
+  return items.slice(firstIndex, lastIndex + 1);
+};
 
 const cli = meow(
   /*
@@ -14,7 +47,9 @@ const cli = meow(
       --site fileName, -si fileName
       --survey fileName, -su fileName
       --mechanicalTreatment fileName, -mt fileName
-      --monitoring fileName, -s fileName
+      --mechanicalMonitoring fileName, -mm fileName
+      --chemicalTreatment fileName, -ct fileName
+      --chemicalMonitoring fileName, -cm fileName
       --dispersal fileName, -d fileName
       --bioControlOutput fileName, -b fileName
 
@@ -22,7 +57,32 @@ const cli = meow(
       Load just sites:
       $ IAPP_Migrate --site sites.csv http://point_of_interest_endpoint/
       Load more:
-      $ IAPP_Migrate -si sites.csv -su surveys.csv -t treatments.csv -m monitoring.csv http://point_of_interest_endpoint
+      $ IAPP_Migrate --si sites.csv -su surveys.csv --mt mechtreatments.csv --mm mechmonitoring.csv --ct chemtreatments.csv --cm chemmonitoring.csv http://point_of_interest_endpoint
+
+    Recommend ts-node for Windows users.  Command is then:
+    $ ts-node IAPP_Migrator.ts --site sites.csv http://point_of_interest_endpoint/
+
+    REQUIREMENTS:
+      CSV files must be sorted according to:
+      --site: SiteID DESC
+      --survey: SiteID ASC
+      --mechanicalTreatment: SiteID ASC
+      --mechanicalMonitoring: treatment_id ASC
+      --chemicalTreatment: SiteID ASC
+      --chemicalMonitoring: treatment_id ASC
+      --dispersal: SiteID ASC
+      --bioControlOutput: SiteID ASC
+
+    OUTPUT:
+      Data will be sorted according to:
+      --site: SiteID DESC
+      --survey: MechanicalID DESC
+      --mechanicalTreatment: TreatmentID DESC
+      --mechanicalMonitoring: monitoring_id DESC
+      --chemicalTreatment: TreatmentID DESC
+      --chemicalMonitoring: treatment_id DESC
+      --dispersal: SiteID DESC
+      --bioControlOutput: SiteID DESC
   */
   {
     flags: {
@@ -41,9 +101,19 @@ const cli = meow(
         alias: 'mt',
         isRequired: false
       },
-      monitoring: {
+      mechanicalMonitoring: {
         type: 'string',
-        alias: 'm',
+        alias: 'mm',
+        isRequired: false
+      },
+      chemicalTreatment: {
+        type: 'string',
+        alias: 'ct',
+        isRequired: false
+      },
+      chemicalMonitoring: {
+        type: 'string',
+        alias: 'cm',
         isRequired: false
       },
       dispersal: {
@@ -107,7 +177,9 @@ interface IAPPDataInterface {
   siteData?: any[];
   surveyData?: any[];
   mechanicalTreatmentData?: any[];
-  monitoringData?: any[];
+  mechanicalMonitoringData?: any[];
+  chemicalTreatmentData?: any[];
+  chemicalMonitoringData?: any[];
   dispersalData?: any[];
   bioControlOutputData?: any[];
 }
@@ -129,15 +201,27 @@ const loadAllData = async () => {
   }
 
   if (cli.flags.mechanicalTreatment) {
-    console.log('Loading treatments...');
+    console.log('Loading mechanical treatments...');
     results.mechanicalTreatmentData = await loadACSV(cli.flags.mechanicalTreatment);
-    console.log(results.mechanicalTreatmentData.length + ' mechanical treatments loaded.');
+    console.log(results.mechanicalTreatmentData.length + ' mech mechanical treatments loaded.');
   }
 
-  if (cli.flags.monitoring) {
-    console.log('Loading monitoring...');
-    results.monitoringData = await loadACSV(cli.flags.monitoring);
-    console.log(results.monitoringData.length + ' monitoring records loaded.');
+  if (cli.flags.mechanicalMonitoring) {
+    console.log('Loading mechanical monitoring...');
+    results.mechanicalMonitoringData = await loadACSV(cli.flags.mechanicalMonitoring);
+    console.log(results.mechanicalMonitoringData.length + ' mech monitoring records loaded.');
+  }
+
+  if (cli.flags.chemicalTreatment) {
+    console.log('Loading chemical treatments...');
+    results.chemicalTreatmentData = await loadACSV(cli.flags.chemicalTreatment);
+    console.log(results.chemicalTreatmentData.length + ' chem mechanical treatments loaded.');
+  }
+
+  if (cli.flags.chemicalMonitoring) {
+    console.log('Loading chemical monitoring...');
+    results.chemicalMonitoringData = await loadACSV(cli.flags.chemicalMonitoring);
+    console.log(results.chemicalMonitoringData.length + ' chem monitoring records loaded.');
   }
 
   if (cli.flags.dispersal) {
@@ -161,40 +245,56 @@ const urlstring = 'https://api-dev-invasivesbci.pathfinder.gov.bc.ca/api/point-o
 const main = async () => {
   const IAPPData = await loadAllData();
 
-  let count1 = 0;
-  while (count1 < 10000) {
-    const siteRecord = IAPPData.siteData[count1];
+  let siteCount = 0;
+
+  // assumes site CSV sorted by SiteID DESC
+  while (siteCount < 10000) {
+    const siteRecord = IAPPData.siteData[siteCount];
+    if (!IAPPData.siteData[siteCount]) break;
     const siteRecordID = siteRecord['SiteID'];
 
-    const surveys = [];
+    // assumes surveys CSV sorted by SiteID ASC
+    let surveys = binarySearchValues(IAPPData.surveyData, 'SiteID', siteRecordID);
+    surveys = surveys.map((survey) => ({
+      ...survey,
+      SurveyDate: formatDateToISO(survey.surveyDate)
+    }));
+    // restore desired sorting order by MechanicalID DESC (latest first)
+    surveys.sort((a, b) => Number(b.MechanicalID) - Number(a.MechanicalID));
 
-    let count2 = 0;
-    while (count2 < IAPPData.surveyData.length) {
-      const surveyRecord = IAPPData.surveyData[count2];
-      const surveyRecordID = surveyRecord['SiteID'];
+    // assumes mechtreatements CSV sorted by SiteID ASC
+    let mechanical_treatments = binarySearchValues(IAPPData.mechanicalTreatmentData, 'SiteID', siteRecordID);
+    mechanical_treatments = mechanical_treatments.map((treatment) => {
+      // assumes monitoring CSV sorted by treatment_id ASC
+      treatment.monitoring = binarySearchValues(
+        IAPPData.mechanicalMonitoringData,
+        'treatment_id',
+        treatment.TreatmentID
+      );
+      // restore desired sorting order by monitoring_id DESC (latest first)
+      treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
+      return treatment;
+    });
+    // restore desired sorting order by TreatmentID DESC (latest first)
+    mechanical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
 
-      if (surveyRecordID == siteRecordID) {
-        surveys.push(surveyRecord);
-      }
+    // assumes chemtreatements CSV sorted by SiteID ASC
+    let chemical_treatments = binarySearchValues(IAPPData.chemicalTreatmentData, 'SiteID', siteRecordID);
+    chemical_treatments = chemical_treatments.map((treatment) => {
+      // assumes monitoring CSV sorted by treatment_id ASC
+      treatment.monitoring = binarySearchValues(IAPPData.chemicalMonitoringData, 'treatment_id', treatment.TreatmentID);
+      // restore desired sorting order by treatment_id DESC (latest first)
+      treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
+      return treatment;
+    });
+    // restore desired sorting order by TreatmentID DESC (latest first)
+    chemical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
 
-      count2++;
-    }
+    siteCount++;
 
-    const mechanical_treatments = [];
-
-    let count3 = 0;
-    while (count3 < IAPPData.mechanicalTreatmentData.length) {
-      const mechanicalTreatmentRecord = IAPPData.mechanicalTreatmentData[count3];
-      const mechanicalTreatmentRecordID = mechanicalTreatmentRecord['SiteID'];
-
-      if (mechanicalTreatmentRecordID == siteRecordID) {
-        mechanical_treatments.push(mechanicalTreatmentRecord);
-      }
-
-      count3++;
-    }
-
-    count1++;
+    // Go/No-Go Rules:
+    // only import POIs which have Survey data:
+    if (!surveys || surveys.length === 0) continue;
 
     const requestBody: any = {
       point_of_interest_type: 'IAPP Site',
@@ -214,7 +314,7 @@ const main = async () => {
         point_of_interest_data: {
           jurisdiction_code: 'Not provided',
           point_of_interest_status: 'pending',
-          species_agency_code: 'Not provided',
+          invasive_species_agency_code: 'Not provided',
           access_description: siteRecord.Locations,
           media_indicator: false,
           created_date_on_device: siteRecord.CreateDate,
@@ -227,6 +327,8 @@ const main = async () => {
           ]
         },
         point_of_interest_type_data: {
+          slope: siteRecord.Slope,
+          elevation: siteRecord.Elevation,
           site_id: siteRecordID,
           created_date: siteRecord.CreateDate,
           aspect: siteRecord.Aspect,
@@ -237,7 +339,8 @@ const main = async () => {
           comments: siteRecord.Comments,
           species: [],
           surveys: surveys,
-          mechanical_treatments: mechanical_treatments
+          mechanical_treatments: mechanical_treatments,
+          chemical_treatments: chemical_treatments
         }
       }
     };
@@ -249,11 +352,12 @@ const main = async () => {
         Authorization: `Bearer ${token}`
       }
     };
+
     try {
       // process.stdout.write(`${siteRecordID},`);
       await axios.post(urlstring, requestBody, postconfig);
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error);
     }
   }
 };
