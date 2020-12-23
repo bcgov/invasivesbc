@@ -45,7 +45,7 @@ export async function addActivityToDB(
     } else {
       formData.activity_type_data = {
         activity_id: linkedRecord._id
-      }
+      };
     }
   } else {
     formData = {
