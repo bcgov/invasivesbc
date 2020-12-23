@@ -9,7 +9,7 @@ import meow from 'meow';
 const formatDateToISO = (d) => {
   if (!d) return;
   return moment(d).format('YYYY-MM-DD');
-}
+};
 
 // return items matching field value in an array of objects sorted by field
 // https://www.w3resource.com/javascript-exercises/javascript-array-exercise-18.php

@@ -295,8 +295,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 : []
             }
             dropdown={(i) =>
-              mechanical_treatments[i].monitoring ||
-              mechanical_treatments[i].monitoring.length === 0 ? null : (
+              mechanical_treatments[i].monitoring || mechanical_treatments[i].monitoring.length === 0 ? null : (
                 <IAPPTable
                   key={'dropdown_' + i}
                   headers={[
@@ -396,8 +395,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   ]}
                 />
                 <br />
-                {chemical_treatments[i].monitoring ||
-                chemical_treatments[i].monitoring.length === 0 ? null : (
+                {chemical_treatments[i].monitoring || chemical_treatments[i].monitoring.length === 0 ? null : (
                   <IAPPTable
                     headers={[
                       'Monitoring ID',
