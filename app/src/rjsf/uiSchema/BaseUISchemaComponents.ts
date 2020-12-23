@@ -97,6 +97,9 @@ const Observation_AnimalAquatic = {
 };
 
 const Treatment = {
+  activity_id: {
+    'ui:readonly': true
+  },
   applicator1_first_name: {},
   applicator1_last_name: {},
   applicator2_first_name: {},
@@ -157,7 +160,9 @@ const Treatment_BiologicalTerrestrialAnimal = {
 };
 
 const Monitoring = {
-  activity_id: {},
+  activity_id: {
+    'ui:readonly': true
+  },
   observer_first_name: {},
   observer_last_name: {},
   efficacy_code: {}
