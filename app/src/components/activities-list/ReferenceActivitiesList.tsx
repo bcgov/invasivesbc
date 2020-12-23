@@ -10,7 +10,11 @@ import {
   Theme,
   Typography,
   Button,
-  Box
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
@@ -47,17 +51,11 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'inline',
       marginRight: '1rem'
     }
+  },
+  formControl: {
+    maxWidth: 175
   }
 }));
-
-/**
- * 
- * @param {ActivitySubtype} observationSubtype The observation subtype for which to get the associated treatment subtype
- */
-const calculateTreatmentSubtypeByObservationSubtype = (observationSubtype: ActivitySubtype): ActivitySubtype => {
-  // Temporarily always creates a chemical plant treatment
-  return ActivitySubtype.Treatment_ChemicalPlant;
-};
 
 /**
  *
@@ -80,18 +78,6 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
     monitoringSubtype = ActivitySubtype[`Monitoring_${treatmentSubtype.split('_')[2]}`];
   }
 
-  // Observation_PlantTerrestial = 'Activity_Observation_PlantTerrestial',
-  // Observation_PlantAquatic = 'Activity_Observation_PlantAquatic',
-
-  // Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlant',
-  // Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlant',
-  // Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
-  // Treatment_BiologicalDispersalPlant = 'Activity_Treatment_BiologicalDispersalPlant',
-
-  // Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
-  // Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-  // Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
-
   return monitoringSubtype;
 };
 
@@ -104,6 +90,7 @@ interface IReferenceActivityListItem {
 const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
   const classes = useStyles();
   const history = useHistory();
+  const [treatmentSubtypeToCreate, setTreatmentSubtypeToCreate] = useState(ActivitySubtype.Treatment_ChemicalPlant);
   const { activity, databaseContext, setOnReferencesListPage } = props;
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
@@ -114,32 +101,16 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
     history.push(`/home/activity`);
   };
 
-  const generateCreateActivityButton = (databaseContext: any, activityType: ActivityType, activity: any, calculateSubtype: Function) => {
-    return (
-      <>
-        <Divider flexItem={true} orientation="vertical" />
-        <Grid item>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            startIcon={<Add />}
-            onClick={async (e) => {
-              e.stopPropagation();
-              const addedActivity = await addActivityToDB(
-                databaseContext,
-                activityType,
-                calculateSubtype(activity.activitySubtype),
-                activity
-              );
-              setActiveActivityAndNavigateToActivityPage(addedActivity);
-              setOnReferencesListPage(false);
-            }}>
-            {`Create ${activityType}`}
-          </Button>
-        </Grid>
-      </>
-    );
+  const handleTreatmentSubtypeClick = async (event: any) => {
+    event.stopPropagation();
+
+    const dropdownValue = event.target.value === 0 ? ActivitySubtype.Treatment_ChemicalPlant : event.target.value;
+    setTreatmentSubtypeToCreate(dropdownValue);
+
+    const addedActivity = await addActivityToDB(databaseContext, ActivityType.Treatment, dropdownValue, activity);
+    setActiveActivityAndNavigateToActivityPage(addedActivity);
+
+    setOnReferencesListPage(false);
   };
 
   return (
@@ -148,10 +119,55 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
       <ActivityListItem activity={activity} classes={classes} />
       <ActivityListDate classes={classes} activity={activity} />
       {activity.activityType === 'Treatment' && (
-        generateCreateActivityButton(databaseContext, ActivityType.Monitoring, activity, calculateMonitoringSubtypeByTreatmentSubtype)
+        <>
+          <Divider flexItem={true} orientation="vertical" />
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              startIcon={<Add />}
+              onClick={async (e) => {
+                e.stopPropagation();
+                const addedActivity = await addActivityToDB(
+                  databaseContext,
+                  ActivityType.Monitoring,
+                  calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
+                  activity
+                );
+                setActiveActivityAndNavigateToActivityPage(addedActivity);
+                setOnReferencesListPage(false);
+              }}>
+              Create Monitoring
+            </Button>
+          </Grid>
+        </>
       )}
       {activity.activityType === 'Observation' && (
-        generateCreateActivityButton(databaseContext, ActivityType.Treatment, activity, calculateTreatmentSubtypeByObservationSubtype)
+        <>
+          <Divider flexItem={true} orientation="vertical" />
+          <Grid item>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <InputLabel>Create Treatment</InputLabel>
+              {activity.activitySubtype.includes('Plant') && (
+                <Select
+                  value={treatmentSubtypeToCreate}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={handleTreatmentSubtypeClick}
+                  label="Create Treatment">
+                  <MenuItem value={ActivitySubtype.Treatment_ChemicalPlant} onClick={handleTreatmentSubtypeClick}>
+                    Chemical Plant
+                  </MenuItem>
+                  <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
+                  <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
+                  <MenuItem value={ActivitySubtype.Treatment_BiologicalDispersalPlant}>
+                    Biological Dispersal Plant
+                  </MenuItem>
+                </Select>
+              )}
+            </FormControl>
+          </Grid>
+        </>
       )}
     </Grid>
   );

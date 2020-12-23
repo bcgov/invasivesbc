@@ -514,6 +514,18 @@ const ActivitiesList: React.FC = (props) => {
               </Box>
             </Box>
           )}
+          {workflowFunction !== 'Special' && (
+            <Box>
+              <Box>
+                <Typography variant="h5">Efficacy Monitorings</Typography>
+              </Box>
+              <ActivityList
+                workflowFunction={workflowFunction}
+                isDisabled={isDisabled}
+                activityType={ActivityType.Monitoring}
+              />
+            </Box>
+          )}
           {workflowFunction === 'Special' && (
             <>
               <Box>
