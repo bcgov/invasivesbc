@@ -3,7 +3,6 @@
   and apply some filters based on the type of data 
 */
 export function getFieldsToCopy(data: any, activitySubtype?: string) {
-
   /*
     These fields are not being included because they are either read-only fields that are generated
     based on the geometry or editable fields that get autopopulated based on when the activity
