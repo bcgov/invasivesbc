@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
   wideCell: {
     whiteSpace: 'normal',
-    minWidth: '500'
+    minWidth: 500
   },
   missingValue: {
     fontStyle: 'italic',
