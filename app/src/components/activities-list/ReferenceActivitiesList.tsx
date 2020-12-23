@@ -51,6 +51,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
+ * 
+ * @param {ActivitySubtype} observationSubtype The observation subtype for which to get the associated treatment subtype
+ */
+const calculateTreatmentSubtypeByObservationSubtype = (observationSubtype: ActivitySubtype): ActivitySubtype => {
+  // Temporarily always creates a chemical plant treatment
+  return ActivitySubtype.Treatment_ChemicalPlant;
+};
+
+/**
  *
  * @param {ActivitySubtype} treatmentSubtype The treatment subtype for which to get the associated monitoring subtype
  */
@@ -70,6 +79,18 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
   } else {
     monitoringSubtype = ActivitySubtype[`Monitoring_${treatmentSubtype.split('_')[2]}`];
   }
+
+  // Observation_PlantTerrestial = 'Activity_Observation_PlantTerrestial',
+  // Observation_PlantAquatic = 'Activity_Observation_PlantAquatic',
+
+  // Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlant',
+  // Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlant',
+  // Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
+  // Treatment_BiologicalDispersalPlant = 'Activity_Treatment_BiologicalDispersalPlant',
+
+  // Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
+  // Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
+  // Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
 
   return monitoringSubtype;
 };
@@ -93,35 +114,44 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
     history.push(`/home/activity`);
   };
 
+  const generateCreateActivityButton = (databaseContext: any, activityType: ActivityType, activity: any, calculateSubtype: Function) => {
+    return (
+      <>
+        <Divider flexItem={true} orientation="vertical" />
+        <Grid item>
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            startIcon={<Add />}
+            onClick={async (e) => {
+              e.stopPropagation();
+              const addedActivity = await addActivityToDB(
+                databaseContext,
+                activityType,
+                calculateSubtype(activity.activitySubtype),
+                activity
+              );
+              setActiveActivityAndNavigateToActivityPage(addedActivity);
+              setOnReferencesListPage(false);
+            }}>
+            {`Create ${activityType}`}
+          </Button>
+        </Grid>
+      </>
+    );
+  };
+
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
       <ActivityListItem activity={activity} classes={classes} />
       <ActivityListDate classes={classes} activity={activity} />
       {activity.activityType === 'Treatment' && (
-        <>
-          <Divider flexItem={true} orientation="vertical" />
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              startIcon={<Add />}
-              onClick={async (e) => {
-                e.stopPropagation();
-                const addedActivity = await addActivityToDB(
-                  databaseContext,
-                  ActivityType.Monitoring,
-                  calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
-                  activity
-                );
-                setActiveActivityAndNavigateToActivityPage(addedActivity);
-                setOnReferencesListPage(false);
-              }}>
-              Create Monitoring
-            </Button>
-          </Grid>
-        </>
+        generateCreateActivityButton(databaseContext, ActivityType.Monitoring, activity, calculateMonitoringSubtypeByTreatmentSubtype)
+      )}
+      {activity.activityType === 'Observation' && (
+        generateCreateActivityButton(databaseContext, ActivityType.Treatment, activity, calculateTreatmentSubtypeByObservationSubtype)
       )}
     </Grid>
   );
