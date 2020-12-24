@@ -900,6 +900,11 @@
           "treatment_issues_code"
         ],
         "properties": {
+          "activity_id": {
+            "type": "string",
+            "title": "Observation Id",
+            "default": "N/A"
+          },
           "applicator1_first_name": {
             "type": "string",
             "title": "Applicator 1 First Name"
@@ -957,6 +962,11 @@
           "pesticide_use_permit_PUP"
         ],
         "properties": {
+          "activity_id": {
+            "type": "string",
+            "title": "Observation Id",
+            "default": "N/A"
+          },
           "applicator1_first_name": {
             "type": "string",
             "title": "Applicator 1 First Name"
