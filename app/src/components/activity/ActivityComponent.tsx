@@ -37,7 +37,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     if (props.activity.activityType === 'Monitoring') {
       getActivityData();
     }
-  }, [databaseContext]);
+  }, [databaseContext, props]);
 
   return (
     <>
