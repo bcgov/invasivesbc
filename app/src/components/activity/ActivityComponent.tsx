@@ -20,7 +20,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const [linkedActivityProps, setLinkedActivityProps] = useState(null);
 
   useEffect(() => {
-    const getActivityData = async (databaseContext, activityId) => {
+    const getActivityData = async () => {
       const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
       if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
@@ -28,15 +28,14 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       }
 
       const activityResults = await databaseContext.database.find({
-        selector: { _id: activityId }
+        selector: { _id: props.activity.formData.activity_type_data.activity_id }
       });
 
       setLinkedActivityProps({ ...props, activity: activityResults.docs[0], isDisabled: true });
     };
 
     if (props.activity.activityType === 'Monitoring') {
-      const { activity: { formData } } = props;
-      getActivityData(databaseContext, formData.activity_type_data.activity_id);
+      getActivityData();
     }
   }, [databaseContext]);
 
