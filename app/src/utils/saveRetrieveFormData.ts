@@ -8,7 +8,7 @@ export function saveFormDataToSession(formData: any, activitySubtype: string): v
   const activityData = { ...formData.activity_data };
 
   // call business rule function to exclude certain fields of the activity_data of the form data
-  const activityDataToCopy = getFieldsToCopy(activityData, 'activity_data');
+  const activityDataToCopy = getFieldsToCopy(activityData);
 
   const formDataToCopy = {
     ...formData,

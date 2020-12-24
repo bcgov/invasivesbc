@@ -29,18 +29,24 @@ export async function addActivityToDB(
   if (linkedRecord) {
     formData = {
       activity_data: {
-        ...getFieldsToCopy(linkedRecord.formData.activity_data, 'activity_data', linkedRecord.activitySubtype),
+        ...getFieldsToCopy(linkedRecord.formData.activity_data, linkedRecord.activitySubtype),
         activity_date_time: moment(new Date()).format()
-      },
-      activity_type_data: {
-        ...getFieldsToCopy(
-          linkedRecord.formData.activity_subtype_data,
-          'activity_subtype_data',
-          linkedRecord.activitySubtype
-        ),
-        activity_id: linkedRecord._id
       }
     };
+
+    /*
+      Since chemical plant treatments are different and do not have activity_type_data
+      the linked record activity id field is present in the activity_subtype_data
+    */
+    if (activitySubtype === ActivitySubtype.Treatment_ChemicalPlant) {
+      formData.activity_subtype_data = {
+        activity_id: linkedRecord._id
+      };
+    } else {
+      formData.activity_type_data = {
+        activity_id: linkedRecord._id
+      };
+    }
   } else {
     formData = {
       activity_data: {
