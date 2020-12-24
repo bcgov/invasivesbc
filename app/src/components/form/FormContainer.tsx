@@ -136,7 +136,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       </ThemeProvider>
 
       <Box mt={3}>
-        <FormControlsComponent onSubmit={() => formRef.submit()} isDisabled={isDisabled} />
+        <FormControlsComponent
+          onSubmit={() => formRef.submit()}
+          isDisabled={isDisabled}
+          onCopy={props.copyFormData ? () => props.copyFormData() : null}
+          onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
+          activitySubtype={props.activity.activitySubtype}
+        />
       </Box>
     </Box>
   );
