@@ -48,8 +48,8 @@ jobs:
       - name: Build Database Image
         working-directory: './database/.pipeline/'
         run: |
-          npm install
-          # npm ci
+          # npm install
+          npm ci
           DEBUG=* npm run db:build -- --pr=$BUILD_ID
 
   # Build the Database Setup image
@@ -80,8 +80,8 @@ jobs:
       - name: Build Database Setup Image
         working-directory: './database/.pipeline/'
         run: |
-          npm install
-          # npm ci
+          # npm install
+          npm ci
           DEBUG=* npm run db-setup:build -- --pr=$BUILD_ID
 
   # Build the API image
@@ -178,8 +178,8 @@ jobs:
       - name: Deploy Database Image
         working-directory: './database/.pipeline/'
         run: |
-          npm install
-          # npm ci
+          # npm install
+          npm ci
           DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev
 
   # Deploy Database image
@@ -213,8 +213,8 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: './database/.pipeline/'
         run: |
-          npm install
-          # npm ci
+          # npm install
+          npm ci
           DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=dev
 
   # Deploy API image
@@ -355,8 +355,8 @@ jobs:
       - name: Clean Database Artifacts
         working-directory: './database/.pipeline/'
         run: |
-          npm install
-          # npm ci
+          # npm install
+          npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
 
