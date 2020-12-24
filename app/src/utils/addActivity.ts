@@ -43,6 +43,7 @@ export async function addActivityToDB(
         activity_id: linkedRecord._id
       };
     } else {
+      console.log('in here', linkedRecord);
       formData.activity_type_data = {
         activity_id: linkedRecord._id
       };

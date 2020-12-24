@@ -14,6 +14,7 @@ export interface IPhoto {
 export interface IPhotoContainerProps {
   classes?: any;
   photoState: { photos: IPhoto[]; setPhotos: (photo: IPhoto[]) => void };
+  isDisabled?: boolean;
 }
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
@@ -48,7 +49,6 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     return <CircularProgress />;
   }
 
-  // Grid with overlays: https://material-ui.com/components/grid-list/
   return (
     <Box width={1}>
       <Box mb={3}>
@@ -58,33 +58,37 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
               <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                 <Card>
                   <CardMedia src={photo.dataUrl} component="img" />
-                  <CardActions>
-                    <IconButton onClick={() => deletePhoto(photo.filepath)}>
-                      <DeleteForever />
-                    </IconButton>
-                  </CardActions>
+                  {!props.isDisabled && (
+                    <CardActions>
+                      <IconButton onClick={() => deletePhoto(photo.filepath)}>
+                        <DeleteForever />
+                      </IconButton>
+                    </CardActions>
+                  )}
                 </Card>
               </Grid>
             ))}
           </Grid>
         </Grid>
       </Box>
-      <Box>
-        <Grid container>
-          <Grid container item spacing={3} justify="center">
-            <Grid item>
-              <Button variant="contained" color="primary" startIcon={<AddAPhoto />} onClick={() => takePhoto()}>
-                Add A Photo
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button variant="contained" startIcon={<DeleteForever />} onClick={() => deletePhotos()}>
-                Remove All Photos
-              </Button>
+      {!props.isDisabled && (
+        <Box>
+          <Grid container>
+            <Grid container item spacing={3} justify="center">
+              <Grid item>
+                <Button variant="contained" color="primary" startIcon={<AddAPhoto />} onClick={() => takePhoto()}>
+                  Add A Photo
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button variant="contained" startIcon={<DeleteForever />} onClick={() => deletePhotos()}>
+                  Remove All Photos
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      )}
     </Box>
   );
 };
