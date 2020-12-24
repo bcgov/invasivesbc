@@ -55,7 +55,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           {linkedActivityProps.activity.photos.length > 0 && (
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-photo-content" id="panel-photo-header">
-                <Typography className={linkedActivityProps.classes.heading}>Photos</Typography>
+                <Typography className={linkedActivityProps.classes.heading}>Linked Activity Photos</Typography>
               </AccordionSummary>
               <AccordionDetails className={linkedActivityProps.classes.photoContainer}>
                 <PhotoContainer {...linkedActivityProps} />
@@ -83,7 +83,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       </Accordion>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-photo-content" id="panel-photo-header">
-          <Typography className={props.classes.heading}>Photos</Typography>
+          <Typography className={props.classes.heading}>Activity Photos</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.photoContainer}>
           <PhotoContainer {...props} />
