@@ -10,7 +10,11 @@ import {
   Theme,
   Typography,
   Button,
-  Box
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
@@ -47,6 +51,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'inline',
       marginRight: '1rem'
     }
+  },
+  formControl: {
+    maxWidth: 175
   }
 }));
 
@@ -83,6 +90,7 @@ interface IReferenceActivityListItem {
 const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
   const classes = useStyles();
   const history = useHistory();
+  const [treatmentSubtypeToCreate, setTreatmentSubtypeToCreate] = useState(ActivitySubtype.Treatment_ChemicalPlant);
   const { activity, databaseContext, setOnReferencesListPage } = props;
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
@@ -91,6 +99,18 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
     });
 
     history.push(`/home/activity`);
+  };
+
+  const handleTreatmentSubtypeClick = async (event: any) => {
+    event.stopPropagation();
+
+    const dropdownValue = event.target.value === 0 ? ActivitySubtype.Treatment_ChemicalPlant : event.target.value;
+    setTreatmentSubtypeToCreate(dropdownValue);
+
+    const addedActivity = await addActivityToDB(databaseContext, ActivityType.Treatment, dropdownValue, activity);
+    setActiveActivityAndNavigateToActivityPage(addedActivity);
+
+    setOnReferencesListPage(false);
   };
 
   return (
@@ -120,6 +140,32 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
               }}>
               Create Monitoring
             </Button>
+          </Grid>
+        </>
+      )}
+      {activity.activityType === 'Observation' && (
+        <>
+          <Divider flexItem={true} orientation="vertical" />
+          <Grid item>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <InputLabel>Create Treatment</InputLabel>
+              {activity.activitySubtype.includes('Plant') && (
+                <Select
+                  value={treatmentSubtypeToCreate}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={handleTreatmentSubtypeClick}
+                  label="Create Treatment">
+                  <MenuItem value={ActivitySubtype.Treatment_ChemicalPlant} onClick={handleTreatmentSubtypeClick}>
+                    Chemical Plant
+                  </MenuItem>
+                  <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
+                  <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
+                  <MenuItem value={ActivitySubtype.Treatment_BiologicalDispersalPlant}>
+                    Biological Dispersal Plant
+                  </MenuItem>
+                </Select>
+              )}
+            </FormControl>
           </Grid>
         </>
       )}

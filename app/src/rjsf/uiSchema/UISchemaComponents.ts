@@ -13,6 +13,9 @@
 import BaseUISchemaComponents from 'rjsf/uiSchema/BaseUISchemaComponents';
 
 const Treatment_ChemicalPlant = {
+  activity_id: {
+    'ui:readonly': true
+  },
   applicator1_first_name: {},
   applicator1_last_name: {},
   applicator1_licence_number: {},
