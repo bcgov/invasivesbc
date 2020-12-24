@@ -902,8 +902,7 @@
         "properties": {
           "activity_id": {
             "type": "string",
-            "title": "Observation Id",
-            "default": "N/A"
+            "title": "Observation Id"
           },
           "applicator1_first_name": {
             "type": "string",
@@ -964,8 +963,7 @@
         "properties": {
           "activity_id": {
             "type": "string",
-            "title": "Observation Id",
-            "default": "N/A"
+            "title": "Observation Id"
           },
           "applicator1_first_name": {
             "type": "string",
