@@ -48,7 +48,7 @@ jobs:
       - name: Clean APP Deployment
         working-directory: "./app/.pipeline/"
         run: |
-          npm install
-          # npm ci
+          # npm install
+          npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
