@@ -1,5 +1,4 @@
-import * as Knex from "knex";
-
+import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
@@ -25,10 +24,9 @@ export async function up(knex: Knex): Promise<void> {
     where activity_incoming_data.activity_type = 'Observation'
     )
     COMMENT ON VIEW observation_common_fields_view IS 'View on fields common to all types of observations, with table activity_incoming_data as source.';
-  `)
+  `);
 }
 
-
 export async function down(knex: Knex): Promise<void> {
-  knex.raw(`drop view if exists observation_common_fields_view`)
+  knex.raw(`drop view if exists observation_common_fields_view`);
 }
