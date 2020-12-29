@@ -10,7 +10,7 @@ jobs:
   # Print variables for logging and debugging purposes
   checkEnv:
     name: Check Env variables
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false}}
     steps:
       - name: Print Env Vars
@@ -23,7 +23,7 @@ jobs:
   # Build the Database image
   buildDatabase:
     name: Build Database Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -55,7 +55,7 @@ jobs:
   # Build the Database Setup image
   buildDatabaseSetup:
     name: Build Database Setup Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -87,7 +87,7 @@ jobs:
   # Build the API image
   buildAPI:
     name: Build API Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -119,7 +119,7 @@ jobs:
   # Build the web frontend app image
   buildAPP:
     name: Build App Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -151,7 +151,7 @@ jobs:
   # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -185,7 +185,7 @@ jobs:
   # Deploy Database image
   deployDatabaseSetup:
     name: Deploy Database Setup Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -220,7 +220,7 @@ jobs:
   # Deploy API image
   deployAPI:
     name: Deploy API Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -255,7 +255,7 @@ jobs:
   # Deploy App image
   deployAPP:
     name: Deploy App Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -288,7 +288,7 @@ jobs:
 
   # Smoke Test the API
   PR-API-Test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == false && github.base_ref == 'dev' }}
     needs:
       - deployDatabase
@@ -326,7 +326,7 @@ jobs:
   # Clean build/deployment artifacts
   clean:
     name: Clean Build/Deployment Artifacts
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == true && github.base_ref != 'dev' && github.base_ref != 'test' && github.base_ref != 'prod' }}
     needs:
       - deployDatabase
