@@ -144,7 +144,7 @@ export function uploadMedia(): RequestHandler {
 export function getMediaItemsList(s3ObjectList: GetObjectOutput[]) {
   const mediaItems: IMediaItem[] = s3ObjectList.map((s3Object: GetObjectOutput) => {
     // Encode image buffer as base64
-    const contentString = Buffer.from(s3Object.Body as Buffer).toString('base64');
+    const contentString = Buffer.from(s3Object.Body).toString('base64');
 
     // Append DATA Url string
     const encodedFile = `data:${s3Object.ContentType};base64,${contentString}`;
