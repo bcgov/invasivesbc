@@ -10,7 +10,7 @@ const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
 
 const API_URL =
-  (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'https://api-dev-invasivesbci.pathfinder.gov.bc.ca';
+  (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
