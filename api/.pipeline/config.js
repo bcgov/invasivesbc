@@ -4,7 +4,7 @@ let options = require('pipeline-cli').Util.parseArguments();
 // The root config for common values
 const config = require('../../.config/config.json');
 
-const defaultHost = 'invasivebci-8ecbmv-api.pathfinder.gov.bc.ca';
+const defaultHost = 'invasivebci-7068ad-api.apps.silver.devops.gov.bc.ca';
 
 const name = (config.module && config.module['api']) || 'invasivesbci-api';
 const dbName = (config.module && config.module['db']) || 'invasivesbci-db';
@@ -48,7 +48,7 @@ options = processOptions(options);
 
 const phases = {
   build: {
-    namespace: '8ecbmv-tools',
+    namespace: '7068ad-tools',
     name: `${name}`,
     dbName: `${dbName}`,
     phase: 'build',
@@ -61,7 +61,7 @@ const phases = {
     branch: branch
   },
   dev: {
-    namespace: '8ecbmv-dev',
+    namespace: '7068ad-dev',
     name: `${name}`,
     dbName: `${dbName}`,
     phase: 'dev',
@@ -72,14 +72,14 @@ const phases = {
     tag: `dev-${version}-${deployChangeId}`,
     host:
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) ||
-      `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
+      `${name}-${changeId}-7068ad-dev.apps.silver.devops.gov.bc.ca`,
     env: 'dev',
     certificateURL: config.certificateURL.dev,
     replicas: 1,
     maxReplicas: 2
   },
   test: {
-    namespace: '8ecbmv-test',
+    namespace: '7068ad-test',
     name: `${name}`,
     dbName: `${dbName}`,
     phase: 'test',
@@ -95,7 +95,7 @@ const phases = {
     maxReplicas: 5
   },
   prod: {
-    namespace: '8ecbmv-prod',
+    namespace: '7068ad-prod',
     name: `${name}`,
     dbName: `${dbName}`,
     phase: 'prod',

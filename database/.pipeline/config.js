@@ -42,7 +42,7 @@ options = processOptions(options);
 
 const phases = {
   build: {
-    namespace: '8ecbmv-tools',
+    namespace: '7068ad-tools',
     name: `${name}`,
     phase: 'build',
     changeId: changeId,
@@ -54,7 +54,7 @@ const phases = {
     branch: branch
   },
   dev: {
-    namespace: '8ecbmv-dev',
+    namespace: '7068ad-dev',
     name: `${name}`,
     phase: 'dev',
     changeId: deployChangeId,
@@ -65,7 +65,7 @@ const phases = {
     env: 'dev'
   },
   test: {
-    namespace: '8ecbmv-test',
+    namespace: '7068ad-test',
     name: `${name}`,
     phase: 'test',
     changeId: deployChangeId,
@@ -76,7 +76,7 @@ const phases = {
     env: 'test'
   },
   prod: {
-    namespace: '8ecbmv-prod',
+    namespace: '7068ad-prod',
     name: `${name}`,
     phase: 'prod',
     changeId: deployChangeId,

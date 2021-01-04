@@ -240,7 +240,7 @@ const loadAllData = async () => {
 };
 
 //const urlstring = 'http://localhost:7080/api/point-of-interest';
-const urlstring = 'https://api-dev-invasivesbci.pathfinder.gov.bc.ca/api/point-of-interest';
+const urlstring = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca/api/point-of-interest';
 
 const main = async () => {
   const IAPPData = await loadAllData();
