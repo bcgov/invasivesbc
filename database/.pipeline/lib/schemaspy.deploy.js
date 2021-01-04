@@ -14,7 +14,7 @@ module.exports = (settings) => {
   const changeId = phases[phase].changeId || 'dev-tools';
   const instance = phases[phase].instance;
   const name = `${phases[phase].name}-schemaspy`;
-  const host = `invasivebc-schemaspy-${changeId}-${phases[phase].namespace}.pathfinder.gov.bc.ca`;
+  const host = `invasivebc-schemaspy-${changeId}-${phases[phase].namespace}.apps.silver.devops.gov.bc.ca`;
 
   const objects = [];
 
