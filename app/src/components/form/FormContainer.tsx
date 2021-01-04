@@ -3,7 +3,6 @@ import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { ActivitySyncStatus } from 'constants/activities';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { JSONSchema7 } from 'json-schema';
 import React, { useEffect, useState } from 'react';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
@@ -83,7 +82,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           key={props.activity?._id}
           disabled={isDisabled}
           formData={props.activity?.formData || null}
-          schema={schemas.schema as JSONSchema7}
+          schema={schemas.schema}
           uiSchema={schemas.uiSchema}
           liveValidate={false}
           showErrorList={true}
