@@ -222,10 +222,16 @@ const PaperFileID = {
 };
 
 const Herbicide = {
-  herbicide_name: {},
+  liquid_herbicide_code: {},
   herbicide_amount: {},
   mix_delivery_rate: {},
-  application_rate: {}
+  application_rate: {},
+  dilution: {
+    'ui:readonly': true
+  },
+  specific_treatment_area: {
+    'ui:readonly': true
+  }
 };
 
 const InvasivePlants = {
