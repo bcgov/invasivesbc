@@ -62,8 +62,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SYNC_SUCCESSFUL || false;
 
-  console.log('activity is: ', props.activity);
-
   return (
     <Box>
       <Box mb={3}>

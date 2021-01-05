@@ -182,8 +182,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         formStatus: FormValidationStatus.VALID
       };
 
-      console.log(updatedFormValues);
-
       setDoc({ ...doc, ...updatedFormValues });
 
       await databaseContext.database.upsert(docId, (activity) => {
@@ -285,8 +283,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   if (isLoading) {
     return <CircularProgress />;
   }
-
-  console.log('doc is :', doc);
 
   return (
     <Container className={props.classes.container}>
