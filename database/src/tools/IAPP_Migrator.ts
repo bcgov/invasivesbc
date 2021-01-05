@@ -6,6 +6,8 @@ import qs from 'qs';
 import moment from 'moment';
 import meow from 'meow';
 
+// HELPER FUNCTIONS (TODO move somewhere more general):
+
 const formatDateToISO = (d) => {
   if (!d) return;
   return moment(d).format('YYYY-MM-DD');
@@ -37,6 +39,71 @@ const binarySearchValues = (items, field, value) => {
 
   return items.slice(firstIndex, lastIndex + 1);
 };
+
+// helper to get common values of an array of objects
+// returns default if empty or no common value
+const getCommonValue = (array, default = undefined) =>
+  new Set(array).length === 1 ? array[0] : default;
+
+const mapSlope = (slope) => {
+  if (slope === '') return 'NA';
+  slope = Number(slope);
+  if (!slope) return 'FL';
+  if (slope < 5) return 'NF';
+  if (slope < 10) return 'GS';
+  if (slope < 15) return 'MS';
+  if (slope < 20) return 'SS';
+  if (slope < 25) return 'VS';
+  if (slope < 30) return 'ES';
+  if (slope < 45) return 'ST';
+  if (slope >= 45) return 'VT';
+  return 'NA';
+}
+
+const mapAspect = (aspect) => {
+  aspect = Number(aspect);
+  if (aspect > 333.5 && aspect <= 360 || aspect <= 22.5) return 'N';
+  if (aspect <= 67.5) return 'NE';
+  if (aspect <= 112.5) return 'E';
+  if (aspect <= 157.5) return 'SE';
+  if (aspect <= 202.5) return 'S';
+  if (aspect <= 247.5) return 'SW';
+  if (aspect <= 292.5) return 'W';
+  if (aspect <= 333.5) return 'NW';
+  return 'NA';
+};
+
+// LOOKUP TABLES:
+
+const densityMap = {
+  '0: Unknown Density': 'X'
+  '1: Low (<= 1 plant/m2)': 'L'
+  '2: Med (2-5 plants/m2)': 'M'
+  '3: High (6-10 plants/m2)': 'H'
+  '4: Dense (>10 plants/m2)': 'D'
+};
+
+const distributionMap = {
+  '0: Unknown distribution' : 'NA',
+  '1: rare individual / single occurrence': 'RS',
+  '2: few sporadically': 'FS',
+  '3: single patch or clump': 'CL',
+  '4: several sporadically individuals': 'SS',
+  '5: a few patches or clumps': 'FP',
+  '6: several well-spaced patches / clumps': 'WS',
+  '7: continuous / uniform': 'CU',
+  '8: continuous with a few gaps': 'CO',
+  '9: continuous / dense': 'CD'
+};
+
+const observationTypes = {
+  'C: Cursory': 'CU',
+  'O: Operational': 'OP',
+  'P: Precise': 'PR'
+  // add more as they show up in CSV
+};
+
+// IMPORT LOGIC:
 
 const cli = meow(
   /*
@@ -301,6 +368,13 @@ const main = async () => {
       // only import POIs which have Survey data:
       if (!surveys || surveys.length === 0) continue;
 
+      const surveyAgencyCodes = surveys
+        .map((survey) => survey.SurveyAgency)
+        .filter((agency) => agency);
+      const surveySpecies = surveys
+        .map((survey) => survey.Species)
+        .filter((agency) => agency);
+
       const requestBody: any = {
         point_of_interest_type: 'IAPP Site',
         point_of_interest_subtype: 'First Load',
@@ -316,36 +390,85 @@ const main = async () => {
           }
         ],
         form_data: {
+
           point_of_interest_data: {
-            jurisdiction_code: 'Not provided',
-            point_of_interest_status: 'pending',
-            invasive_species_agency_code: 'Not provided',
-            access_description: siteRecord.Locations,
+            jurisdiction_code: siteRecord.Jur1pct === '100' ? siteRecord.Jur1 : 'Not provided',
+            point_of_interest_status: 'done',
+            invasive_species_agency_code: getCommonValue(surveyAgencyCodes, 'Not Provided'),
             media_indicator: false,
-            created_date_on_device: siteRecord.CreateDate,
-            updated_date_on_device: siteRecord.CreateDate,
-            general_comment: siteRecord.comments,
+            created_date_on_device: formatDateToISO(siteRecord.CreateDate),
+            updated_date_on_device: formatDateToISO(siteRecord.CreateDate),
+            general_comment: siteRecord.Comments,
+            access_description: siteRecord.AccessDescription,
             paper_file: [
               {
                 description: siteRecord.PaperFile
               }
             ]
           },
+
           point_of_interest_type_data: {
-            slope: siteRecord.Slope,
+
             elevation: siteRecord.Elevation,
             site_id: siteRecordID,
-            created_date: siteRecord.CreateDate,
-            aspect: siteRecord.Aspect,
+            created_date: formatDateToISO(siteRecord.CreateDate),
             original_bec_id: siteRecord.BEC_ID,
-            map_sheet: siteRecord.Mapsheet,
-            specific_use: siteRecord.SpecificUse,
-            soil_texture: siteRecord.SoilTexture,
+            map_sheet: siteRecord.MapSheet,
+            specific_use_code: siteRecord.SpecificUse || 'X',
+            soil_texture_code: siteRecord.SoilTexture || 'X',
+            slope: siteRecord.Slope,
+            slope_code: mapSlope(siteRecord.Slope),
+            aspect: siteRecord.Aspect,
+            aspect_code: mapAspect(siteRecord.Aspect),
             comments: siteRecord.Comments,
-            species: [],
-            surveys: surveys,
-            mechanical_treatments: mechanical_treatments,
-            chemical_treatments: chemical_treatments
+            species: surveySpecies,
+
+            surveys: surveys.map((survey) => {
+              survey_id: survey.SurveyID,
+              survey_date: formatDateToISO(survey.SurveyDate),
+              reported_area: Number(survey.EstArea) * 10000, // hectares to m2
+              map_code: survey.MapCode,
+              // invasive_plant_code: 'NA', // TODO map species/genus to plant code
+              species: survey.Species,
+              genus: survey.Genus,
+              common_name: survey.CommonName,
+              invasive_species_agency_code: survey.SurveyAgency,
+              jurisdictions: [
+                {
+                  jursidiction_code: survey.Jur1,
+                  percentage: survey.Jur1pct
+                },
+                {
+                  jursidiction_code: survey.Jur2,
+                  percentage: survey.Jur2pct
+                },
+                {
+                  jursidiction_code: survey.Jur3,
+                  percentage: survey.Jur3pct
+                }
+              ].filter((jur) => jur.jursidiction_code && jur.percentage && jur.percentage > 0),
+              employer_code: survey.EmployerCode ? survey.EmployerCode : undefined,
+              density: survey.Density,
+              invasive_plant_density_code: densityMap[survey.Density],
+              distribution: survey.Distribution,
+              invasive_plant_distribution_code: distributionMap[survey.Distribution],
+              observation_type: survey.SurveyType,
+              observation_type_code: observationTypes[survey.SurveyType]
+              weeds_found: survey.WeedsFound,
+              paper_file: [
+                {
+                  description: survey.PaperFileID
+                }
+              ],
+              comments: survey.Comment
+            }),
+
+            mechanical_treatments: {
+              ...mechanical_treatments
+            },
+            chemical_treatments: {
+              ...chemical_treatments
+            }
           }
         }
       };
