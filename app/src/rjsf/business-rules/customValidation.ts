@@ -1,4 +1,5 @@
 import { FormValidation } from '@rjsf/core';
+import { HerbicideApplicationRates } from 'rjsf/business-rules/constants/herbicideApplicationRates';
 
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
@@ -57,6 +58,29 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
         'Cannot specify a wind direction when wind speed is 0'
       );
     }
+
+    return errors;
+  };
+}
+
+export function getHerbicideApplicationRateValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.herbicide || formData.activity_subtype_data.herbicide.length === 0) {
+      return errors;
+    }
+
+    const herbicides = formData.activity_subtype_data.herbicide;
+
+    herbicides.forEach((herbicide: any, index: number) => {
+      // validate herbicide application rate maximums
+      errors.activity_subtype_data['herbicide'][index]['application_rate'].__errors = [];
+
+      if (herbicide.application_rate && herbicide.application_rate > HerbicideApplicationRates[herbicide.liquid_herbicide_code]) {
+        errors.activity_subtype_data['herbicide'][index]['application_rate'].addError(
+          `Application rate exceeds maximum applicable rate of ${HerbicideApplicationRates[herbicide.liquid_herbicide_code]} L/ha for this herbicide`
+        );
+      }
+    });
 
     return errors;
   };

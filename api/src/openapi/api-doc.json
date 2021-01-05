@@ -1644,7 +1644,8 @@
           "liquid_herbicide_code",
           "application_rate",
           "herbicide_amount",
-          "mix_delivery_rate"
+          "mix_delivery_rate",
+          "tank_volume"
         ],
         "properties": {
           "liquid_herbicide_code": {
@@ -1661,17 +1662,36 @@
           "application_rate": {
             "type": "number",
             "title": "Application Rate (L/ha)",
-            "format": "float"
+            "format": "float",
+            "minimum": 0
           },
           "herbicide_amount": {
             "type": "number",
-            "title": "Amount of Herbicide",
-            "format": "float"
+            "title": "Amount of Herbicide (L)",
+            "format": "float",
+            "minimum": 0
           },
           "mix_delivery_rate": {
             "type": "number",
-            "title": "Mix Delivery Rate",
-            "format": "float"
+            "title": "Mix Delivery Rate (L/ha)",
+            "format": "float",
+            "minimum": 0
+          },
+          "tank_volume": {
+            "type": "number",
+            "title": "Tank Volume (L)",
+            "format": "float",
+            "minimum": 0
+          },
+          "specific_treatment_area": {
+            "type": "number",
+            "title": "Specific Treatment Area (ha)",
+            "minimum": 0
+          },
+          "dilution": {
+            "type": "number",
+            "title": "Dilution Rate (%)",
+            "minimum": 0
           }
         }
       },
