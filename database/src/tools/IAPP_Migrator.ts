@@ -246,104 +246,113 @@ const main = async () => {
   const IAPPData = await loadAllData();
 
   let siteCount = 0;
+  const batchSize = 1000;
 
   // assumes site CSV sorted by SiteID DESC
-  while (siteCount < 10000) {
-    const siteRecord = IAPPData.siteData[siteCount];
-    if (!IAPPData.siteData[siteCount]) break;
-    const siteRecordID = siteRecord['SiteID'];
+  while (siteCount < IAPPData.siteData.length) {
+    let batch = 0;
+    const pois : Array<object> = [];
 
-    // assumes surveys CSV sorted by SiteID ASC
-    let surveys = binarySearchValues(IAPPData.surveyData, 'SiteID', siteRecordID);
-    surveys = surveys.map((survey) => ({
-      ...survey,
-      SurveyDate: formatDateToISO(survey.surveyDate)
-    }));
-    // restore desired sorting order by MechanicalID DESC (latest first)
-    surveys.sort((a, b) => Number(b.MechanicalID) - Number(a.MechanicalID));
+    while (batch < batchSize) {
+      const siteRecord = IAPPData.siteData[siteCount];
+      if (!IAPPData.siteData[siteCount]) break;
+      const siteRecordID = siteRecord['SiteID'];
 
-    // assumes mechtreatements CSV sorted by SiteID ASC
-    let mechanical_treatments = binarySearchValues(IAPPData.mechanicalTreatmentData, 'SiteID', siteRecordID);
-    mechanical_treatments = mechanical_treatments.map((treatment) => {
-      // assumes monitoring CSV sorted by treatment_id ASC
-      treatment.monitoring = binarySearchValues(
-        IAPPData.mechanicalMonitoringData,
-        'treatment_id',
-        treatment.TreatmentID
-      );
-      // restore desired sorting order by monitoring_id DESC (latest first)
-      treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
-      return treatment;
-    });
-    // restore desired sorting order by TreatmentID DESC (latest first)
-    mechanical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
+      // assumes surveys CSV sorted by SiteID ASC
+      let surveys = binarySearchValues(IAPPData.surveyData, 'SiteID', siteRecordID);
+      surveys = surveys.map((survey) => ({
+        ...survey,
+        SurveyDate: formatDateToISO(survey.surveyDate)
+      }));
+      // restore desired sorting order by MechanicalID DESC (latest first)
+      surveys.sort((a, b) => Number(b.MechanicalID) - Number(a.MechanicalID));
 
-    // assumes chemtreatements CSV sorted by SiteID ASC
-    let chemical_treatments = binarySearchValues(IAPPData.chemicalTreatmentData, 'SiteID', siteRecordID);
-    chemical_treatments = chemical_treatments.map((treatment) => {
-      // assumes monitoring CSV sorted by treatment_id ASC
-      treatment.monitoring = binarySearchValues(IAPPData.chemicalMonitoringData, 'treatment_id', treatment.TreatmentID);
-      // restore desired sorting order by treatment_id DESC (latest first)
-      treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
-      return treatment;
-    });
-    // restore desired sorting order by TreatmentID DESC (latest first)
-    chemical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
+      // assumes mechtreatements CSV sorted by SiteID ASC
+      let mechanical_treatments = binarySearchValues(IAPPData.mechanicalTreatmentData, 'SiteID', siteRecordID);
+      mechanical_treatments = mechanical_treatments.map((treatment) => {
+        // assumes monitoring CSV sorted by treatment_id ASC
+        treatment.monitoring = binarySearchValues(
+          IAPPData.mechanicalMonitoringData,
+          'treatment_id',
+          treatment.TreatmentID
+        );
+        // restore desired sorting order by monitoring_id DESC (latest first)
+        treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
+        return treatment;
+      });
+      // restore desired sorting order by TreatmentID DESC (latest first)
+      mechanical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
 
-    siteCount++;
+      // assumes chemtreatements CSV sorted by SiteID ASC
+      let chemical_treatments = binarySearchValues(IAPPData.chemicalTreatmentData, 'SiteID', siteRecordID);
+      chemical_treatments = chemical_treatments.map((treatment) => {
+        // assumes monitoring CSV sorted by treatment_id ASC
+        treatment.monitoring = binarySearchValues(IAPPData.chemicalMonitoringData, 'treatment_id', treatment.TreatmentID);
+        // restore desired sorting order by treatment_id DESC (latest first)
+        treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
+        return treatment;
+      });
+      // restore desired sorting order by TreatmentID DESC (latest first)
+      chemical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
 
-    // Go/No-Go Rules:
-    // only import POIs which have Survey data:
-    if (!surveys || surveys.length === 0) continue;
+      siteCount++;
 
-    const requestBody: any = {
-      point_of_interest_type: 'IAPP Site',
-      point_of_interest_subtype: 'First Load',
-      media: [],
-      geometry: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [+siteRecord.OFF_Longitude, +siteRecord.OFF_Latitude]
+      // Go/No-Go Rules:
+      // only import POIs which have Survey data:
+      if (!surveys || surveys.length === 0) continue;
+
+      const requestBody: any = {
+        point_of_interest_type: 'IAPP Site',
+        point_of_interest_subtype: 'First Load',
+        media: [],
+        geometry: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [+siteRecord.OFF_Longitude, +siteRecord.OFF_Latitude]
+            },
+            properties: {}
+          }
+        ],
+        form_data: {
+          point_of_interest_data: {
+            jurisdiction_code: 'Not provided',
+            point_of_interest_status: 'pending',
+            invasive_species_agency_code: 'Not provided',
+            access_description: siteRecord.Locations,
+            media_indicator: false,
+            created_date_on_device: siteRecord.CreateDate,
+            updated_date_on_device: siteRecord.CreateDate,
+            general_comment: siteRecord.comments,
+            paper_file: [
+              {
+                description: siteRecord.PaperFile
+              }
+            ]
           },
-          properties: {}
+          point_of_interest_type_data: {
+            slope: siteRecord.Slope,
+            elevation: siteRecord.Elevation,
+            site_id: siteRecordID,
+            created_date: siteRecord.CreateDate,
+            aspect: siteRecord.Aspect,
+            original_bec_id: siteRecord.BEC_ID,
+            map_sheet: siteRecord.Mapsheet,
+            specific_use: siteRecord.SpecificUse,
+            soil_texture: siteRecord.SoilTexture,
+            comments: siteRecord.Comments,
+            species: [],
+            surveys: surveys,
+            mechanical_treatments: mechanical_treatments,
+            chemical_treatments: chemical_treatments
+          }
         }
-      ],
-      form_data: {
-        point_of_interest_data: {
-          jurisdiction_code: 'Not provided',
-          point_of_interest_status: 'pending',
-          invasive_species_agency_code: 'Not provided',
-          access_description: siteRecord.Locations,
-          media_indicator: false,
-          created_date_on_device: siteRecord.CreateDate,
-          updated_date_on_device: siteRecord.CreateDate,
-          general_comment: siteRecord.comments,
-          paper_file: [
-            {
-              description: siteRecord.PaperFile
-            }
-          ]
-        },
-        point_of_interest_type_data: {
-          slope: siteRecord.Slope,
-          elevation: siteRecord.Elevation,
-          site_id: siteRecordID,
-          created_date: siteRecord.CreateDate,
-          aspect: siteRecord.Aspect,
-          original_bec_id: siteRecord.BEC_ID,
-          map_sheet: siteRecord.Mapsheet,
-          specific_use: siteRecord.SpecificUse,
-          soil_texture: siteRecord.SoilTexture,
-          comments: siteRecord.Comments,
-          species: [],
-          surveys: surveys,
-          mechanical_treatments: mechanical_treatments,
-          chemical_treatments: chemical_treatments
-        }
-      }
-    };
+      };
+
+      pois.push(requestBody);
+      batch++;
+    }
 
     const tokenResp = await getToken();
     const token = tokenResp.data.access_token;
@@ -355,7 +364,7 @@ const main = async () => {
 
     try {
       // process.stdout.write(`${siteRecordID},`);
-      await axios.post(urlstring, requestBody, postconfig);
+      await axios.post(urlstring, pois, postconfig);
     } catch (error) {
       console.log(error);
     }

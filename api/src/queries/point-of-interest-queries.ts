@@ -67,6 +67,79 @@ export const postPointOfInterestSQL = (point_of_interest: PointOfInterestPostReq
 };
 
 /**
+ * SQL query to insert a large batch of new point_of_interest data, and return the last inserted record.
+ *
+ * @param {PointsOfInterestPostRequestBody} points_of_interest
+ * @returns {SQLStatement} sql query object
+ */
+export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBody>): SQLStatement => {
+  if (!data) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO point_of_interest_incoming_data (
+      point_of_interest_type,
+      point_of_interest_subtype,
+      received_timestamp,
+      point_of_interest_payload,
+      geog,
+      media_keys
+    ) VALUES `;
+
+  for (let i = 0; i < data.length; i++) {
+    sqlStatement.append(SQL`(
+      ${data[i].pontOfInterest_type},
+      ${data[i].pontOfInterest_subtype},
+      ${data[i].received_timestamp},
+      ${data[i].pontOfInterestPostBody}
+    `);
+
+    if (data[i].geoJSONFeature && data[i].geoJSONFeature.length) {
+      // Note: this is only saving the `geometry` part of the feature, and not any assocaited `properties`.
+      const geometry = JSON.stringify(data[i].geoJSONFeature[0].geometry);
+
+      sqlStatement.append(SQL`
+        ,public.geography(
+          public.ST_Force2D(
+            public.ST_SetSRID(
+              public.ST_GeomFromGeoJSON(${geometry}),
+              4326
+            )
+          )
+        )
+      `);
+    } else {
+      sqlStatement.append(SQL`
+        ,null
+      `);
+    }
+
+    if (data[i].mediaKeys) {
+      sqlStatement.append(SQL`
+        ,${data[i].mediaKeys}
+      `);
+    } else {
+      sqlStatement.append(SQL`
+        ,null
+      `);
+    }
+
+    sqlStatement.append(SQL`)`);
+    if (i < data.length - 1)
+      sqlStatement.append(SQL`,
+      `);
+  }
+
+  sqlStatement.append(SQL`
+    RETURNING
+      point_of_interest_incoming_data_id;
+  `);
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to fetch point_of_interest records based on search criteria.
  *
  * @param {PointOfInterestSearchCriteria} searchCriteria
