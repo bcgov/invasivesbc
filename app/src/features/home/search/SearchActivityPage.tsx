@@ -78,10 +78,10 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
   const saveGeometry = useCallback((geom: Feature[]) => {
-    setActivity((activity: any) => {
+    setActivity((doc: any) => {
       const { latitude, longitude } = calculateLatLng(geom) || {};
 
-      const formData = activity.formData;
+      const formData = doc.formData;
       const areaOfGeometry = calculateGeometryArea(geom);
 
       const updatedFormData = {
@@ -95,7 +95,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       };
 
       return {
-        ...activity,
+        ...doc,
         geometry: geom,
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
