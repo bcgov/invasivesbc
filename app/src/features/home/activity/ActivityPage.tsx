@@ -8,7 +8,12 @@ import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
-import { getCustomValidator, getAreaValidator, getWindValidator, getHerbicideApplicationRateValidator } from 'rjsf/business-rules/customValidation';
+import {
+  getCustomValidator,
+  getAreaValidator,
+  getWindValidator,
+  getHerbicideApplicationRateValidator
+} from 'rjsf/business-rules/customValidation';
 import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
