@@ -69,7 +69,7 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
       !formData ||
       !formData.activity_subtype_data ||
       !formData.activity_subtype_data.herbicide ||
-      formData.activity_subtype_data.herbicide.length === 0
+      !formData.activity_subtype_data.herbicide.length
     ) {
       return errors;
     }
