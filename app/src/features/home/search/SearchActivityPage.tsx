@@ -77,30 +77,32 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
-  const saveGeometry = async (geom: Feature[]) => {
-    const { latitude, longitude } = calculateLatLng(geom) || {};
+  const saveGeometry = useCallback((geom: Feature[]) => {
+    setActivity((activity: any) => {
+      const { latitude, longitude } = calculateLatLng(geom) || {};
 
-    const formData = activity.formData;
-    const areaOfGeometry = calculateGeometryArea(geom);
+      const formData = activity.formData;
+      const areaOfGeometry = calculateGeometryArea(geom);
 
-    const updatedFormData = {
-      ...formData,
-      activity_data: {
-        ...formData.activity_data,
-        latitude,
-        longitude,
-        reported_area: areaOfGeometry
-      }
-    };
+      const updatedFormData = {
+        ...formData,
+        activity_data: {
+          ...formData.activity_data,
+          latitude,
+          longitude,
+          reported_area: areaOfGeometry
+        }
+      };
 
-    setActivity({
-      ...activity,
-      geometry: geom,
-      status: ActivityStatus.EDITED,
-      dateUpdated: new Date(),
-      formData: updatedFormData
+      return {
+        ...activity,
+        geometry: geom,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date(),
+        formData: updatedFormData
+      };
     });
-  };
+  }, []);
 
   /**
    * Save the photos.
@@ -208,7 +210,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
     }
 
     saveGeometry(geometry);
-  }, [geometry]);
+  }, [geometry, isLoading, saveGeometry]);
 
   useEffect(() => {
     if (isLoading) {
