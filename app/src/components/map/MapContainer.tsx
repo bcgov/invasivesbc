@@ -179,12 +179,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       aGeo = convertLineStringToPoly(aGeo);
 
-      // Note that drawing one wipes all others:
-      props.geometryState.setGeometry([aGeo]);
-    });
-
-    mapRef.current.on('draw:drawstart', function () {
-      props.geometryState.setGeometry([]);
+      props.geometryState.setGeometry([ props.geometryState.geometry[0], aGeo ]);
     });
 
     const convertLineStringToPoly = (aGeo: any) => {
@@ -205,7 +200,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       return aGeo;
     };
 
-    mapRef.current.on('draw:editstop', async function (layerGroup) {
+    mapRef.current.on('draw:editstop', async function () {
       // The current feature isn't passed to this function, so grab it from the acetate layer
       let aGeo = drawnItems?.toGeoJSON()?.features[0];
 
@@ -224,7 +219,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     mapRef.current.on('draw:deleted', function () {
-      props.geometryState.setGeometry([]);
+      const aGeo = drawnItems?.toGeoJSON()?.features[0];
+
+      props.geometryState.setGeometry(props.geometryState.geometry.filter(geo => JSON.stringify(geo) === JSON.stringify(aGeo)));
     });
   };
 
@@ -234,9 +231,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     if (props.geometryState) {
       // For each geometry, add a new layer to the drawn features
-      props.geometryState.geometry.forEach((collection) => {
+      props.geometryState.geometry.forEach((collection, index) => {
+        const geoColor = index === 0 ? '#3388ff' : '#ff7800';
         const style = {
-          // color: '#ff7800',
+          color: geoColor,
           weight: 4,
           opacity: 0.65
         };
