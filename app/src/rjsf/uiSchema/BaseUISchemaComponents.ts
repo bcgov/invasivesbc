@@ -231,6 +231,9 @@ const Herbicide = {
   },
   specific_treatment_area: {
     'ui:readonly': true
+  },
+  tank_volume: {
+    'ui:readonly': true
   }
 };
 
