@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
   CREATE OR REPLACE VIEW Activity_Observation_AquaticPlant as (
         select
         activity_id as activity_id,
-	    invasive_plant_codes.code_description as invasive_plant,
+	      invasive_plant_codes.code_description as invasive_plant,
         record.invasive_plant_code,
         specific_use_codes.code_description as specific_use,
         record.specific_use_code,
