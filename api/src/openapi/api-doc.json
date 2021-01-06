@@ -1644,8 +1644,7 @@
           "liquid_herbicide_code",
           "application_rate",
           "herbicide_amount",
-          "mix_delivery_rate",
-          "tank_volume"
+          "mix_delivery_rate"
         ],
         "properties": {
           "liquid_herbicide_code": {
