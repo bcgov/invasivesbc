@@ -231,10 +231,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     if (props.geometryState) {
       // For each geometry, add a new layer to the drawn features
-      props.geometryState.geometry.forEach((collection, index) => {
-        const geoColor = index === 0 ? '#3388ff' : '#ff7800';
+      props.geometryState.geometry.forEach((collection) => {
         const style = {
-          color: geoColor,
           weight: 4,
           opacity: 0.65
         };

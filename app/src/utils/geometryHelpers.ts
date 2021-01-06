@@ -9,11 +9,11 @@ import * as turf from '@turf/turf';
 export function calculateGeometryArea(geometry: Feature[]) {
   let totalArea = 0;
 
-  if (!geometry || !geometry.length || geometry[geometry.length - 1].geometry.type === 'LineString') {
+  if (!geometry || !geometry.length || geometry[0].geometry.type === 'LineString') {
     return parseFloat(totalArea.toFixed(0));
   }
 
-  const geo = geometry[geometry.length - 1];
+  const geo = geometry[0];
   if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
     totalArea = Math.PI * Math.pow(geo.properties.radius, 2);
   } else if (geo.geometry.type === 'Polygon') {
@@ -29,9 +29,9 @@ export function calculateGeometryArea(geometry: Feature[]) {
  * @param {Feature[]} geoJSON The geometry in GeoJSON format
  */
 export function calculateLatLng(geom: Feature[]) {
-  if (!geom || !geom[geom.length - 1] || !geom[geom.length - 1].geometry) return;
+  if (!geom || !geom[0] || !geom[0].geometry) return;
 
-  const geo = geom[geom.length - 1].geometry;
+  const geo = geom[0].geometry;
   const firstCoord = geo['coordinates'][0];
 
   let latitude = null;
