@@ -72,10 +72,11 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const classes = useStyles();
   const {
     aspect,
-    chemical_treatments,
     comments,
     map_sheet,
     mechanical_treatments,
+    chemical_treatments,
+    biological_treatments,
     site_id,
     soil_texture,
     specific_use,
@@ -93,6 +94,53 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const { Jur1, Jur1pct, Jur2, Jur2pct, Jur3, Jur3pct } = surveys
     ? surveys[0]
     : { Jur1: 'Not Specified', Jur1pct: '100', Jur2: '', Jur2pct: '0', Jur3: '', Jur3pct: '0' };
+
+  /*
+  const biological_treatments = {
+    biological_id,
+    common_name,
+    treatment_date,
+    collection_date,
+    bioagent_source,
+    agency_code,
+    stage_larva_ind,
+    stage_pupa_ind,
+    stage_other_ind,
+    release_quantity,
+    area_classification_code,
+    biological_agent_code,
+    utm_easting,
+    utm_northing,
+    utm_zone,
+    comments,
+
+    monitoring: [{
+      monitoring_id,
+      treatment_id,
+      inspection_date,
+      efficacy_rating_code,
+      paper_file_id,
+      plant_count,
+      agent_count,
+      count_duration,
+      agent_destroyed_ind,
+      legacy_presence_ind,
+      foliar_feeding_damage_ind,
+      root_feeding_damage_ind,
+      seed_feeding_damage_ind,
+      oviposition_marks_ind,
+      eggs_present_ind,
+      larvae_present_ind,
+      pupae_present_ind,
+      adults_present_ind,
+      tunnels_present_ind,
+      utm_easting,
+      utm_northing,
+      utm_zone,
+      comments
+    }]
+  };
+  */
 
   const ifApplicable = (value) =>
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
@@ -265,7 +313,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             headers={[
               'Treatment ID',
               'Mechanical ID',
-              'Common Name',
+              'Species (Common)',
               'Treatment Date',
               'Agency',
               'Hectares',
@@ -336,7 +384,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           <IAPPTable
             headers={[
               'Treatment ID',
-              'Common Name',
+              'Species (Common)',
               'Treatment Date',
               'Agency',
               'Hectares',
@@ -414,6 +462,121 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       row.invasive_plant_agency_code,
                       row.EFFICACY_RATING_CODE,
                       row.PAPER_FILE_ID,
+                      {
+                        className: classes.wideCell,
+                        children: row.comments
+                      }
+                    ])}
+                  />
+                )}
+              </React.Fragment>
+            )}
+            pagination={true}
+          />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion defaultExpanded={false}>
+        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
+          <Typography className={classes.heading}>Biological Treatments and Efficacy Monitoring</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <IAPPTable
+            headers={[
+              'Biological ID',
+              'Species (Common)',
+              'Treatment Date',
+              'Collection Date',
+              'Bioagent Source',
+              'Agency',
+              'Larva Stage',
+              'Egg Stage',
+              'Pupa Stage',
+              'Other Stage',
+              'Release Quantity',
+              'Area Classification Code',
+              'Biological Agent Code',
+              'UTM Easting',
+              'UTM Northing',
+              'UTM Zone',
+              'Comments'
+            ]}
+            rows={
+              biological_treatments
+                ? biological_treatments.map((row) => [
+                    row.biological_id,
+                    row.common_name,
+                    row.treatment_date,
+                    row.collection_date,
+                    row.bioagent_source,
+                    row.agency_code,
+                    row.stage_larva_ind,
+                    row.stage_egg_ind,
+                    row.stage_pupa_ind,
+                    row.stage_other_ind,
+                    row.release_quantity,
+                    row.area_classification_code,
+                    row.biological_agent_code,
+                    row.utm_easting,
+                    row.utm_northing,
+                    row.utm_zone,
+                    row.comments
+                  ])
+                : []
+            }
+            dropdown={(i) => (
+              <React.Fragment key={'dropdown_' + i}>
+                {biological_treatments[i].monitoring || biological_treatments[i].monitoring.length === 0 ? null : (
+                  <IAPPTable
+                    headers={[
+                      'Monitoring ID',
+                      'Inspection Date',
+                      'Efficacy Rating Code',
+                      'Paper File ID',
+                      'Plant Count',
+                      'Agent Count',
+                      'Count Duration',
+                      'Agent Destroyed',
+                      'Legacy Presence',
+                      'Foliar Feeding Damage',
+                      'Root Feeding Damage',
+                      'Seed Feeding Damage',
+                      'Oviposition Marks',
+                      'Eggs Present',
+                      'Larvae Present',
+                      'Pupae Present',
+                      'Adults Present',
+                      'Tunnels Present',
+                      'UTM Easting',
+                      'UTM Northing',
+                      'UTM Zone',
+                      {
+                        className: classes.wideCell,
+                        children: 'Comment'
+                      }
+                    ]}
+                    rows={biological_treatments[i].monitoring.map((row, j) => [
+                      row.monitoring_id,
+                      row.inspection_date,
+                      row.efficacy_rating_code,
+                      row.paper_file_id,
+                      row.plant_count,
+                      row.agent_count,
+                      row.count_duration,
+                      row.agent_destroyed_ind,
+                      row.legacy_presence_ind,
+                      row.foliar_feeding_damage_ind,
+                      row.root_feeding_damage_ind,
+                      row.seed_feeding_damage_ind,
+                      row.oviposition_marks_ind,
+                      row.eggs_present_ind,
+                      row.larvae_present_ind,
+                      row.pupae_present_ind,
+                      row.adults_present_ind,
+                      row.tunnels_present_ind,
+                      row.utm_easting,
+                      row.utm_northing,
+                      row.utm_zone,
                       {
                         className: classes.wideCell,
                         children: row.comments

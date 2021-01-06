@@ -41,9 +41,9 @@ const binarySearchValues = (items, field, value) => {
 };
 
 // helper to get common values of an array of objects
-// returns default if empty or no common value
-const getCommonValue = (array, default = undefined) =>
-  new Set(array).length === 1 ? array[0] : default;
+// returns fallback value if empty or no common value
+const getCommonValue = (array, fallback = undefined) =>
+  new Set(array).size === 1 ? array[0] : fallback;
 
 const mapSlope = (slope) => {
   if (slope === '') return 'NA';
@@ -76,10 +76,10 @@ const mapAspect = (aspect) => {
 // LOOKUP TABLES:
 
 const densityMap = {
-  '0: Unknown Density': 'X'
-  '1: Low (<= 1 plant/m2)': 'L'
-  '2: Med (2-5 plants/m2)': 'M'
-  '3: High (6-10 plants/m2)': 'H'
+  '0: Unknown Density': 'X',
+  '1: Low (<= 1 plant/m2)': 'L',
+  '2: Med (2-5 plants/m2)': 'M',
+  '3: High (6-10 plants/m2)': 'H',
   '4: Dense (>10 plants/m2)': 'D'
 };
 
@@ -137,6 +137,8 @@ const cli = meow(
       --mechanicalMonitoring: treatment_id ASC
       --chemicalTreatment: SiteID ASC
       --chemicalMonitoring: treatment_id ASC
+      --biologicalTreatment: site_id ASC
+      --biologicalMonitoring: treatment_id ASC
       --dispersal: SiteID ASC
       --bioControlOutput: SiteID ASC
 
@@ -148,6 +150,8 @@ const cli = meow(
       --mechanicalMonitoring: monitoring_id DESC
       --chemicalTreatment: TreatmentID DESC
       --chemicalMonitoring: treatment_id DESC
+      --biologicalTreatment: site_id DESC
+      --biologicalMonitoring: treatment_id ASC
       --dispersal: SiteID DESC
       --bioControlOutput: SiteID DESC
   */
@@ -161,7 +165,7 @@ const cli = meow(
       survey: {
         type: 'string',
         alias: 'su',
-        isRequired: false
+        isRequired: true
       },
       mechanicalTreatment: {
         type: 'string',
@@ -181,6 +185,16 @@ const cli = meow(
       chemicalMonitoring: {
         type: 'string',
         alias: 'cm',
+        isRequired: false
+      },
+      biologicalTreatment: {
+        type: 'string',
+        alias: 'bt',
+        isRequired: false
+      },
+      biologicalMonitoring: {
+        type: 'string',
+        alias: 'bm',
         isRequired: false
       },
       dispersal: {
@@ -247,6 +261,8 @@ interface IAPPDataInterface {
   mechanicalMonitoringData?: any[];
   chemicalTreatmentData?: any[];
   chemicalMonitoringData?: any[];
+  biologicalTreatmentData?: any[];
+  biologicalMonitoringData?: any[];
   dispersalData?: any[];
   bioControlOutputData?: any[];
 }
@@ -362,6 +378,19 @@ const main = async () => {
       // restore desired sorting order by TreatmentID DESC (latest first)
       chemical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
 
+      // assumes biotreatments CSV sorted by site_id ASC
+      let biological_treatments = binarySearchValues(IAPPData.biologicalTreatmentData, 'SiteID', siteRecordID);
+      biological_treatments = biological_treatments.map((treatment) => {
+        // assumes monitoring CSV sorted by treatment_id ASC
+        treatment.monitoring = binarySearchValues(IAPPData.biologicalMonitoringData, 'treatment_id', treatment.TreatmentID);
+        // restore desired sorting order by treatment_id DESC (latest first)
+        treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
+        return treatment;
+      });
+      // restore desired sorting order by biological_id DESC (latest first)
+      biological_treatments.sort((a, b) => Number(b.biological_id) - Number(a.biological_id));
+
+
       siteCount++;
 
       // Go/No-Go Rules:
@@ -423,7 +452,7 @@ const main = async () => {
             comments: siteRecord.Comments,
             species: surveySpecies,
 
-            surveys: surveys.map((survey) => {
+            surveys: surveys.map((survey) => ({
               survey_id: survey.SurveyID,
               survey_date: formatDateToISO(survey.SurveyDate),
               reported_area: Number(survey.EstArea) * 10000, // hectares to m2
@@ -453,7 +482,7 @@ const main = async () => {
               distribution: survey.Distribution,
               invasive_plant_distribution_code: distributionMap[survey.Distribution],
               observation_type: survey.SurveyType,
-              observation_type_code: observationTypes[survey.SurveyType]
+              observation_type_code: observationTypes[survey.SurveyType],
               weeds_found: survey.WeedsFound,
               paper_file: [
                 {
@@ -461,14 +490,58 @@ const main = async () => {
                 }
               ],
               comments: survey.Comment
-            }),
+            })),
 
             mechanical_treatments: {
               ...mechanical_treatments
             },
             chemical_treatments: {
               ...chemical_treatments
-            }
+            },
+
+            biological_treatments: biological_treatments.map((t) => ({
+              biological_id: t.biological_id,
+              common_name: t.CommonName,
+              treatment_date: t.TREATMENT_DATE,
+              collection_date: t.COLLECTION_DATE,
+              bioagent_source: t.BIOAGENT_SOURCE,
+              agency_code: t.Agency,
+              stage_larva_ind: t.STAGE_LARVA_IND,
+              stage_pupa_ind: t.STAGE_PUPA_IND,
+              stage_other_ind: t.STAGE_OTHER_IND,
+              release_quantity: t.RELEASE_QUANTITY,
+              area_classification_code: t.AREA_CLASSIFICATION_CODE,
+              biological_agent_code: t.BIOLOGICAL_AGENT_CODE,
+              utm_easting: t.UTM_EASTING,
+              utm_northing: t.UTM_NORTHING,
+              utm_zone: t.UTM_ZONE,
+              comments: t.COMMENTS,
+
+              monitoring: t.monitoring.map((m) => ({
+                monitoring_id: m.monitoring_id,
+                inspection_date: m.inspection_date,
+                efficacy_rating_code: m.EFFICACY_RATING_CODE,
+                paper_file_id: m.PAPER_FILE_ID,
+                plant_count: m.PLANT_COUNT,
+                agent_count: m.AGENT_COUNT,
+                count_duration: m.COUNT_DURATION,
+                agent_destroyed_ind: m.AGENT_DESTROYED_IND,
+                legacy_presence_ind: m.LEGACY_PRESENCE_IND,
+                foliar_feeding_damage_ind: m.FOLIAR_FEEDING_DAMAGE_IND,
+                root_feeding_damage_ind: m.ROOT_FEEDING_DAMAGE_IND,
+                seed_feeding_damage_ind: m.SEED_FEEDING_DAMAGE_IND,
+                oviposition_marks_ind: m.OVIPOSITION_MARKS_IND,
+                eggs_present_ind: m.EGGS_PRESENT_IND,
+                larvae_present_ind: m.LARVAE_PRESENT_IND,
+                pupae_present_ind: m.PUPAE_PRESENT_IND,
+                adults_present_ind: m.ADULTS_PRESENT_IND,
+                tunnels_present_ind: m.TUNNELS_PRESENT_IND,
+                utm_easting: m.UTM_EASTING,
+                utm_northing: m.UTM_NORTHING,
+                utm_zone: m.UTM_ZONE,
+                comments: m.Comment
+              }))
+            }))
           }
         }
       };
