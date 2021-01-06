@@ -179,7 +179,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       aGeo = convertLineStringToPoly(aGeo);
 
-      props.geometryState.setGeometry([ props.geometryState.geometry[0], aGeo ]);
+      props.geometryState.setGeometry([aGeo]);
     });
 
     const convertLineStringToPoly = (aGeo: any) => {
