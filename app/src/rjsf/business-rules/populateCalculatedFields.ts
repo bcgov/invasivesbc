@@ -23,14 +23,16 @@ export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
       herbicideToUpdate.application_rate &&
       herbicideToUpdate.herbicide_amount &&
       herbicideToUpdate.liquid_herbicide_code &&
-      herbicideToUpdate.tank_volume &&
       herbicideToUpdate.mix_delivery_rate
     ) {
       herbicideToUpdate.specific_treatment_area = parseFloat(
-        (herbicideToUpdate.herbicide_amount / herbicideToUpdate.application_rate).toFixed(2)
+        (herbicideToUpdate.herbicide_amount / herbicideToUpdate.mix_delivery_rate).toFixed(4)
       );
       herbicideToUpdate.dilution = parseFloat(
-        (herbicideToUpdate.application_rate / herbicideToUpdate.mix_delivery_rate).toFixed(2)
+        ((herbicideToUpdate.application_rate * 100) / herbicideToUpdate.mix_delivery_rate).toFixed(4)
+      );
+      herbicideToUpdate.tank_volume = parseFloat(
+        ((herbicideToUpdate.herbicide_amount * 100) / herbicideToUpdate.dilution).toFixed(4)
       );
     }
 
