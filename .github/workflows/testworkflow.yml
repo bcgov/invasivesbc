@@ -15,6 +15,10 @@ jobs:
       - name: Print Env Vars
         run: |
           echo Git Base Ref: ${{ github.base_ref }}
-          echo $${{ github.event.pull_request.title }}
+      - if: contains(github.event.pull_request.title, 'PR-DEPLOY') 
+        run: |  
+          echo 'yay'
+
+
 
       
