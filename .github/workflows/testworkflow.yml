@@ -9,13 +9,12 @@ on:
 jobs:
   # Print variables for logging and debugging purposes
   checkEnv:
-    name: test
+    name: Print PR Title
     runs-on: ubuntu-16.04
     steps:
       - name: Print Env Vars
         run: |
           echo Git Base Ref: ${{ github.base_ref }}
-          echo $${{ github.event.pull_request }}
           echo $${{ github.event.pull_request.title }}
 
       
