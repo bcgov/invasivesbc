@@ -63,7 +63,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
               databaseContext,
               props.activity.activityType,
               props.activity.activitySubtype,
-              linkedActivityProps && linkedActivityProps.activity || null,
+              null,
               props.activity
             );
             setActiveActivityAndNavigateToActivityPage(addedActivity);
