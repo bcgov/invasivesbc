@@ -179,6 +179,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       aGeo = convertLineStringToPoly(aGeo);
 
+      // Drawing one geo wipes all others
       props.geometryState.setGeometry([aGeo]);
     });
 
