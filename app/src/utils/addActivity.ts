@@ -25,7 +25,7 @@ export async function addActivityToDB(
   clonedRecord?: any
 ): Promise<IActivity> {
   const id = uuidv4();
-  let formData = clonedRecord && clonedRecord.formData || {};
+  let formData = (clonedRecord && clonedRecord.formData) || {};
   let geometry = null;
 
   if (clonedRecord) {

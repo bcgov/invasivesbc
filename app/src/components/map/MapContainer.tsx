@@ -221,7 +221,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('draw:deleted', function () {
       const aGeo = drawnItems?.toGeoJSON()?.features[0];
 
-      props.geometryState.setGeometry(props.geometryState.geometry.filter(geo => JSON.stringify(geo) === JSON.stringify(aGeo)));
+      props.geometryState.setGeometry(
+        props.geometryState.geometry.filter(geo => JSON.stringify(geo) === JSON.stringify(aGeo))
+      );
     });
   };
 

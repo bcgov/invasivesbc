@@ -67,7 +67,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
               props.activity
             );
             setActiveActivityAndNavigateToActivityPage(addedActivity);
-            notifySuccess(databaseContext, 'Successfully cloned activity.');
+            notifySuccess(databaseContext, 'Successfully cloned activity. You are now viewing the cloned activity.');
           }}>
           Clone Activity
         </Button>
