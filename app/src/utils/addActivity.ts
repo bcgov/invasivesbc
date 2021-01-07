@@ -21,41 +21,49 @@ export async function addActivityToDB(
   databaseContext: any,
   activityType: ActivityType,
   activitySubtype: ActivitySubtype,
-  linkedRecord?: any
+  linkedRecord?: any,
+  clonedRecord?: any
 ): Promise<IActivity> {
   const id = uuidv4();
-  let formData: any;
+  let formData = clonedRecord && clonedRecord.formData || {};
+  let geometry = null;
 
-  if (linkedRecord) {
-    formData = {
-      activity_data: {
-        ...getFieldsToCopy(linkedRecord.formData.activity_data, linkedRecord.activitySubtype),
-        activity_date_time: moment(new Date()).format()
-      }
-    };
-
-    /*
-      Since chemical plant treatments are different and do not have activity_type_data
-      the linked record activity id field is present in the activity_subtype_data
-    */
-    if (activitySubtype === ActivitySubtype.Treatment_ChemicalPlant) {
-      formData.activity_subtype_data = {
-        activity_id: linkedRecord._id
-      };
-    } else {
-      formData.activity_type_data = {
-        activity_id: linkedRecord._id
-      };
-    }
-  } else {
-    formData = {
-      activity_data: {
-        activity_date_time: moment(new Date()).format()
-      }
-    };
+  if (clonedRecord) {
+    geometry = clonedRecord.geometry;
+  } else if (linkedRecord) {
+    geometry = linkedRecord.geometry;
   }
 
-  const geometry = linkedRecord ? linkedRecord.geometry : null;
+  if (!clonedRecord) {
+    if (linkedRecord) {
+      formData = {
+        activity_data: {
+          ...getFieldsToCopy(linkedRecord.formData.activity_data, linkedRecord.activitySubtype),
+          activity_date_time: moment(new Date()).format()
+        }
+      };
+
+      /*
+        Since chemical plant treatments are different and do not have activity_type_data
+        the linked record activity id field is present in the activity_subtype_data
+      */
+      if (activitySubtype === ActivitySubtype.Treatment_ChemicalPlant) {
+        formData.activity_subtype_data = {
+          activity_id: linkedRecord._id
+        };
+      } else {
+        formData.activity_type_data = {
+          activity_id: linkedRecord._id
+        };
+      }
+    } else {
+      formData = {
+        activity_data: {
+          activity_date_time: moment(new Date()).format()
+        }
+      };
+    }
+  }
 
   const doc: IActivity = {
     _id: id,

@@ -1,11 +1,14 @@
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+import { Accordion, AccordionDetails, AccordionSummary, Typography, Button, Box } from '@material-ui/core';
+import { ExpandMore, FileCopy } from '@material-ui/icons';
 import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
 import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { addActivityToDB } from 'utils/addActivity';
+import { notifySuccess } from 'utils/NotificationUtils';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -18,6 +21,7 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const [linkedActivityProps, setLinkedActivityProps] = useState(null);
+  const history = useHistory();
 
   useEffect(() => {
     const getActivityData = async () => {
@@ -39,8 +43,36 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     }
   }, [databaseContext, props]);
 
+  const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
+    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+      return { ...appStateDoc, activeActivity: doc._id };
+    });
+
+    history.push(`/home/activity`);
+  };
+
   return (
     <>
+      <Box mb={3} display="flex" flexDirection="row-reverse">
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<FileCopy />}
+          onClick={async () => {
+            const addedActivity = await addActivityToDB(
+              databaseContext,
+              props.activity.activityType,
+              props.activity.activitySubtype,
+              linkedActivityProps && linkedActivityProps.activity || null,
+              props.activity
+            );
+            setActiveActivityAndNavigateToActivityPage(addedActivity);
+            notifySuccess(databaseContext, 'Successfully cloned activity.');
+          }}>
+          Clone Activity
+        </Button>
+      </Box>
+
       {/* Display the linked activity record information alongside the actual activity record */}
       {linkedActivityProps && (
         <>
