@@ -55,7 +55,7 @@ This application is anticipated to include the following main features:
 
 ## Getting Help or Reporting an Issue
 
-To report bugs/issues/features requests, please file an issue.
+To report bugs/issues/features requests, please file an issue ticket.
 
 ## How to Contribute
 
