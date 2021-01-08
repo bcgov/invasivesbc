@@ -306,8 +306,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
 
-      console.log('inside get activity data call', updatedDoc);
-
       if (updatedDoc.activityType === 'Monitoring') {
         const linkedRecordActivityResults = await getActivityResultsFromDB(
           updatedDoc.formData.activity_type_data.activity_id
