@@ -10,7 +10,7 @@ CREATE OR REPLACE VIEW Activity_Treatment_Chemical_TerrestrialPlant_with_codes a
     activity_id,
     trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'applicator1_first_name')::text)) as applicator1_first_name,
     trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'applicator1_last_name')::text)) as applicator1_last_name,
-applicator1_licence_number
+    (activity_payload::json->'form_data'->'activity_subtype_data'->'applicator1_licence_number')::text::integer as applicator1_licence_number,
     trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'applicator2_first_name')::text)) as applicator2_first_name,
     trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'applicator2_last_name')::text)) as applicator2_last_name,
     (activity_payload::json->'form_data'->'activity_subtype_data'->'applicator2_licence_number')::text::decimal as applicator2_licence_number
@@ -22,7 +22,7 @@ applicator1_licence_number
     (activity_payload::json->'form_data'->'activity_subtype_data'->'temperature')::text::integer as temperature,
     (activity_payload::json->'form_data'->'activity_subtype_data'->'wind_speed')::text::integer as wind_speed,
     trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'wind_direction_code')::text)) as wind_direction_code,
-    (activity_payload::json->'form_data'->'activity_subtype_data'->'humidity')::text::integer as humidity,
+    (activity_payload::json->'form_data'->'activity_subtype_data'->'humidity')::text::integer as humidity
     -- need to work with Shasko on these:
     --invasive_plants
     --herbicide
