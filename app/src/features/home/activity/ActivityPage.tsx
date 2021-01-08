@@ -112,7 +112,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           };
         });
 
-        return { ...activity, formData: updatedFormData };
+        return {
+          ...activity,
+          formData: updatedFormData,
+          geometry: geom,
+          status: ActivityStatus.EDITED,
+          dateUpdated: new Date()
+        };
       });
     },
     [databaseContext.database]

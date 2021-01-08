@@ -7,7 +7,7 @@ import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { addActivityToDB } from 'utils/addActivity';
+import { addClonedActivityToDB } from 'utils/addActivity';
 import { notifySuccess } from 'utils/NotificationUtils';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
@@ -48,7 +48,8 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
 
-    history.push(`/home/activity`);
+    history.push(`/home/temp`);
+    history.goBack();
   };
 
   return (
@@ -59,11 +60,8 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           color="primary"
           startIcon={<FileCopy />}
           onClick={async () => {
-            const addedActivity = await addActivityToDB(
+            const addedActivity = await addClonedActivityToDB(
               databaseContext,
-              props.activity.activityType,
-              props.activity.activitySubtype,
-              null,
               props.activity
             );
             setActiveActivityAndNavigateToActivityPage(addedActivity);
