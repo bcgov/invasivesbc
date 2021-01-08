@@ -265,9 +265,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /*
     Function to set the active activity in the DB context and the current activity view
   */
-  const setActiveActivity = async (doc: any) => {
+  const setActiveActivity = async (activeActivity: any) => {
     await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-      const updatedActivity = { ...appStateDoc, activeActivity: doc._id };
+      const updatedActivity = { ...appStateDoc, activeActivity: activeActivity._id };
 
       setIsCloned(true);
 
