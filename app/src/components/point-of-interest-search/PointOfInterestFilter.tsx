@@ -1,15 +1,5 @@
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  Grid,
-  InputLabel,
-  List,
-  ListItem,
-  makeStyles,
-  MenuItem,
-  Paper,
-  Select,
-  Switch
-} from '@material-ui/core';
+import { Grid, InputLabel, List, ListItem, makeStyles, MenuItem, Paper, Select, Switch } from '@material-ui/core';
 import { Add, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';

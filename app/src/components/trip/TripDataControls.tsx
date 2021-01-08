@@ -182,12 +182,7 @@ export const TripDataControls: React.FC = (props) => {
 
   return (
     <>
-      <CommonButton
-        variant="contained"
-        color="primary"
-        onButtonClick={() => deleteTripAndFetch()}
-        label="Fetch"
-      />
+      <CommonButton variant="contained" color="primary" onButtonClick={() => deleteTripAndFetch()} label="Fetch" />
     </>
   );
 };

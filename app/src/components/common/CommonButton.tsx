@@ -21,8 +21,7 @@ const CommonButton: React.FC<ICommonButtonProps> = (props) => {
       color={color || 'default'}
       startIcon={icon}
       onClick={() => onButtonClick()}
-      disabled={isDisabled}
-    >
+      disabled={isDisabled}>
       {label}
     </Button>
   );
