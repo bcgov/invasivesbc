@@ -65,55 +65,27 @@ interface popOutComponentProps {
 
 const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
   const classes = useStyles();
+  const buttonLabels = ['Close', 'Edit', 'Photos', 'Show related activities'];
+
   //very quick and dirty style for demo:
   return (
     <div className={classes.popOutComponent}>
       <br />
       <blockquote>
         <Grid container spacing={3}>
-          <Grid item>
-            <CommonButton
-              variant="contained"
-              color="primary"
-              onButtonClick={() => {
-                props.buttonCloseCallback();
-              }}
-              label="Close"
-            />
-          </Grid>
-          <Grid item>
-            <CommonButton
-              isDisabled={true}
-              variant="contained"
-              color="primary"
-              onButtonClick={() => {
-                props.buttonCloseCallback();
-              }}
-              label="Edit"
-            />
-          </Grid>
-          <Grid item>
-            <CommonButton
-              isDisabled={true}
-              variant="contained"
-              color="primary"
-              onButtonClick={() => {
-                props.buttonCloseCallback();
-              }}
-              label="Photos"
-            />
-          </Grid>
-          <Grid item>
-            <CommonButton
-              isDisabled={true}
-              variant="contained"
-              color="primary"
-              onButtonClick={() => {
-                props.buttonCloseCallback();
-              }}
-              label="Show related activities"
-            />
-          </Grid>
+          {buttonLabels.map((item) => (
+            <Grid item key={item}>
+              <CommonButton
+                isDisabled={item !== 'Close'}
+                color="primary"
+                variant="contained"
+                label={item}
+                onButtonClick={() => {
+                  props.buttonCloseCallback();
+                }}
+              />
+            </Grid>
+          ))}
         </Grid>
       </blockquote>
       <br />
