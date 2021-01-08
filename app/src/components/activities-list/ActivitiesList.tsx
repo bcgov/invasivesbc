@@ -241,6 +241,14 @@ const ActivitiesList: React.FC = (props) => {
   const [isDisabled, setIsDisable] = useState(false);
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
 
+  const specialFunctions = [
+    'Fire Monitoring',
+    'Invasive Plant Density Transects',
+    'Vegetation Transect (Full Vegetation)',
+    'Vegetation Transect (Lumped Species)',
+    'Biocontrol Efficacy'
+  ];
+
   const syncActivities = async () => {
     setIsDisable(true);
     setSyncing(true);
@@ -538,41 +546,16 @@ const ActivitiesList: React.FC = (props) => {
                   <Typography variant="h5">Special Activities</Typography>
                 </Box>
                 <Box className={classes.newActivityButtonsRow}>
-                  <CommonButton
-                    isDisabled={isDisabled}
-                    variant="contained"
-                    icon={<Add />}
-                    label="Fire Monitoring"
-                    onButtonClick={() => {}}
-                  />
-                  <CommonButton
-                    isDisabled={isDisabled}
-                    variant="contained"
-                    icon={<Add />}
-                    label="Invasive Plant Density Transects"
-                    onButtonClick={() => {}}
-                  />
-                  <CommonButton
-                    isDisabled={isDisabled}
-                    variant="contained"
-                    icon={<Add />}
-                    label="Vegetation Transect (Full Vegetation)"
-                    onButtonClick={() => {}}
-                  />
-                  <CommonButton
-                    isDisabled={isDisabled}
-                    variant="contained"
-                    icon={<Add />}
-                    label="Vegetation Transect (Lumped Species)"
-                    onButtonClick={() => {}}
-                  />
-                  <CommonButton
-                    isDisabled={isDisabled}
-                    variant="contained"
-                    icon={<Add />}
-                    label="Biocontrol Efficacy"
-                    onButtonClick={() => {}}
-                  />
+                  {specialFunctions.map((item) => (
+                    <CommonButton
+                      key={item}
+                      isDisabled={isDisabled}
+                      variant="contained"
+                      icon={<Add />}
+                      label={item}
+                      onButtonClick={() => {}}
+                    />
+                  ))}
                 </Box>
               </Box>
               <br />
