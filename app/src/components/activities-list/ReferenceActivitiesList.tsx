@@ -9,7 +9,6 @@ import {
   SvgIcon,
   Theme,
   Typography,
-  Button,
   Box,
   FormControl,
   InputLabel,
@@ -26,6 +25,7 @@ import { useHistory } from 'react-router-dom';
 import ActivityListItem from './ActivityListItem';
 import ActivityListDate from './ActivityListDate';
 import { addLinkedActivityToDB } from 'utils/addActivity';
+import CommonButton from 'components/common/CommonButton';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -122,12 +122,12 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
         <>
           <Divider flexItem={true} orientation="vertical" />
           <Grid item>
-            <Button
+            <CommonButton
               variant="contained"
               color="primary"
               size="small"
-              startIcon={<Add />}
-              onClick={async (e) => {
+              icon={<Add />}
+              onButtonClick={async (e) => {
                 e.stopPropagation();
                 const addedActivity = await addLinkedActivityToDB(
                   databaseContext,
@@ -137,9 +137,9 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
                 );
                 setActiveActivityAndNavigateToActivityPage(addedActivity);
                 setOnReferencesListPage(false);
-              }}>
-              Create Monitoring
-            </Button>
+              }}
+              label="Create Monitoring"
+            />
           </Grid>
         </>
       )}

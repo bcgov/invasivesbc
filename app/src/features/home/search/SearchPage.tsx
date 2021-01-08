@@ -3,7 +3,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Button,
   Container,
   makeStyles,
   Paper,
@@ -22,6 +21,7 @@ import moment from 'moment';
 import qs from 'qs';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import CommonButton from 'components/common/CommonButton';
 
 const useStyles = makeStyles((theme: Theme) => ({
   fieldset: {
@@ -194,9 +194,13 @@ const SearchPage: React.FC<ISearchPagePage> = (props) => {
                   />
                 </Box>
                 <Box p={2}>
-                  <Button variant="contained" color="primary" onClick={handleSearch} disabled={isDisabled}>
-                    Search
-                  </Button>
+                  <CommonButton
+                    variant="contained"
+                    color="primary"
+                    onButtonClick={() => handleSearch()}
+                    isDisabled={isDisabled}
+                    label="Search"
+                  />
                 </Box>
               </Box>
             </AccordionDetails>

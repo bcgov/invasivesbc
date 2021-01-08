@@ -1,5 +1,6 @@
-import { Button, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import React from 'react';
+import CommonButton from 'components/common/CommonButton';
 
 export interface IFormControlsComponentProps {
   classes?: any;
@@ -18,34 +19,42 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
       <Grid container spacing={3}>
         <Grid container item spacing={3}>
           <Grid item>
-            <Button
-              disabled={isDisabled}
+            <CommonButton
+              isDisabled={isDisabled}
               variant="contained"
               color="primary"
-              onClick={() => {
+              onButtonClick={() => {
                 if (!props.onSubmit) {
                   return;
                 }
 
                 props.onSubmit();
-              }}>
-              Check Form For Errors
-            </Button>
+              }}
+              label="Check Form For Errors"
+            />
           </Grid>
           {props.onCopy && (
             <Grid item>
-              <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onCopy()}>
-                Copy Form Data
-              </Button>
+              <CommonButton
+                isDisabled={isDisabled}
+                variant="contained"
+                color="primary"
+                onButtonClick={() => props.onCopy()}
+                label="Copy Form Data"
+              />
             </Grid>
           )}
           {sessionStorage.getItem('copiedFormData') &&
             sessionStorage.getItem('activitySubtype') === props.activitySubtype &&
             props.onPaste && (
               <Grid item>
-                <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onPaste()}>
-                  Paste Form Data
-                </Button>
+                <CommonButton
+                  isDisabled={isDisabled}
+                  variant="contained"
+                  color="primary"
+                  onButtonClick={() => props.onPaste()}
+                  label="Paste Form Data"
+                />
               </Grid>
             )}
         </Grid>

@@ -1,6 +1,5 @@
 import DateFnsUtils from '@date-io/date-fns';
 import {
-  Button,
   Grid,
   InputLabel,
   List,
@@ -17,6 +16,7 @@ import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import SpeciesTree from './SpeciesInput';
+import CommonButton from 'components/common/CommonButton';
 
 interface IActivityChoices {
   activityType: string;
@@ -180,12 +180,12 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                       <SpeciesTree />
                     </Grid>
                     <Grid container item justify="flex-end">
-                      <Button
+                      <CommonButton
                         variant="contained"
-                        startIcon={<DeleteForever />}
-                        onClick={() => deleteActivityChoice(index)}>
-                        Remove
-                      </Button>
+                        icon={<DeleteForever />}
+                        onButtonClick={() => deleteActivityChoice(index)}
+                        label="Remove"
+                      />
                     </Grid>
                   </Grid>
                 </Paper>
@@ -193,11 +193,11 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
             );
           })}
         </List>
-        <Button
+        <CommonButton
           variant="contained"
           color="primary"
-          startIcon={<Add />}
-          onClick={() => {
+          icon={<Add />}
+          onButtonClick={() => {
             addActivityChoice({
               activityType: '',
               includePhotos: false,
@@ -206,9 +206,9 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
               startDate: null,
               endDate: null
             });
-          }}>
-          Add New
-        </Button>
+          }}
+          label="Add New"
+        />
       </MuiPickersUtilsProvider>
     </>
   );

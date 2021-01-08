@@ -1,8 +1,9 @@
 import { CameraResultType, CameraSource } from '@capacitor/core';
 import { useCamera } from '@ionic/react-hooks/camera';
-import { Box, Button, Card, CardActions, CardMedia, CircularProgress, Grid, IconButton } from '@material-ui/core';
+import { Box, Card, CardActions, CardMedia, CircularProgress, Grid, IconButton } from '@material-ui/core';
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
 import React from 'react';
+import CommonButton from 'components/common/CommonButton';
 
 export interface IPhoto {
   filepath: string;
@@ -76,14 +77,21 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
           <Grid container>
             <Grid container item spacing={3} justify="center">
               <Grid item>
-                <Button variant="contained" color="primary" startIcon={<AddAPhoto />} onClick={() => takePhoto()}>
-                  Add A Photo
-                </Button>
+                <CommonButton
+                  variant="contained"
+                  color="primary"
+                  icon={<AddAPhoto />}
+                  onButtonClick={() => takePhoto()}
+                  label="Add A Photo"
+                />
               </Grid>
               <Grid item>
-                <Button variant="contained" startIcon={<DeleteForever />} onClick={() => deletePhotos()}>
-                  Remove All Photos
-                </Button>
+                <CommonButton
+                  variant="contained"
+                  icon={<DeleteForever />}
+                  onButtonClick={() => deletePhotos()}
+                  label="Remove All Photos"
+                />
               </Grid>
             </Grid>
           </Grid>

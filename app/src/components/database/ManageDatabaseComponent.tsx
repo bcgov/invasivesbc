@@ -1,7 +1,7 @@
-import { Button } from '@material-ui/core';
 import { DeleteForever } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext } from 'react';
+import CommonButton from 'components/common/CommonButton';
 
 interface IManageDatabaseComponentProps {
   classes?: any;
@@ -15,9 +15,12 @@ const ManageDatabaseComponent: React.FC<IManageDatabaseComponentProps> = (props)
   };
 
   return (
-    <Button variant="contained" startIcon={<DeleteForever />} onClick={() => resetDatabase()}>
-      Wipe Local Data
-    </Button>
+    <CommonButton
+      variant="contained"
+      icon={<DeleteForever />}
+      onButtonClick={() => resetDatabase()}
+      label="Wipe Local Data"
+    />
   );
 };
 

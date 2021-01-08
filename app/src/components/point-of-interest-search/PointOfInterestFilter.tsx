@@ -1,6 +1,5 @@
 import DateFnsUtils from '@date-io/date-fns';
 import {
-  Button,
   Grid,
   InputLabel,
   List,
@@ -16,6 +15,7 @@ import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/picker
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
+import CommonButton from 'components/common/CommonButton';
 
 interface IPointOfInterestChoices {
   pointOfInterestType: string;
@@ -174,12 +174,12 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                       />
                     </Grid>
                     <Grid container item justify="flex-end">
-                      <Button
+                      <CommonButton
                         variant="contained"
-                        startIcon={<DeleteForever />}
-                        onClick={() => deletePointOfInterestChoice(index)}>
-                        Remove
-                      </Button>
+                        icon={<DeleteForever />}
+                        onButtonClick={() => deletePointOfInterestChoice(index)}
+                        label="Remove"
+                      />
                     </Grid>
                   </Grid>
                 </Paper>
@@ -187,11 +187,11 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
             );
           })}
         </List>
-        <Button
+        <CommonButton
           variant="contained"
           color="primary"
-          startIcon={<Add />}
-          onClick={() => {
+          icon={<Add />}
+          onButtonClick={() => {
             addPointOfInterestChoice({
               pointOfInterestType: '',
               includePhotos: false,
@@ -199,9 +199,9 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
               startDate: null,
               endDate: null
             });
-          }}>
-          Add New
-        </Button>
+          }}
+          label="Add New"
+        />
       </MuiPickersUtilsProvider>
     </>
   );

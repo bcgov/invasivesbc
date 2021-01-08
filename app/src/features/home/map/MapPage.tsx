@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Container, Grid, makeStyles, Theme, Box } from '@material-ui/core';
+import { CircularProgress, Container, Grid, makeStyles, Theme, Box } from '@material-ui/core';
 import clsx from 'clsx';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
@@ -11,6 +11,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
+import CommonButton from 'components/common/CommonButton';
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -71,47 +72,47 @@ const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
       <blockquote>
         <Grid container spacing={3}>
           <Grid item>
-            <Button
+            <CommonButton
               variant="contained"
               color="primary"
-              onClick={() => {
+              onButtonClick={() => {
                 props.buttonCloseCallback();
-              }}>
-              Close
-            </Button>
+              }}
+              label="Close"
+            />
           </Grid>
           <Grid item>
-            <Button
-              disabled={true}
+            <CommonButton
+              isDisabled={true}
               variant="contained"
               color="primary"
-              onClick={() => {
+              onButtonClick={() => {
                 props.buttonCloseCallback();
-              }}>
-              Edit
-            </Button>
+              }}
+              label="Edit"
+            />
           </Grid>
           <Grid item>
-            <Button
-              disabled={true}
+            <CommonButton
+              isDisabled={true}
               variant="contained"
               color="primary"
-              onClick={() => {
+              onButtonClick={() => {
                 props.buttonCloseCallback();
-              }}>
-              Photos
-            </Button>
+              }}
+              label="Photos"
+            />
           </Grid>
           <Grid item>
-            <Button
-              disabled={true}
+            <CommonButton
+              isDisabled={true}
               variant="contained"
               color="primary"
-              onClick={() => {
+              onButtonClick={() => {
                 props.buttonCloseCallback();
-              }}>
-              Show related activities
-            </Button>
+              }}
+              label="Show related activities"
+            />
           </Grid>
         </Grid>
       </blockquote>

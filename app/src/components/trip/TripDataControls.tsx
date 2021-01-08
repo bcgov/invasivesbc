@@ -1,4 +1,4 @@
-import { Button, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -6,6 +6,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { IActivitySearchCriteria, IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
+import CommonButton from 'components/common/CommonButton';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -181,9 +182,12 @@ export const TripDataControls: React.FC = (props) => {
 
   return (
     <>
-      <Button variant="contained" color="primary" onClick={deleteTripAndFetch}>
-        Fetch
-      </Button>
+      <CommonButton
+        variant="contained"
+        color="primary"
+        onButtonClick={() => deleteTripAndFetch()}
+        label="Fetch"
+      />
     </>
   );
 };

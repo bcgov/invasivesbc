@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Checkbox,
   Divider,
   Grid,
@@ -39,6 +38,7 @@ import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUti
 import ActivityListDate from './ActivityListDate';
 import { getErrorMessages } from 'utils/errorHandling';
 import { addNewActivityToDB } from 'utils/addActivity';
+import CommonButton from 'components/common/CommonButton';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -320,14 +320,14 @@ const ActivitiesList: React.FC = (props) => {
               <MenuItem value="Special">Special</MenuItem>
             </Select>
           </FormControl>
-          <Button
-            disabled={isDisabled}
+          <CommonButton
+            isDisabled={isDisabled}
             variant="contained"
             color="primary"
-            startIcon={<Sync className={clsx(syncing && 'rotating')} />}
-            onClick={() => syncActivities()}>
-            Sync Activities
-          </Button>
+            icon={<Sync className={clsx(syncing && 'rotating')} />}
+            onButtonClick={() => syncActivities()}
+            label="Sync Activities"
+          />
         </Box>
         <Box>
           {workflowFunction !== 'Special' && (
@@ -338,62 +338,62 @@ const ActivitiesList: React.FC = (props) => {
               <Box className={classes.newActivityButtonsRow}>
                 {workflowFunction === 'Plant' && (
                   <>
-                    <Button
-                      disabled={isDisabled}
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
                           ActivitySubtype.Observation_PlantTerrestial
                         )
-                      }>
-                      Plant Terrestrial
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
+                      }
+                      label="Plant Terrestrial"
+                    />
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
                           ActivitySubtype.Observation_PlantAquatic
                         )
-                      }>
-                      Plant Aquatic
-                    </Button>
+                      }
+                      label="Plant Aquatic"
+                    />
                   </>
                 )}
                 {workflowFunction === 'Animal' && (
                   <>
-                    <Button
-                      disabled={isDisabled}
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
                           ActivitySubtype.Observation_AnimalTerrestrial
                         )
-                      }>
-                      Animal Terrestrial
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
+                      }
+                      label="Animal Terrestrial"
+                    />
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
                           ActivitySubtype.Observation_AnimalAquatic
                         )
-                      }>
-                      Animal Aquatic
-                    </Button>
+                      }
+                      label="Animal Aquatic"
+                    />
                   </>
                 )}
 
@@ -413,101 +413,101 @@ const ActivitiesList: React.FC = (props) => {
               <Box className={classes.newActivityButtonsRow}>
                 {workflowFunction === 'Plant' && (
                   <>
-                    <Button
-                      disabled={isDisabled}
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_ChemicalPlant
                         )
-                      }>
-                      Plant Chemical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
+                      }
+                      label="Plant Chemical"
+                    />
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_MechanicalPlant
                         )
-                      }>
-                      Plant Mechanical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
+                      }
+                      label="Plant Mechanical"
+                    />
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_BiologicalPlant
                         )
-                      }>
-                      Plant Biological
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
+                      }
+                      label="Plant Biological"
+                    />
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_BiologicalDispersalPlant
                         )
-                      }>
-                      Plant Biological Dispersal
-                    </Button>
+                      }
+                      label="Plant Biological Dispersal"
+                    />
                   </>
                 )}
                 {workflowFunction === 'Animal' && (
                   <>
-                    <Button
-                      disabled={isDisabled}
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_MechanicalTerrestrialAnimal
                         )
-                      }>
-                      Animal Terrestrial Mechanical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
+                      }
+                      label="Animal Terrestrial Mechanical"
+                    />
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_ChemicalTerrestrialAnimal
                         )
-                      }>
-                      Animal Terrestrial Chemical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
+                      }
+                      label="Animal Terrestrial Chemical"
+                    />
+                    <CommonButton
+                      isDisabled={isDisabled}
                       variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
+                      icon={<Add />}
+                      onButtonClick={() =>
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_BiologicalTerrestrialAnimal
                         )
-                      }>
-                      Animal Terrestrial Biological
-                    </Button>
+                      }
+                      label="Animal Terrestrial Biological"
+                    />
                   </>
                 )}
 
@@ -538,21 +538,41 @@ const ActivitiesList: React.FC = (props) => {
                   <Typography variant="h5">Special Activities</Typography>
                 </Box>
                 <Box className={classes.newActivityButtonsRow}>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Fire Monitoring
-                  </Button>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Invasive Plant Density Transects
-                  </Button>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Vegetation Transect (Full Vegetation)
-                  </Button>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Vegetation Transect (Lumped Species)
-                  </Button>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Biocontrol Efficacy
-                  </Button>
+                  <CommonButton
+                    isDisabled={isDisabled}
+                    variant="contained"
+                    icon={<Add />}
+                    label="Fire Monitoring"
+                    onButtonClick={() => {}}
+                  />
+                  <CommonButton
+                    isDisabled={isDisabled}
+                    variant="contained"
+                    icon={<Add />}
+                    label="Invasive Plant Density Transects"
+                    onButtonClick={() => {}}
+                  />
+                  <CommonButton
+                    isDisabled={isDisabled}
+                    variant="contained"
+                    icon={<Add />}
+                    label="Vegetation Transect (Full Vegetation)"
+                    onButtonClick={() => {}}
+                  />
+                  <CommonButton
+                    isDisabled={isDisabled}
+                    variant="contained"
+                    icon={<Add />}
+                    label="Vegetation Transect (Lumped Species)"
+                    onButtonClick={() => {}}
+                  />
+                  <CommonButton
+                    isDisabled={isDisabled}
+                    variant="contained"
+                    icon={<Add />}
+                    label="Biocontrol Efficacy"
+                    onButtonClick={() => {}}
+                  />
                 </Box>
               </Box>
               <br />
@@ -561,27 +581,27 @@ const ActivitiesList: React.FC = (props) => {
                   <Typography variant="h5">Development/Testing</Typography>
                 </Box>
                 <Box className={classes.newActivityButtonsRow}>
-                  <Button
-                    disabled={isDisabled}
+                  <CommonButton
+                    isDisabled={isDisabled}
                     variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => notifyError(databaseContext, 'An error message!')}>
-                    Simulate Error
-                  </Button>
-                  <Button
-                    disabled={isDisabled}
+                    icon={<Add />}
+                    onButtonClick={() => notifyError(databaseContext, 'An error message!')}
+                    label="Simulate Error"
+                  />
+                  <CommonButton
+                    isDisabled={isDisabled}
                     variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => notifySuccess(databaseContext, 'A Success message!')}>
-                    Simulate Success
-                  </Button>
-                  <Button
-                    disabled={isDisabled}
+                    icon={<Add />}
+                    onButtonClick={() => notifySuccess(databaseContext, 'A Success message!')}
+                    label="Simulate Success"
+                  />
+                  <CommonButton
+                    isDisabled={isDisabled}
                     variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => notifyWarning(databaseContext, 'A Warning message!')}>
-                    Simulate Warning
-                  </Button>
+                    icon={<Add />}
+                    onButtonClick={() => notifyWarning(databaseContext, 'A Warning message!')}
+                    label="Simulate Warning"
+                  />
                 </Box>
               </Box>
             </>

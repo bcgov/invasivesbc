@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Container, makeStyles } from '@material-ui/core';
+import { Box, CircularProgress, Container, makeStyles } from '@material-ui/core';
 import { Save } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
@@ -15,6 +15,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
+import CommonButton from 'components/common/CommonButton';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -230,9 +231,13 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
   return (
     <Container className={props.classes.container}>
       <Box mb={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleUpdate}>
-          Update Activity
-        </Button>
+        <CommonButton
+          variant="contained"
+          color="primary"
+          icon={<Save />}
+          onButtonClick={() => handleUpdate()}
+          label="Update Activity"
+        />
       </Box>
 
       <ActivityComponent
@@ -252,9 +257,13 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       />
 
       <Box mt={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleUpdate}>
-          Update Activity
-        </Button>
+        <CommonButton
+          variant="contained"
+          color="primary"
+          icon={<Save />}
+          onButtonClick={() => handleUpdate()}
+          label="Update Activity"
+        />
       </Box>
     </Container>
   );
