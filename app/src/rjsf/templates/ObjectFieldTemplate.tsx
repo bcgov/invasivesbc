@@ -56,7 +56,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
             style={{ marginBottom: '10px' }}>
             <>
               {!invalidTooltipElements.includes(element.name) && (
-                <Tooltip title={element.content.props.schema.tooltipText || "Tooltip text TBD"} placement="left">
+                <Tooltip title={element.content.props.schema.tooltipText || 'Tooltip text TBD'} placement="left">
                   <HelpOutlineIcon style={{ float: 'right', marginBottom: 5 }} />
                 </Tooltip>
               )}
