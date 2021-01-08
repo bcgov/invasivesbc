@@ -1,4 +1,5 @@
-import Grid from '@material-ui/core/Grid';
+import { Grid, Tooltip } from '@material-ui/core';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { makeStyles } from '@material-ui/styles';
 import { ObjectFieldTemplateProps, utils } from '@rjsf/core';
 import React from 'react';
@@ -17,6 +18,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
 
   const DescriptionField = props.DescriptionField;
   const TitleField = props.TitleField;
+  const invalidTooltipElements = ['activity_data', 'activity_type_data', 'activity_subtype_data'];
 
   return (
     <>
@@ -52,7 +54,14 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
             }
             key={index}
             style={{ marginBottom: '10px' }}>
-            {element.content}
+            <>
+              {!invalidTooltipElements.includes(element.name) && (
+                <Tooltip title={element.content.props.schema.tooltipText || "Tooltip text TBD"} placement="left">
+                  <HelpOutlineIcon style={{ float: 'right', marginBottom: 5 }}/>
+                </Tooltip>
+              )}
+              {element.content}
+            </>
           </Grid>
         ))}
         {canExpand(props.schema, props.uiSchema, props.formData) && (
