@@ -28,7 +28,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
               <Typography className={props.classes.heading}>Linked Activity Form</Typography>
             </AccordionSummary>
             <AccordionDetails className={props.classes.formContainer}>
-              <FormContainer {...{...props, activity: props.linkedActivity, isDisabled: true }} />
+              <FormContainer {...{ ...props, activity: props.linkedActivity, isDisabled: true }} />
             </AccordionDetails>
           </Accordion>
           {props.linkedActivity.photos.length > 0 && (
@@ -37,7 +37,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
                 <Typography className={props.classes.heading}>Linked Activity Photos</Typography>
               </AccordionSummary>
               <AccordionDetails className={props.classes.photoContainer}>
-                <PhotoContainer {...{...props, activity: props.linkedActivity, isDisabled: true }} />
+                <PhotoContainer {...{ ...props, activity: props.linkedActivity, isDisabled: true }} />
               </AccordionDetails>
             </Accordion>
           )}

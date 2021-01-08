@@ -13,11 +13,7 @@ const CommonButton: React.FC<ICommonButtonProps> = (props) => {
   const { variant, color, icon, onButtonClick, label } = props;
 
   return (
-    <Button
-      variant={variant}
-      color={color}
-      startIcon={icon}
-      onClick={() => onButtonClick()}>
+    <Button variant={variant} color={color} startIcon={icon} onClick={() => onButtonClick()}>
       {label}
     </Button>
   );

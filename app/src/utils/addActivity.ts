@@ -66,10 +66,7 @@ export async function addNewActivityToDB(
 /*
   Function to create a cloned activity and save it to DB
 */
-export async function addClonedActivityToDB(
-  databaseContext: any,
-  clonedRecord: any
-) {
+export async function addClonedActivityToDB(databaseContext: any, clonedRecord: any) {
   const id = uuidv4();
 
   // Used to avoid pouch DB conflict
