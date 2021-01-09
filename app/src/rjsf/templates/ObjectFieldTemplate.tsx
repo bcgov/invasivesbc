@@ -59,8 +59,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
                 <Tooltip
                   enterTouchDelay={0}
                   title={element.content.props.schema['x-tooltip-text'] || 'Tooltip text TBD'}
-                  placement="left"
-                >
+                  placement="left">
                   <HelpOutlineIcon style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }} />
                 </Tooltip>
               )}
