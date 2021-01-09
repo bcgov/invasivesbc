@@ -72,19 +72,19 @@ const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
       <br />
       <blockquote>
         <Grid container spacing={3}>
-        {buttonLabels.map((item) => (
-          <Grid item key={item}>
-            <Button
-              disabled={item !== 'Close'}
-              color="primary"
-              variant="contained"
-              onClick={() => {
-                props.buttonCloseCallback();
-              }}>
-              {item}
-            </Button>
-          </Grid>
-        ))}
+          {buttonLabels.map((item) => (
+            <Grid item key={item}>
+              <Button
+                disabled={item !== 'Close'}
+                color="primary"
+                variant="contained"
+                onClick={() => {
+                  props.buttonCloseCallback();
+                }}>
+                {item}
+              </Button>
+            </Grid>
+          ))}
         </Grid>
       </blockquote>
       <br />

@@ -547,12 +547,7 @@ const ActivitiesList: React.FC = (props) => {
                 </Box>
                 <Box className={classes.newActivityButtonsRow}>
                   {specialFunctions.map((item) => (
-                    <Button
-                      key={item}
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                    >
+                    <Button key={item} disabled={isDisabled} variant="contained" startIcon={<Add />}>
                       {item}
                     </Button>
                   ))}
