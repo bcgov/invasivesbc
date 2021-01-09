@@ -59,9 +59,9 @@ const appTheme = createMuiTheme({
     },
     MuiTooltip: {
       tooltip: {
-        fontSize: "1rem",
-        color: "white",
-        backgroundColor: "#223F75"
+        fontSize: '1rem',
+        color: 'white',
+        backgroundColor: '#223F75'
       }
     }
   }
