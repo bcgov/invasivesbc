@@ -25,7 +25,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import ActivityListItem from './ActivityListItem';
 import ActivityListDate from './ActivityListDate';
-import { addActivityToDB } from 'utils/addActivity';
+import { addLinkedActivityToDB } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -107,7 +107,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
     const dropdownValue = event.target.value === 0 ? ActivitySubtype.Treatment_ChemicalPlant : event.target.value;
     setTreatmentSubtypeToCreate(dropdownValue);
 
-    const addedActivity = await addActivityToDB(databaseContext, ActivityType.Treatment, dropdownValue, activity);
+    const addedActivity = await addLinkedActivityToDB(databaseContext, ActivityType.Treatment, dropdownValue, activity);
     setActiveActivityAndNavigateToActivityPage(addedActivity);
 
     setOnReferencesListPage(false);
@@ -129,7 +129,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
               startIcon={<Add />}
               onClick={async (e) => {
                 e.stopPropagation();
-                const addedActivity = await addActivityToDB(
+                const addedActivity = await addLinkedActivityToDB(
                   databaseContext,
                   ActivityType.Monitoring,
                   calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
