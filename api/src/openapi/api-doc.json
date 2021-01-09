@@ -387,23 +387,23 @@
             "type": "string",
             "format": "date-time",
             "title": "Date and Time",
-            "tooltipText": "The date and time for the activity"
+            "x-tooltip-text": "The date and time for the activity"
           },
           "latitude": {
             "type": "number",
             "title": "Latitude",
-            "tooltipText": "The latitude of the anchor point for the specified geometry"
+            "x-tooltip-text": "The latitude of the anchor point for the specified geometry"
           },
           "longitude": {
             "type": "number",
             "title": "Longitude",
-            "tooltipText": "The longitude of the anchor point for the specified geometry"
+            "x-tooltip-text": "The longitude of the anchor point for the specified geometry"
           },
           "reported_area": {
             "type": "number",
             "title": "Area (m\u00B2)",
             "minimum": 1,
-            "tooltipText": "The area for the specified geometry"
+            "x-tooltip-text": "The area for the specified geometry"
           },
           "invasive_species_agency_code": {
             "type": "string",
