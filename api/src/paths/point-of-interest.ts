@@ -2,7 +2,6 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
 import { WRITE_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestPostRequestBody } from '../models/point-of-interest';
@@ -108,17 +107,16 @@ function createPointOfInterest(): RequestHandler {
 
     try {
       const sqlStatement = Array.isArray(req.body)
-        ? postPointsOfInterestSQL(req.body.map(
-            (poi) => new PointOfInterestPostRequestBody({ ...poi, mediaKeys: poi['mediaKeys'] })
-          ))
-        : postPointOfInterestSQL(
-            new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] })
-          );
+        ? postPointsOfInterestSQL(
+            req.body.map((poi) => new PointOfInterestPostRequestBody({ ...poi, mediaKeys: poi['mediaKeys'] }))
+          )
+        : postPointOfInterestSQL(new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] }));
 
-      if (!sqlStatement) throw {
-        status: 400,
-        message: 'Failed to build SQL statement'
-      };
+      if (!sqlStatement)
+        throw {
+          status: 400,
+          message: 'Failed to build SQL statement'
+        };
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
