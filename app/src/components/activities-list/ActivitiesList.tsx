@@ -38,7 +38,7 @@ import 'styles/spinners.scss';
 import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
 import ActivityListDate from './ActivityListDate';
 import { getErrorMessages } from 'utils/errorHandling';
-import { addActivityToDB } from 'utils/addActivity';
+import { addNewActivityToDB } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -186,9 +186,14 @@ const ActivityList: React.FC<IActivityList> = (props) => {
     history.push(`/home/activity`);
   };
 
+  // Sort activities to show most recently updated activities at top of list
+  const sortedActivities = docs.sort((a, b): any => {
+    return new Date(b.dateUpdated).valueOf() - new Date(a.dateUpdated).valueOf();
+  });
+
   return (
     <List>
-      {docs.map((doc) => {
+      {sortedActivities.map((doc) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
         if (!doc.activitySubtype.includes(props.workflowFunction)) {
@@ -235,6 +240,14 @@ const ActivitiesList: React.FC = (props) => {
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
+
+  const specialFunctions = [
+    'Fire Monitoring',
+    'Invasive Plant Density Transects',
+    'Vegetation Transect (Full Vegetation)',
+    'Vegetation Transect (Lumped Species)',
+    'Biocontrol Efficacy'
+  ];
 
   const syncActivities = async () => {
     setIsDisable(true);
@@ -338,7 +351,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
                           ActivitySubtype.Observation_PlantTerrestial
@@ -351,7 +364,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
                           ActivitySubtype.Observation_PlantAquatic
@@ -368,7 +381,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
                           ActivitySubtype.Observation_AnimalTerrestrial
@@ -381,7 +394,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
                           ActivitySubtype.Observation_AnimalAquatic
@@ -413,7 +426,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_ChemicalPlant
@@ -426,7 +439,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_MechanicalPlant
@@ -439,7 +452,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_BiologicalPlant
@@ -452,7 +465,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_BiologicalDispersalPlant
@@ -469,7 +482,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_MechanicalTerrestrialAnimal
@@ -482,7 +495,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_ChemicalTerrestrialAnimal
@@ -495,7 +508,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() =>
-                        addActivityToDB(
+                        addNewActivityToDB(
                           databaseContext,
                           ActivityType.Treatment,
                           ActivitySubtype.Treatment_BiologicalTerrestrialAnimal
@@ -533,21 +546,11 @@ const ActivitiesList: React.FC = (props) => {
                   <Typography variant="h5">Special Activities</Typography>
                 </Box>
                 <Box className={classes.newActivityButtonsRow}>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Fire Monitoring
-                  </Button>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Invasive Plant Density Transects
-                  </Button>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Vegetation Transect (Full Vegetation)
-                  </Button>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Vegetation Transect (Lumped Species)
-                  </Button>
-                  <Button disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                    Biocontrol Efficacy
-                  </Button>
+                  {specialFunctions.map((item) => (
+                    <Button key={item} disabled={isDisabled} variant="contained" startIcon={<Add />}>
+                      {item}
+                    </Button>
+                  ))}
                 </Box>
               </Box>
               <br />
