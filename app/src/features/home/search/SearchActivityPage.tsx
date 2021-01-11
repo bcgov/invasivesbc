@@ -12,7 +12,7 @@ import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
+import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 
@@ -77,39 +77,44 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
-  const saveGeometry = async (geom: Feature[]) => {
-    const { latitude, longitude } = calculateLatLng(geom) || {};
+  const saveGeometry = useCallback((geom: Feature[]) => {
+    setActivity((doc: any) => {
+      const { latitude, longitude } = calculateLatLng(geom) || {};
 
-    const formData = activity.formData;
-    const areaOfGeometry = calculateGeometryArea(geom);
+      const formData = doc.formData;
+      const areaOfGeometry = calculateGeometryArea(geom);
 
-    const updatedFormData = {
-      ...formData,
-      activity_data: {
-        ...formData.activity_data,
-        latitude,
-        longitude,
-        reported_area: areaOfGeometry
-      }
-    };
+      const updatedFormData = {
+        ...formData,
+        activity_data: {
+          ...formData.activity_data,
+          latitude,
+          longitude,
+          reported_area: areaOfGeometry
+        }
+      };
 
-    setActivity({
-      ...activity,
-      geometry: geom,
-      status: ActivityStatus.EDITED,
-      dateUpdated: new Date(),
-      formData: updatedFormData
+      return {
+        ...doc,
+        geometry: geom,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date(),
+        formData: updatedFormData
+      };
     });
-  };
+  }, []);
 
   /**
    * Save the photos.
    *
    * @param {IPhoto} photosArr An array of photo objects.
    */
-  const savePhotos = async (photosArr: IPhoto[]) => {
-    setActivity({ ...activity, photos: photosArr, dateUpdated: new Date() });
-  };
+  const savePhotos = useCallback(
+    async (photosArr: IPhoto[]) => {
+      setActivity({ ...activity, photos: photosArr, dateUpdated: new Date() });
+    },
+    [activity]
+  );
 
   /**
    * Save the form when it is submitted.
@@ -152,11 +157,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
-      // populate herbicide application rate
-      const updatedActivitySubtypeData = populateHerbicideRates(
-        activity.formData.activity_subtype_data,
-        event.formData.activity_subtype_data
-      );
+      const updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
 
       return setActivity({
         ...activity,
@@ -212,7 +213,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
     }
 
     saveGeometry(geometry);
-  }, [geometry]);
+  }, [geometry, isLoading, saveGeometry]);
 
   useEffect(() => {
     if (isLoading) {
@@ -220,7 +221,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
     }
 
     savePhotos(photos);
-  }, [photos]);
+  }, [photos, isLoading, savePhotos]);
 
   if (isLoading) {
     return <CircularProgress />;

@@ -44,7 +44,7 @@ objects:
   apiVersion: v1
   metadata:
     name: "${NAME}"
-    creationTimestamp: 
+    creationTimestamp:
     labels:
       shared: 'true'
     annotations:
@@ -64,7 +64,7 @@ objects:
       activeDeadlineSeconds: 21600
       recreateParams:
         timeoutSeconds: 600
-      resources: 
+      resources:
         limits:
           cpu: 750m
           memory: 2Gi
@@ -184,7 +184,7 @@ parameters:
   displayName: Application Hostname
   description: The exposed hostname that will route to the service, if left blank
     a value will be defaulted.
-  value: 'seism.schemaspy.pathfinder.gov.bc.ca'
+  value: 'seism.schemaspy.apps.silver.devops.gov.bc.ca'
 - name: DATABASE_SCHEMA
   description: Application Schema name
   value: invasivesbc

@@ -1,6 +1,6 @@
 {
   "name": "invasivesbci",
-  "namespaceSuffix": "8ecbmv",
+  "namespaceSuffix": "7068ad",
   "namespace": {
     "tools": "tools",
     "dev": "dev",
@@ -19,14 +19,14 @@
     "prod"
   ],
   "staticUrls": {
-    "dev": "dev-invasivesbci.pathfinder.gov.bc.ca",
-    "test": "test-invasivesbci.pathfinder.gov.bc.ca",
-    "prod": "invasivesbci.pathfinder.gov.bc.ca"
+    "dev": "dev-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "test": "test-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "prod": "invasivesbci.apps.silver.devops.gov.bc.ca"
   },
   "staticUrlsAPI": {
-    "dev": "api-dev-invasivesbci.pathfinder.gov.bc.ca",
-    "test": "api-test-invasivesbci.pathfinder.gov.bc.ca",
-    "prod": "api-invasivesbci.pathfinder.gov.bc.ca"
+    "dev": "api-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "test": "api-test-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "prod": "api-invasivesbci.apps.silver.devops.gov.bc.ca"
   },
   "certificateURL": {
     "dev": "https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",

@@ -31,7 +31,7 @@ objects:
           from:
             kind: ImageStreamTag
             name: postgresql-9.6-oracle-fdw:v1-stable
-            namespace: bcgov
+            namespace: 7068ad-tools
           generation: 1
           importPolicy: {}
           referencePolicy:
