@@ -9,14 +9,15 @@ import meow from 'meow';
 // HELPER FUNCTIONS (TODO move somewhere more general):
 
 const formatDateToISO = (d) => {
+  const supportedFormats = ['YYYY-MM-DD', 'YYYY/MM/DD', 'DD/MM/YYYY', 'DD-MM-YYYY'];
   if (!d) return;
-  return moment(d).format('YYYY-MM-DD');
+  return moment(d, supportedFormats).format('YYYY-MM-DD');
 };
 
 // return items matching field value in an array of objects sorted by field
 // https://www.w3resource.com/javascript-exercises/javascript-array-exercise-18.php
 const binarySearchValues = (items, field, value) => {
-  if (!items) return [];
+  if (!items || items.length === 0) return [];
   let firstIndex = 0;
   let lastIndex = items.length - 1;
   let middleIndex = Math.floor((lastIndex + firstIndex) / 2);
@@ -138,20 +139,21 @@ const cli = meow(
       --chemicalTreatment: SiteID ASC
       --chemicalMonitoring: treatment_id ASC
       --biologicalTreatment: site_id ASC
-      --biologicalMonitoring: treatment_id ASC
+      --biologicalMonitoring: UTF_EASTING ASC UTF_NORTHING ASC
+        - (NOTE: may be temporary, if we can match by treatment_id instead - data pending)
       --dispersal: SiteID ASC
       --bioControlOutput: SiteID ASC
 
     OUTPUT:
       Data will be sorted according to:
       --site: SiteID DESC
-      --survey: MechanicalID DESC
+      --survey: SurveyID DESC
       --mechanicalTreatment: TreatmentID DESC
       --mechanicalMonitoring: monitoring_id DESC
       --chemicalTreatment: TreatmentID DESC
       --chemicalMonitoring: treatment_id DESC
-      --biologicalTreatment: site_id DESC
-      --biologicalMonitoring: treatment_id ASC
+      --biologicalTreatment: biological_id DESC
+      --biologicalMonitoring: monitoring_id DESC
       --dispersal: SiteID DESC
       --bioControlOutput: SiteID DESC
   */
@@ -286,7 +288,7 @@ const loadAllData = async () => {
   if (cli.flags.mechanicalTreatment) {
     console.log('Loading mechanical treatments...');
     results.mechanicalTreatmentData = await loadACSV(cli.flags.mechanicalTreatment);
-    console.log(results.mechanicalTreatmentData.length + ' mech mechanical treatments loaded.');
+    console.log(results.mechanicalTreatmentData.length + ' mech treatments loaded.');
   }
 
   if (cli.flags.mechanicalMonitoring) {
@@ -298,13 +300,25 @@ const loadAllData = async () => {
   if (cli.flags.chemicalTreatment) {
     console.log('Loading chemical treatments...');
     results.chemicalTreatmentData = await loadACSV(cli.flags.chemicalTreatment);
-    console.log(results.chemicalTreatmentData.length + ' chem mechanical treatments loaded.');
+    console.log(results.chemicalTreatmentData.length + ' chem treatments loaded.');
   }
 
   if (cli.flags.chemicalMonitoring) {
     console.log('Loading chemical monitoring...');
     results.chemicalMonitoringData = await loadACSV(cli.flags.chemicalMonitoring);
     console.log(results.chemicalMonitoringData.length + ' chem monitoring records loaded.');
+  }
+
+  if (cli.flags.biologicalTreatment) {
+    console.log('Loading bio treatments...');
+    results.biologicalTreatmentData = await loadACSV(cli.flags.biologicalTreatment);
+    console.log(results.biologicalTreatmentData.length + ' bio treatments loaded.');
+  }
+
+  if (cli.flags.biologicalMonitoring) {
+    console.log('Loading bio monitoring...');
+    results.biologicalMonitoringData = await loadACSV(cli.flags.biologicalMonitoring);
+    console.log(results.biologicalMonitoringData.length + ' bio monitoring records loaded.');
   }
 
   if (cli.flags.dispersal) {
@@ -343,12 +357,8 @@ const main = async () => {
 
       // assumes surveys CSV sorted by SiteID ASC
       let surveys = binarySearchValues(IAPPData.surveyData, 'SiteID', siteRecordID);
-      surveys = surveys.map((survey) => ({
-        ...survey,
-        SurveyDate: formatDateToISO(survey.surveyDate)
-      }));
-      // restore desired sorting order by MechanicalID DESC (latest first)
-      surveys.sort((a, b) => Number(b.MechanicalID) - Number(a.MechanicalID));
+      // restore desired sorting order by SurveyID DESC (latest first)
+      surveys.sort((a, b) => Number(b.SurveyID) - Number(a.SurveyID));
 
       // assumes mechtreatements CSV sorted by SiteID ASC
       let mechanical_treatments = binarySearchValues(IAPPData.mechanicalTreatmentData, 'SiteID', siteRecordID);
@@ -369,9 +379,9 @@ const main = async () => {
       // assumes chemtreatements CSV sorted by SiteID ASC
       let chemical_treatments = binarySearchValues(IAPPData.chemicalTreatmentData, 'SiteID', siteRecordID);
       chemical_treatments = chemical_treatments.map((treatment) => {
-        // assumes monitoring CSV sorted by treatment_id ASC
+        // assumes monitoring CSV sorted by TreatmentID ASC
         treatment.monitoring = binarySearchValues(IAPPData.chemicalMonitoringData, 'treatment_id', treatment.TreatmentID);
-        // restore desired sorting order by treatment_id DESC (latest first)
+        // restore desired sorting order by TreatmentID DESC (latest first)
         treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
         return treatment;
       });
@@ -379,17 +389,17 @@ const main = async () => {
       chemical_treatments.sort((a, b) => Number(b.TreatmentID) - Number(a.TreatmentID));
 
       // assumes biotreatments CSV sorted by site_id ASC
-      let biological_treatments = binarySearchValues(IAPPData.biologicalTreatmentData, 'SiteID', siteRecordID);
+      let biological_treatments = binarySearchValues(IAPPData.biologicalTreatmentData, 'site_id', siteRecordID);
       biological_treatments = biological_treatments.map((treatment) => {
-        // assumes monitoring CSV sorted by treatment_id ASC
-        treatment.monitoring = binarySearchValues(IAPPData.biologicalMonitoringData, 'treatment_id', treatment.TreatmentID);
-        // restore desired sorting order by treatment_id DESC (latest first)
+        // assumes monitoring CSV sorted by UTM_EASTING ASC, UTM_NORTHING ASC
+        treatment.monitoring = binarySearchValues(IAPPData.biologicalMonitoringData, 'UTM_EASTING', treatment.UTM_EASTING);
+        // treatment.monitoring = binarySearchValues(treatment.monitoring, 'UTM_NORTHING', treatment.UTM_NORTHING);
+        // restore desired sorting order by monitoring_id DESC (latest first)
         treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
         return treatment;
       });
       // restore desired sorting order by biological_id DESC (latest first)
       biological_treatments.sort((a, b) => Number(b.biological_id) - Number(a.biological_id));
-
 
       siteCount++;
 
@@ -421,7 +431,7 @@ const main = async () => {
         form_data: {
 
           point_of_interest_data: {
-            jurisdiction_code: siteRecord.Jur1pct === '100' ? siteRecord.Jur1 : 'Not provided',
+            jurisdiction_code: Number(siteRecord.Jur1pct) === 100 ? siteRecord.Jur1 : 'Not provided',
             point_of_interest_status: 'done',
             invasive_species_agency_code: getCommonValue(surveyAgencyCodes, 'Not Provided'),
             media_indicator: false,
@@ -475,7 +485,7 @@ const main = async () => {
                   jursidiction_code: survey.Jur3,
                   percentage: survey.Jur3pct
                 }
-              ].filter((jur) => jur.jursidiction_code && jur.percentage && jur.percentage > 0),
+              ].filter((jur) => jur.jursidiction_code && jur.percentage && Number(jur.percentage) > 0),
               employer_code: survey.EmployerCode ? survey.EmployerCode : undefined,
               density: survey.Density,
               invasive_plant_density_code: densityMap[survey.Density],
@@ -502,29 +512,42 @@ const main = async () => {
             biological_treatments: biological_treatments.map((t) => ({
               biological_id: t.biological_id,
               common_name: t.CommonName,
-              treatment_date: t.TREATMENT_DATE,
-              collection_date: t.COLLECTION_DATE,
-              bioagent_source: t.BIOAGENT_SOURCE,
+              treatment_date: formatDateToISO(t.TREATMENT_DATE),
+              collection_date: formatDateToISO(t.COLLECTION_DATE),
               agency_code: t.Agency,
-              stage_larva_ind: t.STAGE_LARVA_IND,
-              stage_pupa_ind: t.STAGE_PUPA_IND,
-              stage_other_ind: t.STAGE_OTHER_IND,
-              release_quantity: t.RELEASE_QUANTITY,
-              area_classification_code: t.AREA_CLASSIFICATION_CODE,
               biological_agent_code: t.BIOLOGICAL_AGENT_CODE,
+              bioagent_source: t.BIOAGENT_SOURCE,
               utm_easting: t.UTM_EASTING,
               utm_northing: t.UTM_NORTHING,
               utm_zone: t.UTM_ZONE,
+              map_code: t.MapCode,
+              paper_file: [
+                {
+                  description: t.PaperFileID
+                }
+              ],
+              release_quantity: t.RELEASE_QUANTITY,
+              area_classification_code: t.AREA_CLASSIFICATION_CODE,
               comments: t.COMMENTS,
+              stage_larva_ind: t.STAGE_LARVA_IND,
+              stage_egg_ind: t.STAGE_EGG_IND,
+              stage_pupa_ind: t.STAGE_PUPA_IND,
+              stage_other_ind: t.STAGE_OTHER_IND,
 
               monitoring: t.monitoring.map((m) => ({
                 monitoring_id: m.monitoring_id,
-                inspection_date: m.inspection_date,
-                efficacy_rating_code: m.EFFICACY_RATING_CODE,
-                paper_file_id: m.PAPER_FILE_ID,
+                inspection_date: formatDateToISO(m.inspection_date),
+                efficacy_code: m.EFFICACY_RATING_CODE,
                 plant_count: m.PLANT_COUNT,
                 agent_count: m.AGENT_COUNT,
                 count_duration: m.COUNT_DURATION,
+                paper_file: [
+                  {
+                    description: m.PAPER_FILE_ID
+                  }
+                ],
+                comments: m.Comment,
+
                 agent_destroyed_ind: m.AGENT_DESTROYED_IND,
                 legacy_presence_ind: m.LEGACY_PRESENCE_IND,
                 foliar_feeding_damage_ind: m.FOLIAR_FEEDING_DAMAGE_IND,
@@ -535,11 +558,7 @@ const main = async () => {
                 larvae_present_ind: m.LARVAE_PRESENT_IND,
                 pupae_present_ind: m.PUPAE_PRESENT_IND,
                 adults_present_ind: m.ADULTS_PRESENT_IND,
-                tunnels_present_ind: m.TUNNELS_PRESENT_IND,
-                utm_easting: m.UTM_EASTING,
-                utm_northing: m.UTM_NORTHING,
-                utm_zone: m.UTM_ZONE,
-                comments: m.Comment
+                tunnels_present_ind: m.TUNNELS_PRESENT_IND
               }))
             }))
           }
@@ -560,7 +579,8 @@ const main = async () => {
 
     try {
       // process.stdout.write(`${siteRecordID},`);
-      await axios.post(urlstring, pois, postconfig);
+      if (pois && pois.length > 0)
+          await axios.post(urlstring, pois, postconfig);
     } catch (error) {
       console.log(error);
     }
