@@ -43,8 +43,7 @@ const binarySearchValues = (items, field, value) => {
 
 // helper to get common values of an array of objects
 // returns fallback value if empty or no common value
-const getCommonValue = (array, fallback = undefined) =>
-  new Set(array).size === 1 ? array[0] : fallback;
+const getCommonValue = (array, fallback = undefined) => (new Set(array).size === 1 ? array[0] : fallback);
 
 const mapSlope = (slope) => {
   if (slope === '') return 'NA';
@@ -59,11 +58,11 @@ const mapSlope = (slope) => {
   if (slope < 45) return 'ST';
   if (slope >= 45) return 'VT';
   return 'NA';
-}
+};
 
 const mapAspect = (aspect) => {
   aspect = Number(aspect);
-  if (aspect > 333.5 && aspect <= 360 || aspect <= 22.5) return 'N';
+  if ((aspect > 333.5 && aspect <= 360) || aspect <= 22.5) return 'N';
   if (aspect <= 67.5) return 'NE';
   if (aspect <= 112.5) return 'E';
   if (aspect <= 157.5) return 'SE';
@@ -85,7 +84,7 @@ const densityMap = {
 };
 
 const distributionMap = {
-  '0: Unknown distribution' : 'NA',
+  '0: Unknown distribution': 'NA',
   '1: rare individual / single occurrence': 'RS',
   '2: few sporadically': 'FS',
   '3: single patch or clump': 'CL',
@@ -348,7 +347,7 @@ const main = async () => {
   // assumes site CSV sorted by SiteID DESC
   while (siteCount < IAPPData.siteData.length) {
     let batch = 0;
-    const pois : Array<object> = [];
+    const pois: Array<object> = [];
 
     while (batch < batchSize) {
       const siteRecord = IAPPData.siteData[siteCount];
@@ -380,7 +379,11 @@ const main = async () => {
       let chemical_treatments = binarySearchValues(IAPPData.chemicalTreatmentData, 'SiteID', siteRecordID);
       chemical_treatments = chemical_treatments.map((treatment) => {
         // assumes monitoring CSV sorted by TreatmentID ASC
-        treatment.monitoring = binarySearchValues(IAPPData.chemicalMonitoringData, 'treatment_id', treatment.TreatmentID);
+        treatment.monitoring = binarySearchValues(
+          IAPPData.chemicalMonitoringData,
+          'treatment_id',
+          treatment.TreatmentID
+        );
         // restore desired sorting order by TreatmentID DESC (latest first)
         treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
         return treatment;
@@ -392,7 +395,11 @@ const main = async () => {
       let biological_treatments = binarySearchValues(IAPPData.biologicalTreatmentData, 'site_id', siteRecordID);
       biological_treatments = biological_treatments.map((treatment) => {
         // assumes monitoring CSV sorted by UTM_EASTING ASC, UTM_NORTHING ASC
-        treatment.monitoring = binarySearchValues(IAPPData.biologicalMonitoringData, 'UTM_EASTING', treatment.UTM_EASTING);
+        treatment.monitoring = binarySearchValues(
+          IAPPData.biologicalMonitoringData,
+          'UTM_EASTING',
+          treatment.UTM_EASTING
+        );
         // treatment.monitoring = binarySearchValues(treatment.monitoring, 'UTM_NORTHING', treatment.UTM_NORTHING);
         // restore desired sorting order by monitoring_id DESC (latest first)
         treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
@@ -407,12 +414,8 @@ const main = async () => {
       // only import POIs which have Survey data:
       if (!surveys || surveys.length === 0) continue;
 
-      const surveyAgencyCodes = surveys
-        .map((survey) => survey.SurveyAgency)
-        .filter((agency) => agency);
-      const surveySpecies = surveys
-        .map((survey) => survey.Species)
-        .filter((agency) => agency);
+      const surveyAgencyCodes = surveys.map((survey) => survey.SurveyAgency).filter((agency) => agency);
+      const surveySpecies = surveys.map((survey) => survey.Species).filter((agency) => agency);
 
       const requestBody: any = {
         point_of_interest_type: 'IAPP Site',
@@ -429,7 +432,6 @@ const main = async () => {
           }
         ],
         form_data: {
-
           point_of_interest_data: {
             jurisdiction_code: Number(siteRecord.Jur1pct) === 100 ? siteRecord.Jur1 : 'Not provided',
             point_of_interest_status: 'done',
@@ -447,7 +449,6 @@ const main = async () => {
           },
 
           point_of_interest_type_data: {
-
             elevation: siteRecord.Elevation,
             site_id: siteRecordID,
             created_date: formatDateToISO(siteRecord.CreateDate),
@@ -579,8 +580,7 @@ const main = async () => {
 
     try {
       // process.stdout.write(`${siteRecordID},`);
-      if (pois && pois.length > 0)
-          await axios.post(urlstring, pois, postconfig);
+      if (pois && pois.length > 0) await axios.post(urlstring, pois, postconfig);
     } catch (error) {
       console.log(error);
     }

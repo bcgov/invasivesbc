@@ -175,22 +175,29 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Jurisdiction
             </Grid>
             <Grid item xs={3}>
-              {surveys.length && surveys[0].jurisdictions.length > 0 && (
-                ifApplicable(surveys[0].jurisdictions[0].jurisdiction_code)
-                + ' (' + surveys[0].jurisdictions[0].percentage + '%)'
-              ) || 'Not Provided'}
+              {(surveys.length &&
+                surveys[0].jurisdictions.length > 0 &&
+                ifApplicable(surveys[0].jurisdictions[0].jurisdiction_code) +
+                  ' (' +
+                  surveys[0].jurisdictions[0].percentage +
+                  '%)') ||
+                'Not Provided'}
             </Grid>
             <Grid item xs={3}>
-              {surveys.length && surveys[0].jurisdictions.length > 1 && (
-                ifApplicable(surveys[0].jurisdictions[1].jurisdiction_code)
-                + ' (' + surveys[0].jurisdictions[1].percentage + '%)'
-              )}
+              {surveys.length &&
+                surveys[0].jurisdictions.length > 1 &&
+                ifApplicable(surveys[0].jurisdictions[1].jurisdiction_code) +
+                  ' (' +
+                  surveys[0].jurisdictions[1].percentage +
+                  '%)'}
             </Grid>
             <Grid item xs={3}>
-              {surveys.length && surveys[0].jurisdictions.length > 2 && (
-                ifApplicable(surveys[0].jurisdictions[2].jurisdiction_code)
-                + ' (' + surveys[0].jurisdictions[2].percentage + '%)'
-              )}
+              {surveys.length &&
+                surveys[0].jurisdictions.length > 2 &&
+                ifApplicable(surveys[0].jurisdictions[2].jurisdiction_code) +
+                  ' (' +
+                  surveys[0].jurisdictions[2].percentage +
+                  '%)'}
             </Grid>
 
             <Grid item xs={3} sm={2}>
@@ -254,7 +261,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     },
                     {
                       align: 'center',
-                      children: row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
+                      children:
+                        row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
                     },
                     {
                       className: classes.wideCell,
@@ -635,17 +643,18 @@ const IAPPTable: React.FC<IAPPTablePropType> = (props) => {
     );
   };
 
-  const renderCell = (cell, i, open = false) => typeof cell === 'object'
-    ? React.createElement(TableCell, {
+  const renderCell = (cell, i, open = false) =>
+    typeof cell === 'object' ? (
+      React.createElement(TableCell, {
         key: i,
         ...cell,
         className: `${classes.cell} ${cell.className} ${open ? classes.openRow : classes.closedRow}`
       })
-    : <TableCell key={i} className={classes.cell}>
+    ) : (
+      <TableCell key={i} className={classes.cell}>
         {ifApplicable(cell)}
       </TableCell>
-    ;
-
+    );
   const renderedHeaders = headers.map((cell, i) => renderCell(cell, i));
   const renderedRows = rows
     .slice(startingRow, startingRow + rowsPerPage)
