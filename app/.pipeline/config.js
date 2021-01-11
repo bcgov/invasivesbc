@@ -4,8 +4,8 @@ let options = require('pipeline-cli').Util.parseArguments();
 // The root config for common values
 const config = require('../../.config/config.json');
 
-const defaultHost = 'invasivebci-8ecbmv-dev.pathfinder.gov.bc.ca';
-const defaultHostAPI = 'invasivebci-8ecbmv-api-dev.pathfinder.gov.bc.ca';
+const defaultHost = 'invasivebci-7068ad-dev.apps.silver.devops.gov.bc.ca';
+const defaultHostAPI = 'invasivebci-7068ad-api-dev.apps.silver.devops.gov.bc.ca';
 
 const name = (config.module && config.module['app']) || 'invasivesbci-app';
 const apiName = (config.module && config.module['api']) || 'invasivesbci-api';
@@ -52,7 +52,7 @@ options = processOptions(options);
 
 const phases = {
   build: {
-    namespace: '8ecbmv-tools',
+    namespace: '7068ad-tools',
     name: `${name}`,
     phase: 'build',
     changeId: changeId,
@@ -64,7 +64,7 @@ const phases = {
     branch: branch
   },
   dev: {
-    namespace: '8ecbmv-dev',
+    namespace: '7068ad-dev',
     name: `${name}`,
     phase: 'dev',
     changeId: deployChangeId,
@@ -73,17 +73,17 @@ const phases = {
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     host:
-      (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
+      (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-7068ad-dev.apps.silver.devops.gov.bc.ca`,
     apiHost:
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHostAPI)) ||
-      `${apiName}-${changeId}-8ecbmv-dev.pathfinder.gov.bc.ca`,
+      `${apiName}-${changeId}-7068ad-dev.apps.silver.devops.gov.bc.ca`,
     env: 'dev',
     sso: sso.dev,
     replicas: 1,
     maxReplicas: 2
   },
   test: {
-    namespace: '8ecbmv-test',
+    namespace: '7068ad-test',
     name: `${name}`,
     phase: 'test',
     changeId: deployChangeId,
@@ -99,7 +99,7 @@ const phases = {
     maxReplicas: 5
   },
   prod: {
-    namespace: '8ecbmv-prod',
+    namespace: '7068ad-prod',
     name: `${name}`,
     phase: 'prod',
     changeId: deployChangeId,

@@ -8,8 +8,13 @@ import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
-import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
-import { populateHerbicideRates } from 'rjsf/business-rules/populateCalculatedFields';
+import {
+  getCustomValidator,
+  getAreaValidator,
+  getWindValidator,
+  getHerbicideApplicationRateValidator
+} from 'rjsf/business-rules/customValidation';
+import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
@@ -173,11 +178,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
-      // populate herbicide application rate
-      const updatedActivitySubtypeData = populateHerbicideRates(
-        doc.formData.activity_subtype_data,
-        event.formData.activity_subtype_data
-      );
+      const updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
 
       const updatedFormValues = {
         formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
@@ -293,7 +294,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       <ActivityComponent
         customValidation={getCustomValidator([
           getAreaValidator(doc.activitySubtype),
-          getWindValidator(doc.activitySubtype)
+          getWindValidator(doc.activitySubtype),
+          getHerbicideApplicationRateValidator()
         ])}
         classes={classes}
         activity={doc}

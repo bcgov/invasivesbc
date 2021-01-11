@@ -19,15 +19,15 @@
       "description": "local api via docker"
     },
     {
-      "url": "https://api-dev-invasivesbci.pathfinder.gov.bc.ca",
+      "url": "https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
       "description": "deployed api in dev environment"
     },
     {
-      "url": "https://api-test-invasivesbci.pathfinder.gov.bc.ca",
+      "url": "https://api-test-invasivesbci.apps.silver.devops.gov.bc.ca",
       "description": "deployed api in test environment"
     },
     {
-      "url": "https://api-invasivesbci.pathfinder.gov.bc.ca",
+      "url": "https://api-invasivesbci.apps.silver.devops.gov.bc.ca",
       "description": "deployed api in prod environment"
     }
   ],
@@ -1661,17 +1661,36 @@
           "application_rate": {
             "type": "number",
             "title": "Application Rate (L/ha)",
-            "format": "float"
+            "format": "float",
+            "minimum": 0
           },
           "herbicide_amount": {
             "type": "number",
-            "title": "Amount of Herbicide",
-            "format": "float"
+            "title": "Amount of Herbicide (L)",
+            "format": "float",
+            "minimum": 0
           },
           "mix_delivery_rate": {
             "type": "number",
-            "title": "Mix Delivery Rate",
-            "format": "float"
+            "title": "Mix Delivery Rate (L/ha)",
+            "format": "float",
+            "minimum": 0
+          },
+          "tank_volume": {
+            "type": "number",
+            "title": "Tank Volume (L)",
+            "format": "float",
+            "minimum": 0
+          },
+          "specific_treatment_area": {
+            "type": "number",
+            "title": "Specific Treatment Area (ha)",
+            "minimum": 0
+          },
+          "dilution": {
+            "type": "number",
+            "title": "Dilution Rate (%)",
+            "minimum": 0
           }
         }
       },
