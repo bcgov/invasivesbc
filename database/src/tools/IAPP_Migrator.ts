@@ -166,7 +166,7 @@ const cli = meow(
       survey: {
         type: 'string',
         alias: 'su',
-        isRequired: true
+        isRequired: false
       },
       mechanicalTreatment: {
         type: 'string',
@@ -355,7 +355,7 @@ const main = async () => {
       const siteRecordID = siteRecord['SiteID'];
 
       // assumes surveys CSV sorted by SiteID ASC
-      let surveys = binarySearchValues(IAPPData.surveyData, 'SiteID', siteRecordID);
+      const surveys = binarySearchValues(IAPPData.surveyData, 'SiteID', siteRecordID);
       // restore desired sorting order by SurveyID DESC (latest first)
       surveys.sort((a, b) => Number(b.SurveyID) - Number(a.SurveyID));
 
@@ -412,7 +412,7 @@ const main = async () => {
 
       // Go/No-Go Rules:
       // only import POIs which have Survey data:
-      if (!surveys || surveys.length === 0) continue;
+      if (!surveys || !surveys.length) continue;
 
       const surveyAgencyCodes = surveys.map((survey) => survey.SurveyAgency).filter((agency) => agency);
       const surveySpecies = surveys.map((survey) => survey.Species).filter((agency) => agency);
@@ -580,7 +580,7 @@ const main = async () => {
 
     try {
       // process.stdout.write(`${siteRecordID},`);
-      if (pois && pois.length > 0) await axios.post(urlstring, pois, postconfig);
+      if (pois && pois.length) await axios.post(urlstring, pois, postconfig);
     } catch (error) {
       console.log(error);
     }
