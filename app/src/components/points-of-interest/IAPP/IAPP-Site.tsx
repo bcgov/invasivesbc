@@ -174,29 +174,29 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Jurisdiction
             </Grid>
             <Grid item xs={3}>
-              {surveys?.length &&
-                surveys[0].jurisdictions?.length && (
+              {(surveys?.length &&
+                surveys[0].jurisdictions?.length &&
                 ifApplicable(surveys[0].jurisdictions[0].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[0].percentage +
-                  '%)'
-              ) || 'Not Provided'}
+                  '%)') ||
+                'Not Provided'}
             </Grid>
             <Grid item xs={3}>
               {surveys?.length &&
-                surveys[0].jurisdictions?.length > 1 && (
+                surveys[0].jurisdictions?.length > 1 &&
                 ifApplicable(surveys[0].jurisdictions[1].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[1].percentage +
-                  '%)')}
+                  '%)'}
             </Grid>
             <Grid item xs={3}>
               {surveys?.length &&
-                surveys[0].jurisdictions?.length > 2 && (
+                surveys[0].jurisdictions?.length > 2 &&
                 ifApplicable(surveys[0].jurisdictions[2].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[2].percentage +
-                  '%)')}
+                  '%)'}
             </Grid>
 
             <Grid item xs={3} sm={2}>
@@ -313,7 +313,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   ])
             }
             dropdown={(i) =>
-              mechanical_treatments[i].monitoring?.length && (
+              !mechanical_treatments[i].monitoring?.length ? null : (
                 <IAPPTable
                   key={'dropdown_' + i}
                   headers={[
@@ -382,65 +382,67 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     }
                   ])
             }
-            dropdown={(i) => (
-              <React.Fragment key={'dropdown_' + i}>
-                <IAPPTable
-                  headers={[
-                    'PMP Confirmation #',
-                    'Description',
-                    'PMRA Reg #',
-                    'Temperature',
-                    'Humidity',
-                    'Wind Velocity',
-                    'Wind Direction',
-                    'Application Rate',
-                    'Amount Used',
-                    'Dilution Rate'
-                  ]}
-                  rows={[
-                    [
-                      chemical_treatments[i].Pmp_Confirmation_Number,
-                      chemical_treatments[i].Description,
-                      chemical_treatments[i].Pmra_Reg_Number,
-                      chemical_treatments[i].Temperature,
-                      chemical_treatments[i].Humidity,
-                      chemical_treatments[i].Wind_Velocity,
-                      chemical_treatments[i].Wind_Direction,
-                      chemical_treatments[i].Application_Rate,
-                      chemical_treatments[i].Amount_Used,
-                      chemical_treatments[i].Dilution_Rate
-                    ]
-                  ]}
-                />
-                <br />
-                {chemical_treatments[i].monitoring?.length && (
+            dropdown={(i) =>
+              !chemical_treatments[i].monitoring?.length ? null : (
+                <React.Fragment key={'dropdown_' + i}>
                   <IAPPTable
                     headers={[
-                      'Monitoring ID',
-                      'Monitoring Date',
-                      'Agency',
-                      'Efficacy',
-                      'Paper File ID',
-                      {
-                        className: classes.wideCell,
-                        children: 'Comments'
-                      }
+                      'PMP Confirmation #',
+                      'Description',
+                      'PMRA Reg #',
+                      'Temperature',
+                      'Humidity',
+                      'Wind Velocity',
+                      'Wind Direction',
+                      'Application Rate',
+                      'Amount Used',
+                      'Dilution Rate'
                     ]}
-                    rows={chemical_treatments[i].monitoring.map((row, j) => [
-                      row.monitoring_id,
-                      row.inspection_date,
-                      row.invasive_plant_agency_code,
-                      row.EFFICACY_RATING_CODE,
-                      row.PAPER_FILE_ID,
-                      {
-                        className: classes.wideCell,
-                        children: row.comments
-                      }
-                    ])}
+                    rows={[
+                      [
+                        chemical_treatments[i].Pmp_Confirmation_Number,
+                        chemical_treatments[i].Description,
+                        chemical_treatments[i].Pmra_Reg_Number,
+                        chemical_treatments[i].Temperature,
+                        chemical_treatments[i].Humidity,
+                        chemical_treatments[i].Wind_Velocity,
+                        chemical_treatments[i].Wind_Direction,
+                        chemical_treatments[i].Application_Rate,
+                        chemical_treatments[i].Amount_Used,
+                        chemical_treatments[i].Dilution_Rate
+                      ]
+                    ]}
                   />
-                )}
-              </React.Fragment>
-            )}
+                  <br />
+                  {chemical_treatments[i].monitoring?.length && (
+                    <IAPPTable
+                      headers={[
+                        'Monitoring ID',
+                        'Monitoring Date',
+                        'Agency',
+                        'Efficacy',
+                        'Paper File ID',
+                        {
+                          className: classes.wideCell,
+                          children: 'Comments'
+                        }
+                      ]}
+                      rows={chemical_treatments[i].monitoring.map((row, j) => [
+                        row.monitoring_id,
+                        row.inspection_date,
+                        row.invasive_plant_agency_code,
+                        row.EFFICACY_RATING_CODE,
+                        row.PAPER_FILE_ID,
+                        {
+                          className: classes.wideCell,
+                          children: row.comments
+                        }
+                      ])}
+                    />
+                  )}
+                </React.Fragment>
+              )
+            }
             pagination={true}
           />
         </AccordionDetails>
@@ -478,8 +480,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             rows={
               !biological_treatments?.length
                 ? []
-                :(
-                  biological_treatments.map((row) => [
+                : biological_treatments.map((row) => [
                     row.biological_id,
                     row.common_name,
                     row.treatment_date,
@@ -502,64 +503,62 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       children: row.comments
                     }
                   ])
-                )
             }
-            dropdown={(i) => (
-              <React.Fragment key={'dropdown_' + i}>
-                {biological_treatments[i].monitoring?.length && (
-                  <IAPPTable
-                    headers={[
-                      'Monitoring ID',
-                      'Inspection Date',
-                      'Efficacy Rating Code',
-                      'Paper File ID',
-                      'Plant Count',
-                      'Agent Count',
-                      'Count Duration',
-                      'Agent Destroyed',
-                      'Legacy Presence',
-                      'Foliar Feeding Damage',
-                      'Root Feeding Damage',
-                      'Seed Feeding Damage',
-                      'Oviposition Marks',
-                      'Eggs Present',
-                      'Larvae Present',
-                      'Pupae Present',
-                      'Adults Present',
-                      'Tunnels Present',
-                      {
-                        className: classes.wideCell,
-                        children: 'Comment'
-                      }
-                    ]}
-                    rows={biological_treatments[i].monitoring.map((row, j) => [
-                      row.monitoring_id,
-                      row.inspection_date,
-                      row.efficacy_code,
-                      row.paper_file[0].description,
-                      row.plant_count,
-                      row.agent_count,
-                      row.count_duration,
-                      row.agent_destroyed_ind,
-                      row.legacy_presence_ind,
-                      row.foliar_feeding_damage_ind,
-                      row.root_feeding_damage_ind,
-                      row.seed_feeding_damage_ind,
-                      row.oviposition_marks_ind,
-                      row.eggs_present_ind,
-                      row.larvae_present_ind,
-                      row.pupae_present_ind,
-                      row.adults_present_ind,
-                      row.tunnels_present_ind,
-                      {
-                        className: classes.wideCell,
-                        children: row.comments
-                      }
-                    ])}
-                  />
-                )}
-              </React.Fragment>
-            )}
+            dropdown={(i) =>
+              !biological_treatments[i].monitoring?.length ? null : (
+                <IAPPTable
+                  key={'dropdown_' + i}
+                  headers={[
+                    'Monitoring ID',
+                    'Inspection Date',
+                    'Efficacy Rating Code',
+                    'Paper File ID',
+                    'Plant Count',
+                    'Agent Count',
+                    'Count Duration',
+                    'Agent Destroyed',
+                    'Legacy Presence',
+                    'Foliar Feeding Damage',
+                    'Root Feeding Damage',
+                    'Seed Feeding Damage',
+                    'Oviposition Marks',
+                    'Eggs Present',
+                    'Larvae Present',
+                    'Pupae Present',
+                    'Adults Present',
+                    'Tunnels Present',
+                    {
+                      className: classes.wideCell,
+                      children: 'Comment'
+                    }
+                  ]}
+                  rows={biological_treatments[i].monitoring.map((row, j) => [
+                    row.monitoring_id,
+                    row.inspection_date,
+                    row.efficacy_code,
+                    row.paper_file[0].description,
+                    row.plant_count,
+                    row.agent_count,
+                    row.count_duration,
+                    row.agent_destroyed_ind,
+                    row.legacy_presence_ind,
+                    row.foliar_feeding_damage_ind,
+                    row.root_feeding_damage_ind,
+                    row.seed_feeding_damage_ind,
+                    row.oviposition_marks_ind,
+                    row.eggs_present_ind,
+                    row.larvae_present_ind,
+                    row.pupae_present_ind,
+                    row.adults_present_ind,
+                    row.tunnels_present_ind,
+                    {
+                      className: classes.wideCell,
+                      children: row.comments
+                    }
+                  ])}
+                />
+              )
+            }
             pagination={true}
           />
         </AccordionDetails>

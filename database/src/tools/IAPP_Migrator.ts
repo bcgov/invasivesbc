@@ -394,7 +394,11 @@ const main = async () => {
       let biological_treatments = binarySearchValues(IAPPData.biologicalTreatmentData, 'site_id', siteRecordID);
       biological_treatments = biological_treatments.map((treatment) => {
         // assumes monitoring CSV sorted by treatment_id ASC (matching to biological_id in Bio Treatments)
-        treatment.monitoring = binarySearchValues(IAPPData.biologicalMonitoringData, 'treatment_id', treatment.biological_id);
+        treatment.monitoring = binarySearchValues(
+          IAPPData.biologicalMonitoringData,
+          'treatment_id',
+          treatment.biological_id
+        );
         // restore desired sorting order by monitoring_id DESC (latest first)
         treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
         return treatment;
