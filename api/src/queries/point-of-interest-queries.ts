@@ -21,10 +21,10 @@ export const postPointOfInterestSQL = (point_of_interest: PointOfInterestPostReq
       geog,
       media_keys
     ) VALUES (
-      ${point_of_interest.pontOfInterest_type},
-      ${point_of_interest.pontOfInterest_subtype},
+      ${point_of_interest.pointOfInterest_type},
+      ${point_of_interest.pointOfInterest_subtype},
       ${point_of_interest.received_timestamp},
-      ${point_of_interest.pontOfInterestPostBody}
+      ${point_of_interest.pointOfInterestPostBody}
   `;
 
   if (point_of_interest.geoJSONFeature && point_of_interest.geoJSONFeature.length) {
@@ -89,10 +89,10 @@ export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBo
 
   for (let i = 0; i < data.length; i++) {
     sqlStatement.append(SQL`(
-      ${data[i].pontOfInterest_type},
-      ${data[i].pontOfInterest_subtype},
+      ${data[i].pointOfInterest_type},
+      ${data[i].pointOfInterest_subtype},
       ${data[i].received_timestamp},
-      ${data[i].pontOfInterestPostBody}
+      ${data[i].pointOfInterestPostBody}
     `);
 
     if (data[i].geoJSONFeature && data[i].geoJSONFeature.length) {
@@ -148,12 +148,12 @@ export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBo
 export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT * FROM point_of_interest_incoming_data WHERE 1 = 1`;
 
-  if (searchCriteria.pontOfInterest_type) {
-    sqlStatement.append(SQL` AND point_of_interest_type = ${searchCriteria.pontOfInterest_type}`);
+  if (searchCriteria.pointOfInterest_type) {
+    sqlStatement.append(SQL` AND point_of_interest_type = ${searchCriteria.pointOfInterest_type}`);
   }
 
-  if (searchCriteria.pontOfInterest_subtype) {
-    sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pontOfInterest_subtype}`);
+  if (searchCriteria.pointOfInterest_subtype) {
+    sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);
   }
 
   if (searchCriteria.date_range_start) {
