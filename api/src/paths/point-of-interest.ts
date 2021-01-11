@@ -107,17 +107,16 @@ function createPointOfInterest(): RequestHandler {
     }
 
     try {
-      let sanitizedData;
       let sqlStatement: SQLStatement;
       if (Array.isArray(req.body)) {
         // insert a batch of POIs instead of a single POI
-        sanitizedData = req.body.map(
+        sqlStatement = postPointsOfInterestSQL(req.body.map(
           (poi) => new PointOfInterestPostRequestBody({ ...poi, mediaKeys: poi['mediaKeys'] })
-        );
-        sqlStatement = postPointsOfInterestSQL(sanitizedData);
+        ));
       } else {
-        sanitizedData = new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] });
-        sqlStatement = postPointOfInterestSQL(sanitizedData);
+        sqlStatement = postPointOfInterestSQL(
+          new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] })
+        );
       }
 
       if (!sqlStatement) {

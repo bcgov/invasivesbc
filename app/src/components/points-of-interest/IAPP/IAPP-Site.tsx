@@ -174,29 +174,29 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Jurisdiction
             </Grid>
             <Grid item xs={3}>
-              {(surveys.length &&
-                surveys[0].jurisdictions.length &&
+              {surveys?.length &&
+                surveys[0].jurisdictions?.length && (
                 ifApplicable(surveys[0].jurisdictions[0].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[0].percentage +
-                  '%)') ||
-                'Not Provided'}
+                  '%)'
+              ) || 'Not Provided'}
             </Grid>
             <Grid item xs={3}>
-              {surveys.length &&
-                surveys[0].jurisdictions.length > 1 &&
+              {surveys?.length &&
+                surveys[0].jurisdictions?.length > 1 && (
                 ifApplicable(surveys[0].jurisdictions[1].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[1].percentage +
-                  '%)'}
+                  '%)')}
             </Grid>
             <Grid item xs={3}>
-              {surveys.length &&
-                surveys[0].jurisdictions.length > 2 &&
+              {surveys?.length &&
+                surveys[0].jurisdictions?.length > 2 && (
                 ifApplicable(surveys[0].jurisdictions[2].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[2].percentage +
-                  '%)'}
+                  '%)')}
             </Grid>
 
             <Grid item xs={3} sm={2}>
@@ -244,7 +244,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }
             ]}
             rows={
-              !surveys.length
+              !surveys?.length
                 ? []
                 : surveys.map((row) => [
                     row.survey_id,
@@ -295,8 +295,9 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }
             ]}
             rows={
-              mechanical_treatments.length
-                ? mechanical_treatments.map((row) => [
+              !mechanical_treatments.length
+                ? []
+                : mechanical_treatments.map((row) => [
                     row.TreatmentID,
                     row.MechanicalID,
                     row.CommonName,
@@ -310,10 +311,9 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       children: row.Comment
                     }
                   ])
-                : []
             }
             dropdown={(i) =>
-              mechanical_treatments[i].monitoring || !mechanical_treatments[i].monitoring.length ? null : (
+              mechanical_treatments[i].monitoring?.length && (
                 <IAPPTable
                   key={'dropdown_' + i}
                   headers={[
@@ -366,8 +366,9 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }
             ]}
             rows={
-              chemical_treatments.length
-                ? chemical_treatments.map((row) => [
+              !chemical_treatments?.length
+                ? []
+                : chemical_treatments.map((row) => [
                     row.TreatmentID,
                     row.MapCommon,
                     row.TreatmentDate,
@@ -380,7 +381,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       children: row.Comment
                     }
                   ])
-                : []
             }
             dropdown={(i) => (
               <React.Fragment key={'dropdown_' + i}>
@@ -413,7 +413,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   ]}
                 />
                 <br />
-                {chemical_treatments[i].monitoring || !chemical_treatments[i].monitoring.length ? null : (
+                {chemical_treatments[i].monitoring?.length && (
                   <IAPPTable
                     headers={[
                       'Monitoring ID',
@@ -476,9 +476,10 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }
             ]}
             rows={
-              !biological_treatments.length
+              !biological_treatments?.length
                 ? []
-                : biological_treatments.map((row) => [
+                :(
+                  biological_treatments.map((row) => [
                     row.biological_id,
                     row.common_name,
                     row.treatment_date,
@@ -501,10 +502,11 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       children: row.comments
                     }
                   ])
+                )
             }
             dropdown={(i) => (
               <React.Fragment key={'dropdown_' + i}>
-                {!biological_treatments[i].monitoring.length ? null : (
+                {biological_treatments[i].monitoring?.length && (
                   <IAPPTable
                     headers={[
                       'Monitoring ID',
@@ -659,7 +661,7 @@ const IAPPTable: React.FC<IAPPTablePropType> = (props) => {
     .slice(startingRow, startingRow + rowsPerPage)
     .map((row, i) => <IAPPBodyRow row={row} index={startingRow + i} key={startingRow + i} />);
 
-  return !rows || !rows.length ? (
+  return !rows?.length ? (
     <div>No Data</div>
   ) : (
     <TableContainer component={Paper} className={classes.tableContainer}>

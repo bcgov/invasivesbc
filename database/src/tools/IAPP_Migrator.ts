@@ -8,16 +8,16 @@ import meow from 'meow';
 
 // HELPER FUNCTIONS (TODO move somewhere more general):
 
-const formatDateToISO = (d) => {
+const formatDateToISO = (dateString: string) => {
   const supportedFormats = ['YYYY-MM-DD', 'YYYY/MM/DD', 'DD/MM/YYYY', 'DD-MM-YYYY'];
-  if (!d) return;
-  return moment(d, supportedFormats).format('YYYY-MM-DD');
+  if (!dateString) return;
+  return moment(dateString, supportedFormats).format('YYYY-MM-DD');
 };
 
 // return items matching field value in an array of objects sorted by field
 // https://www.w3resource.com/javascript-exercises/javascript-array-exercise-18.php
 const binarySearchValues = (items, field, value) => {
-  if (!items || items.length === 0) return [];
+  if (!items?.length) return [];
   let firstIndex = 0;
   let lastIndex = items.length - 1;
   let middleIndex = Math.floor((lastIndex + firstIndex) / 2);
@@ -412,7 +412,7 @@ const main = async () => {
 
       // Go/No-Go Rules:
       // only import POIs which have Survey data:
-      if (!surveys || !surveys.length) continue;
+      if (!surveys?.length) continue;
 
       const surveyAgencyCodes = surveys.map((survey) => survey.SurveyAgency).filter((agency) => agency);
       const surveySpecies = surveys.map((survey) => survey.Species).filter((agency) => agency);
@@ -475,18 +475,18 @@ const main = async () => {
               invasive_species_agency_code: survey.SurveyAgency,
               jurisdictions: [
                 {
-                  jursidiction_code: survey.Jur1,
+                  jurisdiction_code: survey.Jur1,
                   percentage: survey.Jur1pct
                 },
                 {
-                  jursidiction_code: survey.Jur2,
+                  jurisdiction_code: survey.Jur2,
                   percentage: survey.Jur2pct
                 },
                 {
-                  jursidiction_code: survey.Jur3,
+                  jurisdiction_code: survey.Jur3,
                   percentage: survey.Jur3pct
                 }
-              ].filter((jur) => jur.jursidiction_code && jur.percentage && Number(jur.percentage) > 0),
+              ].filter((jur) => jur.jurisdiction_code && jur.percentage && Number(jur.percentage) > 0),
               employer_code: survey.EmployerCode ? survey.EmployerCode : undefined,
               density: survey.Density,
               invasive_plant_density_code: densityMap[survey.Density],
@@ -580,7 +580,7 @@ const main = async () => {
 
     try {
       // process.stdout.write(`${siteRecordID},`);
-      if (pois && pois.length) await axios.post(urlstring, pois, postconfig);
+      if (pois?.length) await axios.post(urlstring, pois, postconfig);
     } catch (error) {
       console.log(error);
     }
