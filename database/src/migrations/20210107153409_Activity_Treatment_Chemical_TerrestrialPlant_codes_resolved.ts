@@ -32,18 +32,6 @@ export async function up(knex: Knex): Promise<void> {
 --technically this should be used in all the subsequent joins, but we can get away without for now:
 --join code_category on inv_code_category on inv_code_category.code_category_name = 'invasives'
 
-        record.pesticide_employer_code,
-        pesticide_employer_codes.code_description as pesticide_employer,
-
-        record.treatment_issues_code,
-        treatment_issues_codes.code_description as treatment_issues,
-
-        record.chemical_method_code,
-        chemical_method_codes.code_description as chemical_method,
-
-        record.wind_direction_code,
-        wind_direction_codes.code_description as wind_direction,
-
 left join code_header pesticide_issues_code_header on pesticide_issues_code_header.code_header_title = 'pesticide_issues_code' and pesticide_issues_code_header.valid_to is null
 left join code pesticide_issues_codes on pesticide_issues_codes.code_header_id = pesticide_issues_code_header.code_header_id
 and record.pesticide_issues_code = pesticide_issues_codes.code_name
