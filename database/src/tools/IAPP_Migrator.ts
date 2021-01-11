@@ -138,8 +138,7 @@ const cli = meow(
       --chemicalTreatment: SiteID ASC
       --chemicalMonitoring: treatment_id ASC
       --biologicalTreatment: site_id ASC
-      --biologicalMonitoring: UTF_EASTING ASC UTF_NORTHING ASC
-        - (NOTE: may be temporary, if we can match by treatment_id instead - data pending)
+      --biologicalMonitoring: treatment_id ASC
       --dispersal: SiteID ASC
       --bioControlOutput: SiteID ASC
 
@@ -394,13 +393,8 @@ const main = async () => {
       // assumes biotreatments CSV sorted by site_id ASC
       let biological_treatments = binarySearchValues(IAPPData.biologicalTreatmentData, 'site_id', siteRecordID);
       biological_treatments = biological_treatments.map((treatment) => {
-        // assumes monitoring CSV sorted by UTM_EASTING ASC, UTM_NORTHING ASC
-        treatment.monitoring = binarySearchValues(
-          IAPPData.biologicalMonitoringData,
-          'UTM_EASTING',
-          treatment.UTM_EASTING
-        );
-        // treatment.monitoring = binarySearchValues(treatment.monitoring, 'UTM_NORTHING', treatment.UTM_NORTHING);
+        // assumes monitoring CSV sorted by treatment_id ASC (matching to biological_id in Bio Treatments)
+        treatment.monitoring = binarySearchValues(IAPPData.biologicalMonitoringData, 'treatment_id', treatment.biological_id);
         // restore desired sorting order by monitoring_id DESC (latest first)
         treatment.monitoring.sort((a, b) => Number(b.monitoring_id) - Number(a.monitoring_id));
         return treatment;
