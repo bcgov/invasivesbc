@@ -86,14 +86,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     ...props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data,
     ...props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data
   };
-  const {
-    surveys,
-    mechanical_treatments,
-    chemical_treatments,
-    biological_treatments
-  } = site;
-  const longitude = parseFloat(props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6);
-  const latitude = parseFloat(props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6);
+  const { surveys, mechanical_treatments, chemical_treatments, biological_treatments } = site;
+  const longitude = parseFloat(props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(
+    6
+  );
+  const latitude = parseFloat(props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(
+    6
+  );
 
   const ifApplicable = (value) =>
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
