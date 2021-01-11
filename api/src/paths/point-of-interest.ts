@@ -107,24 +107,18 @@ function createPointOfInterest(): RequestHandler {
     }
 
     try {
-      let sqlStatement: SQLStatement;
-      if (Array.isArray(req.body)) {
-        // insert a batch of POIs instead of a single POI
-        sqlStatement = postPointsOfInterestSQL(req.body.map(
-          (poi) => new PointOfInterestPostRequestBody({ ...poi, mediaKeys: poi['mediaKeys'] })
-        ));
-      } else {
-        sqlStatement = postPointOfInterestSQL(
-          new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] })
-        );
-      }
+      const sqlStatement = Array.isArray(req.body)
+        ? postPointsOfInterestSQL(req.body.map(
+            (poi) => new PointOfInterestPostRequestBody({ ...poi, mediaKeys: poi['mediaKeys'] })
+          ))
+        : postPointOfInterestSQL(
+            new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] })
+          );
 
-      if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
-      }
+      if (!sqlStatement) throw {
+        status: 400,
+        message: 'Failed to build SQL statement'
+      };
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
