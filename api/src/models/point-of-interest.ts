@@ -8,15 +8,15 @@ import { IMediaItem } from './media';
  * @class PointOfInterestPostRequestBody
  */
 export class PointOfInterestPostRequestBody {
-  pontOfInterestPostBody: object;
-  pontOfInterestResponseBody: object;
+  pointOfInterestPostBody: object;
+  pointOfInterestResponseBody: object;
 
-  pontOfInterest_type: string;
-  pontOfInterest_subtype: string;
+  pointOfInterest_type: string;
+  pointOfInterest_subtype: string;
 
-  pontOfInterest_data: object;
-  pontOfInterest_type_data: object;
-  pontOfInterest_subtype_data: object;
+  pointOfInterest_data: object;
+  pointOfInterest_type_data: object;
+  pointOfInterest_subtype_data: object;
 
   received_timestamp: string;
 
@@ -32,7 +32,7 @@ export class PointOfInterestPostRequestBody {
    */
   constructor(obj?: any) {
     // Add whole original object for auditing
-    this.pontOfInterestPostBody = {
+    this.pointOfInterestPostBody = {
       ...obj,
       // Strip out any media base64 strings which would convolute the record
       media:
@@ -44,12 +44,12 @@ export class PointOfInterestPostRequestBody {
         []
     };
 
-    this.pontOfInterest_type = (obj && obj.pontOfInterest_type) || null;
-    this.pontOfInterest_subtype = (obj && obj.pontOfInterest_subtype) || null;
+    this.pointOfInterest_type = (obj && obj.pointOfInterest_type) || null;
+    this.pointOfInterest_subtype = (obj && obj.pointOfInterest_subtype) || null;
 
-    this.pontOfInterest_data = (obj && obj.form_data && obj.form_data.pontOfInterest_data) || null;
-    this.pontOfInterest_type_data = (obj && obj.form_data && obj.form_data.pontOfInterest_type_data) || null;
-    this.pontOfInterest_subtype_data = (obj && obj.form_data && obj.form_data.pontOfInterest_subtype_data) || null;
+    this.pointOfInterest_data = (obj && obj.form_data && obj.form_data.pointOfInterest_data) || null;
+    this.pointOfInterest_type_data = (obj && obj.form_data && obj.form_data.pointOfInterest_type_data) || null;
+    this.pointOfInterest_subtype_data = (obj && obj.form_data && obj.form_data.pointOfInterest_subtype_data) || null;
 
     this.received_timestamp = new Date().toISOString();
 
@@ -69,8 +69,8 @@ export class PointOfInterestSearchCriteria {
   page: number;
   limit: number;
 
-  pontOfInterest_type: string;
-  pontOfInterest_subtype: string;
+  pointOfInterest_type: string;
+  pointOfInterest_subtype: string;
 
   date_range_start: Date;
   date_range_end: Date;
@@ -87,8 +87,8 @@ export class PointOfInterestSearchCriteria {
     this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
     this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;
 
-    this.pontOfInterest_type = (obj && obj.pontOfInterest_type) || null;
-    this.pontOfInterest_subtype = (obj && obj.pontOfInterest_subtype) || null;
+    this.pointOfInterest_type = (obj && obj.pointOfInterest_type) || null;
+    this.pointOfInterest_subtype = (obj && obj.pointOfInterest_subtype) || null;
 
     this.date_range_start = (obj && obj.date_range_start) || null;
     this.date_range_end = (obj && obj.date_range_end) || null;
