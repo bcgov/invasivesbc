@@ -2,12 +2,11 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
 import { WRITE_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestPostRequestBody } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { postPointOfInterestSQL } from '../queries/point-of-interest-queries';
+import { postPointOfInterestSQL, postPointsOfInterestSQL } from '../queries/point-of-interest-queries';
 import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
 
@@ -89,7 +88,8 @@ POST.apiDoc = {
 };
 
 /**
- * Creates a new point of interest record.
+ * Creates a new point of interest record.  If request body is an array of points of interest,
+ * then creates them all in a single batch query
  *
  * @returns {RequestHandler}
  */
@@ -97,12 +97,7 @@ function createPointOfInterest(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
 
-    const data = { ...req.body, mediaKeys: req['mediaKeys'] };
-
-    const sanitizedPointOfInterestData = new PointOfInterestPostRequestBody(data);
-
     const connection = await getDBConnection();
-
     if (!connection) {
       throw {
         status: 503,
@@ -111,14 +106,17 @@ function createPointOfInterest(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = postPointOfInterestSQL(sanitizedPointOfInterestData);
+      const sqlStatement = Array.isArray(req.body)
+        ? postPointsOfInterestSQL(
+            req.body.map((poi) => new PointOfInterestPostRequestBody({ ...poi, mediaKeys: poi['mediaKeys'] }))
+          )
+        : postPointOfInterestSQL(new PointOfInterestPostRequestBody({ ...req.body, mediaKeys: req['mediaKeys'] }));
 
-      if (!sqlStatement) {
+      if (!sqlStatement)
         throw {
           status: 400,
           message: 'Failed to build SQL statement'
         };
-      }
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
