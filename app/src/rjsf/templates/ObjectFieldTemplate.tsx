@@ -18,7 +18,6 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
 
   const DescriptionField = props.DescriptionField;
   const TitleField = props.TitleField;
-  const invalidTooltipElements = ['activity_data', 'activity_type_data', 'activity_subtype_data'];
 
   return (
     <>
@@ -55,10 +54,10 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
             key={index}
             style={{ marginBottom: '10px' }}>
             <>
-              {!invalidTooltipElements.includes(element.name) && (
+              {element.content.props && element.content.props.schema && element.content.props.schema['x-tooltip-text'] && (
                 <Tooltip
                   enterTouchDelay={0}
-                  title={element.content.props.schema['x-tooltip-text'] || 'Tooltip text TBD'}
+                  title={element.content.props.schema['x-tooltip-text']}
                   placement="left">
                   <HelpOutlineIcon style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }} />
                 </Tooltip>
