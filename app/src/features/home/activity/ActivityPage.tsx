@@ -1,4 +1,5 @@
-import { CircularProgress, Container, makeStyles } from '@material-ui/core';
+import { CircularProgress, Container, makeStyles, Box, Button } from '@material-ui/core';
+import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
@@ -18,6 +19,7 @@ import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCa
 import { notifySuccess } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
+import { addClonedActivityToDB } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -44,7 +46,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const [isLoading, setIsLoading] = useState(true);
-
+  const [linkedActivity, setLinkedActivity] = useState(null);
+  const [isCloned, setIsCloned] = useState(false);
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
@@ -112,7 +115,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           };
         });
 
-        return { ...activity, formData: updatedFormData };
+        return {
+          ...activity,
+          formData: updatedFormData,
+          geometry: geom,
+          status: ActivityStatus.EDITED,
+          dateUpdated: new Date()
+        };
       });
     },
     [databaseContext.database]
@@ -235,20 +244,71 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     notifySuccess(databaseContext, 'Successfully copied form data.');
   };
 
+  /*
+    Function to pull activity results from the DB given an activityId if present
+  */
+  const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
+    const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
+
+    if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
+      return;
+    }
+
+    const activityResults = await databaseContext.database.find({
+      selector: { _id: activityId || appStateResults.docs[0].activeActivity }
+    });
+
+    return activityResults;
+  };
+
+  /*
+    Function to set the active activity in the DB context and the current activity view
+  */
+  const setActiveActivity = async (activeActivity: any) => {
+    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+      const updatedActivity = { ...appStateDoc, activeActivity: activeActivity._id };
+
+      setIsCloned(true);
+
+      return updatedActivity;
+    });
+  };
+
+  /*
+    Function to generate clone activity button component
+  */
+  const generateCloneActivityButton = () => {
+    return (
+      <Box mb={3} display="flex" flexDirection="row-reverse">
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<FileCopy />}
+          onClick={async () => {
+            const addedActivity = await addClonedActivityToDB(databaseContext, doc);
+            setActiveActivity(addedActivity);
+            notifySuccess(databaseContext, 'Successfully cloned activity. You are now viewing the cloned activity.');
+          }}>
+          Clone Activity
+        </Button>
+      </Box>
+    );
+  };
+
   useEffect(() => {
     const getActivityData = async () => {
-      const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
-
-      if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
-        return;
-      }
-
-      const activityResults = await databaseContext.database.find({
-        selector: { _id: appStateResults.docs[0].activeActivity }
-      });
+      const activityResults = await getActivityResultsFromDB(null);
 
       const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
+
+      if (updatedDoc.activityType === 'Monitoring') {
+        const linkedRecordActivityResults = await getActivityResultsFromDB(
+          updatedDoc.formData.activity_type_data.activity_id
+        );
+
+        setLinkedActivity(linkedRecordActivityResults.docs[0]);
+      }
 
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
@@ -259,7 +319,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
 
     getActivityData();
-  }, [databaseContext]);
+  }, [databaseContext, isCloned]);
 
   useEffect(() => {
     if (isLoading) {
@@ -299,6 +359,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         ])}
         classes={classes}
         activity={doc}
+        linkedActivity={linkedActivity}
         onFormChange={onFormChange}
         onFormSubmitSuccess={onFormSubmitSuccess}
         photoState={{ photos, setPhotos }}
@@ -308,6 +369,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
         pasteFormData={() => pasteFormData()}
         copyFormData={() => copyFormData()}
+        cloneActivityButton={generateCloneActivityButton}
       />
     </Container>
   );

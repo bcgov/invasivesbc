@@ -64,55 +64,27 @@ interface popOutComponentProps {
 
 const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
   const classes = useStyles();
+  const buttonLabels = ['Close', 'Edit', 'Photos', 'Show related activities'];
+
   //very quick and dirty style for demo:
   return (
     <div className={classes.popOutComponent}>
       <br />
       <blockquote>
         <Grid container spacing={3}>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                props.buttonCloseCallback();
-              }}>
-              Close
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              disabled={true}
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                props.buttonCloseCallback();
-              }}>
-              Edit
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              disabled={true}
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                props.buttonCloseCallback();
-              }}>
-              Photos
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              disabled={true}
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                props.buttonCloseCallback();
-              }}>
-              Show related activities
-            </Button>
-          </Grid>
+          {buttonLabels.map((item) => (
+            <Grid item key={item}>
+              <Button
+                disabled={item !== 'Close'}
+                color="primary"
+                variant="contained"
+                onClick={() => {
+                  props.buttonCloseCallback();
+                }}>
+                {item}
+              </Button>
+            </Grid>
+          ))}
         </Grid>
       </blockquote>
       <br />
