@@ -1833,43 +1833,44 @@
           },
           "species": {
             "type": "array",
+            "title": "Species",
             "items": {
               "type": "string"
             }
           },
           "created_date": {
             "type": "string",
-            "title": "",
+            "title": "Created Date",
             "maximum": 30
           },
           "aspect": {
             "type": "string",
-            "title": "",
+            "title": "Aspect",
             "maximum": 30
           },
           "original_bec_id": {
             "type": "string",
-            "title": "",
+            "title": "BEC ID",
             "maximum": 30
           },
           "map_sheet": {
             "type": "string",
-            "title": "",
+            "title": "Map Sheet",
             "maximum": 30
           },
           "specific_use": {
             "type": "string",
-            "title": "",
+            "title": "Specific Use",
             "maximum": 30
           },
           "soil_texture": {
             "type": "string",
-            "title": "",
+            "title": "Soil Texture",
             "maximum": 30
           },
           "comments": {
             "type": "string",
-            "title": "",
+            "title": "Comments",
             "maximum": 300
           }
         }
