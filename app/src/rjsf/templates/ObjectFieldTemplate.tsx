@@ -1,4 +1,5 @@
-import Grid from '@material-ui/core/Grid';
+import { Grid, Tooltip } from '@material-ui/core';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { makeStyles } from '@material-ui/styles';
 import { ObjectFieldTemplateProps, utils } from '@rjsf/core';
 import React from 'react';
@@ -52,7 +53,14 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
             }
             key={index}
             style={{ marginBottom: '10px' }}>
-            {element.content}
+            <>
+              {element.content.props && element.content.props.schema && element.content.props.schema['x-tooltip-text'] && (
+                <Tooltip enterTouchDelay={0} title={element.content.props.schema['x-tooltip-text']} placement="left">
+                  <HelpOutlineIcon style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }} />
+                </Tooltip>
+              )}
+              {element.content}
+            </>
           </Grid>
         ))}
         {canExpand(props.schema, props.uiSchema, props.formData) && (
