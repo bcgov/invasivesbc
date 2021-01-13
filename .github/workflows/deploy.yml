@@ -1,12 +1,14 @@
-# Static Deploy to Dev On OpensShift
-# Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev environment.
-name: Static Deploy to Dev on OpensShift
+# Static Deploy
+# Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev, Test, or Prod environments.
+name: Static Deploy
 
 on:
   pull_request:
     types: [closed]
     branches:
       - dev
+      - test
+      - prod
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -14,14 +16,16 @@ jobs:
     name: Check Env variables
     runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == true }}
+    env:
+      GITHUB_CONTEXT: ${{ toJson(github) }}
     steps:
       - name: Print Env Vars
         run: |
           echo Git Base Ref: ${{ github.base_ref }}
           echo Git Change ID: ${{ github.event.number }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
-          echo Git Event: ${{ github.event }}
           echo OC CLI Version: $(oc version)
+          echo Git Context: "$GITHUB_CONTEXT"
 
   # Build the Database image
   buildDatabase:
@@ -158,6 +162,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildDatabase
     steps:
@@ -183,7 +188,7 @@ jobs:
         run: |
           # npm install
           npm ci
-          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -192,6 +197,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildDatabaseSetup
       - deployDatabase
@@ -218,7 +224,7 @@ jobs:
         run: |
           # npm install
           npm ci
-          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=dev --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
 
   # Deploy API image
   deployAPI:
@@ -227,6 +233,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildAPI
       - deployDatabase
@@ -253,7 +260,7 @@ jobs:
         run: |
           # npm install
           npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
 
   # Deploy App image
   deployAPP:
@@ -262,6 +269,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildAPP
     steps:
@@ -287,4 +295,4 @@ jobs:
         run: |
           # npm install
           npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
