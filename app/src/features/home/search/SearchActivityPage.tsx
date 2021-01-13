@@ -110,9 +110,9 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    * @param {IPhoto} photosArr An array of photo objects.
    */
   const savePhotos = useCallback((photosArr: IPhoto[]) => {
-    setActivity((activity: any) => {
+    setActivity((doc: any) => {
       return {
-        ...activity,
+        ...doc,
         photos: photosArr,
         dateUpdated: new Date()
       };
