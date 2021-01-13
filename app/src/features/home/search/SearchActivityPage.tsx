@@ -112,10 +112,12 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
   const savePhotos = useCallback((photosArr: IPhoto[]) => {
     setActivity((activity: any) => {
       return {
-        ...activity, photos: photosArr, dateUpdated: new Date()
-      }
+        ...activity,
+        photos: photosArr,
+        dateUpdated: new Date()
+      };
     });
-  }, []);    
+  }, []);
 
   /**
    * Save the form when it is submitted.
