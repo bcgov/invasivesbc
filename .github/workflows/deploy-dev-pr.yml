@@ -5,8 +5,6 @@ name: PR Deploy to Dev on OpensShift
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-    branches:
-      - dev
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -158,6 +156,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildDatabase
     steps:
@@ -183,7 +182,7 @@ jobs:
         run: |
           # npm install
           npm ci
-          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=$BRANCH
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -192,6 +191,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildDatabaseSetup
       - deployDatabase
@@ -218,7 +218,7 @@ jobs:
         run: |
           # npm install
           npm ci
-          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=$BRANCH
 
   # Deploy API image
   deployAPI:
@@ -227,6 +227,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildAPI
       - deployDatabase
@@ -253,7 +254,7 @@ jobs:
         run: |
           # npm install
           npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH
 
   # Deploy App image
   deployAPP:
@@ -262,6 +263,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildAPP
     steps:
@@ -287,7 +289,7 @@ jobs:
         run: |
           # npm install
           npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH
 
   # Smoke Test the API
   PR-API-Test:
