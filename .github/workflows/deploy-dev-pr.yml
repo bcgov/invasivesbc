@@ -21,14 +21,16 @@ jobs:
           echo Git Change ID: ${{ github.event.number }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
           echo OC CLI Version: $(oc version)
-          echo Git Labels: ${{ github.event.pull_request.labels }}
           echo Git Context: "$GITHUB_CONTEXT"
 
   # Build the Database image
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: |
+      ${{ github.event.pull_request.merged == false && 
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -50,7 +52,7 @@ jobs:
 
       # Build the database image
       - name: Build Database Image
-        working-directory: "./database/.pipeline/"
+        working-directory: './database/.pipeline/'
         run: |
           # npm install
           npm ci
@@ -60,7 +62,10 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: |
+      ${{ github.event.pull_request.merged == false && 
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -82,7 +87,7 @@ jobs:
 
       # Build the database image
       - name: Build Database Setup Image
-        working-directory: "./database/.pipeline/"
+        working-directory: './database/.pipeline/'
         run: |
           # npm install
           npm ci
@@ -92,7 +97,10 @@ jobs:
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: |
+      ${{ github.event.pull_request.merged == false && 
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -114,7 +122,7 @@ jobs:
 
       # Build the api image
       - name: Build API Image
-        working-directory: "./api/.pipeline/"
+        working-directory: './api/.pipeline/'
         run: |
           #npm install
           npm ci
@@ -124,7 +132,10 @@ jobs:
   buildAPP:
     name: Build App Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: |
+      ${{ github.event.pull_request.merged == false && 
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -146,7 +157,7 @@ jobs:
 
       # Build the app image
       - name: Build APP Image
-        working-directory: "./app/.pipeline/"
+        working-directory: './app/.pipeline/'
         run: |
           # npm install
           npm ci
@@ -156,7 +167,10 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: |
+      ${{ github.event.pull_request.merged == false && 
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -181,7 +195,7 @@ jobs:
 
       # Deploy the database image
       - name: Deploy Database Image
-        working-directory: "./database/.pipeline/"
+        working-directory: './database/.pipeline/'
         run: |
           # npm install
           npm ci
@@ -191,7 +205,10 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: |
+      ${{ github.event.pull_request.merged == false && 
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -217,7 +234,7 @@ jobs:
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
-        working-directory: "./database/.pipeline/"
+        working-directory: './database/.pipeline/'
         run: |
           # npm install
           npm ci
@@ -227,7 +244,10 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: |
+      ${{ github.event.pull_request.merged == false && 
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -253,7 +273,7 @@ jobs:
 
       # Deploy the api image
       - name: Deploy API Image
-        working-directory: "./api/.pipeline/"
+        working-directory: './api/.pipeline/'
         run: |
           # npm install
           npm ci
@@ -263,7 +283,10 @@ jobs:
   deployAPP:
     name: Deploy App Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: |
+      ${{ github.event.pull_request.merged == false && 
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -288,7 +311,7 @@ jobs:
 
       # Deploy the app image
       - name: Deploy App Image
-        working-directory: "./app/.pipeline"
+        working-directory: './app/.pipeline'
         run: |
           # npm install
           npm ci
@@ -297,7 +320,10 @@ jobs:
   # Smoke Test the API
   PR-API-Test:
     runs-on: ubuntu-16.04
-    if: ${{ github.base_ref == 'dev' && github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: |
+      ${{ github.event.pull_request.merged == false && 
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     needs:
       - deployDatabase
       - deployAPI
