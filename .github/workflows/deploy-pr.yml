@@ -13,6 +13,7 @@ jobs:
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-16.04
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
     steps:
