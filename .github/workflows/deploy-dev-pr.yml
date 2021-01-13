@@ -20,7 +20,7 @@ jobs:
           echo Git Base Ref: ${{ github.base_ref }}
           echo Git Change ID: ${{ github.event.number }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
-          echo Git context: ${{ GITHUB_CONTEXT }}
+          echo Git context: ${{ $GITHUB_CONTEXT }}
           echo OC CLI Version: $(oc version)
 
   # Build the Database image
