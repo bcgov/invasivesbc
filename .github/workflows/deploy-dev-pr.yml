@@ -27,10 +27,7 @@ jobs:
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-16.04
-    if: |
-      ${{ github.event.pull_request.merged == false && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
-          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
+    if: ${{ github.event.pull_request.merged == false && ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -62,10 +59,7 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-16.04
-    if: |
-      ${{ github.event.pull_request.merged == false && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
-          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
+    if: ${{ github.event.pull_request.merged == false && ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -97,10 +91,7 @@ jobs:
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-16.04
-    if: |
-      ${{ github.event.pull_request.merged == false && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
-          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
+    if: ${{ github.event.pull_request.merged == false && ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -132,10 +123,7 @@ jobs:
   buildAPP:
     name: Build App Image
     runs-on: ubuntu-16.04
-    if: |
-      ${{ github.event.pull_request.merged == false && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
-          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
+    if: ${{ github.event.pull_request.merged == false && ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -167,10 +155,7 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-16.04
-    if: |
-      ${{ github.event.pull_request.merged == false && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
-          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
+    if: ${{ github.event.pull_request.merged == false && ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -205,10 +190,7 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-16.04
-    if: |
-      ${{ github.event.pull_request.merged == false && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
-          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
+    if: ${{ github.event.pull_request.merged == false && ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -244,10 +226,7 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-16.04
-    if: |
-      ${{ github.event.pull_request.merged == false && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
-          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
+    if: ${{ github.event.pull_request.merged == false && ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -283,10 +262,7 @@ jobs:
   deployAPP:
     name: Deploy App Image
     runs-on: ubuntu-16.04
-    if: |
-      ${{ github.event.pull_request.merged == false && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
-          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
+    if: ${{ github.event.pull_request.merged == false && ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -320,10 +296,7 @@ jobs:
   # Smoke Test the API
   PR-API-Test:
     runs-on: ubuntu-16.04
-    if: |
-      ${{ github.event.pull_request.merged == false && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
-          contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
+    if: ${{ github.event.pull_request.merged == false && ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY' ) }}
     needs:
       - deployDatabase
       - deployAPI
