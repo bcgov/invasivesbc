@@ -14,20 +14,10 @@
       ]
     },
     "properties": {
-      "oneOf": [
-        {
-          "type": "null"
-        },
-        {
-          "type": "object"
-        }
-      ]
+      "type": "object"
     },
     "geometry": {
       "oneOf": [
-        {
-          "type": "null"
-        },
         {
           "title": "GeoJSON Point",
           "type": "object",
