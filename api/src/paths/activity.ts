@@ -65,7 +65,7 @@ const post_put_apiDoc = {
               type: 'array',
               title: 'Geometries',
               items: {
-                ...geoJSON_Feature_Schema
+                ...(geoJSON_Feature_Schema as any)
               },
               description: 'An array of GeoJSON Features'
             },

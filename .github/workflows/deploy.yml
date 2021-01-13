@@ -1,30 +1,40 @@
-# PR Based Deploy On OpensShift
-# Builds and Deploys unmerged PR's to temporary pods/services/routes/etc in the OpenShift Dev environment.
-name: PR-Based Deploy on OpensShift
+# Static Deploy
+# Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev, Test, or Prod environments.
+name: Static Deploy
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [closed]
+    branches:
+      - dev
+      - test
+      - prod
 
 jobs:
   # Print variables for logging and debugging purposes
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    env:
+      LABELS: ${{ toJson(github.event.pull_request.labels) }}
     steps:
       - name: Print Env Vars
         run: |
+          echo OC CLI Version: $(oc version)
           echo Git Base Ref: ${{ github.base_ref }}
           echo Git Change ID: ${{ github.event.number }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
-          echo OC CLI Version: $(oc version)
+          echo GIt Event Name: ${{ github.event_name }}
+          echo GIt Event Action: ${{ github.event.action }}
+          echo Git Title: ${{ github.event.pull_request.title }}
+          echo Git Labels: "$LABELS"
 
   # Build the Database image
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -46,17 +56,16 @@ jobs:
 
       # Build the database image
       - name: Build Database Image
-        working-directory: "./database/.pipeline/"
+        working-directory: './database/.pipeline/'
         run: |
-          # npm install
           npm ci
-          DEBUG=* npm run db:build -- --pr=$BUILD_ID
+          DEBUG=* npm run db:build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
 
   # Build the Database Setup image
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -78,17 +87,16 @@ jobs:
 
       # Build the database image
       - name: Build Database Setup Image
-        working-directory: "./database/.pipeline/"
+        working-directory: './database/.pipeline/'
         run: |
-          # npm install
           npm ci
-          DEBUG=* npm run db-setup:build -- --pr=$BUILD_ID
+          DEBUG=* npm run db-setup:build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
 
   # Build the API image
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -110,17 +118,16 @@ jobs:
 
       # Build the api image
       - name: Build API Image
-        working-directory: "./api/.pipeline/"
+        working-directory: './api/.pipeline/'
         run: |
-          #npm install
           npm ci
-          DEBUG=* npm run build -- --pr=$BUILD_ID
+          DEBUG=* npm run build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
 
-  # Build the web frontend app image
+  # Build the web frontend app
   buildAPP:
     name: Build App Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -142,19 +149,19 @@ jobs:
 
       # Build the app image
       - name: Build APP Image
-        working-directory: "./app/.pipeline/"
+        working-directory: './app/.pipeline/'
         run: |
-          # npm install
           npm ci
-          DEBUG=* npm run build -- --pr=$BUILD_ID
+          DEBUG=* npm run build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
 
   # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildDatabase
     steps:
@@ -176,19 +183,19 @@ jobs:
 
       # Deploy the database image
       - name: Deploy Database Image
-        working-directory: "./database/.pipeline/"
+        working-directory: './database/.pipeline/'
         run: |
-          # npm install
           npm ci
-          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
 
   # Deploy Database image
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildDatabaseSetup
       - deployDatabase
@@ -211,19 +218,19 @@ jobs:
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
-        working-directory: "./database/.pipeline/"
+        working-directory: './database/.pipeline/'
         run: |
-          # npm install
           npm ci
-          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
 
   # Deploy API image
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildAPI
       - deployDatabase
@@ -246,19 +253,19 @@ jobs:
 
       # Deploy the api image
       - name: Deploy API Image
-        working-directory: "./api/.pipeline/"
+        working-directory: './api/.pipeline/'
         run: |
-          # npm install
           npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
 
   # Deploy App image
   deployAPP:
     name: Deploy App Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildAPP
     steps:
@@ -280,100 +287,7 @@ jobs:
 
       # Deploy the app image
       - name: Deploy App Image
-        working-directory: "./app/.pipeline"
+        working-directory: './app/.pipeline'
         run: |
-          # npm install
           npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
-
-  # Smoke Test the API
-  PR-API-Test:
-    runs-on: ubuntu-16.04
-    if: ${{ github.base_ref == 'dev' && github.event.pull_request.merged == false && contains(github.event.pull_request.title, 'PR-DEPLOY')}}
-    needs:
-      - deployDatabase
-      - deployAPI
-    strategy:
-      matrix:
-        node-version: [12.x]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Install Newman
-        run: npm install -g newman
-      - name: RunTest
-        working-directory: ./testing/integration/postman
-        run: |
-          sed -i "s/<postman pw>/${{ secrets.POSTMAN_PW }}/g" invasives_api_dev.environment.json
-          sed -i "s/<location>/api-dev-invasivesbci/g" invasives_api_dev.environment.json
-          newman run InvasivesBC-API-DEV.postman_collection.json -e invasives_api_dev.environment.json
-
-  # Clean build/deployment artifacts
-  clean:
-    name: Clean Build/Deployment Artifacts
-    runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'dev' && github.base_ref != 'test' && github.base_ref != 'prod' }}
-    needs:
-      - deployDatabase
-      - deployAPI
-      - deployAPP
-    env:
-      BUILD_ID: ${{ github.event.number }}
-    steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.16
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Clean the database build/deployment artifacts
-      - name: Clean Database Artifacts
-        working-directory: "./database/.pipeline/"
-        run: |
-          # npm install
-          npm ci
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
-
-      # Clean the api build/deployment artifacts
-      - name: Clean API Artifacts
-        working-directory: "./api/.pipeline/"
-        run: |
-          # npm install
-          npm ci
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
-
-      # Clean the app build/deployment artifacts
-      - name: Clean APP Artifacts
-        working-directory: "./app/.pipeline/"
-        run: |
-          # npm install
-          npm ci
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
