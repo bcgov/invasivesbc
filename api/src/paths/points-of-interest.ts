@@ -56,7 +56,7 @@ POST.apiDoc = {
               example: '2020-08-30'
             },
             search_feature: {
-              ...geoJSON_Feature_Schema
+              ...(geoJSON_Feature_Schema as any)
             }
           }
         }
