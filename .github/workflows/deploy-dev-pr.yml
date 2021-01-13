@@ -1,10 +1,12 @@
-# PR Based Deploy On OpensShift
-# Builds and Deploys unmerged PR's to temporary pods/services/routes/etc in the OpenShift Dev environment.
-name: PR-Based Deploy on OpensShift
+# PR Deploy to Dev on OpensShift
+# Builds and Deploys unmerged PR's agaisnt the dev branch to temporary pods/services/routes/etc in the OpenShift Dev environment.
+name: PR Deploy to Dev on OpensShift
 
 on:
   pull_request:
     types: [opened, reopened, synchronize]
+    branches:
+      - dev
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -18,6 +20,7 @@ jobs:
           echo Git Base Ref: ${{ github.base_ref }}
           echo Git Change ID: ${{ github.event.number }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
+          echo Git Event: ${{ github.event }}
           echo OC CLI Version: $(oc version)
 
   # Build the Database image
@@ -322,58 +325,3 @@ jobs:
           sed -i "s/<postman pw>/${{ secrets.POSTMAN_PW }}/g" invasives_api_dev.environment.json
           sed -i "s/<location>/api-dev-invasivesbci/g" invasives_api_dev.environment.json
           newman run InvasivesBC-API-DEV.postman_collection.json -e invasives_api_dev.environment.json
-
-  # Clean build/deployment artifacts
-  clean:
-    name: Clean Build/Deployment Artifacts
-    runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'dev' && github.base_ref != 'test' && github.base_ref != 'prod' }}
-    needs:
-      - deployDatabase
-      - deployAPI
-      - deployAPP
-    env:
-      BUILD_ID: ${{ github.event.number }}
-    steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.16
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Clean the database build/deployment artifacts
-      - name: Clean Database Artifacts
-        working-directory: "./database/.pipeline/"
-        run: |
-          # npm install
-          npm ci
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
-
-      # Clean the api build/deployment artifacts
-      - name: Clean API Artifacts
-        working-directory: "./api/.pipeline/"
-        run: |
-          # npm install
-          npm ci
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
-
-      # Clean the app build/deployment artifacts
-      - name: Clean APP Artifacts
-        working-directory: "./app/.pipeline/"
-        run: |
-          # npm install
-          npm ci
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev

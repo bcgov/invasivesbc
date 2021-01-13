@@ -1,14 +1,12 @@
-# Static Deploy On OpensShift
-# Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev or Test or Prod environment.
-name: Static Deploy on OpensShift
+# Static Deploy to Dev On OpensShift
+# Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev environment.
+name: Static Deploy to Dev on OpensShift
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, closed]
+    types: [closed]
     branches:
       - dev
-      - test
-      - prod
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -22,6 +20,7 @@ jobs:
           echo Git Base Ref: ${{ github.base_ref }}
           echo Git Change ID: ${{ github.event.number }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
+          echo Git Event: ${{ github.event }}
           echo OC CLI Version: $(oc version)
 
   # Build the Database image
@@ -289,58 +288,3 @@ jobs:
           # npm install
           npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev --branch=${{ github.base_ref }} --type=static
-
-  # Clean build/deployment artifacts
-  clean:
-    name: Clean Build/Deployment Artifacts
-    runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true && (github.base_ref == 'dev' || github.base_ref == 'test') }}
-    needs:
-      - deployDatabase
-      - deployAPI
-      - deployAPP
-    env:
-      BUILD_ID: ${{ github.event.number }}
-    steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
-
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.16
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Clean the database build/deployment artifacts
-      - name: Clean Database Artifacts
-        working-directory: './database/.pipeline/'
-        run: |
-          # npm install
-          npm ci
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
-
-      # Clean the api build/deployment artifacts
-      - name: Clean API Artifacts
-        working-directory: './api/.pipeline/'
-        run: |
-          # npm install
-          npm ci
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
-
-      # Clean the app build/deployment artifacts
-      - name: Clean APP Artifacts
-        working-directory: './app/.pipeline/'
-        run: |
-          # npm install
-          npm ci
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
