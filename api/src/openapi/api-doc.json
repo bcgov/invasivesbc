@@ -1449,7 +1449,7 @@
         }
       },
       "Monitoring_ChemicalTerrestrialAquaticPlant": {
-        "title": "Chemical Terrestral Aquatic Monitoring Information",
+        "title": "Chemical Terrestrial Aquatic Monitoring Information",
         "type": "object",
         "required": [
           "monitoring_details",
@@ -1474,7 +1474,7 @@
         }
       },
       "Monitoring_MechanicalTerrestrialAquaticPlant": {
-        "title": "Mechanical Terrestral Aquatic Monitoring Information",
+        "title": "Mechanical Terrestrial Aquatic Monitoring Information",
         "type": "object",
         "required": [
           "monitoring_details",
