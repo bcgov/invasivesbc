@@ -15,7 +15,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
-import { getActivityByIdFromApi } from 'utils/getActivity';
+import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -54,19 +54,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
 
   const handleUpdate = async () => {
     try {
-      const updatedActivity: ICreateOrUpdateActivity = {
-        activity_id: activity.activityId,
-        created_timestamp: activity.dateCreated,
-        activity_type: activity.activityType,
-        activity_subtype: activity.activitySubtype,
-        geometry: activity.geometry,
-        media: activity.photos.map((photo) => {
-          return { file_name: photo.filepath, encoded_file: photo.dataUrl };
-        }),
-        form_data: activity.formData
-      };
-
-      await invasivesApi.updateActivity(updatedActivity);
+      await invasivesApi.updateActivity(getICreateOrUpdateActivity(activity));
       notifySuccess(databaseContext, 'Successfully updated activity.');
     } catch (error) {
       notifyError(databaseContext, 'Failed to update activity.');

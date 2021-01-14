@@ -7,7 +7,7 @@ import { ActivitySubtype, ActivityType } from 'constants/activities';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { IActivity } from 'interfaces/activity-interfaces';
 import { debounced } from 'utils/FunctionUtils';
-import { getActivityByIdFromApi } from 'utils/getActivity';
+import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
@@ -56,19 +56,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
           activity_subtype_data: { ...doc.formData.activity_subtype_data, ...activity.formData.activity_subtype_data }
         };
 
-        const updatedActivity: ICreateOrUpdateActivity = {
-          activity_id: doc.activityId,
-          created_timestamp: doc.dateCreated,
-          activity_type: doc.activityType,
-          activity_subtype: doc.activitySubtype,
-          geometry: doc.geometry,
-          media: doc.photos.map((photo: any) => {
-            return { file_name: photo.filepath, encoded_file: photo.dataUrl };
-          }),
-          form_data: updatedActivityFormData
-        };
-
-        await invasivesApi.updateActivity(updatedActivity);
+        await invasivesApi.updateActivity(getICreateOrUpdateActivity(doc, updatedActivityFormData));
         notifySuccess(databaseContext, `Successfully updated activity ${activityId}.`);
       } catch (error) {
         notifyError(databaseContext, `Failed to update activity ${activityId}.`);

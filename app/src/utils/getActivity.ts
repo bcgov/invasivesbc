@@ -1,3 +1,5 @@
+import { ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
+
 export async function getActivityByIdFromApi(invasivesApi: any, activityId: any) {
   const response = await invasivesApi.getActivityById(activityId);
 
@@ -17,9 +19,25 @@ export async function getActivityByIdFromApi(invasivesApi: any, activityId: any)
     photos:
       (response.media &&
         response.media.length &&
-        response.media.map((media) => {
+        response.media.map((media: any) => {
           return { filepath: media.file_name, dataUrl: media.encoded_file };
         })) ||
       []
   };
+}
+
+export function getICreateOrUpdateActivity(activity: any, formData?: any): ICreateOrUpdateActivity {
+  const activityDoc: ICreateOrUpdateActivity = {
+    activity_id: activity.activityId,
+    created_timestamp: activity.dateCreated,
+    activity_type: activity.activityType,
+    activity_subtype: activity.activitySubtype,
+    geometry: activity.geometry,
+    media: activity.photos.map((photo) => {
+      return { file_name: photo.filepath, encoded_file: photo.dataUrl };
+    }),
+    form_data: formData || activity.formData
+  };
+
+  return activityDoc;
 }
