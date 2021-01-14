@@ -22,6 +22,7 @@ jobs:
     if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
     env:
       LABELS: ${{ toJson(github.event.pull_request.labels) }}
+      GITHUB_CONTEXT: ${{ toJson(github) }}
     steps:
       - name: Print Env Vars
         run: |
@@ -33,6 +34,7 @@ jobs:
           echo GIt Event Action: ${{ github.event.action }}
           echo Git Title: ${{ github.event.pull_request.title }}
           echo Git Labels: "$LABELS"
+          echo Git Context: "$GITHUB_CONTEXT"
 
   # Build the Database image
   buildDatabase:
