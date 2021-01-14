@@ -9,6 +9,7 @@
  */
 
 const Observation = {
+  observation_type_code: {},
   observer_first_name: {},
   observer_last_name: {},
   sample_number: {},
@@ -18,19 +19,7 @@ const Observation = {
 };
 
 const Observation_BulkEdit = {
-  ...Observation,
-  observer_first_name: {
-    'ui:readonly': true
-  },
-  observer_last_name: {
-    'ui:readonly': true
-  },
-  sample_number: {
-    'ui:readonly': true
-  },
-  negative_obs_ind: {
-    'ui:readonly': true
-  }
+  observation_type_code: {}
 };
 
 const Observation_PlantTerrestial = {
