@@ -470,10 +470,6 @@
       "Activity_BulkEdit": {
         "title": "Basic Information",
         "type": "object",
-        "required": [
-          "invasive_species_agency_code",
-          "jurisdiction_code"
-        ],
         "properties": {
           "invasive_species_agency_code": {
             "type": "string",
@@ -548,9 +544,6 @@
       "Observation_BulkEdit": {
         "title": "Observation Information",
         "type": "object",
-        "required": [
-          "observation_type_code"
-        ],
         "properties": {
           "observation_type_code": {
             "type": "string",
@@ -754,19 +747,6 @@
       "Observation_PlantTerrestial_BulkEdit": {
         "title": "Terrestrial Plant Information",
         "type": "object",
-        "required": [
-          "invasive_plant_density_code",
-          "invasive_plant_distribution_code",
-          "soil_texture_code",
-          "specific_use_code",
-          "slope_code",
-          "aspect_code",
-          "invasive_plant_code",
-          "proposed_treatment_code",
-          "plant_life_stage_code",
-          "plant_health_code",
-          "plant_seed_stage_code"
-        ],
         "properties": {
           "invasive_plant_code": {
             "type": "string",
