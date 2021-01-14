@@ -160,7 +160,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} event the form submit event
    */
-  const onFormSubmitSuccess = async (event: any) => {
+  const onFormSubmitSuccess = async (event: any, formRef: any) => {
     const updatedFormValues = {
       formData: event.formData,
       status: ActivityStatus.EDITED,
@@ -168,7 +168,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       formStatus: FormValidationStatus.VALID
     };
 
-    setDoc({ ...doc, ...updatedFormValues });
+    formRef.setState({ ...formRef.state, schemaValidationErrors: [], schemaValidationErrorSchema: {} }, () => {
+      setDoc({ ...doc, ...updatedFormValues });
+    });
 
     await databaseContext.database.upsert(doc._id, (activity) => {
       return {
