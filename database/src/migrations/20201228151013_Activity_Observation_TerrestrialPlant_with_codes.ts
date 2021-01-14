@@ -1,9 +1,8 @@
 import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
-  knex.raw(`
-  set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Observation_TerrestrialPlant_with_codes;
+  knex.raw(`set search_path=invasivesbc;
+  drop  view if exists invasivesbc.Activity_Observation_TerrestrialPlant_with_codes cascade;
   CREATE OR REPLACE VIEW Activity_Observation_TerrestrialPlant_with_codes as (
       select
       activity_id as activity_id,
@@ -31,6 +30,7 @@ export async function up(knex: Knex): Promise<void> {
       from activity_incoming_data
       where activity_incoming_data.activity_type = 'Observation'
       and activity_incoming_data.activity_subtype = 'Activity_Observation_PlantTerrestial'
+      and deleted_timestamp is null
       )
     COMMENT ON VIEW Activity_Observation_TerrestrialPlant_with_codes IS 'View on terrestrial plant observation specific fields, with raw code table values';
   `);
