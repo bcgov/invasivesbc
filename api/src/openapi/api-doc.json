@@ -155,6 +155,20 @@
           }
         }
       },
+      "Activity_Observation_PlantTerrestrial_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Observation_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Observation_PlantTerrestial_BulkEdit"
+          }
+        }
+      },
       "Activity_Observation_PlantAquatic": {
         "type": "object",
         "properties": {
@@ -453,6 +467,40 @@
           }
         }
       },
+      "Activity_BulkEdit": {
+        "title": "Basic Information",
+        "type": "object",
+        "required": [
+          "invasive_species_agency_code",
+          "jurisdiction_code"
+        ],
+        "properties": {
+          "invasive_species_agency_code": {
+            "type": "string",
+            "title": "Agency",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_species_agency_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The agency code"
+          },
+          "jurisdiction_code": {
+            "type": "string",
+            "title": "Jurisdiction",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "jurisdiction_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The jurisdiction code"
+          }
+        }
+      },
       "Observation": {
         "title": "Observation Information",
         "type": "object",
@@ -494,6 +542,26 @@
             "type": "boolean",
             "title": "Negative Observation",
             "default": false
+          }
+        }
+      },
+      "Observation_BulkEdit": {
+        "title": "Observation Information",
+        "type": "object",
+        "required": [
+          "observation_type_code"
+        ],
+        "properties": {
+          "observation_type_code": {
+            "type": "string",
+            "title": "Type",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           }
         }
       },
@@ -680,6 +748,146 @@
             "type": "boolean",
             "title": "Biological Release",
             "default": false
+          }
+        }
+      },
+      "Observation_PlantTerrestial_BulkEdit": {
+        "title": "Terrestrial Plant Information",
+        "type": "object",
+        "required": [
+          "invasive_plant_density_code",
+          "invasive_plant_distribution_code",
+          "soil_texture_code",
+          "specific_use_code",
+          "slope_code",
+          "aspect_code",
+          "invasive_plant_code",
+          "proposed_treatment_code",
+          "plant_life_stage_code",
+          "plant_health_code",
+          "plant_seed_stage_code"
+        ],
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "invasive_plant_density_code": {
+            "type": "string",
+            "title": "Density",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_density_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "invasive_plant_distribution_code": {
+            "type": "string",
+            "title": "Distribution",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_distribution_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "soil_texture_code": {
+            "type": "string",
+            "title": "Soil Texture",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "soil_texture_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "specific_use_code": {
+            "type": "string",
+            "title": "Specific Use",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "specific_use_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "slope_code": {
+            "type": "string",
+            "title": "Slope",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "slope_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "aspect_code": {
+            "type": "string",
+            "title": "Aspect",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "aspect_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "proposed_treatment_code": {
+            "type": "string",
+            "title": "Proposed Action",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "proposed_treatment_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "plant_life_stage_code": {
+            "type": "string",
+            "title": "Life Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "plant_life_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "plant_health_code": {
+            "type": "string",
+            "title": "Health",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "plant_health_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "plant_seed_stage_code": {
+            "type": "string",
+            "title": "Seed Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "plant_seed_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           }
         }
       },

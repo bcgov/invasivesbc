@@ -28,6 +28,27 @@ const Activity_Observation_PlantTerrestial = {
   }
 };
 
+const Activity_Observation_PlantTerrestrial_BulkEdit = {
+  activity_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...UISchemaComponents.Activity_BulkEdit
+  },
+  activity_type_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.Observation_BulkEdit
+  },
+  activity_subtype_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.Observation_PlantTerrestrial_BulkEdit
+  }
+};
+
 const Activity_Observation_PlantAquatic = {
   activity_data: {
     'ui:column-xs': 12,
@@ -354,6 +375,7 @@ const Activity_Monitoring_BiologicalTerrestrialAnimal = {
 
 const RootUISchemas = {
   Activity_Observation_PlantTerrestial,
+  Activity_Observation_PlantTerrestrial_BulkEdit,
   Activity_Observation_PlantAquatic,
   Activity_Observation_AnimalTerrestrial,
   Activity_Observation_AnimalAquatic,

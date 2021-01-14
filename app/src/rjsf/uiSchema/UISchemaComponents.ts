@@ -71,6 +71,11 @@ const Activity = {
   }
 };
 
+const Activity_BulkEdit = {
+  invasive_species_agency_code: {},
+  jurisdiction_code: {}
+};
+
 const MonitoringActivity = {
   ...Activity,
   access_description: {
@@ -85,7 +90,8 @@ const MonitoringActivity = {
 const UISchemaComponents = {
   Treatment_ChemicalPlant,
   Activity,
-  MonitoringActivity
+  MonitoringActivity,
+  Activity_BulkEdit
 };
 
 export default UISchemaComponents;

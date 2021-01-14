@@ -17,6 +17,22 @@ const Observation = {
   }
 };
 
+const Observation_BulkEdit = {
+  ...Observation,
+  observer_first_name: {
+    'ui:readonly': true
+  },
+  observer_last_name: {
+    'ui:readonly': true
+  },
+  sample_number: {
+    'ui:readonly': true
+  },
+  negative_obs_ind: {
+    'ui:readonly': true
+  }
+};
+
 const Observation_PlantTerrestial = {
   invasive_plant_density_code: {},
   invasive_plant_distribution_code: {},
@@ -26,13 +42,13 @@ const Observation_PlantTerrestial = {
   aspect_code: {},
   invasive_plant_code: {},
   proposed_treatment_code: {},
-  flowering: {
-    'ui:widget': 'radio'
-  },
   range_unit_number: {},
   plant_life_stage_code: {},
   plant_health_code: {},
   plant_seed_stage_code: {},
+  flowering: {
+    'ui:widget': 'radio'
+  },
   legacy_site_ind: {
     'ui:widget': 'radio'
   },
@@ -51,6 +67,20 @@ const Observation_PlantTerrestial = {
   biological_ind: {
     'ui:widget': 'radio'
   }
+};
+
+const Observation_PlantTerrestrial_BulkEdit = {
+  invasive_plant_density_code: {},
+  invasive_plant_distribution_code: {},
+  soil_texture_code: {},
+  specific_use_code: {},
+  slope_code: {},
+  aspect_code: {},
+  invasive_plant_code: {},
+  proposed_treatment_code: {},
+  plant_life_stage_code: {},
+  plant_health_code: {},
+  plant_seed_stage_code: {}
 };
 
 const Observation_PlantAquatic = {
@@ -243,7 +273,9 @@ const InvasivePlants = {
 
 const BaseUISchemaComponents = {
   Observation,
+  Observation_BulkEdit,
   Observation_PlantTerrestial,
+  Observation_PlantTerrestrial_BulkEdit,
   Observation_PlantAquatic,
   Observation_AnimalTerrestrial,
   Observation_AnimalAquatic,

@@ -15,6 +15,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
+import { getActivityByIdFromApi } from 'utils/getActivity';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -175,29 +176,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
 
   useEffect(() => {
     const getActivityData = async () => {
-      const response = await invasivesApi.getActivityById(urlParams['id']);
-
-      if (!response) {
-        // TODO error messaging
-        return;
-      }
-
-      const activityDoc = {
-        _id: response.activity_id,
-        activityId: response.activity_id,
-        dateCreated: response.created_timestamp,
-        activityType: response.activity_type,
-        activitySubtype: response.activity_subtype,
-        geometry: response.activity_payload.geometry,
-        formData: response.activity_payload.form_data,
-        photos:
-          (response.media &&
-            response.media.length &&
-            response.media.map((media) => {
-              return { filepath: media.file_name, dataUrl: media.encoded_file };
-            })) ||
-          []
-      };
+      const activityDoc = await getActivityByIdFromApi(invasivesApi, urlParams['id']);
 
       // TODO these are search result activities (online only), so do we really have an extent to set? Or are we just zooming to where the geometry is?
       setGeometry(activityDoc.geometry);
