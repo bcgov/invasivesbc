@@ -4,6 +4,7 @@ export enum ActivityType {
   Observation = 'Observation',
   Observation_BulkEdit = 'Observation_BulkEdit',
   Treatment = 'Treatment',
+  Treatment_BulkEdit = 'Treatment_BulkEdit',
   Monitoring = 'Monitoring'
 }
 
@@ -15,6 +16,7 @@ export enum ActivitySubtype {
   Observation_AnimalAquatic = 'Activity_Observation_AnimalAquatic',
 
   Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlant',
+  Treatment_ChemicalPlant_BulkEdit = 'Activity_Treatment_ChemicalPlant_BulkEdit',
   Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlant',
   Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
   Treatment_BiologicalDispersalPlant = 'Activity_Treatment_BiologicalDispersalPlant',

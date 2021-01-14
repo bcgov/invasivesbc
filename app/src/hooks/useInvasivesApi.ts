@@ -104,6 +104,8 @@ export const useInvasivesApi = () => {
   const createActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
     const { data } = await api.post('/api/activity', activity);
 
+    console.log(data);
+
     return data;
   };
 

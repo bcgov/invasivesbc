@@ -52,6 +52,7 @@ initialize({
     res.status(200).json(updatedReq['apiDoc']);
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
+    console.log('############# errors #############', openapiError, ajvError);
     // Transform openapi-request-validator and openapi-response-validator errors
     return ajvError;
   },

@@ -133,6 +133,27 @@ const Activity_Treatment_ChemicalPlant = {
   }
 };
 
+const Activity_Treatment_ChemicalPlant_BulkEdit = {
+  activity_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...UISchemaComponents.Activity_BulkEdit
+  },
+  activity_type_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.Treatment_BulkEdit
+  },
+  activity_subtype_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...UISchemaComponents.Treatment_ChemicalPlant_BulkEdit
+  }
+};
+
 const Activity_Treatment_MechanicalPlant = {
   activity_data: {
     'ui:column-xs': 12,
@@ -380,6 +401,7 @@ const RootUISchemas = {
   Activity_Observation_AnimalTerrestrial,
   Activity_Observation_AnimalAquatic,
   Activity_Treatment_ChemicalPlant,
+  Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_MechanicalPlant,
   Activity_Treatment_BiologicalPlant,
   Activity_Treatment_BiologicalDispersalPlant,

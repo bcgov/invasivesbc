@@ -127,6 +127,10 @@ const Treatment = {
   treatment_issues_code: {}
 };
 
+const Treatment_BulkEdit = {
+  treatment_issues_code: {}
+};
+
 const Treatment_MechanicalPlant = {
   invasive_plant_code: {},
   mechanical_method_code: {},
@@ -269,6 +273,7 @@ const BaseUISchemaComponents = {
   Observation_AnimalTerrestrial,
   Observation_AnimalAquatic,
   Treatment,
+  Treatment_BulkEdit,
   Treatment_MechanicalPlant,
   Treatment_BiologicalPlant,
   Treatment_BiologicalDispersalPlant,

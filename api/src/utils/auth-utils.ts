@@ -286,6 +286,7 @@ export const getUserWithRoles = async function (email: string) {
 
     return result;
   } catch (error) {
+    console.log('ERROR: ', JSON.stringify(error));
     defaultLog.debug({ label: 'getUserWithRoles', message: 'error', error });
     throw error;
   } finally {

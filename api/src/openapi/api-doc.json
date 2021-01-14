@@ -222,6 +222,17 @@
           }
         }
       },
+      "Activity_Treatment_ChemicalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_ChemicalPlant_BulkEdit"
+          }
+        }
+      },
       "Activity_Treatment_MechanicalPlant": {
         "type": "object",
         "properties": {
@@ -1135,6 +1146,24 @@
           }
         }
       },
+      "Treatment_BulkEdit": {
+        "title": "Treatment Information",
+        "type": "object",
+        "properties": {
+          "treatment_issues_code": {
+            "type": "string",
+            "title": "Treatment Issue",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "treatment_issues_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "default": "NA"
+          }
+        }
+      },
       "Treatment_ChemicalPlant": {
         "title": "Chemical Treatment Information",
         "type": "object",
@@ -1292,6 +1321,96 @@
             "title": "Herbicide",
             "items": {
               "$ref": "#/components/schemas/Herbicide"
+            }
+          }
+        }
+      },
+      "Treatment_ChemicalPlant_BulkEdit": {
+        "title": "Chemical Treatment Information",
+        "type": "object",
+        "properties": {
+          "pesticide_employer_code": {
+            "type": "string",
+            "title": "Pesticide Employer Code",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "pesticide_employer_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "pest_management_plan": {
+            "type": "string",
+            "title": "Pesticide Management Plan",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "pest_management_plan",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "treatment_issues_code": {
+            "type": "string",
+            "title": "Treatment Issue",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "treatment_issues_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "default": "NA"
+          },
+          "chemical_method_code": {
+            "type": "string",
+            "title": "Chemical Treatment Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "chemical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "wind_direction_code": {
+            "type": "string",
+            "title": "Wind Direction",
+            "enum": [
+              "No Wind",
+              "N",
+              "NE",
+              "E",
+              "SE",
+              "S",
+              "SW",
+              "W",
+              "NW"
+            ]
+          },
+          "humidity": {
+            "type": "number",
+            "title": "Humidity",
+            "enum": [
+              0,
+              10,
+              20,
+              30,
+              40,
+              50,
+              60,
+              70,
+              80,
+              90,
+              100
+            ]
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
             }
           }
         }
