@@ -48,7 +48,7 @@ POST.apiDoc = {
               type: 'array',
               title: 'Geometries',
               items: {
-                ...geoJSON_Feature_Schema
+                ...(geoJSON_Feature_Schema as any)
               }
             },
             form_data: {

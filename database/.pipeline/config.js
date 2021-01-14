@@ -51,7 +51,8 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
-    branch: branch
+    branch: branch,
+    dbSetupDockerfilePath: './.docker/db/Dockerfile.setup'
   },
   dev: {
     namespace: '7068ad-dev',
@@ -62,7 +63,8 @@ const phases = {
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    env: 'dev'
+    env: 'dev',
+    dbSetupDockerfilePath: './.docker/db/Dockerfile.migrate'
   },
   test: {
     namespace: '7068ad-test',
@@ -73,7 +75,8 @@ const phases = {
     instance: `${name}-test`,
     version: `${version}`,
     tag: `test-${version}`,
-    env: 'test'
+    env: 'test',
+    dbSetupDockerfilePath: './.docker/db/Dockerfile.migrate'
   },
   prod: {
     namespace: '7068ad-prod',
@@ -84,7 +87,8 @@ const phases = {
     instance: `${name}-prod`,
     version: `${version}`,
     tag: `prod-${version}`,
-    env: 'prod'
+    env: 'prod',
+    dbSetupDockerfilePath: './.docker/db/Dockerfile.migrate'
   }
 };
 
