@@ -80,7 +80,7 @@ const phases = {
     env: 'dev',
     sso: sso.dev,
     replicas: 1,
-    maxReplicas: 2
+    maxReplicas: 1
   },
   test: {
     namespace: '7068ad-test',
@@ -95,8 +95,8 @@ const phases = {
     apiHost: staticUrlsAPI.test || defaultHostAPI,
     env: 'test',
     sso: sso.test,
-    replicas: 3,
-    maxReplicas: 5
+    replicas: 1,
+    maxReplicas: 1
   },
   prod: {
     namespace: '7068ad-prod',
@@ -111,8 +111,8 @@ const phases = {
     apiHost: staticUrlsAPI.prod || defaultHostAPI,
     env: 'prod',
     sso: sso.prod,
-    replicas: 3,
-    maxReplicas: 6
+    replicas: 1,
+    maxReplicas: 1
   }
 };
 
