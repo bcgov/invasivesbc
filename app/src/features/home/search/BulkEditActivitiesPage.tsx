@@ -22,10 +22,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   // This list of activity IDs to edit will eventually be passed into this component
-  const activityIdsToEdit = [
-    '73cb57c3-4255-49ce-b983-e5c65ca7c1d4',
-    'bcb3d181-fe7f-429d-85e8-aa38261ef16d'
-  ];
+  const activityIdsToEdit = ['73cb57c3-4255-49ce-b983-e5c65ca7c1d4', 'bcb3d181-fe7f-429d-85e8-aa38261ef16d'];
 
   useEffect(() => {
     const setupActivityDataToEdit = async () => {
@@ -45,23 +42,25 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
    * Bulk edit the activities selected with the newly selected dropdown field values
    */
   const handleBulkEdit = async () => {
-    await Promise.all(activityIdsToEdit.map(async (activityId: any) => {
-      try {
-        const doc = await getActivityByIdFromApi(invasivesApi, activityId);
+    await Promise.all(
+      activityIdsToEdit.map(async (activityId: any) => {
+        try {
+          const doc = await getActivityByIdFromApi(invasivesApi, activityId);
 
-        const updatedActivityFormData = {
-          ...doc.formData,
-          activity_data: { ...doc.formData.activity_data, ...activity.formData.activity_data },
-          activity_type_data: { ...doc.formData.activity_type_data, ...activity.formData.activity_type_data },
-          activity_subtype_data: { ...doc.formData.activity_subtype_data, ...activity.formData.activity_subtype_data }
-        };
+          const updatedActivityFormData = {
+            ...doc.formData,
+            activity_data: { ...doc.formData.activity_data, ...activity.formData.activity_data },
+            activity_type_data: { ...doc.formData.activity_type_data, ...activity.formData.activity_type_data },
+            activity_subtype_data: { ...doc.formData.activity_subtype_data, ...activity.formData.activity_subtype_data }
+          };
 
-        await invasivesApi.updateActivity(getICreateOrUpdateActivity(doc, updatedActivityFormData));
-        notifySuccess(databaseContext, `Successfully updated activity ${activityId}.`);
-      } catch (error) {
-        notifyError(databaseContext, `Failed to update activity ${activityId}.`);
-      }
-    }));
+          await invasivesApi.updateActivity(getICreateOrUpdateActivity(doc, updatedActivityFormData));
+          notifySuccess(databaseContext, `Successfully updated activity ${activityId}.`);
+        } catch (error) {
+          notifyError(databaseContext, `Failed to update activity ${activityId}.`);
+        }
+      })
+    );
   };
 
   /**
@@ -107,8 +106,6 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
     return <CircularProgress />;
   }
 
-  console.log(props.classes.container)
-
   return (
     <Container className={props.classes.container}>
       <Box mb={3}>
@@ -135,6 +132,6 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
       </Box>
     </Container>
   );
-}
+};
 
 export default BulkEditActivitiesPage;
