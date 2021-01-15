@@ -86,7 +86,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     ...props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data,
     ...props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data
   };
-  const { surveys, mechanical_treatments, chemical_treatments, biological_treatments } = site;
+  const { surveys, mechanical_treatments, chemical_treatments, biological_treatments, biological_dispersals }
+    = props?.record?.point_of_interest_payload?.form_data;
   const longitude = parseFloat(props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(
     6
   );
@@ -122,7 +123,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               PaperFile
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.paper_file[0].description)}
+              {ifApplicable(site.paper_file_id[0].description)}
             </Grid>
             <Grid item xs={3} sm={2}>
               Aspect
@@ -210,7 +211,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Comments
             </Grid>
             <Grid item xs={9} sm={10}>
-              {ifApplicable(site.comments || site.general_comments)}
+              {ifApplicable(site.general_comment)}
             </Grid>
           </Grid>
         </AccordionDetails>
@@ -265,7 +266,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     },
                     {
                       className: classes.wideCell,
-                      children: row.comments
+                      children: row.general_comment
                     }
                   ])
             }
@@ -286,7 +287,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               'Species (Common)',
               'Treatment Date',
               'Agency',
-              'Hectares',
+              'Area Treated (m2)',
               'Mech Method',
               'Paper File ID',
               {
@@ -298,17 +299,17 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               !mechanical_treatments.length
                 ? []
                 : mechanical_treatments.map((row) => [
-                    row.TreatmentID,
-                    row.MechanicalID,
-                    row.CommonName,
-                    row.TreatmentDate,
-                    row.TreatmentAgency,
-                    parseFloat(row.AreaTreated).toFixed(4),
-                    row.MechanicalMethod,
-                    row.PaperFileID,
+                    row.treatment_id,
+                    row.mechanical_id,
+                    row.common_name,
+                    row.treatment_date,
+                    row.invasive_species_agency_code,
+                    row.area_treated,
+                    '(' + row.mechanical_method_code + ') ' +  row.mechanical_method,
+                    row.paper_file_id[0].description,
                     {
                       className: classes.wideCell,
-                      children: row.Comment
+                      children: row.general_comment
                     }
                   ])
             }
@@ -330,12 +331,12 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   rows={mechanical_treatments[i].monitoring.map((row, j) => [
                     row.monitoring_id,
                     row.monitoring_date,
-                    row.agency_code,
+                    row.invasive_species_agency_code,
                     row.efficacy_percent,
-                    row.paper_file_id,
+                    row.paper_file_id[0].description,
                     {
                       className: classes.wideCell,
-                      children: row.comment
+                      children: row.general_comment
                     }
                   ])}
                 />
@@ -357,8 +358,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               'Species (Common)',
               'Treatment Date',
               'Agency',
-              'Hectares',
-              'Chem Method',
+              'Area Treated (m2)',
+              'Method',
               'Paper File ID',
               {
                 className: classes.wideCell,
@@ -369,16 +370,16 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               !chemical_treatments?.length
                 ? []
                 : chemical_treatments.map((row) => [
-                    row.TreatmentID,
-                    row.MapCommon,
-                    row.TreatmentDate,
-                    row.TreatmentAgency,
-                    parseFloat(row.AreaTreated).toFixed(4),
-                    row.ChemicalMethod,
-                    row.PAPER_FILE_ID,
+                    row.treatment_id,
+                    row.common_name,
+                    row.treatment_date,
+                    row.invasive_species_agency_code,
+                    row.area_treated,
+                    row.chemical_method,
+                    row.paper_file_id[0].description,
                     {
                       className: classes.wideCell,
-                      children: row.Comment
+                      children: row.general_comment
                     }
                   ])
             }
@@ -388,7 +389,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   <IAPPTable
                     headers={[
                       'PMP Confirmation #',
-                      'Description',
+                      'Herbicide',
                       'PMRA Reg #',
                       'Temperature',
                       'Humidity',
@@ -396,20 +397,22 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       'Wind Direction',
                       'Application Rate',
                       'Amount Used',
-                      'Dilution Rate'
+                      'Dilution Rate',
+                      'Mix Delivery Rate'
                     ]}
                     rows={[
                       [
-                        chemical_treatments[i].Pmp_Confirmation_Number,
-                        chemical_treatments[i].Description,
-                        chemical_treatments[i].Pmra_Reg_Number,
-                        chemical_treatments[i].Temperature,
-                        chemical_treatments[i].Humidity,
-                        chemical_treatments[i].Wind_Velocity,
-                        chemical_treatments[i].Wind_Direction,
-                        chemical_treatments[i].Application_Rate,
-                        chemical_treatments[i].Amount_Used,
-                        chemical_treatments[i].Dilution_Rate
+                        chemical_treatments[i].pmp_confirmation_number,
+                        chemical_treatments[i].herbicide_description,
+                        chemical_treatments[i].pmra_reg_number,
+                        chemical_treatments[i].temperature,
+                        chemical_treatments[i].humidity,
+                        chemical_treatments[i].wind_speed,
+                        chemical_treatments[i].wind_direction,
+                        chemical_treatments[i].application_rate,
+                        chemical_treatments[i].herbicide_amount,
+                        chemical_treatments[i].dilution,
+                        chemical_treatments[i].mix_delivery_rate
                       ]
                     ]}
                   />
@@ -429,13 +432,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                       ]}
                       rows={chemical_treatments[i].monitoring.map((row, j) => [
                         row.monitoring_id,
-                        row.inspection_date,
-                        row.invasive_plant_agency_code,
-                        row.EFFICACY_RATING_CODE,
-                        row.PAPER_FILE_ID,
+                        row.monitoring_date,
+                        row.invasive_species_agency_code,
+                        row.efficacy_percent,
+                        row.paper_file_id[0].description,
                         {
                           className: classes.wideCell,
-                          children: row.comments
+                          children: row.general_comment
                         }
                       ])}
                     />
@@ -455,7 +458,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         <AccordionDetails>
           <IAPPTable
             headers={[
-              'Biological ID',
+              'Treatment ID',
               'Species (Common)',
               'Treatment Date',
               'Collection Date',
@@ -481,12 +484,12 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               !biological_treatments?.length
                 ? []
                 : biological_treatments.map((row) => [
-                    row.biological_id,
+                    row.treatment_id,
                     row.common_name,
                     row.treatment_date,
                     row.collection_date,
                     row.bioagent_source,
-                    row.agency_code,
+                    row.invasive_species_agency_code,
                     row.stage_larva_ind,
                     row.stage_egg_ind,
                     row.stage_pupa_ind,
@@ -497,10 +500,10 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.utm_zone,
                     row.utm_easting,
                     row.utm_northing,
-                    row.paper_file[0].description,
+                    row.paper_file_id[0].description,
                     {
                       className: classes.wideCell,
-                      children: row.comments
+                      children: row.general_comment
                     }
                   ])
             }
@@ -511,8 +514,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   headers={[
                     'Monitoring ID',
                     'Inspection Date',
-                    'Efficacy Rating Code',
-                    'Paper File ID',
                     'Plant Count',
                     'Agent Count',
                     'Count Duration',
@@ -527,6 +528,10 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     'Pupae Present',
                     'Adults Present',
                     'Tunnels Present',
+                    'UTM Zone',
+                    'UTM Easting',
+                    'UTM Northing',
+                    'Paper File ID',
                     {
                       className: classes.wideCell,
                       children: 'Comment'
@@ -534,9 +539,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   ]}
                   rows={biological_treatments[i].monitoring.map((row, j) => [
                     row.monitoring_id,
-                    row.inspection_date,
-                    row.efficacy_code,
-                    row.paper_file[0].description,
+                    row.monitoring_date,
                     row.plant_count,
                     row.agent_count,
                     row.count_duration,
@@ -551,13 +554,84 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.pupae_present_ind,
                     row.adults_present_ind,
                     row.tunnels_present_ind,
+                    row.utm_zone,
+                    row.utm_easting,
+                    row.utm_northing,
+                    row.paper_file_id[0].description,
                     {
                       className: classes.wideCell,
-                      children: row.comments
+                      children: row.general_comment
                     }
                   ])}
                 />
               )
+            }
+            pagination={true}
+          />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion defaultExpanded={false}>
+        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
+          <Typography className={classes.heading}>Biological Dispersals</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <IAPPTable
+            headers={[
+              'Biological ID',
+              'Species (Common)',
+              'Inspection Date',
+              'Paper File ID',
+              'Plant Count',
+              'Agent Count',
+              'Count Duration',
+              'Agent Code',
+              'Foliar Feeding Damage',
+              'Root Feeding Damage',
+              'Seed Feeding Damage',
+              'Oviposition Feeding Damage',
+              'Eggs Present',
+              'Larvae Present',
+              'Pupae Present',
+              'Adults Present',
+              'Tunnels Present',
+              'UTM Zone',
+              'UTM Easting',
+              'UTM Northing',
+              {
+                className: classes.wideCell,
+                children: 'Comments'
+              }
+            ]}
+            rows={
+              !biological_dispersals?.length
+                ? []
+                : biological_dispersals.map((row) => [
+                    row.biological_dispersal_id,
+                    row.common_name,
+                    row.monitoring_date,
+                    row.paper_file_id[0].description,
+                    row.plant_count,
+                    row.agent_count,
+                    row.count_duration,
+                    row.biological_agent_code,
+                    row.foliar_feeding_damage_ind,
+                    row.root_feeding_damage_ind,
+                    row.seed_feeding_damage_ind,
+                    row.oviposition_marks_ind,
+                    row.eggs_present_ind,
+                    row.larvae_present_ind,
+                    row.pupae_present_ind,
+                    row.adults_present_ind,
+                    row.tunnels_present_ind,
+                    row.utm_zone,
+                    row.utm_easting,
+                    row.utm_northing,
+                    {
+                      className: classes.wideCell,
+                      children: row.general_comment
+                    }
+                  ])
             }
             pagination={true}
           />
