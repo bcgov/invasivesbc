@@ -4,6 +4,10 @@ const { OpenShiftClientX } = require('pipeline-cli');
 /**
  * Run OC commands to clean all build and deployment artifacts (pods, imagestreams, builds/deployment configs, etc).
  *
+ * Note: This will purge all artifacts for the given environment (with matching selectors). This should generally only
+ * be used to clean up any temporary builds and deployments (from PR-based deployments) and not permanent builds or 
+ * deployments (like those for dev, test and prod).
+ *
  * @param {*} settings
  */
 module.exports = (settings) => {
@@ -61,12 +65,6 @@ module.exports = (settings) => {
     });
 
     oc.raw('delete', ['all'], {
-      selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-      wait: 'true',
-      namespace: phaseObj.namespace
-    });
-
-    oc.raw('delete', ['pvc,Secret,secrets,secret,configmap,endpoints,Endpoints'], {
       selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
       wait: 'true',
       namespace: phaseObj.namespace

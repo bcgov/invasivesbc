@@ -1,10 +1,10 @@
-# Clean out the deployment artifacts when a PR is closed.
+# Clean out the deployment artifacts when a PR is closed (but not merged).
 # This deletes the PR artifacts created by the deploy-pr workflow.
 
-# This workflow only runs if the PR has either the 'PR-DEPLOY' label and/or 'PR-DEPLOY' in the title when it is first created.
-# If the label or title are updated after the PR has been opened, you will need to push a change to the PR to re-trigger the workflow.
+# This workflow only runs if the PR has the 'PR-DEPLOY' label when it is first created.
+# If the label is added after the PR has been opened, you will need to push a change to the PR to re-trigger the workflow.
 # Manually re-running the workflow (via the 're-run jobs' button) won't work, as the git context won't have updated and the new label and/or title won't be present.
-name: Clean PR Deploy Artifacts
+name: Clean Closed PR Build and Deploy Artifacts
 
 on:
   pull_request:
@@ -19,7 +19,7 @@ jobs:
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       LABELS: ${{ toJson(github.event.pull_request.labels) }}
     steps:
@@ -32,18 +32,22 @@ jobs:
           echo GIt Event Name: ${{ github.event_name }}
           echo GIt Event Action: ${{ github.event.action }}
           echo Git Title: ${{ github.event.pull_request.title }}
+          echo Git Merged?: ${{ github.event.pull_request.merged }}
+          echo Git If: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
           echo Git Labels: "$LABELS"
 
+  # Clean any artifacts created by the deploy-pr workflow
   clean:
-    name: Clean Build and Deployment Artifacts in the Dev and Tools OpenShift environments
+    name: Clean Closed PR Build and Deploy Artifacts
     runs-on: ubuntu-16.04
-    # Only clean if the PR that closed was marked as a PR-DEPLOY
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    # Only clean if the PR was closed (but not merged) and was marked as a PR-DEPLOY
+    if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     steps:
       # Checkout the PR branch
-      - name: Checkout Dev Branch - Contains the Pipeline Code
+      - name: Checkout Target Branch
         uses: actions/checkout@v2
 
       # Install Node - for `node` and `npm` commands
@@ -64,7 +68,7 @@ jobs:
         run: |
           npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
 
       # Clean the api build/deployment artifacts
       - name: Clean API Artifacts
@@ -72,7 +76,7 @@ jobs:
         run: |
           npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
 
       # Clean the app build/deployment artifacts
       - name: Clean APP Artifacts
@@ -80,4 +84,4 @@ jobs:
         run: |
           npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH

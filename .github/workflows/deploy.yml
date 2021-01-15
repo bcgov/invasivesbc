@@ -15,7 +15,7 @@ jobs:
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       LABELS: ${{ toJson(github.event.pull_request.labels) }}
     steps:
@@ -37,6 +37,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -59,7 +60,7 @@ jobs:
         working-directory: './database/.pipeline/'
         run: |
           npm ci
-          DEBUG=* npm run db:build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run db:build -- --pr=$BUILD_ID --branch=$BRANCH --type=static
 
   # Build the Database Setup image
   buildDatabaseSetup:
@@ -68,6 +69,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -90,7 +92,7 @@ jobs:
         working-directory: './database/.pipeline/'
         run: |
           npm ci
-          DEBUG=* npm run db-setup:build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run db-setup:build -- --pr=$BUILD_ID --branch=$BRANCH --type=static
 
   # Build the API image
   buildAPI:
@@ -99,6 +101,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -121,7 +124,7 @@ jobs:
         working-directory: './api/.pipeline/'
         run: |
           npm ci
-          DEBUG=* npm run build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run build -- --pr=$BUILD_ID --branch=$BRANCH --type=static
 
   # Build the web frontend app
   buildAPP:
@@ -130,6 +133,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -152,7 +156,7 @@ jobs:
         working-directory: './app/.pipeline/'
         run: |
           npm ci
-          DEBUG=* npm run build -- --pr=$BUILD_ID --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run build -- --pr=$BUILD_ID --branch=$BRANCH --type=static
 
   # Deploy Database image
   deployDatabase:
@@ -186,7 +190,7 @@ jobs:
         working-directory: './database/.pipeline/'
         run: |
           npm ci
-          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -221,7 +225,7 @@ jobs:
         working-directory: './database/.pipeline/'
         run: |
           npm ci
-          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy API image
   deployAPI:
@@ -256,7 +260,7 @@ jobs:
         working-directory: './api/.pipeline/'
         run: |
           npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy App image
   deployAPP:
@@ -290,4 +294,62 @@ jobs:
         working-directory: './app/.pipeline'
         run: |
           npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=${{ github.base_ref }} --type=static
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH --branch=$BRANCH --type=static
+
+  # Clean any artifacts created by the deploy-pr workflow (if it ran, see comments at the top of `deploy-pr.yml`)
+  clean:
+    name: Clean Merged PR Build and Deploy Artifacts
+    runs-on: ubuntu-16.04
+    # Only clean if the PR was merged (but not closed) and was marked as a PR-DEPLOY
+    if: |
+      ${{ github.event.pull_request.merged == true &&
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') ||
+          contains(github.event.pull_request.title, 'PR-DEPLOY') ) }}
+    needs:
+      - deployDatabase
+      - deployDatabaseSetup
+      - deployAPI
+      - deployAPP
+    env:
+      BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
+    steps:
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.16
+
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Clean the database build/deployment artifacts
+      - name: Clean Database Artifacts
+        working-directory: './database/.pipeline/'
+        run: |
+          npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
+
+      # Clean the api build/deployment artifacts
+      - name: Clean API Artifacts
+        working-directory: './api/.pipeline/'
+        run: |
+          npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
+
+      # Clean the app build/deployment artifacts
+      - name: Clean APP Artifacts
+        working-directory: './app/.pipeline/'
+        run: |
+          npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
