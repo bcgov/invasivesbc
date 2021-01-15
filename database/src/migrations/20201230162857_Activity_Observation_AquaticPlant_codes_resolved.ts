@@ -3,7 +3,7 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Observation_AquaticPlant;
+  drop view if exists invasivesbc.Activity_Observation_AquaticPlant cascade;
   CREATE OR REPLACE VIEW Activity_Observation_AquaticPlant as (
         select
         activity_id as activity_id,
