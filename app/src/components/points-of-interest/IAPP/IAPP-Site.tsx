@@ -86,8 +86,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     ...props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data,
     ...props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data
   };
-  const { surveys, mechanical_treatments, chemical_treatments, biological_treatments, biological_dispersals }
-    = props?.record?.point_of_interest_payload?.form_data;
+  const {
+    surveys,
+    mechanical_treatments,
+    chemical_treatments,
+    biological_treatments,
+    biological_dispersals
+  } = props?.record?.point_of_interest_payload?.form_data;
   const longitude = parseFloat(props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(
     6
   );
@@ -305,7 +310,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.treatment_date,
                     row.invasive_species_agency_code,
                     row.area_treated,
-                    '(' + row.mechanical_method_code + ') ' +  row.mechanical_method,
+                    '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
                     row.paper_file_id[0].description,
                     {
                       className: classes.wideCell,

@@ -462,12 +462,7 @@
       "Observation": {
         "title": "Observation Information",
         "type": "object",
-        "required": [
-          "observation_type_code",
-          "observer_first_name",
-          "observer_last_name",
-          "negative_obs_ind"
-        ],
+        "required": ["observation_type_code", "observer_first_name", "observer_last_name", "negative_obs_ind"],
         "properties": {
           "observation_type_code": {
             "type": "string",
@@ -877,10 +872,7 @@
       "Observation_AnimalAquatic": {
         "title": "Aquatic Animal Information",
         "type": "object",
-        "required": [
-          "observation_details",
-          "invasive_animals"
-        ],
+        "required": ["observation_details", "invasive_animals"],
         "properties": {
           "invasive_animals": {
             "type": "array",
@@ -1059,34 +1051,12 @@
           "wind_direction_code": {
             "type": "string",
             "title": "Wind Direction",
-            "enum": [
-              "No Wind",
-              "N",
-              "NE",
-              "E",
-              "SE",
-              "S",
-              "SW",
-              "W",
-              "NW"
-            ]
+            "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"]
           },
           "humidity": {
             "type": "number",
             "title": "Humidity",
-            "enum": [
-              0,
-              10,
-              20,
-              30,
-              40,
-              50,
-              60,
-              70,
-              80,
-              90,
-              100
-            ]
+            "enum": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
           },
           "invasive_plants": {
             "type": "array",
@@ -1328,10 +1298,7 @@
       "Treatment_MechanicalTerrestrialAnimal": {
         "title": "Mechanical Treatment Information",
         "type": "object",
-        "required": [
-          "treatment_details",
-          "invasive_animal_code"
-        ],
+        "required": ["treatment_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1354,10 +1321,7 @@
       "Treatment_ChemicalTerrestrialAnimal": {
         "title": "Chemical Treatment Information",
         "type": "object",
-        "required": [
-          "treatment_details",
-          "invasive_animal_code"
-        ],
+        "required": ["treatment_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1380,10 +1344,7 @@
       "Treatment_BiologicalTerrestrialAnimal": {
         "title": "Biological Treatment Information",
         "type": "object",
-        "required": [
-          "treatment_details",
-          "invasive_animal_code"
-        ],
+        "required": ["treatment_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1406,12 +1367,7 @@
       "Monitoring": {
         "title": "Monitoring Information",
         "type": "object",
-        "required": [
-          "activity_id",
-          "observer_first_name",
-          "observer_last_name",
-          "efficacy_code"
-        ],
+        "required": ["activity_id", "observer_first_name", "observer_last_name", "efficacy_code"],
         "properties": {
           "activity_id": {
             "type": "string",
@@ -1441,10 +1397,7 @@
       "Monitoring_ChemicalTerrestrialAquaticPlant": {
         "title": "Chemical Terrestrial Aquatic Monitoring Information",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_plant_code"
-        ],
+        "required": ["monitoring_details", "invasive_plant_code"],
         "properties": {
           "invasive_plant_code": {
             "type": "string",
@@ -1466,10 +1419,7 @@
       "Monitoring_MechanicalTerrestrialAquaticPlant": {
         "title": "Mechanical Terrestrial Aquatic Monitoring Information",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_plant_code"
-        ],
+        "required": ["monitoring_details", "invasive_plant_code"],
         "properties": {
           "invasive_plant_code": {
             "type": "string",
@@ -1581,10 +1531,7 @@
         "title": "Monitoring a mechanical treatment for a terrestrial animal",
         "description": "Mechanical monitoring for terrestrial plants",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_animal_code"
-        ],
+        "required": ["monitoring_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1607,10 +1554,7 @@
         "title": "Monitoring a chemical treatment for a terrestrial animal",
         "description": "Chemical monitoring for terrestrial plants",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_animal_code"
-        ],
+        "required": ["monitoring_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1633,10 +1577,7 @@
         "title": "Monitoring a biological treatment for a terrestrial animal",
         "description": "Biological monitoring for terrestrial plants",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_animal_code"
-        ],
+        "required": ["monitoring_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1682,9 +1623,7 @@
       },
       "PaperFileID": {
         "type": "object",
-        "required": [
-          "description"
-        ],
+        "required": ["description"],
         "properties": {
           "description": {
             "type": "string",
@@ -1695,12 +1634,7 @@
       },
       "Herbicide": {
         "type": "object",
-        "required": [
-          "liquid_herbicide_code",
-          "application_rate",
-          "herbicide_amount",
-          "mix_delivery_rate"
-        ],
+        "required": ["liquid_herbicide_code", "application_rate", "herbicide_amount", "mix_delivery_rate"],
         "properties": {
           "liquid_herbicide_code": {
             "type": "string",
@@ -1751,9 +1685,7 @@
       },
       "InvasivePlants": {
         "type": "object",
-        "required": [
-          "invasive_plant_code"
-        ],
+        "required": ["invasive_plant_code"],
         "properties": {
           "invasive_plant_code": {
             "type": "string",
@@ -1770,9 +1702,7 @@
       },
       "InvasiveAnimals": {
         "type": "object",
-        "required": [
-          "invasive_animal_code"
-        ],
+        "required": ["invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1877,12 +1807,7 @@
           "point_of_interest_status": {
             "type": "string",
             "title": "Point of interest status",
-            "enum": [
-              "sync",
-              "done",
-              "pending",
-              "errors"
-            ]
+            "enum": ["sync", "done", "pending", "errors"]
           },
           "general_comment": {
             "type": "string",
@@ -2006,9 +1931,7 @@
         "title": "IAPP Survey",
         "description": "IAPP Survey",
         "type": "object",
-        "required": [
-          "survey_id"
-        ],
+        "required": ["survey_id"],
         "properties": {
           "survey_id": {
             "type": "string",
@@ -2144,11 +2067,7 @@
       "IAPP_Treatment": {
         "title": "IAPP Treatment common properties",
         "type": "object",
-        "required": [
-          "treatment_id",
-          "treatment_date",
-          "invasive_species_agency_code"
-        ],
+        "required": ["treatment_id", "treatment_date", "invasive_species_agency_code"],
         "properties": {
           "treatment_id": {
             "type": "string",
@@ -2215,8 +2134,7 @@
                   "$ref": "#/components/schemas/IAPP_Monitoring"
                 }
               ],
-              "properties": {
-              }
+              "properties": {}
             }
           }
         }

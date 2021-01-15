@@ -121,42 +121,42 @@ const observationTypes = {
 };
 
 const mechMethodCodes = {
-  "Digging": "DIG",
-  "Bury": "BRY",
-  "Controlled Burning": "BUR",
-  "Cultivation or till": "CUL",
-  "Dead-heading": "DED",
-  "Flaming / burn": "FLA",
-  "Flaming / Tiger Torch burn": "FLA",
-  "Hand pulling": "HAN",
-  "Hot water / Steam": "HWS",
-  "Mowing": "MOW",
-  "Mulching": "MUL",
-  "Suction dredging": "SD",
-  "Sheet Mulching": "SHM",
-  "Salt water / Vinegar": "SV",
-  "Targeted grazing": "TG",
-  "Tarping": "TR",
-  "Seeding": "SED",
-  "Planting": "PLT",
-  "Legacy": "CNV", // Note, may want to treat this differently
-  "Mechanical Method not recorded": "CNV"
+  Digging: 'DIG',
+  Bury: 'BRY',
+  'Controlled Burning': 'BUR',
+  'Cultivation or till': 'CUL',
+  'Dead-heading': 'DED',
+  'Flaming / burn': 'FLA',
+  'Flaming / Tiger Torch burn': 'FLA',
+  'Hand pulling': 'HAN',
+  'Hot water / Steam': 'HWS',
+  Mowing: 'MOW',
+  Mulching: 'MUL',
+  'Suction dredging': 'SD',
+  'Sheet Mulching': 'SHM',
+  'Salt water / Vinegar': 'SV',
+  'Targeted grazing': 'TG',
+  Tarping: 'TR',
+  Seeding: 'SED',
+  Planting: 'PLT',
+  Legacy: 'CNV', // Note, may want to treat this differently
+  'Mechanical Method not recorded': 'CNV'
 };
 
 const chemMethodCodes = {
-  "ATV": "ATV",
-  "Basal Bark": "BBA",
-  "Boomless Nozzle": "BNO",
-  "Back Pack": "BPA",
-  "Cut and Insert": "CIN",
-  "Cut Stump / Cut and Paint": "CSP",
-  "Cut Stump / Paint": "CSP",
-  "Fixed Boom": "FBO",
-  "Hand Gun": "HGU",
-  "Chemical Method not recorded": "NOT",
-  "Stem Injection": "SIN",
-  "Spread": "SPR",
-  "Wick": "WCK",
+  ATV: 'ATV',
+  'Basal Bark': 'BBA',
+  'Boomless Nozzle': 'BNO',
+  'Back Pack': 'BPA',
+  'Cut and Insert': 'CIN',
+  'Cut Stump / Cut and Paint': 'CSP',
+  'Cut Stump / Paint': 'CSP',
+  'Fixed Boom': 'FBO',
+  'Hand Gun': 'HGU',
+  'Chemical Method not recorded': 'NOT',
+  'Stem Injection': 'SIN',
+  Spread: 'SPR',
+  Wick: 'WCK'
 };
 
 // IMPORT LOGIC:
@@ -491,7 +491,6 @@ const main = async () => {
           }
         ],
         form_data: {
-
           point_of_interest_data: {
             invasive_species_agency_code: getCommonValue(surveyAgencyCodes, undefined),
             jurisdiction_code: Number(siteRecord.Jur1pct) === 100 ? siteRecord.Jur1 : undefined,
@@ -518,7 +517,7 @@ const main = async () => {
             slope: siteRecord.Slope,
             aspect_code: mapAspect(siteRecord.Aspect),
             aspect: siteRecord.Aspect,
-            elevation: siteRecord.Elevation,
+            elevation: siteRecord.Elevation
           },
 
           surveys: surveys.map((survey) => ({
@@ -587,7 +586,7 @@ const main = async () => {
             monitoring: t.monitoring.map((m) => ({
               monitoring_id: m.monitoring_id,
               monitoring_date: formatDateToISO(m.monitoring_date),
-              efficacy_percent: m.efficacy_percent,  // percent vs code?
+              efficacy_percent: m.efficacy_percent, // percent vs code?
               efficacy_code: mapEfficacyCode(m.efficacy_percent),
               invasive_species_agency_code: m.agency_code,
               paper_file_id: [
@@ -666,7 +665,6 @@ const main = async () => {
               }
             ],
             general_comment: t.COMMENTS,
-            
 
             // Bio-Specific properties:
             area_classification_code: t.AREA_CLASSIFICATION_CODE,
