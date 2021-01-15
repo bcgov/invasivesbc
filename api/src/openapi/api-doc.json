@@ -244,6 +244,20 @@
           }
         }
       },
+      "Activity_Treatment_MechanicalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Treatment_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_MechanicalPlant_BulkEdit"
+          }
+        }
+      },
       "Activity_Treatment_BiologicalPlant": {
         "type": "object",
         "properties": {
@@ -1366,6 +1380,56 @@
             "type": "boolean",
             "title": "Signage on Site",
             "default": false
+          }
+        }
+      },
+      "Treatment_MechanicalPlant_BulkEdit": {
+        "title": "Mechanical Treatment Information",
+        "type": "object",
+        "properties": {
+          "mechanical_method_code": {
+            "type": "string",
+            "title": "Mechanical Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "mechanical_disposal_code": {
+            "type": "string",
+            "title": "Disposal Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_disposal_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "root_removal_code": {
+            "type": "string",
+            "title": "Root Removal",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "root_removal_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "soil_disturbance_code": {
+            "type": "string",
+            "title": "Soil Disturbance",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "soil_disturbance_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           }
         }
       },

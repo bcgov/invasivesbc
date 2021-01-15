@@ -113,12 +113,6 @@ const Activity_Treatment_ChemicalPlant = {
     'ui:column-lg': 4,
     ...UISchemaComponents.Activity
   },
-  activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
-    ...BaseUISchemaComponents.Treatment
-  },
   activity_subtype_data: {
     'ui:column-xs': 12,
     'ui:column-md': 6,
@@ -133,12 +127,6 @@ const Activity_Treatment_ChemicalPlant_BulkEdit = {
     'ui:column-md': 6,
     'ui:column-lg': 4,
     ...UISchemaComponents.Activity_BulkEdit
-  },
-  activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
-    ...BaseUISchemaComponents.Treatment_BulkEdit
   },
   activity_subtype_data: {
     'ui:column-xs': 12,
@@ -166,6 +154,27 @@ const Activity_Treatment_MechanicalPlant = {
     'ui:column-md': 6,
     'ui:column-lg': 4,
     ...BaseUISchemaComponents.Treatment_MechanicalPlant
+  }
+};
+
+const Activity_Treatment_MechanicalPlant_BulkEdit = {
+  activity_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...UISchemaComponents.Activity_BulkEdit
+  },
+  activity_type_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.Treatment_BulkEdit
+  },
+  activity_subtype_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.Treatment_MechanicalPlant_BulkEdit
   }
 };
 
@@ -397,6 +406,7 @@ const RootUISchemas = {
   Activity_Treatment_ChemicalPlant,
   Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_MechanicalPlant,
+  Activity_Treatment_MechanicalPlant_BulkEdit,
   Activity_Treatment_BiologicalPlant,
   Activity_Treatment_BiologicalDispersalPlant,
   Activity_Treatment_MechanicalTerrestrialAnimal,

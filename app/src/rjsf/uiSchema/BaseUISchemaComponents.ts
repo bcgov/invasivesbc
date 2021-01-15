@@ -151,6 +151,13 @@ const Treatment_MechanicalPlant = {
   }
 };
 
+const Treatment_MechanicalPlant_BulkEdit = {
+  mechanical_method_code: {},
+  mechanical_disposal_code: {},
+  root_removal_code: {},
+  soil_disturbance_code: {}
+};
+
 const Treatment_BiologicalPlant = {
   classified_area_code: {},
   release_quantity: {},
@@ -279,6 +286,7 @@ const BaseUISchemaComponents = {
   Treatment,
   Treatment_BulkEdit,
   Treatment_MechanicalPlant,
+  Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalDispersalPlant,
   Treatment_MechanicalTerrestrialAnimal,
