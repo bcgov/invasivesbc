@@ -76,7 +76,7 @@ const phases = {
     env: 'dev',
     certificateURL: config.certificateURL.dev,
     replicas: 1,
-    maxReplicas: 2
+    maxReplicas: 1
   },
   test: {
     namespace: '7068ad-test',
@@ -91,8 +91,8 @@ const phases = {
     host: staticUrlsAPI.test,
     env: 'test',
     certificateURL: config.certificateURL.test,
-    replicas: 3,
-    maxReplicas: 5
+    replicas: 1,
+    maxReplicas: 1
   },
   prod: {
     namespace: '7068ad-prod',
@@ -107,8 +107,8 @@ const phases = {
     host: staticUrlsAPI.prod,
     env: 'prod',
     certificateURL: config.certificateURL.prod,
-    replicas: 3,
-    maxReplicas: 6
+    replicas: 1,
+    maxReplicas: 1
   }
 };
 

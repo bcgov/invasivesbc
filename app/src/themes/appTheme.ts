@@ -56,6 +56,13 @@ const appTheme = createMuiTheme({
         maxWidth: 'xl',
         margin: 'auto'
       }
+    },
+    MuiTooltip: {
+      tooltip: {
+        fontSize: '1rem',
+        color: 'white',
+        backgroundColor: '#223F75'
+      }
     }
   }
 });

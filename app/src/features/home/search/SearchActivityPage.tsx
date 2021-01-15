@@ -109,12 +109,15 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    *
    * @param {IPhoto} photosArr An array of photo objects.
    */
-  const savePhotos = useCallback(
-    async (photosArr: IPhoto[]) => {
-      setActivity({ ...activity, photos: photosArr, dateUpdated: new Date() });
-    },
-    [activity]
-  );
+  const savePhotos = useCallback((photosArr: IPhoto[]) => {
+    setActivity((doc: any) => {
+      return {
+        ...doc,
+        photos: photosArr,
+        dateUpdated: new Date()
+      };
+    });
+  }, []);
 
   /**
    * Save the form when it is submitted.

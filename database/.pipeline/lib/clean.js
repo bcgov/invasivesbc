@@ -2,6 +2,15 @@
 const { OpenShiftClientX } = require('pipeline-cli');
 const checkAndClean = require('../utils/checkAndClean');
 
+/**
+ * Run OC commands to clean all build and deployment artifacts (pods, imagestreams, builds/deployment configs, etc).
+ *
+ * Note: This will purge all artifacts for the given environment (with matching selectors). This should generally only
+ * be used to clean up any temporary builds and deployments (from PR-based deployments) and not permanent builds or 
+ * deployments (like those for dev, test and prod).
+ *
+ * @param {*} settings
+ */
 module.exports = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
@@ -27,9 +36,9 @@ module.exports = (settings) => {
     });
 
     // Clean build configs
-    buildConfigs.forEach((bc) => {
-      if (bc.spec.output.to.kind == 'ImageStreamTag') {
-        oc.delete([`ImageStreamTag/${bc.spec.output.to.name}`], {
+    buildConfigs.forEach((buildConfig) => {
+      if (buildConfig.spec.output.to.kind == 'ImageStreamTag') {
+        oc.delete([`ImageStreamTag/${buildConfig.spec.output.to.name}`], {
           'ignore-not-found': 'true',
           wait: 'true',
           namespace: phaseObj.namespace
@@ -44,8 +53,8 @@ module.exports = (settings) => {
     });
 
     // Clean deployment configs
-    deploymentConfigs.forEach((dc) => {
-      dc.spec.triggers.forEach((trigger) => {
+    deploymentConfigs.forEach((deploymentConfig) => {
+      deploymentConfig.spec.triggers.forEach((trigger) => {
         if (trigger.type == 'ImageChange' && trigger.imageChangeParams.from.kind == 'ImageStreamTag') {
           oc.delete([`ImageStreamTag/${trigger.imageChangeParams.from.name}`], {
             'ignore-not-found': 'true',
@@ -56,20 +65,13 @@ module.exports = (settings) => {
       });
     });
 
-    // Cleaning other pods
-    if (phaseKey !== 'build') {
-      const newOC = new OpenShiftClientX(Object.assign({ namespace: phases[phaseKey].namespace }, options));
-      const setupPod = `${phases[phaseKey].name}-setup${phases[phaseKey].suffix}`;
-      checkAndClean(`pod/${setupPod}`, newOC);
-    }
+    // Extra cleaning for any disposable 'build' items (database migration/seeding pods, test pods, etc)
+    // This should include anything that is only run/used once, and can be deleted afterwards.
+    const newOC = new OpenShiftClientX(Object.assign({ namespace: phases[phaseKey].namespace }, options));
+    const setupPod = `${phases[phaseKey].name}-setup${phases[phaseKey].suffix}`;
+    checkAndClean(`pod/${setupPod}`, newOC);
 
     oc.raw('delete', ['all'], {
-      selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-      wait: 'true',
-      namespace: phaseObj.namespace
-    });
-
-    oc.raw('delete', ['all,pvc,secrets,Secrets,secret,configmap,endpoints,Endpoints'], {
       selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
       wait: 'true',
       namespace: phaseObj.namespace

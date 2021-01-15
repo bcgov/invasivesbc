@@ -3,7 +3,7 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Observation_TerrestrialPlant;
+  drop view if exists invasivesbc.Activity_Observation_TerrestrialPlant cascade;
   CREATE OR REPLACE VIEW Activity_Observation_TerrestrialPlant as (
         select
         activity_id as activity_id,
@@ -38,9 +38,6 @@ export async function up(knex: Knex): Promise<void> {
         special_care_ind,
         biological_ind
         from invasivesbc.Activity_Observation_TerrestrialPlant_with_codes record
-
---technically this should be used in all the subsequent joins, but we can get away without for now:
---join code_category on inv_code_category on inv_code_category.code_category_name = 'invasives'
 
 left join code_header invasive_plant_code_header on invasive_plant_code_header.code_header_title = 'invasive_plant_code' and invasive_plant_code_header.valid_to is null
 left join code invasive_plant_codes on invasive_plant_codes.code_header_id = invasive_plant_code_header.code_header_id
@@ -86,8 +83,6 @@ left join code_header plant_seed_stage_code_header on plant_seed_stage_code_head
 left join code plant_seed_stage_codes on plant_seed_stage_codes.code_header_id = plant_seed_stage_code_header.code_header_id
 and record.plant_seed_stage_code = aspect_codes.code_name
 )
-
-
     COMMENT ON VIEW Activity_Observation_TerrestrialPlant IS 'View on terrestrial plant observation specific fields, with code table values resolved';
   `);
 }

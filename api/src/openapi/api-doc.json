@@ -300,6 +300,9 @@
           },
           "activity_type_data": {
             "$ref": "#/components/schemas/Monitoring"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Monitoring_ChemicalTerrestrialAquaticPlant"
           }
         }
       },
@@ -311,6 +314,9 @@
           },
           "activity_type_data": {
             "$ref": "#/components/schemas/Monitoring"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Monitoring_MechanicalTerrestrialAquaticPlant"
           }
         }
       },
@@ -386,20 +392,24 @@
           "activity_date_time": {
             "type": "string",
             "format": "date-time",
-            "title": "Date and Time"
+            "title": "Date and Time",
+            "x-tooltip-text": "The date and time for the activity"
           },
           "latitude": {
             "type": "number",
-            "title": "Latitude"
+            "title": "Latitude",
+            "x-tooltip-text": "The latitude of the anchor point for the specified geometry"
           },
           "longitude": {
             "type": "number",
-            "title": "Longitude"
+            "title": "Longitude",
+            "x-tooltip-text": "The longitude of the anchor point for the specified geometry"
           },
           "reported_area": {
             "type": "number",
             "title": "Area (m\u00B2)",
-            "minimum": 1
+            "minimum": 1,
+            "x-tooltip-text": "The area for the specified geometry"
           },
           "invasive_species_agency_code": {
             "type": "string",
@@ -410,7 +420,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "The agency code"
           },
           "jurisdiction_code": {
             "type": "string",
@@ -421,26 +432,30 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "The jurisdiction code"
           },
           "general_comment": {
             "type": "string",
             "title": "Comment",
             "maximum": 300,
-            "default": ""
+            "default": "",
+            "x-tooltip-text": "A comment about the activity"
           },
           "access_description": {
             "type": "string",
             "title": "Access Description",
             "maximum": 300,
-            "default": ""
+            "default": "",
+            "x-tooltip-text": "A more detailed description about the activity"
           },
           "paper_file_id": {
             "type": "array",
             "title": "Paper File ID",
             "items": {
               "$ref": "#/components/schemas/PaperFileID"
-            }
+            },
+            "x-tooltip-text": "A list of associated paper file IDs"
           }
         }
       },
@@ -676,7 +691,6 @@
       },
       "Observation_PlantAquatic": {
         "title": "Aquatic Plant Information",
-        "description": "Plant Observation Terrestrial",
         "type": "object",
         "required": [
           "specific_use_code",
@@ -692,19 +706,15 @@
           "biological_ind",
           "secchi_depth",
           "water_depth",
-          "invasive_plant_code",
-          "voucher_submitted_ind"
+          "voucher_submitted_ind",
+          "invasive_plants"
         ],
         "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
             }
           },
           "specific_use_code": {
@@ -866,27 +876,22 @@
       },
       "Observation_AnimalAquatic": {
         "title": "Aquatic Animal Information",
-        "description": "Animal Observation Aquatic",
         "type": "object",
         "required": [
           "observation_details",
-          "invasive_animal_code"
+          "invasive_animals"
         ],
         "properties": {
-          "invasive_animal_code": {
-            "type": "string",
-            "title": "Invasive animal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
+          "invasive_animals": {
+            "type": "array",
+            "title": "Invasive Animals",
+            "items": {
+              "$ref": "#/components/schemas/InvasiveAnimals"
             }
           },
           "observation_details": {
             "type": "string",
-            "title": "Aquatic animal observations"
+            "title": "Aquatic Animal Observations"
           }
         }
       },
@@ -1433,6 +1438,56 @@
           }
         }
       },
+      "Monitoring_ChemicalTerrestrialAquaticPlant": {
+        "title": "Chemical Terrestrial Aquatic Monitoring Information",
+        "type": "object",
+        "required": [
+          "monitoring_details",
+          "invasive_plant_code"
+        ],
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "monitoring_details": {
+            "type": "string",
+            "title": "Monitoring details"
+          }
+        }
+      },
+      "Monitoring_MechanicalTerrestrialAquaticPlant": {
+        "title": "Mechanical Terrestrial Aquatic Monitoring Information",
+        "type": "object",
+        "required": [
+          "monitoring_details",
+          "invasive_plant_code"
+        ],
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "monitoring_details": {
+            "type": "string",
+            "title": "Monitoring details"
+          }
+        }
+      },
       "Monitoring_BiologicalTerrestrialPlant": {
         "title": "Biological Monitoring Information",
         "type": "object",
@@ -1706,6 +1761,25 @@
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
+      "InvasiveAnimals": {
+        "type": "object",
+        "required": [
+          "invasive_animal_code"
+        ],
+        "properties": {
+          "invasive_animal_code": {
+            "type": "string",
+            "title": "Invasive Animal",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_animal_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
