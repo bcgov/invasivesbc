@@ -300,6 +300,20 @@
           }
         }
       },
+      "Activity_Treatment_BiologicalDispersalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Treatment_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_BiologicalDispersalPlant_BulkEdit"
+          }
+        }
+      },
       "Activity_Treatment_MechanicalTerrestrialAnimal": {
         "type": "object",
         "properties": {
@@ -1641,6 +1655,29 @@
               "x-enum-code-sort-order": "code_sort_order"
             },
             "default": "NA"
+          }
+        }
+      },
+      "Treatment_BiologicalDispersalPlant_BulkEdit": {
+        "title": "Biological Dispersal Treatment Information",
+        "type": "object",
+        "properties": {
+          "biological_agent_count": {
+            "type": "number",
+            "title": "Biological Agent Count (n > 0)",
+            "minimum": 1,
+            "default": 1
+          },
+          "biological_agent_presence_code": {
+            "type": "string",
+            "title": "Biological Agent Presence",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_presence_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           }
         }
       },

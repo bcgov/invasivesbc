@@ -184,6 +184,11 @@ const Treatment_BiologicalDispersalPlant = {
   biological_agent_presence_code: {}
 };
 
+const Treatment_BiologicalDispersalPlant_BulkEdit = {
+  biological_agent_code: {},
+  biological_agent_presence_code: {}
+};
+
 const Treatment_MechanicalTerrestrialAnimal = {
   treatment_details: {
     'ui:widget': 'textarea'
@@ -297,6 +302,7 @@ const BaseUISchemaComponents = {
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
   Treatment_BiologicalDispersalPlant,
+  Treatment_BiologicalDispersalPlant_BulkEdit,
   Treatment_MechanicalTerrestrialAnimal,
   Treatment_ChemicalTerrestrialAnimal,
   Treatment_BiologicalTerrestrialAnimal,

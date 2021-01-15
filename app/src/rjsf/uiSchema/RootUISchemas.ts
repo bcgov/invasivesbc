@@ -241,6 +241,27 @@ const Activity_Treatment_BiologicalDispersalPlant = {
   }
 };
 
+const Activity_Treatment_BiologicalDispersalPlant_BulkEdit = {
+  activity_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...UISchemaComponents.Activity_BulkEdit
+  },
+  activity_type_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.Treatment_BulkEdit
+  },
+  activity_subtype_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.Treatment_BiologicalDispersalPlant_BulkEdit
+  }
+};
+
 const Activity_Treatment_MechanicalTerrestrialAnimal = {
   activity_data: {
     'ui:column-xs': 12,
@@ -431,6 +452,7 @@ const RootUISchemas = {
   Activity_Treatment_BiologicalPlant,
   Activity_Treatment_BiologicalPlant_BulkEdit,
   Activity_Treatment_BiologicalDispersalPlant,
+  Activity_Treatment_BiologicalDispersalPlant_BulkEdit,
   Activity_Treatment_MechanicalTerrestrialAnimal,
   Activity_Treatment_ChemicalTerrestrialAnimal,
   Activity_Treatment_BiologicalTerrestrialAnimal,
