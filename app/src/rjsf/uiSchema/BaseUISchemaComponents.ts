@@ -8,6 +8,14 @@
  * }
  */
 
+const InvasivePlants = {
+  invasive_plant_code: {}
+};
+
+const InvasiveAnimals = {
+  invasive_animal_code: {}
+};
+
 const Observation = {
   observation_type_code: {},
   observer_first_name: {},
@@ -97,7 +105,12 @@ const Observation_PlantAquatic = {
   voucher_submitted_ind: {
     'ui:widget': 'radio'
   },
-  voucher_submission_detail: {}
+  voucher_submission_detail: {},
+  invasive_plants: {
+    items: {
+      ...InvasivePlants
+    }
+  }
 };
 
 const Observation_AnimalTerrestrial = {
@@ -108,7 +121,12 @@ const Observation_AnimalTerrestrial = {
 };
 
 const Observation_AnimalAquatic = {
-  observation_details: {}
+  observation_details: {},
+  invasive_animals: {
+    items: {
+      ...InvasiveAnimals
+    }
+  }
 };
 
 const Treatment = {
@@ -254,10 +272,6 @@ const Herbicide = {
   tank_volume: {
     'ui:readonly': true
   }
-};
-
-const InvasivePlants = {
-  invasive_plant_code: {}
 };
 
 const BaseUISchemaComponents = {

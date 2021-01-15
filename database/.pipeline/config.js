@@ -16,6 +16,11 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
+// If this is a static build (to dev, test, or prod) then only run migrations, otherwise if this is a PR build run the
+// migrations and seeding.
+const dbSetupDockerfilePath =
+  (isStaticDeployment && './.docker/db/Dockerfile.migrate') || './.docker/db/Dockerfile.setup';
+
 const processOptions = (options) => {
   const result = { ...options };
 
@@ -52,7 +57,7 @@ const phases = {
     tag: tag,
     env: 'build',
     branch: branch,
-    dbSetupDockerfilePath: './.docker/db/Dockerfile.setup'
+    dbSetupDockerfilePath: dbSetupDockerfilePath
   },
   dev: {
     namespace: '7068ad-dev',
@@ -64,7 +69,7 @@ const phases = {
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     env: 'dev',
-    dbSetupDockerfilePath: './.docker/db/Dockerfile.migrate'
+    dbSetupDockerfilePath: dbSetupDockerfilePath
   },
   test: {
     namespace: '7068ad-test',
@@ -76,7 +81,7 @@ const phases = {
     version: `${version}`,
     tag: `test-${version}`,
     env: 'test',
-    dbSetupDockerfilePath: './.docker/db/Dockerfile.migrate'
+    dbSetupDockerfilePath: dbSetupDockerfilePath
   },
   prod: {
     namespace: '7068ad-prod',
@@ -88,7 +93,7 @@ const phases = {
     version: `${version}`,
     tag: `prod-${version}`,
     env: 'prod',
-    dbSetupDockerfilePath: './.docker/db/Dockerfile.migrate'
+    dbSetupDockerfilePath: dbSetupDockerfilePath
   }
 };
 
