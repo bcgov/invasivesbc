@@ -23,8 +23,6 @@ export function generateActivityPayload(
 ): IActivity {
   const id = uuidv4();
 
-  console.log(activityType, activitySubtype);
-
   return {
     _id: id,
     activityId: id,

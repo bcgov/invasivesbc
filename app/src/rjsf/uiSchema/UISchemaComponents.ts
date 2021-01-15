@@ -47,14 +47,7 @@ const Treatment_ChemicalPlant_BulkEdit = {
   pesticide_employer_code: {},
   pest_management_plan: {},
   treatment_issues_code: {},
-  chemical_method_code: {},
-  wind_direction_code: {},
-  invasive_plants: {
-    items: {
-      ...BaseUISchemaComponents.InvasivePlants
-    }
-  },
-  humidity: {}
+  chemical_method_code: {}
 };
 
 const Activity = {
