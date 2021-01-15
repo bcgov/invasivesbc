@@ -1,8 +1,8 @@
 # PR Deploy
 # Builds and Deploys unmerged PR's to pods/services/routes/etc in the OpenShift.
 
-# This workflow only runs if the PR has either the 'PR-DEPLOY' label and/or 'PR-DEPLOY' in the title when it is first created.
-# If the label or title are updated after the PR has been opened, you will need to push a change to the PR to re-trigger the workflow.
+# This workflow only runs if the PR has the 'PR-DEPLOY' label when it is first created.
+# If the label is added after the PR has been opened, you will need to push a change to the PR to re-trigger the workflow.
 # Manually re-running the workflow (via the 're-run jobs' button) won't work, as the git context won't have updated and the new label and/or title won't be present.
 name: PR Deploy
 
@@ -19,7 +19,7 @@ jobs:
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       LABELS: ${{ toJson(github.event.pull_request.labels) }}
     steps:
@@ -31,14 +31,13 @@ jobs:
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
           echo GIt Event Name: ${{ github.event_name }}
           echo GIt Event Action: ${{ github.event.action }}
-          echo Git Title: ${{ github.event.pull_request.title }}
           echo Git Labels: "$LABELS"
 
   # Build the Database image
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -69,7 +68,7 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -100,7 +99,7 @@ jobs:
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -131,7 +130,7 @@ jobs:
   buildAPP:
     name: Build App Image
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
@@ -162,7 +161,7 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -196,7 +195,7 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -231,7 +230,7 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -266,7 +265,7 @@ jobs:
   deployAPP:
     name: Deploy App Image
     runs-on: ubuntu-16.04
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || contains(github.event.pull_request.title, 'PR-DEPLOY') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -301,8 +300,8 @@ jobs:
     name: Postman API Tests (Dev only)
     runs-on: ubuntu-16.04
     if: |
-      ${{ github.base_ref == 'dev' && 
-        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') || 
+      ${{ github.base_ref == 'dev' &&
+        ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') ||
           contains(github.event.pull_request.title, 'PR-DEPLOY') ) }}
     needs:
       - deployDatabase
