@@ -1159,8 +1159,7 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            },
-            "default": "NA"
+            }
           }
         }
       },
@@ -1360,8 +1359,7 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            },
-            "default": "NA"
+            }
           },
           "chemical_method_code": {
             "type": "string",
@@ -1373,38 +1371,6 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
-          },
-          "wind_direction_code": {
-            "type": "string",
-            "title": "Wind Direction",
-            "enum": [
-              "No Wind",
-              "N",
-              "NE",
-              "E",
-              "SE",
-              "S",
-              "SW",
-              "W",
-              "NW"
-            ]
-          },
-          "humidity": {
-            "type": "number",
-            "title": "Humidity",
-            "enum": [
-              0,
-              10,
-              20,
-              30,
-              40,
-              50,
-              60,
-              70,
-              80,
-              90,
-              100
-            ]
           },
           "invasive_plants": {
             "type": "array",
