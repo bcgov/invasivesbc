@@ -149,12 +149,9 @@ PUT.apiDoc = {
  */
 function createActivity(): RequestHandler {
   return async (req, res) => {
-    console.log('################ SHREYAS #################')
     defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
 
     const data = { ...req.body, mediaKeys: req['mediaKeys'] };
-
-    console.log('DATA', data);
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
 
@@ -168,12 +165,10 @@ function createActivity(): RequestHandler {
     }
 
     try {
-      console.log("HEYEHEYEYHEHEYEYYEYE")
       const getActivitySQLStatement: SQLStatement = getActivitySQL(sanitizedActivityData.activity_id);
       const createActivitySQLStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
 
       if (!getActivitySQLStatement || !createActivitySQLStatement) {
-        console.log("heheheheh")
         throw {
           status: 400,
           message: 'Failed to build SQL statement'
@@ -216,7 +211,6 @@ function createActivity(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      console.log('error is: ', JSON.stringify(error));
       defaultLog.debug({ label: 'createActivity', message: 'error', error });
       throw error;
     } finally {
