@@ -22,7 +22,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   // This list of activity IDs to edit will eventually be passed into this component
-  const activityIdsToEdit = ['73cb57c3-4255-49ce-b983-e5c65ca7c1d4', 'bcb3d181-fe7f-429d-85e8-aa38261ef16d'];
+  const activityIdsToEdit = ['597b3181-6a36-465b-81c0-0f342156bf26', '37fecfba-b33a-4b7c-8e32-ab0af8f8213d'];
 
   useEffect(() => {
     const setupActivityDataToEdit = async () => {
