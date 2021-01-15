@@ -706,7 +706,6 @@
           "biological_ind",
           "secchi_depth",
           "water_depth",
-          "invasive_plant_code",
           "voucher_submitted_ind",
           "invasive_plants"
         ],
