@@ -1872,10 +1872,6 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "aspect": {
-            "type": "string",
-            "title": "Aspect Full"
-          },
           "original_bec_id": {
             "type": "string",
             "title": "BEC ID",
@@ -1918,11 +1914,6 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
-          },
-          "slope": {
-            "type": "string",
-            "title": "Slope Full",
-            "maximum": 30
           },
           "elevation": {
             "type": "string",
