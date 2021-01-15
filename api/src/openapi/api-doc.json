@@ -691,7 +691,6 @@
       },
       "Observation_PlantAquatic": {
         "title": "Aquatic Plant Information",
-        "description": "Plant Observation Terrestrial",
         "type": "object",
         "required": [
           "specific_use_code",
@@ -707,19 +706,15 @@
           "biological_ind",
           "secchi_depth",
           "water_depth",
-          "invasive_plant_code",
-          "voucher_submitted_ind"
+          "voucher_submitted_ind",
+          "invasive_plants"
         ],
         "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
             }
           },
           "specific_use_code": {
@@ -881,27 +876,22 @@
       },
       "Observation_AnimalAquatic": {
         "title": "Aquatic Animal Information",
-        "description": "Animal Observation Aquatic",
         "type": "object",
         "required": [
           "observation_details",
-          "invasive_animal_code"
+          "invasive_animals"
         ],
         "properties": {
-          "invasive_animal_code": {
-            "type": "string",
-            "title": "Invasive animal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
+          "invasive_animals": {
+            "type": "array",
+            "title": "Invasive Animals",
+            "items": {
+              "$ref": "#/components/schemas/InvasiveAnimals"
             }
           },
           "observation_details": {
             "type": "string",
-            "title": "Aquatic animal observations"
+            "title": "Aquatic Animal Observations"
           }
         }
       },
@@ -1771,6 +1761,25 @@
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
+      "InvasiveAnimals": {
+        "type": "object",
+        "required": [
+          "invasive_animal_code"
+        ],
+        "properties": {
+          "invasive_animal_code": {
+            "type": "string",
+            "title": "Invasive Animal",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_animal_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
