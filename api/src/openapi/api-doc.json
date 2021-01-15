@@ -141,7 +141,7 @@
           }
         }
       },
-      "Activity_Observation_PlantTerrestial": {
+      "Activity_Observation_PlantTerrestrial": {
         "type": "object",
         "properties": {
           "activity_data": {
@@ -151,7 +151,7 @@
             "$ref": "#/components/schemas/Observation"
           },
           "activity_subtype_data": {
-            "$ref": "#/components/schemas/Observation_PlantTerrestial"
+            "$ref": "#/components/schemas/Observation_PlantTerrestrial"
           }
         }
       },
@@ -165,7 +165,7 @@
             "$ref": "#/components/schemas/Observation_BulkEdit"
           },
           "activity_subtype_data": {
-            "$ref": "#/components/schemas/Observation_PlantTerrestial_BulkEdit"
+            "$ref": "#/components/schemas/Observation_PlantTerrestrial_BulkEdit"
           }
         }
       },
@@ -569,7 +569,7 @@
           }
         }
       },
-      "Observation_PlantTerrestial": {
+      "Observation_PlantTerrestrial": {
         "title": "Terrestrial Plant Information",
         "type": "object",
         "required": [
@@ -755,7 +755,7 @@
           }
         }
       },
-      "Observation_PlantTerrestial_BulkEdit": {
+      "Observation_PlantTerrestrial_BulkEdit": {
         "title": "Terrestrial Plant Information",
         "type": "object",
         "properties": {

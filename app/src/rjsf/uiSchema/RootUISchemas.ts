@@ -7,7 +7,7 @@
 import UISchemaComponents from 'rjsf/uiSchema/UISchemaComponents';
 import BaseUISchemaComponents from 'rjsf/uiSchema/BaseUISchemaComponents';
 
-const Activity_Observation_PlantTerrestial = {
+const Activity_Observation_PlantTerrestrial = {
   activity_data: {
     'ui:column-xs': 12,
     'ui:column-md': 6,
@@ -395,7 +395,7 @@ const Activity_Monitoring_BiologicalTerrestrialAnimal = {
 };
 
 const RootUISchemas = {
-  Activity_Observation_PlantTerrestial,
+  Activity_Observation_PlantTerrestrial,
   Activity_Observation_PlantTerrestrial_BulkEdit,
   Activity_Observation_PlantAquatic,
   Activity_Observation_AnimalTerrestrial,
