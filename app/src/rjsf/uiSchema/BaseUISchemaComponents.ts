@@ -18,10 +18,6 @@ const Observation = {
   }
 };
 
-const Observation_BulkEdit = {
-  observation_type_code: {}
-};
-
 const Observation_PlantTerrestial = {
   invasive_plant_density_code: {},
   invasive_plant_distribution_code: {},
@@ -266,7 +262,6 @@ const InvasivePlants = {
 
 const BaseUISchemaComponents = {
   Observation,
-  Observation_BulkEdit,
   Observation_PlantTerrestial,
   Observation_PlantTerrestrial_BulkEdit,
   Observation_PlantAquatic,

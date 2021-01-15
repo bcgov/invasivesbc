@@ -2,7 +2,6 @@ import { SvgIconComponent, Assignment, Build, Visibility } from '@material-ui/ic
 
 export enum ActivityType {
   Observation = 'Observation',
-  Observation_BulkEdit = 'Observation_BulkEdit',
   Treatment = 'Treatment',
   Treatment_BulkEdit = 'Treatment_BulkEdit',
   Monitoring = 'Monitoring'

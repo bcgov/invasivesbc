@@ -35,12 +35,6 @@ const Activity_Observation_PlantTerrestrial_BulkEdit = {
     'ui:column-lg': 4,
     ...UISchemaComponents.Activity_BulkEdit
   },
-  activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
-    ...BaseUISchemaComponents.Observation_BulkEdit
-  },
   activity_subtype_data: {
     'ui:column-xs': 12,
     'ui:column-md': 6,
