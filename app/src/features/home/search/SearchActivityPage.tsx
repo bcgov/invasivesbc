@@ -5,7 +5,6 @@ import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounced } from 'utils/FunctionUtils';

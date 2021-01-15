@@ -3,13 +3,11 @@ import { Accordion, CircularProgress, AccordionDetails, Box, Button, Container }
 import { Save } from '@material-ui/icons';
 import FormContainer from 'components/form/FormContainer';
 import { generateActivityPayload } from 'utils/addActivity';
-import { ActivitySubtype, ActivityType } from 'constants/activities';
-import { ActivityStatus, FormValidationStatus } from 'constants/activities';
+import { ActivityStatus, ActivityType, ActivitySubtype, FormValidationStatus } from 'constants/activities';
 import { IActivity } from 'interfaces/activity-interfaces';
 import { debounced } from 'utils/FunctionUtils';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 
@@ -30,15 +28,17 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   ];
 
   useEffect(() => {
-    const doc: IActivity = generateActivityPayload(
-      {},
-      null,
-      ActivityType.Observation_BulkEdit,
-      ActivitySubtype.Observation_PlantTerrestrial_BulkEdit
-    );
+    const setupActivityDataToEdit = async () => {
+      const { activityType, activitySubtype } = await getActivityByIdFromApi(invasivesApi, activityIdsToEdit[0]);
+      const editActivityType = `${activityType}_BulkEdit` as ActivityType;
+      const editActivitySubtype = `${activitySubtype}_BulkEdit` as ActivitySubtype;
+      const doc: IActivity = generateActivityPayload({}, null, editActivityType, editActivitySubtype);
 
-    setActivity(doc);
-    setIsLoading(false);
+      setActivity(doc);
+      setIsLoading(false);
+    };
+
+    setupActivityDataToEdit();
   }, []);
 
   /**
@@ -106,6 +106,8 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   if (isLoading) {
     return <CircularProgress />;
   }
+
+  console.log(props.classes.container)
 
   return (
     <Container className={props.classes.container}>

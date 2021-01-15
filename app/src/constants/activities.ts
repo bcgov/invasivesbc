@@ -9,7 +9,7 @@ export enum ActivityType {
 }
 
 export enum ActivitySubtype {
-  Observation_PlantTerrestial = 'Activity_Observation_PlantTerrestial',
+  Observation_PlantTerrestrial = 'Activity_Observation_PlantTerrestrial',
   Observation_PlantTerrestrial_BulkEdit = 'Activity_Observation_PlantTerrestrial_BulkEdit',
   Observation_PlantAquatic = 'Activity_Observation_PlantAquatic',
   Observation_AnimalTerrestrial = 'Activity_Observation_AnimalTerrestrial',

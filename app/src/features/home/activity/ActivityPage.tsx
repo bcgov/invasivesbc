@@ -349,6 +349,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return <CircularProgress />;
   }
 
+  console.log(props.classes.container)
+
   return (
     <Container className={props.classes.container}>
       <ActivityComponent
