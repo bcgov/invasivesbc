@@ -1662,11 +1662,16 @@
         "title": "Biological Dispersal Treatment Information",
         "type": "object",
         "properties": {
-          "biological_agent_count": {
-            "type": "number",
-            "title": "Biological Agent Count (n > 0)",
-            "minimum": 1,
-            "default": 1
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Biological Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "biological_agent_presence_code": {
             "type": "string",
