@@ -272,6 +272,20 @@
           }
         }
       },
+      "Activity_Treatment_BiologicalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Treatment_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_BiologicalPlant_BulkEdit"
+          }
+        }
+      },
       "Activity_Treatment_BiologicalDispersalPlant": {
         "type": "object",
         "properties": {
@@ -1478,6 +1492,56 @@
           "agent_source": {
             "type": "string",
             "title": "Agent Source"
+          },
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Biological Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "biological_agent_stage_code": {
+            "type": "string",
+            "title": "Biological Agent Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "bioagent_maturity_status_code": {
+            "type": "string",
+            "title": "Bioagent Maturity Status",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "bioagent_maturity_status_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
+      "Treatment_BiologicalPlant_BulkEdit": {
+        "title": "Biological Treatment Information",
+        "type": "object",
+        "properties": {
+          "classified_area_code": {
+            "type": "string",
+            "title": "Classified Area",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "classified_area_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "biological_agent_code": {
             "type": "string",

@@ -168,6 +168,13 @@ const Treatment_BiologicalPlant = {
   bioagent_maturity_status_code: {}
 };
 
+const Treatment_BiologicalPlant_BulkEdit = {
+  classified_area_code: {},
+  biological_agent_code: {},
+  biological_agent_stage_code: {},
+  bioagent_maturity_status_code: {}
+};
+
 const Treatment_BiologicalDispersalPlant = {
   duration_of_count: {},
   biological_agent_code: {},
@@ -288,6 +295,7 @@ const BaseUISchemaComponents = {
   Treatment_MechanicalPlant,
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
+  Treatment_BiologicalPlant_BulkEdit,
   Treatment_BiologicalDispersalPlant,
   Treatment_MechanicalTerrestrialAnimal,
   Treatment_ChemicalTerrestrialAnimal,
