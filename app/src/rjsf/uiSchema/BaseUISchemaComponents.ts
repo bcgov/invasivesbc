@@ -63,12 +63,7 @@ const Observation_PlantTerrestial = {
 };
 
 const Observation_PlantTerrestrial_BulkEdit = {
-  invasive_plant_density_code: {},
-  invasive_plant_distribution_code: {},
-  soil_texture_code: {},
   specific_use_code: {},
-  slope_code: {},
-  aspect_code: {},
   invasive_plant_code: {},
   proposed_treatment_code: {},
   plant_life_stage_code: {},
