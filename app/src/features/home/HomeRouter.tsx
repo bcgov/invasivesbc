@@ -41,6 +41,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         componentProps={props}
       />
       <PrivateRoute
+        exact
         layout={HomeLayout}
         path="/home/search/bulkedit"
         title={getTitle('Bulk Edit')}
