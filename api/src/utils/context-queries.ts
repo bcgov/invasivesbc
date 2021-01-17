@@ -16,8 +16,8 @@ const defaultLog = getLogger('context-queries');
  * @param req {object} The express request object
  */
 const saveBCGW = async (id: any, req: any) => {
-  const x = req.body.activity_data.latitude;
-  const y = req.body.activity_data.longitude;
+  const y = req.body.activity_data.latitude;
+  const x = req.body.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
@@ -67,7 +67,7 @@ const saveBCGW = async (id: any, req: any) => {
         sqlStatement.append(`
           update activity_incoming_data
           set (${column}) = ('${attribute}')
-          where activity_id = '${id}'
+          where activity_id = '${id}';
         `);
       })
       .catch((error) => {
@@ -87,10 +87,10 @@ const saveBCGW = async (id: any, req: any) => {
   await connection
     .query(sqlStatement.sql)
     .then(() => {
-      console.log('Successfully entered context data');
+      console.log('Successfully entered BCGW data.');
     })
     .catch((err) => {
-      console.error('Error inserting into the database', err);
+      console.error('Error inserting BCGW data into the database', err);
     });
 
   connection.release();
@@ -106,8 +106,8 @@ const saveBCGW = async (id: any, req: any) => {
  * @param req {object} The express request object
  */
 const saveInternal = (id: any, req: any) => {
-  const x = req.body.form_data.activity_data.latitude;
-  const y = req.body.form_data.activity_data.longitude;
+  const y = req.body.activity_data.latitude;
+  const x = req.body.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
@@ -174,8 +174,8 @@ const saveInternal = (id: any, req: any) => {
  * @param req {object} The express request object
  */
 const saveElevation = (id: any, req: any) => {
-  const x = req.body.form_data.activity_data.latitude;
-  const y = req.body.form_data.activity_data.longitude;
+  const y = req.body.activity_data.latitude;
+  const x = req.body.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
@@ -259,10 +259,11 @@ const saveWell = (id: any, req: any) => {
   getWell(payload, false, callback);
 };
 
+// TODO: Pass only what's necessary in the 'req' object.
 export const commit = function (record: any, req: any) {
   const id = record.activity_id;
   saveBCGW(id,req); // Insert DataBC BCGW attributes
-  // saveInternal(id,req); // Insert local attributes
-  // saveElevation(id,req); // Insert elevation
-  // saveWell(id, req); // Insert the closest well
+  saveInternal(id,req); // Insert local attributes
+  saveElevation(id,req); // Insert elevation
+  saveWell(id, req); // Insert the closest well
 };

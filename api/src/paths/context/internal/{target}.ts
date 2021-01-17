@@ -82,6 +82,21 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
     };
   }
 
+  // const sql = `
+  //   select
+  //     target.${attr} "target"
+  //   from
+  //     public.${table} "target"
+  //   where
+  //     public.st_intersects(
+  //       public.geography(
+  //         public.st_setSrid(
+  //           public.st_point(${lon},${lat})
+  //         ,4326)
+  //       ),target.geog
+  //     )
+  // `;
+
   const sql = `
     select
       target.${attr} "target"
@@ -89,11 +104,8 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
       public.${table} "target"
     where
       public.st_intersects(
-        public.geography(
-          public.st_setSrid(
-            public.st_point(${lon},${lat})
-          ,4326)
-        ),target.geog
+        public.st_geographyFromText('POINT(${lon} ${lat})'),
+        target.geog
       )
   `;
 
