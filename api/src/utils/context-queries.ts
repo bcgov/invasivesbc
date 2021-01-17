@@ -3,7 +3,7 @@ import { getDBConnection } from '../database/db';
 import { getLogger } from './logger';
 import { getWell } from '../paths/context/well';
 import { insertWellDistanceSQL } from './../queries/context-queries';
-import { SQLStatement } from 'sql-template-strings';
+import { SQL, SQLStatement } from 'sql-template-strings';
 
 const defaultLog = getLogger('context-queries');
 
@@ -15,9 +15,9 @@ const defaultLog = getLogger('context-queries');
  *   entered in the database.
  * @param req {object} The express request object
  */
-const saveBCGW = (id: any, req: any) => {
-  const x = req.body.form_data.activity_data.latitude;
-  const y = req.body.form_data.activity_data.longitude;
+const saveBCGW = async (id: any, req: any) => {
+  const x = req.body.activity_data.latitude;
+  const y = req.body.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
@@ -54,38 +54,46 @@ const saveBCGW = (id: any, req: any) => {
     }
   ];
 
-  /* For each layer run an asynchronous request */
-  for (const layer of layers) {
+  const sqlStatement: SQLStatement = SQL``;
+
+  const queryBCGW = async (layer) => {
     const url = `${api}/context/databc/${layer.tableName}?lon=${x}&lat=${y}`;
 
-    axios
+    await axios
       .get(url, config)
       .then(async (response) => {
         const attribute = response.data.target[layer.targetAttribute];
         const column = layer.targetColumn;
-        const connection = await getDBConnection();
-        const sql = `
+        sqlStatement.append(`
           update activity_incoming_data
           set (${column}) = ('${attribute}')
           where activity_id = '${id}'
-        `;
-        console.log(sql);
-
-        await connection
-          .query(sql)
-          .then(() => {
-            console.log(`Successfully entered ${attribute} into column ${column}`);
-          })
-          .catch((err) => {
-            console.error('Error inserting into the database', err);
-          });
-
-        connection.release();
+        `);
       })
       .catch((error) => {
         defaultLog.debug({ label: 'addingContext', message: 'error', error });
       });
+      ;
+
+  };
+
+  /* Build the bulk insert statement*/
+  for (const layer of layers) {
+    await queryBCGW(layer);
   }
+
+  const connection = await getDBConnection();
+
+  await connection
+    .query(sqlStatement.sql)
+    .then(() => {
+      console.log('Successfully entered context data');
+    })
+    .catch((err) => {
+      console.error('Error inserting into the database', err);
+    });
+
+  connection.release();
 };
 
 /**
@@ -215,7 +223,7 @@ const saveElevation = (id: any, req: any) => {
  * @param req {object} The express request object
  */
 const saveWell = (id: any, req: any) => {
-  const a = req.body.form_data.activity_data;
+  const a = req.body.activity_data;
   const payload = {
     query: {
       lon: a.longitude,
@@ -253,8 +261,8 @@ const saveWell = (id: any, req: any) => {
 
 export const commit = function (record: any, req: any) {
   const id = record.activity_id;
-  // saveBCGW(id,req); // Insert DataBC BCGW attributes
+  saveBCGW(id,req); // Insert DataBC BCGW attributes
   // saveInternal(id,req); // Insert local attributes
   // saveElevation(id,req); // Insert elevation
-  saveWell(id, req); // Insert the closest well
+  // saveWell(id, req); // Insert the closest well
 };
