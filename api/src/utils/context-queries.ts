@@ -260,8 +260,8 @@ const saveWell = (id: any, req: any) => {
 // TODO: Pass only what's necessary in the 'req' object.
 export const commit = function (record: any, req: any) {
   const id = record.activity_id;
-  saveBCGW(id,req); // Insert DataBC BCGW attributes
-  saveInternal(id,req); // Insert local attributes
-  saveElevation(id,req); // Insert elevation
+  saveBCGW(id, req); // Insert DataBC BCGW attributes
+  saveInternal(id, req); // Insert local attributes
+  saveElevation(id, req); // Insert elevation
   saveWell(id, req); // Insert the closest well
 };
