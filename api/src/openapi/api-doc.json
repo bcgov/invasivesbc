@@ -2065,7 +2065,7 @@
         }
       },
       "IAPP_Treatment": {
-        "title": "IAPP Treatment common properties",
+        "title": "IAPP Treatment Common Properties",
         "type": "object",
         "required": ["treatment_id", "treatment_date", "invasive_species_agency_code"],
         "properties": {
