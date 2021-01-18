@@ -494,7 +494,7 @@ const main = async () => {
           point_of_interest_data: {
             invasive_species_agency_code: getCommonValue(surveyAgencyCodes, undefined),
             jurisdiction_code: Number(siteRecord.Jur1pct) === 100 ? siteRecord.Jur1 : undefined,
-            point_of_interest_status: 'done', // TODO constant this
+            // point_of_interest_status: 'done',
             general_comment: siteRecord.Comments,
             access_description: siteRecord.AccessDescription,
             media_indicator: false,
