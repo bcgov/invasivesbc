@@ -73,8 +73,6 @@ const saveBCGW = async (id: any, req: any) => {
       .catch((error) => {
         defaultLog.debug({ label: 'addingContext', message: 'error', error });
       });
-      ;
-
   };
 
   /* Build the bulk insert statement*/

@@ -91,7 +91,6 @@ function getDataBC(): RequestHandler {
     axios
       .get(url)
       .then((response) => {
-        //console.log('response from databc: ', response.data);
         return res.status(200).json({ target: response.data?.features[0]?.properties });
       })
       .catch((error) => {
