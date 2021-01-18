@@ -16,8 +16,8 @@ const defaultLog = getLogger('context-queries');
  * @param req {object} The express request object
  */
 const saveBCGW = async (id: any, req: any) => {
-  const y = req.body.activity_data.latitude;
-  const x = req.body.activity_data.longitude;
+  const lat = req.body.form_data.activity_data.latitude;
+  const lon = req.body.form_data.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
@@ -57,7 +57,7 @@ const saveBCGW = async (id: any, req: any) => {
   const sqlStatement: SQLStatement = SQL``;
 
   const queryBCGW = async (layer) => {
-    const url = `${api}/context/databc/${layer.tableName}?lon=${x}&lat=${y}`;
+    const url = `${api}/context/databc/${layer.tableName}?lon=${lon}&lat=${lat}`;
 
     await axios
       .get(url, config)
@@ -104,8 +104,8 @@ const saveBCGW = async (id: any, req: any) => {
  * @param req {object} The express request object
  */
 const saveInternal = (id: any, req: any) => {
-  const y = req.body.activity_data.latitude;
-  const x = req.body.activity_data.longitude;
+  const lat = req.body.form_data.activity_data.latitude;
+  const lon = req.body.form_data.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
@@ -131,7 +131,7 @@ const saveInternal = (id: any, req: any) => {
 
   /* For each layer run an asynchronous request */
   for (const layer of layers) {
-    const url = `${api}/context/internal/${layer.targetAttribute}?lon=${x}&lat=${y}`;
+    const url = `${api}/context/internal/${layer.targetAttribute}?lon=${lon}&lat=${lat}`;
 
     axios
       .get(url, config)
@@ -172,8 +172,8 @@ const saveInternal = (id: any, req: any) => {
  * @param req {object} The express request object
  */
 const saveElevation = (id: any, req: any) => {
-  const y = req.body.activity_data.latitude;
-  const x = req.body.activity_data.longitude;
+  const lat = req.body.form_data.activity_data.latitude;
+  const lon = req.body.form_data.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
   const config = {
     headers: {
@@ -182,7 +182,7 @@ const saveElevation = (id: any, req: any) => {
   };
 
   /* For each layer run an asynchronous request */
-  const url = `${api}/context/elevation?lon=${x}&lat=${y}`;
+  const url = `${api}/context/elevation?lon=${lon}&lat=${lat}`;
 
   axios
     .get(url, config)
@@ -221,7 +221,7 @@ const saveElevation = (id: any, req: any) => {
  * @param req {object} The express request object
  */
 const saveWell = (id: any, req: any) => {
-  const a = req.body.activity_data;
+  const a = req.body.form_data.activity_data;
   const payload = {
     query: {
       lon: a.longitude,
