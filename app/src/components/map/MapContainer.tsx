@@ -67,10 +67,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const getSteepSlopes = () => {
     return L.tileLayer.offline('https://forest-bridges.s3.amazonaws.com/steep-areas/{z}/{x}/{y}.png', {
-        maxZoom: 24,
-        tms: true,
-        opacity: 0.5,
-        maxNativeZoom: 15
+      maxZoom: 24,
+      tms: true,
+      opacity: 0.5,
+      maxNativeZoom: 15
     });
   };
 
@@ -139,14 +139,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.fitBounds(bounds);
   };
 
-  const addLayerControls = (
-    baseLayerControlOptions: any,
-    overlayControlOptions: any
-  ) => {
-    mapRef.current.addControl(L.control.layers(
-      baseLayerControlOptions,
-      overlayControlOptions
-    ));
+  const addLayerControls = (baseLayerControlOptions: any, overlayControlOptions: any) => {
+    mapRef.current.addControl(L.control.layers(baseLayerControlOptions, overlayControlOptions));
   };
 
   const initMap = () => {
@@ -169,14 +163,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const basemaps = {
       'Esri Imagery': esriBaseLayer,
       'BC Government': bcBaseLayer
-    }
+    };
 
     const steepSlopes = getSteepSlopes();
     const overlays = {
       'Steep Slopes': steepSlopes
-    }
+    };
 
-    addLayerControls(basemaps,overlays);
+    addLayerControls(basemaps, overlays);
 
     addSaveTilesControl(esriBaseLayer);
 
