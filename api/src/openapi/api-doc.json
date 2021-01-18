@@ -2140,7 +2140,7 @@
         }
       },
       "IAPP_Monitoring": {
-        "title": "IAPP Treatment Monitoring common properties",
+        "title": "IAPP Treatment Monitoring Common Properties",
         "type": "object",
         "required": [],
         "properties": {
