@@ -1,5 +1,8 @@
-import { ICreateOrUpdateActivity } from 'interfaces/useInvasivesApi-interfaces';
+import { ICreateOrUpdateActivity } from '../interfaces/useInvasivesApi-interfaces';
 
+/*
+  Function that retrieves an activity based on an activityId by making a call to the API
+*/
 export async function getActivityByIdFromApi(invasivesApi: any, activityId: any) {
   const response = await invasivesApi.getActivityById(activityId);
 
@@ -26,6 +29,10 @@ export async function getActivityByIdFromApi(invasivesApi: any, activityId: any)
   };
 }
 
+/*
+  Function to retrieve an ICreateOrUpdateActivity activity object based on a given activity
+  and possibly custom formData
+*/
 export function getICreateOrUpdateActivity(activity: any, formData?: any): ICreateOrUpdateActivity {
   const activityDoc: ICreateOrUpdateActivity = {
     activity_id: activity.activityId,
