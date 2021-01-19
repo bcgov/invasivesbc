@@ -3,8 +3,8 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Treatment_Mechanical_TerrestrialPlant ;
-  CREATE OR REPLACE VIEW Activity_Treatment_Mechanical_TerrestrialPlant as (
+  drop view if exists invasivesbc.Treatment_Mechanical_TerrestrialPlant ;
+  CREATE OR REPLACE VIEW Treatment_Mechanical_TerrestrialPlant as (
         select
         record.activity_id,
         record.invasive_plant_code,
@@ -44,10 +44,10 @@ and record.soil_disturbance_code = soil_disturbance_codes.code_name
 )
 
 
-    COMMENT ON VIEW Activity_Treatment_Chemical_MechanicalPlant IS 'View on biological treatments for terrestrial plant specific fields, with code table values resolved';
+    COMMENT ON VIEW Treatment_Mechanical_TerrestrialPlant IS 'View on biological treatments for terrestrial plant specific fields, with code table values resolved';
   `);
 }
 
 export async function down(knex: Knex): Promise<void> {
-  knex.raw(`drop view if exists invasivesbc.Activity_Treatment_Mechanical_TerrestrialPlant ;`);
+  knex.raw(`drop view if exists invasivesbc.Treatment_Mechanical_TerrestrialPlant cascade ;`);
 }
