@@ -33,11 +33,8 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
 
   return (
     <Box>
-      <Box
-        className={classes.resultsBar}>
-        <Typography variant="h5">
-          {`${props.totalItems} Matching Results Found`}
-        </Typography>
+      <Box className={classes.resultsBar}>
+        <Typography variant="h5">{`${props.totalItems} Matching Results Found`}</Typography>
         <Button
           disabled={editIds.length === 0}
           variant="contained"
