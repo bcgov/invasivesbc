@@ -12,7 +12,7 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
-import { ActivityTypeIcon } from 'constants/activities';
+import { ActivityTypeIcon, ActivitySubtype } from 'constants/activities';
 import { MediumDateFormat } from 'constants/misc';
 import moment from 'moment';
 import React from 'react';
@@ -92,6 +92,11 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
     <List>
       {props.activities.map((activity) => {
         const isChecked = editIds.includes(activity._id);
+        // Temporarily limit bulk editing:
+        const bulkEditIsDisabled = !(
+          activity.activitySubtype === ActivitySubtype.Observation_PlantTerrestrial
+        );
+        console.log(activity);
 
         return (
           <Paper key={activity._id}>
@@ -102,6 +107,8 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
               <Grid className={classes.multiSelect}>
                 <Checkbox
                   checked={isChecked}
+                  disabled={bulkEditIsDisabled}
+                  style={bulkEditIsDisabled ? {visibility: 'hidden'} : {}}
                   onChange={() => setEditIds(
                     isChecked
                     ? editIds.filter((id) => id !== activity._id)
