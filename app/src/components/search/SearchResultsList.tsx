@@ -39,6 +39,7 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
           onClick={() => bulkEditActivities(editIds)}
           >
           Edit Selected
+          {editIds.length ? ' (' + editIds.length + ')' : ''}
         </Button>
       </Box>
       <SearchActivitiesList
