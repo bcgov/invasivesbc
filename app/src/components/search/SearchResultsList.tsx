@@ -14,11 +14,11 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
   const [editIds, setEditIds] = useState<any[]>([]);
   const history = useHistory();
 
-  const bulkEditActivities = (editIds: any) => {
+  const bulkEditActivities = (ids: any) => {
     history.push({
       pathname: `/home/search/bulkedit`,
-      search: '?activities=' + editIds.join(','),
-      state: { activityIdsToEdit: editIds }
+      search: '?activities=' + ids.join(','),
+      state: { activityIdsToEdit: ids }
     });
   };
 

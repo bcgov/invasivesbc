@@ -93,7 +93,7 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
       {props.activities.map((activity) => {
         const isChecked = editIds.includes(activity._id);
         // Temporarily limit bulk editing:
-        const bulkEditIsDisabled = !(activity.activitySubtype === ActivitySubtype.Observation_PlantTerrestrial);
+        const bulkEditIsDisabled = activity.activitySubtype !== ActivitySubtype.Observation_PlantTerrestrial;
         console.log(activity);
 
         return (
