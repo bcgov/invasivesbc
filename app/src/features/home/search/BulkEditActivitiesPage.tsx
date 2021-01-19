@@ -26,6 +26,10 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   const activityIdsToEdit = queryParams.activities ? queryParams.activities.split(',') : [];
 
   useEffect(() => {
+    /*
+      Identify the activity type and subtype from the activities selected for bulk edit
+      Generate an empty bulk edit version of the corresponding activity for editing purposes
+    */
     const setupActivityDataToEdit = async () => {
       const { activityType, activitySubtype } = await getActivityByIdFromApi(invasivesApi, activityIdsToEdit[0]);
       const editActivityType = `${activityType}_BulkEdit` as ActivityType;
