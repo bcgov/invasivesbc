@@ -16,6 +16,33 @@ const InvasiveAnimals = {
   invasive_animal_code: {}
 };
 
+const WaterbodyData = {
+  waterbody_name_gazetted: {},
+  waterbody_name_local: {},
+  waterbody_type: {},
+  reach_number: {},
+  water_level_management: {},
+  waterbody_use: {},
+  adjacent_land_use: {},
+  substrate_type: {},
+  watershed_code: {},
+  waterbody_id: {},
+  tidal_influence: {
+    'ui:widget': 'radio'
+  }
+};
+
+const ProjectData = {
+  project_id: {},
+  fish_permit_number: {},
+  start_date: {},
+  completion_date: {},
+  crew: {},
+  purpose: {},
+  targeted_species: {},
+  method: {}
+};
+
 const Observation = {
   observer_first_name: {},
   observer_last_name: {},
@@ -62,39 +89,11 @@ const Observation_PlantTerrestial = {
 };
 
 const Observation_PlantAquatic = {
-  specific_use_code: {},
-  proposed_action_code: {},
-  flowering: {},
-  plant_life_stage: {},
-  plant_health: {},
-  plant_seed_stage: {},
-  range_unit_number: {},
-  legacy_site_ind: {
-    'ui:widget': 'radio'
+  waterbody_data: {
+    ...WaterbodyData
   },
-  early_detection_rapid_resp_ind: {
-    'ui:widget': 'radio'
-  },
-  research_detection_ind: {
-    'ui:widget': 'radio'
-  },
-  sample_point_number: {},
-  special_care_ind: {
-    'ui:widget': 'radio'
-  },
-  biological_ind: {
-    'ui:widget': 'radio'
-  },
-  secchi_depth: {},
-  water_depth: {},
-  voucher_submitted_ind: {
-    'ui:widget': 'radio'
-  },
-  voucher_submission_detail: {},
-  invasive_plants: {
-    items: {
-      ...InvasivePlants
-    }
+  project_data: {
+    ...ProjectData
   }
 };
 

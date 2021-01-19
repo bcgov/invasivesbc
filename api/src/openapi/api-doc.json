@@ -692,134 +692,225 @@
       "Observation_PlantAquatic": {
         "title": "Aquatic Plant Information",
         "type": "object",
-        "required": [
-          "specific_use_code",
-          "proposed_treatment_code",
-          "flowering",
-          "plant_life_stage_code",
-          "plant_health_code",
-          "plant_seed_stage_code",
-          "legacy_site_ind",
-          "early_detection_rapid_resp_ind",
-          "research_detection_ind",
-          "special_care_ind",
-          "biological_ind",
-          "secchi_depth",
-          "water_depth",
-          "voucher_submitted_ind",
-          "invasive_plants"
-        ],
         "properties": {
-          "invasive_plants": {
-            "type": "array",
-            "title": "Invasive Plants",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlants"
+          "waterbody_data": {
+            "type": "object",
+            "title": "Waterbody Data",
+            "properties": {
+              "waterbody_name_gazetted": {
+                "type": "string",
+                "title": "Waterbody Name (Gazetted)"
+              },
+              "waterbody_name_local": {
+                "type": "string",
+                "title": "Waterbody Name (Local)"
+              },
+              "waterbody_type": {
+                "type": "string",
+                "title": "Waterbody Type",
+                "enum": [
+                  "Intertidal",
+                  "Wetland",
+                  "Bog",
+                  "Lake",
+                  "Confined Pond",
+                  "Discharging Pond",
+                  "Ditch",
+                  "Slough",
+                  "River",
+                  "Stream"
+                ]
+              },
+              "reach_number": {
+                "type": "string",
+                "title": "Reach Number"
+              },
+              "water_level_management": {
+                "type": "string",
+                "title": "Water Level Management"
+              },
+              "waterbody_use": {
+                "type": "string",
+                "title": "Waterbody Use"
+              },
+              "adjacent_land_use": {
+                "type": "string",
+                "title": "Adjacent Land Use"
+              },
+              "substrate_type": {
+                "type": "string",
+                "title": "Substrate Type",
+                "enum": [
+                  "Silt/Organic",
+                  "Clay",
+                  "Sand",
+                  "Compact Gravel",
+                  "Cobble",
+                  "Rip-rap"
+                ]
+              },
+              "watershed_code": {
+                "type": "string",
+                "title": "Watershed Code"
+              },
+              "waterbody_id": {
+                "type": "string",
+                "title": "Waterbody ID"
+              },
+              "tidal_influence": {
+                "type": "boolean",
+                "title": "Tidal Influence"
+              }
             }
           },
-          "specific_use_code": {
-            "type": "string",
-            "title": "Specific Use",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "specific_use_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
+          "project_data": {
+            "type": "object",
+            "title": "Project Data",
+            "properties": {
+              "project_id": {
+                "type": "string",
+                "title": "Project ID"
+              },
+              "fish_permit_number": {
+                "type": "string",
+                "title": "Fish Permit Number"
+              },
+              "start_date": {
+                "type": "string",
+                "format": "date",
+                "title": "Start Date"
+              },
+              "completion_date": {
+                "type": "string",
+                "format": "date",
+                "title": "Completion Date"
+              },
+              "crew": {
+                "type": "string",
+                "title": "Crew"
+              },
+              "purpose": {
+                "type": "string",
+                "title": "Purpose",
+                "enum": [
+                  "Survey",
+                  "Monitoring",
+                  "Species Verification"
+                ]
+              },
+              "targeted_species": {
+                "type": "string",
+                "title": "Targeted Species"
+              },
+              "method": {
+                "type": "string",
+                "title": "Method"
+              }
             }
           },
-          "proposed_treatment_code": {
-            "type": "string",
-            "title": "Proposed Action",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "proposed_treatment_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
+          "terrain_characteristics": {
+            "type": "object",
+            "title": "Terrain Characteristics",
+            "properties": {
+              "setting": {
+                "type": "string",
+                "title": "Setting"
+              },
+              "aspect": {
+                "type": "string",
+                "title": "Aspect"
+              },
+              "hillslope_coupling": {
+                "type": "string",
+                "title": "Hillslope Coupling"
+              },
+              "lake_basin_genesis": {
+                "type": "string",
+                "title": "Lake Basin Genesis"
+              },
+              "land_use_percent": {
+                "type": "string",
+                "title": "Land Use (%)"
+              },
+              "shoreline_type": {
+                "type": "string",
+                "title": "Shoreline Type"
+              },
+              "percentage_of_type": {
+                "type": "string",
+                "title": "Percentage of Type"
+              },
+              "cover": {
+                "type": "string",
+                "title": "Cover"
+              },
+              "recreational_features": {
+                "type": "string",
+                "title": "Recreational Features"
+              },
+              "permanent_inlets": {
+                "type": "string",
+                "title": "Inlets (Permanent)"
+              },
+              "other_inlets": {
+                "type": "string",
+                "title": "Inlets (Other)"
+              },
+              "outlets": {
+                "type": "string",
+                "title": "Outlets"
+              },
+              "inlet_spawning_habitat": {
+                "type": "string",
+                "title": "Inlet Spawning Habitat Present"
+              }
             }
           },
-          "flowering": {
-            "type": "boolean",
-            "title": "Flowering"
-          },
-          "plant_life_stage_code": {
-            "type": "string",
-            "title": "Life Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_life_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
+          "access": {
+            "type": "object",
+            "title": "Access",
+            "properties": {
+              "air": {
+                "type": "string",
+                "title": "Air"
+              },
+              "road": {
+                "type": "string",
+                "title": "Road"
+              },
+              "auto": {
+                "type": "string",
+                "title": "Auto"
+              },
+              "off_road": {
+                "type": "string",
+                "title": "Off Road"
+              },
+              "off_road_distance": {
+                "type": "string",
+                "title": "Off Road Distance"
+              },
+              "trail": {
+                "type": "string",
+                "title": "Trail"
+              },
+              "trail_distance": {
+                "type": "string",
+                "title": "Trail Distance"
+              },
+              "closest_community": {
+                "type": "string",
+                "title": "Closest Community"
+              },
+              "water_access": {
+                "type": "string",
+                "title": "Water Access"
+              },
+              "comments": {
+                "type": "string",
+                "title": "Comments"
+              }
             }
-          },
-          "plant_health_code": {
-            "type": "string",
-            "title": "Health",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_health_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "plant_seed_stage_code": {
-            "type": "string",
-            "title": "Seed Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_seed_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "range_unit_number": {
-            "type": "string",
-            "title": "Range Unit"
-          },
-          "legacy_site_ind": {
-            "type": "boolean"
-          },
-          "early_detection_rapid_resp_ind": {
-            "type": "boolean",
-            "title": "Early Detection"
-          },
-          "research_detection_ind": {
-            "type": "boolean",
-            "title": "Research Observation"
-          },
-          "sample_point_number": {
-            "type": "string",
-            "title": "Sample Number"
-          },
-          "special_care_ind": {
-            "type": "boolean",
-            "title": "Special Care"
-          },
-          "biological_ind": {
-            "type": "boolean",
-            "title": "Biological Release"
-          },
-          "secchi_depth": {
-            "type": "number",
-            "format": "float",
-            "title": "Secchi Depth"
-          },
-          "water_depth": {
-            "type": "number",
-            "format": "float",
-            "title": "Water Depth"
-          },
-          "voucher_submitted_ind": {
-            "type": "boolean",
-            "title": "Voucher Submitted"
-          },
-          "voucher_submission_detail": {
-            "type": "string",
-            "title": "Voucher Submission Details"
           }
         }
       },
