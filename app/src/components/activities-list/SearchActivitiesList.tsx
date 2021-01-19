@@ -1,5 +1,6 @@
 import {
   Box,
+  Checkbox,
   Divider,
   Grid,
   List,
@@ -39,6 +40,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'inline',
       marginRight: '1rem'
     }
+  },
+  multiSelect: {
+    flexBasis: 0
   }
 }));
 
@@ -71,12 +75,14 @@ const SearchActivityListItem: React.FC<ISearchActivityListItem> = (props) => {
 
 interface ISearchActivitiesList {
   activities: any[];
+  editIds?: string[];
+  setEditIds?: any;
 }
 
 const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
   const classes = useStyles();
-
   const history = useHistory();
+  const { editIds, setEditIds } = props;
 
   const navigateToSearchActivityPage = async (doc: any) => {
     history.push(`/home/search/activity/${doc._id}`);
@@ -85,12 +91,25 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
   return (
     <List>
       {props.activities.map((activity) => {
+        const isChecked = editIds.includes(activity._id);
+
         return (
           <Paper key={activity._id}>
             <ListItem
               button
               className={classes.activitiyListItem}
               onClick={() => navigateToSearchActivityPage(activity)}>
+              <Grid className={classes.multiSelect}>
+                <Checkbox
+                  checked={isChecked}
+                  onChange={() => setEditIds(
+                    isChecked
+                    ? editIds.filter((id) => id !== activity._id)
+                    : [activity._id, ...editIds]
+                  )}
+                  onClick={(event) => event.stopPropagation()}
+                />
+              </Grid>
               <ListItemIcon>
                 <SvgIcon fontSize="large" component={ActivityTypeIcon[activity.activityType]} />
               </ListItemIcon>

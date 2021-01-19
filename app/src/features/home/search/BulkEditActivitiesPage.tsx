@@ -6,6 +6,7 @@ import { generateActivityPayload } from 'utils/addActivity';
 import { ActivityStatus, ActivityType, ActivitySubtype, FormValidationStatus } from 'constants/activities';
 import { IActivity } from 'interfaces/activity-interfaces';
 import { debounced } from 'utils/FunctionUtils';
+import { useQuery } from 'hooks/useQuery';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
@@ -20,9 +21,9 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   const [activity, setActivity] = useState(null);
   const invasivesApi = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
+  const queryParams = useQuery();
 
-  // This list of activity IDs to edit will eventually be passed into this component
-  const activityIdsToEdit = ['597b3181-6a36-465b-81c0-0f342156bf26', '37fecfba-b33a-4b7c-8e32-ab0af8f8213d'];
+  const activityIdsToEdit = queryParams.activities ? queryParams.activities.split(',') : [];
 
   useEffect(() => {
     const setupActivityDataToEdit = async () => {
