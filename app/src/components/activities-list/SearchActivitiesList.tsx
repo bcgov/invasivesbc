@@ -93,9 +93,7 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
       {props.activities.map((activity) => {
         const isChecked = editIds.includes(activity._id);
         // Temporarily limit bulk editing:
-        const bulkEditIsDisabled = !(
-          activity.activitySubtype === ActivitySubtype.Observation_PlantTerrestrial
-        );
+        const bulkEditIsDisabled = !(activity.activitySubtype === ActivitySubtype.Observation_PlantTerrestrial);
         console.log(activity);
 
         return (
@@ -108,12 +106,10 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
                 <Checkbox
                   checked={isChecked}
                   disabled={bulkEditIsDisabled}
-                  style={bulkEditIsDisabled ? {visibility: 'hidden'} : {}}
-                  onChange={() => setEditIds(
-                    isChecked
-                    ? editIds.filter((id) => id !== activity._id)
-                    : [activity._id, ...editIds]
-                  )}
+                  style={bulkEditIsDisabled ? { visibility: 'hidden' } : {}}
+                  onChange={() =>
+                    setEditIds(isChecked ? editIds.filter((id) => id !== activity._id) : [activity._id, ...editIds])
+                  }
                   onClick={(event) => event.stopPropagation()}
                 />
               </Grid>

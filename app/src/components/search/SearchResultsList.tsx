@@ -18,17 +18,18 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
     history.push({
       pathname: `/home/search/bulkedit`,
       search: '?activities=' + editIds.join(','),
-      state: { activityIdsToEdit: editIds },
+      state: { activityIdsToEdit: editIds }
     });
   };
 
   return (
     <Box>
-      <Box style={{
-        justifyContent: 'space-between',
-        display: 'flex',
-        alignItems: 'flex-end'
-      }}>
+      <Box
+        style={{
+          justifyContent: 'space-between',
+          display: 'flex',
+          alignItems: 'flex-end'
+        }}>
         <Typography variant="h5">
           {(!props.totalItems && 'No Results Found') || `${props.totalItems} Matching Results Found`}
         </Typography>
@@ -36,17 +37,12 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
           disabled={editIds.length === 0}
           variant="contained"
           color="primary"
-          onClick={() => bulkEditActivities(editIds)}
-          >
+          onClick={() => bulkEditActivities(editIds)}>
           Edit Selected
           {editIds.length ? ' (' + editIds.length + ')' : ''}
         </Button>
       </Box>
-      <SearchActivitiesList
-        activities={props.results}
-        editIds={editIds}
-        setEditIds={setEditIds}
-      />
+      <SearchActivitiesList activities={props.results} editIds={editIds} setEditIds={setEditIds} />
     </Box>
   );
 };
