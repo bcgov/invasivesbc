@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Button, makeStyles, Theme, Typography } from '@material-ui/core';
 import SearchActivitiesList from 'components/activities-list/SearchActivitiesList';
 import { ISearchActivity } from 'features/home/search/SearchPage';
 import React, { useState } from 'react';
@@ -10,11 +10,20 @@ interface ISearchResultsList {
   results?: ISearchActivity[];
 }
 
+const useStyles = makeStyles((theme: Theme) => ({
+  resultsBar: {
+    justifyContent: 'space-between',
+    display: 'flex',
+    alignItems: 'flex-end'
+  }
+}));
+
 const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
   const [editIds, setEditIds] = useState<any[]>([]);
   const history = useHistory();
+  const classes = useStyles();
 
-  const bulkEditActivities = (ids: any) => {
+  const navigateToBulkEditPage = (ids: any) => {
     history.push({
       pathname: `/home/search/bulkedit`,
       search: '?activities=' + ids.join(','),
@@ -25,19 +34,15 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
   return (
     <Box>
       <Box
-        style={{
-          justifyContent: 'space-between',
-          display: 'flex',
-          alignItems: 'flex-end'
-        }}>
+        className={classes.resultsBar}>
         <Typography variant="h5">
-          {(!props.totalItems && 'No Results Found') || `${props.totalItems} Matching Results Found`}
+          {`${props.totalItems} Matching Results Found`}
         </Typography>
         <Button
           disabled={editIds.length === 0}
           variant="contained"
           color="primary"
-          onClick={() => bulkEditActivities(editIds)}>
+          onClick={() => navigateToBulkEditPage(editIds)}>
           Edit Selected
           {editIds.length ? ' (' + editIds.length + ')' : ''}
         </Button>
