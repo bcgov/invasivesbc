@@ -37,5 +37,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  knex.raw(`drop view if exists invasivesbc.Activity_Observation_TerrestrialPlant_with_codes`);
+  knex.raw(`drop view if exists invasivesbc.Activity_Observation_TerrestrialPlant_with_codes cascade;`);
 }

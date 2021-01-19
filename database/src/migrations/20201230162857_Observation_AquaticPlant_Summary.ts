@@ -3,8 +3,8 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Observation_AquaticPlant cascade;
-  CREATE OR REPLACE VIEW Activity_Observation_AquaticPlant as (
+  drop view if exists invasivesbc.Observation_AquaticPlant_Summary cascade;
+  CREATE OR REPLACE VIEW Observation_AquaticPlant_Summary as (
         select
         activity_id as activity_id,
 	      invasive_plant_codes.code_description as invasive_plant,
@@ -55,12 +55,13 @@ export async function up(knex: Knex): Promise<void> {
 
   left join code_header plant_seed_stage_code_header on plant_seed_stage_code_header.code_header_title = 'plant_seed_stage_code' and plant_seed_stage_code_header.valid_to is null
   left join code plant_seed_stage_codes on plant_seed_stage_codes.code_header_id = plant_seed_stage_code_header.code_header_id
-  and record.plant_seed_stage_code = plant_seed_stage_codes.code_name)    `);
+  and record.plant_seed_stage_code = plant_seed_stage_codes.code_name
+  )    `);
 }
 
 export async function down(knex: Knex): Promise<void> {
   knex.raw(`
 
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Observation_AquaticPlant; `);
+  drop view if exists invasivesbc.Observation_AquaticPlant_Summary; `);
 }
