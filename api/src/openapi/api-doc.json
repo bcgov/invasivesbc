@@ -2133,8 +2133,7 @@
                 {
                   "$ref": "#/components/schemas/IAPP_Monitoring"
                 }
-              ],
-              "properties": {}
+              ]
             }
           }
         }
@@ -2142,7 +2141,6 @@
       "IAPP_Monitoring": {
         "title": "IAPP Treatment Monitoring Common Properties",
         "type": "object",
-        "required": [],
         "properties": {
           "monitoring_id": {
             "type": "string",
@@ -2195,7 +2193,6 @@
       "IAPP_Mechanical_Treatment": {
         "title": "Mechanical Treatment Information",
         "type": "object",
-        "required": [],
         "allOf": [
           {
             "$ref": "#/components/schemas/IAPP_Treatment"
@@ -2222,7 +2219,6 @@
       "IAPP_Chemical_Treatment": {
         "title": "Chemical Treatment Information",
         "type": "object",
-        "required": [],
         "allOf": [
           {
             "$ref": "#/components/schemas/IAPP_Treatment"
@@ -2256,7 +2252,6 @@
       "IAPP_Biological_Treatment": {
         "title": "Biological Treatment Information",
         "type": "object",
-        "required": [],
         "allOf": [
           {
             "$ref": "#/components/schemas/IAPP_Treatment"
@@ -2278,9 +2273,7 @@
       },
       "IAPP_Biological_Dispersal": {
         "title": "Biological Dispersal Information",
-        "type": "object",
-        "required": [],
-        "properties": {}
+        "type": "object"
       }
     }
   }
