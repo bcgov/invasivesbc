@@ -60,6 +60,36 @@ const AquaticAnimals = {
   genetic_structure_collected: {}
 };
 
+const LakeBathymetry = {
+  survey_type: {},
+  littoral_area: {},
+  max_depth: {},
+  benchmark: {},
+  max_water_level: {},
+  benchmark_type: {}
+};
+
+const AquaticPlants = {
+  invasive_plant_code: {},
+  invasive_plant_density_code: {},
+  invasive_plant_distribution_code: {},
+  plant_life_stage_code: {},
+  plant_health_code: {},
+  plant_seed_stage_code: {},
+  voucher_sample_id: {},
+  genetic_sample_id: {},
+  genetic_structure_collected: {},
+  flowering: {
+    'ui:widget': 'radio'
+  },
+  early_detection_rapid_resp_ind: {
+    'ui:widget': 'radio'
+  },
+  negative_obs_ind: {
+    'ui:widget': 'radio'
+  }
+};
+
 const WaterbodyData = {
   waterbody_name_gazetted: {},
   waterbody_name_local: {},
@@ -85,6 +115,52 @@ const ProjectData = {
   purpose: {},
   targeted_species: {},
   method: {}
+};
+
+const TerrainCharacteristics = {
+  setting: {},
+  aspect: {},
+  hillslope_coupling: {},
+  lake_basin_genesis: {},
+  land_use_percent: {},
+  shoreline_type: {},
+  percentage_of_type: {},
+  cover: {},
+  recreational_features: {},
+  permanent_inlets: {},
+  other_inlets: {},
+  outlets: {},
+  inlet_spawning_habitat: {}
+};
+
+const AquaticFlora = {
+  emergent_vegetation: {},
+  emergent_vegetation_dominant_species: {},
+  submergent_vegetation: {},
+  submergent_vegetation_dominant_species: {},
+  voucher_specimens_collected: {},
+  floating_algae_present: {
+    'ui:widget': 'radio'
+  }
+};
+
+const LimnologicalStationWaterQuality = {
+  station_number: {},
+  date_time: {},
+  location: {},
+  ems_number: {}
+};
+
+const WaterQuality = {
+  water_sample: {},
+  water_sample_depth: {},
+  water_sample_requisition_number: {},
+  surface_water_temperature: {},
+  field_ph: {},
+  turbidity: {},
+  secchi_depth: {},
+  water_colour: {},
+  ice_depth: {}
 };
 
 const Observation = {
@@ -154,6 +230,44 @@ const Observation_PlantAquatic = {
     'ui:column-md': 6,
     'ui:column-lg': 4,
     ...ProjectData
+  },
+  terrain_characteristics: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...TerrainCharacteristics
+  },
+  aquatic_flora: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...AquaticFlora
+  },
+  lake_bathymetry: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...LakeBathymetry
+  },
+  limnological_station_water_quality: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...LimnologicalStationWaterQuality
+  },
+  water_quality: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...WaterQuality
+  },
+  invasive_aquatic_plants: {
+    items: {
+      'ui:column-xs': 12,
+      'ui:column-md': 6,
+      'ui:column-lg': 4,
+      ...AquaticPlants
+    }
   }
 };
 
@@ -176,6 +290,36 @@ const Observation_AnimalAquatic = {
     'ui:column-md': 6,
     'ui:column-lg': 4,
     ...ProjectData
+  },
+  terrain_characteristics: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...TerrainCharacteristics
+  },
+  aquatic_flora: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...AquaticFlora
+  },
+  lake_bathymetry: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...LakeBathymetry
+  },
+  limnological_station_water_quality: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...LimnologicalStationWaterQuality
+  },
+  water_quality: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...WaterQuality
   },
   invasive_aquatic_animals: {
     items: {
