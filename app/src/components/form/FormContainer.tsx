@@ -18,6 +18,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   isDisabled?: boolean;
   pasteFormData?: Function;
   copyFormData?: Function;
+  hideErrorCheckButton?: boolean;
   /**
    * A function executed everytime the form changes.
    *
@@ -63,7 +64,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SYNC_SUCCESSFUL || false;
 
   return (
-    <Box>
+    <Box width="100%">
       <Box mb={3}>
         <FormControlsComponent
           onSubmit={() => formRef.submit()}
@@ -71,6 +72,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           onCopy={props.copyFormData ? () => props.copyFormData() : null}
           onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
           activitySubtype={props.activity.activitySubtype}
+          hideErrorCheckButton={props.hideErrorCheckButton}
         />
       </Box>
 
@@ -141,6 +143,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           onCopy={props.copyFormData ? () => props.copyFormData() : null}
           onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
           activitySubtype={props.activity.activitySubtype}
+          hideErrorCheckButton={props.hideErrorCheckButton}
         />
       </Box>
     </Box>

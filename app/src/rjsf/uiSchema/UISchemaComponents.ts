@@ -43,6 +43,13 @@ const Treatment_ChemicalPlant = {
   pesticide_use_permit_PUP: {}
 };
 
+const Treatment_ChemicalPlant_BulkEdit = {
+  pesticide_employer_code: {},
+  pest_management_plan: {},
+  treatment_issues_code: {},
+  chemical_method_code: {}
+};
+
 const Activity = {
   activity_date_time: {
     'ui:widget': 'datetime'
@@ -71,6 +78,11 @@ const Activity = {
   }
 };
 
+const Activity_BulkEdit = {
+  invasive_species_agency_code: {},
+  jurisdiction_code: {}
+};
+
 const MonitoringActivity = {
   ...Activity,
   access_description: {
@@ -85,7 +97,9 @@ const MonitoringActivity = {
 const UISchemaComponents = {
   Treatment_ChemicalPlant,
   Activity,
-  MonitoringActivity
+  MonitoringActivity,
+  Activity_BulkEdit,
+  Treatment_ChemicalPlant_BulkEdit
 };
 
 export default UISchemaComponents;

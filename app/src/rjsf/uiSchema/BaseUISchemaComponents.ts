@@ -17,6 +17,7 @@ const InvasiveAnimals = {
 };
 
 const Observation = {
+  observation_type_code: {},
   observer_first_name: {},
   observer_last_name: {},
   sample_number: {},
@@ -34,13 +35,13 @@ const Observation_PlantTerrestial = {
   aspect_code: {},
   invasive_plant_code: {},
   proposed_treatment_code: {},
-  flowering: {
-    'ui:widget': 'radio'
-  },
   range_unit_number: {},
   plant_life_stage_code: {},
   plant_health_code: {},
   plant_seed_stage_code: {},
+  flowering: {
+    'ui:widget': 'radio'
+  },
   legacy_site_ind: {
     'ui:widget': 'radio'
   },
@@ -59,6 +60,15 @@ const Observation_PlantTerrestial = {
   biological_ind: {
     'ui:widget': 'radio'
   }
+};
+
+const Observation_PlantTerrestrial_BulkEdit = {
+  specific_use_code: {},
+  invasive_plant_code: {},
+  proposed_treatment_code: {},
+  plant_life_stage_code: {},
+  plant_health_code: {},
+  plant_seed_stage_code: {}
 };
 
 const Observation_PlantAquatic = {
@@ -126,6 +136,10 @@ const Treatment = {
   treatment_issues_code: {}
 };
 
+const Treatment_BulkEdit = {
+  treatment_issues_code: {}
+};
+
 const Treatment_MechanicalPlant = {
   invasive_plant_code: {},
   mechanical_method_code: {},
@@ -135,6 +149,13 @@ const Treatment_MechanicalPlant = {
   signage_on_site: {
     'ui:widget': 'radio'
   }
+};
+
+const Treatment_MechanicalPlant_BulkEdit = {
+  mechanical_method_code: {},
+  mechanical_disposal_code: {},
+  root_removal_code: {},
+  soil_disturbance_code: {}
 };
 
 const Treatment_BiologicalPlant = {
@@ -147,12 +168,24 @@ const Treatment_BiologicalPlant = {
   bioagent_maturity_status_code: {}
 };
 
+const Treatment_BiologicalPlant_BulkEdit = {
+  classified_area_code: {},
+  biological_agent_code: {},
+  biological_agent_stage_code: {},
+  bioagent_maturity_status_code: {}
+};
+
 const Treatment_BiologicalDispersalPlant = {
   duration_of_count: {},
   biological_agent_code: {},
   plant_count: {},
   biological_agent_count: {},
   invasive_plant_code: {},
+  biological_agent_presence_code: {}
+};
+
+const Treatment_BiologicalDispersalPlant_BulkEdit = {
+  biological_agent_code: {},
   biological_agent_presence_code: {}
 };
 
@@ -258,13 +291,18 @@ const Herbicide = {
 const BaseUISchemaComponents = {
   Observation,
   Observation_PlantTerrestial,
+  Observation_PlantTerrestrial_BulkEdit,
   Observation_PlantAquatic,
   Observation_AnimalTerrestrial,
   Observation_AnimalAquatic,
   Treatment,
+  Treatment_BulkEdit,
   Treatment_MechanicalPlant,
+  Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
+  Treatment_BiologicalPlant_BulkEdit,
   Treatment_BiologicalDispersalPlant,
+  Treatment_BiologicalDispersalPlant_BulkEdit,
   Treatment_MechanicalTerrestrialAnimal,
   Treatment_ChemicalTerrestrialAnimal,
   Treatment_BiologicalTerrestrialAnimal,

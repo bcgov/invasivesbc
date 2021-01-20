@@ -141,7 +141,7 @@
           }
         }
       },
-      "Activity_Observation_PlantTerrestial": {
+      "Activity_Observation_PlantTerrestrial": {
         "type": "object",
         "properties": {
           "activity_data": {
@@ -151,7 +151,18 @@
             "$ref": "#/components/schemas/Observation"
           },
           "activity_subtype_data": {
-            "$ref": "#/components/schemas/Observation_PlantTerrestial"
+            "$ref": "#/components/schemas/Observation_PlantTerrestrial"
+          }
+        }
+      },
+      "Activity_Observation_PlantTerrestrial_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Observation_PlantTerrestrial_BulkEdit"
           }
         }
       },
@@ -208,6 +219,17 @@
           }
         }
       },
+      "Activity_Treatment_ChemicalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_ChemicalPlant_BulkEdit"
+          }
+        }
+      },
       "Activity_Treatment_MechanicalPlant": {
         "type": "object",
         "properties": {
@@ -219,6 +241,20 @@
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Treatment_MechanicalPlant"
+          }
+        }
+      },
+      "Activity_Treatment_MechanicalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Treatment_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_MechanicalPlant_BulkEdit"
           }
         }
       },
@@ -236,6 +272,20 @@
           }
         }
       },
+      "Activity_Treatment_BiologicalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Treatment_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_BiologicalPlant_BulkEdit"
+          }
+        }
+      },
       "Activity_Treatment_BiologicalDispersalPlant": {
         "type": "object",
         "properties": {
@@ -247,6 +297,20 @@
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Treatment_BiologicalDispersalPlant"
+          }
+        }
+      },
+      "Activity_Treatment_BiologicalDispersalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Treatment_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_BiologicalDispersalPlant_BulkEdit"
           }
         }
       },
@@ -459,15 +523,40 @@
           }
         }
       },
+      "Activity_BulkEdit": {
+        "title": "Basic Information",
+        "type": "object",
+        "properties": {
+          "invasive_species_agency_code": {
+            "type": "string",
+            "title": "Agency",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_species_agency_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The agency code"
+          },
+          "jurisdiction_code": {
+            "type": "string",
+            "title": "Jurisdiction",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "jurisdiction_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The jurisdiction code"
+          }
+        }
+      },
       "Observation": {
         "title": "Observation Information",
         "type": "object",
-        "required": [
-          "observation_type_code",
-          "observer_first_name",
-          "observer_last_name",
-          "negative_obs_ind"
-        ],
+        "required": ["observation_type_code", "observer_first_name", "observer_last_name", "negative_obs_ind"],
         "properties": {
           "observation_type_code": {
             "type": "string",
@@ -503,7 +592,7 @@
           }
         }
       },
-      "Observation_PlantTerrestial": {
+      "Observation_PlantTerrestrial": {
         "title": "Terrestrial Plant Information",
         "type": "object",
         "required": [
@@ -686,6 +775,78 @@
             "type": "boolean",
             "title": "Biological Release",
             "default": false
+          }
+        }
+      },
+      "Observation_PlantTerrestrial_BulkEdit": {
+        "title": "Terrestrial Plant Information",
+        "type": "object",
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "specific_use_code": {
+            "type": "string",
+            "title": "Specific Use",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "specific_use_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "proposed_treatment_code": {
+            "type": "string",
+            "title": "Proposed Action",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "proposed_treatment_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "plant_life_stage_code": {
+            "type": "string",
+            "title": "Life Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "plant_life_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "plant_health_code": {
+            "type": "string",
+            "title": "Health",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "plant_health_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "plant_seed_stage_code": {
+            "type": "string",
+            "title": "Seed Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "plant_seed_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           }
         }
       },
@@ -877,10 +1038,7 @@
       "Observation_AnimalAquatic": {
         "title": "Aquatic Animal Information",
         "type": "object",
-        "required": [
-          "observation_details",
-          "invasive_animals"
-        ],
+        "required": ["observation_details", "invasive_animals"],
         "properties": {
           "invasive_animals": {
             "type": "array",
@@ -940,6 +1098,23 @@
               "x-enum-code-sort-order": "code_sort_order"
             },
             "default": "NA"
+          }
+        }
+      },
+      "Treatment_BulkEdit": {
+        "title": "Treatment Information",
+        "type": "object",
+        "properties": {
+          "treatment_issues_code": {
+            "type": "string",
+            "title": "Treatment Issue",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "treatment_issues_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           }
         }
       },
@@ -1059,34 +1234,12 @@
           "wind_direction_code": {
             "type": "string",
             "title": "Wind Direction",
-            "enum": [
-              "No Wind",
-              "N",
-              "NE",
-              "E",
-              "SE",
-              "S",
-              "SW",
-              "W",
-              "NW"
-            ]
+            "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"]
           },
           "humidity": {
             "type": "number",
             "title": "Humidity",
-            "enum": [
-              0,
-              10,
-              20,
-              30,
-              40,
-              50,
-              60,
-              70,
-              80,
-              90,
-              100
-            ]
+            "enum": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
           },
           "invasive_plants": {
             "type": "array",
@@ -1100,6 +1253,56 @@
             "title": "Herbicide",
             "items": {
               "$ref": "#/components/schemas/Herbicide"
+            }
+          }
+        }
+      },
+      "Treatment_ChemicalPlant_BulkEdit": {
+        "title": "Chemical Treatment Information",
+        "type": "object",
+        "properties": {
+          "pesticide_employer_code": {
+            "type": "string",
+            "title": "Pesticide Employer Code",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "pesticide_employer_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "pest_management_plan": {
+            "type": "string",
+            "title": "Pesticide Management Plan",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "pest_management_plan",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "treatment_issues_code": {
+            "type": "string",
+            "title": "Treatment Issue",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "treatment_issues_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "chemical_method_code": {
+            "type": "string",
+            "title": "Chemical Treatment Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "chemical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
             }
           }
         }
@@ -1178,6 +1381,56 @@
           }
         }
       },
+      "Treatment_MechanicalPlant_BulkEdit": {
+        "title": "Mechanical Treatment Information",
+        "type": "object",
+        "properties": {
+          "mechanical_method_code": {
+            "type": "string",
+            "title": "Mechanical Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "mechanical_disposal_code": {
+            "type": "string",
+            "title": "Disposal Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_disposal_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "root_removal_code": {
+            "type": "string",
+            "title": "Root Removal",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "root_removal_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "soil_disturbance_code": {
+            "type": "string",
+            "title": "Soil Disturbance",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "soil_disturbance_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
       "Treatment_BiologicalPlant": {
         "title": "Biological Treatment Information",
         "type": "object",
@@ -1223,6 +1476,56 @@
           "agent_source": {
             "type": "string",
             "title": "Agent Source"
+          },
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Biological Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "biological_agent_stage_code": {
+            "type": "string",
+            "title": "Biological Agent Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "bioagent_maturity_status_code": {
+            "type": "string",
+            "title": "Bioagent Maturity Status",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "bioagent_maturity_status_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
+      "Treatment_BiologicalPlant_BulkEdit": {
+        "title": "Biological Treatment Information",
+        "type": "object",
+        "properties": {
+          "classified_area_code": {
+            "type": "string",
+            "title": "Classified Area",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "classified_area_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "biological_agent_code": {
             "type": "string",
@@ -1325,13 +1628,38 @@
           }
         }
       },
+      "Treatment_BiologicalDispersalPlant_BulkEdit": {
+        "title": "Biological Dispersal Treatment Information",
+        "type": "object",
+        "properties": {
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Biological Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "biological_agent_presence_code": {
+            "type": "string",
+            "title": "Biological Agent Presence",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_presence_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
       "Treatment_MechanicalTerrestrialAnimal": {
         "title": "Mechanical Treatment Information",
         "type": "object",
-        "required": [
-          "treatment_details",
-          "invasive_animal_code"
-        ],
+        "required": ["treatment_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1354,10 +1682,7 @@
       "Treatment_ChemicalTerrestrialAnimal": {
         "title": "Chemical Treatment Information",
         "type": "object",
-        "required": [
-          "treatment_details",
-          "invasive_animal_code"
-        ],
+        "required": ["treatment_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1380,10 +1705,7 @@
       "Treatment_BiologicalTerrestrialAnimal": {
         "title": "Biological Treatment Information",
         "type": "object",
-        "required": [
-          "treatment_details",
-          "invasive_animal_code"
-        ],
+        "required": ["treatment_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1406,12 +1728,7 @@
       "Monitoring": {
         "title": "Monitoring Information",
         "type": "object",
-        "required": [
-          "activity_id",
-          "observer_first_name",
-          "observer_last_name",
-          "efficacy_code"
-        ],
+        "required": ["activity_id", "observer_first_name", "observer_last_name", "efficacy_code"],
         "properties": {
           "activity_id": {
             "type": "string",
@@ -1441,10 +1758,7 @@
       "Monitoring_ChemicalTerrestrialAquaticPlant": {
         "title": "Chemical Terrestrial Aquatic Monitoring Information",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_plant_code"
-        ],
+        "required": ["monitoring_details", "invasive_plant_code"],
         "properties": {
           "invasive_plant_code": {
             "type": "string",
@@ -1466,10 +1780,7 @@
       "Monitoring_MechanicalTerrestrialAquaticPlant": {
         "title": "Mechanical Terrestrial Aquatic Monitoring Information",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_plant_code"
-        ],
+        "required": ["monitoring_details", "invasive_plant_code"],
         "properties": {
           "invasive_plant_code": {
             "type": "string",
@@ -1581,10 +1892,7 @@
         "title": "Monitoring a mechanical treatment for a terrestrial animal",
         "description": "Mechanical monitoring for terrestrial plants",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_animal_code"
-        ],
+        "required": ["monitoring_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1607,10 +1915,7 @@
         "title": "Monitoring a chemical treatment for a terrestrial animal",
         "description": "Chemical monitoring for terrestrial plants",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_animal_code"
-        ],
+        "required": ["monitoring_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1633,10 +1938,7 @@
         "title": "Monitoring a biological treatment for a terrestrial animal",
         "description": "Biological monitoring for terrestrial plants",
         "type": "object",
-        "required": [
-          "monitoring_details",
-          "invasive_animal_code"
-        ],
+        "required": ["monitoring_details", "invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1682,9 +1984,7 @@
       },
       "PaperFileID": {
         "type": "object",
-        "required": [
-          "description"
-        ],
+        "required": ["description"],
         "properties": {
           "description": {
             "type": "string",
@@ -1695,12 +1995,7 @@
       },
       "Herbicide": {
         "type": "object",
-        "required": [
-          "liquid_herbicide_code",
-          "application_rate",
-          "herbicide_amount",
-          "mix_delivery_rate"
-        ],
+        "required": ["liquid_herbicide_code", "application_rate", "herbicide_amount", "mix_delivery_rate"],
         "properties": {
           "liquid_herbicide_code": {
             "type": "string",
@@ -1751,9 +2046,7 @@
       },
       "InvasivePlants": {
         "type": "object",
-        "required": [
-          "invasive_plant_code"
-        ],
+        "required": ["invasive_plant_code"],
         "properties": {
           "invasive_plant_code": {
             "type": "string",
@@ -1770,9 +2063,7 @@
       },
       "InvasiveAnimals": {
         "type": "object",
-        "required": [
-          "invasive_animal_code"
-        ],
+        "required": ["invasive_animal_code"],
         "properties": {
           "invasive_animal_code": {
             "type": "string",
@@ -1795,6 +2086,46 @@
           },
           "point_of_interest_type_data": {
             "$ref": "#/components/schemas/IAPP_Site"
+          },
+          "surveys": {
+            "type": "array",
+            "title": "Surveys",
+            "description": "Legacy IAPP Surveys from this point of interest",
+            "items": {
+              "$ref": "#/components/schemas/IAPP_Survey"
+            }
+          },
+          "mechanical_treatments": {
+            "type": "array",
+            "title": "Mechanical Treatments",
+            "description": "Legacy IAPP Mechanical Treatments",
+            "items": {
+              "$ref": "#/components/schemas/IAPP_Mechanical_Treatment"
+            }
+          },
+          "chemical_treatments": {
+            "type": "array",
+            "title": "Mechanical Treatments",
+            "description": "Legacy IAPP Mechanical Treatments",
+            "items": {
+              "$ref": "#/components/schemas/IAPP_Chemical_Treatment"
+            }
+          },
+          "biological_treatments": {
+            "type": "array",
+            "title": "Biological Treatments",
+            "description": "Legacy IAPP Biological Treatments",
+            "items": {
+              "$ref": "#/components/schemas/IAPP_Biological_Treatment"
+            }
+          },
+          "biological_dispersals": {
+            "type": "array",
+            "title": "Biological Dispersals",
+            "description": "Legacy IAPP Biological Dispersals",
+            "items": {
+              "$ref": "#/components/schemas/IAPP_Biological_Dispersals"
+            }
           }
         }
       },
@@ -1837,12 +2168,7 @@
           "point_of_interest_status": {
             "type": "string",
             "title": "Point of interest status",
-            "enum": [
-              "sync",
-              "done",
-              "pending",
-              "errors"
-            ]
+            "enum": ["sync", "done", "pending", "errors"]
           },
           "general_comment": {
             "type": "string",
@@ -1877,18 +2203,17 @@
       },
       "IAPP_Site": {
         "title": "IAPP Site",
-        "description": "IAPP Site",
+        "description": "Legacy IAPP Site",
         "type": "object",
         "required": [
           "site_id",
-          "created_date",
-          "aspect",
+          "aspect_code",
           "original_bec_id",
           "map_sheet",
-          "specific_use",
-          "soil_texture",
-          "comments",
-          "species"
+          "specific_use_code",
+          "soil_texture_code",
+          "slope_code",
+          "elevation"
         ],
         "properties": {
           "site_id": {
@@ -1896,22 +2221,16 @@
             "title": "Site ID",
             "maximum": 30
           },
-          "species": {
-            "type": "array",
-            "title": "Species",
-            "items": {
-              "type": "string"
-            }
-          },
-          "created_date": {
-            "type": "string",
-            "title": "Created Date",
-            "maximum": 30
-          },
-          "aspect": {
+          "aspect_code": {
             "type": "string",
             "title": "Aspect",
-            "maximum": 30
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "aspect_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "original_bec_id": {
             "type": "string",
@@ -1923,22 +2242,399 @@
             "title": "Map Sheet",
             "maximum": 30
           },
-          "specific_use": {
+          "specific_use_code": {
             "type": "string",
             "title": "Specific Use",
-            "maximum": 30
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "specific_use_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
-          "soil_texture": {
+          "soil_texture_code": {
             "type": "string",
             "title": "Soil Texture",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "soil_texture_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "slope_code": {
+            "type": "string",
+            "title": "Slope",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "slope_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "elevation": {
+            "type": "string",
+            "title": "Elevation",
             "maximum": 30
           },
-          "comments": {
+          "surveys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IAPP_Survey"
+            }
+          }
+        }
+      },
+      "IAPP_Survey": {
+        "title": "IAPP Survey",
+        "description": "IAPP Survey",
+        "type": "object",
+        "required": ["survey_id"],
+        "properties": {
+          "survey_id": {
             "type": "string",
-            "title": "Comments",
+            "title": "Survey ID",
+            "maximum": 30
+          },
+          "survey_date": {
+            "type": "string",
+            "title": "Survey Date",
+            "maximum": 30
+          },
+          "reported_area": {
+            "type": "number",
+            "title": "Area (m\u00B2)",
+            "minimum": 1
+          },
+          "map_code": {
+            "type": "string",
+            "title": "Map Code",
+            "maximum": 30
+          },
+          "invasive_species_agency_code": {
+            "type": "string",
+            "title": "Agency",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_species_agency_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "common_name": {
+            "type": "string",
+            "title": "Common Name"
+          },
+          "species": {
+            "type": "string",
+            "title": "Species"
+          },
+          "genus": {
+            "type": "string",
+            "title": "Genus"
+          },
+          "invasive_plant_density_code": {
+            "type": "string",
+            "title": "Density",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_density_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "invasive_plant_distribution_code": {
+            "type": "string",
+            "title": "Distribution",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_distribution_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "observation_type_code": {
+            "type": "string",
+            "title": "Type",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "default": "OP"
+          },
+          "general_comment": {
+            "type": "string",
+            "title": "Comment",
+            "maximum": 300
+          },
+          "employer_code": {
+            "type": "string",
+            "title": "Employer"
+          },
+          "weeds_found": {
+            "type": "string",
+            "title": "Weeds Found"
+          },
+          "paper_file_id": {
+            "type": "array",
+            "title": "Paper File ID",
+            "items": {
+              "$ref": "#/components/schemas/PaperFileID"
+            }
+          },
+          "jurisdictions": {
+            "type": "array",
+            "title": "Jurisdictions",
+            "minimum": 1,
+            "maximum": 3,
+            "items": {
+              "type": "object",
+              "properties": {
+                "jurisdiction_code": {
+                  "type": "string",
+                  "title": "Jurisdiction Code"
+                },
+                "percentage": {
+                  "type": "number",
+                  "title": "Percentage",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            }
+          }
+        }
+      },
+      "IAPP_Treatment": {
+        "title": "IAPP Treatment Common Properties",
+        "type": "object",
+        "required": ["treatment_id", "treatment_date", "invasive_species_agency_code"],
+        "properties": {
+          "treatment_id": {
+            "type": "string",
+            "title": "Treatment ID"
+          },
+          "treatment_date": {
+            "type": "string",
+            "title": "Treatment Date"
+          },
+          "map_code": {
+            "type": "string",
+            "title": "Map Code"
+          },
+          "reported_area": {
+            "type": "number",
+            "title": "Reported Area (m\u00B2)",
+            "minimum": 1
+          },
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "common_name": {
+            "type": "string",
+            "title": "Common Name"
+          },
+          "invasive_species_agency_code": {
+            "type": "string",
+            "title": "Agency",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_species_agency_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "paper_file_id": {
+            "type": "array",
+            "title": "Paper File ID",
+            "items": {
+              "$ref": "#/components/schemas/PaperFileID"
+            }
+          },
+          "general_comment": {
+            "type": "string",
+            "title": "Comment",
+            "maximum": 300
+          },
+          "monitoring": {
+            "type": "array",
+            "title": "Monitoring",
+            "items": {
+              "type": "object",
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IAPP_Monitoring"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "IAPP_Monitoring": {
+        "title": "IAPP Treatment Monitoring Common Properties",
+        "type": "object",
+        "properties": {
+          "monitoring_id": {
+            "type": "string",
+            "title": "Monitoring ID"
+          },
+          "monitoring_date": {
+            "type": "string",
+            "title": "Monitoring Date"
+          },
+          "efficacy_code": {
+            "type": "string",
+            "title": "Efficacy Rating",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "efficacy_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "invasive_species_agency_code": {
+            "type": "string",
+            "title": "Agency",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_species_agency_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "employer": {
+            "type": "string",
+            "title": "Employer"
+          },
+          "paper_file_id": {
+            "type": "array",
+            "title": "Paper File ID",
+            "items": {
+              "$ref": "#/components/schemas/PaperFileID"
+            }
+          },
+          "general_comment": {
+            "type": "string",
+            "title": "Comment",
             "maximum": 300
           }
         }
+      },
+      "IAPP_Mechanical_Treatment": {
+        "title": "Mechanical Treatment Information",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IAPP_Treatment"
+          }
+        ],
+        "properties": {
+          "mechanical_id": {
+            "type": "string",
+            "title": "Mechanical ID"
+          },
+          "mechanical_method_code": {
+            "type": "string",
+            "title": "Mechanical Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
+      "IAPP_Chemical_Treatment": {
+        "title": "Chemical Treatment Information",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IAPP_Treatment"
+          }
+        ],
+        "properties": {
+          "chemical_method_code": {
+            "type": "string",
+            "title": "Chemical Treatment Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "chemical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "liquid_herbicide_code": {
+            "type": "string",
+            "title": "Liquid Herbicide",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "liquid_herbicide_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
+      "IAPP_Biological_Treatment": {
+        "title": "Biological Treatment Information",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IAPP_Treatment"
+          }
+        ],
+        "properties": {
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Biological Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
+      "IAPP_Biological_Dispersal": {
+        "title": "Biological Dispersal Information",
+        "type": "object"
       }
     }
   }
