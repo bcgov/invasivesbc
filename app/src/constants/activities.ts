@@ -3,19 +3,25 @@ import { SvgIconComponent, Assignment, Build, Visibility } from '@material-ui/ic
 export enum ActivityType {
   Observation = 'Observation',
   Treatment = 'Treatment',
+  Treatment_BulkEdit = 'Treatment_BulkEdit',
   Monitoring = 'Monitoring'
 }
 
 export enum ActivitySubtype {
-  Observation_PlantTerrestial = 'Activity_Observation_PlantTerrestial',
+  Observation_PlantTerrestrial = 'Activity_Observation_PlantTerrestrial',
+  Observation_PlantTerrestrial_BulkEdit = 'Activity_Observation_PlantTerrestrial_BulkEdit',
   Observation_PlantAquatic = 'Activity_Observation_PlantAquatic',
   Observation_AnimalTerrestrial = 'Activity_Observation_AnimalTerrestrial',
   Observation_AnimalAquatic = 'Activity_Observation_AnimalAquatic',
 
   Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlant',
+  Treatment_ChemicalPlant_BulkEdit = 'Activity_Treatment_ChemicalPlant_BulkEdit',
   Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlant',
+  Treatment_MechanicalPlant_BulkEdit = 'Activity_Treatment_MechanicalPlant_BulkEdit',
   Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
+  Treatment_BiologicalPlant_BulkEdit = 'Activity_Treatment_BiologicalPlant_BulkEdit',
   Treatment_BiologicalDispersalPlant = 'Activity_Treatment_BiologicalDispersalPlant',
+  Treatment_BiologicalDispersalPlant_BulkEdit = 'Activity_Treatment_BiologicalDispersalPlant_BulkEdit',
   Treatment_MechanicalTerrestrialAnimal = 'Activity_Treatment_MechanicalTerrestrialAnimal',
   Treatment_ChemicalTerrestrialAnimal = 'Activity_Treatment_ChemicalTerrestrialAnimal',
   Treatment_BiologicalTerrestrialAnimal = 'Activity_Treatment_BiologicalTerrestrialAnimal',

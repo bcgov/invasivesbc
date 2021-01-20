@@ -354,7 +354,7 @@ const ActivitiesList: React.FC = (props) => {
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
-                          ActivitySubtype.Observation_PlantTerrestial
+                          ActivitySubtype.Observation_PlantTerrestrial
                         )
                       }>
                       Plant Terrestrial
