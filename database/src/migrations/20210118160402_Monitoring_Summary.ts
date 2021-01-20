@@ -2,11 +2,12 @@ import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
-  drop view if exists monitoring_summary cascade
+  set search_path=invasivesbc;
+  drop view if exists monitoring_summary cascade;
   CREATE OR REPLACE VIEW Monitoring_Summary as (
     select
-    id as activity_id,
-    activity_sub_type as monitoring_type,
+    activity_id,
+    activity_subtype as monitoring_type,
     activity_payload::json->'form_data'->'activity_type_data'->'observer_last_name' as primary_user_last_name,
     activity_payload::json->'form_data'->'activity_type_data'->'observer_first_name' as primary_user_first_name,
     activity_payload::json->'form_data'->'acitivity_subtype_data'->'efficacy_code' as efficacy_code
