@@ -517,7 +517,8 @@ const main = async () => {
             slope: siteRecord.Slope,
             aspect_code: mapAspect(siteRecord.Aspect),
             aspect: siteRecord.Aspect,
-            elevation: siteRecord.Elevation
+            elevation: siteRecord.Elevation,
+            species: surveySpecies
           },
 
           surveys: surveys.map((survey) => ({
