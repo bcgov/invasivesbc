@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8e358b65-20ba-42d4-9764-1614135b4e4d",
+		"_postman_id": "fdcd41b9-17fa-4b3d-bdca-40f196c5c8e8",
 		"name": "InvasivesBC-API-DEV",
 		"description": "API for InvasivesBC (Ionic Version)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "980073da-8af3-4b13-b974-06d6a83a549a",
+								"id": "75c93404-0e14-43fc-8f93-09847570a80a",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -95,7 +95,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "783125a0-c353-47c8-a0de-b4d233628aec",
+								"id": "4a33bfb8-7fb8-4ad0-ab45-c84e19c8b660",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -111,7 +111,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "6dae9395-bce7-446e-b874-7ef153cfcec3",
+								"id": "50331410-b537-4e4d-b9bd-ab18b3a26c59",
 								"exec": [
 									"const uuid = require('uuid');\r",
 									"const activity_id = uuid.v4();\r",
@@ -150,12 +150,72 @@
 					"response": []
 				},
 				{
+					"name": "Chem Plant Treatment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8d380eaa-bfd5-4d2d-9068-d8601646f502",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ec74ef00-7ef6-43f8-98df-5bd4618550e5",
+								"exec": [
+									"const uuid = require('uuid');\r",
+									"const activity_id = uuid.v4();\r",
+									"\r",
+									"console.log('ACTIVITY_ID', activity_id);\r",
+									"\r",
+									"pm.environment.set('ACTIVITY_ID', activity_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"activity_id\": \"3937e989-bb3b-4916-884c-2bec9e7c87b3\",\r\n    \"created_timestamp\": \"2021-01-20T19:35:55.152Z\",\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"Activity_Treatment_ChemicalPlant\",\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"properties\": {},\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -127.859593,\r\n                            55.087996\r\n                        ],\r\n                        [\r\n                            -127.860644,\r\n                            55.08825\r\n                        ],\r\n                        [\r\n                            -127.859952,\r\n                            55.088369\r\n                        ],\r\n                        [\r\n                            -127.859593,\r\n                            55.087996\r\n                        ]\r\n                    ]\r\n                ]\r\n            }\r\n        }\r\n    ],\r\n    \"media\": [],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"general_comment\": \"asd\",\r\n            \"access_description\": \"asf\",\r\n            \"activity_date_time\": \"2021-01-20T11:35:55-08:00\",\r\n            \"reported_area\": 1067,\r\n            \"latitude\": 55.087996,\r\n            \"longitude\": -127.859593,\r\n            \"invasive_species_agency_code\": \"OGC\",\r\n            \"jurisdiction_code\": \"PCAN\"\r\n        },\r\n        \"activity_subtype_data\": {\r\n            \"pesticide_use_permit_PUP\": \"none\",\r\n            \"treatment_issues_code\": \"RA\",\r\n            \"invasive_plants\": [\r\n                {\r\n                    \"invasive_plant_code\": \"BL\"\r\n                }\r\n            ],\r\n            \"herbicide\": [\r\n                {\r\n                    \"liquid_herbicide_code\": \"27856\",\r\n                    \"application_rate\": 1,\r\n                    \"herbicide_amount\": 1,\r\n                    \"mix_delivery_rate\": 1,\r\n                    \"specific_treatment_area\": 1,\r\n                    \"dilution\": 100,\r\n                    \"tank_volume\": 1\r\n                }\r\n            ],\r\n            \"applicator1_first_name\": \"micheal\",\r\n            \"applicator1_last_name\": \"wells\",\r\n            \"applicator1_licence_number\": 1,\r\n            \"applicator2_first_name\": \"micheal's\",\r\n            \"applicator2_last_name\": \"assistant\",\r\n            \"applicator2_licence_number\": 2,\r\n            \"pesticide_employer_code\": \"00594\",\r\n            \"pest_management_plan\": \"102-0670-16-21\",\r\n            \"chemical_method_code\": \"CIN\",\r\n            \"temperature\": 15,\r\n            \"wind_speed\": 0,\r\n            \"wind_direction_code\": \"No Wind\",\r\n            \"humidity\": 100\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURL}}/activity",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"activity"
+							]
+						},
+						"description": "Create a new activitiy, and upload any included media to S3."
+					},
+					"response": []
+				},
+				{
 					"name": "/activity/{activityId}",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "f12333e2-9508-42fe-98e1-ab977d67b85c",
+								"id": "3f2b25fa-fa18-4ffa-86f7-495ff5433adc",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
@@ -206,37 +266,6 @@
 					},
 					"response": [
 						{
-							"name": "Unauthorized user",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/activity",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"activity"
-									]
-								}
-							},
-							"status": "Unauthorized",
-							"code": 401,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
-						},
-						{
 							"name": "Created",
 							"originalRequest": {
 								"method": "POST",
@@ -266,6 +295,37 @@
 							],
 							"cookie": [],
 							"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
+						},
+						{
+							"name": "Unauthorized user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/activity",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"activity"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
 						}
 					]
 				},
@@ -275,7 +335,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3734773c-03e4-4d3d-9948-b1ef9dc83f2a",
+								"id": "18e9da99-4ae8-4bfc-b041-fa30b2b07c6b",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -326,7 +386,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ae66c91b-921b-4dc8-b273-3fb4b2f22dd7",
+								"id": "1a5f4b9c-792f-4806-95c0-6891a0512f32",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -377,7 +437,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2643c430-3d72-4a91-b46a-dfb5ade5292f",
+								"id": "38c44d5d-171a-41b4-b6fa-9367dbd38792",
 								"exec": [
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
@@ -496,7 +556,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "1e969b18-f2dc-42dc-ac8b-3cfdc55c40b5",
+						"id": "b1b7b77e-2a03-4a80-a4ae-587f8ddb0802",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -573,7 +633,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "a1a0387c-2d4b-4661-9c05-b69fe4c36b1a",
+				"id": "d6c1d018-2293-4162-afe4-675c22809aa5",
 				"type": "text/javascript",
 				"exec": [
 					"const echoPostRequest = {",
@@ -624,7 +684,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "42a30710-1ee2-4ee4-aa6a-d59b2793b94e",
+				"id": "a7e7319d-89a5-4976-bf02-1255f94d3974",
 				"type": "text/javascript",
 				"exec": [
 					""
