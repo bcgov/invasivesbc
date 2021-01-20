@@ -101,7 +101,7 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
           ActivitySubtype.Treatment_BiologicalPlant,
           ActivitySubtype.Treatment_BiologicalDispersalPlant
         ];
-        const bulkEditIsDisabled = allowedBulkEditSubtypes.indexOf(activity.activitySubtype) === -1;
+        const bulkEditIsDisabled = !allowedBulkEditSubtypes.includes(activity.activitySubtype);
 
         return (
           <Paper key={activity._id}>
