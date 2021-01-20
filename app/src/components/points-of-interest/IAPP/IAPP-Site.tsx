@@ -235,7 +235,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               'Genus',
               'Survey Date',
               'Agency',
-              'Area (m2)',
+              'Area (m\u00B2)',
               {
                 align: 'center',
                 children: 'Density'
@@ -292,7 +292,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               'Species (Common)',
               'Treatment Date',
               'Agency',
-              'Area Treated (m2)',
+              'Area Treated (m\u00B2)',
               'Mech Method',
               'Paper File ID',
               {
@@ -363,7 +363,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               'Species (Common)',
               'Treatment Date',
               'Agency',
-              'Area Treated (m2)',
+              'Area Treated (m\u00B2)',
               'Method',
               'Paper File ID',
               {
