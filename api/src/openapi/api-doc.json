@@ -1031,52 +1031,6 @@
                 "title": "Inlet Spawning Habitat Present"
               }
             }
-          },
-          "access": {
-            "type": "object",
-            "title": "Access",
-            "properties": {
-              "air": {
-                "type": "string",
-                "title": "Air"
-              },
-              "road": {
-                "type": "string",
-                "title": "Road"
-              },
-              "auto": {
-                "type": "string",
-                "title": "Auto"
-              },
-              "off_road": {
-                "type": "string",
-                "title": "Off Road"
-              },
-              "off_road_distance": {
-                "type": "string",
-                "title": "Off Road Distance"
-              },
-              "trail": {
-                "type": "string",
-                "title": "Trail"
-              },
-              "trail_distance": {
-                "type": "string",
-                "title": "Trail Distance"
-              },
-              "closest_community": {
-                "type": "string",
-                "title": "Closest Community"
-              },
-              "water_access": {
-                "type": "string",
-                "title": "Water Access"
-              },
-              "comments": {
-                "type": "string",
-                "title": "Comments"
-              }
-            }
           }
         }
       },
@@ -1132,23 +1086,130 @@
         }
       },
       "Observation_AnimalAquatic": {
-        "title": "Aquatic Animal Information",
+        "title": "Aquatic Plant Information",
         "type": "object",
-        "required": [
-          "observation_details",
-          "invasive_animals"
-        ],
         "properties": {
-          "invasive_animals": {
-            "type": "array",
-            "title": "Invasive Animals",
-            "items": {
-              "$ref": "#/components/schemas/InvasiveAnimals"
+          "waterbody_data": {
+            "type": "object",
+            "title": "Waterbody Data",
+            "properties": {
+              "waterbody_name_gazetted": {
+                "type": "string",
+                "title": "Waterbody Name (Gazetted)"
+              },
+              "waterbody_name_local": {
+                "type": "string",
+                "title": "Waterbody Name (Local)"
+              },
+              "waterbody_type": {
+                "type": "string",
+                "title": "Waterbody Type",
+                "enum": [
+                  "Intertidal",
+                  "Wetland",
+                  "Bog",
+                  "Lake",
+                  "Confined Pond",
+                  "Discharging Pond",
+                  "Ditch",
+                  "Slough",
+                  "River",
+                  "Stream"
+                ]
+              },
+              "reach_number": {
+                "type": "string",
+                "title": "Reach Number"
+              },
+              "water_level_management": {
+                "type": "string",
+                "title": "Water Level Management"
+              },
+              "waterbody_use": {
+                "type": "string",
+                "title": "Waterbody Use"
+              },
+              "adjacent_land_use": {
+                "type": "string",
+                "title": "Adjacent Land Use"
+              },
+              "substrate_type": {
+                "type": "string",
+                "title": "Substrate Type",
+                "enum": [
+                  "Silt/Organic",
+                  "Clay",
+                  "Sand",
+                  "Compact Gravel",
+                  "Cobble",
+                  "Rip-rap"
+                ]
+              },
+              "watershed_code": {
+                "type": "string",
+                "title": "Watershed Code"
+              },
+              "waterbody_id": {
+                "type": "string",
+                "title": "Waterbody ID"
+              },
+              "tidal_influence": {
+                "type": "boolean",
+                "title": "Tidal Influence"
+              }
             }
           },
-          "observation_details": {
-            "type": "string",
-            "title": "Aquatic Animal Observations"
+          "project_data": {
+            "type": "object",
+            "title": "Project Data",
+            "properties": {
+              "project_id": {
+                "type": "string",
+                "title": "Project ID"
+              },
+              "fish_permit_number": {
+                "type": "string",
+                "title": "Fish Permit Number"
+              },
+              "start_date": {
+                "type": "string",
+                "format": "date",
+                "title": "Start Date"
+              },
+              "completion_date": {
+                "type": "string",
+                "format": "date",
+                "title": "Completion Date"
+              },
+              "crew": {
+                "type": "string",
+                "title": "Crew"
+              },
+              "purpose": {
+                "type": "string",
+                "title": "Purpose",
+                "enum": [
+                  "Survey",
+                  "Monitoring",
+                  "Species Verification"
+                ]
+              },
+              "targeted_species": {
+                "type": "string",
+                "title": "Targeted Species"
+              },
+              "method": {
+                "type": "string",
+                "title": "Method"
+              }
+            }
+          },
+          "invasive_aquatic_animals": {
+            "type": "array",
+            "title": "Aquatic Animals",
+            "items": {
+              "$ref": "#/components/schemas/AquaticAnimals"
+            }
           }
         }
       },
@@ -2142,6 +2203,131 @@
             "type": "string",
             "title": "Description",
             "maximum": 50
+          }
+        }
+      },
+      "AquaticAnimals": {
+        "type": "object",
+        "properties": {
+          "invasive_animal_code": {
+            "type": "string",
+            "title": "Invasive animal",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_animal_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "number_of_individuals_observed": {
+            "type": "number",
+            "title": "Number of Individuals (n > 0)",
+            "minimum": 1,
+            "default": 1
+          },
+          "length_method": {
+            "type": "string",
+            "title": "Length Method",
+            "enum": [
+              "Fork Length",
+              "Total Length"
+            ]
+          },
+          "length": {
+            "type": "string",
+            "title": "Length (mm)"
+          },
+          "weight": {
+            "type": "string",
+            "title": "Weight (g)"
+          },
+          "sex": {
+            "type": "string",
+            "title": "Sex",
+            "enum": [
+              "Male",
+              "Female",
+              "Undetermined"
+            ]
+          },
+          "reproductive_maturity": {
+            "type": "string",
+            "title": "Reproductive Maturity",
+            "enum": [
+              "Immature",
+              "Maturing",
+              "Mature",
+              "Spawning",
+              "Spent",
+              "Undetermined"
+            ]
+          },
+          "life_stage": {
+            "type": "string",
+            "title": "Life Stage",
+            "enum": [
+              "Fry",
+              "Juvenile",
+              "Parr",
+              "Adult",
+              "Not Specified"
+            ]
+          },
+          "behaviour": {
+            "type": "string",
+            "title": "Behaviour",
+            "enum": [
+              "Migration",
+              "Spawning",
+              "Incubation",
+              "Rearing"
+            ]
+          },
+          "age_sample_id": {
+            "type": "string",
+            "title": "Age Sample ID"
+          },
+          "age_structure_collected": {
+            "type": "string",
+            "title": "Age Structure Collected",
+            "enum": [
+              "Scales",
+              "Bones",
+              "Fin Rays",
+              "Vertebrae",
+              "Otoliths"
+            ]
+          },
+          "age": {
+            "type": "string",
+            "title": "Age"
+          },
+          "voucher_sample_id": {
+            "type": "string",
+            "title": "Voucher Sample ID"
+          },
+          "genetic_sample_id": {
+            "type": "string",
+            "title": "Genetic Sample ID"
+          },
+          "genetic_structure_collected": {
+            "type": "string",
+            "title": "Genetic Structure Collected",
+            "enum": [
+              "Tissue",
+              "Fin Ray"
+            ]
+          },
+          "early_detection_rapid_resp_ind": {
+            "type": "boolean",
+            "title": "Early Detection",
+            "default": false
+          },
+          "negative_obs_ind": {
+            "type": "boolean",
+            "title": "Negative Observation",
+            "default": false
           }
         }
       },

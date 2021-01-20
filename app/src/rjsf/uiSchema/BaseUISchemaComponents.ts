@@ -16,6 +16,50 @@ const InvasiveAnimals = {
   invasive_animal_code: {}
 };
 
+const Herbicide = {
+  liquid_herbicide_code: {},
+  herbicide_amount: {},
+  mix_delivery_rate: {},
+  application_rate: {},
+  dilution: {
+    'ui:readonly': true
+  },
+  specific_treatment_area: {
+    'ui:readonly': true
+  },
+  tank_volume: {
+    'ui:readonly': true
+  }
+};
+
+const PaperFileID = {
+  description: {}
+};
+
+const AquaticAnimals = {
+  invasive_animal_code: {},
+  early_detection_rapid_resp_ind: {
+    'ui:widget': 'radio'
+  },
+  negative_obs_ind: {
+    'ui:widget': 'radio'
+  },
+  number_of_individuals_observed: {},
+  length_method: {},
+  length: {},
+  weight: {},
+  sex: {},
+  reproductive_maturity: {},
+  life_stage: {},
+  behaviour: {},
+  age_sample_id: {},
+  age_structure_collected: {},
+  age: {},
+  voucher_sample_id: {},
+  genetic_sample_id: {},
+  genetic_structure_collected: {}
+};
+
 const WaterbodyData = {
   waterbody_name_gazetted: {},
   waterbody_name_local: {},
@@ -100,9 +144,15 @@ const Observation_PlantTerrestrial_BulkEdit = {
 
 const Observation_PlantAquatic = {
   waterbody_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
     ...WaterbodyData
   },
   project_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
     ...ProjectData
   }
 };
@@ -115,10 +165,24 @@ const Observation_AnimalTerrestrial = {
 };
 
 const Observation_AnimalAquatic = {
-  observation_details: {},
-  invasive_animals: {
+  waterbody_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...WaterbodyData
+  },
+  project_data: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...ProjectData
+  },
+  invasive_aquatic_animals: {
     items: {
-      ...InvasiveAnimals
+      'ui:column-xs': 12,
+      'ui:column-md': 6,
+      'ui:column-lg': 4,
+      ...AquaticAnimals
     }
   }
 };
@@ -265,26 +329,6 @@ const Monitoring_ChemicalTerrestrialAnimal = {
 
 const Monitoring_BiologicalTerrestrialAnimal = {
   monitoring_details: {}
-};
-
-const PaperFileID = {
-  description: {}
-};
-
-const Herbicide = {
-  liquid_herbicide_code: {},
-  herbicide_amount: {},
-  mix_delivery_rate: {},
-  application_rate: {},
-  dilution: {
-    'ui:readonly': true
-  },
-  specific_treatment_area: {
-    'ui:readonly': true
-  },
-  tank_volume: {
-    'ui:readonly': true
-  }
 };
 
 const BaseUISchemaComponents = {

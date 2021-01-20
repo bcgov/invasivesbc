@@ -57,9 +57,6 @@ const Activity_Observation_PlantAquatic = {
     ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
     ...BaseUISchemaComponents.Observation_PlantAquatic
   }
 };
@@ -99,9 +96,6 @@ const Activity_Observation_AnimalAquatic = {
     ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
     ...BaseUISchemaComponents.Observation_AnimalAquatic
   }
 };

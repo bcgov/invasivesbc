@@ -59,6 +59,8 @@ const DefaultArrayItem = (props: any) => {
     fontWeight: 'bold'
   };
 
+  console.log(props);
+
   return (
     <Grid container={true} key={props.key} alignItems="center">
       <Grid item={true} xs={12}>
@@ -108,6 +110,8 @@ const DefaultArrayItem = (props: any) => {
 };
 
 const DefaultFixedArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
+  console.log('props', props);
+
   return (
     <fieldset className={props.className}>
       <ArrayFieldTitle
@@ -136,6 +140,7 @@ const DefaultFixedArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
 };
 
 const DefaultNormalArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
+  console.log('props', props);
   return (
     <Box>
       <ArrayFieldTitle
