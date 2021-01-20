@@ -2442,9 +2442,9 @@
             "type": "string",
             "title": "Map Code"
           },
-          "area_treated": {
+          "reported_area": {
             "type": "number",
-            "title": "Area Treated (m\u00B2)",
+            "title": "Reported Area (m\u00B2)",
             "minimum": 1
           },
           "invasive_plant_code": {

@@ -292,7 +292,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               'Species (Common)',
               'Treatment Date',
               'Agency',
-              'Area Treated (m\u00B2)',
+              'Reported Area (m\u00B2)',
               'Mech Method',
               'Paper File ID',
               {
@@ -309,7 +309,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.common_name,
                     row.treatment_date,
                     row.invasive_species_agency_code,
-                    row.area_treated,
+                    row.reported_area,
                     '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
                     row.paper_file_id[0].description,
                     {
@@ -363,7 +363,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               'Species (Common)',
               'Treatment Date',
               'Agency',
-              'Area Treated (m\u00B2)',
+              'Reported Area (m\u00B2)',
               'Method',
               'Paper File ID',
               {
@@ -379,7 +379,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.common_name,
                     row.treatment_date,
                     row.invasive_species_agency_code,
-                    row.area_treated,
+                    row.reported_area,
                     row.chemical_method,
                     row.paper_file_id[0].description,
                     {

@@ -566,7 +566,7 @@ const main = async () => {
             treatment_id: t.TreatmentID,
             treatment_date: formatDateToISO(t.TreatmentDate),
             map_code: t.MapCode,
-            area_treated: hectaresToM2(t.AreaTreated),
+            reported_area: hectaresToM2(t.AreaTreated),
             // invasive_plant_code: 'NA', // TODO map common_name to plant code
             common_name: t.CommonName,
             invasive_species_agency_code: t.TreatmentAgency,
@@ -603,7 +603,7 @@ const main = async () => {
             treatment_id: t.TreatmentID,
             treatment_date: formatDateToISO(t.TreatmentDate),
             map_code: t.MapCode,
-            area_treated: hectaresToM2(t.AreaTreated),
+            reported_area: hectaresToM2(t.AreaTreated),
             // invasive_plant_code: 'NA', // TODO map common_name to plant code
             common_name: t.MapCommon,
             invasive_species_agency_code: t.TreatmentAgency,
@@ -655,7 +655,7 @@ const main = async () => {
             treatment_id: t.treatment_id,
             treatment_date: formatDateToISO(t.TREATMENT_DATE),
             map_code: t.MapCode,
-            // no area_treated provided
+            // no reported_area provided
             // invasive_plant_code: 'NA', // TODO map common_name to plant code
             common_name: t.CommonName,
             invasive_species_agency_code: t.Agency,
