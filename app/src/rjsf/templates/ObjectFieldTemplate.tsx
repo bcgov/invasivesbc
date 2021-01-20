@@ -14,7 +14,6 @@ const useStyles = makeStyles({
 });
 
 const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
-  console.log('oft', props)
   const classes = useStyles();
 
   const DescriptionField = props.DescriptionField;

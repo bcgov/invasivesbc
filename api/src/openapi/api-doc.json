@@ -1086,7 +1086,7 @@
         }
       },
       "Observation_AnimalAquatic": {
-        "title": "Aquatic Plant Information",
+        "title": "Aquatic Animal Information",
         "type": "object",
         "properties": {
           "waterbody_data": {
