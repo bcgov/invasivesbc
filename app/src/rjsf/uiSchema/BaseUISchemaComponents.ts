@@ -8,6 +8,12 @@
  * }
  */
 
+const ThreeColumnStyle = {
+  'ui:column-xs': 12,
+  'ui:column-md': 6,
+  'ui:column-lg': 4
+};
+
 const InvasivePlants = {
   invasive_plant_code: {}
 };
@@ -308,64 +314,44 @@ const Observation_PlantTerrestrial_BulkEdit = {
 
 const Observation_PlantAquatic = {
   waterbody_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...WaterbodyData
   },
   project_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...ProjectData
   },
   terrain_characteristics: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...TerrainCharacteristics
   },
   aquatic_flora: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...AquaticFlora
   },
   lake_bathymetry: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...LakeBathymetry
   },
   limnological_station_water_quality: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...LimnologicalStationWaterQuality
   },
   water_quality: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...WaterQuality
   },
   profile: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...Profile
   },
   substrate_sample: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...SubstrateSample
   },
   invasive_aquatic_plants: {
     items: {
-      'ui:column-xs': 12,
-      'ui:column-md': 6,
-      'ui:column-lg': 4,
+      ...ThreeColumnStyle,
       ...AquaticPlants
     }
   }
@@ -380,82 +366,56 @@ const Observation_AnimalTerrestrial = {
 
 const Observation_AnimalAquatic = {
   waterbody_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...WaterbodyData
   },
   project_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...ProjectData
   },
   terrain_characteristics: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...TerrainCharacteristics
   },
   aquatic_flora: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...AquaticFlora
   },
   lake_bathymetry: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...LakeBathymetry
   },
   limnological_station_water_quality: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...LimnologicalStationWaterQuality
   },
   water_quality: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...WaterQuality
   },
   profile: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...Profile
   },
   substrate_sample: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...SubstrateSample
   },
   plankton_tow_sample: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...PlanktonTowSample
   },
   net_trap_specifications: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...NetTrapSpecifications
   },
   electrofisher_specifications: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...ThreeColumnStyle,
     ...ElectrofisherSpecifications
   },
   invasive_aquatic_animals: {
     items: {
-      'ui:column-xs': 12,
-      'ui:column-md': 6,
-      'ui:column-lg': 4,
+      ...ThreeColumnStyle,
       ...AquaticAnimals
     }
   }
@@ -630,7 +590,8 @@ const BaseUISchemaComponents = {
   Monitoring_BiologicalTerrestrialAnimal,
   PaperFileID,
   Herbicide,
-  InvasivePlants
+  InvasivePlants,
+  ThreeColumnStyle
 };
 
 export default BaseUISchemaComponents;
