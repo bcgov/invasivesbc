@@ -163,6 +163,94 @@ const WaterQuality = {
   ice_depth: {}
 };
 
+const Profile = {
+  depth: {},
+  dissolved_oxygen: {},
+  temperature: {},
+  conductivity: {},
+  thermocline: {}
+};
+
+const SubstrateSample = {
+  date_installed: {},
+  date_monitored: {},
+  waterbody: {},
+  site_location: {},
+  depth: {},
+  latitude: {},
+  longitude: {},
+  water_temperature: {},
+  water_column_ph: {},
+  secchi_depth: {},
+  preservative_type: {},
+  location_description: {},
+  comments: {},
+  microscopy_species: {},
+  e_dna_sample: {},
+  adult_suspected_presence: {
+    'ui:widget': 'radio'
+  },
+  sample_collected: {
+    'ui:widget': 'radio'
+  }
+};
+
+const PlanktonTowSample = {
+  tows: {},
+  date_time: {},
+  plankton_tow_type: {},
+  tow_depth_length: {},
+  volume_sampled: {},
+  containers: {},
+  preserved_sample_ph: {},
+  arrival_sample_ph: {},
+  preservative_type: {},
+  preservation_concentration: {},
+  other_species: {},
+  veliger_positive: {
+    'ui:widget': 'radio'
+  },
+  buffered: {
+    'ui:widget': 'radio'
+  }
+};
+
+const NetTrapSpecifications = {
+  fish_permit_number: {},
+  haul_number: {},
+  date_time_in: {},
+  date_time_out: {},
+  net_trap_type: {},
+  length: {},
+  depth: {},
+  mesh_size: {},
+  mesh_description: {},
+  zone: {},
+  habitat: {},
+  number_of_fish: {},
+  min_length: {},
+  max_length: {}
+};
+
+const ElectrofisherSpecifications = {
+  fish_permit_number: {},
+  passes: {},
+  date_time_in: {},
+  date_time_out: {},
+  one_pass_time: {},
+  length: {},
+  width: {},
+  enclosure: {},
+  voltage: {},
+  frequency: {},
+  pulse: {},
+  make: {},
+  model: {},
+  number_of_fish: {},
+  min_length: {},
+  max_length: {}
+};
+
 const Observation = {
   observation_type_code: {},
   observer_first_name: {},
@@ -261,6 +349,18 @@ const Observation_PlantAquatic = {
     'ui:column-lg': 4,
     ...WaterQuality
   },
+  profile: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...Profile
+  },
+  substrate_sample: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...SubstrateSample
+  },
   invasive_aquatic_plants: {
     items: {
       'ui:column-xs': 12,
@@ -320,6 +420,36 @@ const Observation_AnimalAquatic = {
     'ui:column-md': 6,
     'ui:column-lg': 4,
     ...WaterQuality
+  },
+  profile: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...Profile
+  },
+  substrate_sample: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...SubstrateSample
+  },
+  plankton_tow_sample: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...PlanktonTowSample
+  },
+  net_trap_specifications: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...NetTrapSpecifications
+  },
+  electrofisher_specifications: {
+    'ui:column-xs': 12,
+    'ui:column-md': 6,
+    'ui:column-lg': 4,
+    ...ElectrofisherSpecifications
   },
   invasive_aquatic_animals: {
     items: {
