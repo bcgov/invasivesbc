@@ -11,10 +11,7 @@ import {
   Typography,
   Button,
   Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select
+  Checkbox
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
@@ -101,18 +98,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
     history.push(`/home/activity`);
   };
 
-  const handleTreatmentSubtypeClick = async (event: any) => {
-    event.stopPropagation();
-
-    const dropdownValue = event.target.value === 0 ? ActivitySubtype.Treatment_ChemicalPlant : event.target.value;
-    setTreatmentSubtypeToCreate(dropdownValue);
-
-    const addedActivity = await addLinkedActivityToDB(databaseContext, ActivityType.Treatment, dropdownValue, activity);
-    setActiveActivityAndNavigateToActivityPage(addedActivity);
-
-    setOnReferencesListPage(false);
-  };
-
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
@@ -143,32 +128,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
           </Grid>
         </>
       )}
-      {activity.activityType === 'Observation' && (
-        <>
-          <Divider flexItem={true} orientation="vertical" />
-          <Grid item>
-            <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel>Create Treatment</InputLabel>
-              {activity.activitySubtype.includes('Plant') && (
-                <Select
-                  value={treatmentSubtypeToCreate}
-                  onClick={(e) => e.stopPropagation()}
-                  onChange={handleTreatmentSubtypeClick}
-                  label="Create Treatment">
-                  <MenuItem value={ActivitySubtype.Treatment_ChemicalPlant} onClick={handleTreatmentSubtypeClick}>
-                    Chemical Plant
-                  </MenuItem>
-                  <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
-                  <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
-                  <MenuItem value={ActivitySubtype.Treatment_BiologicalDispersalPlant}>
-                    Biological Dispersal Plant
-                  </MenuItem>
-                </Select>
-              )}
-            </FormControl>
-          </Grid>
-        </>
-      )}
     </Grid>
   );
 };
@@ -177,12 +136,16 @@ interface IReferenceActivityListComponent {
   doc: any;
   databaseContext: any;
   setOnReferencesListPage: Function;
+  selectedObservations?: any;
+  setSelectedObservations?: Function;
 }
 
 const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { doc, databaseContext, setOnReferencesListPage } = props;
+  const { doc, databaseContext, setOnReferencesListPage, selectedObservations, setSelectedObservations } = props;
+
+  const isChecked = selectedObservations.includes(doc._id);
 
   const navigateToActivityPage = async (activity: any) => {
     history.push(`/home/references/activity/${activity._id}`);
@@ -191,6 +154,15 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
   return (
     <Paper key={doc._id}>
       <ListItem button className={classes.activitiyListItem} onClick={() => navigateToActivityPage(doc)}>
+        {doc.activityType === 'Observation' && (
+          <Checkbox
+            checked={isChecked}
+            onChange={() => {
+              setSelectedObservations(isChecked ? selectedObservations.filter((id) => id !== doc._id) : [doc._id, ...selectedObservations])
+            }}
+            onClick={(event) => event.stopPropagation()}
+          />
+        )}
         <ListItemIcon>
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
@@ -212,6 +184,8 @@ const ReferenceActivityList: React.FC = () => {
   const [onReferencesListPage, setOnReferencesListPage] = useState(true);
 
   const [docs, setDocs] = useState<any[]>([]);
+  const [selectedObservations, setSelectedObservations] = useState([]);
+  const history = useHistory();
 
   const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
@@ -239,12 +213,26 @@ const ReferenceActivityList: React.FC = () => {
   return (
     <List className={classes.activityList}>
       {observations.length > 0 && (
-        <Box>
+        <Box mb={3} display="flex" justifyContent="space-between">
           <Typography variant="h5">Observations</Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              history.push({
+                pathname: `/home/activity/create`,
+                search: '?activities=' + selectedObservations.join(','),
+                state: { observations: selectedObservations }
+              });
+            }}>
+            Create Treatment
+          </Button>
         </Box>
       )}
       {observations.map((doc) => (
         <ReferenceActivityListComponent
+          selectedObservations={selectedObservations}
+          setSelectedObservations={setSelectedObservations}
           setOnReferencesListPage={setOnReferencesListPage}
           databaseContext={databaseContext}
           key={doc._id}

@@ -7,6 +7,7 @@ import ReferencesActivityPage from 'features/home/references/ReferencesActivityP
 import ReferencesPage from 'features/home/references/ReferencesPage';
 import SearchActivityPage from 'features/home/search/SearchActivityPage';
 import BulkEditActivitiesPage from 'features/home/search/BulkEditActivitiesPage';
+import ActivityCreationStepperPage from 'features/home/activity/ActivityCreationStepperPage';
 import SearchPage from 'features/home/search/SearchPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -46,6 +47,14 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         path="/home/search/bulkedit"
         title={getTitle('Bulk Edit')}
         component={BulkEditActivitiesPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/activity/create"
+        title={getTitle('Create Activity')}
+        component={ActivityCreationStepperPage}
         componentProps={props}
       />
       <PrivateRoute

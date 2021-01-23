@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface IActivityPageProps {
   classes?: any;
+  activityId?: string;
 }
 
 //why does this page think I need a map context menu ?
@@ -299,7 +300,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   useEffect(() => {
     const getActivityData = async () => {
-      const activityResults = await getActivityResultsFromDB(null);
+      const activityResults = await getActivityResultsFromDB(props.activityId || null);
 
       const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
