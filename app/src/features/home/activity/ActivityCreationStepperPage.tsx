@@ -53,7 +53,7 @@ const getStepContent = (step: number) => {
     case 3:
       return 'Please create an overarching observation.';
     case 4:
-      return `Thank you for specifying your information regarding your treatment activity.
+      return `Thank you for specifying information regarding your treatment activity.
               You may proceed to creating your treatment now.`
   }
 };
