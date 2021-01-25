@@ -16,12 +16,14 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useQuery } from 'hooks/useQuery';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
-import { generateActivityPayload, addClonedActivityToDB } from 'utils/addActivity';
+import { generateActivityPayload, addClonedActivityToDB, addLinkedActivityToDB } from 'utils/addActivity';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import { getActivityByIdFromApi } from 'utils/getActivity';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import moment from 'moment';
+import { DocType } from 'constants/database';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -61,6 +63,7 @@ const getStepContent = (step: number) => {
 const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (props) => {
   const queryParams = useQuery();
   const classes = useStyles();
+  const history = useHistory();
   const invasivesApi = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
 
@@ -114,7 +117,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
       await Promise.all(selectedObservationIds.map(async (oId: any) => {
         const activity = await getActivityByIdFromApi(invasivesApi, oId);
 
-        setObservationGeos([activity.geometry[activity.geometry.length - 1], ...observationGeos]);
+        setObservationGeos(observationGeos => observationGeos.concat(activity.geometry[activity.geometry.length - 1]));
       }));
     };
 
@@ -126,6 +129,14 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
 
     const dropdownValue = event.target.value === 0 ? ActivitySubtype.Treatment_ChemicalPlant : event.target.value;
     setTreatmentSubtypeToCreate(dropdownValue);
+  };
+
+  const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
+    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+      return { ...appStateDoc, activeActivity: doc._id };
+    });
+
+    history.push(`/home/activity`);
   };
 
   return (
@@ -205,6 +216,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
               <ActivityPage
                 classes={classes}
                 activityId={observation._id}
+                setObservation={setObservation}
               />
               <Box mt={5} display="flex" justifyContent="center">
                 <Button
@@ -220,12 +232,28 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                   size="large"
                   variant="contained"
                   color="primary"
-                  onClick={() => setActiveStep(activeStep + 2)}
+                  onClick={() => setActiveStep(activeStep + 1)}
                 >
                   Continue
                 </Button>
               </Box>
             </>
+          )}
+
+          {activeStep === 4 && (
+            <Box mt={5} display="flex" justifyContent="center">
+              <Button
+                size="large"
+                variant="contained"
+                color="primary"
+                onClick={async () => {
+                  const addedActivity = await addLinkedActivityToDB(databaseContext, ActivityType.Treatment, treatmentSubtypeToCreate, observation);
+                  setActiveActivityAndNavigateToActivityPage(addedActivity);
+                }}
+              >
+                Create Treatment
+              </Button>
+            </Box>
           )}
         </Box>
       </Box>

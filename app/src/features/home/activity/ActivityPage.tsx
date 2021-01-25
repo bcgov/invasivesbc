@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 interface IActivityPageProps {
   classes?: any;
   activityId?: string;
+  setObservation?: Function;
 }
 
 //why does this page think I need a map context menu ?
@@ -116,13 +117,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           };
         });
 
-        return {
+        const resultActivity = {
           ...activity,
           formData: updatedFormData,
           geometry: geom,
           status: ActivityStatus.EDITED,
           dateUpdated: new Date()
         };
+
+        if (props.setObservation) {
+          props.setObservation(resultActivity);
+        }
+
+        return resultActivity;
       });
     },
     [databaseContext.database]
@@ -200,6 +207,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       };
 
       setDoc({ ...doc, ...updatedFormValues });
+
+      if (props.setObservation) {
+        props.setObservation({ ...doc, ...updatedFormValues });
+      }
 
       await databaseContext.database.upsert(docId, (activity) => {
         return {

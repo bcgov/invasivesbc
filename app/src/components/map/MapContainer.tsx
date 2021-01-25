@@ -195,7 +195,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       aGeo = convertLineStringToPoly(aGeo);
 
-      // Drawing one geo wipes all others
       props.geometryState.setGeometry([aGeo]);
     });
 
@@ -239,7 +238,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       const aGeo = drawnItems?.toGeoJSON()?.features[0];
 
       props.geometryState.setGeometry(
-        props.geometryState.geometry.filter((geo) => JSON.stringify(geo) === JSON.stringify(aGeo))
+        props.geometryState.geometry?.filter((geo) => JSON.stringify(geo) === JSON.stringify(aGeo))
       );
     });
   };
@@ -247,6 +246,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const updateMapOnGeometryChange = () => {
     // Clear the drawn features
     setDrawnItems(drawnItems.clearLayers());
+
+    console.log(props.geometryState);
 
     if (props.geometryState) {
       // For each geometry, add a new layer to the drawn features

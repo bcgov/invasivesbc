@@ -87,7 +87,6 @@ interface IReferenceActivityListItem {
 const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const [treatmentSubtypeToCreate, setTreatmentSubtypeToCreate] = useState(ActivitySubtype.Treatment_ChemicalPlant);
   const { activity, databaseContext, setOnReferencesListPage } = props;
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
