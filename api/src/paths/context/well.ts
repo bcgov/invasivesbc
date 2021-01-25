@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../constants/misc';
+import { Roles } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
 import proj4 from 'proj4';
 import { point } from '@turf/helpers';
@@ -20,7 +20,7 @@ GET.apiDoc = {
   tags: ['activity', 'databc'],
   security: [
     {
-      Bearer: ALL_ROLES
+      Bearer: [Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]
     }
   ],
   parameters: [
@@ -95,7 +95,7 @@ function getWell(req, res, next) {
   defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
 
   /*
-    Here is the projection definition of the well layer 
+    Here is the projection definition of the well layer
     stored in the BCGW
   */
   const albers =
@@ -177,7 +177,7 @@ function getWell(req, res, next) {
 }
 
 /* ## proxyWell
-  This allows us to export the getWell function for 
+  This allows us to export the getWell function for
   ECMAScript module usage.
  */
 function proxyWell(): RequestHandler {

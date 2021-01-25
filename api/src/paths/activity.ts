@@ -4,7 +4,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { WRITE_ROLES } from '../constants/misc';
+import { Roles } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivityPostRequestBody } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -24,7 +24,7 @@ const post_put_apiDoc = {
   tags: ['activity'],
   security: [
     {
-      Bearer: WRITE_ROLES
+      Bearer: [Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]
     }
   ],
   requestBody: {

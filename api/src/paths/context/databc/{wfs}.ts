@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../../constants/misc';
+import { Roles } from '../../../constants/misc';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('activity');
@@ -15,7 +15,7 @@ GET.apiDoc = {
   tags: ['activity', 'databc'],
   security: [
     {
-      Bearer: ALL_ROLES
+      Bearer: [Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]
     }
   ],
   parameters: [

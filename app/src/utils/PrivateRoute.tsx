@@ -1,9 +1,11 @@
+import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React from 'react';
-import { Route, RouteProps } from 'react-router-dom';
+import { Redirect, Route, RouteProps } from 'react-router-dom';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
   layout: React.ComponentType<any>;
+  roles: string[];
   title: string;
   componentProps?: any;
 }
@@ -13,6 +15,8 @@ interface IPrivateRouteProps extends RouteProps {
  * @param props - Properties to pass { component, role, claim }
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
+  const keycloak = useKeycloakWrapper();
+
   let { component: Component, layout: Layout, ...rest } = props;
 
   document.title = props.title;
@@ -20,11 +24,17 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   return (
     <Route
       {...rest}
-      render={(prop) => (
-        <Layout>
-          <Component {...prop} {...rest.componentProps} />
-        </Layout>
-      )}
+      render={(props) => {
+        if (!keycloak.obj?.authenticated || !rest.roles || !keycloak.hasRole(rest.roles)) {
+          return <Redirect to={{ pathname: '/forbidden', state: { referer: props.location } }} />;
+        } else {
+          return (
+            <Layout>
+              <Component {...props} {...rest.componentProps} />
+            </Layout>
+          );
+        }
+      }}
     />
   );
 };

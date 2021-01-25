@@ -2,7 +2,7 @@
 
 import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../../constants/misc';
+import { Roles } from '../../../constants/misc';
 import { getLogger } from '../../../utils/logger';
 import { getDBConnection } from '../../../database/db';
 
@@ -15,7 +15,7 @@ GET.apiDoc = {
   tags: ['activity', 'RISO', 'IPMA'],
   security: [
     {
-      Bearer: ALL_ROLES
+      Bearer: [Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]
     }
   ],
   parameters: [

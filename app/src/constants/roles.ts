@@ -1,3 +1,5 @@
 export const Roles = {
-  SYSTEM_ADMINISTRATOR: 'ADM'
+  ADMIN: 'admin',
+  MANAGER: 'manager',
+  DATA_EDITOR: 'data-editor'
 };

@@ -12,6 +12,7 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
+import { Roles } from 'constants/roles';
 
 interface IHomeRouterProps {
   classes: any;
@@ -30,6 +31,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/search"
         title={getTitle('Search')}
+        roles={[Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]}
         component={SearchPage}
         componentProps={props}
       />
@@ -37,6 +39,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/search/activity/:id?"
         title={getTitle('Edit')}
+        roles={[Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]}
         component={SearchActivityPage}
         componentProps={props}
       />
@@ -45,6 +48,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/search/bulkedit"
         title={getTitle('Bulk Edit')}
+        roles={[Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]}
         component={BulkEditActivitiesPage}
         componentProps={props}
       />
@@ -53,6 +57,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/plan"
         title={getTitle('Plan')}
+        roles={[Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]}
         component={PlanPage}
         componentProps={props}
       />
@@ -61,6 +66,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/references"
         title={getTitle('Reference')}
+        roles={[Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]}
         component={ReferencesPage}
         componentProps={props}
       />
@@ -68,6 +74,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/references/activity/:id?"
         title={getTitle('Activity')}
+        roles={[Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]}
         component={ReferencesActivityPage}
         componentProps={props}
       />
@@ -76,6 +83,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activities"
         title={getTitle('Activities')}
+        roles={[Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]}
         component={ActivitiesPage}
         componentProps={props}
       />
@@ -84,6 +92,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/map"
         title={getTitle('Map')}
+        roles={[Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]}
         component={MapPage}
         componentProps={props}
       />
@@ -92,6 +101,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activity"
         title={getTitle('Activity')}
+        roles={[Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]}
         component={ActivityPage}
         componentProps={props}
       />

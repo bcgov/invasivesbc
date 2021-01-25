@@ -1,8 +1,10 @@
 import { useKeycloak } from '@react-keycloak/web';
-import { Roles } from 'constants/roles';
 
 /**
- * IUserInfo interface, represents the userinfo provided by keycloak.
+ * Represents the userinfo provided by keycloak.
+ *
+ * @export
+ * @interface IUserInfo
  */
 export interface IUserInfo {
   displayName?: string;
@@ -16,13 +18,14 @@ export interface IUserInfo {
   roles: string[];
   given_name?: string;
   family_name?: string;
-  agencies: number[];
+  sub?: string;
 }
 
-// TODO cleanout old code from copied project
-
 /**
- * IKeycloak interface, represents the keycloak object for the authenticated user.
+ * Represents the keycloak object for the authenticated user.
+ *
+ * @export
+ * @interface IKeycloak
  */
 export interface IKeycloak {
   obj: any;
@@ -34,12 +37,8 @@ export interface IKeycloak {
   lastName?: string;
   email?: string;
   roles: string[];
-  agencyId?: number;
-  isAdmin: boolean;
-  hasRole(role?: string | Array<string>): boolean;
-  hasClaim(claim?: string | Array<string>): boolean;
-  hasAgency(agency?: number): boolean;
-  agencyIds: number[];
+  sub: string;
+  hasRole(role?: string | string[]): boolean;
 }
 
 /**
@@ -47,45 +46,33 @@ export interface IKeycloak {
  */
 function useKeycloakWrapper(): IKeycloak {
   const { keycloak } = useKeycloak();
+
   const userInfo = keycloak?.userInfo as IUserInfo;
 
   /**
-   * Determine if the user has the specified 'claim'
-   * @param claim - The name of the claim
+   * Determine if the user belongs to the specified role(s).
+   * The user's role(s) must match at least 1 of the valid roles.
+   *
+   * @param {(string | string[])} [validRoles] a role, or array of roles, that the user must match.
+   * @return {*}  {boolean} true if the user's role(s) match at least 1 of the valid roles, false otherwise.
    */
-  const hasClaim = (claim?: string | Array<string>): boolean => {
-    return (
-      claim !== undefined &&
-      claim !== null &&
-      (typeof claim === 'string' ? userInfo?.roles?.includes(claim) : claim.some((c) => userInfo?.roles?.includes(c)))
-    );
+  const hasRole = (validRoles?: string | string[]): boolean => {
+    if (!validRoles || !validRoles.length) {
+      return false;
+    }
+
+    if (Array.isArray(validRoles)) {
+      return validRoles.some((role) => roles().includes(role));
+    }
+
+    return roles().includes(validRoles);
   };
 
   /**
-   * Determine if the user belongs to the specified 'role'
-   * @param role - The role name or an array of role name
+   * Return the array of roles that the user belongs to.
    */
-  const hasRole = (role?: string | Array<string>): boolean => {
-    return (
-      role !== undefined &&
-      role !== null &&
-      (typeof role === 'string' ? userInfo?.groups?.includes(role) : role.some((r) => userInfo?.groups?.includes(r)))
-    );
-  };
-
-  /**
-   * Determine if the user belongs to the specified 'agency'
-   * @param agency - The agency name
-   */
-  const hasAgency = (agency?: number): boolean => {
-    return agency !== undefined && agency !== null && userInfo?.agencies?.includes(agency);
-  };
-
-  /**
-   * Return an array of roles the user belongs to
-   */
-  const roles = (): Array<string> => {
-    return userInfo?.groups ? [...userInfo?.groups] : [];
+  const roles = (): string[] => {
+    return keycloak?.resourceAccess?.['invasives-bc']?.roles || [];
   };
 
   /**
@@ -93,6 +80,13 @@ function useKeycloakWrapper(): IKeycloak {
    */
   const username = (): string => {
     return userInfo?.username;
+  };
+
+  /**
+   * Return the user's preferred_username
+   */
+  const preferredUsername = (): string => {
+    return userInfo?.preferred_username;
   };
 
   /**
@@ -123,20 +117,24 @@ function useKeycloakWrapper(): IKeycloak {
     return userInfo?.email;
   };
 
+  /**
+   * Return the user's sub (unique identifier)
+   */
+  const sub = (): string | undefined => {
+    return userInfo?.sub;
+  };
+
   return {
     obj: keycloak,
     username: username(),
+    preferred_username: preferredUsername(),
     displayName: displayName(),
     firstName: firstName(),
     lastName: lastName(),
     email: email(),
-    isAdmin: hasRole(Roles.SYSTEM_ADMINISTRATOR),
     roles: roles(),
-    agencyId: userInfo?.agencies?.find((x) => x),
-    hasRole: hasRole,
-    hasClaim: hasClaim,
-    hasAgency: hasAgency,
-    agencyIds: userInfo?.agencies
+    sub: sub(),
+    hasRole: hasRole
   };
 }
 
