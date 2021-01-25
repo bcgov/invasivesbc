@@ -19,13 +19,14 @@ export async function getActivityByIdFromApi(invasivesApi: any, activityId: any)
     activitySubtype: response.activity_subtype,
     geometry: response.activity_payload.geometry,
     formData: response.activity_payload.form_data,
-    photos:
-      (response.media &&
-        response.media.length &&
-        response.media.map((media: any) => {
-          return { filepath: media.file_name, dataUrl: media.encoded_file };
-        })) ||
-      []
+    photos:(
+      response.media &&
+      response.media.length &&
+      response.media.map((media: any) => ({
+        filepath: media.file_name,
+        dataUrl: media.encoded_file
+      })
+    )) || []
   };
 }
 
@@ -40,9 +41,10 @@ export function getICreateOrUpdateActivity(activity: any, formData?: any): ICrea
     activity_type: activity.activityType,
     activity_subtype: activity.activitySubtype,
     geometry: activity.geometry,
-    media: activity.photos.map((photo) => {
-      return { file_name: photo.filepath, encoded_file: photo.dataUrl };
-    }),
+    media: activity.photos.map((photo) => ({
+      file_name: photo.filepath,
+      encoded_file: photo.dataUrl
+    })),
     form_data: formData || activity.formData
   };
 
