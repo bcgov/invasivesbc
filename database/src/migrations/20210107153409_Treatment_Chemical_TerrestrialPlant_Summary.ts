@@ -3,8 +3,8 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Treatment_Chemical_TerrestrialPlant ;
-  CREATE OR REPLACE VIEW Treatment_Chemical_TerrestrialPlant as (
+  drop view if exists invasivesbc.Treatment_Chemical_TerrestrialPlant_Summary ;
+  CREATE OR REPLACE VIEW Treatment_Chemical_TerrestrialPlant_Summary as (
         select
         record.activity_id,
         record.applicator1_first_name,
@@ -33,6 +33,10 @@ export async function up(knex: Knex): Promise<void> {
 --join code_category on inv_code_category on inv_code_category.code_category_name = 'invasives'
 
 
+left join code_header pesticide_employer_code_header on pesticide_employer_code_header.code_header_title = 'pesticide_employer_code' and pesticide_employer_code_header.valid_to is null
+left join code pesticide_employer_codes on pesticide_employer_codes.code_header_id = pesticide_employer_code_header.code_header_id
+and record.pesticide_employer_code = pesticide_employer_codes.code_name
+
 left join code_header treatment_issues_code_header on treatment_issues_code_header.code_header_title = 'treatment_issues_code' and treatment_issues_code_header.valid_to is null
 left join code treatment_issues_codes on treatment_issues_codes.code_header_id = treatment_issues_code_header.code_header_id
 and record.treatment_issues_code = treatment_issues_codes.code_name
@@ -56,5 +60,5 @@ and record.wind_direction_code = wind_direction_codes.code_name
 }
 
 export async function down(knex: Knex): Promise<void> {
-  knex.raw(`drop view if exists invasivesbc.Treatment_Chemical_TerrestrialPlant ;`);
+  knex.raw(`drop view if exists invasivesbc.Activity_Treatment_Chemical_TerrestrialPlant_Summary ;`);
 }
