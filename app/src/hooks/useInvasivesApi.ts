@@ -55,6 +55,24 @@ export const useInvasivesApi = () => {
   };
 
   /**
+   * Delete activities by ids.
+   *
+   * @param {string[]} activityIds
+   * @return {*}  {Promise<any>}
+   */
+  const deleteActivities = async (activityIds: string[]): Promise<any> => {
+    const { data } = await api.delete(`/api/activities`, {
+      params: { id: [activityIds[0], activityIds[1]] },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+    console.log(data);
+
+    return data;
+  };
+
+  /**
    * Fetch points of interest by search criteria.
    *
    * @param {pointsOfInterestSearchCriteria} activitiesSearchCriteria
@@ -155,6 +173,7 @@ export const useInvasivesApi = () => {
   return {
     getMedia,
     getActivities,
+    deleteActivities,
     getActivityById,
     createActivity,
     updateActivity,

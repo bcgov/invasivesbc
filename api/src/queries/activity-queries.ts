@@ -211,3 +211,31 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
     AND deleted_timestamp IS NULL;
   `;
 };
+
+/**
+ * SQL queries to soft-delete activity records, marking them as `deleted`.
+ *
+ * @param {string} activityIds
+ * @return {SQLStatement} sql query object
+ */
+export const deleteActivitiesSQL = (activityIds: Array<string>): SQLStatement => {
+  if (!activityIds.length) {
+    return null;
+  }
+
+  // update existing activity record
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE activity_incoming_data
+    SET deleted_timestamp = ${new Date().toISOString()}
+    WHERE activity_id IN (${activityIds[0]}`;
+  
+  for (let i = 1; i < activityIds.length; i++) {
+    sqlStatement.append(SQL`, ${activityIds[i]}`);
+  }
+
+  sqlStatement.append(SQL`)
+    AND deleted_timestamp IS NULL;
+  `);
+
+  return sqlStatement;
+};
