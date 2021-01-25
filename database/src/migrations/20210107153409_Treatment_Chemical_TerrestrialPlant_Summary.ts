@@ -29,9 +29,6 @@ export async function up(knex: Knex): Promise<void> {
 
         from invasivesbc.Activity_Treatment_Chemical_TerrestrialPlant_with_codes record
 
---technically this should be used in all the subsequent joins, but we can get away without for now:
---join code_category on inv_code_category on inv_code_category.code_category_name = 'invasives'
-
 
 left join code_header treatment_issues_code_header on treatment_issues_code_header.code_header_title = 'treatment_issues_code' and treatment_issues_code_header.valid_to is null
 left join code treatment_issues_codes on treatment_issues_codes.code_header_id = treatment_issues_code_header.code_header_id
