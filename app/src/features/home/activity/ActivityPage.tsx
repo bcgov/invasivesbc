@@ -117,19 +117,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           };
         });
 
-        const resultActivity = {
+        return {
           ...activity,
           formData: updatedFormData,
           geometry: geom,
           status: ActivityStatus.EDITED,
           dateUpdated: new Date()
         };
-
-        if (props.setObservation) {
-          props.setObservation(resultActivity);
-        }
-
-        return resultActivity;
       });
     },
     [databaseContext.database]
@@ -207,10 +201,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       };
 
       setDoc({ ...doc, ...updatedFormValues });
-
-      if (props.setObservation) {
-        props.setObservation({ ...doc, ...updatedFormValues });
-      }
 
       await databaseContext.database.upsert(docId, (activity) => {
         return {
@@ -358,6 +348,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     savePhotos(photos);
   }, [photos, isLoading, savePhotos]);
+
+  useEffect(() => {
+    if (props.setObservation && doc) {
+      props.setObservation(doc);
+    }
+  }, [doc]);
 
   if (isLoading) {
     return <CircularProgress />;

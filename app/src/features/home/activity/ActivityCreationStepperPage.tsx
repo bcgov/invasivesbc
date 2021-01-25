@@ -113,7 +113,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
   }, [activeStep]);
 
   useEffect(() => {
-    const getGeometriesOfSelectecObservations = async () => {
+    const getGeometriesOfSelectedObservations = async () => {
       await Promise.all(selectedObservationIds.map(async (oId: any) => {
         const activity = await getActivityByIdFromApi(invasivesApi, oId);
 
@@ -121,7 +121,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
       }));
     };
 
-    getGeometriesOfSelectecObservations();
+    getGeometriesOfSelectedObservations();
   }, []);
 
   const handleTreatmentSubtypeClick = async (event: any) => {

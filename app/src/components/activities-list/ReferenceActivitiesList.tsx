@@ -22,6 +22,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import ActivityListItem from './ActivityListItem';
 import ActivityListDate from './ActivityListDate';
+import { notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -144,7 +145,7 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
   const history = useHistory();
   const { doc, databaseContext, setOnReferencesListPage, selectedObservations, setSelectedObservations } = props;
 
-  const isChecked = selectedObservations.includes(doc._id);
+  const isChecked = selectedObservations.some((obs: any) => obs.id === doc._id );
 
   const navigateToActivityPage = async (activity: any) => {
     history.push(`/home/references/activity/${activity._id}`);
@@ -157,7 +158,10 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
           <Checkbox
             checked={isChecked}
             onChange={() => {
-              setSelectedObservations(isChecked ? selectedObservations.filter((id) => id !== doc._id) : [doc._id, ...selectedObservations])
+              setSelectedObservations(isChecked ?
+                selectedObservations.filter((obs: any) => obs.id !== doc._id) :
+                [{ id: doc._id, subtype: doc.activitySubtype }, ...selectedObservations]
+              );
             }}
             onClick={(event) => event.stopPropagation()}
           />
@@ -209,6 +213,20 @@ const ReferenceActivityList: React.FC = () => {
   const treatments = docs.filter((doc) => doc.activityType === 'Treatment');
   const monitorings = docs.filter((doc) => doc.activityType === 'Monitoring');
 
+  const validateSelectedObservationTypes = () => {
+    return selectedObservations.every((a, _, [b]) => a.subtype === b.subtype);
+  };
+
+  const navigateToCreateActivityPage = () => {
+    const selectedObservationIds = selectedObservations.map((obs: any) => obs.id);
+
+    history.push({
+      pathname: `/home/activity/create`,
+      search: '?activities=' + selectedObservationIds.join(','),
+      state: { observations: selectedObservationIds }
+    });
+  };
+
   return (
     <List className={classes.activityList}>
       {observations.length > 0 && (
@@ -218,11 +236,16 @@ const ReferenceActivityList: React.FC = () => {
             variant="contained"
             color="primary"
             onClick={() => {
-              history.push({
-                pathname: `/home/activity/create`,
-                search: '?activities=' + selectedObservations.join(','),
-                state: { observations: selectedObservations }
-              });
+              if (!validateSelectedObservationTypes()) {
+                notifyError(
+                  databaseContext,
+                  `You have selected activities of different subtypes.
+                  Please make sure they are all of the same subtype.`
+                );
+                return;
+              }
+
+              navigateToCreateActivityPage();
             }}>
             Create Treatment
           </Button>
