@@ -277,7 +277,7 @@ function deleteActivitiesByIds(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = { count: (response && response.rowCount) || 0};
+      const result = { count: (response && response.rowCount) || 0 };
 
       return res.status(200).json(result);
     } catch (error) {

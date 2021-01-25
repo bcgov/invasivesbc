@@ -228,7 +228,7 @@ export const deleteActivitiesSQL = (activityIds: Array<string>): SQLStatement =>
     UPDATE activity_incoming_data
     SET deleted_timestamp = ${new Date().toISOString()}
     WHERE activity_id IN (${activityIds[0]}`;
-  
+
   for (let i = 1; i < activityIds.length; i++) {
     sqlStatement.append(SQL`, ${activityIds[i]}`);
   }
