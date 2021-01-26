@@ -18,10 +18,6 @@ const InvasivePlants = {
   invasive_plant_code: {}
 };
 
-const InvasiveAnimals = {
-  invasive_animal_code: {}
-};
-
 const Herbicide = {
   liquid_herbicide_code: {},
   herbicide_amount: {},

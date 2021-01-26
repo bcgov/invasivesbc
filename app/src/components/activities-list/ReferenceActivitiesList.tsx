@@ -158,9 +158,10 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
           <Checkbox
             checked={isChecked}
             onChange={() => {
-              setSelectedObservations(isChecked ?
-                selectedObservations.filter((obs: any) => obs.id !== doc._id) :
-                [{ id: doc._id, subtype: doc.activitySubtype }, ...selectedObservations]
+              setSelectedObservations(
+                isChecked
+                  ? selectedObservations.filter((obs: any) => obs.id !== doc._id)
+                  : [{ id: doc._id, subtype: doc.activitySubtype }, ...selectedObservations]
               );
             }}
             onClick={(event) => event.stopPropagation()}
