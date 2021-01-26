@@ -72,6 +72,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
   const [treatmentSubtypeToCreate, setTreatmentSubtypeToCreate] = useState(ActivitySubtype.Treatment_ChemicalPlant);
   const [observation, setObservation] = useState(null);
   const [observationGeos, setObservationGeos] = useState([]);
+  const [observationSubtype, setObservationSubtype] = useState(null);
 
   const steps = [
     'Specify Treatment Type',
@@ -95,7 +96,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
         formData,
         observationGeos,
         ActivityType.Observation,
-        ActivitySubtype.Observation_PlantTerrestrial  // temporarily hard coded
+        observationSubtype
       );
 
       /*
@@ -112,6 +113,10 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
     if (activeStep === 3 && !observation) {
       createNewObservation();
     }
+
+    if (prevStep === activeStep) {
+      setPrevStep(activeStep - 1);
+    }
   }, [activeStep]);
 
   useEffect(() => {
@@ -123,6 +128,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
           setObservation(activity);
         }
 
+        setObservationSubtype(activity.activitySubtype);
         setObservationGeos(observationGeos => observationGeos.concat(activity.geometry[activity.geometry.length - 1]));
       }));
     };
@@ -172,17 +178,19 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
             <Box justifyContent="center" mt={5} display="flex">
               <FormControl variant="outlined" style={{ marginRight: 20 }}>
                 <InputLabel>Create Treatment</InputLabel>
-                <Select
-                  value={treatmentSubtypeToCreate}
-                  onClick={(e) => e.stopPropagation()}
-                  onChange={handleTreatmentSubtypeClick}
-                  label="Create Treatment">
-                  <MenuItem value={ActivitySubtype.Treatment_ChemicalPlant} onClick={handleTreatmentSubtypeClick}>
-                    Chemical Plant
-                  </MenuItem>
-                  <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
-                  <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
-                </Select>
+                {observationSubtype?.includes('Plant') && (
+                  <Select
+                    value={treatmentSubtypeToCreate}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={handleTreatmentSubtypeClick}
+                    label="Create Treatment">
+                    <MenuItem value={ActivitySubtype.Treatment_ChemicalPlant} onClick={handleTreatmentSubtypeClick}>
+                      Chemical Plant
+                    </MenuItem>
+                    <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
+                    <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
+                  </Select>
+                )}
               </FormControl>
 
               <Button
