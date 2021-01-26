@@ -7,7 +7,8 @@ import ReferencesActivityPage from 'features/home/references/ReferencesActivityP
 import ReferencesPage from 'features/home/references/ReferencesPage';
 import SearchActivityPage from 'features/home/search/SearchActivityPage';
 import BulkEditActivitiesPage from 'features/home/search/BulkEditActivitiesPage';
-import ActivityCreationStepperPage from 'features/home/activity/ActivityCreationStepperPage';
+import TreatmentCreationStepperPage from 'features/home/activity/TreatmentCreationStepperPage';
+import ObservationCreationStepperPage from 'features/home/activity/ObservationCreationStepperPage';
 import SearchPage from 'features/home/search/SearchPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -52,9 +53,17 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
       <PrivateRoute
         exact
         layout={HomeLayout}
-        path="/home/activity/create"
-        title={getTitle('Create Activity')}
-        component={ActivityCreationStepperPage}
+        path="/home/activity/observation"
+        title={getTitle('Create Observation')}
+        component={ObservationCreationStepperPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/activity/treatment"
+        title={getTitle('Create Treatment')}
+        component={TreatmentCreationStepperPage}
         componentProps={props}
       />
       <PrivateRoute

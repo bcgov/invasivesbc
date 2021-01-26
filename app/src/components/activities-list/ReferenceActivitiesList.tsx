@@ -234,8 +234,8 @@ const ReferenceActivityList: React.FC = () => {
     const selectedObservationIds = selectedObservations.map((obs: any) => obs.id);
 
     history.push({
-      pathname: `/home/activity/create`,
-      search: '?activities=' + selectedObservationIds.join(','),
+      pathname: `/home/activity/treatment`,
+      search: '?observations=' + selectedObservationIds.join(','),
       state: { observations: selectedObservationIds }
     });
   };

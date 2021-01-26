@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface IActivityCreationStepperPage {
+interface ITreatmentCreationStepperPage {
   classes?: any;
 }
 
@@ -63,7 +63,7 @@ const getStepContent = (step: number) => {
   }
 };
 
-const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (props) => {
+const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (props) => {
   const queryParams = useQuery();
   const classes = useStyles();
   const history = useHistory();
@@ -90,7 +90,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
   ];
 
   // Extract the selected observation ids
-  const selectedObservationIds = queryParams.activities ? queryParams.activities.split(',') : [];
+  const selectedObservationIds = queryParams.observations ? queryParams.observations.split(',') : [];
 
   /*
     On initial render, get the activity data (primarily geometry information)
@@ -375,4 +375,4 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
   );
 };
 
-export default ActivityCreationStepperPage;
+export default TreatmentCreationStepperPage;
