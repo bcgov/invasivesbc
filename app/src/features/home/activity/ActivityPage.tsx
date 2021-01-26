@@ -255,6 +255,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
     const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
+    console.log('appstate results:', appStateResults)
+
     if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
       return;
     }
@@ -262,6 +264,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const activityResults = await databaseContext.database.find({
       selector: { _id: activityId || appStateResults.docs[0].activeActivity }
     });
+
+    console.log('actibity results', activityResults)
 
     return activityResults;
   };

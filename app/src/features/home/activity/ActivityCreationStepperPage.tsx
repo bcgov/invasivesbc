@@ -68,6 +68,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
   const databaseContext = useContext(DatabaseContext);
 
   const [activeStep, setActiveStep] = useState(0);
+  const [prevStep, setPrevStep] = useState(null);
   const [treatmentSubtypeToCreate, setTreatmentSubtypeToCreate] = useState(ActivitySubtype.Treatment_ChemicalPlant);
   const [observation, setObservation] = useState(null);
   const [observationGeos, setObservationGeos] = useState([]);
@@ -108,7 +109,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
       setObservation(activity);
     };
 
-    if (activeStep === 3) {
+    if (activeStep === 3 && !observation) {
       createNewObservation();
     }
   }, [activeStep]);
@@ -147,6 +148,8 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
   const removeActivity = async (activity: PouchDB.Core.RemoveDocument) => {
     const dbDoc = await databaseContext.database.get(activity._id);
     await databaseContext.database.remove(dbDoc);
+
+    setObservation(null);
   };
 
   return (
@@ -182,7 +185,15 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                 </Select>
               </FormControl>
 
-              <Button size="large" variant="contained" color="primary" onClick={() => setActiveStep(activeStep + 1)}>
+              <Button
+                size="large"
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setPrevStep(activeStep);
+                  setActiveStep(activeStep + 1);
+                }}
+              >
                 Continue
               </Button>
             </Box>
@@ -195,7 +206,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                 variant="contained"
                 startIcon={<ArrowBackIcon />}
                 style={{ marginRight: 20 }}
-                onClick={() => setActiveStep(activeStep - 1)}
+                onClick={() => setActiveStep(prevStep)}
               >
                 Back
               </Button>
@@ -204,6 +215,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                 size="large"
                 variant="contained"
                 onClick={() => {
+                  setPrevStep(activeStep);
                   if (selectedObservationIds.length === 1) {
                     setActiveStep(activeStep + 1);
                   } else {
@@ -217,7 +229,10 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                 size="large"
                 variant="contained"
                 color="primary"
-                onClick={() => setActiveStep(activeStep + 2)}
+                onClick={() => {
+                  setPrevStep(activeStep);
+                  setActiveStep(activeStep + 2);
+                }}
               >
                 Yes
               </Button>
@@ -231,7 +246,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                 variant="contained"
                 startIcon={<ArrowBackIcon />}
                 style={{ marginRight: 20 }}
-                onClick={() => setActiveStep(activeStep - 1)}
+                onClick={() => setActiveStep(prevStep)}
               >
                 Back
               </Button>
@@ -239,7 +254,10 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                 style={{ marginRight: 20 }}
                 size="large"
                 variant="contained"
-                onClick={() => setActiveStep(activeStep + 1)}
+                onClick={() => {
+                  setPrevStep(activeStep);
+                  setActiveStep(activeStep + 1);
+                }}
               >
                 No
               </Button>
@@ -247,7 +265,10 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                 size="large"
                 variant="contained"
                 color="primary"
-                onClick={() => setActiveStep(activeStep + 2)}
+                onClick={() => {
+                  setPrevStep(activeStep);
+                  setActiveStep(activeStep + 2);
+                }}
               >
                 Yes
               </Button>
@@ -269,7 +290,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                   style={{ marginRight: 20 }}
                   onClick={() => {
                     removeActivity(observation);
-                    setActiveStep(activeStep - 1);
+                    setActiveStep(prevStep);
                   }}
                 >
                   Back
@@ -278,7 +299,10 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                   size="large"
                   variant="contained"
                   color="primary"
-                  onClick={() => setActiveStep(activeStep + 1)}
+                  onClick={() => {
+                    setPrevStep(activeStep);
+                    setActiveStep(activeStep + 1);
+                  }}
                 >
                   Continue
                 </Button>
@@ -293,7 +317,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                 variant="contained"
                 startIcon={<ArrowBackIcon />}
                 style={{ marginRight: 20 }}
-                onClick={() => setActiveStep(activeStep - 1)}
+                onClick={() => setActiveStep(prevStep)}
               >
                 Back
               </Button>
