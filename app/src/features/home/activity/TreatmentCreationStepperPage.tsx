@@ -2,10 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
   Container,
   Box,
-  Step,
-  StepLabel,
-  Typography,
-  Stepper,
   MenuItem,
   Button,
   FormControl,
@@ -19,6 +15,7 @@ import { ActivitySubtype, ActivityType } from 'constants/activities';
 import { generateActivityPayload, addClonedActivityToDB, addLinkedActivityToDB } from 'utils/addActivity';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import ActivityPage from 'features/home/activity/ActivityPage';
+import StepperComponent from 'components/activity/StepperComponent';
 import { getActivityByIdFromApi } from 'utils/getActivity';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import moment from 'moment';
@@ -198,38 +195,125 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
 
   return (
     <Container className={props.classes.container}>
+      <StepperComponent activeStep={activeStep} steps={steps} stepContent={getStepContent(activeStep)} />
+
       <Box>
-        <Stepper activeStep={activeStep} orientation="horizontal" style={{ backgroundColor: 'transparent' }}>
-          {steps.map((step) => (
-            <Step key={step}>
-              <StepLabel>
-                <Typography variant="h4">{step}</Typography>
-              </StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+        {activeStep === 0 && (
+          <Box justifyContent="center" mt={5} display="flex">
+            <FormControl variant="outlined" style={{ marginRight: 20 }}>
+              <InputLabel>Create Treatment</InputLabel>
+              {observationSubtype?.includes('Plant') && (
+                <Select
+                  value={treatmentSubtypeToCreate}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={handleTreatmentSubtypeClick}
+                  label="Create Treatment">
+                  <MenuItem value={ActivitySubtype.Treatment_ChemicalPlant} onClick={handleTreatmentSubtypeClick}>
+                    Chemical Plant
+                  </MenuItem>
+                  <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
+                  <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
+                </Select>
+              )}
+            </FormControl>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setPrevStep(activeStep);
+                setActiveStep(activeStep + 1);
+              }}>
+              Continue
+            </Button>
+          </Box>
+        )}
 
-        <Box mt={3}>
-          <Typography style={{ textAlign: 'center' }}>{getStepContent(activeStep)}</Typography>
+        {activeStep === 1 && (
+          <Box mt={5} display="flex" justifyContent="center">
+            <Button
+              size="large"
+              variant="contained"
+              startIcon={<ArrowBackIcon />}
+              style={{ marginRight: 20 }}
+              onClick={() => setActiveStep(prevStep)}>
+              Back
+            </Button>
+            <Button
+              style={{ marginRight: 20 }}
+              size="large"
+              variant="contained"
+              onClick={() => {
+                setPrevStep(activeStep);
+                if (selectedObservationIds.length === 1) {
+                  setActiveStep(activeStep + 1);
+                } else {
+                  setActiveStep(activeStep + 2);
+                }
+              }}>
+              No
+            </Button>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setPrevStep(activeStep);
+                setActiveStep(activeStep + 2);
+              }}>
+              Yes
+            </Button>
+          </Box>
+        )}
 
-          {activeStep === 0 && (
-            <Box justifyContent="center" mt={5} display="flex">
-              <FormControl variant="outlined" style={{ marginRight: 20 }}>
-                <InputLabel>Create Treatment</InputLabel>
-                {observationSubtype?.includes('Plant') && (
-                  <Select
-                    value={treatmentSubtypeToCreate}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={handleTreatmentSubtypeClick}
-                    label="Create Treatment">
-                    <MenuItem value={ActivitySubtype.Treatment_ChemicalPlant} onClick={handleTreatmentSubtypeClick}>
-                      Chemical Plant
-                    </MenuItem>
-                    <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
-                    <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
-                  </Select>
-                )}
-              </FormControl>
+        {activeStep === 2 && (
+          <Box mt={5} display="flex" justifyContent="center">
+            <Button
+              size="large"
+              variant="contained"
+              startIcon={<ArrowBackIcon />}
+              style={{ marginRight: 20 }}
+              onClick={() => setActiveStep(prevStep)}>
+              Back
+            </Button>
+            <Button
+              style={{ marginRight: 20 }}
+              size="large"
+              variant="contained"
+              onClick={() => {
+                setPrevStep(activeStep);
+                setActiveStep(activeStep + 1);
+              }}>
+              No
+            </Button>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setPrevStep(activeStep);
+                setActiveStep(activeStep + 2);
+              }}>
+              Yes
+            </Button>
+          </Box>
+        )}
+
+        {activeStep === 3 && observation && (
+          <>
+            <ActivityPage classes={classes} activityId={observation._id} setObservation={setObservation} />
+            <Box mt={5} display="flex" justifyContent="center">
+              <Button
+                size="large"
+                variant="contained"
+                startIcon={<ArrowBackIcon />}
+                style={{ marginRight: 20 }}
+                onClick={() => {
+                  removeActivity(observation);
+                  setActiveStep(prevStep);
+                }}>
+                Back
+              </Button>
               <Button
                 size="large"
                 variant="contained"
@@ -241,135 +325,36 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
                 Continue
               </Button>
             </Box>
-          )}
+          </>
+        )}
 
-          {activeStep === 1 && (
-            <Box mt={5} display="flex" justifyContent="center">
-              <Button
-                size="large"
-                variant="contained"
-                startIcon={<ArrowBackIcon />}
-                style={{ marginRight: 20 }}
-                onClick={() => setActiveStep(prevStep)}>
-                Back
-              </Button>
-              <Button
-                style={{ marginRight: 20 }}
-                size="large"
-                variant="contained"
-                onClick={() => {
-                  setPrevStep(activeStep);
-                  if (selectedObservationIds.length === 1) {
-                    setActiveStep(activeStep + 1);
-                  } else {
-                    setActiveStep(activeStep + 2);
-                  }
-                }}>
-                No
-              </Button>
-              <Button
-                size="large"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setPrevStep(activeStep);
-                  setActiveStep(activeStep + 2);
-                }}>
-                Yes
-              </Button>
-            </Box>
-          )}
-
-          {activeStep === 2 && (
-            <Box mt={5} display="flex" justifyContent="center">
-              <Button
-                size="large"
-                variant="contained"
-                startIcon={<ArrowBackIcon />}
-                style={{ marginRight: 20 }}
-                onClick={() => setActiveStep(prevStep)}>
-                Back
-              </Button>
-              <Button
-                style={{ marginRight: 20 }}
-                size="large"
-                variant="contained"
-                onClick={() => {
-                  setPrevStep(activeStep);
-                  setActiveStep(activeStep + 1);
-                }}>
-                No
-              </Button>
-              <Button
-                size="large"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setPrevStep(activeStep);
-                  setActiveStep(activeStep + 2);
-                }}>
-                Yes
-              </Button>
-            </Box>
-          )}
-
-          {activeStep === 3 && observation && (
-            <>
-              <ActivityPage classes={classes} activityId={observation._id} setObservation={setObservation} />
-              <Box mt={5} display="flex" justifyContent="center">
-                <Button
-                  size="large"
-                  variant="contained"
-                  startIcon={<ArrowBackIcon />}
-                  style={{ marginRight: 20 }}
-                  onClick={() => {
-                    removeActivity(observation);
-                    setActiveStep(prevStep);
-                  }}>
-                  Back
-                </Button>
-                <Button
-                  size="large"
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setPrevStep(activeStep);
-                    setActiveStep(activeStep + 1);
-                  }}>
-                  Continue
-                </Button>
-              </Box>
-            </>
-          )}
-
-          {activeStep === 4 && (
-            <Box mt={5} display="flex" justifyContent="center">
-              <Button
-                size="large"
-                variant="contained"
-                startIcon={<ArrowBackIcon />}
-                style={{ marginRight: 20 }}
-                onClick={() => setActiveStep(prevStep)}>
-                Back
-              </Button>
-              <Button
-                size="large"
-                variant="contained"
-                color="primary"
-                onClick={async () => {
-                  const addedActivity = await addLinkedActivityToDB(
-                    databaseContext,
-                    ActivityType.Treatment,
-                    treatmentSubtypeToCreate,
-                    observation
-                  );
-                  setActiveActivityAndNavigate(addedActivity);
-                }}>
-                Create Treatment
-              </Button>
-            </Box>
-          )}
-        </Box>
+        {activeStep === 4 && (
+          <Box mt={5} display="flex" justifyContent="center">
+            <Button
+              size="large"
+              variant="contained"
+              startIcon={<ArrowBackIcon />}
+              style={{ marginRight: 20 }}
+              onClick={() => setActiveStep(prevStep)}>
+              Back
+            </Button>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={async () => {
+                const addedActivity = await addLinkedActivityToDB(
+                  databaseContext,
+                  ActivityType.Treatment,
+                  treatmentSubtypeToCreate,
+                  observation
+                );
+                setActiveActivityAndNavigate(addedActivity);
+              }}>
+              Create Treatment
+            </Button>
+          </Box>
+        )}
       </Box>
     </Container>
   );
