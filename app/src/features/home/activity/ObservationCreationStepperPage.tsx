@@ -68,10 +68,7 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   const [observationSubtype, setObservationSubtype] = useState(null);
 
   // Define the steps of the workflow
-  const steps = [
-    'Create Observation',
-    'Create Optional Treatment'
-  ];
+  const steps = ['Create Observation', 'Create Optional Treatment'];
 
   // Extract the selected observation id
   const selectedObservationId = queryParams.observation;
@@ -135,11 +132,7 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
             <>
               <ActivityPage classes={classes} activityId={observation._id} setObservation={setObservation} />
               <Box mt={5} display="flex" justifyContent="center">
-                <Button
-                  size="large"
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setActiveStep(activeStep + 1)}>
+                <Button size="large" variant="contained" color="primary" onClick={() => setActiveStep(activeStep + 1)}>
                   Continue
                 </Button>
               </Box>
