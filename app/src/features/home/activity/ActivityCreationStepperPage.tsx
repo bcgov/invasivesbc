@@ -43,6 +43,9 @@ interface IActivityCreationStepperPage {
   classes?: any;
 }
 
+/*
+  Text for background info/steps to follow at each of the given workflow stages
+*/
 const getStepContent = (step: number) => {
   switch (step) {
     case 0:
@@ -77,6 +80,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
   const [observationGeos, setObservationGeos] = useState([]);
   const [observationSubtype, setObservationSubtype] = useState(null);
 
+  // Define the steps of the workflow
   const steps = [
     'Specify Treatment Type',
     'Specify Treatment Number',
@@ -85,8 +89,43 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
     'Create Treatment'
   ];
 
+  // Extract the selected observation ids
   const selectedObservationIds = queryParams.activities ? queryParams.activities.split(',') : [];
 
+  /*
+    On initial render, get the activity data (primarily geometry information)
+    for each of the selected observations to display on map later
+
+    If only one observation is selected initially, set it as the active observation
+    because we enable users to not have to specify an overarching observation
+    when they have only selected one initially
+  */
+  useEffect(() => {
+    const getGeometriesOfSelectedObservations = async () => {
+      await Promise.all(
+        selectedObservationIds.map(async (oId: any) => {
+          const activity = await getActivityByIdFromApi(invasivesApi, oId);
+
+          if (selectedObservationIds.length === 1) {
+            setObservation(activity);
+          }
+
+          setObservationSubtype(activity.activitySubtype);
+          setObservationGeos((obsGeos: any) => obsGeos.concat(activity.geometry[activity.geometry.length - 1]));
+        })
+      );
+    };
+
+    getGeometriesOfSelectedObservations();
+  }, []);
+
+  /*
+    Anytime we change the active step of our workflow:
+      - If the previous step happens to now be the same as the active step, modify the previous step
+      - If the active step is step 3 and we don't have an observation record created for the user to
+        create as their overarching observation, generate it using the geometry info from the previously
+        selected observation records
+  */
   useEffect(() => {
     const createNewObservation = async () => {
       const formData = {
@@ -122,25 +161,9 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
     }
   }, [activeStep]);
 
-  useEffect(() => {
-    const getGeometriesOfSelectedObservations = async () => {
-      await Promise.all(
-        selectedObservationIds.map(async (oId: any) => {
-          const activity = await getActivityByIdFromApi(invasivesApi, oId);
-
-          if (selectedObservationIds.length === 1) {
-            setObservation(activity);
-          }
-
-          setObservationSubtype(activity.activitySubtype);
-          setObservationGeos((obsGeos: any) => obsGeos.concat(activity.geometry[activity.geometry.length - 1]));
-        })
-      );
-    };
-
-    getGeometriesOfSelectedObservations();
-  }, []);
-
+  /*
+    When a treatment type is selected, store it in state for later use
+  */
   const handleTreatmentSubtypeClick = async (event: any) => {
     event.stopPropagation();
 
@@ -148,6 +171,11 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
     setTreatmentSubtypeToCreate(dropdownValue);
   };
 
+  /*
+    When we have completed the workflow and are ready to create the treatment record,
+    set the active activity to the treatment record we are going to be creating and navigate
+    to the treatment activity page
+  */
   const setActiveActivityAndNavigate = async (doc: any) => {
     await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
       return { ...appStateDoc, activeActivity: doc._id };
@@ -156,6 +184,11 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
     history.push(`/home/activity`);
   };
 
+  /*
+    Remove an activity from PouchDB, and also clear the local state of the observation activity
+    Typically used when user navigates away from the create observation step of the workflow
+    (in order to not create unused activity records)
+  */
   const removeActivity = async (activity: PouchDB.Core.RemoveDocument) => {
     const dbDoc = await databaseContext.database.get(activity._id);
     await databaseContext.database.remove(dbDoc);

@@ -145,6 +145,7 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
   const history = useHistory();
   const { doc, databaseContext, setOnReferencesListPage, selectedObservations, setSelectedObservations } = props;
 
+  // Determine which observation records have been selected
   const isChecked = selectedObservations.some((obs: any) => obs.id === doc._id);
 
   const navigateToActivityPage = async (activity: any) => {
@@ -154,6 +155,7 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
   return (
     <Paper key={doc._id}>
       <ListItem button className={classes.activitiyListItem} onClick={() => navigateToActivityPage(doc)}>
+        {/* For observations, allow ability to select one or more and start the create treatment flow */}
         {doc.activityType === 'Observation' && (
           <Checkbox
             checked={isChecked}
@@ -214,10 +216,20 @@ const ReferenceActivityList: React.FC = () => {
   const treatments = docs.filter((doc) => doc.activityType === 'Treatment');
   const monitorings = docs.filter((doc) => doc.activityType === 'Monitoring');
 
+  /*
+    Function to determine if all selected observation records are
+    of the same subtype. For example: Cannot create a treatment if you select a plant
+    and an animal observation, and most probably will not go treat a terrestrial
+    and aquatic observation in a single treatment as those are different areas
+  */
   const validateSelectedObservationTypes = () => {
     return selectedObservations.every((a, _, [b]) => a.subtype === b.subtype);
   };
 
+  /*
+    If all the selected observation records are valid, navigate to the create
+    activity flow to enable the creation of a treatment record
+  */
   const navigateToCreateActivityPage = () => {
     const selectedObservationIds = selectedObservations.map((obs: any) => obs.id);
 
