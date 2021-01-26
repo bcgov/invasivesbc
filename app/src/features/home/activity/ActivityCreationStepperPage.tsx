@@ -50,7 +50,7 @@ const getStepContent = (step: number) => {
     case 1:
       return 'Is this the first treatment of the year on the targeted invasive species?';
     case 2:
-      return `Do the selected observations accurately represent the current size and shape
+      return `Does the selected observation accurately represent the current size and shape
               of the treatment area? If the area has expanded then please select No.`;
     case 3:
       return 'Please create an overarching observation.';
@@ -73,11 +73,11 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
   const [observationGeos, setObservationGeos] = useState([]);
 
   const steps = [
-    'Specify treatment type',
-    'Specify treatment number',
-    'Specify observation accuracy',
-    'Create observation',
-    'Create treatment'
+    'Specify Treatment Type',
+    'Specify Treatment Number',
+    'Confirm Treatment Area',
+    'Create Observation',
+    'Create Treatment'
   ];
 
   const selectedObservationIds = queryParams.activities ? queryParams.activities.split(',') : [];
@@ -101,6 +101,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
         Using the clone activity functionality to create a brand new activity
         with geometry information prepopulated. Generate the payload above
         and then just create a new activity
+        (even though it is not actually cloning an existing activity record)
       */
       const activity = await addClonedActivityToDB(databaseContext, activityPayload);
 
@@ -116,6 +117,10 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
     const getGeometriesOfSelectedObservations = async () => {
       await Promise.all(selectedObservationIds.map(async (oId: any) => {
         const activity = await getActivityByIdFromApi(invasivesApi, oId);
+
+        if (selectedObservationIds.length === 1) {
+          setObservation(activity);
+        }
 
         setObservationGeos(observationGeos => observationGeos.concat(activity.geometry[activity.geometry.length - 1]));
       }));
@@ -137,6 +142,11 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
     });
 
     history.push(`/home/activity`);
+  };
+
+  const removeActivity = async (activity: PouchDB.Core.RemoveDocument) => {
+    const dbDoc = await databaseContext.database.get(activity._id);
+    await databaseContext.database.remove(dbDoc);
   };
 
   return (
@@ -169,9 +179,6 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                   </MenuItem>
                   <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
                   <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
-                  <MenuItem value={ActivitySubtype.Treatment_BiologicalDispersalPlant}>
-                    Biological Dispersal Plant
-                  </MenuItem>
                 </Select>
               </FormControl>
 
@@ -181,7 +188,43 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
             </Box>
           )}
 
-          {(activeStep === 1 || activeStep === 2) && (
+          {activeStep === 1 && (
+            <Box mt={5} display="flex" justifyContent="center">
+              <Button
+                size="large"
+                variant="contained"
+                startIcon={<ArrowBackIcon />}
+                style={{ marginRight: 20 }}
+                onClick={() => setActiveStep(activeStep - 1)}
+              >
+                Back
+              </Button>
+              <Button
+                style={{ marginRight: 20 }}
+                size="large"
+                variant="contained"
+                onClick={() => {
+                  if (selectedObservationIds.length === 1) {
+                    setActiveStep(activeStep + 1);
+                  } else {
+                    setActiveStep(activeStep + 2);
+                  }
+                }}
+              >
+                No
+              </Button>
+              <Button
+                size="large"
+                variant="contained"
+                color="primary"
+                onClick={() => setActiveStep(activeStep + 2)}
+              >
+                Yes
+              </Button>
+            </Box>
+          )}
+
+          {activeStep === 2 && (
             <Box mt={5} display="flex" justifyContent="center">
               <Button
                 size="large"
@@ -224,7 +267,10 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                   variant="contained"
                   startIcon={<ArrowBackIcon />}
                   style={{ marginRight: 20 }}
-                  onClick={() => setActiveStep(activeStep - 1)}
+                  onClick={() => {
+                    removeActivity(observation);
+                    setActiveStep(activeStep - 1);
+                  }}
                 >
                   Back
                 </Button>
@@ -242,6 +288,15 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
 
           {activeStep === 4 && (
             <Box mt={5} display="flex" justifyContent="center">
+              <Button
+                size="large"
+                variant="contained"
+                startIcon={<ArrowBackIcon />}
+                style={{ marginRight: 20 }}
+                onClick={() => setActiveStep(activeStep - 1)}
+              >
+                Back
+              </Button>
               <Button
                 size="large"
                 variant="contained"

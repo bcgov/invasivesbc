@@ -110,6 +110,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         databaseContext.database.upsert(activity._id, (dbDoc) => {
           return {
             ...dbDoc,
+            ...activity,
             formData: updatedFormData,
             geometry: geom,
             status: ActivityStatus.EDITED,
@@ -313,6 +314,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
         setLinkedActivity(linkedRecordActivityResults.docs[0]);
       }
+
+      console.log(updatedDoc);
 
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
