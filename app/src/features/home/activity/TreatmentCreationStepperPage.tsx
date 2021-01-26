@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {
-  Container,
-  Box,
-  MenuItem,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  makeStyles
-} from '@material-ui/core';
+import { Container, Box, MenuItem, Button, FormControl, InputLabel, Select, makeStyles } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useQuery } from 'hooks/useQuery';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
