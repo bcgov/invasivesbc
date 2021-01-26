@@ -853,6 +853,9 @@
       "Observation_PlantAquatic": {
         "title": "Aquatic Plant Information",
         "type": "object",
+        "required": [
+          "invasive_aquatic_plants"
+        ],
         "properties": {
           "waterbody_data": {
             "type": "object",
@@ -1323,7 +1326,9 @@
       "Observation_AnimalAquatic": {
         "title": "Aquatic Animal Information",
         "type": "object",
-        "required": ["observation_details", "invasive_animals"],
+        "required": [
+          "invasive_aquatic_animals"
+        ],
         "properties": {
           "waterbody_data": {
             "type": "object",
