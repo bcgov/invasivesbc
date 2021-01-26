@@ -236,6 +236,7 @@ const ReferenceActivityList: React.FC = () => {
           <Button
             variant="contained"
             color="primary"
+            disabled={!selectedObservations.length}
             onClick={() => {
               if (!validateSelectedObservationTypes()) {
                 notifyError(
