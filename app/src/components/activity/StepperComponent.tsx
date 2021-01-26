@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Step,
-  StepLabel,
-  Typography,
-  Stepper
-} from '@material-ui/core';
+import { Box, Step, StepLabel, Typography, Stepper } from '@material-ui/core';
 
 interface IStepperComponentProps {
   activeStep: number;
@@ -33,6 +27,6 @@ const StepperComponent: React.FC<IStepperComponentProps> = (props) => {
       </Box>
     </Box>
   );
-}
+};
 
 export default StepperComponent;
