@@ -51,8 +51,8 @@ const TabsContainer: React.FC = () => {
       <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
         <Tab label="Search" icon={<Search />} onClick={() => history.push('/home/search')} />
         <Tab label="Plan My Trip" icon={<Explore />} onClick={() => history.push('/home/plan')} />
-        <Tab label="References" icon={<Bookmarks />} onClick={() => history.push('/home/references')} />
-        <Tab label="My Activities" icon={<HomeWork />} onClick={() => history.push('/home/activities')} />
+        <Tab label="Cached Activities" icon={<Bookmarks />} onClick={() => history.push('/home/references')} />
+        <Tab label="Current Activities" icon={<HomeWork />} onClick={() => history.push('/home/activities')} />
         <Tab label="Map" icon={<Map />} onClick={() => history.push('/home/map')} />
         <Tab label="Current Activity" icon={<Assignment />} onClick={() => history.push('/home/activity')} />
       </Tabs>
