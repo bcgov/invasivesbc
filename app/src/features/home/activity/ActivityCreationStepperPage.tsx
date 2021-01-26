@@ -67,13 +67,12 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
   const invasivesApi = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
 
-  const [activeStep, setActiveStep] = useState(0);
-  const [prevStep, setPrevStep] = useState(null);
-
   /*
     This is temporarily defaulted to a plant treatment type because animal forms are not yet complete
   */
   const [treatmentSubtypeToCreate, setTreatmentSubtypeToCreate] = useState(ActivitySubtype.Treatment_ChemicalPlant);
+  const [activeStep, setActiveStep] = useState(0);
+  const [prevStep, setPrevStep] = useState(null);
   const [observation, setObservation] = useState(null);
   const [observationGeos, setObservationGeos] = useState([]);
   const [observationSubtype, setObservationSubtype] = useState(null);
