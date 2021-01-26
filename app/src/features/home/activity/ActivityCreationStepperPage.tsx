@@ -133,8 +133,8 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
           }
 
           setObservationSubtype(activity.activitySubtype);
-          setObservationGeos((observationGeos: any) =>
-            observationGeos.concat(activity.geometry[activity.geometry.length - 1])
+          setObservationGeos((obsGeos: any) =>
+            obsGeos.concat(activity.geometry[activity.geometry.length - 1])
           );
         })
       );
