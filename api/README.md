@@ -253,3 +253,10 @@ npm run test
 # Keycloak
 
 This project uses [Keycloak](https://www.keycloak.org/) to handle authentication.
+
+# Troubleshooting
+
+There can sometimes be issues with the validation of the API JSON Schema Specification. If this is ever noticed, few things to keep in mind are:
+
+- Syntax errors or issues with naming within the spec
+- `oneOf` errors where there are multiple fields in the spec that are all considered valid `oneOf` records. This can cause specific actions to fail such as syncing of records. To fix this, ensure that fields have required properties to make them unique
