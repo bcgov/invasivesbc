@@ -2,7 +2,6 @@ import PouchDB from 'pouchdb-core';
 import PouchDBFind from 'pouchdb-find';
 import PouchDBUpsert from 'pouchdb-upsert';
 import React, { useEffect, useState, useCallback } from 'react';
-import { couldStartTrivia } from 'typescript';
 
 const DB_SCHEMA = process.env.REACT_APP_DB_SCHEMA || 'invasivesbc';
 
@@ -39,7 +38,6 @@ export const DatabaseContextProvider: React.FC = (props) => {
    * Create the database using standard (non-mobile) plugins/settings.
    */
   const createDatabase = (): PouchDB.Database<any> => {
-    console.log('in here');
     PouchDB.plugin(require('pouchdb-adapter-idb').default); // add sbrowser adapter
 
     return new PouchDB(DB_SCHEMA, { adapter: 'idb' });

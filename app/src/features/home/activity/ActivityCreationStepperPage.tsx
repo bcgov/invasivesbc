@@ -69,6 +69,10 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
 
   const [activeStep, setActiveStep] = useState(0);
   const [prevStep, setPrevStep] = useState(null);
+
+  /*
+    This is temporarily defaulted to a plant treatment type because animal forms are not yet complete
+  */
   const [treatmentSubtypeToCreate, setTreatmentSubtypeToCreate] = useState(ActivitySubtype.Treatment_ChemicalPlant);
   const [observation, setObservation] = useState(null);
   const [observationGeos, setObservationGeos] = useState([]);
@@ -147,7 +151,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
     setTreatmentSubtypeToCreate(dropdownValue);
   };
 
-  const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
+  const setActiveActivityAndNavigate = async (doc: any) => {
     await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
@@ -196,7 +200,6 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                   </Select>
                 )}
               </FormControl>
-
               <Button
                 size="large"
                 variant="contained"
@@ -330,7 +333,7 @@ const ActivityCreationStepperPage: React.FC<IActivityCreationStepperPage> = (pro
                     treatmentSubtypeToCreate,
                     observation
                   );
-                  setActiveActivityAndNavigateToActivityPage(addedActivity);
+                  setActiveActivityAndNavigate(addedActivity);
                 }}>
                 Create Treatment
               </Button>
