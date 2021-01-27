@@ -183,11 +183,15 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
 
-    history.push({
-      pathname: `/home/activity/observation`,
-      search: '?observation=' + doc._id,
-      state: { observation: doc._id }
-    });
+    if (doc.activityType === 'Observation') {
+      history.push({
+        pathname: `/home/activity/observation`,
+        search: '?observation=' + doc._id,
+        state: { observation: doc._id }
+      });
+    } else {
+      history.push('/home/activity');
+    }
   };
 
   // Sort activities to show most recently updated activities at top of list
