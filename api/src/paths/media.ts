@@ -3,8 +3,8 @@
 import { GetObjectOutput, ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { ALL_ROLES } from '../constants/misc';
 import { IMediaItem, MediaBase64 } from '../models/media';
-import { Roles } from '../constants/misc';
 import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 
@@ -20,7 +20,7 @@ GET.apiDoc = {
   tags: ['media'],
   security: [
     {
-      Bearer: [Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]
+      Bearer: ALL_ROLES
     }
   ],
   parameters: [

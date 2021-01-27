@@ -2,9 +2,9 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { Roles } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
+import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('activity');
 
@@ -15,7 +15,7 @@ GET.apiDoc = {
   tags: ['activity', 'transform', 'projection'],
   security: [
     {
-      Bearer: [Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]
+      Bearer: ALL_ROLES
     }
   ],
   parameters: [

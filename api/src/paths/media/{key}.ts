@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { Roles } from '../../constants/misc';
+import { ALL_ROLES } from '../../constants/misc';
 import { getS3SignedURL } from '../../utils/file-utils';
 
 export const GET: Operation = [getSignedURL()];
@@ -12,7 +12,7 @@ GET.apiDoc = {
   tags: ['media'],
   security: [
     {
-      Bearer: [Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]
+      Bearer: ALL_ROLES
     }
   ],
   parameters: [

@@ -1,6 +1,6 @@
 import { AppBar, CircularProgress, Tab, Tabs } from '@material-ui/core';
 import { Assignment, Bookmarks, Explore, HomeWork, Map, Search } from '@material-ui/icons';
-import { Roles } from 'constants/roles';
+import { ALL_ROLES } from 'constants/roles';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -61,7 +61,7 @@ const TabsContainer: React.FC = () => {
       setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
 
-        if (keycloak.hasRole([Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR])) {
+        if (keycloak.hasRole(ALL_ROLES)) {
           tabsUserHasAccessTo.push({
             label: 'Search',
             path: '/home/search',

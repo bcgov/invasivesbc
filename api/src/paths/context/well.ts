@@ -1,14 +1,14 @@
 'use strict';
 
+import distance from '@turf/distance';
+import { point } from '@turf/helpers';
+import nearestPoint from '@turf/nearest-point';
 import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { Roles } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
 import proj4 from 'proj4';
-import { point } from '@turf/helpers';
-import nearestPoint from '@turf/nearest-point';
-import distance from '@turf/distance';
+import { ALL_ROLES } from '../../constants/misc';
+import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('activity');
 
@@ -20,7 +20,7 @@ GET.apiDoc = {
   tags: ['activity', 'databc'],
   security: [
     {
-      Bearer: [Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]
+      Bearer: ALL_ROLES
     }
   ],
   parameters: [

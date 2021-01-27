@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { Roles } from '../constants/misc';
+import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -19,7 +19,7 @@ POST.apiDoc = {
   tags: ['point-of-interest'],
   security: [
     {
-      Bearer: [Roles.ADMIN, Roles.MANAGER, Roles.DATA_EDITOR]
+      Bearer: ALL_ROLES
     }
   ],
   requestBody: {
