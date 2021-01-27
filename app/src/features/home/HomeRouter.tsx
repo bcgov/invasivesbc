@@ -59,6 +59,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activity/observation"
         title={getTitle('Create Observation')}
+        roles={ALL_ROLES}
         component={ObservationCreationStepperPage}
         componentProps={props}
       />
@@ -67,6 +68,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         layout={HomeLayout}
         path="/home/activity/treatment"
         title={getTitle('Create Treatment')}
+        roles={ALL_ROLES}
         component={TreatmentCreationStepperPage}
         componentProps={props}
       />
