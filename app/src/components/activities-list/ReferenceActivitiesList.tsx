@@ -72,7 +72,7 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
     monitoringSubtype = ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant;
   } else if (treatmentSubtype.includes('MechanicalPlant')) {
     monitoringSubtype = ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant;
-  } else if (treatmentSubtype.includes('BiologicalPlant') || treatmentSubtype.includes('BiologicalDispersalPlant')) {
+  } else if (treatmentSubtype.includes('BiologicalPlant')) {
     monitoringSubtype = ActivitySubtype.Monitoring_BiologicalTerrestrialPlant;
   } else {
     monitoringSubtype = ActivitySubtype[`Monitoring_${treatmentSubtype.split('_')[2]}`];
@@ -160,9 +160,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
                   </MenuItem>
                   <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
                   <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
-                  <MenuItem value={ActivitySubtype.Treatment_BiologicalDispersalPlant}>
-                    Biological Dispersal Plant
-                  </MenuItem>
                 </Select>
               )}
             </FormControl>

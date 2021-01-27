@@ -286,34 +286,6 @@
           }
         }
       },
-      "Activity_Treatment_BiologicalDispersalPlant": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Treatment"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Treatment_BiologicalDispersalPlant"
-          }
-        }
-      },
-      "Activity_Treatment_BiologicalDispersalPlant_BulkEdit": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity_BulkEdit"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Treatment_BulkEdit"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Treatment_BiologicalDispersalPlant_BulkEdit"
-          }
-        }
-      },
       "Activity_Treatment_MechanicalTerrestrialAnimal": {
         "type": "object",
         "properties": {
@@ -2010,7 +1982,8 @@
           "herbicide",
           "wind_speed",
           "wind_direction_code",
-          "pesticide_use_permit_PUP"
+          "pesticide_use_permit_PUP",
+          "signage_on_site"
         ],
         "properties": {
           "activity_id": {
@@ -2101,7 +2074,8 @@
             "type": "number",
             "title": "Wind Speed (km/h)",
             "minimum": 0,
-            "maximum": 25
+            "maximum": 50,
+            "default": 0
           },
           "wind_direction_code": {
             "type": "string",
@@ -2126,6 +2100,11 @@
             "items": {
               "$ref": "#/components/schemas/Herbicide"
             }
+          },
+          "signage_on_site": {
+            "type": "boolean",
+            "title": "Signage on Site",
+            "default": false
           }
         }
       },
@@ -2321,7 +2300,8 @@
           "biological_agent_code",
           "biological_agent_stage_code",
           "invasive_plant_code",
-          "bioagent_maturity_status_code"
+          "bioagent_maturity_status_code",
+          "signage_on_site"
         ],
         "properties": {
           "invasive_plant_code": {
@@ -2389,6 +2369,11 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
+          },
+          "signage_on_site": {
+            "type": "boolean",
+            "title": "Signage on Site",
+            "default": false
           }
         }
       },
@@ -2446,100 +2431,6 @@
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "bioagent_maturity_status_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          }
-        }
-      },
-      "Treatment_BiologicalDispersalPlant": {
-        "title": "Biological Dispersal Treatment Information",
-        "type": "object",
-        "required": [
-          "duration_of_count",
-          "biological_agent_code",
-          "plant_count",
-          "biological_agent_count",
-          "invasive_plant_code",
-          "biological_agent_presence_code"
-        ],
-        "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "duration_of_count": {
-            "type": "number",
-            "title": "Duration of Count (min)",
-            "minimum": 1,
-            "default": 1
-          },
-          "biological_agent_code": {
-            "type": "string",
-            "title": "Biological Agent",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "biological_agent_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "plant_count": {
-            "type": "number",
-            "title": "Plant Count (n > 0)",
-            "minimum": 1,
-            "default": 1
-          },
-          "biological_agent_count": {
-            "type": "number",
-            "title": "Biological Agent Count (n > 0)",
-            "minimum": 1,
-            "default": 1
-          },
-          "biological_agent_presence_code": {
-            "type": "string",
-            "title": "Biological Agent Presence",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "biological_agent_presence_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "default": "NA"
-          }
-        }
-      },
-      "Treatment_BiologicalDispersalPlant_BulkEdit": {
-        "title": "Biological Dispersal Treatment Information",
-        "type": "object",
-        "properties": {
-          "biological_agent_code": {
-            "type": "string",
-            "title": "Biological Agent",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "biological_agent_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "biological_agent_presence_code": {
-            "type": "string",
-            "title": "Biological Agent Presence",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "biological_agent_presence_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"

@@ -98,8 +98,7 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
           ActivitySubtype.Observation_PlantTerrestrial,
           ActivitySubtype.Treatment_ChemicalPlant,
           ActivitySubtype.Treatment_MechanicalPlant,
-          ActivitySubtype.Treatment_BiologicalPlant,
-          ActivitySubtype.Treatment_BiologicalDispersalPlant
+          ActivitySubtype.Treatment_BiologicalPlant
         ];
         const bulkEditIsDisabled = !allowedBulkEditSubtypes.includes(activity.activitySubtype);
 

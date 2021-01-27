@@ -78,7 +78,6 @@ const post_put_apiDoc = {
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_BiologicalDispersalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalTerrestrialAnimal' },
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalTerrestrialAnimal' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalTerrestrialAnimal' },
