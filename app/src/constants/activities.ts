@@ -20,8 +20,6 @@ export enum ActivitySubtype {
   Treatment_MechanicalPlant_BulkEdit = 'Activity_Treatment_MechanicalPlant_BulkEdit',
   Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
   Treatment_BiologicalPlant_BulkEdit = 'Activity_Treatment_BiologicalPlant_BulkEdit',
-  Treatment_BiologicalDispersalPlant = 'Activity_Treatment_BiologicalDispersalPlant',
-  Treatment_BiologicalDispersalPlant_BulkEdit = 'Activity_Treatment_BiologicalDispersalPlant_BulkEdit',
   Treatment_MechanicalTerrestrialAnimal = 'Activity_Treatment_MechanicalTerrestrialAnimal',
   Treatment_ChemicalTerrestrialAnimal = 'Activity_Treatment_ChemicalTerrestrialAnimal',
   Treatment_BiologicalTerrestrialAnimal = 'Activity_Treatment_BiologicalTerrestrialAnimal',
