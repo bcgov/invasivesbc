@@ -7,69 +7,15 @@ import { ALL_ROLES } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 import { undeleteActivitiesSQL } from '../../queries/activity-queries';
 import { getLogger } from '../../utils/logger';
+import { DELETE as activitiesDeleteApiDoc } from '../activities';
 
 const defaultLog = getLogger('activity');
 
 export const POST: Operation = [undeleteActivitiesByIds()];
 
 POST.apiDoc = {
+  ...activitiesDeleteApiDoc.apiDoc,
   description: 'Un-deletes all activities based on a list of ids.',
-  tags: ['activity'],
-  security: [
-    {
-      Bearer: ALL_ROLES // TODO make admin only
-    }
-  ],
-  parameters: [
-    {
-      in: 'query',
-      name: 'id',
-      required: true
-    }
-  ],
-  requestBody: {
-    description: 'Activities search filter criteria object.',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {
-            in: {
-              type: 'string'
-            }
-          }
-        }
-      }
-    }
-  },
-  responses: {
-    200: {
-      description: 'Count of un-deleted activities',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                count: {
-                  type: 'number'
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
 };
 
 /**
@@ -81,7 +27,7 @@ function undeleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'activity', message: 'undeleteActivitiesByIds', body: req.body });
 
-    const ids = Object.values(req.query.id);
+    const ids = Object.values(req.query.id) as string[]; // eslint-disable-line no-eval
 
     if (!ids || !ids.length) {
       throw {

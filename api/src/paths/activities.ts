@@ -152,7 +152,7 @@ DELETE.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Count of soft-deleted activities',
+      description: 'Count of modified activities',
       content: {
         'application/json': {
           schema: {
@@ -241,7 +241,7 @@ function deleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
-    const ids = Object.values(req.query.id);
+    const ids = Object.values(req.query.id) as string[]; // eslint-disable-line no-eval
 
     if (!ids || !ids.length) {
       throw {
