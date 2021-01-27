@@ -2113,7 +2113,8 @@
             "type": "number",
             "title": "Wind Speed (km/h)",
             "minimum": 0,
-            "maximum": 25
+            "maximum": 50,
+            "default": 0
           },
           "wind_direction_code": {
             "type": "string",
