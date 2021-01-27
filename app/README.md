@@ -64,6 +64,7 @@ xCode will open and, after a short delay, will allow you to run the application 
 	- You've got a provisioning profile
 	- You're an admin or app manager
 	- Xcode 11.6
+	- You've already run ionic capacitor build ios
 
 - Build: 
 	- From app/:
@@ -73,4 +74,7 @@ xCode will open and, after a short delay, will allow you to run the application 
 	- Upload ZIP to mobile signing service.  Download as 'signed.zip' in app/
 
 	- From app/:
+	        - export $APP_STORE_USERNAME=YourAppleIDEmail
+		- export $APP_SPECIFIC_PASSWORD=MakeThisInAppleIDProfile
+ 	
 		- sh deploy.sh
