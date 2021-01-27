@@ -176,7 +176,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               expandIcon={<ExpandMore />}
               aria-controls="panel-pointOfInterest-record-picker-content"
               id="panel-pointOfInterest-record-picker-header">
-              <Typography variant="h5">Points Of Interest</Typography>
+              <Typography variant="h5">{'Points Of Interest & IAPP Data'}</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.pointOfInterestList}>
               <PointOfInterestDataFilter />
