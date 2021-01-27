@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { WRITE_ROLES } from '../constants/misc';
+import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestPostRequestBody } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -19,7 +19,7 @@ POST.apiDoc = {
   tags: ['point-of-interest'],
   security: [
     {
-      Bearer: WRITE_ROLES
+      Bearer: ALL_ROLES
     }
   ],
   requestBody: {

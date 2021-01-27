@@ -4,7 +4,7 @@ import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from './../../constants/misc';
+import { ALL_ROLES } from '../../constants/misc';
 import { getDBConnection } from './../../database/db';
 import { getActivitySQL } from './../../queries/activity-queries';
 import { getFileFromS3 } from './../../utils/file-utils';

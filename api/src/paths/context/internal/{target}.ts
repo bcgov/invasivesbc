@@ -3,8 +3,8 @@
 import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES } from '../../../constants/misc';
-import { getLogger } from '../../../utils/logger';
 import { getDBConnection } from '../../../database/db';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('activity');
 
