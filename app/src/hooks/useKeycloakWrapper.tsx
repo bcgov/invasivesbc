@@ -62,78 +62,78 @@ function useKeycloakWrapper(): IKeycloak {
     }
 
     if (Array.isArray(validRoles)) {
-      return validRoles.some((role) => roles().includes(role));
+      return validRoles.some((role) => getRoles().includes(role));
     }
 
-    return roles().includes(validRoles);
+    return getRoles().includes(validRoles);
   };
 
   /**
    * Return the array of roles that the user belongs to.
    */
-  const roles = (): string[] => {
+  const getRoles = (): string[] => {
     return keycloak?.resourceAccess?.['invasives-bc']?.roles || [];
   };
 
   /**
    * Return the user's username
    */
-  const username = (): string => {
+  const getUsername = (): string => {
     return userInfo?.username;
   };
 
   /**
    * Return the user's preferred_username
    */
-  const preferredUsername = (): string => {
+  const getPreferredUsername = (): string => {
     return userInfo?.preferred_username;
   };
 
   /**
    * Return the user's display name
    */
-  const displayName = (): string | undefined => {
+  const getDisplayName = (): string | undefined => {
     return userInfo?.name ?? userInfo?.preferred_username;
   };
 
   /**
    * Return the user's first name
    */
-  const firstName = (): string | undefined => {
+  const getFirstName = (): string | undefined => {
     return userInfo?.firstName ?? userInfo?.given_name;
   };
 
   /**
    * Return the user's last name
    */
-  const lastName = (): string | undefined => {
+  const getLastName = (): string | undefined => {
     return userInfo?.lastName ?? userInfo?.family_name;
   };
 
   /**
    * Return the user's email
    */
-  const email = (): string | undefined => {
+  const getEmail = (): string | undefined => {
     return userInfo?.email;
   };
 
   /**
    * Return the user's sub (unique identifier)
    */
-  const sub = (): string | undefined => {
+  const getSub = (): string | undefined => {
     return userInfo?.sub;
   };
 
   return {
     obj: keycloak,
-    username: username(),
-    preferred_username: preferredUsername(),
-    displayName: displayName(),
-    firstName: firstName(),
-    lastName: lastName(),
-    email: email(),
-    roles: roles(),
-    sub: sub(),
+    username: getUsername(),
+    preferred_username: getPreferredUsername(),
+    displayName: getDisplayName(),
+    firstName: getFirstName(),
+    lastName: getLastName(),
+    email: getEmail(),
+    roles: getRoles(),
+    sub: getSub(),
     hasRole: hasRole
   };
 }

@@ -118,10 +118,11 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     // Add the verified token to the request for future use, if needed
     req.auth_payload = verifiedToken;
 
-    // Verify that the user roles (from keycloak) align with the required roles for this endpoint (security scopes)
-    const isUserRolesValid = userHasValidRoles(scopes, verifiedToken['resource_access'][KEYCLOAK_CLIENT_ID].roles);
+    // Verify that the user role(s) (from keycloak) align with the required roles for this endpoint (security scopes)
+    // The user may have multiple roles, but this check only requires 1 role to match for successful authorization
+    const areUserRolesValid = userHasValidRoles(scopes, verifiedToken['resource_access'][KEYCLOAK_CLIENT_ID].roles);
 
-    if (!isUserRolesValid) {
+    if (!areUserRolesValid) {
       throw {
         status: 401,
         message: 'Access Denied'

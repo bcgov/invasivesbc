@@ -38,7 +38,7 @@ const AccessDenied = () => {
           </Typography>
         </Box>
         <Box mb={4}>
-          <Typography variant="h4">You must request access to view this application by email</Typography>
+          <Typography variant="h4">You must request access by email to view this application </Typography>
         </Box>
         <Box mb={4}>
           <Typography variant="body1" component="span">
