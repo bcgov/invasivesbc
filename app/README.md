@@ -78,4 +78,4 @@ xCode will open and, after a short delay, will allow you to run the application 
 		- export $APP_SPECIFIC_PASSWORD=MakeThisInAppleIDProfile
 		- or put these in env
  	
-		- sh deploy.sh
+		- `sh deploy.sh`
