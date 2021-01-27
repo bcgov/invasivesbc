@@ -54,7 +54,7 @@ function useKeycloakWrapper(): IKeycloak {
    * The user's role(s) must match at least 1 of the valid roles.
    *
    * @param {(string | string[])} [validRoles] a role, or array of roles, that the user must match.
-   * @return {*}  {boolean} true if the user's role(s) match at least 1 of the valid roles, false otherwise.
+   * @return {*} {boolean} true if the user's role(s) match at least 1 of the valid roles, false otherwise.
    */
   const hasRole = (validRoles?: string | string[]): boolean => {
     if (!validRoles || !validRoles.length) {
