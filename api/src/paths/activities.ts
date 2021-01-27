@@ -241,7 +241,6 @@ function deleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
-    // prettier-ignore
     const ids = Object.values(req.query.id) as string[];
 
     if (!ids || !ids.length) {
