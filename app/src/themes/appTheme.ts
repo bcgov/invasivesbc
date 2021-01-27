@@ -1,4 +1,5 @@
 import { createMuiTheme } from '@material-ui/core';
+import 'styles/fonts.scss';
 
 const appTheme = createMuiTheme({
   palette: {
@@ -15,6 +16,9 @@ const appTheme = createMuiTheme({
       dark: '#ad7900',
       contrastText: '#000000'
     }
+  },
+  typography: {
+    fontFamily: ['BCSans', '"Noto Sans"', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(',')
   },
   overrides: {
     MuiTypography: {

@@ -4,13 +4,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { WRITE_ROLES } from '../constants/misc';
+import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivityPostRequestBody } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
-import { getLogger } from '../utils/logger';
 import { commit as commitContext } from '../utils/context-queries';
+import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
 
 const defaultLog = getLogger('activity');
@@ -24,7 +24,7 @@ const post_put_apiDoc = {
   tags: ['activity'],
   security: [
     {
-      Bearer: WRITE_ROLES
+      Bearer: ALL_ROLES
     }
   ],
   requestBody: {
