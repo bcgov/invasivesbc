@@ -146,7 +146,7 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
   const { doc, databaseContext, setOnReferencesListPage, selectedObservations, setSelectedObservations } = props;
 
   // Determine which observation records have been selected
-  const isChecked = selectedObservations.some((obs: any) => obs.id === doc._id);
+  const isChecked = selectedObservations?.some((obs: any) => obs.id === doc._id);
 
   const navigateToActivityPage = async (activity: any) => {
     history.push(`/home/references/activity/${activity._id}`);
