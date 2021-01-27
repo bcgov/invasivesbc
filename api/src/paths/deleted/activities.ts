@@ -14,7 +14,7 @@ export const POST: Operation = [undeleteActivitiesByIds()];
 
 POST.apiDoc = {
   ...activitiesDeleteApiDoc.apiDoc,
-  description: 'Un-deletes all activities based on a list of ids.',
+  description: 'Un-deletes all activities based on a list of ids.'
 };
 
 /**
