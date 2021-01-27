@@ -11,6 +11,8 @@ import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getAct
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
+import { getCustomValidator, getHerbicideApplicationRateValidator } from 'rjsf/business-rules/customValidation';
 
 interface IBulkEditActivitiesPage {
   classes?: any;
@@ -77,9 +79,11 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
+      const updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+
       return setActivity({
         ...activity,
-        formData: event.formData,
+        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.NOT_VALIDATED
@@ -87,25 +91,6 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
     }),
     [activity]
   );
-
-  /**
-   * Save the form when it is submitted.
-   *
-   * Note: this runs after validation has run, and only if there were no errors.
-   *
-   * @param {*} event the form submit event
-   */
-  const onFormSubmitSuccess = (event: any, formRef: any) => {
-    formRef.setState({ ...formRef.state, schemaValidationErrors: [], schemaValidationErrorSchema: {} }, () => {
-      setActivity({
-        ...activity,
-        formData: event.formData,
-        status: ActivityStatus.EDITED,
-        dateUpdated: new Date(),
-        formStatus: FormValidationStatus.VALID
-      });
-    });
-  };
 
   if (isLoading) {
     return <CircularProgress />;
@@ -124,8 +109,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
           <FormContainer
             activity={activity}
             onFormChange={onFormChange}
-            onFormSubmitSuccess={onFormSubmitSuccess}
-            hideErrorCheckButton={true}
+            customValidation={getCustomValidator([getHerbicideApplicationRateValidator()])}
           />
         </AccordionDetails>
       </Accordion>
