@@ -804,49 +804,10 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "proposed_treatment_code": {
-            "type": "string",
-            "title": "Proposed Action",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "proposed_treatment_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "plant_life_stage_code": {
-            "type": "string",
-            "title": "Life Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_life_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "plant_health_code": {
-            "type": "string",
-            "title": "Health",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_health_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "plant_seed_stage_code": {
-            "type": "string",
-            "title": "Seed Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_seed_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
+          "early_detection_rapid_resp_ind": {
+            "type": "boolean",
+            "title": "Early Detection",
+            "default": false
           }
         }
       },
@@ -2183,6 +2144,11 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
+          "pesticide_use_permit_PUP": {
+            "type": "string",
+            "title": "Pesticide Use Permit",
+            "default": "none"
+          },
           "pest_management_plan": {
             "type": "string",
             "title": "Pesticide Management Plan",
@@ -2214,6 +2180,20 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
+            }
+          },
+          "herbicide": {
+            "type": "array",
+            "title": "Herbicide",
+            "items": {
+              "$ref": "#/components/schemas/Herbicide"
             }
           }
         }
@@ -2296,6 +2276,17 @@
         "title": "Mechanical Treatment Information",
         "type": "object",
         "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
           "mechanical_method_code": {
             "type": "string",
             "title": "Mechanical Method",
@@ -2313,28 +2304,6 @@
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "mechanical_disposal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "root_removal_code": {
-            "type": "string",
-            "title": "Root Removal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "root_removal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "soil_disturbance_code": {
-            "type": "string",
-            "title": "Soil Disturbance",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "soil_disturbance_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
@@ -2427,6 +2396,17 @@
         "title": "Biological Treatment Information",
         "type": "object",
         "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
           "classified_area_code": {
             "type": "string",
             "title": "Classified Area",

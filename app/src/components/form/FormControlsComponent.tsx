@@ -8,7 +8,6 @@ export interface IFormControlsComponentProps {
   onCopy?: Function;
   onPaste?: Function;
   activitySubtype?: string;
-  hideErrorCheckButton?: boolean;
 }
 
 const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
@@ -18,23 +17,21 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
     <>
       <Grid container spacing={3}>
         <Grid container item spacing={3}>
-          {!props.hideErrorCheckButton && (
-            <Grid item>
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  if (!props.onSubmit) {
-                    return;
-                  }
+          <Grid item>
+            <Button
+              disabled={isDisabled}
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                if (!props.onSubmit) {
+                  return;
+                }
 
-                  props.onSubmit();
-                }}>
-                Check Form For Errors
-              </Button>
-            </Grid>
-          )}
+                props.onSubmit();
+              }}>
+              Check Form For Errors
+            </Button>
+          </Grid>
           {props.onCopy && (
             <Grid item>
               <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onCopy()}>
