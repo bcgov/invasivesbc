@@ -71,10 +71,13 @@ xCode will open and, after a short delay, will allow you to run the application 
 		- sh build.sh
 		- sh pack.sh
 
-	- Upload ZIP to mobile signing service.  Download as 'signed.zip' in app/
+	- Upload ZIP to mobile signing service here https://signing-web-devhub-prod.pathfinder.gov.bc.ca/.  
+	- Make sure you log in first as it will wipe the form once you do.
+	- Download as 'signed.zip' in app/
 
 	- From app/:
 	        - export $APP_STORE_USERNAME=YourAppleIDEmail
 		- export $APP_SPECIFIC_PASSWORD=MakeThisInAppleIDProfile
+		- or put these in env
  	
 		- sh deploy.sh
