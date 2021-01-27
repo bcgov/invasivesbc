@@ -11,8 +11,10 @@ interface IPrivateRouteProps extends RouteProps {
 }
 
 /**
- * A PrivateRoute only allows a user who is authenticated and has the appropriate role(s) or claim(s).
- * @param props - Properties to pass { component, role, claim }
+ * A PrivateRoute only allows a user who is authenticated and has the appropriate role(s).
+ *
+ * @param {*} props properties {component, layout, ...rest}
+ * @return {*}
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   const keycloak = useKeycloakWrapper();
@@ -24,13 +26,13 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   return (
     <Route
       {...rest}
-      render={(props) => {
+      render={(renderProps) => {
         if (!keycloak.obj?.authenticated || !rest.roles || !keycloak.hasRole(rest.roles)) {
-          return <Redirect to={{ pathname: '/forbidden', state: { referer: props.location } }} />;
+          return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
         } else {
           return (
             <Layout>
-              <Component {...props} {...rest.componentProps} />
+              <Component {...renderProps} {...rest.componentProps} />
             </Layout>
           );
         }
