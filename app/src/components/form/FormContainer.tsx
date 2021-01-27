@@ -63,7 +63,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const isDisabled = props.isDisabled || props.activity?.sync?.status === ActivitySyncStatus.SYNC_SUCCESSFUL || false;
 
   return (
-    <Box>
+    <Box width="100%">
       <Box mb={3}>
         <FormControlsComponent
           onSubmit={() => formRef.submit()}

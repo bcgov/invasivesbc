@@ -7,360 +7,296 @@
 import UISchemaComponents from 'rjsf/uiSchema/UISchemaComponents';
 import BaseUISchemaComponents from 'rjsf/uiSchema/BaseUISchemaComponents';
 
-const Activity_Observation_PlantTerrestial = {
+const Activity_Observation_PlantTerrestrial = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Observation_PlantTerrestial
+  }
+};
+
+const Activity_Observation_PlantTerrestrial_BulkEdit = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity_BulkEdit
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.Observation_PlantTerrestrial_BulkEdit
   }
 };
 
 const Activity_Observation_PlantAquatic = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
     ...BaseUISchemaComponents.Observation_PlantAquatic
   }
 };
 
 const Activity_Observation_AnimalTerrestrial = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Observation_AnimalTerrestrial
   }
 };
 
 const Activity_Observation_AnimalAquatic = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
     ...BaseUISchemaComponents.Observation_AnimalAquatic
   }
 };
 
 const Activity_Treatment_ChemicalPlant = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
-  activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
-    ...BaseUISchemaComponents.Treatment
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Treatment_ChemicalPlant
+  }
+};
+
+const Activity_Treatment_ChemicalPlant_BulkEdit = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity_BulkEdit
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
-    ...UISchemaComponents.Treatment_ChemicalPlant
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Treatment_ChemicalPlant_BulkEdit
   }
 };
 
 const Activity_Treatment_MechanicalPlant = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_MechanicalPlant
+  }
+};
+
+const Activity_Treatment_MechanicalPlant_BulkEdit = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity_BulkEdit
+  },
+  activity_type_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.Treatment_BulkEdit
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.Treatment_MechanicalPlant_BulkEdit
   }
 };
 
 const Activity_Treatment_BiologicalPlant = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_BiologicalPlant
   }
 };
 
-const Activity_Treatment_BiologicalDispersalPlant = {
+const Activity_Treatment_BiologicalPlant_BulkEdit = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
-    ...UISchemaComponents.Activity
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity_BulkEdit
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
-    ...BaseUISchemaComponents.Treatment
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.Treatment_BulkEdit
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
-    ...BaseUISchemaComponents.Treatment_BiologicalDispersalPlant
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.Treatment_BiologicalPlant_BulkEdit
   }
 };
 
 const Activity_Treatment_MechanicalTerrestrialAnimal = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_MechanicalTerrestrialAnimal
   }
 };
 
 const Activity_Treatment_ChemicalTerrestrialAnimal = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_ChemicalTerrestrialAnimal
   }
 };
 
 const Activity_Treatment_BiologicalTerrestrialAnimal = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_BiologicalTerrestrialAnimal
   }
 };
 
 const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring
   }
 };
 
 const Activity_Monitoring_MechanicalTerrestrialAquaticPlant = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring
   }
 };
 
 const Activity_Monitoring_BiologicalTerrestrialPlant = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring_BiologicalTerrestrialPlant
   }
 };
 
 const Activity_Monitoring_MechanicalTerrestrialAnimal = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring_MechanicalTerrestrialAnimal
   }
 };
 
 const Activity_Monitoring_ChemicalTerrestrialAnimal = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring_ChemicalTerrestrialAnimal
   }
 };
 
 const Activity_Monitoring_BiologicalTerrestrialAnimal = {
   activity_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.MonitoringActivity
   },
   activity_type_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring
   },
   activity_subtype_data: {
-    'ui:column-xs': 12,
-    'ui:column-md': 6,
-    'ui:column-lg': 4,
+    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring_BiologicalTerrestrialAnimal
   }
 };
 
 const RootUISchemas = {
-  Activity_Observation_PlantTerrestial,
+  Activity_Observation_PlantTerrestrial,
+  Activity_Observation_PlantTerrestrial_BulkEdit,
   Activity_Observation_PlantAquatic,
   Activity_Observation_AnimalTerrestrial,
   Activity_Observation_AnimalAquatic,
   Activity_Treatment_ChemicalPlant,
+  Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_MechanicalPlant,
+  Activity_Treatment_MechanicalPlant_BulkEdit,
   Activity_Treatment_BiologicalPlant,
-  Activity_Treatment_BiologicalDispersalPlant,
+  Activity_Treatment_BiologicalPlant_BulkEdit,
   Activity_Treatment_MechanicalTerrestrialAnimal,
   Activity_Treatment_ChemicalTerrestrialAnimal,
   Activity_Treatment_BiologicalTerrestrialAnimal,

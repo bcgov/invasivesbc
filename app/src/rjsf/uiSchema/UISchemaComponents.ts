@@ -40,7 +40,28 @@ const Treatment_ChemicalPlant = {
   },
   wind_speed: {},
   wind_direction_code: {},
-  pesticide_use_permit_PUP: {}
+  pesticide_use_permit_PUP: {},
+  signage_on_site: {
+    'ui:widget': 'radio'
+  }
+};
+
+const Treatment_ChemicalPlant_BulkEdit = {
+  pesticide_employer_code: {},
+  pest_management_plan: {},
+  pesticide_use_permit_PUP: {},
+  treatment_issues_code: {},
+  chemical_method_code: {},
+  herbicide: {
+    items: {
+      ...BaseUISchemaComponents.Herbicide
+    }
+  },
+  invasive_plants: {
+    items: {
+      ...BaseUISchemaComponents.InvasivePlants
+    }
+  }
 };
 
 const Activity = {
@@ -71,6 +92,11 @@ const Activity = {
   }
 };
 
+const Activity_BulkEdit = {
+  invasive_species_agency_code: {},
+  jurisdiction_code: {}
+};
+
 const MonitoringActivity = {
   ...Activity,
   access_description: {
@@ -85,7 +111,9 @@ const MonitoringActivity = {
 const UISchemaComponents = {
   Treatment_ChemicalPlant,
   Activity,
-  MonitoringActivity
+  MonitoringActivity,
+  Activity_BulkEdit,
+  Treatment_ChemicalPlant_BulkEdit
 };
 
 export default UISchemaComponents;
