@@ -3,7 +3,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 import { undeleteActivitiesSQL } from '../../queries/activity-queries';
 import { getLogger } from '../../utils/logger';
@@ -27,7 +26,8 @@ function undeleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'activity', message: 'undeleteActivitiesByIds', body: req.body });
 
-    const ids = Object.values(req.query.id) as string[]; // eslint-disable-line no-eval
+    // prettier-ignore
+    const ids = Object.values(req.query.id) as string[];
 
     if (!ids || !ids.length) {
       throw {

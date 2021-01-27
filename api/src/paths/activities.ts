@@ -241,7 +241,8 @@ function deleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
-    const ids = Object.values(req.query.id) as string[]; // eslint-disable-line no-eval
+    // prettier-ignore
+    const ids = Object.values(req.query.id) as string[];
 
     if (!ids || !ids.length) {
       throw {
