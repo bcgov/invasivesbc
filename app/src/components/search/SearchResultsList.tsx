@@ -1,7 +1,6 @@
 import { Box, Button, makeStyles, Theme, Typography } from '@material-ui/core';
 import SearchActivitiesList from 'components/activities-list/SearchActivitiesList';
 import { ISearchActivity } from 'features/home/search/SearchPage';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';

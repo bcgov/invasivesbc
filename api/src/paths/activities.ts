@@ -7,7 +7,7 @@ import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getActivitiesSQL, deleteActivitiesSQL, undeleteActivitiesSQL } from '../queries/activity-queries';
+import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('activity');
@@ -241,7 +241,7 @@ function deleteActivitiesByIds(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
 
-    const ids = Object.values(req.query.id) as string[];
+    const ids = Object.values(req.query.id);
 
     if (!ids || !ids.length) {
       throw {
