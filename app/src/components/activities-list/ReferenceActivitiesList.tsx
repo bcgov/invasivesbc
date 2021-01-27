@@ -313,7 +313,7 @@ const ReferenceActivitiesList: React.FC = () => {
   return (
     <>
       <div className={classes.activitiesContent}>
-        <Typography variant="h4">Reference Activities</Typography>
+        <Typography variant="h4">Cached Activities</Typography>
         <br />
         <ReferenceActivityList />
       </div>
