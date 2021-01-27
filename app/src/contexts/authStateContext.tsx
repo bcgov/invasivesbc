@@ -12,8 +12,19 @@ export const AuthStateContext = React.createContext<IAuthState>({
 export const AuthStateContextProvider: React.FC = (props) => {
   const keycloak = useKeycloakWrapper();
 
+  const [userInfo, setUserInfo] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const loadUserInfo = async () => {
+      const user = await keycloak.obj?.loadUserInfo();
+      setUserInfo(user);
+    };
+
+    loadUserInfo();
+  }, [keycloak.obj]);
+
   return (
-    <AuthStateContext.Provider value={{ ready: keycloak.obj?.authenticated }}>
+    <AuthStateContext.Provider value={{ ready: keycloak.obj?.authenticated && !!userInfo }}>
       {props.children}
     </AuthStateContext.Provider>
   );
