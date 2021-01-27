@@ -240,7 +240,6 @@ export const deleteActivitiesSQL = (activityIds: Array<string>): SQLStatement =>
   return sqlStatement;
 };
 
-
 /**
  * SQL query to un-delete activity records.
  *
