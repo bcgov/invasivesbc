@@ -460,19 +460,6 @@ const ActivitiesList: React.FC = (props) => {
                       }>
                       Plant Biological
                     </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_BiologicalDispersalPlant
-                        )
-                      }>
-                      Plant Biological Dispersal
-                    </Button>
                   </>
                 )}
                 {workflowFunction === 'Animal' && (

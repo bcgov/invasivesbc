@@ -462,7 +462,10 @@ const Treatment_BiologicalPlant = {
   biological_agent_code: {},
   biological_agent_stage_code: {},
   invasive_plant_code: {},
-  bioagent_maturity_status_code: {}
+  bioagent_maturity_status_code: {},
+  signage_on_site: {
+    'ui:widget': 'radio'
+  }
 };
 
 const Treatment_BiologicalPlant_BulkEdit = {
@@ -470,20 +473,6 @@ const Treatment_BiologicalPlant_BulkEdit = {
   biological_agent_code: {},
   biological_agent_stage_code: {},
   bioagent_maturity_status_code: {}
-};
-
-const Treatment_BiologicalDispersalPlant = {
-  duration_of_count: {},
-  biological_agent_code: {},
-  plant_count: {},
-  biological_agent_count: {},
-  invasive_plant_code: {},
-  biological_agent_presence_code: {}
-};
-
-const Treatment_BiologicalDispersalPlant_BulkEdit = {
-  biological_agent_code: {},
-  biological_agent_presence_code: {}
 };
 
 const Treatment_MechanicalTerrestrialAnimal = {
@@ -578,8 +567,6 @@ const BaseUISchemaComponents = {
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
-  Treatment_BiologicalDispersalPlant,
-  Treatment_BiologicalDispersalPlant_BulkEdit,
   Treatment_MechanicalTerrestrialAnimal,
   Treatment_ChemicalTerrestrialAnimal,
   Treatment_BiologicalTerrestrialAnimal,
