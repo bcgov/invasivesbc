@@ -7,7 +7,7 @@ import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
+import { getActivitiesSQL, deleteActivitiesSQL, undeleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('activity');
@@ -145,14 +145,7 @@ DELETE.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          properties: {
-            id: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            }
-          }
+          properties: {}
         }
       }
     }

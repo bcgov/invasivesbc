@@ -62,12 +62,28 @@ export const useInvasivesApi = () => {
    */
   const deleteActivities = async (activityIds: string[]): Promise<any> => {
     const { data } = await api.delete(`/api/activities`, {
-      params: { id: [activityIds[0], activityIds[1]] },
+      params: { id: activityIds },
       paramsSerializer: (params) => {
         return qs.stringify(params);
       }
     });
-    console.log(data);
+
+    return data;
+  };
+
+  /**
+   * Undelete activities by ids.
+   *
+   * @param {string[]} activityIds
+   * @return {*}  {Promise<any>}
+   */
+  const undeleteActivities = async (activityIds: string[]): Promise<any> => {
+    const { data } = await api.post(`/api/deleted/activities`, {
+      params: { id: activityIds },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
 
     return data;
   };
@@ -174,6 +190,7 @@ export const useInvasivesApi = () => {
     getMedia,
     getActivities,
     deleteActivities,
+    undeleteActivities,
     getActivityById,
     createActivity,
     updateActivity,

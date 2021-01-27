@@ -57,8 +57,8 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
             variant="contained"
             color="primary"
             onClick={() => {
-              setEditIds([]);
               invasivesApi.deleteActivities(editIds);
+              setEditIds([]);
               history.go(0);
             }}>
             Delete
