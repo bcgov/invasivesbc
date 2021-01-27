@@ -74,7 +74,7 @@ xCode will open and, after a short delay, will allow you to run the application 
 	- Download as 'signed.zip' in app/
 
 	- From app/:
-	        - export $APP_STORE_USERNAME=YourAppleIDEmail
+- `export $APP_STORE_USERNAME=YourAppleIDEmail`
 		- export $APP_SPECIFIC_PASSWORD=MakeThisInAppleIDProfile
 		- or put these in env
  	
