@@ -45,6 +45,8 @@ const binarySearchValues = (items, field, value) => {
 // returns fallback value if empty or no common value
 const getCommonValue = (array, fallback = undefined) => (new Set(array).size === 1 ? array[0] : fallback);
 
+const hectaresToM2 = (hectares) => Math.round(Number(hectares) * 10000) | 0;
+
 const mapSlope = (slope) => {
   if (slope === '') return 'NA';
   slope = Number(slope);
@@ -71,6 +73,21 @@ const mapAspect = (aspect) => {
   if (aspect <= 292.5) return 'W';
   if (aspect <= 333.5) return 'NW';
   return 'NA';
+};
+
+const mapEfficacyCode = (percent) => {
+  percent = Number(percent);
+  if (percent < 10) return 10;
+  if (percent < 20) return 9;
+  if (percent < 30) return 8;
+  if (percent < 40) return 7;
+  if (percent < 50) return 6;
+  if (percent < 60) return 5;
+  if (percent < 70) return 4;
+  if (percent < 80) return 3;
+  if (percent < 90) return 2;
+  if (percent <= 100) return 1;
+  return;
 };
 
 // LOOKUP TABLES:
@@ -101,6 +118,45 @@ const observationTypes = {
   'O: Operational': 'OP',
   'P: Precise': 'PR'
   // add more as they show up in CSV
+};
+
+const mechMethodCodes = {
+  Digging: 'DIG',
+  Bury: 'BRY',
+  'Controlled Burning': 'BUR',
+  'Cultivation or till': 'CUL',
+  'Dead-heading': 'DED',
+  'Flaming / burn': 'FLA',
+  'Flaming / Tiger Torch burn': 'FLA',
+  'Hand pulling': 'HAN',
+  'Hot water / Steam': 'HWS',
+  Mowing: 'MOW',
+  Mulching: 'MUL',
+  'Suction dredging': 'SD',
+  'Sheet Mulching': 'SHM',
+  'Salt water / Vinegar': 'SV',
+  'Targeted grazing': 'TG',
+  Tarping: 'TR',
+  Seeding: 'SED',
+  Planting: 'PLT',
+  Legacy: 'CNV', // Note, may want to treat this differently
+  'Mechanical Method not recorded': 'CNV'
+};
+
+const chemMethodCodes = {
+  ATV: 'ATV',
+  'Basal Bark': 'BBA',
+  'Boomless Nozzle': 'BNO',
+  'Back Pack': 'BPA',
+  'Cut and Insert': 'CIN',
+  'Cut Stump / Cut and Paint': 'CSP',
+  'Cut Stump / Paint': 'CSP',
+  'Fixed Boom': 'FBO',
+  'Hand Gun': 'HGU',
+  'Chemical Method not recorded': 'NOT',
+  'Stem Injection': 'SIN',
+  Spread: 'SPR',
+  Wick: 'WCK'
 };
 
 // IMPORT LOGIC:
@@ -152,7 +208,7 @@ const cli = meow(
       --chemicalMonitoring: monitoring_id DESC
       --biologicalTreatment: biological_id DESC
       --biologicalMonitoring: monitoring_id DESC
-      --dispersal: SiteID DESC
+      --dispersal: biological_dispersal_id DESC
       --bioControlOutput: SiteID DESC
   */
   {
@@ -406,6 +462,11 @@ const main = async () => {
       // restore desired sorting order by biological_id DESC (latest first)
       biological_treatments.sort((a, b) => Number(b.biological_id) - Number(a.biological_id));
 
+      // assumes dispersals CSV sorted by site_id ASC
+      const biological_dispersals = binarySearchValues(IAPPData.dispersalData, 'site_id', siteRecordID);
+      // restore desired sorting order by biological_dispersal_id ASC
+      biological_dispersals.sort((a, b) => Number(a.biological_dispersal_id) - Number(b.biological_dispersal_id));
+
       siteCount++;
 
       // Go/No-Go Rules:
@@ -431,15 +492,15 @@ const main = async () => {
         ],
         form_data: {
           point_of_interest_data: {
-            jurisdiction_code: Number(siteRecord.Jur1pct) === 100 ? siteRecord.Jur1 : 'Not provided',
-            point_of_interest_status: 'done',
-            invasive_species_agency_code: getCommonValue(surveyAgencyCodes, 'Not Provided'),
+            invasive_species_agency_code: getCommonValue(surveyAgencyCodes, undefined),
+            jurisdiction_code: Number(siteRecord.Jur1pct) === 100 ? siteRecord.Jur1 : undefined,
+            // point_of_interest_status: 'done',
+            general_comment: siteRecord.Comments,
+            access_description: siteRecord.AccessDescription,
             media_indicator: false,
             created_date_on_device: formatDateToISO(siteRecord.CreateDate),
             updated_date_on_device: formatDateToISO(siteRecord.CreateDate),
-            general_comment: siteRecord.Comments,
-            access_description: siteRecord.AccessDescription,
-            paper_file: [
+            paper_file_id: [
               {
                 description: siteRecord.PaperFile
               }
@@ -447,120 +508,246 @@ const main = async () => {
           },
 
           point_of_interest_type_data: {
-            elevation: siteRecord.Elevation,
             site_id: siteRecordID,
-            created_date: formatDateToISO(siteRecord.CreateDate),
             original_bec_id: siteRecord.BEC_ID,
             map_sheet: siteRecord.MapSheet,
-            specific_use_code: siteRecord.SpecificUse || 'X',
             soil_texture_code: siteRecord.SoilTexture || 'X',
-            slope: siteRecord.Slope,
+            specific_use_code: siteRecord.SpecificUse || 'X',
             slope_code: mapSlope(siteRecord.Slope),
-            aspect: siteRecord.Aspect,
+            slope: siteRecord.Slope,
             aspect_code: mapAspect(siteRecord.Aspect),
-            comments: siteRecord.Comments,
-            species: surveySpecies,
+            aspect: siteRecord.Aspect,
+            elevation: siteRecord.Elevation,
+            species: surveySpecies
+          },
 
-            surveys: surveys.map((survey) => ({
-              survey_id: survey.SurveyID,
-              survey_date: formatDateToISO(survey.SurveyDate),
-              reported_area: Number(survey.EstArea) * 10000, // hectares to m2
-              map_code: survey.MapCode,
-              // invasive_plant_code: 'NA', // TODO map species/genus to plant code
-              species: survey.Species,
-              genus: survey.Genus,
-              common_name: survey.CommonName,
-              invasive_species_agency_code: survey.SurveyAgency,
-              jurisdictions: [
+          surveys: surveys.map((survey) => ({
+            survey_id: survey.SurveyID,
+            survey_date: formatDateToISO(survey.SurveyDate),
+            reported_area: hectaresToM2(survey.EstArea), // hectares to m2
+            map_code: survey.MapCode,
+            invasive_species_agency_code: survey.SurveyAgency,
+            // invasive_plant_code: 'NA', // TODO map common/species/genus to plant code
+            common_name: survey.CommonName,
+            species: survey.Species,
+            genus: survey.Genus,
+            invasive_plant_density_code: densityMap[survey.Density],
+            density: survey.Density,
+            invasive_plant_distribution_code: distributionMap[survey.Distribution],
+            distribution: survey.Distribution,
+            // proposed_treatment_code
+            observation_type_code: observationTypes[survey.SurveyType],
+            observation_type: survey.SurveyType,
+            general_comment: survey.Comment,
+            paper_file_id: [
+              {
+                description: survey.PaperFileID
+              }
+            ],
+            weeds_found: survey.WeedsFound,
+            employer_code: survey.EmployerCode ? survey.EmployerCode : undefined,
+            jurisdictions: [
+              {
+                jurisdiction_code: survey.Jur1,
+                percentage: survey.Jur1pct
+              },
+              {
+                jurisdiction_code: survey.Jur2,
+                percentage: survey.Jur2pct
+              },
+              {
+                jurisdiction_code: survey.Jur3,
+                percentage: survey.Jur3pct
+              }
+            ].filter((jur) => jur.jurisdiction_code && jur.percentage && Number(jur.percentage) > 0)
+          })),
+
+          mechanical_treatments: mechanical_treatments.map((t) => ({
+            // General treatment properties:
+            treatment_id: t.TreatmentID,
+            treatment_date: formatDateToISO(t.TreatmentDate),
+            map_code: t.MapCode,
+            reported_area: hectaresToM2(t.AreaTreated),
+            // invasive_plant_code: 'NA', // TODO map common_name to plant code
+            common_name: t.CommonName,
+            invasive_species_agency_code: t.TreatmentAgency,
+            employer: t.Employer,
+            paper_file_id: [
+              {
+                description: t.PaperFileID
+              }
+            ],
+            general_comment: t.Comment,
+
+            // Mech-Specific properties:
+            mechanical_id: t.MechanicalID,
+            mechanical_method_code: mechMethodCodes[t.MechanicalMethod],
+            mechanical_method: t.MechanicalMethod,
+
+            monitoring: t.monitoring.map((m) => ({
+              monitoring_id: m.monitoring_id,
+              monitoring_date: formatDateToISO(m.monitoring_date),
+              efficacy_percent: m.efficacy_percent, // percent vs code?
+              efficacy_code: mapEfficacyCode(m.efficacy_percent),
+              invasive_species_agency_code: m.agency_code,
+              paper_file_id: [
                 {
-                  jurisdiction_code: survey.Jur1,
-                  percentage: survey.Jur1pct
-                },
-                {
-                  jurisdiction_code: survey.Jur2,
-                  percentage: survey.Jur2pct
-                },
-                {
-                  jurisdiction_code: survey.Jur3,
-                  percentage: survey.Jur3pct
-                }
-              ].filter((jur) => jur.jurisdiction_code && jur.percentage && Number(jur.percentage) > 0),
-              employer_code: survey.EmployerCode ? survey.EmployerCode : undefined,
-              density: survey.Density,
-              invasive_plant_density_code: densityMap[survey.Density],
-              distribution: survey.Distribution,
-              invasive_plant_distribution_code: distributionMap[survey.Distribution],
-              observation_type: survey.SurveyType,
-              observation_type_code: observationTypes[survey.SurveyType],
-              weeds_found: survey.WeedsFound,
-              paper_file: [
-                {
-                  description: survey.PaperFileID
+                  description: m.paper_file_id
                 }
               ],
-              comments: survey.Comment
-            })),
-
-            mechanical_treatments: {
-              ...mechanical_treatments
-            },
-            chemical_treatments: {
-              ...chemical_treatments
-            },
-
-            biological_treatments: biological_treatments.map((t) => ({
-              biological_id: t.biological_id,
-              common_name: t.CommonName,
-              treatment_date: formatDateToISO(t.TREATMENT_DATE),
-              collection_date: formatDateToISO(t.COLLECTION_DATE),
-              agency_code: t.Agency,
-              biological_agent_code: t.BIOLOGICAL_AGENT_CODE,
-              bioagent_source: t.BIOAGENT_SOURCE,
-              utm_easting: t.UTM_EASTING,
-              utm_northing: t.UTM_NORTHING,
-              utm_zone: t.UTM_ZONE,
-              map_code: t.MapCode,
-              paper_file: [
-                {
-                  description: t.PaperFileID
-                }
-              ],
-              release_quantity: t.RELEASE_QUANTITY,
-              area_classification_code: t.AREA_CLASSIFICATION_CODE,
-              comments: t.COMMENTS,
-              stage_larva_ind: t.STAGE_LARVA_IND,
-              stage_egg_ind: t.STAGE_EGG_IND,
-              stage_pupa_ind: t.STAGE_PUPA_IND,
-              stage_other_ind: t.STAGE_OTHER_IND,
-
-              monitoring: t.monitoring.map((m) => ({
-                monitoring_id: m.monitoring_id,
-                inspection_date: formatDateToISO(m.inspection_date),
-                efficacy_code: m.EFFICACY_RATING_CODE,
-                plant_count: m.PLANT_COUNT,
-                agent_count: m.AGENT_COUNT,
-                count_duration: m.COUNT_DURATION,
-                paper_file: [
-                  {
-                    description: m.PAPER_FILE_ID
-                  }
-                ],
-                comments: m.Comment,
-
-                agent_destroyed_ind: m.AGENT_DESTROYED_IND,
-                legacy_presence_ind: m.LEGACY_PRESENCE_IND,
-                foliar_feeding_damage_ind: m.FOLIAR_FEEDING_DAMAGE_IND,
-                root_feeding_damage_ind: m.ROOT_FEEDING_DAMAGE_IND,
-                seed_feeding_damage_ind: m.SEED_FEEDING_DAMAGE_IND,
-                oviposition_marks_ind: m.OVIPOSITION_MARKS_IND,
-                eggs_present_ind: m.EGGS_PRESENT_IND,
-                larvae_present_ind: m.LARVAE_PRESENT_IND,
-                pupae_present_ind: m.PUPAE_PRESENT_IND,
-                adults_present_ind: m.ADULTS_PRESENT_IND,
-                tunnels_present_ind: m.TUNNELS_PRESENT_IND
-              }))
+              general_comment: m.comment
             }))
-          }
+          })),
+
+          chemical_treatments: chemical_treatments.map((t) => ({
+            // General treatment properties:
+            treatment_id: t.TreatmentID,
+            treatment_date: formatDateToISO(t.TreatmentDate),
+            map_code: t.MapCode,
+            reported_area: hectaresToM2(t.AreaTreated),
+            // invasive_plant_code: 'NA', // TODO map common_name to plant code
+            common_name: t.MapCommon,
+            invasive_species_agency_code: t.TreatmentAgency,
+            employer: t.Employer,
+            paper_file_id: [
+              {
+                description: t.PAPER_FILE_ID
+              }
+            ],
+            general_comment: t.Comment,
+
+            // Chem-Specific properties:
+            chemical_method: t.ChemicalMethodFull,
+            chemical_method_code: chemMethodCodes[t.ChemicalMethodFull],
+            treatment_time: t.TreatmentTime,
+            service_licence_number: t.Service_Licence_Number,
+            pmp_confirmation_number: t.Pmp_Confirmation_Number,
+            pmra_reg_number: t.Pmra_Reg_Number,
+            pup_number: t.Pup_Number,
+            herbicide_code: t.Herbicide_Code,
+            herbicide_description: t.Description,
+            temperature: t.Temperature,
+            humidity: t.Humidity, // note: not mapped to increments of 10
+            wind_speed: t.Wind_Velocity,
+            // wind_direction_code
+            wind_direction: t.Wind_Direction,
+            application_rate: t.Application_Rate,
+            herbicide_amount: t.Amount_Used,
+            dilution: t.Dilution_Rate,
+            mix_delivery_rate: t.Delivery_Rate,
+            tank_mix_id: t.Tank_Mix_Id,
+            monitoring: t.monitoring.map((m) => ({
+              monitoring_id: m.monitoring_id,
+              monitoring_date: formatDateToISO(m.inspection_date),
+              efficacy_percent: m.EFFICACY_RATING_CODE,
+              efficacy_code: mapEfficacyCode(m.EFFICACY_RATING_CODE),
+              invasive_species_agency_code: m.invasive_plant_agency_code,
+              paper_file_id: [
+                {
+                  description: m.PAPER_FILE_ID
+                }
+              ],
+              general_comment: m.comments
+            }))
+          })),
+
+          biological_treatments: biological_treatments.map((t) => ({
+            // General treatment properties:
+            treatment_id: t.treatment_id,
+            treatment_date: formatDateToISO(t.TREATMENT_DATE),
+            map_code: t.MapCode,
+            // no reported_area provided
+            // invasive_plant_code: 'NA', // TODO map common_name to plant code
+            common_name: t.CommonName,
+            invasive_species_agency_code: t.Agency,
+            paper_file_id: [
+              {
+                description: t.PaperFileID
+              }
+            ],
+            general_comment: t.COMMENTS,
+
+            // Bio-Specific properties:
+            area_classification_code: t.AREA_CLASSIFICATION_CODE,
+            collection_date: formatDateToISO(t.COLLECTION_DATE),
+            biological_agent_code: t.BIOLOGICAL_AGENT_CODE,
+            bioagent_source: t.BIOAGENT_SOURCE,
+            release_quantity: t.RELEASE_QUANTITY,
+            stage_larva_ind: t.STAGE_LARVA_IND,
+            stage_egg_ind: t.STAGE_EGG_IND,
+            stage_pupa_ind: t.STAGE_PUPA_IND,
+            stage_other_ind: t.STAGE_OTHER_IND,
+            utm_zone: t.UTM_ZONE,
+            utm_easting: t.UTM_EASTING,
+            utm_northing: t.UTM_NORTHING,
+
+            monitoring: t.monitoring.map((m) => ({
+              monitoring_id: m.monitoring_id,
+              monitoring_date: formatDateToISO(m.inspection_date),
+              efficacy_code: undefined, // m.EFFICACY_RATING_CODE Note: all 0
+              invasive_species_agency_code: undefined, // none provided
+              paper_file_id: [
+                {
+                  description: m.PAPER_FILE_ID
+                }
+              ],
+              general_comment: m.Comment,
+
+              // Bio-Specific Monitoring Properties
+              plant_count: m.PLANT_COUNT,
+              agent_count: m.AGENT_COUNT,
+              count_duration: m.COUNT_DURATION,
+              agent_destroyed_ind: m.AGENT_DESTROYED_IND,
+              legacy_presence_ind: m.LEGACY_PRESENCE_IND,
+              foliar_feeding_damage_ind: m.FOLIAR_FEEDING_DAMAGE_IND,
+              root_feeding_damage_ind: m.ROOT_FEEDING_DAMAGE_IND,
+              seed_feeding_damage_ind: m.SEED_FEEDING_DAMAGE_IND,
+              oviposition_marks_ind: m.OVIPOSITION_MARKS_IND,
+              eggs_present_ind: m.EGGS_PRESENT_IND,
+              larvae_present_ind: m.LARVAE_PRESENT_IND,
+              pupae_present_ind: m.PUPAE_PRESENT_IND,
+              adults_present_ind: m.ADULTS_PRESENT_IND,
+              tunnels_present_ind: m.TUNNELS_PRESENT_IND,
+              utm_zone: m.UTM_ZONE,
+              utm_easting: m.UTM_EASTING,
+              utm_northing: m.UTM_NORTHING
+            }))
+          })),
+
+          biological_dispersals: biological_dispersals.map((d) => ({
+            biological_dispersal_id: d.biological_dispersal_id,
+            monitoring_date: formatDateToISO(d.inspection_date),
+            // no efficacy_code applicable
+            map_code: d.map_symbol,
+            common_name: d.common_name,
+            invasive_species_agency_code: d.invasive_plant_agency_code,
+            paper_file_id: [
+              {
+                description: d.paper_file_id
+              }
+            ],
+            general_comment: d.comments,
+
+            // Dispersal-Specific Properties
+            invasive_plant_id: d.invasive_plant_id,
+            biological_agent_code: d.biological_agent_code,
+            // invasive_plant_code: 'NA', // TODO map common_name to plant code
+            utm_zone: d.utm_zone,
+            utm_easting: d.utm_easting,
+            utm_northing: d.utm_northing,
+            agent_count: d.agent_count,
+            count_duration: d.count_duration,
+            plant_count: d.plant_count,
+            foliar_feeding_damage_ind: d.foliar_feeding_damage_ind,
+            root_feeding_damage_ind: d.root_feeding_damage_ind,
+            seed_feeding_damage_ind: d.seed_feeding_damage_ind,
+            oviposition_marks_ind: d.oviposition_marks_ind,
+            eggs_present_ind: d.eggs_present_ind,
+            larvae_present_ind: d.larvae_present_ind,
+            pupae_present_ind: d.pupae_present_ind,
+            adults_present_ind: d.adults_present_ind,
+            tunnels_present_ind: d.tunnels_present_ind
+          }))
         }
       };
 

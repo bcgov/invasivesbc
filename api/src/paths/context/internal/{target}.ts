@@ -3,8 +3,8 @@
 import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES } from '../../../constants/misc';
-import { getLogger } from '../../../utils/logger';
 import { getDBConnection } from '../../../database/db';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('activity');
 
@@ -89,11 +89,8 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
       public.${table} "target"
     where
       public.st_intersects(
-        public.geography(
-          public.st_setSrid(
-            public.st_point(${lon},${lat})
-          ,4326)
-        ),target.geog
+        public.st_geographyFromText('POINT(${lon} ${lat})'),
+        target.geog
       )
   `;
 

@@ -4,13 +4,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { WRITE_ROLES } from '../constants/misc';
+import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivityPostRequestBody } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
-import { getLogger } from '../utils/logger';
 import { commit as commitContext } from '../utils/context-queries';
+import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
 
 const defaultLog = getLogger('activity');
@@ -24,7 +24,7 @@ const post_put_apiDoc = {
   tags: ['activity'],
   security: [
     {
-      Bearer: WRITE_ROLES
+      Bearer: ALL_ROLES
     }
   ],
   requestBody: {
@@ -71,14 +71,13 @@ const post_put_apiDoc = {
             },
             form_data: {
               oneOf: [
-                { $ref: '#/components/schemas/Activity_Observation_PlantTerrestial' },
+                { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
                 { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
                 { $ref: '#/components/schemas/Activity_Observation_AnimalTerrestrial' },
                 { $ref: '#/components/schemas/Activity_Observation_AnimalAquatic' },
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_BiologicalDispersalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalTerrestrialAnimal' },
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalTerrestrialAnimal' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalTerrestrialAnimal' },

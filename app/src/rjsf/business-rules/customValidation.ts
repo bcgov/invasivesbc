@@ -19,7 +19,7 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
     let areaLimit = Number.POSITIVE_INFINITY;
     const tenThousandAreaLimitSubtypes = [
       'Activity_Treatment_MechanicalPlant',
-      'Activity_Observation_PlantTerrestial',
+      'Activity_Observation_PlantTerrestrial',
       'Activity_Treatment_ChemicalPlant'
     ];
 

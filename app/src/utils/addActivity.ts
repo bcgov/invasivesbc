@@ -15,7 +15,7 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 /*
   Function to generate activity payload for a new activity
 */
-function generateActivityPayload(
+export function generateActivityPayload(
   formData: any,
   geometry: Feature[],
   activityType: ActivityType,

@@ -3,8 +3,8 @@
 import { GetObjectOutput, ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { IMediaItem, MediaBase64 } from '../models/media';
 import { ALL_ROLES } from '../constants/misc';
+import { IMediaItem, MediaBase64 } from '../models/media';
 import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 

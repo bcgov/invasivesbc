@@ -354,7 +354,7 @@ const ActivitiesList: React.FC = (props) => {
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
-                          ActivitySubtype.Observation_PlantTerrestial
+                          ActivitySubtype.Observation_PlantTerrestrial
                         )
                       }>
                       Plant Terrestrial
@@ -459,19 +459,6 @@ const ActivitiesList: React.FC = (props) => {
                         )
                       }>
                       Plant Biological
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_BiologicalDispersalPlant
-                        )
-                      }>
-                      Plant Biological Dispersal
                     </Button>
                   </>
                 )}
