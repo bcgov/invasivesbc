@@ -19,11 +19,14 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightRegular
   },
   mapContainer: {
-    height: '600px'
+    height: 600
   },
   map: {
     height: '100%',
     width: '100%'
+  },
+  buttonMarginRight: {
+    marginRight: 20
   }
 }));
 
@@ -191,7 +194,7 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
       <Box>
         {activeStep === 0 && (
           <Box justifyContent="center" mt={5} display="flex">
-            <FormControl variant="outlined" style={{ marginRight: 20 }}>
+            <FormControl variant="outlined" className={classes.buttonMarginRight}>
               <InputLabel>Create Treatment</InputLabel>
               {observationSubtype?.includes('Plant') && (
                 <Select
@@ -226,12 +229,12 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
               size="large"
               variant="contained"
               startIcon={<ArrowBackIcon />}
-              style={{ marginRight: 20 }}
+              className={classes.buttonMarginRight}
               onClick={() => setActiveStep(prevStep)}>
               Back
             </Button>
             <Button
-              style={{ marginRight: 20 }}
+              className={classes.buttonMarginRight}
               size="large"
               variant="contained"
               onClick={() => {
@@ -263,12 +266,12 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
               size="large"
               variant="contained"
               startIcon={<ArrowBackIcon />}
-              style={{ marginRight: 20 }}
+              className={classes.buttonMarginRight}
               onClick={() => setActiveStep(prevStep)}>
               Back
             </Button>
             <Button
-              style={{ marginRight: 20 }}
+              className={classes.buttonMarginRight}
               size="large"
               variant="contained"
               onClick={() => {
@@ -298,7 +301,7 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
                 size="large"
                 variant="contained"
                 startIcon={<ArrowBackIcon />}
-                style={{ marginRight: 20 }}
+                className={classes.buttonMarginRight}
                 onClick={() => {
                   removeActivity(observation);
                   setActiveStep(prevStep);
@@ -325,7 +328,7 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
               size="large"
               variant="contained"
               startIcon={<ArrowBackIcon />}
-              style={{ marginRight: 20 }}
+              className={classes.buttonMarginRight}
               onClick={() => setActiveStep(prevStep)}>
               Back
             </Button>
