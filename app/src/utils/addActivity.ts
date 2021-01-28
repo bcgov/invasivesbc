@@ -83,7 +83,7 @@ export async function addClonedActivityToDB(databaseContext: any, clonedRecord: 
 
   await databaseContext.database.put(doc);
 
-  return doc;
+  return await databaseContext.database.get(doc._id);
 }
 
 /*

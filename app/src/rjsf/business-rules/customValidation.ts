@@ -24,7 +24,7 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
     ];
 
     if (tenThousandAreaLimitSubtypes.includes(activitySubtype)) {
-      areaLimit = 10000;
+      areaLimit = 50000;
     }
 
     // validate reported area limit

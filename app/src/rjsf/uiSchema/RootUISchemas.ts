@@ -18,7 +18,7 @@ const Activity_Observation_PlantTerrestrial = {
   },
   activity_subtype_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Observation_PlantTerrestial
+    ...BaseUISchemaComponents.Observation_PlantTerrestrial
   }
 };
 

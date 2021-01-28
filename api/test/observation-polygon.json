@@ -2,7 +2,7 @@
   "activity_id": "e3cad5c7-b229-434e-9d7b-f2134a6a24b0",
   "created_timestamp": "2021-01-18T21:00:04.324Z",
   "activity_type": "Observation",
-  "activity_subtype": "Activity_Observation_PlantTerrestial",
+  "activity_subtype": "Activity_Observation_PlantTerrestrial",
   "geometry": [
     {
       "type": "Feature",
