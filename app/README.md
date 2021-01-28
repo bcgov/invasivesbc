@@ -57,6 +57,7 @@ xCode will open and, after a short delay, will allow you to run the application 
   - See: https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used
 
 # Release to Test Flight (WIP)
+
 - Assumptions:  
 	- You've got access to app store connect.
 	- You've got a provisioning profile
