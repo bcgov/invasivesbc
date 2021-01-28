@@ -18,10 +18,6 @@ const InvasivePlants = {
   invasive_plant_code: {}
 };
 
-const InvasiveAnimals = {
-  invasive_animal_code: {}
-};
-
 const Herbicide = {
   liquid_herbicide_code: {},
   herbicide_amount: {},
@@ -267,7 +263,7 @@ const Observation = {
   }
 };
 
-const Observation_PlantTerrestial = {
+const Observation_PlantTerrestrial = {
   invasive_plant_density_code: {},
   invasive_plant_distribution_code: {},
   soil_texture_code: {},
@@ -306,10 +302,9 @@ const Observation_PlantTerrestial = {
 const Observation_PlantTerrestrial_BulkEdit = {
   specific_use_code: {},
   invasive_plant_code: {},
-  proposed_treatment_code: {},
-  plant_life_stage_code: {},
-  plant_health_code: {},
-  plant_seed_stage_code: {}
+  early_detection_rapid_resp_ind: {
+    'ui:widget': 'radio'
+  }
 };
 
 const Observation_PlantAquatic = {
@@ -449,10 +444,9 @@ const Treatment_MechanicalPlant = {
 };
 
 const Treatment_MechanicalPlant_BulkEdit = {
+  invasive_plant_code: {},
   mechanical_method_code: {},
-  mechanical_disposal_code: {},
-  root_removal_code: {},
-  soil_disturbance_code: {}
+  mechanical_disposal_code: {}
 };
 
 const Treatment_BiologicalPlant = {
@@ -462,28 +456,18 @@ const Treatment_BiologicalPlant = {
   biological_agent_code: {},
   biological_agent_stage_code: {},
   invasive_plant_code: {},
-  bioagent_maturity_status_code: {}
+  bioagent_maturity_status_code: {},
+  signage_on_site: {
+    'ui:widget': 'radio'
+  }
 };
 
 const Treatment_BiologicalPlant_BulkEdit = {
+  invasive_plant_code: {},
   classified_area_code: {},
   biological_agent_code: {},
   biological_agent_stage_code: {},
   bioagent_maturity_status_code: {}
-};
-
-const Treatment_BiologicalDispersalPlant = {
-  duration_of_count: {},
-  biological_agent_code: {},
-  plant_count: {},
-  biological_agent_count: {},
-  invasive_plant_code: {},
-  biological_agent_presence_code: {}
-};
-
-const Treatment_BiologicalDispersalPlant_BulkEdit = {
-  biological_agent_code: {},
-  biological_agent_presence_code: {}
 };
 
 const Treatment_MechanicalTerrestrialAnimal = {
@@ -567,7 +551,7 @@ const Monitoring_BiologicalTerrestrialAnimal = {
 
 const BaseUISchemaComponents = {
   Observation,
-  Observation_PlantTerrestial,
+  Observation_PlantTerrestrial,
   Observation_PlantTerrestrial_BulkEdit,
   Observation_PlantAquatic,
   Observation_AnimalTerrestrial,
@@ -578,8 +562,6 @@ const BaseUISchemaComponents = {
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
-  Treatment_BiologicalDispersalPlant,
-  Treatment_BiologicalDispersalPlant_BulkEdit,
   Treatment_MechanicalTerrestrialAnimal,
   Treatment_ChemicalTerrestrialAnimal,
   Treatment_BiologicalTerrestrialAnimal,

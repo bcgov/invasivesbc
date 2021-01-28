@@ -7,7 +7,10 @@ import PlanPage from 'features/home/plan/PlanPage';
 import ReferencesActivityPage from 'features/home/references/ReferencesActivityPage';
 import ReferencesPage from 'features/home/references/ReferencesPage';
 import BulkEditActivitiesPage from 'features/home/search/BulkEditActivitiesPage';
+import TreatmentCreationStepperPage from 'features/home/activity/TreatmentCreationStepperPage';
+import ObservationCreationStepperPage from 'features/home/activity/ObservationCreationStepperPage';
 import SearchActivityPage from 'features/home/search/SearchActivityPage';
+import LandingPage from 'features/home/landing/LandingPage';
 import SearchPage from 'features/home/search/SearchPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -25,7 +28,16 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
 
   return (
     <Switch>
-      <Redirect exact from="/home" to="/home/activities" />
+      <Redirect exact from="/home" to="/home/landing" />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/landing"
+        title={getTitle('Welcome')}
+        roles={ALL_ROLES}
+        component={LandingPage}
+        componentProps={props}
+      />
       <PrivateRoute
         exact
         layout={HomeLayout}
@@ -50,6 +62,24 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         title={getTitle('Bulk Edit')}
         roles={ALL_ROLES}
         component={BulkEditActivitiesPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/activity/observation"
+        title={getTitle('Create Observation')}
+        roles={ALL_ROLES}
+        component={ObservationCreationStepperPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/activity/treatment"
+        title={getTitle('Create Treatment')}
+        roles={ALL_ROLES}
+        component={TreatmentCreationStepperPage}
         componentProps={props}
       />
       <PrivateRoute

@@ -11,6 +11,8 @@ import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getAct
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
+import { getCustomValidator, getHerbicideApplicationRateValidator } from 'rjsf/business-rules/customValidation';
 
 interface IBulkEditActivitiesPage {
   classes?: any;
@@ -22,6 +24,8 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   const invasivesApi = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
   const queryParams = useQuery();
+
+  const [parentFormRef, setParentFormRef] = useState(null);
 
   const activityIdsToEdit = queryParams.activities ? queryParams.activities.split(',') : [];
 
@@ -43,10 +47,23 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
     setupActivityDataToEdit();
   }, []);
 
+  /*
+    Function that runs if the form submit fails and has errors
+  */
+  const onFormSubmitError = () => {
+    notifyError(
+      databaseContext,
+      'Failed to edit activities. Please make sure your form contains no errors and try again.'
+    );
+  };
+
   /**
-   * Bulk edit the activities selected with the newly selected dropdown field values
+   * Save the form when it is submitted.
+   * Bulk edit the activities selected with the newly selected dropdown field values.
+   *
+   * @param {*} event the form submit event
    */
-  const handleBulkEdit = async () => {
+  const onFormSubmitSuccess = async (event: any) => {
     await Promise.all(
       activityIdsToEdit.map(async (activityId: any) => {
         try {
@@ -54,9 +71,9 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
 
           const updatedActivityFormData = {
             ...doc.formData,
-            activity_data: { ...doc.formData.activity_data, ...activity.formData.activity_data },
-            activity_type_data: { ...doc.formData.activity_type_data, ...activity.formData.activity_type_data },
-            activity_subtype_data: { ...doc.formData.activity_subtype_data, ...activity.formData.activity_subtype_data }
+            activity_data: { ...doc.formData.activity_data, ...event.formData.activity_data },
+            activity_type_data: { ...doc.formData.activity_type_data, ...event.formData.activity_type_data },
+            activity_subtype_data: { ...doc.formData.activity_subtype_data, ...event.formData.activity_subtype_data }
           };
 
           await invasivesApi.updateActivity(getICreateOrUpdateActivity(doc, updatedActivityFormData));
@@ -77,9 +94,11 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
+      const updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+
       return setActivity({
         ...activity,
-        formData: event.formData,
+        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.NOT_VALIDATED
@@ -88,25 +107,6 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
     [activity]
   );
 
-  /**
-   * Save the form when it is submitted.
-   *
-   * Note: this runs after validation has run, and only if there were no errors.
-   *
-   * @param {*} event the form submit event
-   */
-  const onFormSubmitSuccess = (event: any, formRef: any) => {
-    formRef.setState({ ...formRef.state, schemaValidationErrors: [], schemaValidationErrorSchema: {} }, () => {
-      setActivity({
-        ...activity,
-        formData: event.formData,
-        status: ActivityStatus.EDITED,
-        dateUpdated: new Date(),
-        formStatus: FormValidationStatus.VALID
-      });
-    });
-  };
-
   if (isLoading) {
     return <CircularProgress />;
   }
@@ -114,7 +114,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   return (
     <Container className={props.classes.container}>
       <Box mb={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleBulkEdit}>
+        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => parentFormRef?.submit()}>
           Bulk Edit Activities
         </Button>
       </Box>
@@ -125,13 +125,16 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
             activity={activity}
             onFormChange={onFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}
-            hideErrorCheckButton={true}
+            customValidation={getCustomValidator([getHerbicideApplicationRateValidator()])}
+            setParentFormRef={setParentFormRef}
+            onFormSubmitError={onFormSubmitError}
+            hideCheckFormForErrors={true}
           />
         </AccordionDetails>
       </Accordion>
 
       <Box mt={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleBulkEdit}>
+        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => parentFormRef?.submit()}>
           Bulk Edit Activities
         </Button>
       </Box>
