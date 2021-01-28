@@ -59,7 +59,7 @@ xCode will open and, after a short delay, will allow you to run the application 
 # Release to Test Flight (WIP)
 
 - Assumptions:  
-	- You've got access to app store connect.
+	- You've got access to app store connect
 	- You've got a provisioning profile
 	- You're an admin or app manager
 	- Xcode 11.6
