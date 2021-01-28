@@ -51,7 +51,7 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
             disabled={editIds.length === 0}
             variant="contained"
             color="primary"
-            onClick={() => navigateToBulkEditPage(editIds)}>
+            onClick={() => navigateToEditPage(editIds)}>
             Edit
           </Button>
           <Button
