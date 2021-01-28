@@ -19,6 +19,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   pasteFormData?: Function;
   copyFormData?: Function;
   setParentFormRef?: Function;
+  hideCheckFormForErrors?: boolean;
   /**
    * A function executed everytime the form changes.
    *
@@ -72,6 +73,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           onCopy={props.copyFormData ? () => props.copyFormData() : null}
           onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
           activitySubtype={props.activity.activitySubtype}
+          hideCheckFormForErrors={props.hideCheckFormForErrors}
         />
       </Box>
 

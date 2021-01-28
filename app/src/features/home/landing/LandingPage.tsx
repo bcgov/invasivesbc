@@ -17,7 +17,9 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
       setUserInfo(user);
     };
 
-    loadUserInfo();
+    if (!window['cordova']) {
+      loadUserInfo();
+    }
   }, [keycloak.obj]);
 
   /*
@@ -31,9 +33,11 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
     <Container className={props.classes.container}>
       <Box display="flex" justifyContent="space-between">
         <Typography variant="h4">Welcome to the InvasivesBC Application</Typography>
-        <Button variant="contained" color="primary" size="large" onClick={logoutUser}>
-          Logout
-        </Button>
+        {userInfo && (
+          <Button variant="contained" color="primary" size="large" onClick={logoutUser}>
+            Logout
+          </Button>
+        )}
       </Box>
 
       {userInfo && (

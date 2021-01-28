@@ -23,12 +23,16 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
   const history = useHistory();
   const classes = useStyles();
 
-  const navigateToBulkEditPage = (ids: any) => {
-    history.push({
-      pathname: `/home/search/bulkedit`,
-      search: '?activities=' + ids.join(','),
-      state: { activityIdsToEdit: ids }
-    });
+  const navigateToEditPage = (ids: any) => {
+    if (ids.length > 1) {
+      history.push({
+        pathname: `/home/search/bulkedit`,
+        search: '?activities=' + ids.join(','),
+        state: { activityIdsToEdit: ids }
+      });
+    } else {
+      history.push(`/home/search/activity/${ids[0]}`);
+    }
   };
 
   return (
@@ -39,7 +43,7 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
           disabled={editIds.length === 0}
           variant="contained"
           color="primary"
-          onClick={() => navigateToBulkEditPage(editIds)}>
+          onClick={() => navigateToEditPage(editIds)}>
           Edit Selected
           {editIds.length ? ' (' + editIds.length + ')' : ''}
         </Button>
