@@ -44,9 +44,15 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
         <Box mt={4}>
           <Typography variant="h5">User Information</Typography>
           <br />
-          <Typography><b>Name:</b> {userInfo.name}</Typography>
-          <Typography><b>Email:</b> {userInfo.email}</Typography>
-          <Typography><b>Username:</b> {userInfo.preferred_username}</Typography>
+          <Typography>
+            <b>Name:</b> {userInfo.name}
+          </Typography>
+          <Typography>
+            <b>Email:</b> {userInfo.email}
+          </Typography>
+          <Typography>
+            <b>Username:</b> {userInfo.preferred_username}
+          </Typography>
         </Box>
       )}
     </Container>

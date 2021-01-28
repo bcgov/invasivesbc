@@ -114,7 +114,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   return (
     <Container className={props.classes.container}>
       <Box mb={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => parentFormRef?.submit() }>
+        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => parentFormRef?.submit()}>
           Bulk Edit Activities
         </Button>
       </Box>
@@ -134,7 +134,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
       </Accordion>
 
       <Box mt={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => parentFormRef?.submit() }>
+        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => parentFormRef?.submit()}>
           Bulk Edit Activities
         </Button>
       </Box>
