@@ -25,6 +25,8 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const queryParams = useQuery();
 
+  const [parentFormRef, setParentFormRef] = useState(null);
+
   const activityIdsToEdit = queryParams.activities ? queryParams.activities.split(',') : [];
 
   useEffect(() => {
@@ -46,9 +48,12 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   }, []);
 
   /**
-   * Bulk edit the activities selected with the newly selected dropdown field values
+   * Save the form when it is submitted.
+   * Bulk edit the activities selected with the newly selected dropdown field values.
+   *
+   * @param {*} event the form submit event
    */
-  const handleBulkEdit = async () => {
+  const onFormSubmitSuccess = async (event: any, formRef: any) => {
     await Promise.all(
       activityIdsToEdit.map(async (activityId: any) => {
         try {
@@ -99,7 +104,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   return (
     <Container className={props.classes.container}>
       <Box mb={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleBulkEdit}>
+        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => { parentFormRef?.submit() }}>
           Bulk Edit Activities
         </Button>
       </Box>
@@ -109,13 +114,15 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
           <FormContainer
             activity={activity}
             onFormChange={onFormChange}
+            onFormSubmitSuccess={onFormSubmitSuccess}
             customValidation={getCustomValidator([getHerbicideApplicationRateValidator()])}
+            setParentFormRef={setParentFormRef}
           />
         </AccordionDetails>
       </Accordion>
 
       <Box mt={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleBulkEdit}>
+        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => { parentFormRef?.submit() }}>
           Bulk Edit Activities
         </Button>
       </Box>

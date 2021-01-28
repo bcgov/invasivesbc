@@ -18,6 +18,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   isDisabled?: boolean;
   pasteFormData?: Function;
   copyFormData?: Function;
+  setParentFormRef?: Function;
   /**
    * A function executed everytime the form changes.
    *
@@ -128,6 +129,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               return;
             }
 
+            if (props.setParentFormRef) {
+              props.setParentFormRef(form);
+            }
             setFormRef(form);
           }}>
           <React.Fragment />
