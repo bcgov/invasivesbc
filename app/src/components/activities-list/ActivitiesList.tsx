@@ -183,7 +183,15 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
 
-    history.push(`/home/activity`);
+    if (doc.activityType === 'Observation') {
+      history.push({
+        pathname: `/home/activity/observation`,
+        search: '?observation=' + doc._id,
+        state: { observation: doc._id }
+      });
+    } else {
+      history.push('/home/activity');
+    }
   };
 
   // Sort activities to show most recently updated activities at top of list
@@ -419,93 +427,6 @@ const ActivitiesList: React.FC = (props) => {
                 <Typography variant="h5">Treatments</Typography>
               </Box>
               <Box className={classes.newActivityButtonsRow}>
-                {workflowFunction === 'Plant' && (
-                  <>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_ChemicalPlant
-                        )
-                      }>
-                      Plant Chemical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_MechanicalPlant
-                        )
-                      }>
-                      Plant Mechanical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_BiologicalPlant
-                        )
-                      }>
-                      Plant Biological
-                    </Button>
-                  </>
-                )}
-                {workflowFunction === 'Animal' && (
-                  <>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_MechanicalTerrestrialAnimal
-                        )
-                      }>
-                      Animal Terrestrial Mechanical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_ChemicalTerrestrialAnimal
-                        )
-                      }>
-                      Animal Terrestrial Chemical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_BiologicalTerrestrialAnimal
-                        )
-                      }>
-                      Animal Terrestrial Biological
-                    </Button>
-                  </>
-                )}
-
                 <ActivityList
                   workflowFunction={workflowFunction}
                   isDisabled={isDisabled}

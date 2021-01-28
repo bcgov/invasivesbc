@@ -11,10 +11,7 @@ import {
   Typography,
   Button,
   Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select
+  Checkbox
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
@@ -25,6 +22,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import ActivityListItem from './ActivityListItem';
 import ActivityListDate from './ActivityListDate';
+import { notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -90,7 +88,6 @@ interface IReferenceActivityListItem {
 const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const [treatmentSubtypeToCreate, setTreatmentSubtypeToCreate] = useState(ActivitySubtype.Treatment_ChemicalPlant);
   const { activity, databaseContext, setOnReferencesListPage } = props;
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
@@ -99,18 +96,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
     });
 
     history.push(`/home/activity`);
-  };
-
-  const handleTreatmentSubtypeClick = async (event: any) => {
-    event.stopPropagation();
-
-    const dropdownValue = event.target.value === 0 ? ActivitySubtype.Treatment_ChemicalPlant : event.target.value;
-    setTreatmentSubtypeToCreate(dropdownValue);
-
-    const addedActivity = await addLinkedActivityToDB(databaseContext, ActivityType.Treatment, dropdownValue, activity);
-    setActiveActivityAndNavigateToActivityPage(addedActivity);
-
-    setOnReferencesListPage(false);
   };
 
   return (
@@ -143,29 +128,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
           </Grid>
         </>
       )}
-      {activity.activityType === 'Observation' && (
-        <>
-          <Divider flexItem={true} orientation="vertical" />
-          <Grid item>
-            <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel>Create Treatment</InputLabel>
-              {activity.activitySubtype.includes('Plant') && (
-                <Select
-                  value={treatmentSubtypeToCreate}
-                  onClick={(e) => e.stopPropagation()}
-                  onChange={handleTreatmentSubtypeClick}
-                  label="Create Treatment">
-                  <MenuItem value={ActivitySubtype.Treatment_ChemicalPlant} onClick={handleTreatmentSubtypeClick}>
-                    Chemical Plant
-                  </MenuItem>
-                  <MenuItem value={ActivitySubtype.Treatment_MechanicalPlant}>Mechanical Plant</MenuItem>
-                  <MenuItem value={ActivitySubtype.Treatment_BiologicalPlant}>Biological Plant</MenuItem>
-                </Select>
-              )}
-            </FormControl>
-          </Grid>
-        </>
-      )}
     </Grid>
   );
 };
@@ -174,12 +136,17 @@ interface IReferenceActivityListComponent {
   doc: any;
   databaseContext: any;
   setOnReferencesListPage: Function;
+  selectedObservations?: any;
+  setSelectedObservations?: Function;
 }
 
 const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { doc, databaseContext, setOnReferencesListPage } = props;
+  const { doc, databaseContext, setOnReferencesListPage, selectedObservations, setSelectedObservations } = props;
+
+  // Determine which observation records have been selected
+  const isChecked = selectedObservations?.some((obs: any) => obs.id === doc._id);
 
   const navigateToActivityPage = async (activity: any) => {
     history.push(`/home/references/activity/${activity._id}`);
@@ -188,6 +155,20 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
   return (
     <Paper key={doc._id}>
       <ListItem button className={classes.activitiyListItem} onClick={() => navigateToActivityPage(doc)}>
+        {/* For observations, allow ability to select one or more and start the create treatment flow */}
+        {doc.activityType === 'Observation' && (
+          <Checkbox
+            checked={isChecked}
+            onChange={() => {
+              setSelectedObservations(
+                isChecked
+                  ? selectedObservations.filter((obs: any) => obs.id !== doc._id)
+                  : [{ id: doc._id, subtype: doc.activitySubtype }, ...selectedObservations]
+              );
+            }}
+            onClick={(event) => event.stopPropagation()}
+          />
+        )}
         <ListItemIcon>
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
@@ -209,6 +190,8 @@ const ReferenceActivityList: React.FC = () => {
   const [onReferencesListPage, setOnReferencesListPage] = useState(true);
 
   const [docs, setDocs] = useState<any[]>([]);
+  const [selectedObservations, setSelectedObservations] = useState([]);
+  const history = useHistory();
 
   const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
@@ -233,15 +216,59 @@ const ReferenceActivityList: React.FC = () => {
   const treatments = docs.filter((doc) => doc.activityType === 'Treatment');
   const monitorings = docs.filter((doc) => doc.activityType === 'Monitoring');
 
+  /*
+    Function to determine if all selected observation records are
+    of the same subtype. For example: Cannot create a treatment if you select a plant
+    and an animal observation, and most probably will not go treat a terrestrial
+    and aquatic observation in a single treatment as those are different areas
+  */
+  const validateSelectedObservationTypes = () => {
+    return selectedObservations.every((a, _, [b]) => a.subtype === b.subtype);
+  };
+
+  /*
+    If all the selected observation records are valid, navigate to the create
+    activity flow to enable the creation of a treatment record
+  */
+  const navigateToCreateActivityPage = () => {
+    const selectedObservationIds = selectedObservations.map((obs: any) => obs.id);
+
+    history.push({
+      pathname: `/home/activity/treatment`,
+      search: '?observations=' + selectedObservationIds.join(','),
+      state: { observations: selectedObservationIds }
+    });
+  };
+
   return (
     <List className={classes.activityList}>
       {observations.length > 0 && (
-        <Box>
+        <Box mb={3} display="flex" justifyContent="space-between">
           <Typography variant="h5">Observations</Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={!selectedObservations.length}
+            onClick={() => {
+              if (!validateSelectedObservationTypes()) {
+                notifyError(
+                  databaseContext,
+                  `You have selected activities of different subtypes.
+                  Please make sure they are all of the same subtype.`
+                );
+                return;
+              }
+
+              navigateToCreateActivityPage();
+            }}>
+            Create Treatment
+          </Button>
         </Box>
       )}
       {observations.map((doc) => (
         <ReferenceActivityListComponent
+          selectedObservations={selectedObservations}
+          setSelectedObservations={setSelectedObservations}
           setOnReferencesListPage={setOnReferencesListPage}
           databaseContext={databaseContext}
           key={doc._id}
