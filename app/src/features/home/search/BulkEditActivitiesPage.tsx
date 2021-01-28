@@ -25,6 +25,8 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const queryParams = useQuery();
 
+  const [parentFormRef, setParentFormRef] = useState(null);
+
   const activityIdsToEdit = queryParams.activities ? queryParams.activities.split(',') : [];
 
   useEffect(() => {
@@ -45,10 +47,23 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
     setupActivityDataToEdit();
   }, []);
 
+  /*
+    Function that runs if the form submit fails and has errors
+  */
+  const onFormSubmitError = () => {
+    notifyError(
+      databaseContext,
+      'Failed to edit activities. Please make sure your form contains no errors and try again.'
+    );
+  };
+
   /**
-   * Bulk edit the activities selected with the newly selected dropdown field values
+   * Save the form when it is submitted.
+   * Bulk edit the activities selected with the newly selected dropdown field values.
+   *
+   * @param {*} event the form submit event
    */
-  const handleBulkEdit = async () => {
+  const onFormSubmitSuccess = async (event: any) => {
     await Promise.all(
       activityIdsToEdit.map(async (activityId: any) => {
         try {
@@ -56,9 +71,9 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
 
           const updatedActivityFormData = {
             ...doc.formData,
-            activity_data: { ...doc.formData.activity_data, ...activity.formData.activity_data },
-            activity_type_data: { ...doc.formData.activity_type_data, ...activity.formData.activity_type_data },
-            activity_subtype_data: { ...doc.formData.activity_subtype_data, ...activity.formData.activity_subtype_data }
+            activity_data: { ...doc.formData.activity_data, ...event.formData.activity_data },
+            activity_type_data: { ...doc.formData.activity_type_data, ...event.formData.activity_type_data },
+            activity_subtype_data: { ...doc.formData.activity_subtype_data, ...event.formData.activity_subtype_data }
           };
 
           await invasivesApi.updateActivity(getICreateOrUpdateActivity(doc, updatedActivityFormData));
@@ -99,7 +114,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   return (
     <Container className={props.classes.container}>
       <Box mb={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleBulkEdit}>
+        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => parentFormRef?.submit()}>
           Bulk Edit Activities
         </Button>
       </Box>
@@ -109,13 +124,17 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
           <FormContainer
             activity={activity}
             onFormChange={onFormChange}
+            onFormSubmitSuccess={onFormSubmitSuccess}
             customValidation={getCustomValidator([getHerbicideApplicationRateValidator()])}
+            setParentFormRef={setParentFormRef}
+            onFormSubmitError={onFormSubmitError}
+            hideCheckFormForErrors={true}
           />
         </AccordionDetails>
       </Accordion>
 
       <Box mt={3}>
-        <Button variant="contained" color="primary" startIcon={<Save />} onClick={handleBulkEdit}>
+        <Button variant="contained" color="primary" startIcon={<Save />} onClick={() => parentFormRef?.submit()}>
           Bulk Edit Activities
         </Button>
       </Box>

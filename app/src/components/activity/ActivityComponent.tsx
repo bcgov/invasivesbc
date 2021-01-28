@@ -13,6 +13,8 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
   pasteFormData?: Function;
   copyFormData?: Function;
   cloneActivityButton?: Function;
+  setParentFormRef?: Function;
+  hideCheckFormForErrors?: boolean;
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {

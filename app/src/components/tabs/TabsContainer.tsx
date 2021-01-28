@@ -1,5 +1,5 @@
 import { AppBar, CircularProgress, Tab, Tabs } from '@material-ui/core';
-import { Assignment, Bookmarks, Explore, HomeWork, Map, Search } from '@material-ui/icons';
+import { Assignment, Bookmarks, Explore, HomeWork, Map, Search, Home } from '@material-ui/icons';
 import { ALL_ROLES } from 'constants/roles';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -63,6 +63,12 @@ const TabsContainer: React.FC = () => {
 
         if (keycloak.hasRole(ALL_ROLES)) {
           tabsUserHasAccessTo.push({
+            label: 'Home',
+            path: '/home/landing',
+            icon: <Home />
+          });
+
+          tabsUserHasAccessTo.push({
             label: 'Search',
             path: '/home/search',
             icon: <Search />
@@ -82,7 +88,7 @@ const TabsContainer: React.FC = () => {
           });
 
           tabsUserHasAccessTo.push({
-            label: 'My Activities',
+            label: 'Local Activities',
             path: '/home/activities',
             icon: <HomeWork />
           });
