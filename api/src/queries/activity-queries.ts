@@ -211,3 +211,70 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
     AND deleted_timestamp IS NULL;
   `;
 };
+
+/**
+ * SQL queries to soft-delete activity records, marking them as `deleted`.
+ *
+ * @param {string} activityIds
+ * @return {SQLStatement} sql query object
+ */
+export const deleteActivitiesSQL = (activityIds: Array<string>): SQLStatement => {
+  if (!activityIds.length) {
+    return null;
+  }
+
+  // update existing activity record
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE activity_incoming_data
+    SET deleted_timestamp = ${new Date().toISOString()}
+    WHERE activity_id IN (${activityIds[0]}`;
+
+  for (let i = 1; i < activityIds.length; i++) {
+    sqlStatement.append(SQL`, ${activityIds[i]}`);
+  }
+
+  sqlStatement.append(SQL`)
+    AND deleted_timestamp IS NULL;
+  `);
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to un-delete activity records.
+ *
+ * @param {string} activityIds
+ * @return {SQLStatement} sql query object
+ */
+export const undeleteActivitiesSQL = (activityIds: Array<string>): SQLStatement => {
+  if (!activityIds.length) {
+    return null;
+  }
+
+  // undelete the latest record of the given id
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE activity_incoming_data
+    SET deleted_timestamp = NULL
+    WHERE 
+    activity_id in (${activityIds[0]}`;
+
+  for (let i = 1; i < activityIds.length; i++) {
+    sqlStatement.append(SQL`, ${activityIds[i]}`);
+  }
+
+  // this eliminates all older activity dates:
+  sqlStatement.append(SQL`)
+    AND activity_incoming_data_id IN
+    (
+      SELECT a1.activity_incoming_data_id
+      FROM activity_incoming_data a1
+      LEFT OUTER JOIN activity_incoming_data AS newer_matches
+      ON a1.activity_id = newer_matches.activity_id
+      AND a1.deleted_timestamp < newer_matches.deleted_timestamp
+      WHERE a1.deleted_timestamp IS NOT NULL
+      AND newer_matches.activity_id IS NULL
+    );
+  `);
+
+  return sqlStatement;
+};
