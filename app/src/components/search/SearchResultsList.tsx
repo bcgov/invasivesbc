@@ -14,12 +14,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   resultsBar: {
     justifyContent: 'space-between',
     display: 'flex',
-    alignItems: 'flex-end'
+    alignItems: 'center'
+  },
+  bulkEditControl: {
+    marginLeft: 10
   }
 }));
 
 const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
   const [editIds, setEditIds] = useState<any[]>([]);
+  const [editSubtype, setEditSubtype] = useState<any>();
   const history = useHistory();
   const classes = useStyles();
 
@@ -35,16 +39,39 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
     <Box>
       <Box className={classes.resultsBar}>
         <Typography variant="h5">{`${props.totalItems} Matching Results Found`}</Typography>
-        <Button
-          disabled={editIds.length === 0}
-          variant="contained"
-          color="primary"
-          onClick={() => navigateToBulkEditPage(editIds)}>
-          Edit Selected
-          {editIds.length ? ' (' + editIds.length + ')' : ''}
-        </Button>
+        <Box className={classes.resultsBar}>
+          <Typography className={classes.bulkEditControl} variant="h5">
+            {editIds.length && editSubtype ? editIds.length + ' ' + editSubtype.split('_')[2] + ' Records Selected' : ''}
+          </Typography>
+          <Button
+            className={classes.bulkEditControl}
+            disabled={editIds.length === 0}
+            variant="contained"
+            color="primary"
+            onClick={() => navigateToEditPage(editIds)}>
+            Edit
+          </Button>
+          <Button
+            className={classes.bulkEditControl}
+            disabled={editIds.length === 0}
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              invasivesApi.deleteActivities(editIds);
+              setEditIds([]);
+              history.go(0);
+            }}>
+            Delete
+          </Button>
+        </Box>
       </Box>
-      <SearchActivitiesList activities={props.results} editIds={editIds} setEditIds={setEditIds} />
+      <SearchActivitiesList
+        activities={props.results}
+        editIds={editIds}
+        setEditIds={setEditIds}
+        editSubtype={editSubtype}
+        setEditSubtype={setEditSubtype}
+      />
     </Box>
   );
 };

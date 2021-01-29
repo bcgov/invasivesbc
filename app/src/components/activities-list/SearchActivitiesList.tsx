@@ -77,12 +77,14 @@ interface ISearchActivitiesList {
   activities: any[];
   editIds?: string[];
   setEditIds?: any;
+  editSubtype?: string;
+  setEditSubtype?: any;
 }
 
 const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { editIds, setEditIds } = props;
+  const { editIds, setEditIds, editSubtype, setEditSubtype } = props;
 
   const navigateToSearchActivityPage = async (doc: any) => {
     history.push(`/home/search/activity/${doc._id}`);
@@ -100,7 +102,7 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
           ActivitySubtype.Treatment_MechanicalPlant,
           ActivitySubtype.Treatment_BiologicalPlant
         ];
-        const bulkEditIsDisabled = !allowedBulkEditSubtypes.includes(activity.activitySubtype);
+        const bulkEditIsDisabled = editSubtype && activity.activitySubtype !== editSubtype || !allowedBulkEditSubtypes.includes(activity.activitySubtype);
 
         return (
           <Paper key={activity._id}>
@@ -113,9 +115,13 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
                   checked={isChecked}
                   disabled={bulkEditIsDisabled}
                   style={bulkEditIsDisabled ? { visibility: 'hidden' } : {}}
-                  onChange={() =>
-                    setEditIds(isChecked ? editIds.filter((id) => id !== activity._id) : [activity._id, ...editIds])
-                  }
+                  onChange={() => {
+                    if (editIds.length === 1 && isChecked) // remove subtype limiter on uncheck
+                      setEditSubtype(undefined);
+                    if (!editIds.length && !isChecked) // add subtype limiter on first check
+                      setEditSubtype(activity.activitySubtype);
+                    setEditIds(isChecked ? editIds.filter((id) => id !== activity._id) : [activity._id, ...editIds]);
+                  }}
                   onClick={(event) => event.stopPropagation()}
                 />
               </Grid>
