@@ -1,6 +1,7 @@
 import { Box, Button, makeStyles, Theme, Typography } from '@material-ui/core';
 import SearchActivitiesList from 'components/activities-list/SearchActivitiesList';
 import { ISearchActivity } from 'features/home/search/SearchPage';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -26,13 +27,18 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
   const [editSubtype, setEditSubtype] = useState<any>();
   const history = useHistory();
   const classes = useStyles();
+  const invasivesApi = useInvasivesApi();
 
-  const navigateToBulkEditPage = (ids: any) => {
-    history.push({
-      pathname: `/home/search/bulkedit`,
-      search: '?activities=' + ids.join(','),
-      state: { activityIdsToEdit: ids }
-    });
+  const navigateToEditPage = (ids: any) => {
+    if (ids.length > 1) {
+      history.push({
+        pathname: `/home/search/bulkedit`,
+        search: '?activities=' + ids.join(','),
+        state: { activityIdsToEdit: ids }
+      });
+    } else {
+      history.push(`/home/search/activity/${ids[0]}`);
+    }
   };
 
   return (

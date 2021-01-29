@@ -10,6 +10,7 @@ import BulkEditActivitiesPage from 'features/home/search/BulkEditActivitiesPage'
 import TreatmentCreationStepperPage from 'features/home/activity/TreatmentCreationStepperPage';
 import ObservationCreationStepperPage from 'features/home/activity/ObservationCreationStepperPage';
 import SearchActivityPage from 'features/home/search/SearchActivityPage';
+import LandingPage from 'features/home/landing/LandingPage';
 import SearchPage from 'features/home/search/SearchPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -27,7 +28,16 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
 
   return (
     <Switch>
-      <Redirect exact from="/home" to="/home/activities" />
+      <Redirect exact from="/home" to="/home/landing" />
+      <PrivateRoute
+        exact
+        layout={HomeLayout}
+        path="/home/landing"
+        title={getTitle('Welcome')}
+        roles={ALL_ROLES}
+        component={LandingPage}
+        componentProps={props}
+      />
       <PrivateRoute
         exact
         layout={HomeLayout}
