@@ -260,10 +260,8 @@ const FireMonitoringTransectPoints = {
 const FireMonitoringTransectLines = {
   start_x_utm: {},
   start_y_utm: {},
-  start_zone_utm: {},
   end_x_utm: {},
   end_y_utm: {},
-  end_zone_utm: {},
   fire_monitoring_transect_points: {
     items: {
       ...FireMonitoringTransectPoints

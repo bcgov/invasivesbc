@@ -163,8 +163,6 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       selector: { docType: DocType.ACTIVITY, activityType: props.activityType }
     });
 
-    console.log(activityResult)
-
     setDocs([...activityResult.docs]);
   }, [databaseContext.database, props.activityType]);
 
@@ -200,8 +198,6 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   const sortedActivities = docs.sort((a, b): any => {
     return new Date(b.dateUpdated).valueOf() - new Date(a.dateUpdated).valueOf();
   });
-
-  console.log(sortedActivities)
 
   return (
     <List>
@@ -465,7 +461,6 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() => {
-                        console.log('hey')
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Transect,
