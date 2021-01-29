@@ -1959,9 +1959,14 @@
         "title": "Fire Monitoring Transect Information",
         "type": "object",
         "required": [
+          "utm_zone",
           "fire_monitoring_transect_lines"
         ],
         "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
           "fire_monitoring_transect_lines": {
             "type": "array",
             "title": "Fire Monitoring Transect Lines",
@@ -3162,7 +3167,6 @@
         }
       },
       "FireMonitoringTransectLines": {
-        "title": "Fire Monitoring Transect Lines",
         "type": "object",
         "required": [
           "fire_monitoring_transect_points"
@@ -3176,10 +3180,6 @@
             "type": "number",
             "title": "Start UTM Y"
           },
-          "start_zone_utm": {
-            "type": "number",
-            "title": "Start UTM Zone"
-          },
           "end_x_utm": {
             "type": "number",
             "title": "End UTM X"
@@ -3187,10 +3187,6 @@
           "end_y_utm": {
             "type": "number",
             "title": "End UTM Y"
-          },
-          "end_zone_utm": {
-            "type": "number",
-            "title": "End UTM Zone"
           },
           "fire_monitoring_transect_points": {
             "type": "array",
@@ -3202,32 +3198,11 @@
         }
       },
       "FireMonitoringTransectPoints": {
-        "title": "Fire Monitoring Transect Points",
         "type": "object",
         "properties": {
-          "start_x_utm": {
+          "offset_distance": {
             "type": "number",
-            "title": "Start UTM X"
-          },
-          "start_y_utm": {
-            "type": "number",
-            "title": "Start UTM Y"
-          },
-          "start_zone_utm": {
-            "type": "number",
-            "title": "Start UTM Zone"
-          },
-          "end_x_utm": {
-            "type": "number",
-            "title": "End UTM X"
-          },
-          "end_y_utm": {
-            "type": "number",
-            "title": "End UTM Y"
-          },
-          "end_zone_utm": {
-            "type": "number",
-            "title": "End UTM Zone"
+            "title": "Offset Distance"
           }
         }
       },

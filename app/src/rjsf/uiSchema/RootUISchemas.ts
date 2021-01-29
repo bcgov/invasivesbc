@@ -82,7 +82,6 @@ const Activity_Transect_FireMonitoring = {
     ...UISchemaComponents.Activity
   },
   activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Transect_FireMonitoring
   }
 };
