@@ -253,6 +253,30 @@ const ElectrofisherSpecifications = {
   max_length: {}
 };
 
+const FireMonitoringTransectPoints = {
+  start_x_utm: {},
+  start_y_utm: {},
+  start_zone_utm: {},
+  end_x_utm: {},
+  end_y_utm: {},
+  end_zone_utm: {}
+};
+
+const FireMonitoringTransectLines = {
+  start_x_utm: {},
+  start_y_utm: {},
+  start_zone_utm: {},
+  end_x_utm: {},
+  end_y_utm: {},
+  end_zone_utm: {},
+  fire_monitoring_transect_points: {
+    items: {
+      ...ThreeColumnStyle,
+      ...FireMonitoringTransectPoints
+    }
+  }
+};
+
 const Observation = {
   observation_type_code: {},
   observer_first_name: {},
@@ -296,6 +320,14 @@ const Observation_PlantTerrestrial = {
   },
   biological_ind: {
     'ui:widget': 'radio'
+  }
+};
+
+const Transect_FireMonitoring = {
+  fire_monitoring_transect_lines: {
+    items: {
+      ...FireMonitoringTransectLines
+    }
   }
 };
 
@@ -556,6 +588,7 @@ const BaseUISchemaComponents = {
   Observation_PlantAquatic,
   Observation_AnimalTerrestrial,
   Observation_AnimalAquatic,
+  Transect_FireMonitoring,
   Treatment,
   Treatment_BulkEdit,
   Treatment_MechanicalPlant,

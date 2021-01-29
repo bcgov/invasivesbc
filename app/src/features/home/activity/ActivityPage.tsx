@@ -315,6 +315,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         setLinkedActivity(linkedRecordActivityResults.docs[0]);
       }
 
+      console.log(updatedDoc)
+
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);

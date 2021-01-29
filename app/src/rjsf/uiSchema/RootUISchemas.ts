@@ -76,6 +76,17 @@ const Activity_Observation_AnimalAquatic = {
   }
 };
 
+const Activity_Transect_FireMonitoring = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.Transect_FireMonitoring
+  }
+};
+
 const Activity_Treatment_ChemicalPlant = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
@@ -291,6 +302,7 @@ const RootUISchemas = {
   Activity_Observation_PlantAquatic,
   Activity_Observation_AnimalTerrestrial,
   Activity_Observation_AnimalAquatic,
+  Activity_Transect_FireMonitoring,
   Activity_Treatment_ChemicalPlant,
   Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_MechanicalPlant,

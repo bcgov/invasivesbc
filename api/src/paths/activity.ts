@@ -75,6 +75,7 @@ const post_put_apiDoc = {
                 { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
                 { $ref: '#/components/schemas/Activity_Observation_AnimalTerrestrial' },
                 { $ref: '#/components/schemas/Activity_Observation_AnimalAquatic' },
+                { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },

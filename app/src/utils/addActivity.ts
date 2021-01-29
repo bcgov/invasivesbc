@@ -60,6 +60,8 @@ export async function addNewActivityToDB(
 
   await databaseContext.database.put(doc);
 
+  console.log(doc)
+
   return doc;
 }
 
