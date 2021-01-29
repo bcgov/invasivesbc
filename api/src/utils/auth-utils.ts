@@ -115,6 +115,8 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
       };
     }
 
+    defaultLog.debug({ label: 'verifyToken', message: 'verifiedToken', verifiedToken });
+
     // Add the verified token to the request for future use, if needed
     req.auth_payload = verifiedToken;
 
@@ -155,8 +157,6 @@ const verifyToken = function (tokenString: any, secretOrPublicKey: any): any {
       defaultLog.warn({ label: 'verifyToken', message: 'jwt verification error', verificationError });
       return null;
     }
-
-    defaultLog.debug({ label: 'verifyToken', message: 'verifiedToken', verifiedToken });
 
     // Verify that the token came from the expected issuer
     // Example: when running in prod, only accept tokens from `sso.pathfinder...` and not `sso-dev.pathfinder...`, etc
