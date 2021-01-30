@@ -100,11 +100,11 @@ The ideal multi-platform supporting machine is the Mac, But Windows and Linus wo
 
 ### Android Development
 
-Install AndroidStudio and the Android SDK
+Install AndroidStudio and the Android SDK.
 
 ### IOS Development
 
-On MacOS: Install xCode
+On MacOS: Install xCode.
 
 
 ## Setup Instructions
