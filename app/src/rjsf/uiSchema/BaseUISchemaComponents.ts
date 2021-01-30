@@ -269,6 +269,22 @@ const FireMonitoringTransectLines = {
   }
 };
 
+const InvasivePlantDensityTransectPoints = {
+  offset_distance: {}
+};
+
+const InvasivePlantDensityTransectLines = {
+  start_x_utm: {},
+  start_y_utm: {},
+  end_x_utm: {},
+  end_y_utm: {},
+  invasive_plant_density_transect_points: {
+    items: {
+      ...InvasivePlantDensityTransectPoints
+    }
+  }
+};
+
 const Observation = {
   observation_type_code: {},
   observer_first_name: {},
@@ -321,6 +337,16 @@ const Transect_FireMonitoring = {
     items: {
       ...ThreeColumnStyle,
       ...FireMonitoringTransectLines
+    }
+  }
+};
+
+const Transect_InvasivePlantDensity = {
+  utm_zone: {},
+  invasive_plant_density_transect_lines: {
+    items: {
+      ...ThreeColumnStyle,
+      ...InvasivePlantDensityTransectLines
     }
   }
 };
@@ -583,6 +609,7 @@ const BaseUISchemaComponents = {
   Observation_AnimalTerrestrial,
   Observation_AnimalAquatic,
   Transect_FireMonitoring,
+  Transect_InvasivePlantDensity,
   Treatment,
   Treatment_BulkEdit,
   Treatment_MechanicalPlant,

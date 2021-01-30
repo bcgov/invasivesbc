@@ -1976,6 +1976,27 @@
           }
         }
       },
+      "Transect_InvasivePlantDensity": {
+        "title": "Invasive Plant Density Transect Information",
+        "type": "object",
+        "required": [
+          "utm_zone",
+          "invasive_plant_density_transect_lines"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
+          "invasive_plant_density_transect_lines": {
+            "type": "array",
+            "title": "Invasive Plant Density Transect Lines",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlantDensityTransectLines"
+            }
+          }
+        }
+      },
       "Treatment": {
         "title": "Treatment Information",
         "type": "object",
@@ -3197,7 +3218,47 @@
           }
         }
       },
+      "InvasivePlantDensityTransectLines": {
+        "type": "object",
+        "required": [
+          "invasive_plant_density_transect_points"
+        ],
+        "properties": {
+          "start_x_utm": {
+            "type": "number",
+            "title": "Start UTM X"
+          },
+          "start_y_utm": {
+            "type": "number",
+            "title": "Start UTM Y"
+          },
+          "end_x_utm": {
+            "type": "number",
+            "title": "End UTM X"
+          },
+          "end_y_utm": {
+            "type": "number",
+            "title": "End UTM Y"
+          },
+          "invasive_plant_density_transect_points": {
+            "type": "array",
+            "title": "Invasive Plant Density Transect Points",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlantDensityTransectPoints"
+            }
+          }
+        }
+      },
       "FireMonitoringTransectPoints": {
+        "type": "object",
+        "properties": {
+          "offset_distance": {
+            "type": "number",
+            "title": "Offset Distance"
+          }
+        }
+      },
+      "InvasivePlantDensityTransectPoints": {
         "type": "object",
         "properties": {
           "offset_distance": {
