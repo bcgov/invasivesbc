@@ -461,7 +461,7 @@ const ActivitiesList: React.FC = (props) => {
                       variant="contained"
                       startIcon={<Add />}
                       onClick={() => {
-                        addNewActivityToDB(databaseContext, ActivityType.Transect, item.type)
+                        addNewActivityToDB(databaseContext, ActivityType.Transect, item.type);
                       }}>
                       {item.label}
                     </Button>
