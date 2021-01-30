@@ -138,13 +138,13 @@ const TabsContainer: React.FC = () => {
     <AppBar position="static">
       <Toolbar>
         <Grid className={classes.alignment} container>
-        <img
-          className={classes.pointer}
-          src={bcGovLogoRev}
-          width="181"
-          alt="B.C. Government Logo"
-          onClick={() => history.push("/")}
-        />
+          <img
+            className={classes.pointer}
+            src={bcGovLogoRev}
+            width="181"
+            alt="B.C. Government Logo"
+            onClick={() => history.push("/")}
+          />
           <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
             {tabConfig.map((tab) => (
               <Tab

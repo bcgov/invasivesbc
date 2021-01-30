@@ -2,7 +2,7 @@ import { Box, Collapse, IconButton } from '@material-ui/core';
 import Badge from '@material-ui/core/Badge';
 import { Close, MarkunreadMailbox } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
-import Footer from 'components/footer/Footer';
+import Footer from 'components/Footer/Footer';
 import TabsContainer from 'components/tabs/TabsContainer';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
