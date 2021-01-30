@@ -4,6 +4,7 @@ import { Close, MarkunreadMailbox } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import NetworkStatusComponent from 'components/network/NetworkStatusComponent';
 import TabsContainer from 'components/tabs/TabsContainer';
+import Footer from 'components/Footer/Footer';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -96,7 +97,6 @@ const HomeLayout = (props: any) => {
         {props.children}
       </Box>
       <Box
-        height="43px"
         position="absolute"
         bottom="0"
         left="0"
