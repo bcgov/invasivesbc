@@ -1976,6 +1976,27 @@
           }
         }
       },
+      "Transect_FullVegetation": {
+        "title": "Full Vegetation Transect Information",
+        "type": "object",
+        "required": [
+          "utm_zone",
+          "full_vegetation_transect_lines"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
+          "full_vegetation_transect_lines": {
+            "type": "array",
+            "title": "Full Vegetation Transect Lines",
+            "items": {
+              "$ref": "#/components/schemas/FullVegetationTransectLines"
+            }
+          }
+        }
+      },
       "Transect_InvasivePlantDensity": {
         "title": "Invasive Plant Density Transect Information",
         "type": "object",
@@ -3249,6 +3270,37 @@
           }
         }
       },
+      "FullVegetationTransectLines": {
+        "type": "object",
+        "required": [
+          "full_vegetation_transect_points"
+        ],
+        "properties": {
+          "start_x_utm": {
+            "type": "number",
+            "title": "Start UTM X"
+          },
+          "start_y_utm": {
+            "type": "number",
+            "title": "Start UTM Y"
+          },
+          "end_x_utm": {
+            "type": "number",
+            "title": "End UTM X"
+          },
+          "end_y_utm": {
+            "type": "number",
+            "title": "End UTM Y"
+          },
+          "full_vegetation_transect_points": {
+            "type": "array",
+            "title": "Full Vegetation Transect Points",
+            "items": {
+              "$ref": "#/components/schemas/FullVegetationTransectPoints"
+            }
+          }
+        }
+      },
       "FireMonitoringTransectPoints": {
         "type": "object",
         "properties": {
@@ -3259,6 +3311,15 @@
         }
       },
       "InvasivePlantDensityTransectPoints": {
+        "type": "object",
+        "properties": {
+          "offset_distance": {
+            "type": "number",
+            "title": "Offset Distance"
+          }
+        }
+      },
+      "FullVegetationTransectPoints": {
         "type": "object",
         "properties": {
           "offset_distance": {

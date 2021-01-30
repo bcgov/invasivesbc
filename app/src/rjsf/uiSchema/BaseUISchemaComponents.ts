@@ -285,6 +285,22 @@ const InvasivePlantDensityTransectLines = {
   }
 };
 
+const FullVegetationTransectPoints = {
+  offset_distance: {}
+};
+
+const FullVegetationTransectLines = {
+  start_x_utm: {},
+  start_y_utm: {},
+  end_x_utm: {},
+  end_y_utm: {},
+  full_vegetation_transect_points: {
+    items: {
+      ...FullVegetationTransectPoints
+    }
+  }
+};
+
 const Observation = {
   observation_type_code: {},
   observer_first_name: {},
@@ -347,6 +363,16 @@ const Transect_InvasivePlantDensity = {
     items: {
       ...ThreeColumnStyle,
       ...InvasivePlantDensityTransectLines
+    }
+  }
+};
+
+const Transect_FullVegetation = {
+  utm_zone: {},
+  full_vegetation_transect_lines: {
+    items: {
+      ...ThreeColumnStyle,
+      ...FullVegetationTransectLines
     }
   }
 };
@@ -610,6 +636,7 @@ const BaseUISchemaComponents = {
   Observation_AnimalAquatic,
   Transect_FireMonitoring,
   Transect_InvasivePlantDensity,
+  Transect_FullVegetation,
   Treatment,
   Treatment_BulkEdit,
   Treatment_MechanicalPlant,
