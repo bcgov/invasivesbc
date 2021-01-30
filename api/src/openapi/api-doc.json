@@ -2039,6 +2039,27 @@
           }
         }
       },
+      "Transect_BiocontrolEfficacy": {
+        "title": "Biocontrol Efficacy Transect Information",
+        "type": "object",
+        "required": [
+          "utm_zone",
+          "biocontrol_efficacy_transect_lines"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
+          "biocontrol_efficacy_transect_lines": {
+            "type": "array",
+            "title": "Biocontrol Efficacy Transect Lines",
+            "items": {
+              "$ref": "#/components/schemas/BiocontrolEfficacyTransectLines"
+            }
+          }
+        }
+      },
       "Treatment": {
         "title": "Treatment Information",
         "type": "object",
@@ -3353,6 +3374,37 @@
           }
         }
       },
+      "BiocontrolEfficacyTransectLines": {
+        "type": "object",
+        "required": [
+          "biocontrol_efficacy_transect_points"
+        ],
+        "properties": {
+          "start_x_utm": {
+            "type": "number",
+            "title": "Start UTM X"
+          },
+          "start_y_utm": {
+            "type": "number",
+            "title": "Start UTM Y"
+          },
+          "end_x_utm": {
+            "type": "number",
+            "title": "End UTM X"
+          },
+          "end_y_utm": {
+            "type": "number",
+            "title": "End UTM Y"
+          },
+          "biocontrol_efficacy_transect_points": {
+            "type": "array",
+            "title": "Biocontrol Efficacy Transect Points",
+            "items": {
+              "$ref": "#/components/schemas/BiocontrolEfficacyTransectPoints"
+            }
+          }
+        }
+      },
       "FireMonitoringTransectPoints": {
         "type": "object",
         "properties": {
@@ -3381,6 +3433,15 @@
         }
       },
       "LumpedSpeciesVegetationTransectPoints": {
+        "type": "object",
+        "properties": {
+          "offset_distance": {
+            "type": "number",
+            "title": "Offset Distance"
+          }
+        }
+      },
+      "BiocontrolEfficacyTransectPoints": {
         "type": "object",
         "properties": {
           "offset_distance": {

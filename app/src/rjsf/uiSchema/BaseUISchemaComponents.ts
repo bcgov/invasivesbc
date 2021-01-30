@@ -317,6 +317,22 @@ const LumpedSpeciesVegetationTransectLines = {
   }
 };
 
+const BiocontrolEfficacyTransectPoints = {
+  offset_distance: {}
+};
+
+const BiocontrolEfficacyTransectLines = {
+  start_x_utm: {},
+  start_y_utm: {},
+  end_x_utm: {},
+  end_y_utm: {},
+  biocontrol_efficacy_transect_points: {
+    items: {
+      ...BiocontrolEfficacyTransectPoints
+    }
+  }
+};
+
 const Observation = {
   observation_type_code: {},
   observer_first_name: {},
@@ -399,6 +415,16 @@ const Transect_LumpedSpeciesVegetation = {
     items: {
       ...ThreeColumnStyle,
       ...LumpedSpeciesVegetationTransectLines
+    }
+  }
+};
+
+const Transect_BiocontrolEfficacy = {
+  utm_zone: {},
+  biocontrol_efficacy_transect_lines: {
+    items: {
+      ...ThreeColumnStyle,
+      ...BiocontrolEfficacyTransectLines
     }
   }
 };
@@ -664,6 +690,7 @@ const BaseUISchemaComponents = {
   Transect_InvasivePlantDensity,
   Transect_FullVegetation,
   Transect_LumpedSpeciesVegetation,
+  Transect_BiocontrolEfficacy,
   Treatment,
   Treatment_BulkEdit,
   Treatment_MechanicalPlant,

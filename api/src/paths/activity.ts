@@ -79,6 +79,7 @@ const post_put_apiDoc = {
                 { $ref: '#/components/schemas/Activity_Transect_InvasivePlantDensity' },
                 { $ref: '#/components/schemas/Activity_Transect_FullVegetation' },
                 { $ref: '#/components/schemas/Activity_Transect_LumpedSpeciesVegetation' },
+                { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' },
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
