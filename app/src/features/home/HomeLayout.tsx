@@ -2,9 +2,8 @@ import { Box, Collapse, IconButton } from '@material-ui/core';
 import Badge from '@material-ui/core/Badge';
 import { Close, MarkunreadMailbox } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
-import NetworkStatusComponent from 'components/network/NetworkStatusComponent';
+import Footer from 'components/footer/Footer';
 import TabsContainer from 'components/tabs/TabsContainer';
-import Footer from 'components/Footer/Footer';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -103,7 +102,7 @@ const HomeLayout = (props: any) => {
         right="0"
         bgcolor="primary.main"
         color="primary.contrastText">
-        <NetworkStatusComponent />
+        <Footer />
       </Box>
     </Box>
   );
