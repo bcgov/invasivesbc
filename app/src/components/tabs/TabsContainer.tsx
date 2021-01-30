@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   alignment: {
     justifyContent: 'inherit',
-    '@media (max-device-width: 1430px)' : {
+    '@media (max-device-width: 1430px)': {
       justifyContent: 'center'
     }
   }
@@ -24,7 +24,7 @@ export interface ITabConfig {
   icon: React.ReactElement;
 }
 
-const bcGovLogoRev = "https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg";
+const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
 
 const TabsContainer: React.FC = () => {
   const keycloak = useKeycloakWrapper();
@@ -143,7 +143,7 @@ const TabsContainer: React.FC = () => {
             src={bcGovLogoRev}
             width="181"
             alt="B.C. Government Logo"
-            onClick={() => history.push("/")}
+            onClick={() => history.push('/')}
           />
           <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
             {tabConfig.map((tab) => (

@@ -37,11 +37,7 @@ const Footer: React.FC<IFooterProps> = () => {
       <Toolbar style={{ justifyContent: 'flex-end' }}>
         <Tabs value={false} variant="scrollable" scrollButtons="on">
           {tabs.map((tab) => (
-            <Tab
-              label={tab.label}
-              key={tab.label}
-              onClick={() => window.open(tab.url)}
-            />
+            <Tab label={tab.label} key={tab.label} onClick={() => window.open(tab.url)} />
           ))}
         </Tabs>
       </Toolbar>

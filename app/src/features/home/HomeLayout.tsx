@@ -95,13 +95,7 @@ const HomeLayout = (props: any) => {
       <Box mb="43px" height="inherit" width="inherit" overflow="auto">
         {props.children}
       </Box>
-      <Box
-        position="absolute"
-        bottom="0"
-        left="0"
-        right="0"
-        bgcolor="primary.main"
-        color="primary.contrastText">
+      <Box position="absolute" bottom="0" left="0" right="0" bgcolor="primary.main" color="primary.contrastText">
         <Footer />
       </Box>
     </Box>
