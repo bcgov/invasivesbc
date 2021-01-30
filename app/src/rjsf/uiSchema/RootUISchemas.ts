@@ -106,6 +106,16 @@ const Activity_Transect_FullVegetation = {
   }
 };
 
+const Activity_Transect_LumpedSpeciesVegetation = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.Transect_LumpedSpeciesVegetation
+  }
+};
+
 const Activity_Treatment_ChemicalPlant = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
@@ -324,6 +334,7 @@ const RootUISchemas = {
   Activity_Transect_FireMonitoring,
   Activity_Transect_InvasivePlantDensity,
   Activity_Transect_FullVegetation,
+  Activity_Transect_LumpedSpeciesVegetation,
   Activity_Treatment_ChemicalPlant,
   Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_MechanicalPlant,

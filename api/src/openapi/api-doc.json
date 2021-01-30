@@ -2018,6 +2018,27 @@
           }
         }
       },
+      "Transect_LumpedSpeciesVegetation": {
+        "title": "Lumped Species Vegetation Transect Information",
+        "type": "object",
+        "required": [
+          "utm_zone",
+          "lumped_species_vegetation_transect_lines"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
+          "lumped_species_vegetation_transect_lines": {
+            "type": "array",
+            "title": "Lumped Species Vegetation Transect Lines",
+            "items": {
+              "$ref": "#/components/schemas/LumpedSpeciesVegetationTransectLines"
+            }
+          }
+        }
+      },
       "Treatment": {
         "title": "Treatment Information",
         "type": "object",
@@ -3301,6 +3322,37 @@
           }
         }
       },
+      "LumpedSpeciesVegetationTransectLines": {
+        "type": "object",
+        "required": [
+          "lumped_species_vegetation_transect_points"
+        ],
+        "properties": {
+          "start_x_utm": {
+            "type": "number",
+            "title": "Start UTM X"
+          },
+          "start_y_utm": {
+            "type": "number",
+            "title": "Start UTM Y"
+          },
+          "end_x_utm": {
+            "type": "number",
+            "title": "End UTM X"
+          },
+          "end_y_utm": {
+            "type": "number",
+            "title": "End UTM Y"
+          },
+          "lumped_species_vegetation_transect_points": {
+            "type": "array",
+            "title": "Lumped Species Vegetation Transect Points",
+            "items": {
+              "$ref": "#/components/schemas/LumpedSpeciesVegetationTransectPoints"
+            }
+          }
+        }
+      },
       "FireMonitoringTransectPoints": {
         "type": "object",
         "properties": {
@@ -3320,6 +3372,15 @@
         }
       },
       "FullVegetationTransectPoints": {
+        "type": "object",
+        "properties": {
+          "offset_distance": {
+            "type": "number",
+            "title": "Offset Distance"
+          }
+        }
+      },
+      "LumpedSpeciesVegetationTransectPoints": {
         "type": "object",
         "properties": {
           "offset_distance": {

@@ -301,6 +301,22 @@ const FullVegetationTransectLines = {
   }
 };
 
+const LumpedSpeciesVegetationTransectPoints = {
+  offset_distance: {}
+};
+
+const LumpedSpeciesVegetationTransectLines = {
+  start_x_utm: {},
+  start_y_utm: {},
+  end_x_utm: {},
+  end_y_utm: {},
+  lumped_species_vegetation_transect_points: {
+    items: {
+      ...LumpedSpeciesVegetationTransectPoints
+    }
+  }
+};
+
 const Observation = {
   observation_type_code: {},
   observer_first_name: {},
@@ -373,6 +389,16 @@ const Transect_FullVegetation = {
     items: {
       ...ThreeColumnStyle,
       ...FullVegetationTransectLines
+    }
+  }
+};
+
+const Transect_LumpedSpeciesVegetation = {
+  utm_zone: {},
+  lumped_species_vegetation_transect_lines: {
+    items: {
+      ...ThreeColumnStyle,
+      ...LumpedSpeciesVegetationTransectLines
     }
   }
 };
@@ -637,6 +663,7 @@ const BaseUISchemaComponents = {
   Transect_FireMonitoring,
   Transect_InvasivePlantDensity,
   Transect_FullVegetation,
+  Transect_LumpedSpeciesVegetation,
   Treatment,
   Treatment_BulkEdit,
   Treatment_MechanicalPlant,
