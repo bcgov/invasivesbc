@@ -76,6 +76,56 @@ const Activity_Observation_AnimalAquatic = {
   }
 };
 
+const Activity_Transect_FireMonitoring = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.Transect_FireMonitoring
+  }
+};
+
+const Activity_Transect_InvasivePlantDensity = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.Transect_InvasivePlantDensity
+  }
+};
+
+const Activity_Transect_FullVegetation = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.Transect_FullVegetation
+  }
+};
+
+const Activity_Transect_LumpedSpeciesVegetation = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.Transect_LumpedSpeciesVegetation
+  }
+};
+
+const Activity_Transect_BiocontrolEfficacy = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.Transect_BiocontrolEfficacy
+  }
+};
+
 const Activity_Treatment_ChemicalPlant = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
@@ -291,6 +341,11 @@ const RootUISchemas = {
   Activity_Observation_PlantAquatic,
   Activity_Observation_AnimalTerrestrial,
   Activity_Observation_AnimalAquatic,
+  Activity_Transect_FireMonitoring,
+  Activity_Transect_InvasivePlantDensity,
+  Activity_Transect_FullVegetation,
+  Activity_Transect_LumpedSpeciesVegetation,
+  Activity_Transect_BiocontrolEfficacy,
   Activity_Treatment_ChemicalPlant,
   Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_MechanicalPlant,

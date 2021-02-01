@@ -204,7 +204,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       {sortedActivities.map((doc) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
-        if (!doc.activitySubtype.includes(props.workflowFunction)) {
+        if (!doc.activitySubtype.includes(props.workflowFunction) && doc.activityType !== 'Transect') {
           return null;
         }
 
@@ -250,11 +250,11 @@ const ActivitiesList: React.FC = (props) => {
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
 
   const specialFunctions = [
-    'Fire Monitoring',
-    'Invasive Plant Density Transects',
-    'Vegetation Transect (Full Vegetation)',
-    'Vegetation Transect (Lumped Species)',
-    'Biocontrol Efficacy'
+    { label: 'Fire Monitoring', type: ActivitySubtype.Transect_FireMonitoring },
+    { label: 'Invasive Plant Density Transects', type: ActivitySubtype.Transect_InvasivePlantDensity },
+    { label: 'Vegetation Transect (Full Vegetation)', type: ActivitySubtype.Transect_FullVegetation },
+    { label: 'Vegetation Transect (Lumped Species)', type: ActivitySubtype.Transect_LumpedSpeciesVegetation },
+    { label: 'Biocontrol Efficacy', type: ActivitySubtype.Transect_BiocontrolEfficacy }
   ];
 
   const syncActivities = async () => {
@@ -455,11 +455,24 @@ const ActivitiesList: React.FC = (props) => {
                 </Box>
                 <Box className={classes.newActivityButtonsRow}>
                   {specialFunctions.map((item) => (
-                    <Button key={item} disabled={isDisabled} variant="contained" startIcon={<Add />}>
-                      {item}
+                    <Button
+                      key={item.label}
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => {
+                        addNewActivityToDB(databaseContext, ActivityType.Transect, item.type);
+                      }}>
+                      {item.label}
                     </Button>
                   ))}
                 </Box>
+
+                <ActivityList
+                  workflowFunction={workflowFunction}
+                  isDisabled={isDisabled}
+                  activityType={ActivityType.Transect}
+                />
               </Box>
               <br />
               <Box>
