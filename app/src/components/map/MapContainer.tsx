@@ -279,6 +279,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
     if (props.interactiveGeometryState) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
+        console.log(interactObj)
         const style = {
           color: interactObj.color,
           weight: 4,
@@ -309,6 +310,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               if (feature.geometry.type !== 'Polygon') {
                 L.popup()
                   .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
+                  .setContent(content)
+                  .openOn(mapRef.current);
+              } else {
+                // If polygon use the first point as the coordinate for popup
+                L.popup()
+                  .setLatLng([feature.geometry.coordinates[0][0][1], feature.geometry.coordinates[0][0][0]])
                   .setContent(content)
                   .openOn(mapRef.current);
               }

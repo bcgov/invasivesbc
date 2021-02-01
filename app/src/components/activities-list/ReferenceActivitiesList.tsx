@@ -11,7 +11,12 @@ import {
   Typography,
   Button,
   Box,
-  Checkbox
+  Checkbox,
+  Container,
+  FormControl,
+  MenuItem,
+  Select,
+  InputLabel
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
@@ -24,6 +29,10 @@ import ActivityListItem from './ActivityListItem';
 import ActivityListDate from './ActivityListDate';
 import { notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
+import MapContainer from 'components/map/MapContainer';
+import { Feature } from 'geojson';
+import { MapContextMenuData } from 'features/home/map/MapContextMenu';
+import * as L from 'leaflet';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -51,7 +60,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   formControl: {
-    maxWidth: 175
+    minWidth: 180
+  },
+  map: {
+    height: '500px',
+    width: '100%'
+  },
+  tripGrid: {
+    flexDirection: 'row',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column'
+    }
   }
 }));
 
@@ -182,39 +201,23 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
   );
 };
 
-const ReferenceActivityList: React.FC = () => {
+interface IReferenceActivityList {
+  docs: any;
+  databaseContext: any;
+  setOnReferencesListPage: Function;
+}
+
+const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
+  const { docs, databaseContext, setOnReferencesListPage } = props;
+
   const classes = useStyles();
-
-  const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
-  const [onReferencesListPage, setOnReferencesListPage] = useState(true);
-
-  const [docs, setDocs] = useState<any[]>([]);
-  const [selectedObservations, setSelectedObservations] = useState([]);
   const history = useHistory();
 
-  const updateActivityList = useCallback(async () => {
-    const activityResult = await databaseContext.database.find({
-      selector: { docType: DocType.REFERENCE_ACTIVITY }
-    });
+  const [selectedObservations, setSelectedObservations] = useState([]);
 
-    setDocs([...activityResult.docs]);
-  }, [databaseContext.database]);
-
-  useEffect(() => {
-    const updateComponent = () => {
-      // Used to fix react state update unmounted component error
-      if (onReferencesListPage) {
-        updateActivityList();
-      }
-    };
-
-    updateComponent();
-  }, [databaseChangesContext, onReferencesListPage, updateActivityList]);
-
-  const observations = docs.filter((doc) => doc.activityType === 'Observation');
-  const treatments = docs.filter((doc) => doc.activityType === 'Treatment');
-  const monitorings = docs.filter((doc) => doc.activityType === 'Monitoring');
+  const observations = docs.filter((doc: any) => doc.activityType === 'Observation');
+  const treatments = docs.filter((doc: any) => doc.activityType === 'Treatment');
+  const monitorings = docs.filter((doc: any) => doc.activityType === 'Monitoring');
 
   /*
     Function to determine if all selected observation records are
@@ -309,15 +312,148 @@ const ReferenceActivityList: React.FC = () => {
 
 const ReferenceActivitiesList: React.FC = () => {
   const classes = useStyles();
+  const databaseContext = useContext(DatabaseContext);
+  const databaseChangesContext = useContext(DatabaseChangesContext);
+
+  const [geometry, setGeometry] = useState<Feature[]>([]);
+  const [interactiveGeometry, setInteractiveGeometry] = useState([]);
+  const [extent, setExtent] = useState(null);
+  const [docs, setDocs] = useState<any[]>([]);
+  const [onReferencesListPage, setOnReferencesListPage] = useState(true);
+
+  const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
+  const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
+  const [mapActivityType, setMapActivityType] = useState("All");
+
+  /*
+    Fetch activities from database and save them in state
+    Also, call a helper function to save map geometries
+  */
+  const updateActivityList = useCallback(async () => {
+    const activityResult = await databaseContext.database.find({
+      selector: { docType: DocType.REFERENCE_ACTIVITY }
+    });
+
+    setDocs([...activityResult.docs]);
+  }, [databaseContext.database]);
+
+  /*
+    On render, update the list of activities (fetch them and set in state)
+  */
+  useEffect(() => {
+    const updateComponent = () => {
+      // Used to fix react state update unmounted component error
+      if (onReferencesListPage) {
+        updateActivityList();
+      }
+    };
+
+    updateComponent();
+  }, [databaseChangesContext, onReferencesListPage, updateActivityList]);
+
+  /*
+    When the selected map activity type changes, filter the docs by the type
+    and store the associated geometries only
+  */
+  useEffect(() => {
+    const mapGeos = [];
+
+    docs.forEach((doc: any) => {
+      if (doc.activityType === mapActivityType || mapActivityType === 'All') {
+        mapGeos.push(getInteractiveGeoData(doc));
+      }
+    });
+
+    setInteractiveGeometry([...mapGeos]);
+  }, [mapActivityType]);
+
+  /*
+    Store info regarding the geometry for each activity
+  */
+  useEffect(() => {
+    const saveMapGeos = () => {
+      const mapGeos = [];
+
+      docs.forEach((doc: any) => {
+        mapGeos.push(getInteractiveGeoData(doc));
+      });
+
+      setInteractiveGeometry([...mapGeos]);
+    };
+
+    saveMapGeos();
+  }, [docs]);
+
+  /*
+    Function to set the chosen map activity type in state
+  */
+  const handleMapActivityChange = (event: any) => {
+    setMapActivityType(event.target.value);
+  };
+
+  const ActivityPopup = (name: string) => {
+    return '<div>' + name + '</div>';
+  };
+
+  const getInteractiveGeoData = (doc: any) => {
+    return {
+      recordDocID: doc._id,
+      geometry: doc.geometry,
+      color: getGeoColor(doc.activityType),
+      description: `${doc.activityType}: ${doc._id}`,
+      popUpComponent: ActivityPopup,
+      onClickCallback: () => {}
+    }
+  };
+
+  const getGeoColor = (activityType: string) => {
+    let color = 'rgb(51, 136, 255)';
+
+    if (activityType === 'Treatment') {
+      color = 'FFA500';
+    } else if (activityType === 'Monitoring') {
+      color = 'red';
+    }
+
+    return color;
+  };
 
   return (
-    <>
-      <div className={classes.activitiesContent}>
+    <Container className={classes.activitiesContent}>
+      <Box mb={3} display="flex" justifyContent="space-between">
         <Typography variant="h4">Cached Activities</Typography>
-        <br />
-        <ReferenceActivityList />
-      </div>
-    </>
+        <FormControl variant="outlined" className={classes.formControl}>
+          <InputLabel>Map Activity Type</InputLabel>
+          <Select value={mapActivityType} onChange={handleMapActivityChange} label="Select Map Activity Type">
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value={ActivityType.Observation}>Observation</MenuItem>
+            <MenuItem value={ActivityType.Treatment}>Treatment</MenuItem>
+            <MenuItem value={ActivityType.Monitoring}>Monitoring</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+      {interactiveGeometry.length > 0 && (
+        <Paper>
+          <MapContainer
+            classes={classes}
+            mapId="references_page_map_container"
+            geometryState={{ geometry, setGeometry }}
+            interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+            extentState={{ extent, setExtent }}
+            contextMenuState={{ state: contextMenuState, setContextMenuState }}
+          />
+        </Paper>
+      )}
+      {!interactiveGeometry.length && (
+        <Typography>No activities available of the selected type.</Typography>
+      )}
+      <br />
+      <ReferenceActivityList
+        docs={docs}
+        databaseContext={databaseContext}
+        setOnReferencesListPage={setOnReferencesListPage}
+      />
+    </Container>
   );
 };
 
