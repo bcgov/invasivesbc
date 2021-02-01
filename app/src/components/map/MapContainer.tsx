@@ -279,7 +279,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
     if (props.interactiveGeometryState) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-        console.log(interactObj)
         const style = {
           color: interactObj.color,
           weight: 4,

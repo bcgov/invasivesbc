@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     minWidth: 180
   },
   map: {
-    height: '500px',
+    height: 500,
     width: '100%'
   }
 }));
