@@ -208,6 +208,61 @@
           }
         }
       },
+      "Activity_Transect_FireMonitoring": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Transect_FireMonitoring"
+          }
+        }
+      },
+      "Activity_Transect_InvasivePlantDensity": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Transect_InvasivePlantDensity"
+          }
+        }
+      },
+      "Activity_Transect_FullVegetation": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Transect_FullVegetation"
+          }
+        }
+      },
+      "Activity_Transect_LumpedSpeciesVegetation": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Transect_LumpedSpeciesVegetation"
+          }
+        }
+      },
+      "Activity_Transect_BiocontrolEfficacy": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Transect_BiocontrolEfficacy"
+          }
+        }
+      },
       "Activity_Treatment_ChemicalPlant": {
         "type": "object",
         "properties": {
@@ -1897,6 +1952,114 @@
           }
         }
       },
+      "Transect": {
+        "title": "Transect Information"
+      },
+      "Transect_FireMonitoring": {
+        "title": "Fire Monitoring Transect Information",
+        "type": "object",
+        "required": [
+          "utm_zone",
+          "fire_monitoring_transect_lines"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
+          "fire_monitoring_transect_lines": {
+            "type": "array",
+            "title": "Fire Monitoring Transect Lines",
+            "items": {
+              "$ref": "#/components/schemas/FireMonitoringTransectLines"
+            }
+          }
+        }
+      },
+      "Transect_FullVegetation": {
+        "title": "Full Vegetation Transect Information",
+        "type": "object",
+        "required": [
+          "utm_zone",
+          "full_vegetation_transect_lines"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
+          "full_vegetation_transect_lines": {
+            "type": "array",
+            "title": "Full Vegetation Transect Lines",
+            "items": {
+              "$ref": "#/components/schemas/FullVegetationTransectLines"
+            }
+          }
+        }
+      },
+      "Transect_InvasivePlantDensity": {
+        "title": "Invasive Plant Density Transect Information",
+        "type": "object",
+        "required": [
+          "utm_zone",
+          "invasive_plant_density_transect_lines"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
+          "invasive_plant_density_transect_lines": {
+            "type": "array",
+            "title": "Invasive Plant Density Transect Lines",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlantDensityTransectLines"
+            }
+          }
+        }
+      },
+      "Transect_LumpedSpeciesVegetation": {
+        "title": "Lumped Species Vegetation Transect Information",
+        "type": "object",
+        "required": [
+          "utm_zone",
+          "lumped_species_vegetation_transect_lines"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
+          "lumped_species_vegetation_transect_lines": {
+            "type": "array",
+            "title": "Lumped Species Vegetation Transect Lines",
+            "items": {
+              "$ref": "#/components/schemas/LumpedSpeciesVegetationTransectLines"
+            }
+          }
+        }
+      },
+      "Transect_BiocontrolEfficacy": {
+        "title": "Biocontrol Efficacy Transect Information",
+        "type": "object",
+        "required": [
+          "utm_zone",
+          "biocontrol_efficacy_transect_lines"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone"
+          },
+          "biocontrol_efficacy_transect_lines": {
+            "type": "array",
+            "title": "Biocontrol Efficacy Transect Lines",
+            "items": {
+              "$ref": "#/components/schemas/BiocontrolEfficacyTransectLines"
+            }
+          }
+        }
+      },
       "Treatment": {
         "title": "Treatment Information",
         "type": "object",
@@ -3084,6 +3247,206 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
+          }
+        }
+      },
+      "FireMonitoringTransectLines": {
+        "type": "object",
+        "required": [
+          "fire_monitoring_transect_points"
+        ],
+        "properties": {
+          "start_x_utm": {
+            "type": "number",
+            "title": "Start UTM X"
+          },
+          "start_y_utm": {
+            "type": "number",
+            "title": "Start UTM Y"
+          },
+          "end_x_utm": {
+            "type": "number",
+            "title": "End UTM X"
+          },
+          "end_y_utm": {
+            "type": "number",
+            "title": "End UTM Y"
+          },
+          "fire_monitoring_transect_points": {
+            "type": "array",
+            "title": "Fire Monitoring Transect Points",
+            "items": {
+              "$ref": "#/components/schemas/FireMonitoringTransectPoints"
+            }
+          }
+        }
+      },
+      "InvasivePlantDensityTransectLines": {
+        "type": "object",
+        "required": [
+          "invasive_plant_density_transect_points"
+        ],
+        "properties": {
+          "start_x_utm": {
+            "type": "number",
+            "title": "Start UTM X"
+          },
+          "start_y_utm": {
+            "type": "number",
+            "title": "Start UTM Y"
+          },
+          "end_x_utm": {
+            "type": "number",
+            "title": "End UTM X"
+          },
+          "end_y_utm": {
+            "type": "number",
+            "title": "End UTM Y"
+          },
+          "invasive_plant_density_transect_points": {
+            "type": "array",
+            "title": "Invasive Plant Density Transect Points",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlantDensityTransectPoints"
+            }
+          }
+        }
+      },
+      "FullVegetationTransectLines": {
+        "type": "object",
+        "required": [
+          "full_vegetation_transect_points"
+        ],
+        "properties": {
+          "start_x_utm": {
+            "type": "number",
+            "title": "Start UTM X"
+          },
+          "start_y_utm": {
+            "type": "number",
+            "title": "Start UTM Y"
+          },
+          "end_x_utm": {
+            "type": "number",
+            "title": "End UTM X"
+          },
+          "end_y_utm": {
+            "type": "number",
+            "title": "End UTM Y"
+          },
+          "full_vegetation_transect_points": {
+            "type": "array",
+            "title": "Full Vegetation Transect Points",
+            "items": {
+              "$ref": "#/components/schemas/FullVegetationTransectPoints"
+            }
+          }
+        }
+      },
+      "LumpedSpeciesVegetationTransectLines": {
+        "type": "object",
+        "required": [
+          "lumped_species_vegetation_transect_points"
+        ],
+        "properties": {
+          "start_x_utm": {
+            "type": "number",
+            "title": "Start UTM X"
+          },
+          "start_y_utm": {
+            "type": "number",
+            "title": "Start UTM Y"
+          },
+          "end_x_utm": {
+            "type": "number",
+            "title": "End UTM X"
+          },
+          "end_y_utm": {
+            "type": "number",
+            "title": "End UTM Y"
+          },
+          "lumped_species_vegetation_transect_points": {
+            "type": "array",
+            "title": "Lumped Species Vegetation Transect Points",
+            "items": {
+              "$ref": "#/components/schemas/LumpedSpeciesVegetationTransectPoints"
+            }
+          }
+        }
+      },
+      "BiocontrolEfficacyTransectLines": {
+        "type": "object",
+        "required": [
+          "biocontrol_efficacy_transect_points"
+        ],
+        "properties": {
+          "start_x_utm": {
+            "type": "number",
+            "title": "Start UTM X"
+          },
+          "start_y_utm": {
+            "type": "number",
+            "title": "Start UTM Y"
+          },
+          "end_x_utm": {
+            "type": "number",
+            "title": "End UTM X"
+          },
+          "end_y_utm": {
+            "type": "number",
+            "title": "End UTM Y"
+          },
+          "biocontrol_efficacy_transect_points": {
+            "type": "array",
+            "title": "Biocontrol Efficacy Transect Points",
+            "items": {
+              "$ref": "#/components/schemas/BiocontrolEfficacyTransectPoints"
+            }
+          }
+        }
+      },
+      "FireMonitoringTransectPoints": {
+        "type": "object",
+        "properties": {
+          "offset_distance": {
+            "type": "number",
+            "title": "Offset Distance"
+          }
+        }
+      },
+      "InvasivePlantDensityTransectPoints": {
+        "type": "object",
+        "properties": {
+          "offset_distance": {
+            "type": "number",
+            "title": "Offset Distance"
+          }
+        }
+      },
+      "FullVegetationTransectPoints": {
+        "type": "object",
+        "properties": {
+          "offset_distance": {
+            "type": "number",
+            "title": "Offset Distance"
+          }
+        }
+      },
+      "LumpedSpeciesVegetationTransectPoints": {
+        "type": "object",
+        "properties": {
+          "offset_distance": {
+            "type": "number",
+            "title": "Offset Distance"
+          }
+        }
+      },
+      "BiocontrolEfficacyTransectPoints": {
+        "type": "object",
+        "properties": {
+          "offset_distance": {
+            "type": "number",
+            "title": "Offset Distance"
           }
         }
       },
