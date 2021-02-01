@@ -32,7 +32,6 @@ import { addLinkedActivityToDB } from 'utils/addActivity';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
-import * as L from 'leaflet';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -65,12 +64,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   map: {
     height: '500px',
     width: '100%'
-  },
-  tripGrid: {
-    flexDirection: 'row',
-    [theme.breakpoints.down('sm')]: {
-      flexDirection: 'column'
-    }
   }
 }));
 
