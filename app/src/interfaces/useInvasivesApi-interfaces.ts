@@ -82,6 +82,14 @@ export interface IActivitySearchCriteria {
    * @memberof IActivitySearchCriteria
    */
   search_feature?: Feature;
+   /**
+   * The metabase question ID will get all the activities referenced in the question.
+   *
+   *
+   * @type {number}
+   * @memberof IActivitySearchCriteria
+   */
+   metabaseQuestionID?: number;
 }
 
 /**

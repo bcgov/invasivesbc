@@ -7,6 +7,7 @@ import {
   LinearProgress,
   makeStyles,
   Paper,
+  TextField,
   Typography
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
@@ -72,6 +73,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
+  const [mbQuestionID, setMBQuestionID] = useState(null);
 
   const [tripLoaded, setTripLoaded] = useState(false);
 
@@ -124,6 +126,18 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     });
   }, [geometry, tripLoaded, databaseContext.database]);
 
+
+    // persist mbQuestionID changes
+    useEffect(() => {
+      if (!tripLoaded) {
+        return;
+      }
+
+      databaseContext.database.upsert('trip', (tripDoc) => {
+        return { ...tripDoc, metabaseQuestionID: mbQuestionID };
+      });
+    }, [mbQuestionID, tripLoaded, databaseContext.database]);
+
   // persist extent changes
   useEffect(() => {
     if (!tripLoaded) {
@@ -140,6 +154,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Grid container spacing={3} className={classes.tripGrid}>
         <Grid container item xs={12} justify="space-between">
           <TripDataControls />
+          <TextField value={mbQuestionID} onChange={(e)=>{setMBQuestionID(e.target.value); console.log(e.target.value)}} id="metabase-question-id" label="Outlined" variant="outlined" />
           <ManageDatabaseComponent />
         </Grid>
         <Grid item xs={12}>

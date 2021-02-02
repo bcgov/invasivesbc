@@ -58,12 +58,14 @@ export const TripDataControls: React.FC = (props) => {
 
     for (const setOfChoices of trip.activityChoices) {
       const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
+      const metabaseQuestionID = (trip.metabaseQuestionID && trip.metabaseQuestionID.length || null;
 
       const activitySearchCriteria: IActivitySearchCriteria = {
         ...((setOfChoices.activityType && { activity_type: [setOfChoices.activityType] }) || []),
         ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
         ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
-        ...((geometry && { search_feature: geometry }) || {})
+        ...((geometry && { search_feature: geometry }) || {}),
+        ...(metabaseQuestionID && {metabaseQuestionID: metabaseQuestionID})
       };
 
       let response = await invasivesApi.getActivities(activitySearchCriteria);
