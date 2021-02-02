@@ -21,7 +21,6 @@ import {
 import { Add } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
 import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -183,10 +182,7 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
         <ListItemIcon>
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
-        <ReferenceActivityListItem
-          databaseContext={databaseContext}
-          activity={doc}
-        />
+        <ReferenceActivityListItem databaseContext={databaseContext} activity={doc} />
       </ListItem>
     </Paper>
   );
@@ -274,11 +270,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {treatments.map((doc) => (
-        <ReferenceActivityListComponent
-          databaseContext={databaseContext}
-          key={doc._id}
-          doc={doc}
-        />
+        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
       ))}
       {monitorings.length > 0 && (
         <Box>
@@ -287,11 +279,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {monitorings.map((doc) => (
-        <ReferenceActivityListComponent
-          databaseContext={databaseContext}
-          key={doc._id}
-          doc={doc}
-        />
+        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
       ))}
     </List>
   );
@@ -308,13 +296,13 @@ const ReferenceActivitiesList: React.FC = () => {
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
-  const [mapActivityType, setMapActivityType] = useState("All");
+  const [mapActivityType, setMapActivityType] = useState('All');
 
   const geoColors = {
-    'Observation': '#CBAA2C',
-    'Treatment': '#FFA500',
-    'Monitoring': '#BCA0DC'
-  }
+    Observation: '#CBAA2C',
+    Treatment: '#FFA500',
+    Monitoring: '#BCA0DC'
+  };
 
   /*
     Fetch activities from database and save them in state
@@ -325,7 +313,7 @@ const ReferenceActivitiesList: React.FC = () => {
       selector: { docType: DocType.REFERENCE_ACTIVITY }
     });
 
-    storeInteractiveGeoInfo(activityResult.docs)
+    storeInteractiveGeoInfo(activityResult.docs);
     setDocs([...activityResult.docs]);
   }, [databaseContext.database]);
 
@@ -334,7 +322,7 @@ const ReferenceActivitiesList: React.FC = () => {
     and store the associated geometries only
   */
   useEffect(() => {
-    storeInteractiveGeoInfo(docs)
+    storeInteractiveGeoInfo(docs);
   }, [mapActivityType]);
 
   /*
@@ -344,7 +332,7 @@ const ReferenceActivitiesList: React.FC = () => {
     const mapGeos = getUpdatedGeoInfo(docs);
 
     setInteractiveGeometry([...mapGeos]);
-  }
+  };
 
   /*
     On geometry change (user drawn), find out which activities are
@@ -406,7 +394,7 @@ const ReferenceActivitiesList: React.FC = () => {
       description: `${doc.activityType}: ${doc._id}`,
       popUpComponent: ActivityPopup,
       onClickCallback: () => {}
-    }
+    };
   };
 
   /*
@@ -442,14 +430,9 @@ const ReferenceActivitiesList: React.FC = () => {
           />
         </Paper>
       )}
-      {!interactiveGeometry.length && (
-        <Typography>No activities available of the selected type.</Typography>
-      )}
+      {!interactiveGeometry.length && <Typography>No activities available of the selected type.</Typography>}
       <br />
-      <ReferenceActivityList
-        docs={docs}
-        databaseContext={databaseContext}
-      />
+      <ReferenceActivityList docs={docs} databaseContext={databaseContext} />
     </Container>
   );
 };
