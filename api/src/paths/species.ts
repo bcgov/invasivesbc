@@ -2,12 +2,12 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { getLogger } from '../utils/logger';
 import { cached } from '../utils/utils';
 import { CacheKeys } from '../constants/misc';
 import { getAllCodeEntities, IAllCodeEntities } from '../utils/code-utils';
+import { retrieveGetDoc } from '../docs/getDoc';
 
 const defaultLog = getLogger('media');
 
@@ -16,49 +16,14 @@ const defaultLog = getLogger('media');
  */
 export const GET: Operation = [getSpeciesDetails()];
 
+const { security, parameters, responses } = retrieveGetDoc('Array of species');
+
 GET.apiDoc = {
   description: 'Fetches one or more species based on their keys.',
   tags: ['species'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
-  parameters: [
-    {
-      in: 'query',
-      name: 'key',
-      required: true
-    }
-  ],
-  responses: {
-    200: {
-      description: 'Array of species.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                // Don't specify exact response, as it will vary, and is not currently enforced anyways
-                // Eventually this could be updated to be a oneOf list, similar to the Post request below.
-              }
-            }
-          }
-        }
-      }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
+  ...security,
+  ...parameters,
+  ...responses
 };
 
 function getSpeciesDetails(): RequestHandler {
