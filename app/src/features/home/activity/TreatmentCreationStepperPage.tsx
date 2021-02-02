@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme) => ({
   },
   map: {
     height: '100%',
-    width: '100%'
+    width: '100%',
+    zIndex: 0
   },
   buttonMarginRight: {
     marginRight: 20
