@@ -95,15 +95,16 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
 interface IReferenceActivityListItem {
   activity: any;
   databaseContext: any;
+  setActiveDoc: Function;
 }
 
 const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { activity, databaseContext } = props;
+  const { activity, databaseContext, setActiveDoc } = props;
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
-    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
 
@@ -111,7 +112,13 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
   };
 
   return (
-    <Grid className={classes.activityListItem_Grid} container spacing={2}>
+    <Grid
+      className={classes.activityListItem_Grid}
+      container
+      spacing={2}
+      onMouseEnter={() => setActiveDoc(activity)}
+      onMouseLeave={() => setActiveDoc(null)}
+    >
       <Divider flexItem={true} orientation="vertical" />
       <ActivityListItem activity={activity} classes={classes} />
       <ActivityListDate classes={classes} activity={activity} />
@@ -148,12 +155,13 @@ interface IReferenceActivityListComponent {
   databaseContext: any;
   selectedObservations?: any;
   setSelectedObservations?: Function;
+  setActiveDoc: Function;
 }
 
 const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { doc, databaseContext, selectedObservations, setSelectedObservations } = props;
+  const { doc, databaseContext, selectedObservations, setSelectedObservations, setActiveDoc } = props;
 
   // Determine which observation records have been selected
   const isChecked = selectedObservations?.some((obs: any) => obs.id === doc._id);
@@ -182,7 +190,7 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
         <ListItemIcon>
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
-        <ReferenceActivityListItem databaseContext={databaseContext} activity={doc} />
+        <ReferenceActivityListItem setActiveDoc={setActiveDoc} databaseContext={databaseContext} activity={doc} />
       </ListItem>
     </Paper>
   );
@@ -191,10 +199,11 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
 interface IReferenceActivityList {
   docs: any;
   databaseContext: any;
+  setActiveDoc: Function;
 }
 
 const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
-  const { docs, databaseContext } = props;
+  const { docs, databaseContext, setActiveDoc } = props;
 
   const classes = useStyles();
   const history = useHistory();
@@ -261,6 +270,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
           databaseContext={databaseContext}
           key={doc._id}
           doc={doc}
+          setActiveDoc={setActiveDoc}
         />
       ))}
       {treatments.length > 0 && (
@@ -270,7 +280,12 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {treatments.map((doc) => (
-        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
+        <ReferenceActivityListComponent
+          setActiveDoc={setActiveDoc}
+          databaseContext={databaseContext}
+          key={doc._id}
+          doc={doc}
+        />
       ))}
       {monitorings.length > 0 && (
         <Box>
@@ -279,7 +294,12 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {monitorings.map((doc) => (
-        <ReferenceActivityListComponent databaseContext={databaseContext} key={doc._id} doc={doc} />
+        <ReferenceActivityListComponent
+          setActiveDoc={setActiveDoc}
+          databaseContext={databaseContext}
+          key={doc._id}
+          doc={doc}
+        />
       ))}
     </List>
   );
@@ -289,6 +309,7 @@ const ReferenceActivitiesList: React.FC = () => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
 
+  const [activeDoc, setActiveDoc] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [interactiveGeometry, setInteractiveGeometry] = useState([]);
   const [extent, setExtent] = useState(null);
@@ -355,6 +376,36 @@ const ReferenceActivitiesList: React.FC = () => {
   }, [geometry]);
 
   /*
+    When the active activity changes (on hover), change the color of the activity
+    When the activity is no longer being hovered over, reset the geo color
+  */
+  useEffect(() => {
+    let updatedInteractiveGeos = [...interactiveGeometry];
+
+    if (!activeDoc) {
+      updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
+        geo.color = geoColors[geo.recordType];
+
+        return geo;
+      });
+
+      setInteractiveGeometry(updatedInteractiveGeos);
+
+      return;
+    }
+
+    updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
+      if (geo.recordDocID === activeDoc.activity_id) {
+        geo.color = '#9E1A1A';
+      }
+
+      return geo;
+    });
+
+    setInteractiveGeometry(updatedInteractiveGeos);
+  }, [activeDoc]);
+
+  /*
     Get updated interactive geometries based on the activities/selected map activity type
   */
   const getUpdatedGeoInfo = (documents: any) => {
@@ -389,6 +440,7 @@ const ReferenceActivitiesList: React.FC = () => {
   const getInteractiveGeoData = (doc: any) => {
     return {
       recordDocID: doc._id,
+      recordType: doc.activityType,
       geometry: doc.geometry,
       color: geoColors[doc.activityType],
       description: `${doc.activityType}: ${doc._id}`,
@@ -432,7 +484,7 @@ const ReferenceActivitiesList: React.FC = () => {
       )}
       {!interactiveGeometry.length && <Typography>No activities available of the selected type.</Typography>}
       <br />
-      <ReferenceActivityList docs={docs} databaseContext={databaseContext} />
+      <ReferenceActivityList docs={docs} databaseContext={databaseContext} setActiveDoc={setActiveDoc} />
     </Container>
   );
 };
