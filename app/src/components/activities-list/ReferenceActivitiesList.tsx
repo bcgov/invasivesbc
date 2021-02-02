@@ -319,8 +319,8 @@ const ReferenceActivitiesList: React.FC = () => {
   const [mapActivityType, setMapActivityType] = useState('All');
 
   const geoColors = {
-    Observation: '#CBAA2C',
-    Treatment: '#FFA500',
+    Observation: '#0BD2F0',
+    Treatment: '#F99F04',
     Monitoring: '#BCA0DC'
   };
 
@@ -379,6 +379,10 @@ const ReferenceActivitiesList: React.FC = () => {
     When the activity is no longer being hovered over, reset the geo color
   */
   useEffect(() => {
+    if (!geometry.length) {
+      return;
+    }
+
     let updatedInteractiveGeos = [...interactiveGeometry];
 
     if (!activeDoc) {
