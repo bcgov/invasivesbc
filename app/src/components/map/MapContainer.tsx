@@ -278,6 +278,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       });
     }
     if (props.interactiveGeometryState) {
+      console.log(props.interactiveGeometryState.interactiveGeometry);
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
         const style = {
           color: interactObj.color,
@@ -353,7 +354,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     updateMapOnGeometryChange();
-  }, [props.geometryState.geometry]);
+  }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
 
   useEffect(() => {
     if (!mapRef.current) {

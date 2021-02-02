@@ -33,7 +33,8 @@ const useStyles = makeStyles((theme) => ({
   },
   map: {
     height: '500px',
-    width: '100%'
+    width: '100%',
+    zIndex: 0
   },
   layerPicker: {
     height: '100%',

@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   map: {
     height: '100%',
-    width: '100%'
+    width: '100%',
+    zIndex: 0
   },
   mainGrid: {
     height: '100%',

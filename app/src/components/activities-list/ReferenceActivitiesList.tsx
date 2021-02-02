@@ -32,6 +32,7 @@ import { addLinkedActivityToDB } from 'utils/addActivity';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
+import booleanIntersects from '@turf/boolean-intersects';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -63,7 +64,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   map: {
     height: 500,
-    width: '100%'
+    width: '100%',
+    zIndex: 0
   }
 }));
 
@@ -94,13 +96,12 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
 interface IReferenceActivityListItem {
   activity: any;
   databaseContext: any;
-  setOnReferencesListPage: Function;
 }
 
 const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { activity, databaseContext, setOnReferencesListPage } = props;
+  const { activity, databaseContext } = props;
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
     await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
@@ -133,7 +134,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
                   activity
                 );
                 setActiveActivityAndNavigateToActivityPage(addedActivity);
-                setOnReferencesListPage(false);
               }}>
               Create Monitoring
             </Button>
@@ -147,7 +147,6 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
 interface IReferenceActivityListComponent {
   doc: any;
   databaseContext: any;
-  setOnReferencesListPage: Function;
   selectedObservations?: any;
   setSelectedObservations?: Function;
 }
@@ -155,7 +154,7 @@ interface IReferenceActivityListComponent {
 const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { doc, databaseContext, setOnReferencesListPage, selectedObservations, setSelectedObservations } = props;
+  const { doc, databaseContext, selectedObservations, setSelectedObservations } = props;
 
   // Determine which observation records have been selected
   const isChecked = selectedObservations?.some((obs: any) => obs.id === doc._id);
@@ -185,7 +184,6 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
         <ReferenceActivityListItem
-          setOnReferencesListPage={setOnReferencesListPage}
           databaseContext={databaseContext}
           activity={doc}
         />
@@ -197,11 +195,10 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
 interface IReferenceActivityList {
   docs: any;
   databaseContext: any;
-  setOnReferencesListPage: Function;
 }
 
 const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
-  const { docs, databaseContext, setOnReferencesListPage } = props;
+  const { docs, databaseContext } = props;
 
   const classes = useStyles();
   const history = useHistory();
@@ -265,7 +262,6 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         <ReferenceActivityListComponent
           selectedObservations={selectedObservations}
           setSelectedObservations={setSelectedObservations}
-          setOnReferencesListPage={setOnReferencesListPage}
           databaseContext={databaseContext}
           key={doc._id}
           doc={doc}
@@ -279,7 +275,6 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
       )}
       {treatments.map((doc) => (
         <ReferenceActivityListComponent
-          setOnReferencesListPage={setOnReferencesListPage}
           databaseContext={databaseContext}
           key={doc._id}
           doc={doc}
@@ -293,7 +288,6 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
       )}
       {monitorings.map((doc) => (
         <ReferenceActivityListComponent
-          setOnReferencesListPage={setOnReferencesListPage}
           databaseContext={databaseContext}
           key={doc._id}
           doc={doc}
@@ -306,17 +300,21 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
 const ReferenceActivitiesList: React.FC = () => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [interactiveGeometry, setInteractiveGeometry] = useState([]);
   const [extent, setExtent] = useState(null);
   const [docs, setDocs] = useState<any[]>([]);
-  const [onReferencesListPage, setOnReferencesListPage] = useState(true);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
   const [mapActivityType, setMapActivityType] = useState("All");
+
+  const geoColors = {
+    'Observation': '#CBAA2C',
+    'Treatment': '#FFA500',
+    'Monitoring': '#BCA0DC'
+  }
 
   /*
     Fetch activities from database and save them in state
@@ -327,28 +325,51 @@ const ReferenceActivitiesList: React.FC = () => {
       selector: { docType: DocType.REFERENCE_ACTIVITY }
     });
 
+    storeInteractiveGeoInfo(activityResult.docs)
     setDocs([...activityResult.docs]);
   }, [databaseContext.database]);
-
-  /*
-    On render, update the list of activities (fetch them and set in state)
-  */
-  useEffect(() => {
-    const updateComponent = () => {
-      // Used to fix react state update unmounted component error
-      if (onReferencesListPage) {
-        updateActivityList();
-      }
-    };
-
-    updateComponent();
-  }, [databaseChangesContext, onReferencesListPage, updateActivityList]);
 
   /*
     When the selected map activity type changes, filter the docs by the type
     and store the associated geometries only
   */
   useEffect(() => {
+    storeInteractiveGeoInfo(docs)
+  }, [mapActivityType]);
+
+  /*
+    Store the interactive geometry info in state
+  */
+  const storeInteractiveGeoInfo = (docs: any) => {
+    const mapGeos = getUpdatedGeoInfo(docs);
+
+    setInteractiveGeometry([...mapGeos]);
+  }
+
+  /*
+    On geometry change (user drawn), find out which activities are
+    selected on the map container. If geometry is deleted, reset all activities
+  */
+  useEffect(() => {
+    const docIdsWithinArea = [];
+
+    if (geometry.length) {
+      interactiveGeometry.forEach((iGeo: any) => {
+        if (booleanIntersects(iGeo.geometry[0], geometry[0])) {
+          docIdsWithinArea.push(iGeo.recordDocID);
+        }
+      });
+
+      updateDocList(docIdsWithinArea);
+    } else {
+      updateActivityList();
+    }
+  }, [geometry]);
+
+  /*
+    Get updated interactive geometries based on the activities/selected map activity type
+  */
+  const getUpdatedGeoInfo = (docs: any) => {
     const mapGeos = [];
 
     docs.forEach((doc: any) => {
@@ -357,25 +378,15 @@ const ReferenceActivitiesList: React.FC = () => {
       }
     });
 
-    setInteractiveGeometry([...mapGeos]);
-  }, [mapActivityType]);
+    return mapGeos;
+  };
 
   /*
-    Store info regarding the geometry for each activity
+    Filter out activities within a drawn geometry polygon on the map
   */
-  useEffect(() => {
-    const saveMapGeos = () => {
-      const mapGeos = [];
-
-      docs.forEach((doc: any) => {
-        mapGeos.push(getInteractiveGeoData(doc));
-      });
-
-      setInteractiveGeometry([...mapGeos]);
-    };
-
-    saveMapGeos();
-  }, [docs]);
+  const updateDocList = (docIdsWithinArea: any[]) => {
+    setDocs(docs.filter((doc: any) => docIdsWithinArea.some((docId: any) => docId === doc._id)));
+  };
 
   /*
     Function to set the chosen map activity type in state
@@ -384,31 +395,25 @@ const ReferenceActivitiesList: React.FC = () => {
     setMapActivityType(event.target.value);
   };
 
-  const ActivityPopup = (name: string) => {
-    return '<div>' + name + '</div>';
-  };
-
+  /*
+    Function to generate interactive geometry data object
+  */
   const getInteractiveGeoData = (doc: any) => {
     return {
       recordDocID: doc._id,
       geometry: doc.geometry,
-      color: getGeoColor(doc.activityType),
+      color: geoColors[doc.activityType],
       description: `${doc.activityType}: ${doc._id}`,
       popUpComponent: ActivityPopup,
       onClickCallback: () => {}
     }
   };
 
-  const getGeoColor = (activityType: string) => {
-    let color = 'rgb(51, 136, 255)';
-
-    if (activityType === 'Treatment') {
-      color = 'FFA500';
-    } else if (activityType === 'Monitoring') {
-      color = 'red';
-    }
-
-    return color;
+  /*
+    What is displayed in the popup on click of a geo on the map
+  */
+  const ActivityPopup = (name: string) => {
+    return '<div>' + name + '</div>';
   };
 
   return (
@@ -444,7 +449,6 @@ const ReferenceActivitiesList: React.FC = () => {
       <ReferenceActivityList
         docs={docs}
         databaseContext={databaseContext}
-        setOnReferencesListPage={setOnReferencesListPage}
       />
     </Container>
   );
