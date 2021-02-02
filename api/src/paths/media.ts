@@ -15,14 +15,10 @@ const defaultLog = getLogger('media');
  */
 export const GET: Operation = [getMedia()];
 
-const { security, parameters, responses } = retrieveGetDoc('Array of media objects.');
-
 GET.apiDoc = {
-  description: 'Fetches one or more media items based on their keys.',
   tags: ['media'],
-  ...security,
-  ...parameters,
-  ...responses
+  description: 'Fetches one or more media items based on their keys.',
+  ...retrieveGetDoc('Array of media objects')
 };
 
 function getMedia(): RequestHandler {

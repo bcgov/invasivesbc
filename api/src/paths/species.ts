@@ -16,14 +16,10 @@ const defaultLog = getLogger('media');
  */
 export const GET: Operation = [getSpeciesDetails()];
 
-const { security, parameters, responses } = retrieveGetDoc('Array of species');
-
 GET.apiDoc = {
-  description: 'Fetches one or more species based on their keys.',
   tags: ['species'],
-  ...security,
-  ...parameters,
-  ...responses
+  description: 'Fetches one or more species based on their keys.',
+  ...retrieveGetDoc('Array of species.')
 };
 
 function getSpeciesDetails(): RequestHandler {
