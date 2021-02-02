@@ -81,6 +81,7 @@ export class ActivitySearchCriteria {
 
   activity_type: string[];
   activity_subtype: string[];
+  activity_payload: object;
 
   date_range_start: Date;
   date_range_end: Date;
@@ -103,6 +104,7 @@ export class ActivitySearchCriteria {
 
     this.activity_type = (obj && obj.activity_type) || [];
     this.activity_subtype = (obj && obj.activity_subtype) || [];
+    this.activity_payload = (obj && obj.activity_payload) || {};
 
     this.date_range_start = (obj && obj.date_range_start) || null;
     this.date_range_end = (obj && obj.date_range_end) || null;

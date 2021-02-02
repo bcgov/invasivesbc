@@ -72,6 +72,7 @@ export const TripDataControls: React.FC = (props) => {
         const photos = [];
 
         if (setOfChoices.includePhotos && row.media_keys && row.media_keys.length) {
+          console.log(row);
           try {
             const mediaResults = await invasivesApi.getMedia(row.media_keys);
 
