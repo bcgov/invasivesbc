@@ -311,6 +311,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                   .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
                   .setContent(content)
                   .openOn(mapRef.current);
+              } else {
+                // If polygon use the first point as the coordinate for popup
+                L.popup()
+                  .setLatLng([feature.geometry.coordinates[0][0][1], feature.geometry.coordinates[0][0][0]])
+                  .setContent(content)
+                  .openOn(mapRef.current);
               }
             });
           }
@@ -347,7 +353,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     updateMapOnGeometryChange();
-  }, [props.geometryState.geometry]);
+  }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
 
   useEffect(() => {
     if (!mapRef.current) {

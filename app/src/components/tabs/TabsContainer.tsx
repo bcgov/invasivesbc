@@ -1,9 +1,21 @@
-import { AppBar, CircularProgress, Tab, Tabs } from '@material-ui/core';
+import { AppBar, CircularProgress, Tab, Tabs, Toolbar, Grid, makeStyles, Theme } from '@material-ui/core';
 import { Assignment, Bookmarks, Explore, HomeWork, Map, Search, Home } from '@material-ui/icons';
 import { ALL_ROLES } from 'constants/roles';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  pointer: {
+    cursor: 'pointer'
+  },
+  alignment: {
+    justifyContent: 'inherit',
+    '@media (max-device-width: 1430px)': {
+      justifyContent: 'center'
+    }
+  }
+}));
 
 export interface ITabConfig {
   path: string;
@@ -12,9 +24,12 @@ export interface ITabConfig {
   icon: React.ReactElement;
 }
 
+const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
+
 const TabsContainer: React.FC = () => {
   const keycloak = useKeycloakWrapper();
 
+  const classes = useStyles();
   const history = useHistory();
 
   const [tabConfig, setTabConfig] = useState<ITabConfig[]>([]);
@@ -121,16 +136,27 @@ const TabsContainer: React.FC = () => {
 
   return (
     <AppBar position="static">
-      <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
-        {tabConfig.map((tab) => (
-          <Tab
-            label={tab.label}
-            key={tab.label.split(' ').join('_')}
-            icon={tab.icon}
-            onClick={() => history.push(tab.path)}
+      <Toolbar>
+        <Grid className={classes.alignment} container>
+          <img
+            className={classes.pointer}
+            src={bcGovLogoRev}
+            width="181"
+            alt="B.C. Government Logo"
+            onClick={() => history.push('/')}
           />
-        ))}
-      </Tabs>
+          <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
+            {tabConfig.map((tab) => (
+              <Tab
+                label={tab.label}
+                key={tab.label.split(' ').join('_')}
+                icon={tab.icon}
+                onClick={() => history.push(tab.path)}
+              />
+            ))}
+          </Tabs>
+        </Grid>
+      </Toolbar>
     </AppBar>
   );
 };
