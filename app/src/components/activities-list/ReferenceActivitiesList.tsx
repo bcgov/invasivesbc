@@ -117,8 +117,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
       container
       spacing={2}
       onMouseEnter={() => setActiveDoc(activity)}
-      onMouseLeave={() => setActiveDoc(null)}
-    >
+      onMouseLeave={() => setActiveDoc(null)}>
       <Divider flexItem={true} orientation="vertical" />
       <ActivityListItem activity={activity} classes={classes} />
       <ActivityListDate classes={classes} activity={activity} />
