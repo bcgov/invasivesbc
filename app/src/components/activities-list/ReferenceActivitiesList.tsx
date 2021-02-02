@@ -328,8 +328,8 @@ const ReferenceActivitiesList: React.FC = () => {
   /*
     Store the interactive geometry info in state
   */
-  const storeInteractiveGeoInfo = (docs: any) => {
-    const mapGeos = getUpdatedGeoInfo(docs);
+  const storeInteractiveGeoInfo = (activities: any) => {
+    const mapGeos = getUpdatedGeoInfo(activities);
 
     setInteractiveGeometry([...mapGeos]);
   };
@@ -357,10 +357,10 @@ const ReferenceActivitiesList: React.FC = () => {
   /*
     Get updated interactive geometries based on the activities/selected map activity type
   */
-  const getUpdatedGeoInfo = (docs: any) => {
+  const getUpdatedGeoInfo = (documents: any) => {
     const mapGeos = [];
 
-    docs.forEach((doc: any) => {
+    documents.forEach((doc: any) => {
       if (doc.activityType === mapActivityType || mapActivityType === 'All') {
         mapGeos.push(getInteractiveGeoData(doc));
       }
