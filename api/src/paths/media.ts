@@ -15,7 +15,7 @@ const defaultLog = getLogger('media');
  */
 export const GET: Operation = [getMedia()];
 
-const { security, parameters, responses } = retrieveGetDoc('Activity get response object array.');
+const { security, parameters, responses } = retrieveGetDoc('Array of media objects.');
 
 GET.apiDoc = {
   description: 'Fetches one or more media items based on their keys.',
