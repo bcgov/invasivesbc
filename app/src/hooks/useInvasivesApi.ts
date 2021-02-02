@@ -187,7 +187,7 @@ export const useInvasivesApi = () => {
   };
 
   /**
-   * Fetch species names.
+   * Fetch species details.
    *
    * @param {string[]} species
    * @return {*}  {Promise<any>}
