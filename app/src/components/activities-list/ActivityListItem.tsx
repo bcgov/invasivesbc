@@ -57,7 +57,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
         <>
           <Divider flexItem={true} orientation="vertical" />
           <Grid item md={3}>
-            <Box overflow="hidden" textOverflow="ellipsis">
+            <Box overflow="hidden" textOverflow="ellipsis" title={species}>
               <Typography className={classes.activitiyListItem_Typography}>Species</Typography>
               {species}
             </Box>

@@ -89,6 +89,33 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
+  const invasivesApi = useInvasivesApi();
+  const [species, setSpecies] = useState(null);
+
+  useEffect(() => {
+    getSpeciesFromActivity();
+  }, []);
+
+  /*
+    Function to get the species for a given activity and set it in state
+    for usage and display in the activities grid
+  */
+  const getSpeciesFromActivity = async () => {
+    /*
+      Temporarily only enabled for plant terrestrial observation subtype
+    */
+    if (props.activity.activitySubtype !== 'Activity_Observation_PlantTerrestrial') {
+      return;
+    }
+
+    const speciesCode = props.activity.formData?.activity_subtype_data?.invasive_plant_code;
+
+    if (speciesCode) {
+      const codeResults = await invasivesApi.getSpeciesDetails([speciesCode]);
+
+      setSpecies(codeResults[0].code_description);
+    }
+  };
 
   const toggleActivitySyncReadyStatus = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -109,19 +136,33 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={2}>
         <Box overflow="hidden" textOverflow="ellipsis" title={props.activity.activitySubtype.split('_')[2]}>
-          <Typography className={classes.activitiyListItem_Typography}>Type</Typography>
+          <Typography className={classes.activitiyListItem_Typography}>Subtype</Typography>
           {props.activity.activitySubtype.split('_')[2]}
         </Box>
       </Grid>
+      {species && (
+        <>
+          <Divider flexItem={true} orientation="vertical" />
+          <Grid item md={2}>
+            <Box
+              overflow="hidden"
+              textOverflow="ellipsis"
+              title={species}>
+              <Typography className={classes.activitiyListItem_Typography}>Species</Typography>
+              {species}
+            </Box>
+          </Grid>
+        </>
+      )}
       <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={2}>
+      <Grid item md={1}>
         <Typography variant="h6" className={classes.activitiyListItem_Typography}>
           Form Status
         </Typography>
         {props.activity.formStatus}
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={2}>
+      <Grid item md={1}>
         <Typography className={classes.activitiyListItem_Typography}>Sync Status</Typography>
         {props.activity.sync.status}
       </Grid>
