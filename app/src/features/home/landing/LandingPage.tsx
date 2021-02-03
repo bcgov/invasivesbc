@@ -69,15 +69,9 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   };
 
   /*
-    Generate reused card component with info to guide users through the app
+    Generate reusable card component with info to guide users through the app
   */
-  const getCardData = (
-    heading: string,
-    subheading: string,
-    content: string,
-    footerText: string,
-    url: string
-  ) => {
+  const getCardData = (heading: string, subheading: string, content: string, footerText: string, url: string) => {
     return (
       <Card className={classes.cardWidth}>
         <CardContent>
@@ -92,10 +86,12 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button onClick={() => history.push(url)} size="small">{footerText}</Button>
+          <Button onClick={() => history.push(url)} size="small">
+            {footerText}
+          </Button>
         </CardActions>
       </Card>
-    )
+    );
   };
 
   return (
@@ -145,9 +141,10 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
 
       <Grid className={classes.cardListItemGrid}>
         {getCardData(
-          'Plan a Trip',
+          'Plan a Trip/Fetch Cached Records',
           'Points of Interest, Past Activity Records, Layers',
-          'Going out into the field and wish to gather information regarding your trip?',
+          `Heading out into the field and wish to gather information regarding your
+           trip before going offline?`,
           'Plan your trip now',
           '/home/plan'
         )}
@@ -163,10 +160,10 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
 
       <Grid className={classes.cardListItemGrid}>
         {getCardData(
-          'Fetch Cached Activities',
+          'Search',
           'Cached Observations, Treatments and Monitorings',
           'Need to view previously created and cached activity records?',
-          'Fetch cached activities now',
+          'Search cached activities now',
           '/home/search'
         )}
 
