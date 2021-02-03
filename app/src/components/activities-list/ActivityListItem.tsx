@@ -40,14 +40,14 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
 
   return (
     <>
-      <Grid item md={species ? 2: 3}>
+      <Grid item md={species ? 2 : 3}>
         <Box overflow="hidden" textOverflow="ellipsis" title={activity.activityType}>
           <Typography className={classes.activitiyListItem_Typography}>Type</Typography>
           {activity.activityType}
         </Box>
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={species ? 2: 3}>
+      <Grid item md={species ? 2 : 3}>
         <Box overflow="hidden" textOverflow="ellipsis" title={activity.activitySubtype.split('_')[2]}>
           <Typography className={classes.activitiyListItem_Typography}>Subtype</Typography>
           {activity.activitySubtype.split('_')[2]}
