@@ -159,13 +159,13 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
         {props.activity.formStatus}
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={1}>
+      <Grid item md={species ? 1 : 2}>
         <Typography className={classes.activitiyListItem_Typography}>Sync Status</Typography>
         {props.activity.sync.status}
       </Grid>
       <ActivityListDate classes={classes} activity={props.activity} />
       <Divider flexItem={true} orientation="vertical" />
-      <Grid item md={1}>
+      <Grid item md={species ? 1 : 2}>
         <Typography className={classes.activitiyListItem_Typography}>Reviewed</Typography>
         <Checkbox
           disabled={isDisabled}
