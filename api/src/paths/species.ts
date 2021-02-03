@@ -9,7 +9,7 @@ import { CacheKeys } from '../constants/misc';
 import { getAllCodeEntities, IAllCodeEntities } from '../utils/code-utils';
 import { retrieveGetDoc } from '../docs/getDoc';
 
-const defaultLog = getLogger('media');
+const defaultLog = getLogger('species');
 
 /**
  * GET api/species?key=123;key=456;key=789
@@ -51,12 +51,15 @@ function getSpeciesDetails(): RequestHandler {
         return req;
       }
 
+      /*
+        Only return the plant and animal species (code header id values of 28 and 29)
+      */
       species = allCodeEntities.codes.filter(
         item => (item['code_header_id'] === 28 || item['code_header_id'] === 29) &&
         keys.includes(item['code_name'])
       );
     } catch (error) {
-      defaultLog.debug({ label: 'getActivity', message: 'error', error });
+      defaultLog.debug({ label: 'getSpecies', message: 'error', error });
       throw error;
     } finally {
       connection.release();

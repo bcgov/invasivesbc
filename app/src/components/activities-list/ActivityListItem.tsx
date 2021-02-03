@@ -23,7 +23,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
   */
   const getSpeciesFromActivity = async () => {
     /*
-      Temporarily only enabled for plant terrestrial observation subtypes
+      Temporarily only enabled for plant terrestrial observation subtype
     */
     if (activity.activitySubtype !== 'Activity_Observation_PlantTerrestrial') {
       return;
