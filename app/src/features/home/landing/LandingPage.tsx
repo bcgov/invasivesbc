@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Box, Typography, Button, Card, CardActions, CardContent, Grid, makeStyles, Theme, Divider } from '@material-ui/core';
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Grid,
+  makeStyles,
+  Theme,
+  Divider
+} from '@material-ui/core';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
   userInfoItemGrid: {
@@ -33,6 +46,7 @@ interface ILandingPage {
 const LandingPage: React.FC<ILandingPage> = (props) => {
   const keycloak = useKeycloakWrapper();
   const classes = useStyles();
+  const history = useHistory();
 
   const [userInfo, setUserInfo] = useState<any>(null);
 
@@ -57,7 +71,13 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   /*
     Generate reused card component with info to guide users through the app
   */
-  const getCardData = (heading: string, subheading: string, content: string, footerText: string) => {
+  const getCardData = (
+    heading: string,
+    subheading: string,
+    content: string,
+    footerText: string,
+    url: string
+  ) => {
     return (
       <Card className={classes.cardWidth}>
         <CardContent>
@@ -72,7 +92,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small">{footerText}</Button>
+          <Button onClick={() => history.push(url)} size="small">{footerText}</Button>
         </CardActions>
       </Card>
     )
@@ -128,14 +148,16 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           'Plan a Trip',
           'Points of Interest, Past Activity Records, Layers',
           'Going out into the field and wish to gather information regarding your trip?',
-          'Plan your trip now'
+          'Plan your trip now',
+          '/home/plan'
         )}
 
         {getCardData(
           'Create a Local Activity',
           'Observations, Transects, Biological Dispersals',
           'In the field and wish to record an observation record or create a transect?',
-          'Create a local activity now'
+          'Create a local activity now',
+          '/home/activities'
         )}
       </Grid>
 
@@ -144,7 +166,8 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           'Fetch Cached Activities',
           'Cached Observations, Treatments and Monitorings',
           'Need to view previously created and cached activity records?',
-          'Fetch cached activities now'
+          'Fetch cached activities now',
+          '/home/search'
         )}
 
         {getCardData(
@@ -152,7 +175,8 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           'Treatments and Monitorings from Cached Activities',
           `Need to create a treatment based off existing observation records,
            or create a monitoring for an existing treatment?`,
-          'Create a treatment or monitoring now'
+          'Create a treatment or monitoring now',
+          '/home/references'
         )}
       </Grid>
 
@@ -161,14 +185,16 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           'View Fetched Records on Map',
           'IAPP Sites, Activities on Main Map',
           'Want to see all the data you have fetched on a single map?',
-          'View the main map now'
+          'View the main map now',
+          '/home/map'
         )}
 
         {getCardData(
           'Continue Creating an Activity',
           'Pause and Resume Activity Creation',
           'Had to take a break and come back to creating an activity?',
-          'Resume current activity creation now'
+          'Resume current activity creation now',
+          '/home/activity'
         )}
       </Grid>
     </Container>
