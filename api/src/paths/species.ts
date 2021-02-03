@@ -55,8 +55,7 @@ function getSpeciesDetails(): RequestHandler {
         Only return the plant and animal species (code header id values of 28 and 29)
       */
       species = allCodeEntities.codes.filter(
-        item => (item['code_header_id'] === 28 || item['code_header_id'] === 29) &&
-        keys.includes(item['code_name'])
+        item => (item['code_header_id'] === 28 || item['code_header_id'] === 29) && keys.includes(item['code_name'])
       );
     } catch (error) {
       defaultLog.debug({ label: 'getSpecies', message: 'error', error });
