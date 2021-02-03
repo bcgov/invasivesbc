@@ -186,8 +186,26 @@ export const useInvasivesApi = () => {
     }
   };
 
+  /**
+   * Fetch species details.
+   *
+   * @param {string[]} species
+   * @return {*}  {Promise<any>}
+   */
+  const getSpeciesDetails = async (species: string[]): Promise<any> => {
+    const { data } = await api.get('/api/species', {
+      params: { key: species },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
   return {
     getMedia,
+    getSpeciesDetails,
     getActivities,
     deleteActivities,
     undeleteActivities,

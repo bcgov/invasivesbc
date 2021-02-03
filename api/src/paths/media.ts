@@ -3,10 +3,10 @@
 import { GetObjectOutput, ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../constants/misc';
 import { IMediaItem, MediaBase64 } from '../models/media';
 import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
+import { retrieveGetDoc } from '../docs/getDoc';
 
 const defaultLog = getLogger('media');
 
@@ -16,48 +16,9 @@ const defaultLog = getLogger('media');
 export const GET: Operation = [getMedia()];
 
 GET.apiDoc = {
-  description: 'Fetches one or more media items based on their keys.',
   tags: ['media'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
-  parameters: [
-    {
-      in: 'query',
-      name: 'key',
-      required: true
-    }
-  ],
-  responses: {
-    200: {
-      description: 'Activity get response object array.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                // Don't specify exact response, as it will vary, and is not currently enforced anyways
-                // Eventually this could be updated to be a oneOf list, similar to the Post request below.
-              }
-            }
-          }
-        }
-      }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
+  description: 'Fetches one or more media items based on their keys.',
+  ...retrieveGetDoc('Array of media objects')
 };
 
 function getMedia(): RequestHandler {
