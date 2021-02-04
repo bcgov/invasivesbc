@@ -484,23 +484,23 @@
             "type": "string",
             "format": "date-time",
             "title": "Date and Time",
-            "x-tooltip-text": "The date and time for the activity"
+            "x-tooltip-text": "Date and time of the activity"
           },
           "latitude": {
             "type": "number",
             "title": "Latitude",
-            "x-tooltip-text": "The latitude of the anchor point for the specified geometry"
+            "x-tooltip-text": "Latitude of the anchor point for the specified geometry"
           },
           "longitude": {
             "type": "number",
             "title": "Longitude",
-            "x-tooltip-text": "The longitude of the anchor point for the specified geometry"
+            "x-tooltip-text": "Longitude of the anchor point for the specified geometry"
           },
           "reported_area": {
             "type": "number",
             "title": "Area (m\u00B2)",
             "minimum": 1,
-            "x-tooltip-text": "The area for the specified geometry"
+            "x-tooltip-text": "Area of the activity automatically created from the geometry in square"
           },
           "invasive_species_agency_code": {
             "type": "string",
@@ -512,7 +512,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "The agency code"
+            "x-tooltip-text": "Organization that is paying to have this work done"
           },
           "jurisdiction_code": {
             "type": "string",
@@ -524,29 +524,29 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "The jurisdiction code"
+            "x-tooltip-text": "Entity that owns or is responsible for the land base or water body"
           },
           "general_comment": {
             "type": "string",
             "title": "Comment",
-            "maximum": 300,
+            "maximum": 2000,
             "default": "",
-            "x-tooltip-text": "A comment about the activity"
+            "x-tooltip-text": "Plain text description of any supporting information about the observation that is not captured elsewhere (up to 2000 characters)"
           },
           "access_description": {
             "type": "string",
             "title": "Access Description",
             "maximum": 300,
             "default": "",
-            "x-tooltip-text": "A more detailed description about the activity"
+            "x-tooltip-text": "Text entry to provide location and access directions. Locations should start general and get more specific"
           },
-          "paper_file_id": {
+          "project_code": {
             "type": "array",
-            "title": "Paper File ID",
+            "title": "Project Code",
             "items": {
-              "$ref": "#/components/schemas/PaperFileID"
+              "$ref": "#/components/schemas/ProjectCode"
             },
-            "x-tooltip-text": "A list of associated paper file IDs"
+            "x-tooltip-text": "User defined identifier related to associated paper documents (alphanumeric, 50 characters)"
           }
         }
       },
@@ -564,7 +564,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "The agency code"
+            "x-tooltip-text": "Organization that is paying to have this work done"
           },
           "jurisdiction_code": {
             "type": "string",
@@ -576,7 +576,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "The jurisdiction code"
+            "x-tooltip-text": "Entity that owns or is responsible for the land base or water body"
           }
         }
       },
@@ -595,27 +595,26 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "default": "OP"
+            "default": "OP",
+            "x-tooltip-text": "Choose type of observation from dropdown"
           },
           "observer_first_name": {
             "type": "string",
             "title": "First Name",
-            "maximum": 50
+            "maximum": 50,
+            "x-tooltip-text": "First name of person completing the observation"
           },
           "observer_last_name": {
             "type": "string",
             "title": "Last Name",
-            "maximum": 50
-          },
-          "sample_number": {
-            "type": "string",
-            "title": "Sample Number",
-            "maximum": 50
+            "maximum": 50,
+            "x-tooltip-text": "Last name of person completing the observation"
           },
           "negative_obs_ind": {
             "type": "boolean",
             "title": "Negative Observation",
-            "default": false
+            "default": false,
+            "x-tooltip-text": "The observation describes the absence of target invasive plants within a defined area"
           }
         }
       },
@@ -652,7 +651,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Target invasive plant species for this observation at this location. Create a separate observation for any other species at this location"
           },
           "invasive_plant_density_code": {
             "type": "string",
@@ -663,7 +663,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Average number of individual plants per square meter expressed as a density class code"
           },
           "invasive_plant_distribution_code": {
             "type": "string",
@@ -674,7 +675,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
           },
           "soil_texture_code": {
             "type": "string",
@@ -685,7 +687,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Relative amount of sand, silt, clay, organic matter, and bedrock throughout the observation area"
           },
           "specific_use_code": {
             "type": "string",
@@ -696,7 +699,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Notable land uses or attributes within the observation area"
           },
           "slope_code": {
             "type": "string",
@@ -707,7 +711,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Autogenerated percent macroslope; may be overwritten with numeric degree for microsite slopes"
           },
           "aspect_code": {
             "type": "string",
@@ -2927,7 +2932,7 @@
           }
         }
       },
-      "PaperFileID": {
+      "ProjectCode": {
         "type": "object",
         "required": ["description"],
         "properties": {
@@ -3564,11 +3569,11 @@
             "type": "string",
             "title": "Updated date on device"
           },
-          "paper_file_id": {
+          "project_code": {
             "type": "array",
-            "title": "Paper File ID",
+            "title": "Project Code",
             "items": {
-              "$ref": "#/components/schemas/PaperFileID"
+              "$ref": "#/components/schemas/ProjectCode"
             }
           }
         }
@@ -3767,11 +3772,11 @@
             "type": "string",
             "title": "Weeds Found"
           },
-          "paper_file_id": {
+          "project_code": {
             "type": "array",
-            "title": "Paper File ID",
+            "title": "Project Code",
             "items": {
-              "$ref": "#/components/schemas/PaperFileID"
+              "$ref": "#/components/schemas/ProjectCode"
             }
           },
           "jurisdictions": {
@@ -3845,11 +3850,11 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "paper_file_id": {
+          "project_code": {
             "type": "array",
-            "title": "Paper File ID",
+            "title": "Project Code",
             "items": {
-              "$ref": "#/components/schemas/PaperFileID"
+              "$ref": "#/components/schemas/ProjectCode"
             }
           },
           "general_comment": {
@@ -3909,11 +3914,11 @@
             "type": "string",
             "title": "Employer"
           },
-          "paper_file_id": {
+          "project_code": {
             "type": "array",
-            "title": "Paper File ID",
+            "title": "Project Code",
             "items": {
-              "$ref": "#/components/schemas/PaperFileID"
+              "$ref": "#/components/schemas/ProjectCode"
             }
           },
           "general_comment": {

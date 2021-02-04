@@ -34,7 +34,7 @@ const Herbicide = {
   }
 };
 
-const PaperFileID = {
+const ProjectCode = {
   description: {}
 };
 
@@ -337,7 +337,6 @@ const Observation = {
   observation_type_code: {},
   observer_first_name: {},
   observer_last_name: {},
-  sample_number: {},
   negative_obs_ind: {
     'ui:widget': 'radio'
   }
@@ -705,7 +704,7 @@ const BaseUISchemaComponents = {
   Monitoring_MechanicalTerrestrialAnimal,
   Monitoring_ChemicalTerrestrialAnimal,
   Monitoring_BiologicalTerrestrialAnimal,
-  PaperFileID,
+  ProjectCode,
   Herbicide,
   InvasivePlants,
   ThreeColumnStyle
