@@ -75,14 +75,14 @@ const SearchActivityListItem: React.FC<ISearchActivityListItem> = (props) => {
 
 interface ISearchActivitiesList {
   activities: any[];
-  editIds?: string[];
-  setEditIds?: any;
+  edits?: any[];
+  setEdits?: any;
 }
 
 const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { editIds, setEditIds } = props;
+  const { edits, setEdits } = props;
 
   const navigateToSearchActivityPage = async (doc: any) => {
     history.push(`/home/search/activity/${doc._id}`);
@@ -91,7 +91,7 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
   return (
     <List>
       {props.activities.map((activity) => {
-        const isChecked = editIds.includes(activity._id);
+        const isChecked = edits.filter((edit) => edit.id === activity._id).length > 0;
 
         // Temporarily limit bulk editing:
         const allowedBulkEditSubtypes = [
@@ -114,7 +114,16 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
                   disabled={bulkEditIsDisabled}
                   style={bulkEditIsDisabled ? { visibility: 'hidden' } : {}}
                   onChange={() =>
-                    setEditIds(isChecked ? editIds.filter((id) => id !== activity._id) : [activity._id, ...editIds])
+                    setEdits(isChecked 
+                      ? edits.filter((edit) => edit.id !== activity._id)
+                      : [
+                        {
+                          id: activity._id,
+                          subtype: activity.activitySubtype
+                        },
+                        ...edits
+                      ]
+                    )
                   }
                   onClick={(event) => event.stopPropagation()}
                 />
