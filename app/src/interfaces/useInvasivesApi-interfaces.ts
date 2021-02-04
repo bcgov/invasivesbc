@@ -172,6 +172,29 @@ export interface IPointOfInterestSearchCriteria {
 }
 
 /**
+ * MetabaseQuery search filter criteria.
+ *
+ * @export
+ * @interface IMetabaseQuerySearchCriteria
+ */
+export interface IMetabaseQuerySearchCriteria {
+  /**
+   * The id of a corresponding Metabase Query to search for.
+   *
+   * @type {number}
+   * @memberof IMetabaseQuerySearchCriteria
+   */
+  metabaseQueryId?: number;
+  /**
+   * GeoJSON feature (of type polygon) to search in.
+   *
+   * @type {Feature}
+   * @memberof IMetabaseQuerySearchCriteria
+   */
+  search_feature?: Feature;
+}
+
+/**
  * Create point_of_interest endpoint post body.
  *
  * @export

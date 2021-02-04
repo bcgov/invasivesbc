@@ -91,13 +91,40 @@ export const useInvasivesApi = () => {
   /**
    * Fetch points of interest by search criteria.
    *
-   * @param {pointsOfInterestSearchCriteria} activitiesSearchCriteria
+   * @param {pointsOfInterestSearchCriteria} pointsOfInterestSearchCriteria
    * @return {*}  {Promise<any>}
    */
   const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
     const { data } = await api.post(`/api/points-of-interest/`, pointsOfInterestSearchCriteria);
 
     return data;
+  };
+
+  /**
+   * Fetch activities or points of interest returned by Metabase queries corresponding to an id.
+   *
+   * @param {metabaseQueriesSearchCriteria} metabaseQueriesSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getMetabaseQueryResults = async (metabaseQueriesSearchCriteria: IMetabaseQuerySearchCriteria): Promise<any> => {
+    const { data } = await api.post(`/api/metabase-fetch`, metabaseQueriesSearchCriteria);
+    let activities, points_of_interest;
+    if (data.activity_ids.length)
+      activities = await getActivities({
+        activity_ids: data.activity_ids,
+        search_feature: metabaseQueriesSearchCriteria.search_feature
+      });
+    if (data.point_of_interest_ids.length)
+      points_of_interest = await getPointsOfInterest({
+        point_of_interest_ids: data.point_of_interest_ids,
+        search_feature: metabaseQueriesSearchCriteria.search_feature
+      });
+
+    return {
+      // TODO Note: api code smell that activities and points-of-interest dont have same response format
+      activities: activities?.rows?.length ? activities.rows : [],
+      points_of_interest: points_of_interest?.length ? points_of_interest : []
+    };
   };
 
   /**
@@ -196,6 +223,7 @@ export const useInvasivesApi = () => {
     updateActivity,
     getApiSpec,
     getCachedApiSpec,
-    getPointsOfInterest
+    getPointsOfInterest,
+    getMetabaseQueryResults
   };
 };
