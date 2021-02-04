@@ -707,7 +707,7 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Manual entry for percent macroslope; or when applicable the numeric degree for microsite slopes"
+            "x-tooltip-text": "Exact or general slope of the land expressed as a percentage"
           },
           "aspect_code": {
             "type": "string",
