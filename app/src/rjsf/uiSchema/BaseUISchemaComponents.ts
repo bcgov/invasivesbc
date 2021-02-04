@@ -350,20 +350,7 @@ const Observation_PlantTerrestrial = {
   slope_code: {},
   aspect_code: {},
   invasive_plant_code: {},
-  proposed_treatment_code: {},
-  range_unit_number: {},
   plant_life_stage_code: {},
-  plant_health_code: {},
-  plant_seed_stage_code: {},
-  flowering: {
-    'ui:widget': 'radio'
-  },
-  legacy_site_ind: {
-    'ui:widget': 'radio'
-  },
-  early_detection_rapid_resp_ind: {
-    'ui:widget': 'radio'
-  },
   research_detection_ind: {
     'ui:widget': 'radio'
   },
