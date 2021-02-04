@@ -34,7 +34,7 @@ const Herbicide = {
   }
 };
 
-const PaperFileID = {
+const ProjectCode = {
   description: {}
 };
 
@@ -337,7 +337,6 @@ const Observation = {
   observation_type_code: {},
   observer_first_name: {},
   observer_last_name: {},
-  sample_number: {},
   negative_obs_ind: {
     'ui:widget': 'radio'
   }
@@ -351,20 +350,7 @@ const Observation_PlantTerrestrial = {
   slope_code: {},
   aspect_code: {},
   invasive_plant_code: {},
-  proposed_treatment_code: {},
-  range_unit_number: {},
   plant_life_stage_code: {},
-  plant_health_code: {},
-  plant_seed_stage_code: {},
-  flowering: {
-    'ui:widget': 'radio'
-  },
-  legacy_site_ind: {
-    'ui:widget': 'radio'
-  },
-  early_detection_rapid_resp_ind: {
-    'ui:widget': 'radio'
-  },
   research_detection_ind: {
     'ui:widget': 'radio'
   },
@@ -705,7 +691,7 @@ const BaseUISchemaComponents = {
   Monitoring_MechanicalTerrestrialAnimal,
   Monitoring_ChemicalTerrestrialAnimal,
   Monitoring_BiologicalTerrestrialAnimal,
-  PaperFileID,
+  ProjectCode,
   Herbicide,
   InvasivePlants,
   ThreeColumnStyle
