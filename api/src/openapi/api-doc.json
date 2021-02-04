@@ -723,7 +723,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": ""
           },
           "proposed_treatment_code": {
             "type": "string",
