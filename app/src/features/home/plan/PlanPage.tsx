@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
+import MetabaseSearch from 'components/search/MetabaseSearch';
 import ManageDatabaseComponent from 'components/database/ManageDatabaseComponent';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import MapContainer from 'components/map/MapContainer';
@@ -188,6 +189,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             </AccordionSummary>
             <AccordionDetails>
               <KMLUpload />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded={false}>
+            <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-kml-content" id="panel-kml-header">
+              <Typography variant="h5">Load Metabase Searches</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <MetabaseSearch />
             </AccordionDetails>
           </Accordion>
         </Grid>
