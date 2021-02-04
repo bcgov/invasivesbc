@@ -70,6 +70,13 @@ POST.apiDoc = {
               description: 'Date range end, in YYYY-MM-DD format. Defaults time to end of day.',
               example: '2020-08-30'
             },
+            activity_ids: {
+              type: 'array',
+              description: 'A list of ids to limit results to',
+              items: {
+                type: 'string'
+              }
+            },
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
             },

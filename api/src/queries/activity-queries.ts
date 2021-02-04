@@ -161,6 +161,15 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
   }
 
+  if (searchCriteria.activity_ids && searchCriteria.activity_ids.length) {
+    sqlStatement.append(SQL` AND activity_id IN (`);
+    sqlStatement.append(SQL`${searchCriteria.activity_ids[0]}`);
+    for (let idx = 1; idx < searchCriteria.activity_ids.length; idx++) {
+      sqlStatement.append(SQL`, ${searchCriteria.activity_ids[idx]}`);
+    }
+    sqlStatement.append(SQL`)`);
+  }
+
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
       AND public.ST_INTERSECTS(

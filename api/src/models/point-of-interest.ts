@@ -17,6 +17,7 @@ export class PointOfInterestPostRequestBody {
   pointOfInterest_data: object;
   pointOfInterest_type_data: object;
   pointOfInterest_subtype_data: object;
+  pointOfInterest_ids: string[];
 
   received_timestamp: string;
 
@@ -50,6 +51,7 @@ export class PointOfInterestPostRequestBody {
     this.pointOfInterest_data = (obj && obj.form_data && obj.form_data.pointOfInterest_data) || null;
     this.pointOfInterest_type_data = (obj && obj.form_data && obj.form_data.pointOfInterest_type_data) || null;
     this.pointOfInterest_subtype_data = (obj && obj.form_data && obj.form_data.pointOfInterest_subtype_data) || null;
+    this.pointOfInterest_ids = (obj && obj.form_data && obj.form_data.pointOfInterest_ids) || [];
 
     this.received_timestamp = new Date().toISOString();
 
@@ -75,6 +77,8 @@ export class PointOfInterestSearchCriteria {
   date_range_start: Date;
   date_range_end: Date;
 
+  pointOfInterest_ids: string[];
+
   search_feature: GeoJSON.Feature;
 
   /**
@@ -89,6 +93,7 @@ export class PointOfInterestSearchCriteria {
 
     this.pointOfInterest_type = (obj && obj.pointOfInterest_type) || null;
     this.pointOfInterest_subtype = (obj && obj.pointOfInterest_subtype) || null;
+    this.pointOfInterest_ids = (obj && obj.pointOfInterest_ids) || [];
 
     this.date_range_start = (obj && obj.date_range_start) || null;
     this.date_range_end = (obj && obj.date_range_end) || null;

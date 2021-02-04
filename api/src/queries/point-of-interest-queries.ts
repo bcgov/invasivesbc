@@ -164,6 +164,15 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
     sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
   }
 
+  if (searchCriteria.pointOfInterest_ids && searchCriteria.pointOfInterest_ids.length) {
+    sqlStatement.append(SQL` AND point_of_interest_id IN (`);
+    sqlStatement.append(SQL`${searchCriteria.pointOfInterest_ids[0]}`);
+    for (let idx = 1; idx < searchCriteria.pointOfInterest_ids.length; idx++) {
+      sqlStatement.append(SQL`, ${searchCriteria.pointOfInterest_ids[idx]}`);
+    }
+    sqlStatement.append(SQL`)`);
+  }
+
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
       AND public.ST_INTERSECTS(

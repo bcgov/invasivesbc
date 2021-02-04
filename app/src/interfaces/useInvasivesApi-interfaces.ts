@@ -76,6 +76,13 @@ export interface IActivitySearchCriteria {
    */
   date_range_end?: string;
   /**
+   * Activity ids filter.
+   *
+   * @type {string[]}
+   * @memberof IActivitySearchCriteria
+   */
+  activity_ids?: string[];
+  /**
    * GeoJSON feature (of type polygon) to search in.
    *
    * @type {Feature}
@@ -162,6 +169,13 @@ export interface IPointOfInterestSearchCriteria {
    * @memberof IPointOfInterestSearchCriteria
    */
   date_range_end?: Date;
+  /**
+   * Point of Interest ids filter.
+   *
+   * @type {string[]}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  point_of_interest_ids?: string[];
   /**
    * GeoJSON feature (of type polygon) to search in.
    *

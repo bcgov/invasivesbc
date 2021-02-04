@@ -85,6 +85,8 @@ export class ActivitySearchCriteria {
   date_range_start: Date;
   date_range_end: Date;
 
+  activity_ids: string[];
+
   search_feature: GeoJSON.Feature;
 
   column_names: string[];
@@ -106,6 +108,8 @@ export class ActivitySearchCriteria {
 
     this.date_range_start = (obj && obj.date_range_start) || null;
     this.date_range_end = (obj && obj.date_range_end) || null;
+
+    this.activity_ids = (obj && obj.activity_ids) || [];
 
     this.search_feature = (obj && obj.search_feature) || null;
 
