@@ -64,7 +64,7 @@ const Activity_AnimalActivity_AnimalAquatic = {
     ...UISchemaComponents.Activity
   },
   activity_subtype_data: {
-    ...BaseUISchemaComponents.Observation_AnimalAquatic
+    ...BaseUISchemaComponents.Activity_AnimalAquatic
   }
 };
 

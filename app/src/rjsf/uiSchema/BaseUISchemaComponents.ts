@@ -348,6 +348,16 @@ const Activity_AnimalTerrestrial = {
   }
 };
 
+const Activity_AnimalAquatic = {
+  comment: {
+    'ui:widget': 'textarea'
+  },
+  net_trap_specifications: {
+    ...ThreeColumnStyle,
+    ...NetTrapSpecifications
+  },
+};
+
 const Observation_PlantTerrestrial = {
   invasive_plant_density_code: {},
   invasive_plant_distribution_code: {},
@@ -522,10 +532,6 @@ const Observation_AnimalAquatic = {
     ...ThreeColumnStyle,
     ...PlanktonTowSample
   },
-  net_trap_specifications: {
-    ...ThreeColumnStyle,
-    ...NetTrapSpecifications
-  },
   electrofisher_specifications: {
     ...ThreeColumnStyle,
     ...ElectrofisherSpecifications
@@ -673,6 +679,7 @@ const Monitoring_BiologicalTerrestrialAnimal = {
 
 const BaseUISchemaComponents = {
   Activity_AnimalTerrestrial,
+  Activity_AnimalAquatic,
   Observation,
   Observation_PlantTerrestrial,
   Observation_PlantTerrestrial_BulkEdit,
