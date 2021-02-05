@@ -221,7 +221,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
 
-    if (doc.activityType === 'Observation') {
+    if (doc.activityType === 'Observation' && doc.activitySubtype.includes('Plant')) {
       history.push({
         pathname: `/home/activity/observation`,
         search: '?observation=' + doc._id,
@@ -276,7 +276,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   );
 };
 
-const ActivitiesList: React.FC = (props) => {
+const ActivitiesList: React.FC = () => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
@@ -387,7 +387,12 @@ const ActivitiesList: React.FC = (props) => {
           {workflowFunction !== 'Special' && (
             <Box>
               <Box>
-                <Typography variant="h5">Observations</Typography>
+                {workflowFunction === 'Plant' && (
+                  <Typography variant="h5">Observations</Typography>
+                )}
+                {workflowFunction === 'Animal' && (
+                  <Typography variant="h5">Activities</Typography>
+                )}
               </Box>
               <Box className={classes.newActivityButtonsRow}>
                 {workflowFunction === 'Plant' && (
@@ -430,7 +435,7 @@ const ActivitiesList: React.FC = (props) => {
                         addNewActivityToDB(
                           databaseContext,
                           ActivityType.Observation,
-                          ActivitySubtype.Observation_AnimalTerrestrial
+                          ActivitySubtype.Activity_AnimalTerrestrial
                         )
                       }>
                       Animal Terrestrial
@@ -459,7 +464,7 @@ const ActivitiesList: React.FC = (props) => {
               </Box>
             </Box>
           )}
-          {workflowFunction !== 'Special' && (
+          {workflowFunction !== 'Special' && workflowFunction !== 'Animal' && (
             <Box>
               <Box>
                 <Typography variant="h5">Treatments</Typography>
@@ -473,7 +478,7 @@ const ActivitiesList: React.FC = (props) => {
               </Box>
             </Box>
           )}
-          {workflowFunction !== 'Special' && (
+          {workflowFunction !== 'Special' && workflowFunction !== 'Animal' && (
             <Box>
               <Box>
                 <Typography variant="h5">Efficacy Monitorings</Typography>

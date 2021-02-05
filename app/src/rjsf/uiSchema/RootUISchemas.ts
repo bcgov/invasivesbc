@@ -47,18 +47,14 @@ const Activity_Observation_PlantAquatic = {
   }
 };
 
-const Activity_Observation_AnimalTerrestrial = {
+const Activity_Activity_AnimalTerrestrial = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
-  activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Observation
-  },
   activity_subtype_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Observation_AnimalTerrestrial
+    ...BaseUISchemaComponents.Activity_AnimalTerrestrial
   }
 };
 
@@ -339,7 +335,7 @@ const RootUISchemas = {
   Activity_Observation_PlantTerrestrial,
   Activity_Observation_PlantTerrestrial_BulkEdit,
   Activity_Observation_PlantAquatic,
-  Activity_Observation_AnimalTerrestrial,
+  Activity_Activity_AnimalTerrestrial,
   Activity_Observation_AnimalAquatic,
   Activity_Transect_FireMonitoring,
   Activity_Transect_InvasivePlantDensity,

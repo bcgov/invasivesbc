@@ -342,6 +342,12 @@ const Observation = {
   }
 };
 
+const Activity_AnimalTerrestrial = {
+  comment: {
+    'ui:widget': 'textarea'
+  }
+};
+
 const Observation_PlantTerrestrial = {
   invasive_plant_density_code: {},
   invasive_plant_distribution_code: {},
@@ -666,6 +672,7 @@ const Monitoring_BiologicalTerrestrialAnimal = {
 };
 
 const BaseUISchemaComponents = {
+  Activity_AnimalTerrestrial,
   Observation,
   Observation_PlantTerrestrial,
   Observation_PlantTerrestrial_BulkEdit,

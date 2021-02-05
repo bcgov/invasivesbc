@@ -180,17 +180,14 @@
           }
         }
       },
-      "Activity_Observation_AnimalTerrestrial": {
+      "Activity_Activity_AnimalTerrestrial": {
         "type": "object",
         "properties": {
           "activity_data": {
             "$ref": "#/components/schemas/Activity"
           },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Observation"
-          },
           "activity_subtype_data": {
-            "$ref": "#/components/schemas/Observation_AnimalTerrestrial"
+            "$ref": "#/components/schemas/Activity_AnimalTerrestrial"
           }
         }
       },
@@ -578,6 +575,54 @@
               "x-enum-code-sort-order": "code_sort_order"
             },
             "x-tooltip-text": "Entity that owns or is responsible for the land base or water body"
+          }
+        }
+      },
+      "Activity_AnimalTerrestrial": {
+        "title": "Terrestrial Animal Information",
+        "type": "object",
+        "required": ["activity_type"],
+        "properties": {
+          "activity_type": {
+            "type": "string",
+            "title": "Activity Type",
+            "enum": [
+              "Observation",
+              "Treatment",
+              "Efficacy Monitoring"
+            ]
+          }
+        },
+        "dependencies": {
+          "activity_type": {
+            "oneOf": [
+              {
+                "properties": {
+                  "activity_type": {
+                    "enum": [
+                      "Observation"
+                    ]
+                  },
+                  "observation_type": {
+                    "type": "string",
+                    "title": "Observation Type",
+                    "enum": [
+                      "Incidental (Citizen)",
+                      "Incidental (Specialist)",
+                      "Survey"
+                    ]
+                  },
+                  "comment": {
+                    "type": "string",
+                    "title": "Comment",
+                    "maxLength": 300
+                  }
+                },
+                "required": [
+                  "observation_type"
+                ]
+              }
+            ]
           }
         }
       },
@@ -1207,57 +1252,6 @@
             "title": "Aquatic Plants",
             "items": {
               "$ref": "#/components/schemas/AquaticPlants"
-            }
-          }
-        }
-      },
-      "Observation_AnimalTerrestrial": {
-        "title": "Terrestrial Animal Information",
-        "type": "object",
-        "required": [
-          "number_of_individuals_observed",
-          "animal_life_stage_code",
-          "animal_behavior_code",
-          "invasive_animal_code"
-        ],
-        "properties": {
-          "invasive_animal_code": {
-            "type": "string",
-            "title": "Invasive Animal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "number_of_individuals_observed": {
-            "type": "number",
-            "title": "Number of Individuals (n > 0)",
-            "minimum": 1,
-            "default": 1
-          },
-          "animal_life_stage_code": {
-            "type": "string",
-            "title": "Life Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "animal_life_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "animal_behavior_code": {
-            "type": "string",
-            "title": "Behaviour",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "animal_behavior_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
             }
           }
         }
