@@ -221,7 +221,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
 
-    if (doc.activityType === 'Observation' && doc.activitySubtype.includes('Plant')) {
+    if (doc.activityType === 'Observation') {
       history.push({
         pathname: `/home/activity/observation`,
         search: '?observation=' + doc._id,
