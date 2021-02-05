@@ -180,7 +180,7 @@
           }
         }
       },
-      "Activity_Activity_AnimalTerrestrial": {
+      "Activity_AnimalActivity_AnimalTerrestrial": {
         "type": "object",
         "properties": {
           "activity_data": {
@@ -191,14 +191,11 @@
           }
         }
       },
-      "Activity_Observation_AnimalAquatic": {
+      "Activity_AnimalActivity_AnimalAquatic": {
         "type": "object",
         "properties": {
           "activity_data": {
             "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Observation"
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Observation_AnimalAquatic"

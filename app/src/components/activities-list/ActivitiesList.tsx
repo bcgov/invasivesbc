@@ -425,6 +425,15 @@ const ActivitiesList: React.FC = () => {
                     </Button>
                   </>
                 )}
+
+                <ActivityList
+                  workflowFunction={workflowFunction}
+                  isDisabled={isDisabled}
+                  activityType={ActivityType.Observation}
+                />
+              </Box>
+
+              <Box className={classes.newActivityButtonsRow}>
                 {workflowFunction === 'Animal' && (
                   <>
                     <Button
@@ -434,7 +443,7 @@ const ActivitiesList: React.FC = () => {
                       onClick={() =>
                         addNewActivityToDB(
                           databaseContext,
-                          ActivityType.Observation,
+                          ActivityType.AnimalActivity,
                           ActivitySubtype.Activity_AnimalTerrestrial
                         )
                       }>
@@ -447,8 +456,8 @@ const ActivitiesList: React.FC = () => {
                       onClick={() =>
                         addNewActivityToDB(
                           databaseContext,
-                          ActivityType.Observation,
-                          ActivitySubtype.Observation_AnimalAquatic
+                          ActivityType.AnimalActivity,
+                          ActivitySubtype.Activity_AnimalAquatic
                         )
                       }>
                       Animal Aquatic
@@ -459,7 +468,7 @@ const ActivitiesList: React.FC = () => {
                 <ActivityList
                   workflowFunction={workflowFunction}
                   isDisabled={isDisabled}
-                  activityType={ActivityType.Observation}
+                  activityType={ActivityType.AnimalActivity}
                 />
               </Box>
             </Box>

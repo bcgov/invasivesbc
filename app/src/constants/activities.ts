@@ -2,6 +2,7 @@ import { SvgIconComponent, Assignment, Build, Visibility } from '@material-ui/ic
 
 export enum ActivityType {
   Observation = 'Observation',
+  AnimalActivity = 'AnimalActivity',
   Transect = 'Transect',
   Treatment = 'Treatment',
   Treatment_BulkEdit = 'Treatment_BulkEdit',
@@ -12,8 +13,8 @@ export enum ActivitySubtype {
   Observation_PlantTerrestrial = 'Activity_Observation_PlantTerrestrial',
   Observation_PlantTerrestrial_BulkEdit = 'Activity_Observation_PlantTerrestrial_BulkEdit',
   Observation_PlantAquatic = 'Activity_Observation_PlantAquatic',
-  Activity_AnimalTerrestrial = 'Activity_Activity_AnimalTerrestrial',
-  Observation_AnimalAquatic = 'Activity_Observation_AnimalAquatic',
+  Activity_AnimalTerrestrial = 'Activity_AnimalActivity_AnimalTerrestrial',
+  Activity_AnimalAquatic = 'Activity_AnimalActivity_AnimalAquatic',
 
   Transect_FireMonitoring = 'Activity_Transect_FireMonitoring',
   Transect_InvasivePlantDensity = 'Activity_Transect_InvasivePlantDensity',
@@ -41,6 +42,7 @@ export enum ActivitySubtype {
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
   [ActivityType.Observation]: Assignment,
+  [ActivityType.AnimalActivity]: Assignment,
   [ActivityType.Transect]: Assignment,
   [ActivityType.Treatment]: Build,
   [ActivityType.Monitoring]: Visibility
