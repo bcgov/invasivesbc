@@ -33,7 +33,7 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
 
   const navigateToEditPage = (edits: any) => {
     if (new Set(edits.map((edit) => edit.subtype)).size > 1) {
-      notifyError(databaseContext, `Sorry, all activites must be the same Subtype in order to Bulk Edit.`)
+      notifyError(databaseContext, `Sorry, all activites must be the same Subtype in order to Bulk Edit.`);
       return;
     }
     const ids = edits.map((edit) => edit.id);

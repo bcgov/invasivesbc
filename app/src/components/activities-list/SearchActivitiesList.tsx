@@ -114,15 +114,16 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
                   disabled={bulkEditIsDisabled}
                   style={bulkEditIsDisabled ? { visibility: 'hidden' } : {}}
                   onChange={() =>
-                    setEdits(isChecked 
-                      ? edits.filter((edit) => edit.id !== activity._id)
-                      : [
-                        {
-                          id: activity._id,
-                          subtype: activity.activitySubtype
-                        },
-                        ...edits
-                      ]
+                    setEdits(
+                      isChecked
+                        ? edits.filter((edit) => edit.id !== activity._id)
+                        : [
+                            {
+                              id: activity._id,
+                              subtype: activity.activitySubtype
+                            },
+                            ...edits
+                          ]
                     )
                   }
                   onClick={(event) => event.stopPropagation()}

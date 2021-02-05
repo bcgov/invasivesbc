@@ -1,7 +1,11 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { IActivitySearchCriteria, ICreateOrUpdateActivity, IMetabaseQuerySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
+import {
+  IActivitySearchCriteria,
+  ICreateOrUpdateActivity,
+  IMetabaseQuerySearchCriteria
+} from 'interfaces/useInvasivesApi-interfaces';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
 import { useContext, useMemo } from 'react';

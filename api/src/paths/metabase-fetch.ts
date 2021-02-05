@@ -100,12 +100,12 @@ function getMetabaseQueryResults(): RequestHandler {
         };
       }
 
-    	const metabaseSession = await axios({
+      const metabaseSession = await axios({
         method: 'post',
         url: METABASE_URL + `/api/session`,
         data: {
           username: METABASE_USER,
-          password: METABASE_PASS,
+          password: METABASE_PASS
         },
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +166,6 @@ function getMetabaseQueryResults(): RequestHandler {
           .map((row) => '' + row)
           .splice(0, SEARCH_LIMIT_MAX)
       });
-
     } catch (error) {
       defaultLog.debug({ label: 'getMetabaseQueryResults', message: 'error', error });
       throw error;

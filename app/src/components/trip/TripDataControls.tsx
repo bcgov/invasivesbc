@@ -181,7 +181,7 @@ export const TripDataControls: React.FC = (props) => {
     for (const setOfChoices of trip.metabaseChoices) {
       const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
 
-      const querySearchCriteria : IMetabaseQuerySearchCriteria = {
+      const querySearchCriteria: IMetabaseQuerySearchCriteria = {
         ...((setOfChoices.metabaseQueryId && { metabaseQueryId: setOfChoices.metabaseQueryId }) || {}),
         ...((geometry && { search_feature: geometry }) || {})
       };
@@ -189,10 +189,8 @@ export const TripDataControls: React.FC = (props) => {
       let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
 
       let responseRows = [];
-      if (response?.activities?.length)
-        responseRows = response.activities;
-      if (response?.points_of_interest?.length)
-        responseRows = [responseRows, ...response.points_of_interest];
+      if (response?.activities?.length) responseRows = response.activities;
+      if (response?.points_of_interest?.length) responseRows = [responseRows, ...response.points_of_interest];
       for (const row of responseRows) {
         const photos = [];
 
@@ -248,12 +246,13 @@ export const TripDataControls: React.FC = (props) => {
       }
     }
 
-    notifySuccess(databaseContext, 
-      'Cached ' + 
-      (countActivities ? countActivities + ' activities' : '') + 
-      (countActivities && countPois ? ' and ' : '') +
-      (countPois ? countPois + ' points of interest' : '') +
-      ((countActivities || countPois) ? ' from Metabase.' : '0 Metabase results.')
+    notifySuccess(
+      databaseContext,
+      'Cached ' +
+        (countActivities ? countActivities + ' activities' : '') +
+        (countActivities && countPois ? ' and ' : '') +
+        (countPois ? countPois + ' points of interest' : '') +
+        (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
     );
   };
 
