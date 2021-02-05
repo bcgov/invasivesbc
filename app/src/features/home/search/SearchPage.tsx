@@ -106,7 +106,14 @@ const SearchPage: React.FC<ISearchPagePage> = (props) => {
       limit: itemsPerPage,
       sort_by: sortColumn,
       sort_direction: (sortDirection === '-' && SORT_DIRECTION.DESC) || SORT_DIRECTION.ASC,
-      column_names: ['activity_id', 'activity_type', 'activity_subtype', 'created_timestamp', 'received_timestamp'],
+      column_names: [
+        'activity_id',
+        'activity_type',
+        'activity_subtype',
+        'created_timestamp',
+        'received_timestamp',
+        'activity_payload'
+      ],
       ...startDateFilter,
       ...endDateFilter,
       ...activityTypeFilter // NICK TODO WIP - Update backend search to accept array of type, etc. Move it all into the URL????
@@ -126,7 +133,8 @@ const SearchPage: React.FC<ISearchPagePage> = (props) => {
           activityType: activity.activity_type,
           activitySubtype: activity.activity_subtype,
           dateCreated: activity.created_timestamp,
-          dateReceived: activity.received_timestamp
+          dateReceived: activity.received_timestamp,
+          formData: activity.activity_payload.form_data
         };
       });
 
