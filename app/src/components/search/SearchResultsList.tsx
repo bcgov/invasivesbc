@@ -31,12 +31,12 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
   const invasivesApi = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
 
-  const navigateToEditPage = (edits: any) => {
-    if (new Set(edits.map((edit) => edit.subtype)).size > 1) {
+  const navigateToEditPage = (editsList: any) => {
+    if (new Set(editsList.map((edit) => edit.subtype)).size > 1) {
       notifyError(databaseContext, `Sorry, all activites must be the same Subtype in order to Bulk Edit.`);
       return;
     }
-    const ids = edits.map((edit) => edit.id);
+    const ids = editsList.map((edit) => edit.id);
     if (ids.length > 1) {
       history.push({
         pathname: `/home/search/bulkedit`,

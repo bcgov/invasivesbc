@@ -2,18 +2,14 @@ import DateFnsUtils from '@date-io/date-fns';
 import {
   Button,
   Grid,
-  InputLabel,
   List,
   ListItem,
   makeStyles,
-  MenuItem,
   Paper,
-  Select,
-  Switch,
   TextField
 } from '@material-ui/core';
 import { Add, DeleteForever } from '@material-ui/icons';
-import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';

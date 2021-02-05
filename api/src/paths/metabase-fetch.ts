@@ -3,12 +3,7 @@
 import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { ActivitySearchCriteria } from '../models/activity';
-import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
+import { ALL_ROLES, SEARCH_LIMIT_MAX } from '../constants/misc';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('activity');
@@ -108,8 +103,7 @@ function getMetabaseQueryResults(): RequestHandler {
           password: METABASE_PASS
         },
         headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+          'Content-Type': 'application/json'
         },
         timeout: 10000
       });
@@ -127,8 +121,7 @@ function getMetabaseQueryResults(): RequestHandler {
         url: METABASE_URL + `/api/card/${queryId}/query/json`,
         headers: {
           'Content-Type': 'application/json',
-          'X-Metabase-Session': sessionId,
-          'Access-Control-Allow-Origin': '*'
+          'X-Metabase-Session': sessionId
         },
         timeout: 10000
       });
