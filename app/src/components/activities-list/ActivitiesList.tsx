@@ -387,12 +387,8 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction !== 'Special' && (
             <Box>
               <Box>
-                {workflowFunction === 'Plant' && (
-                  <Typography variant="h5">Observations</Typography>
-                )}
-                {workflowFunction === 'Animal' && (
-                  <Typography variant="h5">Activities</Typography>
-                )}
+                {workflowFunction === 'Plant' && <Typography variant="h5">Observations</Typography>}
+                {workflowFunction === 'Animal' && <Typography variant="h5">Activities</Typography>}
               </Box>
               <Box className={classes.newActivityButtonsRow}>
                 {workflowFunction === 'Plant' && (

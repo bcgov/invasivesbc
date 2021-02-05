@@ -355,7 +355,7 @@ const Activity_AnimalAquatic = {
   net_trap_specifications: {
     ...ThreeColumnStyle,
     ...NetTrapSpecifications
-  },
+  }
 };
 
 const Observation_PlantTerrestrial = {
