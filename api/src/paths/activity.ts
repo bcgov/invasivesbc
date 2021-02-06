@@ -73,8 +73,8 @@ const post_put_apiDoc = {
               oneOf: [
                 { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
                 { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
-                { $ref: '#/components/schemas/Activity_Observation_AnimalTerrestrial' },
-                { $ref: '#/components/schemas/Activity_Observation_AnimalAquatic' },
+                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
                 { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
                 { $ref: '#/components/schemas/Activity_Transect_InvasivePlantDensity' },
                 { $ref: '#/components/schemas/Activity_Transect_FullVegetation' },

@@ -185,10 +185,18 @@ const SubstrateSample = {
   water_column_ph: {},
   secchi_depth: {},
   preservative_type: {},
-  location_description: {},
-  comments: {},
-  microscopy_species: {},
-  e_dna_sample: {},
+  location_description: {
+    'ui:widget': 'textarea'
+  },
+  comments: {
+    'ui:widget': 'textarea'
+  },
+  microscopy_species: {
+    'ui:widget': 'textarea'
+  },
+  e_dna_sample: {
+    'ui:widget': 'textarea'
+  },
   adult_suspected_presence: {
     'ui:widget': 'radio'
   },
@@ -251,6 +259,22 @@ const ElectrofisherSpecifications = {
   number_of_fish: {},
   min_length: {},
   max_length: {}
+};
+
+const EDna = {
+  comment: {}
+};
+
+const HabitatAlteration = {
+  comment: {}
+};
+
+const Chemical = {
+  comment: {}
+};
+
+const Biological = {
+  comment: {}
 };
 
 const FireMonitoringTransectPoints = {
@@ -339,6 +363,50 @@ const Observation = {
   observer_last_name: {},
   negative_obs_ind: {
     'ui:widget': 'radio'
+  }
+};
+
+const Activity_AnimalTerrestrial = {
+  comment: {
+    'ui:widget': 'textarea'
+  }
+};
+
+const Activity_AnimalAquatic = {
+  comment: {
+    'ui:widget': 'textarea'
+  },
+  net_trap_specifications: {
+    ...ThreeColumnStyle,
+    ...NetTrapSpecifications
+  },
+  electrofisher_specifications: {
+    ...ThreeColumnStyle,
+    ...ElectrofisherSpecifications
+  },
+  plankton_tow_sample: {
+    ...ThreeColumnStyle,
+    ...PlanktonTowSample
+  },
+  substrate_sample: {
+    ...ThreeColumnStyle,
+    ...SubstrateSample
+  },
+  edna: {
+    ...ThreeColumnStyle,
+    ...EDna
+  },
+  habitat_alteration: {
+    ...ThreeColumnStyle,
+    ...HabitatAlteration
+  },
+  chemical: {
+    ...ThreeColumnStyle,
+    ...Chemical
+  },
+  biological: {
+    ...ThreeColumnStyle,
+    ...Biological
   }
 };
 
@@ -468,13 +536,6 @@ const Observation_PlantAquatic = {
   }
 };
 
-const Observation_AnimalTerrestrial = {
-  number_of_individuals_observed: {},
-  invasive_animal_code: {},
-  animal_behavior_code: {},
-  animal_life_stage_code: {}
-};
-
 const Observation_AnimalAquatic = {
   waterbody_data: {
     ...ThreeColumnStyle,
@@ -507,22 +568,6 @@ const Observation_AnimalAquatic = {
   profile: {
     ...ThreeColumnStyle,
     ...Profile
-  },
-  substrate_sample: {
-    ...ThreeColumnStyle,
-    ...SubstrateSample
-  },
-  plankton_tow_sample: {
-    ...ThreeColumnStyle,
-    ...PlanktonTowSample
-  },
-  net_trap_specifications: {
-    ...ThreeColumnStyle,
-    ...NetTrapSpecifications
-  },
-  electrofisher_specifications: {
-    ...ThreeColumnStyle,
-    ...ElectrofisherSpecifications
   },
   invasive_aquatic_animals: {
     items: {
@@ -666,12 +711,12 @@ const Monitoring_BiologicalTerrestrialAnimal = {
 };
 
 const BaseUISchemaComponents = {
+  Activity_AnimalTerrestrial,
+  Activity_AnimalAquatic,
   Observation,
   Observation_PlantTerrestrial,
   Observation_PlantTerrestrial_BulkEdit,
   Observation_PlantAquatic,
-  Observation_AnimalTerrestrial,
-  Observation_AnimalAquatic,
   Transect_FireMonitoring,
   Transect_InvasivePlantDensity,
   Transect_FullVegetation,
