@@ -299,9 +299,6 @@
           "activity_data": {
             "$ref": "#/components/schemas/Activity_BulkEdit"
           },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Treatment_BulkEdit"
-          },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Treatment_MechanicalPlant_BulkEdit"
           }
@@ -326,9 +323,6 @@
         "properties": {
           "activity_data": {
             "$ref": "#/components/schemas/Activity_BulkEdit"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Treatment_BulkEdit"
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Treatment_BiologicalPlant_BulkEdit"
@@ -2365,56 +2359,18 @@
         "properties": {
           "activity_id": {
             "type": "string",
-            "title": "Observation Id"
+            "title": "Observation Id",
+            "x-tooltip-text": "Identifier of linked observation record"
           },
-          "applicator1_first_name": {
+          "treatment_organization": {
             "type": "string",
-            "title": "Applicator 1 First Name"
+            "title": "Treatment Organization",
+            "x-tooltip-text": "The company or organization conducting the treatment"
           },
-          "applicator1_last_name": {
+          "treatment_location": {
             "type": "string",
-            "title": "Applicator 1 Last Name"
-          },
-          "treatment_contractor": {
-            "type": "string",
-            "title": "Treatment Contractor"
-          },
-          "applicator2_first_name": {
-            "type": "string",
-            "title": "Applicator 2 First Name"
-          },
-          "applicator2_last_name": {
-            "type": "string",
-            "title": "Applicator 2 Last Name"
-          },
-          "treatment_issues_code": {
-            "type": "string",
-            "title": "Treatment Issue",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "treatment_issues_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "default": "NA"
-          }
-        }
-      },
-      "Treatment_BulkEdit": {
-        "title": "Treatment Information",
-        "type": "object",
-        "properties": {
-          "treatment_issues_code": {
-            "type": "string",
-            "title": "Treatment Issue",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "treatment_issues_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
+            "title": "Treatment Location Description",
+            "x-tooltip-text": "Text entry to provide location and access directions specific to this treatment"
           }
         }
       },
@@ -2422,12 +2378,10 @@
         "title": "Chemical Treatment Information",
         "type": "object",
         "required": [
-          "applicator1_first_name",
-          "applicator1_last_name",
-          "applicator1_licence_number",
-          "applicator2_first_name",
-          "applicator2_last_name",
-          "applicator2_licence_number",
+          "applicator1_name",
+          "applicator1_license",
+          "applicator2_name",
+          "applicator2_license",
           "pesticide_employer_code",
           "chemical_method_code",
           "temperature",
@@ -2444,31 +2398,28 @@
         "properties": {
           "activity_id": {
             "type": "string",
-            "title": "Observation Id"
+            "title": "Observation Id",
+            "x-tooltip-text": "Identifier of linked observation record"
           },
-          "applicator1_first_name": {
+          "applicator1_name": {
             "type": "string",
-            "title": "Applicator 1 First Name"
+            "title": "Primary Applicator",
+            "x-tooltip-text": "Name of primary applicator"
           },
-          "applicator1_last_name": {
+          "applicator1_license": {
             "type": "string",
-            "title": "Applicator 1 Last Name"
+            "title": "Primary Applicator License",
+            "x-tooltip-text": "Valid pesticide applicator certificate number"
           },
-          "applicator1_licence_number": {
-            "type": "number",
-            "title": "Applicator 1 Licence"
-          },
-          "applicator2_first_name": {
+          "applicator2_name": {
             "type": "string",
-            "title": "Applicator 2 First Name"
+            "title": "Secondary Applicator",
+            "x-tooltip-text": "Name of secondary applicator"
           },
-          "applicator2_last_name": {
+          "applicator2_license": {
             "type": "string",
-            "title": "Applicator 2 Last Name"
-          },
-          "applicator2_licence_number": {
-            "type": "number",
-            "title": "Applicator 2 Licence"
+            "title": "Secondary Applicator License",
+            "x-tooltip-text": "Valid pesticide applicator certificate number"
           },
           "pesticide_employer_code": {
             "type": "string",

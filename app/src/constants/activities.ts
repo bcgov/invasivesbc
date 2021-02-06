@@ -5,7 +5,6 @@ export enum ActivityType {
   AnimalActivity = 'AnimalActivity',
   Transect = 'Transect',
   Treatment = 'Treatment',
-  Treatment_BulkEdit = 'Treatment_BulkEdit',
   Monitoring = 'Monitoring'
 }
 

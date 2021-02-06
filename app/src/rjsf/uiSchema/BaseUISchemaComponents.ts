@@ -581,16 +581,10 @@ const Treatment = {
   activity_id: {
     'ui:readonly': true
   },
-  applicator1_first_name: {},
-  applicator1_last_name: {},
-  applicator2_first_name: {},
-  applicator2_last_name: {},
-  treatment_contractor: {},
-  treatment_issues_code: {}
-};
-
-const Treatment_BulkEdit = {
-  treatment_issues_code: {}
+  treatment_organization: {},
+  treatment_location: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const Treatment_MechanicalPlant = {
@@ -723,7 +717,6 @@ const BaseUISchemaComponents = {
   Transect_LumpedSpeciesVegetation,
   Transect_BiocontrolEfficacy,
   Treatment,
-  Treatment_BulkEdit,
   Treatment_MechanicalPlant,
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
