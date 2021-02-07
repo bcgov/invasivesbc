@@ -65,31 +65,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
-  const getSteepSlopes = () => {
-    return L.tileLayer.offline('https://forest-bridges.s3.amazonaws.com/steep-areas/{z}/{x}/{y}.png', {
-      maxZoom: 24,
-      tms: true,
-      opacity: 0.5,
-      maxNativeZoom: 15
-    });
-  };
 
-  // const getTestLayer = () => {
-  //   return L.tileLayer.wms('http://localhost:8080/geoserver/invasives/wms', {
-  //     layers: 'invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
-  //     format: 'image/png',
-  //     transparent: true,
-  //     crs: L.CRS.EPSG4326
-  //   });
-  // };
-
-  const getTestLayer = () => {
+  const getNRDistricts = () => {
     return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png',{
       opacity: 0.8,
       tms:true
     });
   };
-  // http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives%3AWHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG%3A4326@png/0/0/0.png
 
   const addZoomControls = () => {
     const zoomControlOptions = { position: 'bottomleft' };
@@ -182,16 +164,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'BC Government': bcBaseLayer
     };
 
-    const steepSlopes = getSteepSlopes();
-    const testLayer = getTestLayer();
+    const nRDistricts = getNRDistricts();
     
     const overlays = {
-      'Steep Slopes': steepSlopes,
-      'Test Layer': testLayer
+      'Natural Resource Districts': nRDistricts
     };
 
     /* XXX: Testing */
-    mapRef.current.addLayer(testLayer);
+    mapRef.current.addLayer(nRDistricts);
     /* XXX: Testing */
 
     addLayerControls(basemaps, overlays);
