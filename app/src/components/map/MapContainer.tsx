@@ -44,6 +44,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       props.contextMenuState.setContextMenuState({ isOpen: true, lat: e.latlng.lat, lng: e.latlng.lng });
     });
   };
+  
 
   const getESRIBaseLayer = () => {
     return L.tileLayer.offline(
@@ -53,6 +54,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         maxNativeZoom: 17,
         attribution:
           '&copy; <a href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps">ESRI Basemap</a>'
+      }
+    );
+  };
+
+  const getESRIPlacenames = () => {
+    return L.tileLayer.offline(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 24,
+        maxNativeZoom: 17
       }
     );
   };
@@ -154,6 +165,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     addDrawControls();
 
     const esriBaseLayer = getESRIBaseLayer();
+    const esriPlacenames = getESRIPlacenames();
     const bcBaseLayer = getBCGovBaseLayer();
 
     // Set initial base map
@@ -167,12 +179,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const nRDistricts = getNRDistricts();
     
     const overlays = {
+      'Placenames': esriPlacenames,
       'Natural Resource Districts': nRDistricts
     };
 
     /* XXX: Testing */
     mapRef.current.addLayer(nRDistricts);
     /* XXX: Testing */
+
+    mapRef.current.addLayer(esriPlacenames);
 
     addLayerControls(basemaps, overlays);
 
