@@ -74,14 +74,22 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
+  // const getTestLayer = () => {
+  //   return L.tileLayer.wms('http://localhost:8080/geoserver/invasives/wms', {
+  //     layers: 'invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
+  //     format: 'image/png',
+  //     transparent: true,
+  //     crs: L.CRS.EPSG4326
+  //   });
+  // };
+
   const getTestLayer = () => {
-    return L.tileLayer.wms('http://localhost:8080/geoserver/invasives/wms', {
-      layers: 'invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
-      format: 'image/png',
-      transparent: true,
-      crs: L.CRS.EPSG4326
+    return L.tileLayer('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.8,
+      tms:true
     });
   };
+  // http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives%3AWHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG%3A4326@png/0/0/0.png
 
   const addZoomControls = () => {
     const zoomControlOptions = { position: 'bottomleft' };
@@ -181,6 +189,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Steep Slopes': steepSlopes,
       'Test Layer': testLayer
     };
+
+    /* XXX: Testing */
+    mapRef.current.addLayer(testLayer);
+    /* XXX: Testing */
 
     addLayerControls(basemaps, overlays);
 
