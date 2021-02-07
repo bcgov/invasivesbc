@@ -84,7 +84,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   // };
 
   const getTestLayer = () => {
-    return L.tileLayer('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png',{
       opacity: 0.8,
       tms:true
     });
