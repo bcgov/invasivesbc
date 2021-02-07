@@ -74,6 +74,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
+  const getTestLayer = () => {
+    return L.tileLayer.wms('http://localhost:8080/geoserver/invasives/wms', {
+      layers: 'invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
+      format: 'image/png',
+      transparent: true,
+      crs: L.CRS.EPSG4326
+    });
+  };
+
   const addZoomControls = () => {
     const zoomControlOptions = { position: 'bottomleft' };
 
@@ -166,8 +175,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     };
 
     const steepSlopes = getSteepSlopes();
+    const testLayer = getTestLayer();
+    
     const overlays = {
-      'Steep Slopes': steepSlopes
+      'Steep Slopes': steepSlopes,
+      'Test Layer': testLayer
     };
 
     addLayerControls(basemaps, overlays);
