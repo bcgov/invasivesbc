@@ -2352,7 +2352,6 @@
         "type": "object",
         "required": [
           "treatment_organization",
-          "treatment_location",
           "treatment_persons"
         ],
         "properties": {
