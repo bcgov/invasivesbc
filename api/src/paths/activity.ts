@@ -80,7 +80,7 @@ const post_put_apiDoc = {
                 { $ref: '#/components/schemas/Activity_Transect_FullVegetation' },
                 { $ref: '#/components/schemas/Activity_Transect_LumpedSpeciesVegetation' },
                 { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' },
-                { $ref: '#/components/schemas/Activity_Biological_Dispersal' },
+                { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
