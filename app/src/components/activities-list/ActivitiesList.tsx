@@ -242,7 +242,10 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       {sortedActivities.map((doc) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
-        if (!doc.activitySubtype.includes(props.workflowFunction) && !['Transect', 'Dispersal'].includes(doc.activityType)) {
+        if (
+          !doc.activitySubtype.includes(props.workflowFunction) &&
+          !['Transect', 'Dispersal'].includes(doc.activityType)
+        ) {
           return null;
         }
 
@@ -533,7 +536,11 @@ const ActivitiesList: React.FC = () => {
                     variant="contained"
                     startIcon={<Add />}
                     onClick={() => {
-                      addNewActivityToDB(databaseContext, ActivityType.Dispersal, ActivitySubtype.Activity_BiologicalDispersal);
+                      addNewActivityToDB(
+                        databaseContext,
+                        ActivityType.Dispersal,
+                        ActivitySubtype.Activity_BiologicalDispersal
+                      );
                     }}>
                     Biological Dispersal
                   </Button>

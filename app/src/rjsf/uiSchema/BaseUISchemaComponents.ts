@@ -512,7 +512,7 @@ const Dispersal_BiologicalDispersal = {
   biological_agent_code: {},
   plant_count: {},
   biological_agent_count: {}
-}
+};
 
 const Observation_PlantTerrestrial_BulkEdit = {
   specific_use_code: {},
