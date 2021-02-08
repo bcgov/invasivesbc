@@ -118,7 +118,7 @@ function getMetabaseQueryResults(): RequestHandler {
       const sessionId = metabaseSession.data.id;
       const response = await axios({
         method: 'post',
-        url: METABASE_URL + `/api/card/${queryId}/query/json`,
+        url: `${METABASE_URL}/api/card/${queryId}/query/json`,
         headers: {
           'Content-Type': 'application/json',
           'X-Metabase-Session': sessionId

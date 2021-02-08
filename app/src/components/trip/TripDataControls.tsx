@@ -218,7 +218,7 @@ export const TripDataControls: React.FC = (props) => {
                 activityType: row.activity_type,
                 activitySubtype: row.activity_subtype,
                 geometry: row.activity_payload.geometry,
-                photos: photos
+                photos
               };
             });
             countActivities++;
@@ -235,7 +235,7 @@ export const TripDataControls: React.FC = (props) => {
                 pointOfInterestType: row.point_of_interest_type,
                 pointOfInterestSubtype: row.point_of_interest_subtype,
                 geometry: [...row.point_of_interest_payload.geometry],
-                photos: photos
+                photos
               };
             });
             countPois++;

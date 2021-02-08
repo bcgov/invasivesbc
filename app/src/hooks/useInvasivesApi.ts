@@ -111,7 +111,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getMetabaseQueryResults = async (metabaseQueriesSearchCriteria: IMetabaseQuerySearchCriteria): Promise<any> => {
-    const { data } = await api.post(`/api/metabase-fetch`, metabaseQueriesSearchCriteria);
+    const { data } = await api.post('/api/metabase-fetch', metabaseQueriesSearchCriteria);
     let activities, points_of_interest;
     if (data.activity_ids.length)
       activities = await getActivities({
@@ -217,8 +217,26 @@ export const useInvasivesApi = () => {
     }
   };
 
+  /**
+   * Fetch species details.
+   *
+   * @param {string[]} species
+   * @return {*}  {Promise<any>}
+   */
+  const getSpeciesDetails = async (species: string[]): Promise<any> => {
+    const { data } = await api.get('/api/species', {
+      params: { key: species },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
   return {
     getMedia,
+    getSpeciesDetails,
     getActivities,
     deleteActivities,
     undeleteActivities,

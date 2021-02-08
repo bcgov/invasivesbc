@@ -34,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
   },
   map: {
     height: '500px',
-    width: '100%'
+    width: '100%',
+    zIndex: 0
   },
   layerPicker: {
     height: '100%',
@@ -77,7 +78,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [tripLoaded, setTripLoaded] = useState(false);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
-  //const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
