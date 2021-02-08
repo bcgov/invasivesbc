@@ -73,7 +73,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
   };
 
   const deleteMetabaseChoice = (index: number) => {
-    let copy = [...metabaseChoices];
+    const copy = [...metabaseChoices];
     copy.splice(index, 1);
     saveChoices(copy);
   };
