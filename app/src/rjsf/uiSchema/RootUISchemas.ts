@@ -150,7 +150,7 @@ const Activity_Treatment_MechanicalPlant = {
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.OneColumnStyle,
     ...BaseUISchemaComponents.Treatment_MechanicalPlant
   }
 };

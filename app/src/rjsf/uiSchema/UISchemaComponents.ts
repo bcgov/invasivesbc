@@ -21,6 +21,7 @@ const Treatment_ChemicalPlant = {
   applicator2_name: {},
   applicator2_license: {},
   pesticide_employer_code: {},
+  pesticide_user_license_number: {},
   chemical_method_code: {},
   temperature: {},
   humidity: {},
@@ -30,7 +31,6 @@ const Treatment_ChemicalPlant = {
       ...BaseUISchemaComponents.InvasivePlants
     }
   },
-  treatment_issues_code: {},
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide
