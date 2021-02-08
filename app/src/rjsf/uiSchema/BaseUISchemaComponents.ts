@@ -630,7 +630,7 @@ const Treatment_BiologicalPlant = {
   },
   treatment_issues_code: {},
   classified_area_code: {},
-  release_quantity : {},
+  release_quantity: {},
   mortality: {},
   agent_source: {},
   biological_agent_code: {},
