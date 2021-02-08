@@ -500,7 +500,7 @@ const main = async () => {
             media_indicator: false,
             created_date_on_device: formatDateToISO(siteRecord.CreateDate),
             updated_date_on_device: formatDateToISO(siteRecord.CreateDate),
-            paper_file_id: [
+            project_code: [
               {
                 description: siteRecord.PaperFile
               }
@@ -539,7 +539,7 @@ const main = async () => {
             observation_type_code: observationTypes[survey.SurveyType],
             observation_type: survey.SurveyType,
             general_comment: survey.Comment,
-            paper_file_id: [
+            project_code: [
               {
                 description: survey.PaperFileID
               }
@@ -572,7 +572,7 @@ const main = async () => {
             common_name: t.CommonName,
             invasive_species_agency_code: t.TreatmentAgency,
             employer: t.Employer,
-            paper_file_id: [
+            project_code: [
               {
                 description: t.PaperFileID
               }
@@ -590,7 +590,7 @@ const main = async () => {
               efficacy_percent: m.efficacy_percent, // percent vs code?
               efficacy_code: mapEfficacyCode(m.efficacy_percent),
               invasive_species_agency_code: m.agency_code,
-              paper_file_id: [
+              project_code: [
                 {
                   description: m.paper_file_id
                 }
@@ -609,7 +609,7 @@ const main = async () => {
             common_name: t.MapCommon,
             invasive_species_agency_code: t.TreatmentAgency,
             employer: t.Employer,
-            paper_file_id: [
+            project_code: [
               {
                 description: t.PAPER_FILE_ID
               }
@@ -642,7 +642,7 @@ const main = async () => {
               efficacy_percent: m.EFFICACY_RATING_CODE,
               efficacy_code: mapEfficacyCode(m.EFFICACY_RATING_CODE),
               invasive_species_agency_code: m.invasive_plant_agency_code,
-              paper_file_id: [
+              project_code: [
                 {
                   description: m.PAPER_FILE_ID
                 }
@@ -660,7 +660,7 @@ const main = async () => {
             // invasive_plant_code: 'NA', // TODO map common_name to plant code
             common_name: t.CommonName,
             invasive_species_agency_code: t.Agency,
-            paper_file_id: [
+            project_code: [
               {
                 description: t.PaperFileID
               }
@@ -686,7 +686,7 @@ const main = async () => {
               monitoring_date: formatDateToISO(m.inspection_date),
               efficacy_code: undefined, // m.EFFICACY_RATING_CODE Note: all 0
               invasive_species_agency_code: undefined, // none provided
-              paper_file_id: [
+              project_code: [
                 {
                   description: m.PAPER_FILE_ID
                 }
@@ -721,7 +721,7 @@ const main = async () => {
             map_code: d.map_symbol,
             common_name: d.common_name,
             invasive_species_agency_code: d.invasive_plant_agency_code,
-            paper_file_id: [
+            project_code: [
               {
                 description: d.paper_file_id
               }
