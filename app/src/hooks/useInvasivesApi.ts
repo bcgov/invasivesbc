@@ -111,7 +111,7 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getMetabaseQueryResults = async (metabaseQueriesSearchCriteria: IMetabaseQuerySearchCriteria): Promise<any> => {
-    const { data } = await api.post(`/api/metabase-fetch`, metabaseQueriesSearchCriteria);
+    const { data } = await api.post('/api/metabase-fetch', metabaseQueriesSearchCriteria);
     let activities, points_of_interest;
     if (data.activity_ids.length)
       activities = await getActivities({
