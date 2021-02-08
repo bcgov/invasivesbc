@@ -622,12 +622,6 @@ const Treatment_MechanicalPlant = {
   }
 };
 
-const Treatment_MechanicalPlant_BulkEdit = {
-  invasive_plant_code: {},
-  mechanical_method_code: {},
-  mechanical_disposal_code: {}
-};
-
 const Treatment_BiologicalPlant = {
   classified_area_code: {},
   release_quantity: {},
@@ -742,7 +736,6 @@ const BaseUISchemaComponents = {
   Transect_BiocontrolEfficacy,
   Treatment,
   Treatment_MechanicalPlant,
-  Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
   Treatment_MechanicalTerrestrialAnimal,
