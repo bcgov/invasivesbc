@@ -293,17 +293,6 @@
           }
         }
       },
-      "Activity_Treatment_MechanicalPlant_BulkEdit": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity_BulkEdit"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Treatment_MechanicalPlant_BulkEdit"
-          }
-        }
-      },
       "Activity_Treatment_BiologicalPlant": {
         "type": "object",
         "properties": {
@@ -2351,10 +2340,8 @@
         "title": "Treatment Information",
         "type": "object",
         "required": [
-          "applicator1_first_name",
-          "applicator1_last_name",
-          "treatment_contractor",
-          "treatment_issues_code"
+          "treatment_organization",
+          "treatment_persons"
         ],
         "properties": {
           "activity_id": {
@@ -2371,6 +2358,14 @@
             "type": "string",
             "title": "Treatment Location Description",
             "x-tooltip-text": "Text entry to provide location and access directions specific to this treatment"
+          },
+          "treatment_persons": {
+            "type": "array",
+            "title": "Treatment Person(s)",
+            "items": {
+              "$ref": "#/components/schemas/TreatmentPersons"
+            },
+            "x-tooltip-text": "Name of person(s) doing treatment"
           }
         }
       },
@@ -2383,16 +2378,14 @@
           "applicator2_name",
           "applicator2_license",
           "pesticide_employer_code",
+          "pesticide_user_license_number",
           "chemical_method_code",
           "temperature",
           "humidity",
-          "pest_management_plan",
           "invasive_plants",
-          "treatment_issues_code",
           "herbicide",
           "wind_speed",
           "wind_direction_code",
-          "pesticide_use_permit_PUP",
           "signage_on_site"
         ],
         "properties": {
@@ -2423,19 +2416,26 @@
           },
           "pesticide_employer_code": {
             "type": "string",
-            "title": "Pesticide Employer Code",
+            "title": "Pesticide Applicator Employer",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "pesticide_employer_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Select from current/valid employer/organization names"
+          },
+          "pesticide_user_license_number": {
+            "type": "string",
+            "title": "Pesticide User License Number",
+            "x-tooltip-text": "Enter valid pesticide-user license number"
           },
           "pesticide_use_permit_PUP": {
             "type": "string",
             "title": "Pesticide Use Permit",
-            "default": "none"
+            "default": "none",
+            "x-tooltip-text": "Enter applicable number if treatment is being completed under pesticide use permit"
           },
           "pest_management_plan": {
             "type": "string",
@@ -2446,8 +2446,168 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Enter applicable number if treatment is being completed under a pest management plan"
           },
+          "chemical_method_code": {
+            "type": "string",
+            "title": "Chemical Treatment Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "chemical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Choose treatment application method"
+          },
+          "temperature": {
+            "type": "number",
+            "title": "Temperature (C)",
+            "minimum": 15,
+            "maximum": 30,
+            "x-tooltip-text": "Measured in degrees celcius at time of treatment"
+          },
+          "wind_speed": {
+            "type": "number",
+            "title": "Wind Speed (km/h)",
+            "minimum": 0,
+            "maximum": 50,
+            "default": 0,
+            "x-tooltip-text": "Wind speed in km/hr at time of treatment"
+          },
+          "wind_direction_code": {
+            "type": "string",
+            "title": "Wind Direction",
+            "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+            "x-tooltip-text": "Cardinal wind direction at time of treatment"
+          },
+          "humidity": {
+            "type": "number",
+            "title": "Humidity",
+            "enum": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+            "x-tooltip-text": "Relative humidity expressed as a percentage"
+          },
+          "signage_on_site": {
+            "type": "boolean",
+            "title": "Treatment Notice Signs",
+            "default": false,
+            "x-tooltip-text": "Treatment notice sign placed at site prior to treatment"
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
+            },
+            "x-tooltip-text": "Target invasive plant species being treated at this location"
+          },
+          "herbicide": {
+            "type": "array",
+            "title": "Herbicide",
+            "items": {
+              "$ref": "#/components/schemas/Herbicide"
+            },
+            "x-tooltip-text": "Herbicide information for the treatment"
+          }
+        }
+      },
+      "Treatment_ChemicalPlant_BulkEdit": {
+        "title": "Chemical Treatment Information",
+        "type": "object",
+        "properties": {
+          "pesticide_employer_code": {
+            "type": "string",
+            "title": "Pesticide Applicator Employer",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "pesticide_employer_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Select from current/valid employer/organization names"
+          },
+          "pesticide_use_permit_PUP": {
+            "type": "string",
+            "title": "Pesticide Use Permit",
+            "default": "none",
+            "x-tooltip-text": "Enter applicable number if treatment is being completed under pesticide use permit"
+          },
+          "pest_management_plan": {
+            "type": "string",
+            "title": "Pesticide Management Plan",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "pest_management_plan",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Enter applicable number if treatment is being completed under a pest management plan"
+          },
+          "chemical_method_code": {
+            "type": "string",
+            "title": "Chemical Treatment Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "chemical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Choose treatment application method"
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
+            },
+            "x-tooltip-text": "Target invasive plant species being treated at this location"
+          },
+          "herbicide": {
+            "type": "array",
+            "title": "Herbicide",
+            "items": {
+              "$ref": "#/components/schemas/Herbicide"
+            },
+            "x-tooltip-text": "Herbicide information for the treatment"
+          }
+        }
+      },
+      "Treatment_MechanicalPlant": {
+        "title": "Mechanical Treatment Information",
+        "type": "object",
+        "required": [
+          "mechanical_plants_method_disposal"
+        ],
+        "properties": {
+          "mechanical_plants_method_disposal": {
+            "type": "array",
+            "title": "Invasive Plants, Treatment and Disposal Method",
+            "items": {
+              "$ref": "#/components/schemas/MechanicalPlantsMethodDisposal"
+            },
+            "x-tooltip-text": "Target invasive plant species, specific treatment technique, and disposal method at this location. May be more than one"
+          }
+        }
+      },
+      "Treatment_BiologicalPlant": {
+        "title": "Biological Treatment Information",
+        "type": "object",
+        "required": [
+          "invasive_plants",
+          "treatment_issues_code",
+          "classified_area_code",
+          "release_quantity",
+          "mortality",
+          "agent_source",
+          "biological_agent_code",
+          "biological_agent_stage_code",
+          "bioagent_maturity_status_code"
+        ],
+        "properties": {
           "treatment_issues_code": {
             "type": "string",
             "title": "Treatment Issue",
@@ -2458,269 +2618,8 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "default": "NA"
-          },
-          "chemical_method_code": {
-            "type": "string",
-            "title": "Chemical Treatment Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "chemical_method_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "temperature": {
-            "type": "number",
-            "title": "Temperature (C)",
-            "minimum": 15,
-            "maximum": 30
-          },
-          "wind_speed": {
-            "type": "number",
-            "title": "Wind Speed (km/h)",
-            "minimum": 0,
-            "maximum": 50,
-            "default": 0
-          },
-          "wind_direction_code": {
-            "type": "string",
-            "title": "Wind Direction",
-            "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"]
-          },
-          "humidity": {
-            "type": "number",
-            "title": "Humidity",
-            "enum": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-          },
-          "invasive_plants": {
-            "type": "array",
-            "title": "Invasive Plants",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlants"
-            }
-          },
-          "herbicide": {
-            "type": "array",
-            "title": "Herbicide",
-            "items": {
-              "$ref": "#/components/schemas/Herbicide"
-            }
-          },
-          "signage_on_site": {
-            "type": "boolean",
-            "title": "Signage on Site",
-            "default": false
-          }
-        }
-      },
-      "Treatment_ChemicalPlant_BulkEdit": {
-        "title": "Chemical Treatment Information",
-        "type": "object",
-        "properties": {
-          "pesticide_employer_code": {
-            "type": "string",
-            "title": "Pesticide Employer Code",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "pesticide_employer_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "pesticide_use_permit_PUP": {
-            "type": "string",
-            "title": "Pesticide Use Permit",
-            "default": "none"
-          },
-          "pest_management_plan": {
-            "type": "string",
-            "title": "Pesticide Management Plan",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "pest_management_plan",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "treatment_issues_code": {
-            "type": "string",
-            "title": "Treatment Issue",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "treatment_issues_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "chemical_method_code": {
-            "type": "string",
-            "title": "Chemical Treatment Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "chemical_method_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "invasive_plants": {
-            "type": "array",
-            "title": "Invasive Plants",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlants"
-            }
-          },
-          "herbicide": {
-            "type": "array",
-            "title": "Herbicide",
-            "items": {
-              "$ref": "#/components/schemas/Herbicide"
-            }
-          }
-        }
-      },
-      "Treatment_MechanicalPlant": {
-        "title": "Mechanical Treatment Information",
-        "type": "object",
-        "required": [
-          "mechanical_method_code",
-          "mechanical_disposal_code",
-          "root_removal_code",
-          "soil_disturbance_code",
-          "invasive_plant_code",
-          "signage_on_site"
-        ],
-        "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "mechanical_method_code": {
-            "type": "string",
-            "title": "Mechanical Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "mechanical_method_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "mechanical_disposal_code": {
-            "type": "string",
-            "title": "Disposal Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "mechanical_disposal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "root_removal_code": {
-            "type": "string",
-            "title": "Root Removal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "root_removal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "soil_disturbance_code": {
-            "type": "string",
-            "title": "Soil Disturbance",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "soil_disturbance_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "signage_on_site": {
-            "type": "boolean",
-            "title": "Signage on Site",
-            "default": false
-          }
-        }
-      },
-      "Treatment_MechanicalPlant_BulkEdit": {
-        "title": "Mechanical Treatment Information",
-        "type": "object",
-        "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "mechanical_method_code": {
-            "type": "string",
-            "title": "Mechanical Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "mechanical_method_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "mechanical_disposal_code": {
-            "type": "string",
-            "title": "Disposal Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "mechanical_disposal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          }
-        }
-      },
-      "Treatment_BiologicalPlant": {
-        "title": "Biological Treatment Information",
-        "type": "object",
-        "required": [
-          "classified_area_code",
-          "release_quantity",
-          "agent_source",
-          "biological_agent_code",
-          "biological_agent_stage_code",
-          "invasive_plant_code",
-          "bioagent_maturity_status_code",
-          "signage_on_site"
-        ],
-        "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
+            "default": "NA",
+            "x-tooltip-text": "Environmental condition that may effect survival of biocontrol"
           },
           "classified_area_code": {
             "type": "string",
@@ -2731,18 +2630,27 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Classification of type of biological treatment - ie research, primary"
           },
           "release_quantity": {
             "type": "number",
             "title": "Release Quantity",
             "minimum": 1,
             "maximum": 100000,
-            "default": 1
+            "default": 1,
+            "x-tooltip-text": "Number of agents released (exact or approximate)"
+          },
+          "mortality": {
+            "type": "number",
+            "title": "Mortality",
+            "x-tooltip-text": "Number of agents dead at time of release"
           },
           "agent_source": {
             "type": "string",
-            "title": "Agent Source"
+            "title": "Agent Source",
+            "maxLength": 50,
+            "x-tooltip-text": "Agent source location and organization (50 characters)"
           },
           "biological_agent_code": {
             "type": "string",
@@ -2753,7 +2661,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Genus species code of the agent (ie ALTICAR [Altica carduorum])"
           },
           "biological_agent_stage_code": {
             "type": "string",
@@ -2764,23 +2673,28 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Life stage of biocontrol agent"
           },
           "bioagent_maturity_status_code": {
             "type": "string",
-            "title": "Bioagent Maturity Status",
+            "title": "Biological Agent Status",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "bioagent_maturity_status_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Primary, secondary or tertiary agent"
           },
-          "signage_on_site": {
-            "type": "boolean",
-            "title": "Signage on Site",
-            "default": false
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
+            },
+            "x-tooltip-text": "Target invasive plant species being treated at this location"
           }
         }
       },
@@ -2788,16 +2702,13 @@
         "title": "Biological Treatment Information",
         "type": "object",
         "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
+            },
+            "x-tooltip-text": "Target invasive plant species being treated at this location"
           },
           "classified_area_code": {
             "type": "string",
@@ -2808,7 +2719,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Classification of type of biological treatment - ie research, primary"
           },
           "biological_agent_code": {
             "type": "string",
@@ -2819,7 +2731,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Genus species code of the agent (ie ALTICAR [Altica carduorum])"
           },
           "biological_agent_stage_code": {
             "type": "string",
@@ -2830,18 +2743,20 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Life stage of biocontrol agent"
           },
           "bioagent_maturity_status_code": {
             "type": "string",
-            "title": "Bioagent Maturity Status",
+            "title": "Biological Agent Status",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "bioagent_maturity_status_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Primary, secondary or tertiary agent"
           }
         }
       },
@@ -3428,35 +3343,41 @@
             "type": "number",
             "title": "Application Rate (L/ha)",
             "format": "float",
-            "minimum": 0
+            "minimum": 0,
+            "x-tooltip-text": "Recommended label rate for herbicide (L/ha) used for this treatment"
           },
           "herbicide_amount": {
             "type": "number",
-            "title": "Amount of Herbicide (L)",
+            "title": "Amount of Mix Used (L)",
             "format": "float",
-            "minimum": 0
+            "minimum": 0,
+            "x-tooltip-text": "Volume in litres (ie 5.1 L) of herbicide and water mix"
           },
           "mix_delivery_rate": {
             "type": "number",
-            "title": "Mix Delivery Rate (L/ha)",
+            "title": "Delivery Rate of Mix (L/ha)",
             "format": "float",
-            "minimum": 0
+            "minimum": 0,
+            "x-tooltip-text": "Calibrated delivery rate of the device used to apply herbicide in L/ha"
           },
           "tank_volume": {
             "type": "number",
             "title": "Tank Volume (L)",
             "format": "float",
-            "minimum": 0
+            "minimum": 0,
+            "x-tooltip-text": "Capacity of tank measured in litres"
           },
           "specific_treatment_area": {
             "type": "number",
             "title": "Specific Treatment Area (ha)",
-            "minimum": 0
+            "minimum": 0,
+            "x-tooltip-text": "Area of the chemical treatment (ha) automatically calculated from the application and delivery rates used during chemical treatment"
           },
           "dilution": {
             "type": "number",
-            "title": "Dilution Rate (%)",
-            "minimum": 0
+            "title": "Dilution %",
+            "minimum": 0,
+            "x-tooltip-text": "Percent (%) of product in the mix"
           }
         }
       },
@@ -3477,6 +3398,52 @@
           }
         }
       },
+      "MechanicalPlantsMethodDisposal": {
+        "type": "object",
+        "required": [
+          "invasive_plant_code",
+          "mechanical_method_code",
+          "mechanical_disposal_code"
+        ],
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Target invasive plant species treated at this location"
+          },
+          "mechanical_method_code": {
+            "type": "string",
+            "title": "Mechanical Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Specific treatment technique, device or method"
+          },
+          "mechanical_disposal_code": {
+            "type": "string",
+            "title": "Disposal Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_disposal_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Indicate disposal method"
+          }
+        }
+      },
       "InvasiveAnimals": {
         "type": "object",
         "required": ["invasive_animal_code"],
@@ -3490,7 +3457,19 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Target invasive animal species at this location"
+          }
+        }
+      },
+      "TreatmentPersons": {
+        "type": "object",
+        "required": ["person_name"],
+        "properties": {
+          "person_name": {
+            "type": "string",
+            "title": "Person Name",
+            "x-tooltip-text": "Name of person"
           }
         }
       },

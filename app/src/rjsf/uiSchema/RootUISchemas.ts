@@ -146,23 +146,12 @@ const Activity_Treatment_MechanicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.OneColumnStyle,
     ...BaseUISchemaComponents.Treatment_MechanicalPlant
-  }
-};
-
-const Activity_Treatment_MechanicalPlant_BulkEdit = {
-  activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.Activity_BulkEdit
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Treatment_MechanicalPlant_BulkEdit
   }
 };
 
@@ -172,7 +161,7 @@ const Activity_Treatment_BiologicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -198,7 +187,7 @@ const Activity_Treatment_MechanicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -213,7 +202,7 @@ const Activity_Treatment_ChemicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -228,7 +217,7 @@ const Activity_Treatment_BiologicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -333,7 +322,6 @@ const RootUISchemas = {
   Activity_Treatment_ChemicalPlant,
   Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_MechanicalPlant,
-  Activity_Treatment_MechanicalPlant_BulkEdit,
   Activity_Treatment_BiologicalPlant,
   Activity_Treatment_BiologicalPlant_BulkEdit,
   Activity_Treatment_MechanicalTerrestrialAnimal,

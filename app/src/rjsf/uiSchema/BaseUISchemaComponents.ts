@@ -14,8 +14,30 @@ const ThreeColumnStyle = {
   'ui:column-lg': 4
 };
 
+const TwoColumnStyle = {
+  'ui:column-xs': 12,
+  'ui:column-md': 6,
+  'ui:column-lg': 6
+};
+
+const OneColumnStyle = {
+  'ui:column-xs': 12,
+  'ui:column-md': 12,
+  'ui:column-lg': 12
+};
+
 const InvasivePlants = {
   invasive_plant_code: {}
+};
+
+const MechanicalPlantsMethodDisposal = {
+  invasive_plant_code: {},
+  mechanical_method_code: {},
+  mechanical_disposal_code: {}
+};
+
+const TreatmentPersons = {
+  person_name: {}
 };
 
 const Herbicide = {
@@ -584,37 +606,36 @@ const Treatment = {
   treatment_organization: {},
   treatment_location: {
     'ui:widget': 'textarea'
+  },
+  treatment_persons: {
+    items: {
+      ...TreatmentPersons
+    }
   }
 };
 
 const Treatment_MechanicalPlant = {
-  invasive_plant_code: {},
-  mechanical_method_code: {},
-  mechanical_disposal_code: {},
-  root_removal_code: {},
-  soil_disturbance_code: {},
-  signage_on_site: {
-    'ui:widget': 'radio'
+  mechanical_plants_method_disposal: {
+    items: {
+      ...MechanicalPlantsMethodDisposal
+    }
   }
-};
-
-const Treatment_MechanicalPlant_BulkEdit = {
-  invasive_plant_code: {},
-  mechanical_method_code: {},
-  mechanical_disposal_code: {}
 };
 
 const Treatment_BiologicalPlant = {
+  invasive_plants: {
+    items: {
+      ...InvasivePlants
+    }
+  },
+  treatment_issues_code: {},
   classified_area_code: {},
   release_quantity: {},
+  mortality: {},
   agent_source: {},
   biological_agent_code: {},
   biological_agent_stage_code: {},
-  invasive_plant_code: {},
-  bioagent_maturity_status_code: {},
-  signage_on_site: {
-    'ui:widget': 'radio'
-  }
+  bioagent_maturity_status_code: {}
 };
 
 const Treatment_BiologicalPlant_BulkEdit = {
@@ -718,7 +739,6 @@ const BaseUISchemaComponents = {
   Transect_BiocontrolEfficacy,
   Treatment,
   Treatment_MechanicalPlant,
-  Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
   Treatment_MechanicalTerrestrialAnimal,
@@ -732,7 +752,9 @@ const BaseUISchemaComponents = {
   ProjectCode,
   Herbicide,
   InvasivePlants,
-  ThreeColumnStyle
+  ThreeColumnStyle,
+  TwoColumnStyle,
+  OneColumnStyle
 };
 
 export default BaseUISchemaComponents;
