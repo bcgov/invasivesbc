@@ -133,20 +133,6 @@ function getMetabaseQueryResults(): RequestHandler {
         };
       }
 
-      /*
-      // Notes for Version 2: filter data can be found here:
-      const response2 = await axios({
-        method: 'post',
-        url: METABASE_URL + `/api/card/${queryId}/query`,
-        headers: {
-          'X-Metabase-Session': sessionId,
-          'Access-Control-Allow-Origin': '*'
-        },
-        timeout: 10000
-      });
-      console.log(response2.data.json_query.query.filter);
-      */
-
       // extract just the ids from results, so we can re-fetch from the db using our own security layers
       return res.status(200).json({
         activity_ids: response.data
