@@ -1350,6 +1350,13 @@
                     "type": "string",
                     "title": "Comment",
                     "maxLength": 300
+                  },
+                  "invasive_aquatic_animals": {
+                    "type": "array",
+                    "title": "Aquatic Animals",
+                    "items": {
+                      "$ref": "#/components/schemas/AquaticAnimals"
+                    }
                   }
                 },
                 "dependencies": {
@@ -1363,87 +1370,7 @@
                             ]
                           },
                           "net_trap_specifications": {
-                            "type": "object",
-                            "title": "Net/Trap Specifications",
-                            "properties": {
-                              "fish_permit_number": {
-                                "type": "number",
-                                "title": "Fish Permit Number"
-                              },
-                              "haul_number": {
-                                "type": "number",
-                                "title": "Haul Number"
-                              },
-                              "date_time_in": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time In"
-                              },
-                              "date_time_out": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time Out"
-                              },
-                              "net_trap_type": {
-                                "type": "string",
-                                "title": "Net/Trap Type",
-                                "enum": [
-                                  "Floating",
-                                  "Sinking"
-                                ]
-                              },
-                              "length": {
-                                "type": "number",
-                                "title": "Length (m)"
-                              },
-                              "depth": {
-                                "type": "number",
-                                "title": "Depth (m)"
-                              },
-                              "mesh_size": {
-                                "type": "number",
-                                "title": "Mesh Size (mm)"
-                              },
-                              "mesh_description": {
-                                "type": "string",
-                                "title": "Mesh Description",
-                                "enum": [
-                                  "Standard (6 pannel gill net)",
-                                  "Individual mesh pannel"
-                                ]
-                              },
-                              "zone": {
-                                "type": "string",
-                                "title": "Zone",
-                                "enum": [
-                                  "Bottom",
-                                  "Mid-water",
-                                  "Surface",
-                                  "Variable"
-                                ]
-                              },
-                              "habitat": {
-                                "type": "string",
-                                "title": "Habitat",
-                                "enum": [
-                                  "Pelagic",
-                                  "Littoral",
-                                  "Both"
-                                ]
-                              },
-                              "number_of_fish": {
-                                "type": "number",
-                                "title": "Total Number of Fish"
-                              },
-                              "min_length": {
-                                "type": "number",
-                                "title": "Min Length (mm)"
-                              },
-                              "max_length": {
-                                "type": "number",
-                                "title": "Max Length (mm)"
-                              }
-                            }
+                            "$ref": "#/components/schemas/NetTrapSpecifications"
                           }
                         }
                       },
@@ -1455,81 +1382,7 @@
                             ]
                           },
                           "electrofisher_specifications": {
-                            "type": "object",
-                            "title": "Electrofisher Specifications",
-                            "properties": {
-                              "fish_permit_number": {
-                                "type": "number",
-                                "title": "Fish Permit Number"
-                              },
-                              "passes": {
-                                "type": "number",
-                                "title": "Number of Passes"
-                              },
-                              "date_time_in": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time In"
-                              },
-                              "date_time_out": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time Out"
-                              },
-                              "one_pass_time": {
-                                "type": "number",
-                                "title": "Time of One Pass (s)"
-                              },
-                              "length": {
-                                "type": "number",
-                                "title": "Length (m)"
-                              },
-                              "width": {
-                                "type": "number",
-                                "title": "Width (m)"
-                              },
-                              "enclosure": {
-                                "type": "string",
-                                "title": "Enclosure",
-                                "enum": [
-                                  "Open",
-                                  "Closed",
-                                  "Partially Enclosed"
-                                ]
-                              },
-                              "voltage": {
-                                "type": "number",
-                                "title": "Voltage"
-                              },
-                              "frequency": {
-                                "type": "number",
-                                "title": "Frequency (Hz)"
-                              },
-                              "pulse": {
-                                "type": "number",
-                                "title": "Pulse (ms)"
-                              },
-                              "make": {
-                                "type": "string",
-                                "title": "Make"
-                              },
-                              "model": {
-                                "type": "string",
-                                "title": "Model"
-                              },
-                              "number_of_fish": {
-                                "type": "number",
-                                "title": "Total Number of Fish"
-                              },
-                              "min_length": {
-                                "type": "number",
-                                "title": "Min Length (mm)"
-                              },
-                              "max_length": {
-                                "type": "number",
-                                "title": "Max Length (mm)"
-                              }
-                            }
+                            "$ref": "#/components/schemas/ElectrofisherSpecifications"
                           }
                         }
                       },
@@ -1541,63 +1394,7 @@
                             ]
                           },
                           "plankton_tow_sample": {
-                            "type": "object",
-                            "title": "Plankton Tow Sample",
-                            "properties": {
-                              "tows": {
-                                "type": "number",
-                                "title": "Tows"
-                              },
-                              "date_time": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time"
-                              },
-                              "plankton_tow_type": {
-                                "type": "string",
-                                "title": "Type of Plankton Tow"
-                              },
-                              "tow_depth_length": {
-                                "type": "number",
-                                "title": "Depth/Length of Tow (m)"
-                              },
-                              "volume_sampled": {
-                                "type": "number",
-                                "title": "Total Volume Sampled (L)"
-                              },
-                              "containers": {
-                                "type": "number",
-                                "title": "Containers"
-                              },
-                              "preserved_sample_ph": {
-                                "type": "number",
-                                "title": "Sample pH (Preserved)"
-                              },
-                              "arrival_sample_ph": {
-                                "type": "number",
-                                "title": "Sample ph (Arrival)"
-                              },
-                              "preservative_type": {
-                                "type": "string",
-                                "title": "Preservative Type"
-                              },
-                              "preservation_concentration": {
-                                "type": "number",
-                                "title": "Preservation Concentration"
-                              },
-                              "other_species": {
-                                "type": "string",
-                                "title": "Other Species"
-                              },
-                              "veliger_positive": {
-                                "type": "boolean",
-                                "title": "Veliger Positive"
-                              },
-                              "buffered": {
-                                "type": "boolean",
-                                "title": "Buffered"
-                              }
-                            }
+                            "$ref": "#/components/schemas/PlanktonTowSample"
                           }
                         }
                       },
@@ -1609,80 +1406,7 @@
                             ]
                           },
                           "substrate_sample": {
-                            "type": "object",
-                            "title": "Substrate Sample",
-                            "properties": {
-                              "date_installed": {
-                                "type": "string",
-                                "format": "date",
-                                "title": "Date of Installation"
-                              },
-                              "date_monitored": {
-                                "type": "string",
-                                "format": "date",
-                                "title": "Date Monitored"
-                              },
-                              "waterbody": {
-                                "type": "string",
-                                "title": "Waterbody"
-                              },
-                              "site_location": {
-                                "type": "string",
-                                "title": "Location (Site Name)"
-                              },
-                              "depth": {
-                                "type": "number",
-                                "title": "Depth (m)"
-                              },
-                              "latitude": {
-                                "type": "number",
-                                "title": "Latitude"
-                              },
-                              "longitude": {
-                                "type": "number",
-                                "title": "Longitude"
-                              },
-                              "water_temperature": {
-                                "type": "number",
-                                "title": "Water Temperature (C)"
-                              },
-                              "water_column_ph": {
-                                "type": "number",
-                                "title": "Water Column pH"
-                              },
-                              "secchi_depth": {
-                                "type": "number",
-                                "title": "Secchi Depth (m)"
-                              },
-                              "preservative_type": {
-                                "type": "string",
-                                "title": "Preservative Type"
-                              },
-                              "location_description": {
-                                "type": "string",
-                                "title": "Location Description"
-                              },
-                              "comments": {
-                                "type": "string",
-                                "title": "Comments"
-                              },
-                              "microscopy_species": {
-                                "type": "string",
-                                "title": "Species Identified from Microscopy"
-                              },
-                              "e_dna_sample": {
-                                "type": "string",
-                                "title": "eDNA Sample"
-                              },
-                              "adult_suspected_presence": {
-                                "type": "boolean",
-                                "title": "Suspected Presence of Adults"
-                              },
-                              "sample_collected": {
-                                "type": "boolean",
-                                "title": "Sample Collected"
-                              }
-                            }
+                            "$ref": "#/components/schemas/SubstrateSample"
                           }
                         }
                       },
@@ -1694,14 +1418,7 @@
                             ]
                           },
                           "edna": {
-                            "type": "object",
-                            "title": "eDNA",
-                            "properties": {
-                              "comment": {
-                                "type": "string",
-                                "title": "eDNA Comment"
-                              }
-                            }
+                            "$ref": "#/components/schemas/EDna"
                           }
                         }
                       },
@@ -1713,14 +1430,7 @@
                             ]
                           },
                           "habitat_alteration": {
-                            "type": "object",
-                            "title": "Habitat Alteration",
-                            "properties": {
-                              "comment": {
-                                "type": "string",
-                                "title": "Habitat Comment"
-                              }
-                            }
+                            "$ref": "#/components/schemas/HabitatAlteration"
                           }
                         }
                       },
@@ -1732,14 +1442,7 @@
                             ]
                           },
                           "chemical": {
-                            "type": "object",
-                            "title": "Chemical",
-                            "properties": {
-                              "comment": {
-                                "type": "string",
-                                "title": "Chemical Comment"
-                              }
-                            }
+                            "$ref": "#/components/schemas/Chemical"
                           }
                         }
                       },
@@ -1751,14 +1454,7 @@
                             ]
                           },
                           "biological": {
-                            "type": "object",
-                            "title": "Biological",
-                            "properties": {
-                              "comment": {
-                                "type": "string",
-                                "title": "Biological Comment"
-                              }
-                            }
+                            "$ref": "#/components/schemas/Biological"
                           }
                         }
                       }
@@ -1791,6 +1487,13 @@
                     "type": "string",
                     "title": "Comment",
                     "maxLength": 300
+                  },
+                  "invasive_aquatic_animals": {
+                    "type": "array",
+                    "title": "Aquatic Animals",
+                    "items": {
+                      "$ref": "#/components/schemas/AquaticAnimals"
+                    }
                   }
                 },
                 "required": [
@@ -1807,87 +1510,7 @@
                             ]
                           },
                           "net_trap_specifications": {
-                            "type": "object",
-                            "title": "Net/Trap Specifications",
-                            "properties": {
-                              "fish_permit_number": {
-                                "type": "number",
-                                "title": "Fish Permit Number"
-                              },
-                              "haul_number": {
-                                "type": "number",
-                                "title": "Haul Number"
-                              },
-                              "date_time_in": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time In"
-                              },
-                              "date_time_out": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time Out"
-                              },
-                              "net_trap_type": {
-                                "type": "string",
-                                "title": "Net/Trap Type",
-                                "enum": [
-                                  "Floating",
-                                  "Sinking"
-                                ]
-                              },
-                              "length": {
-                                "type": "number",
-                                "title": "Length (m)"
-                              },
-                              "depth": {
-                                "type": "number",
-                                "title": "Depth (m)"
-                              },
-                              "mesh_size": {
-                                "type": "number",
-                                "title": "Mesh Size (mm)"
-                              },
-                              "mesh_description": {
-                                "type": "string",
-                                "title": "Mesh Description",
-                                "enum": [
-                                  "Standard (6 pannel gill net)",
-                                  "Individual mesh pannel"
-                                ]
-                              },
-                              "zone": {
-                                "type": "string",
-                                "title": "Zone",
-                                "enum": [
-                                  "Bottom",
-                                  "Mid-water",
-                                  "Surface",
-                                  "Variable"
-                                ]
-                              },
-                              "habitat": {
-                                "type": "string",
-                                "title": "Habitat",
-                                "enum": [
-                                  "Pelagic",
-                                  "Littoral",
-                                  "Both"
-                                ]
-                              },
-                              "number_of_fish": {
-                                "type": "number",
-                                "title": "Total Number of Fish"
-                              },
-                              "min_length": {
-                                "type": "number",
-                                "title": "Min Length (mm)"
-                              },
-                              "max_length": {
-                                "type": "number",
-                                "title": "Max Length (mm)"
-                              }
-                            }
+                            "$ref": "#/components/schemas/NetTrapSpecifications"
                           }
                         }
                       },
@@ -1899,81 +1522,7 @@
                             ]
                           },
                           "electrofisher_specifications": {
-                            "type": "object",
-                            "title": "Electrofisher Specifications",
-                            "properties": {
-                              "fish_permit_number": {
-                                "type": "number",
-                                "title": "Fish Permit Number"
-                              },
-                              "passes": {
-                                "type": "number",
-                                "title": "Number of Passes"
-                              },
-                              "date_time_in": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time In"
-                              },
-                              "date_time_out": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time Out"
-                              },
-                              "one_pass_time": {
-                                "type": "number",
-                                "title": "Time of One Pass (s)"
-                              },
-                              "length": {
-                                "type": "number",
-                                "title": "Length (m)"
-                              },
-                              "width": {
-                                "type": "number",
-                                "title": "Width (m)"
-                              },
-                              "enclosure": {
-                                "type": "string",
-                                "title": "Enclosure",
-                                "enum": [
-                                  "Open",
-                                  "Closed",
-                                  "Partially Enclosed"
-                                ]
-                              },
-                              "voltage": {
-                                "type": "number",
-                                "title": "Voltage"
-                              },
-                              "frequency": {
-                                "type": "number",
-                                "title": "Frequency (Hz)"
-                              },
-                              "pulse": {
-                                "type": "number",
-                                "title": "Pulse (ms)"
-                              },
-                              "make": {
-                                "type": "string",
-                                "title": "Make"
-                              },
-                              "model": {
-                                "type": "string",
-                                "title": "Model"
-                              },
-                              "number_of_fish": {
-                                "type": "number",
-                                "title": "Total Number of Fish"
-                              },
-                              "min_length": {
-                                "type": "number",
-                                "title": "Min Length (mm)"
-                              },
-                              "max_length": {
-                                "type": "number",
-                                "title": "Max Length (mm)"
-                              }
-                            }
+                            "$ref": "#/components/schemas/ElectrofisherSpecifications"
                           }
                         }
                       },
@@ -1985,63 +1534,7 @@
                             ]
                           },
                           "plankton_tow_sample": {
-                            "type": "object",
-                            "title": "Plankton Tow Sample",
-                            "properties": {
-                              "tows": {
-                                "type": "number",
-                                "title": "Tows"
-                              },
-                              "date_time": {
-                                "type": "string",
-                                "format": "date-time",
-                                "title": "Date and Time"
-                              },
-                              "plankton_tow_type": {
-                                "type": "string",
-                                "title": "Type of Plankton Tow"
-                              },
-                              "tow_depth_length": {
-                                "type": "number",
-                                "title": "Depth/Length of Tow (m)"
-                              },
-                              "volume_sampled": {
-                                "type": "number",
-                                "title": "Total Volume Sampled (L)"
-                              },
-                              "containers": {
-                                "type": "number",
-                                "title": "Containers"
-                              },
-                              "preserved_sample_ph": {
-                                "type": "number",
-                                "title": "Sample pH (Preserved)"
-                              },
-                              "arrival_sample_ph": {
-                                "type": "number",
-                                "title": "Sample ph (Arrival)"
-                              },
-                              "preservative_type": {
-                                "type": "string",
-                                "title": "Preservative Type"
-                              },
-                              "preservation_concentration": {
-                                "type": "number",
-                                "title": "Preservation Concentration"
-                              },
-                              "other_species": {
-                                "type": "string",
-                                "title": "Other Species"
-                              },
-                              "veliger_positive": {
-                                "type": "boolean",
-                                "title": "Veliger Positive"
-                              },
-                              "buffered": {
-                                "type": "boolean",
-                                "title": "Buffered"
-                              }
-                            }
+                            "$ref": "#/components/schemas/PlanktonTowSample"
                           }
                         }
                       },
@@ -2053,80 +1546,7 @@
                             ]
                           },
                           "substrate_sample": {
-                            "type": "object",
-                            "title": "Substrate Sample",
-                            "properties": {
-                              "date_installed": {
-                                "type": "string",
-                                "format": "date",
-                                "title": "Date of Installation"
-                              },
-                              "date_monitored": {
-                                "type": "string",
-                                "format": "date",
-                                "title": "Date Monitored"
-                              },
-                              "waterbody": {
-                                "type": "string",
-                                "title": "Waterbody"
-                              },
-                              "site_location": {
-                                "type": "string",
-                                "title": "Location (Site Name)"
-                              },
-                              "depth": {
-                                "type": "number",
-                                "title": "Depth (m)"
-                              },
-                              "latitude": {
-                                "type": "number",
-                                "title": "Latitude"
-                              },
-                              "longitude": {
-                                "type": "number",
-                                "title": "Longitude"
-                              },
-                              "water_temperature": {
-                                "type": "number",
-                                "title": "Water Temperature (C)"
-                              },
-                              "water_column_ph": {
-                                "type": "number",
-                                "title": "Water Column pH"
-                              },
-                              "secchi_depth": {
-                                "type": "number",
-                                "title": "Secchi Depth (m)"
-                              },
-                              "preservative_type": {
-                                "type": "string",
-                                "title": "Preservative Type"
-                              },
-                              "location_description": {
-                                "type": "string",
-                                "title": "Location Description"
-                              },
-                              "comments": {
-                                "type": "string",
-                                "title": "Comments"
-                              },
-                              "microscopy_species": {
-                                "type": "string",
-                                "title": "Species Identified from Microscopy"
-                              },
-                              "e_dna_sample": {
-                                "type": "string",
-                                "title": "eDNA Sample"
-                              },
-                              "adult_suspected_presence": {
-                                "type": "boolean",
-                                "title": "Suspected Presence of Adults"
-                              },
-                              "sample_collected": {
-                                "type": "boolean",
-                                "title": "Sample Collected"
-                              }
-                            }
+                            "$ref": "#/components/schemas/SubstrateSample"
                           }
                         }
                       },
@@ -2138,14 +1558,7 @@
                             ]
                           },
                           "edna": {
-                            "type": "object",
-                            "title": "eDNA",
-                            "properties": {
-                              "comment": {
-                                "type": "string",
-                                "title": "eDNA Comment"
-                              }
-                            }
+                            "$ref": "#/components/schemas/EDna"
                           }
                         }
                       },
@@ -2157,14 +1570,7 @@
                             ]
                           },
                           "habitat_alteration": {
-                            "type": "object",
-                            "title": "Habitat Alteration",
-                            "properties": {
-                              "comment": {
-                                "type": "string",
-                                "title": "Habitat Comment"
-                              }
-                            }
+                            "$ref": "#/components/schemas/HabitatAlteration"
                           }
                         }
                       },
@@ -2176,14 +1582,7 @@
                             ]
                           },
                           "chemical": {
-                            "type": "object",
-                            "title": "Chemical",
-                            "properties": {
-                              "comment": {
-                                "type": "string",
-                                "title": "Chemical Comment"
-                              }
-                            }
+                            "$ref": "#/components/schemas/Chemical"
                           }
                         }
                       },
@@ -2195,14 +1594,7 @@
                             ]
                           },
                           "biological": {
-                            "type": "object",
-                            "title": "Biological",
-                            "properties": {
-                              "comment": {
-                                "type": "string",
-                                "title": "Biological Comment"
-                              }
-                            }
+                            "$ref": "#/components/schemas/Biological"
                           }
                         }
                       }
@@ -2221,6 +1613,13 @@
                     "type": "string",
                     "title": "Comment",
                     "maxLength": 300
+                  },
+                  "invasive_aquatic_animals": {
+                    "type": "array",
+                    "title": "Aquatic Animals",
+                    "items": {
+                      "$ref": "#/components/schemas/AquaticAnimals"
+                    }
                   }
                 }
               }
@@ -3670,6 +3069,341 @@
           "offset_distance": {
             "type": "number",
             "title": "Offset Distance"
+          }
+        }
+      },
+      "NetTrapSpecifications": {
+        "type": "object",
+        "title": "Net/Trap Specifications",
+        "properties": {
+          "fish_permit_number": {
+            "type": "number",
+            "title": "Fish Permit Number"
+          },
+          "haul_number": {
+            "type": "number",
+            "title": "Haul Number"
+          },
+          "date_time_in": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date and Time In"
+          },
+          "date_time_out": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date and Time Out"
+          },
+          "net_trap_type": {
+            "type": "string",
+            "title": "Net/Trap Type",
+            "enum": [
+              "Floating",
+              "Sinking"
+            ]
+          },
+          "length": {
+            "type": "number",
+            "title": "Length (m)"
+          },
+          "depth": {
+            "type": "number",
+            "title": "Depth (m)"
+          },
+          "mesh_size": {
+            "type": "number",
+            "title": "Mesh Size (mm)"
+          },
+          "mesh_description": {
+            "type": "string",
+            "title": "Mesh Description",
+            "enum": [
+              "Standard (6 pannel gill net)",
+              "Individual mesh pannel"
+            ]
+          },
+          "zone": {
+            "type": "string",
+            "title": "Zone",
+            "enum": [
+              "Bottom",
+              "Mid-water",
+              "Surface",
+              "Variable"
+            ]
+          },
+          "habitat": {
+            "type": "string",
+            "title": "Habitat",
+            "enum": [
+              "Pelagic",
+              "Littoral",
+              "Both"
+            ]
+          },
+          "number_of_fish": {
+            "type": "number",
+            "title": "Total Number of Fish"
+          },
+          "min_length": {
+            "type": "number",
+            "title": "Min Length (mm)"
+          },
+          "max_length": {
+            "type": "number",
+            "title": "Max Length (mm)"
+          }
+        }
+      },
+      "SubstrateSample": {
+        "type": "object",
+        "title": "Substrate Sample",
+        "properties": {
+          "date_installed": {
+            "type": "string",
+            "format": "date",
+            "title": "Date of Installation"
+          },
+          "date_monitored": {
+            "type": "string",
+            "format": "date",
+            "title": "Date Monitored"
+          },
+          "waterbody": {
+            "type": "string",
+            "title": "Waterbody"
+          },
+          "site_location": {
+            "type": "string",
+            "title": "Location (Site Name)"
+          },
+          "depth": {
+            "type": "number",
+            "title": "Depth (m)"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "water_temperature": {
+            "type": "number",
+            "title": "Water Temperature (C)"
+          },
+          "water_column_ph": {
+            "type": "number",
+            "title": "Water Column pH"
+          },
+          "secchi_depth": {
+            "type": "number",
+            "title": "Secchi Depth (m)"
+          },
+          "preservative_type": {
+            "type": "string",
+            "title": "Preservative Type"
+          },
+          "location_description": {
+            "type": "string",
+            "title": "Location Description"
+          },
+          "comments": {
+            "type": "string",
+            "title": "Comments"
+          },
+          "microscopy_species": {
+            "type": "string",
+            "title": "Species Identified from Microscopy"
+          },
+          "e_dna_sample": {
+            "type": "string",
+            "title": "eDNA Sample"
+          },
+          "adult_suspected_presence": {
+            "type": "boolean",
+            "title": "Suspected Presence of Adults"
+          },
+          "sample_collected": {
+            "type": "boolean",
+            "title": "Sample Collected"
+          }
+        }
+      },
+      "PlanktonTowSample": {
+        "type": "object",
+        "title": "Plankton Tow Sample",
+        "properties": {
+          "tows": {
+            "type": "number",
+            "title": "Tows"
+          },
+          "date_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date and Time"
+          },
+          "plankton_tow_type": {
+            "type": "string",
+            "title": "Type of Plankton Tow"
+          },
+          "tow_depth_length": {
+            "type": "number",
+            "title": "Depth/Length of Tow (m)"
+          },
+          "volume_sampled": {
+            "type": "number",
+            "title": "Total Volume Sampled (L)"
+          },
+          "containers": {
+            "type": "number",
+            "title": "Containers"
+          },
+          "preserved_sample_ph": {
+            "type": "number",
+            "title": "Sample pH (Preserved)"
+          },
+          "arrival_sample_ph": {
+            "type": "number",
+            "title": "Sample ph (Arrival)"
+          },
+          "preservative_type": {
+            "type": "string",
+            "title": "Preservative Type"
+          },
+          "preservation_concentration": {
+            "type": "number",
+            "title": "Preservation Concentration"
+          },
+          "other_species": {
+            "type": "string",
+            "title": "Other Species"
+          },
+          "veliger_positive": {
+            "type": "boolean",
+            "title": "Veliger Positive"
+          },
+          "buffered": {
+            "type": "boolean",
+            "title": "Buffered"
+          }
+        }
+      },
+      "EDna": {
+        "type": "object",
+        "title": "eDNA",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "title": "eDNA Comment"
+          }
+        }
+      },
+      "HabitatAlteration": {
+        "type": "object",
+        "title": "Habitat Alteration",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "title": "Habitat Comment"
+          }
+        }
+      },
+      "Chemical": {
+        "type": "object",
+        "title": "Chemical",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "title": "Chemical Comment"
+          }
+        }
+      },
+      "Biological": {
+        "type": "object",
+        "title": "Biological",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "title": "Biological Comment"
+          }
+        }
+      },
+      "ElectrofisherSpecifications": {
+        "type": "object",
+        "title": "Electrofisher Specifications",
+        "properties": {
+          "fish_permit_number": {
+            "type": "number",
+            "title": "Fish Permit Number"
+          },
+          "passes": {
+            "type": "number",
+            "title": "Number of Passes"
+          },
+          "date_time_in": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date and Time In"
+          },
+          "date_time_out": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date and Time Out"
+          },
+          "one_pass_time": {
+            "type": "number",
+            "title": "Time of One Pass (s)"
+          },
+          "length": {
+            "type": "number",
+            "title": "Length (m)"
+          },
+          "width": {
+            "type": "number",
+            "title": "Width (m)"
+          },
+          "enclosure": {
+            "type": "string",
+            "title": "Enclosure",
+            "enum": [
+              "Open",
+              "Closed",
+              "Partially Enclosed"
+            ]
+          },
+          "voltage": {
+            "type": "number",
+            "title": "Voltage"
+          },
+          "frequency": {
+            "type": "number",
+            "title": "Frequency (Hz)"
+          },
+          "pulse": {
+            "type": "number",
+            "title": "Pulse (ms)"
+          },
+          "make": {
+            "type": "string",
+            "title": "Make"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "number_of_fish": {
+            "type": "number",
+            "title": "Total Number of Fish"
+          },
+          "min_length": {
+            "type": "number",
+            "title": "Min Length (mm)"
+          },
+          "max_length": {
+            "type": "number",
+            "title": "Max Length (mm)"
           }
         }
       },

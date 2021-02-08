@@ -395,6 +395,12 @@ const Activity_AnimalTerrestrial = {
 };
 
 const Activity_AnimalAquatic = {
+  invasive_aquatic_animals: {
+    items: {
+      ...ThreeColumnStyle,
+      ...AquaticAnimals
+    }
+  },
   comment: {
     'ui:widget': 'textarea'
   },
@@ -590,12 +596,6 @@ const Observation_AnimalAquatic = {
   profile: {
     ...ThreeColumnStyle,
     ...Profile
-  },
-  invasive_aquatic_animals: {
-    items: {
-      ...ThreeColumnStyle,
-      ...AquaticAnimals
-    }
   }
 };
 
