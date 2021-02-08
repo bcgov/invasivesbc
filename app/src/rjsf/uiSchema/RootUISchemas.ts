@@ -160,10 +160,6 @@ const Activity_Treatment_MechanicalPlant_BulkEdit = {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity_BulkEdit
   },
-  activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Treatment_BulkEdit
-  },
   activity_subtype_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_MechanicalPlant_BulkEdit
@@ -189,10 +185,6 @@ const Activity_Treatment_BiologicalPlant_BulkEdit = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity_BulkEdit
-  },
-  activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Treatment_BulkEdit
   },
   activity_subtype_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,

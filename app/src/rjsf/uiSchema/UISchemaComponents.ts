@@ -16,12 +16,10 @@ const Treatment_ChemicalPlant = {
   activity_id: {
     'ui:readonly': true
   },
-  applicator1_first_name: {},
-  applicator1_last_name: {},
-  applicator1_licence_number: {},
-  applicator2_first_name: {},
-  applicator2_last_name: {},
-  applicator2_licence_number: {},
+  applicator1_name: {},
+  applicator1_license: {},
+  applicator2_name: {},
+  applicator2_license: {},
   pesticide_employer_code: {},
   chemical_method_code: {},
   temperature: {},
