@@ -505,6 +505,15 @@ const Transect_BiocontrolEfficacy = {
   }
 };
 
+const Dispersal_BiologicalDispersal = {
+  monitoring_organization: {},
+  biological_agent_presence_code: {},
+  count_duration: {},
+  biological_agent_code: {},
+  plant_count: {},
+  biological_agent_count: {}
+}
+
 const Observation_PlantTerrestrial_BulkEdit = {
   specific_use_code: {},
   invasive_plant_code: {},
@@ -737,6 +746,7 @@ const BaseUISchemaComponents = {
   Transect_FullVegetation,
   Transect_LumpedSpeciesVegetation,
   Transect_BiocontrolEfficacy,
+  Dispersal_BiologicalDispersal,
   Treatment,
   Treatment_MechanicalPlant,
   Treatment_BiologicalPlant,

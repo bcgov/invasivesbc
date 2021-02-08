@@ -242,7 +242,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       {sortedActivities.map((doc) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
-        if (!doc.activitySubtype.includes(props.workflowFunction) && doc.activityType !== 'Transect') {
+        if (!doc.activitySubtype.includes(props.workflowFunction) && !['Transect', 'Dispersal'].includes(doc.activityType)) {
           return null;
         }
 
@@ -499,7 +499,7 @@ const ActivitiesList: React.FC = () => {
             <>
               <Box>
                 <Box>
-                  <Typography variant="h5">Special Activities</Typography>
+                  <Typography variant="h5">Transects</Typography>
                 </Box>
                 <Box className={classes.newActivityButtonsRow}>
                   {specialFunctions.map((item) => (
@@ -520,6 +520,29 @@ const ActivitiesList: React.FC = () => {
                   workflowFunction={workflowFunction}
                   isDisabled={isDisabled}
                   activityType={ActivityType.Transect}
+                />
+              </Box>
+              <br />
+              <Box>
+                <Box>
+                  <Typography variant="h5">Dispersals</Typography>
+                </Box>
+                <Box className={classes.newActivityButtonsRow}>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => {
+                      addNewActivityToDB(databaseContext, ActivityType.Dispersal, ActivitySubtype.Activity_BiologicalDispersal);
+                    }}>
+                    Biological Dispersal
+                  </Button>
+                </Box>
+
+                <ActivityList
+                  workflowFunction={workflowFunction}
+                  isDisabled={isDisabled}
+                  activityType={ActivityType.Dispersal}
                 />
               </Box>
               <br />
