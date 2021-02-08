@@ -41,7 +41,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
         _id: 'trip'
       }
     });
-    if (docs.docs.length > 0) {
+    if (docs.docs.length) {
       let tripDoc = docs.docs[0];
       if (tripDoc.metabaseChoices) {
         setMetabaseChoices([...tripDoc.metabaseChoices]);
