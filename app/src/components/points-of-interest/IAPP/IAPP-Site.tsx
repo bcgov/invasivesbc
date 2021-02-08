@@ -128,7 +128,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               PaperFile
             </Grid>
             <Grid item xs={9} sm={4}>
-              {ifApplicable(site.paper_file_id[0].description)}
+              {ifApplicable(site.project_code[0].description)}
             </Grid>
             <Grid item xs={3} sm={2}>
               Aspect
@@ -311,7 +311,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.invasive_species_agency_code,
                     row.reported_area,
                     '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
-                    row.paper_file_id[0].description,
+                    row.project_code[0].description,
                     {
                       className: classes.wideCell,
                       children: row.general_comment
@@ -338,7 +338,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.monitoring_date,
                     row.invasive_species_agency_code,
                     row.efficacy_percent,
-                    row.paper_file_id[0].description,
+                    row.project_code[0].description,
                     {
                       className: classes.wideCell,
                       children: row.general_comment
@@ -381,7 +381,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.invasive_species_agency_code,
                     row.reported_area,
                     row.chemical_method,
-                    row.paper_file_id[0].description,
+                    row.project_code[0].description,
                     {
                       className: classes.wideCell,
                       children: row.general_comment
@@ -440,7 +440,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                         row.monitoring_date,
                         row.invasive_species_agency_code,
                         row.efficacy_percent,
-                        row.paper_file_id[0].description,
+                        row.project_code[0].description,
                         {
                           className: classes.wideCell,
                           children: row.general_comment
@@ -505,7 +505,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.utm_zone,
                     row.utm_easting,
                     row.utm_northing,
-                    row.paper_file_id[0].description,
+                    row.project_code[0].description,
                     {
                       className: classes.wideCell,
                       children: row.general_comment
@@ -562,7 +562,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.utm_zone,
                     row.utm_easting,
                     row.utm_northing,
-                    row.paper_file_id[0].description,
+                    row.project_code[0].description,
                     {
                       className: classes.wideCell,
                       children: row.general_comment
@@ -615,7 +615,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     row.biological_dispersal_id,
                     row.common_name,
                     row.monitoring_date,
-                    row.paper_file_id[0].description,
+                    row.project_code[0].description,
                     row.plant_count,
                     row.agent_count,
                     row.count_duration,
