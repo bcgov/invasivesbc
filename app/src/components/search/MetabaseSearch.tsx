@@ -67,7 +67,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
   };
 
   const updateMetabaseChoice = (updatedMetabase: IMetabaseChoices, index: number) => {
-    let updatedMetabaseChoices = [...metabaseChoices];
+    const updatedMetabaseChoices = [...metabaseChoices];
     updatedMetabaseChoices[index] = updatedMetabase;
     saveChoices([...updatedMetabaseChoices]);
   };
