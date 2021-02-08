@@ -2371,6 +2371,14 @@
             "type": "string",
             "title": "Treatment Location Description",
             "x-tooltip-text": "Text entry to provide location and access directions specific to this treatment"
+          },
+          "treatment_persons": {
+            "type": "array",
+            "title": "Treatment Person(s)",
+            "items": {
+              "$ref": "#/components/schemas/TreatmentPersons"
+            },
+            "x-tooltip-text": "Name of person(s) doing treatment"
           }
         }
       },
@@ -2588,35 +2596,17 @@
         "title": "Mechanical Treatment Information",
         "type": "object",
         "required": [
-          "mechanical_method_code",
-          "mechanical_disposal_code",
-          "root_removal_code",
-          "soil_disturbance_code",
-          "invasive_plant_code",
-          "signage_on_site"
+          "invasive_plants_mechanical",
+          "mechanical_disposal_code"
         ],
         "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "mechanical_method_code": {
-            "type": "string",
-            "title": "Mechanical Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "mechanical_method_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
+          "invasive_plants_mechanical": {
+            "type": "array",
+            "title": "Invasive Plants and Mechanical Treatment Method",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlantsMechanical"
+            },
+            "x-tooltip-text": "Target invasive plant species and specific treatment technique, device or method at this location. May be more than one"
           },
           "mechanical_disposal_code": {
             "type": "string",
@@ -2627,34 +2617,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "root_removal_code": {
-            "type": "string",
-            "title": "Root Removal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "root_removal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "soil_disturbance_code": {
-            "type": "string",
-            "title": "Soil Disturbance",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "soil_disturbance_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "signage_on_site": {
-            "type": "boolean",
-            "title": "Signage on Site",
-            "default": false
+            },
+            "x-tooltip-text": "Indicate disposal method"
           }
         }
       },
@@ -3477,6 +3441,37 @@
           }
         }
       },
+      "InvasivePlantsMechanical": {
+        "type": "object",
+        "required": [
+          "invasive_plant_code",
+          "mechanical_method_code"
+        ],
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "mechanical_method_code": {
+            "type": "string",
+            "title": "Mechanical Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
       "InvasiveAnimals": {
         "type": "object",
         "required": ["invasive_animal_code"],
@@ -3491,6 +3486,16 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
+          }
+        }
+      },
+      "TreatmentPersons": {
+        "type": "object",
+        "required": ["person_name"],
+        "properties": {
+          "person_name": {
+            "type": "string",
+            "title": "Person Name"
           }
         }
       },

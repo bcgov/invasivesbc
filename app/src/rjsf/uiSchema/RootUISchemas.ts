@@ -146,11 +146,11 @@ const Activity_Treatment_MechanicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment_MechanicalPlant
   }
 };
