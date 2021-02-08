@@ -161,7 +161,7 @@ const Activity_Treatment_BiologicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -187,7 +187,7 @@ const Activity_Treatment_MechanicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -202,7 +202,7 @@ const Activity_Treatment_ChemicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -217,7 +217,7 @@ const Activity_Treatment_BiologicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {

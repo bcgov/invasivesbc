@@ -2597,26 +2597,29 @@
         "title": "Biological Treatment Information",
         "type": "object",
         "required": [
+          "invasive_plants",
+          "treatment_issues_code",
           "classified_area_code",
           "release_quantity",
+          "mortality",
           "agent_source",
           "biological_agent_code",
           "biological_agent_stage_code",
-          "invasive_plant_code",
-          "bioagent_maturity_status_code",
-          "signage_on_site"
+          "bioagent_maturity_status_code"
         ],
         "properties": {
-          "invasive_plant_code": {
+          "treatment_issues_code": {
             "type": "string",
-            "title": "Invasive Plant",
+            "title": "Treatment Issue",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-header-name": "treatment_issues_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "default": "NA",
+            "x-tooltip-text": "Environmental condition that may effect survival of biocontrol"
           },
           "classified_area_code": {
             "type": "string",
@@ -2627,18 +2630,27 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Classification of type of biological treatment - ie research, primary"
           },
           "release_quantity": {
             "type": "number",
             "title": "Release Quantity",
             "minimum": 1,
             "maximum": 100000,
-            "default": 1
+            "default": 1,
+            "x-tooltip-text": "Number of agents released (exact or approximate)"
+          },
+          "mortality": {
+            "type": "number",
+            "title": "Mortality",
+            "x-tooltip-text": "Number of agents dead at time of release"
           },
           "agent_source": {
             "type": "string",
-            "title": "Agent Source"
+            "title": "Agent Source",
+            "maxLength": 50,
+            "x-tooltip-text": "Agent source location and organization (50 characters)"
           },
           "biological_agent_code": {
             "type": "string",
@@ -2649,7 +2661,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Genus species code of the agent (ie ALTICAR [Altica carduorum])"
           },
           "biological_agent_stage_code": {
             "type": "string",
@@ -2660,23 +2673,28 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Life stage of biocontrol agent"
           },
           "bioagent_maturity_status_code": {
             "type": "string",
-            "title": "Bioagent Maturity Status",
+            "title": "Biological Agent Status",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "bioagent_maturity_status_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Primary, secondary or tertiary agent"
           },
-          "signage_on_site": {
-            "type": "boolean",
-            "title": "Signage on Site",
-            "default": false
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
+            },
+            "x-tooltip-text": "Target invasive plant species being treated at this location"
           }
         }
       },

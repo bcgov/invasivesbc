@@ -623,16 +623,19 @@ const Treatment_MechanicalPlant = {
 };
 
 const Treatment_BiologicalPlant = {
+  invasive_plants: {
+    items: {
+      ...InvasivePlants
+    }
+  },
+  treatment_issues_code: {},
   classified_area_code: {},
-  release_quantity: {},
+  release_quantity : {},
+  mortality: {},
   agent_source: {},
   biological_agent_code: {},
   biological_agent_stage_code: {},
-  invasive_plant_code: {},
-  bioagent_maturity_status_code: {},
-  signage_on_site: {
-    'ui:widget': 'radio'
-  }
+  bioagent_maturity_status_code: {}
 };
 
 const Treatment_BiologicalPlant_BulkEdit = {
