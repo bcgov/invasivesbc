@@ -2597,14 +2597,14 @@
         "title": "Mechanical Treatment Information",
         "type": "object",
         "required": [
-          "invasive_plants_mechanical"
+          "mechanical_plants_method_disposal"
         ],
         "properties": {
-          "invasive_plants_mechanical": {
+          "mechanical_plants_method_disposal": {
             "type": "array",
             "title": "Invasive Plants, Treatment and Disposal Method",
             "items": {
-              "$ref": "#/components/schemas/InvasivePlantsMechanical"
+              "$ref": "#/components/schemas/MechanicalPlantsMethodDisposal"
             },
             "x-tooltip-text": "Target invasive plant species, specific treatment technique, and disposal method at this location. May be more than one"
           }
@@ -3435,7 +3435,7 @@
           }
         }
       },
-      "InvasivePlantsMechanical": {
+      "MechanicalPlantsMethodDisposal": {
         "type": "object",
         "required": [
           "invasive_plant_code",

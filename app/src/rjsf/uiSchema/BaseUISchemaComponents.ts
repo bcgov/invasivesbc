@@ -30,7 +30,7 @@ const InvasivePlants = {
   invasive_plant_code: {}
 };
 
-const InvasivePlantsMechanical = {
+const MechanicalPlantsMethodDisposal = {
   invasive_plant_code: {},
   mechanical_method_code: {},
   mechanical_disposal_code: {}
@@ -615,9 +615,9 @@ const Treatment = {
 };
 
 const Treatment_MechanicalPlant = {
-  invasive_plants_mechanical: {
+  mechanical_plants_method_disposal: {
     items: {
-      ...InvasivePlantsMechanical
+      ...MechanicalPlantsMethodDisposal
     }
   }
 };
