@@ -565,41 +565,6 @@ const Observation_PlantAquatic = {
   }
 };
 
-const Observation_AnimalAquatic = {
-  waterbody_data: {
-    ...ThreeColumnStyle,
-    ...WaterbodyData
-  },
-  project_data: {
-    ...ThreeColumnStyle,
-    ...ProjectData
-  },
-  terrain_characteristics: {
-    ...ThreeColumnStyle,
-    ...TerrainCharacteristics
-  },
-  aquatic_flora: {
-    ...ThreeColumnStyle,
-    ...AquaticFlora
-  },
-  lake_bathymetry: {
-    ...ThreeColumnStyle,
-    ...LakeBathymetry
-  },
-  limnological_station_water_quality: {
-    ...ThreeColumnStyle,
-    ...LimnologicalStationWaterQuality
-  },
-  water_quality: {
-    ...ThreeColumnStyle,
-    ...WaterQuality
-  },
-  profile: {
-    ...ThreeColumnStyle,
-    ...Profile
-  }
-};
-
 const Treatment = {
   activity_id: {
     'ui:readonly': true
