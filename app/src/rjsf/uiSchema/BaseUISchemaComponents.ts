@@ -628,11 +628,7 @@ const Treatment_MechanicalPlant_BulkEdit = {
 };
 
 const Treatment_BiologicalPlant = {
-  invasive_plants: {
-    items: {
-      ...InvasivePlants
-    }
-  },
+  invasive_plant_code: {},
   treatment_issues_code: {},
   classified_area_code: {},
   release_quantity: {},
