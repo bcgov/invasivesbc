@@ -449,8 +449,39 @@ const Observation_PlantTerrestrial = {
   }
 };
 
-const Transect_FireMonitoring = {
+const TransectData = {
   utm_zone: {},
+  transect_start_date_time: {},
+  transect_end_date_time: {},
+  project_number: {},
+  surveyor1_name: {},
+  research_trial: {},
+  realm_code: {},
+  site_aspect: {},
+  site_aspect_variability: {},
+  site_slope: {},
+  site_slope_variability: {},
+  site_elevation: {},
+  cloud_cover_code: {},
+  beaufort_wind_code: {},
+  precipitation_code: {},
+  burn_severity_code: {},
+  mesoslope_position_code: {},
+  site_surface_shape_code: {},
+  soil_properties_code: {},
+  surface_substrate_code: {},
+  site_activity_disturbance: {},
+  disturbance_site_defunct: {},
+  disturbance_condition_code: {},
+  disturbance_type_code: {},
+  ecological_moisture_regime_code: {}
+};
+
+const Transect_FireMonitoring = {
+  transect_data: {
+    ...ThreeColumnStyle,
+    ...TransectData
+  },
   fire_monitoring_transect_lines: {
     items: {
       ...ThreeColumnStyle,
