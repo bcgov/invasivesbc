@@ -20,20 +20,8 @@ const TwoColumnStyle = {
   'ui:column-lg': 6
 };
 
-const OneColumnStyle = {
-  'ui:column-xs': 12,
-  'ui:column-md': 12,
-  'ui:column-lg': 12
-};
-
 const InvasivePlants = {
   invasive_plant_code: {}
-};
-
-const MechanicalPlantsMethodDisposal = {
-  invasive_plant_code: {},
-  mechanical_method_code: {},
-  mechanical_disposal_code: {}
 };
 
 const TreatmentPersons = {
@@ -577,41 +565,6 @@ const Observation_PlantAquatic = {
   }
 };
 
-const Observation_AnimalAquatic = {
-  waterbody_data: {
-    ...ThreeColumnStyle,
-    ...WaterbodyData
-  },
-  project_data: {
-    ...ThreeColumnStyle,
-    ...ProjectData
-  },
-  terrain_characteristics: {
-    ...ThreeColumnStyle,
-    ...TerrainCharacteristics
-  },
-  aquatic_flora: {
-    ...ThreeColumnStyle,
-    ...AquaticFlora
-  },
-  lake_bathymetry: {
-    ...ThreeColumnStyle,
-    ...LakeBathymetry
-  },
-  limnological_station_water_quality: {
-    ...ThreeColumnStyle,
-    ...LimnologicalStationWaterQuality
-  },
-  water_quality: {
-    ...ThreeColumnStyle,
-    ...WaterQuality
-  },
-  profile: {
-    ...ThreeColumnStyle,
-    ...Profile
-  }
-};
-
 const Treatment = {
   activity_id: {
     'ui:readonly': true
@@ -628,18 +581,22 @@ const Treatment = {
 };
 
 const Treatment_MechanicalPlant = {
-  mechanical_plants_method_disposal: {
-    items: {
-      ...MechanicalPlantsMethodDisposal
-    }
-  }
+  invasive_plant_code: {
+    'ui:readonly': true
+  },
+  mechanical_method_code: {},
+  mechanical_disposal_code: {}
+};
+
+const Treatment_MechanicalPlant_BulkEdit = {
+  invasive_plant_code: {},
+  mechanical_method_code: {},
+  mechanical_disposal_code: {}
 };
 
 const Treatment_BiologicalPlant = {
-  invasive_plants: {
-    items: {
-      ...InvasivePlants
-    }
+  invasive_plant_code: {
+    'ui:readonly': true
   },
   treatment_issues_code: {},
   classified_area_code: {},
@@ -753,6 +710,7 @@ const BaseUISchemaComponents = {
   Dispersal_BiologicalDispersal,
   Treatment,
   Treatment_MechanicalPlant,
+  Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
   Treatment_MechanicalTerrestrialAnimal,
@@ -767,8 +725,7 @@ const BaseUISchemaComponents = {
   Herbicide,
   InvasivePlants,
   ThreeColumnStyle,
-  TwoColumnStyle,
-  OneColumnStyle
+  TwoColumnStyle
 };
 
 export default BaseUISchemaComponents;

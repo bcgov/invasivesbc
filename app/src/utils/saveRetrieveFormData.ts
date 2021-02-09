@@ -6,9 +6,10 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 */
 export function saveFormDataToSession(formData: any, activitySubtype: string): void {
   const activityData = { ...formData.activity_data };
+  const activitySubtypeData = { ...formData.activity_subtype_data };
 
   // call business rule function to exclude certain fields of the activity_data of the form data
-  const activityDataToCopy = getFieldsToCopy(activityData);
+  const activityDataToCopy = getFieldsToCopy(activityData, activitySubtypeData).activityData;
 
   const formDataToCopy = {
     ...formData,

@@ -293,6 +293,17 @@
           }
         }
       },
+      "Activity_Treatment_MechanicalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_MechanicalPlant_BulkEdit"
+          }
+        }
+      },
       "Activity_Treatment_BiologicalPlant": {
         "type": "object",
         "properties": {
@@ -1879,7 +1890,7 @@
           "chemical_method_code",
           "temperature",
           "humidity",
-          "invasive_plants",
+          "invasive_plant_code",
           "herbicide",
           "wind_speed",
           "wind_direction_code",
@@ -1991,11 +2002,15 @@
             "default": false,
             "x-tooltip-text": "Treatment notice sign placed at site prior to treatment"
           },
-          "invasive_plants": {
-            "type": "array",
-            "title": "Invasive Plants",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlants"
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
             },
             "x-tooltip-text": "Target invasive plant species being treated at this location"
           },
@@ -2055,11 +2070,15 @@
             },
             "x-tooltip-text": "Choose treatment application method"
           },
-          "invasive_plants": {
-            "type": "array",
-            "title": "Invasive Plants",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlants"
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
             },
             "x-tooltip-text": "Target invasive plant species being treated at this location"
           },
@@ -2077,16 +2096,88 @@
         "title": "Mechanical Treatment Information",
         "type": "object",
         "required": [
-          "mechanical_plants_method_disposal"
+          "invasive_plant_code",
+          "mechanical_method_code",
+          "mechanical_disposal_code"
         ],
         "properties": {
-          "mechanical_plants_method_disposal": {
-            "type": "array",
-            "title": "Invasive Plants, Treatment and Disposal Method",
-            "items": {
-              "$ref": "#/components/schemas/MechanicalPlantsMethodDisposal"
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Target invasive plant species, specific treatment technique, and disposal method at this location. May be more than one"
+            "x-tooltip-text": "Target invasive plant species treated at this location"
+          },
+          "mechanical_method_code": {
+            "type": "string",
+            "title": "Mechanical Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Specific treatment technique, device or method"
+          },
+          "mechanical_disposal_code": {
+            "type": "string",
+            "title": "Disposal Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_disposal_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Indicate disposal method"
+          }
+        }
+      },
+      "Treatment_MechanicalPlant_BulkEdit": {
+        "title": "Mechanical Treatment Information",
+        "type": "object",
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Target invasive plant species treated at this location"
+          },
+          "mechanical_method_code": {
+            "type": "string",
+            "title": "Mechanical Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Specific treatment technique, device or method"
+          },
+          "mechanical_disposal_code": {
+            "type": "string",
+            "title": "Disposal Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_disposal_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Indicate disposal method"
           }
         }
       },
@@ -2094,7 +2185,7 @@
         "title": "Biological Treatment Information",
         "type": "object",
         "required": [
-          "invasive_plants",
+          "invasive_plant_code",
           "treatment_issues_code",
           "classified_area_code",
           "release_quantity",
@@ -2105,6 +2196,18 @@
           "bioagent_maturity_status_code"
         ],
         "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Target invasive plant species treated at this location"
+          },
           "treatment_issues_code": {
             "type": "string",
             "title": "Treatment Issue",
@@ -2184,14 +2287,6 @@
               "x-enum-code-sort-order": "code_sort_order"
             },
             "x-tooltip-text": "Primary, secondary or tertiary agent"
-          },
-          "invasive_plants": {
-            "type": "array",
-            "title": "Invasive Plants",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlants"
-            },
-            "x-tooltip-text": "Target invasive plant species being treated at this location"
           }
         }
       },
@@ -2199,13 +2294,17 @@
         "title": "Biological Treatment Information",
         "type": "object",
         "properties": {
-          "invasive_plants": {
-            "type": "array",
-            "title": "Invasive Plants",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlants"
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Target invasive plant species being treated at this location"
+            "x-tooltip-text": "Target invasive plant species treated at this location"
           },
           "classified_area_code": {
             "type": "string",
@@ -2892,52 +2991,6 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
-          }
-        }
-      },
-      "MechanicalPlantsMethodDisposal": {
-        "type": "object",
-        "required": [
-          "invasive_plant_code",
-          "mechanical_method_code",
-          "mechanical_disposal_code"
-        ],
-        "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Target invasive plant species treated at this location"
-          },
-          "mechanical_method_code": {
-            "type": "string",
-            "title": "Mechanical Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "mechanical_method_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Specific treatment technique, device or method"
-          },
-          "mechanical_disposal_code": {
-            "type": "string",
-            "title": "Disposal Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "mechanical_disposal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Indicate disposal method"
           }
         }
       },
