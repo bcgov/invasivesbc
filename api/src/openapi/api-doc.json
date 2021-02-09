@@ -2239,9 +2239,6 @@
           }
         }
       },
-      "Transect": {
-        "title": "Transect Information"
-      },
       "Transect_FireMonitoring": {
         "title": "Fire Monitoring Transect Information",
         "type": "object",
@@ -2356,9 +2353,40 @@
           "count_duration",
           "biological_agent_code",
           "plant_count",
-          "biological_agent_count"
+          "biological_agent_count",
+          "applicator1_name",
+          "applicator2_name",
+          "treatment_organization",
+          "invasive_plant_code"
         ],
         "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Target invasive plant species at this location"
+          },
+          "applicator1_name": {
+            "type": "string",
+            "title": "Primary Applicator Name",
+            "x-tooltip-text": "Name of primary applicator"
+          },
+          "applicator2_name": {
+            "type": "string",
+            "title": "Secondary Applicator Name",
+            "x-tooltip-text": "Name of secondary applicator"
+          },
+          "treatment_organization": {
+            "type": "string",
+            "title": "Treatment Organization",
+            "x-tooltip-text": "The company or organization conducting the treatment"
+          },
           "monitoring_organization": {
             "type": "string",
             "title": "Monitoring Organization",

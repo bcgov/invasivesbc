@@ -511,7 +511,11 @@ const Dispersal_BiologicalDispersal = {
   count_duration: {},
   biological_agent_code: {},
   plant_count: {},
-  biological_agent_count: {}
+  biological_agent_count: {},
+  applicator1_name: {},
+  applicator2_name: {},
+  treatment_organization: {},
+  invasive_plant_code: {}
 };
 
 const Observation_PlantTerrestrial_BulkEdit = {
