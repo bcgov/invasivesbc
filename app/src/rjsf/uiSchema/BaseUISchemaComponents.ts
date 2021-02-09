@@ -20,20 +20,8 @@ const TwoColumnStyle = {
   'ui:column-lg': 6
 };
 
-const OneColumnStyle = {
-  'ui:column-xs': 12,
-  'ui:column-md': 12,
-  'ui:column-lg': 12
-};
-
 const InvasivePlants = {
   invasive_plant_code: {}
-};
-
-const MechanicalPlantsMethodDisposal = {
-  invasive_plant_code: {},
-  mechanical_method_code: {},
-  mechanical_disposal_code: {}
 };
 
 const TreatmentPersons = {
@@ -628,11 +616,9 @@ const Treatment = {
 };
 
 const Treatment_MechanicalPlant = {
-  mechanical_plants_method_disposal: {
-    items: {
-      ...MechanicalPlantsMethodDisposal
-    }
-  }
+  invasive_plant_code: {},
+  mechanical_method_code: {},
+  mechanical_disposal_code: {}
 };
 
 const Treatment_BiologicalPlant = {
@@ -767,8 +753,7 @@ const BaseUISchemaComponents = {
   Herbicide,
   InvasivePlants,
   ThreeColumnStyle,
-  TwoColumnStyle,
-  OneColumnStyle
+  TwoColumnStyle
 };
 
 export default BaseUISchemaComponents;

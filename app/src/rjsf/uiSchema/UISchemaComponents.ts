@@ -26,11 +26,7 @@ const Treatment_ChemicalPlant = {
   temperature: {},
   humidity: {},
   pest_management_plan: {},
-  invasive_plants: {
-    items: {
-      ...BaseUISchemaComponents.InvasivePlants
-    }
-  },
+  invasive_plant_code: {},
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide
@@ -55,11 +51,7 @@ const Treatment_ChemicalPlant_BulkEdit = {
       ...BaseUISchemaComponents.Herbicide
     }
   },
-  invasive_plants: {
-    items: {
-      ...BaseUISchemaComponents.InvasivePlants
-    }
-  }
+  invasive_plant_code: {}
 };
 
 const Activity = {
