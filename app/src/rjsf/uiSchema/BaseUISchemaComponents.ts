@@ -616,7 +616,9 @@ const Treatment = {
 };
 
 const Treatment_MechanicalPlant = {
-  invasive_plant_code: {},
+  invasive_plant_code: {
+    'ui:readonly': true
+  },
   mechanical_method_code: {},
   mechanical_disposal_code: {}
 };
@@ -628,7 +630,9 @@ const Treatment_MechanicalPlant_BulkEdit = {
 };
 
 const Treatment_BiologicalPlant = {
-  invasive_plant_code: {},
+  invasive_plant_code: {
+    'ui:readonly': true
+  },
   treatment_issues_code: {},
   classified_area_code: {},
   release_quantity: {},
