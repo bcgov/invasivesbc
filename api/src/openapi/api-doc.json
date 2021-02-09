@@ -444,6 +444,17 @@
           }
         }
       },
+      "Activity_Dispersal_BiologicalDispersal": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Dispersal_BiologicalDispersal"
+          }
+        }
+      },
       "Activity": {
         "title": "Basic Information",
         "type": "object",
@@ -1627,9 +1638,6 @@
           }
         }
       },
-      "Transect": {
-        "title": "Transect Information"
-      },
       "Transect_FireMonitoring": {
         "title": "Fire Monitoring Transect Information",
         "type": "object",
@@ -1732,6 +1740,96 @@
             "items": {
               "$ref": "#/components/schemas/BiocontrolEfficacyTransectLines"
             }
+          }
+        }
+      },
+      "Dispersal_BiologicalDispersal": {
+        "title": "Biological Dispersal Information",
+        "type": "object",
+        "required": [
+          "monitoring_organization",
+          "biological_agent_presence_code",
+          "count_duration",
+          "biological_agent_code",
+          "plant_count",
+          "biological_agent_count",
+          "applicator1_name",
+          "applicator2_name",
+          "treatment_organization",
+          "invasive_plant_code"
+        ],
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Target invasive plant species at this location"
+          },
+          "applicator1_name": {
+            "type": "string",
+            "title": "Primary Applicator Name",
+            "x-tooltip-text": "Name of primary applicator"
+          },
+          "applicator2_name": {
+            "type": "string",
+            "title": "Secondary Applicator Name",
+            "x-tooltip-text": "Name of secondary applicator"
+          },
+          "treatment_organization": {
+            "type": "string",
+            "title": "Treatment Organization",
+            "x-tooltip-text": "The company or organization conducting the treatment"
+          },
+          "monitoring_organization": {
+            "type": "string",
+            "title": "Monitoring Organization",
+            "x-tooltip-text": "The organization or company doing the monitoring"
+          },
+          "biological_agent_presence_code": {
+            "type": "string",
+            "title": "Biological Agent Presence",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_presence_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Visible state of the agent present"
+          },
+          "count_duration": {
+            "type": "number",
+            "title": "Duration of Count (min)",
+            "minimum": 1,
+            "x-tooltip-text": "Time spent on counting the agents (minutes)"
+          },
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Biological Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Genus species code of the agent (ie ALTICAR [Altica carduorum])"
+          },
+          "plant_count": {
+            "type": "number",
+            "title": "Plant Count",
+            "x-tooltip-text": "Numeric value (exact or approximate)"
+          },
+          "biological_agent_count": {
+            "type": "number",
+            "title": "Biological Agent Count",
+            "x-tooltip-text": "Numeric value (exact or approximate)"
           }
         }
       },
