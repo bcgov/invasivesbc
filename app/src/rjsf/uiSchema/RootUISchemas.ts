@@ -166,6 +166,17 @@ const Activity_Treatment_MechanicalPlant = {
   }
 };
 
+const Activity_Treatment_MechanicalPlant_BulkEdit = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity_BulkEdit
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.Treatment_MechanicalPlant_BulkEdit
+  }
+};
+
 const Activity_Treatment_BiologicalPlant = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
@@ -334,6 +345,7 @@ const RootUISchemas = {
   Activity_Treatment_ChemicalPlant,
   Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_MechanicalPlant,
+  Activity_Treatment_MechanicalPlant_BulkEdit,
   Activity_Treatment_BiologicalPlant,
   Activity_Treatment_BiologicalPlant_BulkEdit,
   Activity_Treatment_MechanicalTerrestrialAnimal,

@@ -293,6 +293,17 @@
           }
         }
       },
+      "Activity_Treatment_MechanicalPlant_BulkEdit": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity_BulkEdit"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_MechanicalPlant_BulkEdit"
+          }
+        }
+      },
       "Activity_Treatment_BiologicalPlant": {
         "type": "object",
         "properties": {
@@ -2089,6 +2100,48 @@
           "mechanical_method_code",
           "mechanical_disposal_code"
         ],
+        "properties": {
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Target invasive plant species treated at this location"
+          },
+          "mechanical_method_code": {
+            "type": "string",
+            "title": "Mechanical Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_method_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Specific treatment technique, device or method"
+          },
+          "mechanical_disposal_code": {
+            "type": "string",
+            "title": "Disposal Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mechanical_disposal_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Indicate disposal method"
+          }
+        }
+      },
+      "Treatment_MechanicalPlant_BulkEdit": {
+        "title": "Mechanical Treatment Information",
+        "type": "object",
         "properties": {
           "invasive_plant_code": {
             "type": "string",

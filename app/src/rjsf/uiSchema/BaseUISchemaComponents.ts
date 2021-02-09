@@ -621,6 +621,12 @@ const Treatment_MechanicalPlant = {
   mechanical_disposal_code: {}
 };
 
+const Treatment_MechanicalPlant_BulkEdit = {
+  invasive_plant_code: {},
+  mechanical_method_code: {},
+  mechanical_disposal_code: {}
+};
+
 const Treatment_BiologicalPlant = {
   invasive_plants: {
     items: {
@@ -739,6 +745,7 @@ const BaseUISchemaComponents = {
   Dispersal_BiologicalDispersal,
   Treatment,
   Treatment_MechanicalPlant,
+  Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
   Treatment_MechanicalTerrestrialAnimal,
