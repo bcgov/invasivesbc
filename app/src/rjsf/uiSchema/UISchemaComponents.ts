@@ -16,23 +16,19 @@ const Treatment_ChemicalPlant = {
   activity_id: {
     'ui:readonly': true
   },
-  applicator1_first_name: {},
-  applicator1_last_name: {},
-  applicator1_licence_number: {},
-  applicator2_first_name: {},
-  applicator2_last_name: {},
-  applicator2_licence_number: {},
+  applicator1_name: {},
+  applicator1_license: {},
+  applicator2_name: {},
+  applicator2_license: {},
   pesticide_employer_code: {},
+  pesticide_user_license_number: {},
   chemical_method_code: {},
   temperature: {},
   humidity: {},
   pest_management_plan: {},
-  invasive_plants: {
-    items: {
-      ...BaseUISchemaComponents.InvasivePlants
-    }
+  invasive_plant_code: {
+    'ui:readonly': true
   },
-  treatment_issues_code: {},
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide
@@ -57,11 +53,7 @@ const Treatment_ChemicalPlant_BulkEdit = {
       ...BaseUISchemaComponents.Herbicide
     }
   },
-  invasive_plants: {
-    items: {
-      ...BaseUISchemaComponents.InvasivePlants
-    }
-  }
+  invasive_plant_code: {}
 };
 
 const Activity = {

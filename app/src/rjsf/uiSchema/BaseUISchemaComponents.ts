@@ -14,8 +14,18 @@ const ThreeColumnStyle = {
   'ui:column-lg': 4
 };
 
+const TwoColumnStyle = {
+  'ui:column-xs': 12,
+  'ui:column-md': 6,
+  'ui:column-lg': 6
+};
+
 const InvasivePlants = {
   invasive_plant_code: {}
+};
+
+const TreatmentPersons = {
+  person_name: {}
 };
 
 const Herbicide = {
@@ -373,6 +383,12 @@ const Activity_AnimalTerrestrial = {
 };
 
 const Activity_AnimalAquatic = {
+  invasive_aquatic_animals: {
+    items: {
+      ...ThreeColumnStyle,
+      ...AquaticAnimals
+    }
+  },
   comment: {
     'ui:widget': 'textarea'
   },
@@ -483,6 +499,19 @@ const Transect_BiocontrolEfficacy = {
   }
 };
 
+const Dispersal_BiologicalDispersal = {
+  monitoring_organization: {},
+  biological_agent_presence_code: {},
+  count_duration: {},
+  biological_agent_code: {},
+  plant_count: {},
+  biological_agent_count: {},
+  applicator1_name: {},
+  applicator2_name: {},
+  treatment_organization: {},
+  invasive_plant_code: {}
+};
+
 const Observation_PlantTerrestrial_BulkEdit = {
   specific_use_code: {},
   invasive_plant_code: {},
@@ -536,72 +565,27 @@ const Observation_PlantAquatic = {
   }
 };
 
-const Observation_AnimalAquatic = {
-  waterbody_data: {
-    ...ThreeColumnStyle,
-    ...WaterbodyData
-  },
-  project_data: {
-    ...ThreeColumnStyle,
-    ...ProjectData
-  },
-  terrain_characteristics: {
-    ...ThreeColumnStyle,
-    ...TerrainCharacteristics
-  },
-  aquatic_flora: {
-    ...ThreeColumnStyle,
-    ...AquaticFlora
-  },
-  lake_bathymetry: {
-    ...ThreeColumnStyle,
-    ...LakeBathymetry
-  },
-  limnological_station_water_quality: {
-    ...ThreeColumnStyle,
-    ...LimnologicalStationWaterQuality
-  },
-  water_quality: {
-    ...ThreeColumnStyle,
-    ...WaterQuality
-  },
-  profile: {
-    ...ThreeColumnStyle,
-    ...Profile
-  },
-  invasive_aquatic_animals: {
-    items: {
-      ...ThreeColumnStyle,
-      ...AquaticAnimals
-    }
-  }
-};
-
 const Treatment = {
   activity_id: {
     'ui:readonly': true
   },
-  applicator1_first_name: {},
-  applicator1_last_name: {},
-  applicator2_first_name: {},
-  applicator2_last_name: {},
-  treatment_contractor: {},
-  treatment_issues_code: {}
-};
-
-const Treatment_BulkEdit = {
-  treatment_issues_code: {}
+  treatment_organization: {},
+  treatment_location: {
+    'ui:widget': 'textarea'
+  },
+  treatment_persons: {
+    items: {
+      ...TreatmentPersons
+    }
+  }
 };
 
 const Treatment_MechanicalPlant = {
-  invasive_plant_code: {},
+  invasive_plant_code: {
+    'ui:readonly': true
+  },
   mechanical_method_code: {},
-  mechanical_disposal_code: {},
-  root_removal_code: {},
-  soil_disturbance_code: {},
-  signage_on_site: {
-    'ui:widget': 'radio'
-  }
+  mechanical_disposal_code: {}
 };
 
 const Treatment_MechanicalPlant_BulkEdit = {
@@ -611,16 +595,17 @@ const Treatment_MechanicalPlant_BulkEdit = {
 };
 
 const Treatment_BiologicalPlant = {
+  invasive_plant_code: {
+    'ui:readonly': true
+  },
+  treatment_issues_code: {},
   classified_area_code: {},
   release_quantity: {},
+  mortality: {},
   agent_source: {},
   biological_agent_code: {},
   biological_agent_stage_code: {},
-  invasive_plant_code: {},
-  bioagent_maturity_status_code: {},
-  signage_on_site: {
-    'ui:widget': 'radio'
-  }
+  bioagent_maturity_status_code: {}
 };
 
 const Treatment_BiologicalPlant_BulkEdit = {
@@ -722,8 +707,8 @@ const BaseUISchemaComponents = {
   Transect_FullVegetation,
   Transect_LumpedSpeciesVegetation,
   Transect_BiocontrolEfficacy,
+  Dispersal_BiologicalDispersal,
   Treatment,
-  Treatment_BulkEdit,
   Treatment_MechanicalPlant,
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
@@ -739,7 +724,8 @@ const BaseUISchemaComponents = {
   ProjectCode,
   Herbicide,
   InvasivePlants,
-  ThreeColumnStyle
+  ThreeColumnStyle,
+  TwoColumnStyle
 };
 
 export default BaseUISchemaComponents;

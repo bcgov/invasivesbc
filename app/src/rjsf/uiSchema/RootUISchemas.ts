@@ -118,6 +118,17 @@ const Activity_Transect_BiocontrolEfficacy = {
   }
 };
 
+const Activity_Dispersal_BiologicalDispersal = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.Dispersal_BiologicalDispersal
+  }
+};
+
 const Activity_Treatment_ChemicalPlant = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
@@ -146,7 +157,7 @@ const Activity_Treatment_MechanicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -160,10 +171,6 @@ const Activity_Treatment_MechanicalPlant_BulkEdit = {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity_BulkEdit
   },
-  activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Treatment_BulkEdit
-  },
   activity_subtype_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_MechanicalPlant_BulkEdit
@@ -176,7 +183,7 @@ const Activity_Treatment_BiologicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -190,10 +197,6 @@ const Activity_Treatment_BiologicalPlant_BulkEdit = {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity_BulkEdit
   },
-  activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Treatment_BulkEdit
-  },
   activity_subtype_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_BiologicalPlant_BulkEdit
@@ -206,7 +209,7 @@ const Activity_Treatment_MechanicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -221,7 +224,7 @@ const Activity_Treatment_ChemicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -236,7 +239,7 @@ const Activity_Treatment_BiologicalTerrestrialAnimal = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Treatment
   },
   activity_subtype_data: {
@@ -338,6 +341,7 @@ const RootUISchemas = {
   Activity_Transect_FullVegetation,
   Activity_Transect_LumpedSpeciesVegetation,
   Activity_Transect_BiocontrolEfficacy,
+  Activity_Dispersal_BiologicalDispersal,
   Activity_Treatment_ChemicalPlant,
   Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_MechanicalPlant,

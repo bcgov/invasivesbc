@@ -76,6 +76,13 @@ export interface IActivitySearchCriteria {
    */
   date_range_end?: string;
   /**
+   * Activity ids filter.
+   *
+   * @type {string[]}
+   * @memberof IActivitySearchCriteria
+   */
+  activity_ids?: string[];
+  /**
    * GeoJSON feature (of type polygon) to search in.
    *
    * @type {Feature}
@@ -163,10 +170,40 @@ export interface IPointOfInterestSearchCriteria {
    */
   date_range_end?: Date;
   /**
+   * Point of Interest ids filter.
+   *
+   * @type {string[]}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  point_of_interest_ids?: string[];
+  /**
    * GeoJSON feature (of type polygon) to search in.
    *
    * @type {Feature}
    * @memberof IPointOfInterestSearchCriteria
+   */
+  search_feature?: Feature;
+}
+
+/**
+ * MetabaseQuery search filter criteria.
+ *
+ * @export
+ * @interface IMetabaseQuerySearchCriteria
+ */
+export interface IMetabaseQuerySearchCriteria {
+  /**
+   * The id of a corresponding Metabase Query to search for.
+   *
+   * @type {number}
+   * @memberof IMetabaseQuerySearchCriteria
+   */
+  metabaseQueryId?: number;
+  /**
+   * GeoJSON feature (of type polygon) to search in.
+   *
+   * @type {Feature}
+   * @memberof IMetabaseQuerySearchCriteria
    */
   search_feature?: Feature;
 }

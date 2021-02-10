@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -35,9 +35,9 @@ POST.apiDoc = {
             },
             limit: {
               type: 'number',
-              default: 25,
+              default: SEARCH_LIMIT_DEFAULT,
               minimum: 0,
-              maximum: 100
+              maximum: SEARCH_LIMIT_MAX
             },
             point_of_interest_type: {
               type: 'string'
@@ -54,6 +54,13 @@ POST.apiDoc = {
               type: 'string',
               description: 'Date range end, in YYYY-MM-DD format. Defaults time to end of day.',
               example: '2020-08-30'
+            },
+            point_of_interest_ids: {
+              type: 'array',
+              description: 'A list of ids to limit results to',
+              items: {
+                type: 'string'
+              }
             },
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
