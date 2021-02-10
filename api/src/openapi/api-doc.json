@@ -1576,6 +1576,13 @@
           "transect_data": {
             "$ref": "#/components/schemas/TransectData"
           },
+          "transect_invasive_plants": {
+            "type": "array",
+            "title": "Targeted Species",
+            "items": {
+              "$ref": "#/components/schemas/TransectInvasivePlants"
+            }
+          },
           "fire_monitoring_transect_lines": {
             "type": "array",
             "title": "Fire Monitoring Transect Lines",
@@ -1589,13 +1596,19 @@
         "title": "Full Vegetation Transect Information",
         "type": "object",
         "required": [
-          "utm_zone",
+          "transect_data",
           "full_vegetation_transect_lines"
         ],
         "properties": {
-          "utm_zone": {
-            "type": "number",
-            "title": "UTM Zone"
+          "transect_data": {
+            "$ref": "#/components/schemas/TransectData"
+          },
+          "transect_invasive_plants": {
+            "type": "array",
+            "title": "Targeted Species",
+            "items": {
+              "$ref": "#/components/schemas/TransectInvasivePlants"
+            }
           },
           "full_vegetation_transect_lines": {
             "type": "array",
@@ -1610,13 +1623,19 @@
         "title": "Invasive Plant Density Transect Information",
         "type": "object",
         "required": [
-          "utm_zone",
+          "transect_data",
           "invasive_plant_density_transect_lines"
         ],
         "properties": {
-          "utm_zone": {
-            "type": "number",
-            "title": "UTM Zone"
+          "transect_data": {
+            "$ref": "#/components/schemas/TransectData"
+          },
+          "transect_invasive_plants": {
+            "type": "array",
+            "title": "Targeted Species",
+            "items": {
+              "$ref": "#/components/schemas/TransectInvasivePlants"
+            }
           },
           "invasive_plant_density_transect_lines": {
             "type": "array",
@@ -1631,13 +1650,19 @@
         "title": "Lumped Species Vegetation Transect Information",
         "type": "object",
         "required": [
-          "utm_zone",
+          "transect_data",
           "lumped_species_vegetation_transect_lines"
         ],
         "properties": {
-          "utm_zone": {
-            "type": "number",
-            "title": "UTM Zone"
+          "transect_data": {
+            "$ref": "#/components/schemas/TransectData"
+          },
+          "transect_invasive_plants": {
+            "type": "array",
+            "title": "Targeted Species",
+            "items": {
+              "$ref": "#/components/schemas/TransectInvasivePlants"
+            }
           },
           "lumped_species_vegetation_transect_lines": {
             "type": "array",
@@ -1652,13 +1677,19 @@
         "title": "Biocontrol Efficacy Transect Information",
         "type": "object",
         "required": [
-          "utm_zone",
+          "transect_data",
           "biocontrol_efficacy_transect_lines"
         ],
         "properties": {
-          "utm_zone": {
-            "type": "number",
-            "title": "UTM Zone"
+          "transect_data": {
+            "$ref": "#/components/schemas/TransectData"
+          },
+          "transect_invasive_plants": {
+            "type": "array",
+            "title": "Targeted Species",
+            "items": {
+              "$ref": "#/components/schemas/TransectInvasivePlants"
+            }
           },
           "biocontrol_efficacy_transect_lines": {
             "type": "array",
@@ -2911,8 +2942,7 @@
           "photoplot_start",
           "photoplot_end",
           "photoplot_aerials",
-          "photoplot_full_25m",
-          "transect_invasive_plants"
+          "photoplot_full_25m"
         ],
         "properties": {
           "utm_zone": {
@@ -3140,13 +3170,6 @@
             "type": "string",
             "title": "Photoplot Full at 25m",
             "x-tooltip-text": "Provide the Full Photoplot form number"
-          },
-          "transect_invasive_plants": {
-            "type": "array",
-            "title": "Targeted Species",
-            "items": {
-              "$ref": "#/components/schemas/TransectInvasivePlants"
-            }
           }
         }
       },
@@ -3228,28 +3251,16 @@
       "InvasivePlantDensityTransectLines": {
         "type": "object",
         "required": [
+          "transect_lines",
           "invasive_plant_density_transect_points"
         ],
         "properties": {
-          "start_x_utm": {
-            "type": "number",
-            "title": "Start UTM X"
-          },
-          "start_y_utm": {
-            "type": "number",
-            "title": "Start UTM Y"
-          },
-          "end_x_utm": {
-            "type": "number",
-            "title": "End UTM X"
-          },
-          "end_y_utm": {
-            "type": "number",
-            "title": "End UTM Y"
+          "transect_lines": {
+            "$ref": "#/components/schemas/TransectLines"
           },
           "invasive_plant_density_transect_points": {
             "type": "array",
-            "title": "Invasive Plant Density Transect Points",
+            "title": "Transect Points Information",
             "items": {
               "$ref": "#/components/schemas/InvasivePlantDensityTransectPoints"
             }
@@ -3259,28 +3270,16 @@
       "FullVegetationTransectLines": {
         "type": "object",
         "required": [
+          "transect_lines",
           "full_vegetation_transect_points"
         ],
         "properties": {
-          "start_x_utm": {
-            "type": "number",
-            "title": "Start UTM X"
-          },
-          "start_y_utm": {
-            "type": "number",
-            "title": "Start UTM Y"
-          },
-          "end_x_utm": {
-            "type": "number",
-            "title": "End UTM X"
-          },
-          "end_y_utm": {
-            "type": "number",
-            "title": "End UTM Y"
+          "transect_lines": {
+            "$ref": "#/components/schemas/TransectLines"
           },
           "full_vegetation_transect_points": {
             "type": "array",
-            "title": "Full Vegetation Transect Points",
+            "title": "Transect Points Information",
             "items": {
               "$ref": "#/components/schemas/FullVegetationTransectPoints"
             }
@@ -3290,28 +3289,16 @@
       "LumpedSpeciesVegetationTransectLines": {
         "type": "object",
         "required": [
+          "transect_lines",
           "lumped_species_vegetation_transect_points"
         ],
         "properties": {
-          "start_x_utm": {
-            "type": "number",
-            "title": "Start UTM X"
-          },
-          "start_y_utm": {
-            "type": "number",
-            "title": "Start UTM Y"
-          },
-          "end_x_utm": {
-            "type": "number",
-            "title": "End UTM X"
-          },
-          "end_y_utm": {
-            "type": "number",
-            "title": "End UTM Y"
+          "transect_lines": {
+            "$ref": "#/components/schemas/TransectLines"
           },
           "lumped_species_vegetation_transect_points": {
             "type": "array",
-            "title": "Lumped Species Vegetation Transect Points",
+            "title": "Transect Points Information",
             "items": {
               "$ref": "#/components/schemas/LumpedSpeciesVegetationTransectPoints"
             }
@@ -3321,28 +3308,16 @@
       "BiocontrolEfficacyTransectLines": {
         "type": "object",
         "required": [
+          "transect_lines",
           "biocontrol_efficacy_transect_points"
         ],
         "properties": {
-          "start_x_utm": {
-            "type": "number",
-            "title": "Start UTM X"
-          },
-          "start_y_utm": {
-            "type": "number",
-            "title": "Start UTM Y"
-          },
-          "end_x_utm": {
-            "type": "number",
-            "title": "End UTM X"
-          },
-          "end_y_utm": {
-            "type": "number",
-            "title": "End UTM Y"
+          "transect_lines": {
+            "$ref": "#/components/schemas/TransectLines"
           },
           "biocontrol_efficacy_transect_points": {
             "type": "array",
-            "title": "Biocontrol Efficacy Transect Points",
+            "title": "Transect Points Information",
             "items": {
               "$ref": "#/components/schemas/BiocontrolEfficacyTransectPoints"
             }
