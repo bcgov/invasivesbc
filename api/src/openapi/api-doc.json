@@ -329,48 +329,6 @@
           }
         }
       },
-      "Activity_Treatment_MechanicalTerrestrialAnimal": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Treatment"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Treatment_MechanicalTerrestrialAnimal"
-          }
-        }
-      },
-      "Activity_Treatment_ChemicalTerrestrialAnimal": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Treatment"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Treatment_ChemicalTerrestrialAnimal"
-          }
-        }
-      },
-      "Activity_Treatment_BiologicalTerrestrialAnimal": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Treatment"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Treatment_BiologicalTerrestrialAnimal"
-          }
-        }
-      },
       "Activity_Monitoring_ChemicalTerrestrialAquaticPlant": {
         "type": "object",
         "properties": {
@@ -410,48 +368,6 @@
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Monitoring_BiologicalTerrestrialPlant"
-          }
-        }
-      },
-      "Activity_Monitoring_MechanicalTerrestrialAnimal": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Monitoring"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Monitoring_MechanicalTerrestrialAnimal"
-          }
-        }
-      },
-      "Activity_Monitoring_ChemicalTerrestrialAnimal": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Monitoring"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Monitoring_ChemicalTerrestrialAnimal"
-          }
-        }
-      },
-      "Activity_Monitoring_BiologicalTerrestrialAnimal": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/Monitoring"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Monitoring_BiologicalTerrestrialAnimal"
           }
         }
       },
@@ -1662,7 +1578,7 @@
           },
           "fire_monitoring_transect_lines": {
             "type": "array",
-            "title": "Transect Lines Information",
+            "title": "Fire Monitoring Transect Lines",
             "items": {
               "$ref": "#/components/schemas/FireMonitoringTransectLines"
             }
@@ -2355,75 +2271,6 @@
           }
         }
       },
-      "Treatment_MechanicalTerrestrialAnimal": {
-        "title": "Mechanical Treatment Information",
-        "type": "object",
-        "required": ["treatment_details", "invasive_animal_code"],
-        "properties": {
-          "invasive_animal_code": {
-            "type": "string",
-            "title": "Invasive Animal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "treatment_details": {
-            "type": "string",
-            "title": "Treatment Details",
-            "maxLength": 300
-          }
-        }
-      },
-      "Treatment_ChemicalTerrestrialAnimal": {
-        "title": "Chemical Treatment Information",
-        "type": "object",
-        "required": ["treatment_details", "invasive_animal_code"],
-        "properties": {
-          "invasive_animal_code": {
-            "type": "string",
-            "title": "Invasive Animal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "treatment_details": {
-            "type": "string",
-            "title": "Treatment Details",
-            "maxLength": 300
-          }
-        }
-      },
-      "Treatment_BiologicalTerrestrialAnimal": {
-        "title": "Biological Treatment Information",
-        "type": "object",
-        "required": ["treatment_details", "invasive_animal_code"],
-        "properties": {
-          "invasive_animal_code": {
-            "type": "string",
-            "title": "Invasive Animal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "treatment_details": {
-            "type": "string",
-            "title": "Treatment Details",
-            "maxLength": 300
-          }
-        }
-      },
       "Monitoring": {
         "title": "Monitoring Information",
         "type": "object",
@@ -2587,75 +2434,6 @@
           "biological_agent_spread": {
             "type": "string",
             "title": "Biological Agent Spread"
-          }
-        }
-      },
-      "Monitoring_MechanicalTerrestrialAnimal": {
-        "title": "Monitoring a mechanical treatment for a terrestrial animal",
-        "description": "Mechanical monitoring for terrestrial plants",
-        "type": "object",
-        "required": ["monitoring_details", "invasive_animal_code"],
-        "properties": {
-          "invasive_animal_code": {
-            "type": "string",
-            "title": "Invasive animal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "monitoring_details": {
-            "type": "string",
-            "title": "Monitoring details"
-          }
-        }
-      },
-      "Monitoring_ChemicalTerrestrialAnimal": {
-        "title": "Monitoring a chemical treatment for a terrestrial animal",
-        "description": "Chemical monitoring for terrestrial plants",
-        "type": "object",
-        "required": ["monitoring_details", "invasive_animal_code"],
-        "properties": {
-          "invasive_animal_code": {
-            "type": "string",
-            "title": "Invasive animal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "monitoring_details": {
-            "type": "string",
-            "title": "Monitoring details"
-          }
-        }
-      },
-      "Monitoring_BiologicalTerrestrialAnimal": {
-        "title": "Monitoring a biological treatment for a terrestrial animal",
-        "description": "Biological monitoring for terrestrial plants",
-        "type": "object",
-        "required": ["monitoring_details", "invasive_animal_code"],
-        "properties": {
-          "invasive_animal_code": {
-            "type": "string",
-            "title": "Invasive animal",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
-          "monitoring_details": {
-            "type": "string",
-            "title": "Monitoring details"
           }
         }
       },
@@ -3372,31 +3150,75 @@
           }
         }
       },
-      "FireMonitoringTransectLines": {
+      "TransectLines": {
         "type": "object",
+        "title": "Transect Lines Information",
         "required": [
-          "fire_monitoring_transect_points"
+          "transect_id",
+          "transect_comment",
+          "start_x_utm",
+          "start_y_utm",
+          "end_x_utm",
+          "end_y_utm",
+          "transect_length",
+          "transect_bearing"
         ],
         "properties": {
+          "transect_id": {
+            "type": "string",
+            "title": "Transect ID",
+            "x-tooltip-text": "Provide a unique transect identifier (ie ABC123)"
+          },
+          "transect_comment": {
+            "type": "string",
+            "title": "Comment",
+            "x-tooltip-text": "Provide a comment specific to the transect line"
+          },
           "start_x_utm": {
             "type": "number",
-            "title": "Start UTM X"
+            "title": "Start UTM X",
+            "x-tooltip-text": "Provide a UTM start x coordinate"
           },
           "start_y_utm": {
             "type": "number",
-            "title": "Start UTM Y"
+            "title": "Start UTM Y",
+            "x-tooltip-text": "Provide a UTM start y coordinate"
           },
           "end_x_utm": {
             "type": "number",
-            "title": "End UTM X"
+            "title": "End UTM X",
+            "x-tooltip-text": "Provide a UTM end x coordinate"
           },
           "end_y_utm": {
             "type": "number",
-            "title": "End UTM Y"
+            "title": "End UTM Y",
+            "x-tooltip-text": "Provide a UTM end y coordinate"
+          },
+          "transect_length": {
+            "type": "number",
+            "title": "Transect Length",
+            "x-tooltip-text": "Transect length based on distance between start and end points"
+          },
+          "transect_bearing": {
+            "type": "number",
+            "title": "Transect Bearing",
+            "x-tooltip-text": "Transect bearing based on the vector from start and end points"
+          }
+        }
+      },
+      "FireMonitoringTransectLines": {
+        "type": "object",
+        "required": [
+          "transect_lines",
+          "fire_monitoring_transect_points"
+        ],
+        "properties": {
+          "transect_lines": {
+            "$ref": "#/components/schemas/TransectLines"
           },
           "fire_monitoring_transect_points": {
             "type": "array",
-            "title": "Fire Monitoring Transect Points",
+            "title": "Transect Points Information",
             "items": {
               "$ref": "#/components/schemas/FireMonitoringTransectPoints"
             }
