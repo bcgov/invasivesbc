@@ -8,7 +8,6 @@
  * }
  */
 
-
 /*
   Styling
 */
@@ -24,7 +23,6 @@ const TwoColumnStyle = {
   'ui:column-md': 6,
   'ui:column-lg': 6
 };
-
 
 const TreatmentPersons = {
   person_name: {}
@@ -289,7 +287,6 @@ const Biological = {
   comment: {}
 };
 
-
 /*
   Transect
 */
@@ -535,7 +532,6 @@ const Transect_BiocontrolEfficacy = {
   }
 };
 
-
 /*
   Observation
 */
@@ -625,7 +621,6 @@ const Observation_PlantAquatic = {
   }
 };
 
-
 /*
   Animal Activity
 */
@@ -680,7 +675,6 @@ const Activity_AnimalAquatic = {
   }
 };
 
-
 /*
   Dispersal
 */
@@ -697,7 +691,6 @@ const Dispersal_BiologicalDispersal = {
   treatment_organization: {},
   invasive_plant_code: {}
 };
-
 
 /*
   Treatment
@@ -754,7 +747,6 @@ const Treatment_BiologicalPlant_BulkEdit = {
   bioagent_maturity_status_code: {}
 };
 
-
 /*
   Monitoring
 */
@@ -804,7 +796,6 @@ const Monitoring_BiologicalTerrestrialPlant = {
   },
   biological_agent_spread: {}
 };
-
 
 /*
   Export
