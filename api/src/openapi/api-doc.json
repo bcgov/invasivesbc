@@ -1649,193 +1649,6 @@
           }
         }
       },
-      "TransectData": {
-        "type": "object",
-        "title": "Transect Information",
-        "required": [
-          "utm_zone",
-          "transect_start_date_time",
-          "transect_end_date_time",
-          "project_number",
-          "surveyor1_name",
-          "research_trial",
-          "realm_code",
-          "site_aspect",
-          "site_aspect_variability",
-          "site_slope",
-          "site_slope_variability",
-          "site_elevation",
-          "cloud_cover_code",
-          "beaufort_wind_code",
-          "precipitation_code",
-          "burn_severity_code",
-          "mesoslope_position_code",
-          "site_surface_shape_code",
-          "soil_properties_code",
-          "surface_substrate_code",
-          "site_activity_disturbance",
-          "disturbance_site_defunct",
-          "disturbance_condition_code",
-          "disturbance_type_code",
-          "ecological_moisture_regime_code"
-        ],
-        "properties": {
-          "utm_zone": {
-            "type": "number",
-            "title": "UTM Zone",
-            "enum": [7, 8, 9, 10, 11],
-            "x-tooltip-text": "Provincial UTM Zone (7, 8, 9, 10, 11)"
-          },
-          "transect_start_date_time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Start Date and Time",
-            "x-tooltip-text": "Start time and date of the collection"
-          },
-          "transect_end_date_time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "End Date and Time",
-            "x-tooltip-text": "End time and date of the collection"
-          },
-          "project_number": {
-            "type": "string",
-            "title": "Project Number",
-            "x-tooltip-text": "The unique project or reference number (ie ABC123)"
-          },
-          "surveyor1_name": {
-            "type": "string",
-            "title": "Surveyor 1 Name",
-            "x-tooltip-text": "Name of the primary surveyor"
-          },
-          "surveyor2_name": {
-            "type": "string",
-            "title": "Surveyor 2 Name",
-            "x-tooltip-text": "Name of the secondary surveyor"
-          },
-          "field_recorder_name": {
-            "type": "string",
-            "title": "Field Recorder Name",
-            "x-tooltip-text": "Name of the field recorder"
-          },
-          "research_trial_code": {
-            "type": "string",
-            "title": "Research Trial",
-            "x-tooltip-text": "Is this observation part of a research project or trial. If yes, add details in Project Code or Comments fields"
-          },
-          "realm_code": {
-            "type": "string",
-            "title": "Realm/Class",
-            "x-tooltip-text": "Ecosystem classification"
-          },
-          "site_aspect": {
-            "type": "number",
-            "title": "Site Aspect",
-            "minimum": 0,
-            "maximum": 359,
-            "x-tooltip-text": "Specify (in degrees) the direction that the slope is facing"
-          },
-          "site_aspect_variability": {
-            "type": "string",
-            "title": "Site Aspect Variability",
-            "enum": ["Unknown", "Yes", "No"],
-            "default": "No",
-            "x-tooltip-text": "If the plant infestation extends into multiple aspects, select Yes"
-          },
-          "site_slope": {
-            "type": "number",
-            "title": "Site Slope",
-            "minimum": 0,
-            "maximum": 50,
-            "x-tooltip-text": "Use a clinometer to obtain the percent of the slope for the site"
-          },
-          "site_slope_variability": {
-            "type": "string",
-            "title": "Site Slope Variability",
-            "enum": ["Unknown", "Yes", "No"],
-            "default": "No",
-            "x-tooltip-text": "If a plant infestation extends over more than one significant slope, select Yes"
-          },
-          "site_elevation": {
-            "type": "number",
-            "title": "Site Elevation",
-            "minimum": 0,
-            "maximum": 4000,
-            "x-tooltip-text": "Use a GPS to obtain and record the average elevation"
-          },
-          "cloud_cover_code": {
-            "type": "string",
-            "title": "Cloud Cover",
-            "x-tooltip-text": "Select the most representative cloud cover"
-          },
-          "beaufort_wind_code": {
-            "type": "string",
-            "title": "Wind",
-            "x-tooltip-text": "Select the most representative wind conditions"
-          },
-          "precipitation_code": {
-            "type": "string",
-            "title": "Precipitation",
-            "x-tooltip-text": "Select the most representative precipitation state"
-          },
-          "burn_severity_code": {
-            "type": "string",
-            "title": "Burn Severity",
-            "enum": ["Yes", "No Burn"],
-            "default": "No Burn",
-            "x-tooltip-text": "Has the observation area been burnt?"
-          },
-          "ecological_moisture_regime_code": {
-            "type": "string",
-            "title": "Ecological Moisture",
-            "x-tooltip-text": "Select the average ecological moisture"
-          },
-          "mesoslope_position_code": {
-            "type": "string",
-            "title": "Mesoslope Position",
-            "x-tooltip-text": "Select the most representative mesoslope condition"
-          },
-          "site_surface_shape_code": {
-            "type": "string",
-            "title": "Site Surface Shape",
-            "x-tooltip-text": "Select the most representative slope shape"
-          },
-          "soil_properties_code": {
-            "type": "string",
-            "title": "Soil Properties",
-            "x-tooltip-text": "Select the most representative soil property"
-          },
-          "surface_substrate_code": {
-            "type": "string",
-            "title": "Surface Substrate",
-            "x-tooltip-text": "Select the most representative subsurface condition"
-          },
-          "site_activity_disturbance": {
-            "type": "string",
-            "title": "Site Activity/Disturbance",
-            "enum": ["Unknown", "Yes", "No"],
-            "default": "No",
-            "x-tooltip-text": "If the site is disturbed, select Yes"
-          },
-          "disturbance_site_defunct": {
-            "type": "string",
-            "title": "Disturbance Site Defunct",
-            "enum": ["Unknown", "Yes", "No"],
-            "default": "No",
-            "x-tooltip-text": "If the site is defunct, select Yes"
-          },
-          "disturbance_condition_code": {
-            "type": "string",
-            "title": "Disturbance Condition",
-            "x-tooltip-text": "Select the most representative disturbance condition"
-          },
-          "disturbance_type_code": {
-            "type": "string",
-            "title": "Disturbance Type",
-            "x-tooltip-text": "Select the most representative disturbance type"
-          }
-        }
-      },
       "Transect_FireMonitoring": {
         "title": "Fire Monitoring Information",
         "type": "object",
@@ -2655,7 +2468,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Target invasive plant species at this location"
           },
           "monitoring_details": {
             "type": "string",
@@ -2677,7 +2491,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Target invasive plant species at this location"
           },
           "monitoring_details": {
             "type": "string",
@@ -2714,7 +2529,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Target invasive plant species at this location"
           },
           "plant_count": {
             "type": "number",
@@ -3016,7 +2832,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Target invasive plant species at this location"
           },
           "invasive_plant_density_code": {
             "type": "string",
@@ -3163,9 +2980,16 @@
           }
         }
       },
-      "InvasivePlants": {
+      "TransectInvasivePlants": {
         "type": "object",
-        "required": ["invasive_plant_code"],
+        "required": [
+          "invasive_plant_code",
+          "invasive_plant_density_code",
+          "invasive_plant_distribution_code",
+          "soil_texture_code",
+          "linear_infestation",
+          "biological_agent_code"
+        ],
         "properties": {
           "invasive_plant_code": {
             "type": "string",
@@ -3176,7 +3000,67 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Target invasive plant species at this location"
+          },
+          "invasive_plant_density_code": {
+            "type": "string",
+            "title": "Density",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_density_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Average number of individual plants per square meter expressed as a density class code"
+          },
+          "invasive_plant_distribution_code": {
+            "type": "string",
+            "title": "Distribution",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_distribution_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
+          },
+          "soil_texture_code": {
+            "type": "string",
+            "title": "Soil Texture",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "soil_texture_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Relative amount of sand, silt, clay, organic matter, and bedrock throughout the observation area"
+          },
+          "linear_infestation": {
+            "type": "string",
+            "title": "Linear",
+            "enum": [
+              "Unknown",
+              "Yes",
+              "No"
+            ],
+            "default": "Unknown",
+            "x-tooltip-text": "If the infestation distribution is linear, select Yes"
+          },
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Proposed Biological Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Genus species code of the agent (ie ALTICAR [Altica carduorum])"
           }
         }
       },
@@ -3206,6 +3090,285 @@
             "type": "string",
             "title": "Person Name",
             "x-tooltip-text": "Name of person"
+          }
+        }
+      },
+      "TransectData": {
+        "type": "object",
+        "title": "Transect Information",
+        "required": [
+          "utm_zone",
+          "transect_start_date_time",
+          "transect_end_date_time",
+          "project_number",
+          "surveyor1_name",
+          "research_trial_code",
+          "realm_code",
+          "site_aspect",
+          "site_aspect_variability",
+          "site_slope",
+          "site_slope_variability",
+          "site_elevation",
+          "cloud_cover_code",
+          "beaufort_wind_code",
+          "precipitation_code",
+          "burn_severity_code",
+          "ecological_moisture_regime_code",
+          "mesoslope_position_code",
+          "site_surface_shape_code",
+          "soil_properties_code",
+          "surface_substrate_code",
+          "site_activity_disturbance",
+          "disturbance_site_defunct",
+          "disturbance_condition_code",
+          "disturbance_type_code",
+          "invasive_plant_change_code",
+          "target_plant_change_code",
+          "treatment_seeded",
+          "density_count_type_code",
+          "trace_plants",
+          "growth_pattern",
+          "frame_size_code",
+          "biocontrol_noted_code",
+          "photoplot_start",
+          "photoplot_end",
+          "photoplot_aerials",
+          "photoplot_full_25m",
+          "transect_invasive_plants"
+        ],
+        "properties": {
+          "utm_zone": {
+            "type": "number",
+            "title": "UTM Zone",
+            "enum": [7, 8, 9, 10, 11],
+            "x-tooltip-text": "Provincial UTM Zone (7, 8, 9, 10, 11)"
+          },
+          "transect_start_date_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Date and Time",
+            "x-tooltip-text": "Start time and date of the collection"
+          },
+          "transect_end_date_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Date and Time",
+            "x-tooltip-text": "End time and date of the collection"
+          },
+          "project_number": {
+            "type": "string",
+            "title": "Project Number",
+            "x-tooltip-text": "The unique project or reference number (ie ABC123)"
+          },
+          "surveyor1_name": {
+            "type": "string",
+            "title": "Surveyor 1 Name",
+            "x-tooltip-text": "Name of the primary surveyor"
+          },
+          "surveyor2_name": {
+            "type": "string",
+            "title": "Surveyor 2 Name",
+            "x-tooltip-text": "Name of the secondary surveyor"
+          },
+          "field_recorder_name": {
+            "type": "string",
+            "title": "Field Recorder Name",
+            "x-tooltip-text": "Name of the field recorder"
+          },
+          "research_trial_code": {
+            "type": "string",
+            "title": "Research Trial",
+            "x-tooltip-text": "Is this observation part of a research project or trial. If yes, add details in Project Code or Comments fields"
+          },
+          "realm_code": {
+            "type": "string",
+            "title": "Realm/Class",
+            "x-tooltip-text": "Ecosystem classification"
+          },
+          "site_aspect": {
+            "type": "number",
+            "title": "Site Aspect",
+            "minimum": 0,
+            "maximum": 359,
+            "x-tooltip-text": "Specify (in degrees) the direction that the slope is facing"
+          },
+          "site_aspect_variability": {
+            "type": "string",
+            "title": "Site Aspect Variability",
+            "enum": ["Unknown", "Yes", "No"],
+            "default": "No",
+            "x-tooltip-text": "If the plant infestation extends into multiple aspects, select Yes"
+          },
+          "site_slope": {
+            "type": "number",
+            "title": "Site Slope",
+            "minimum": 0,
+            "maximum": 50,
+            "x-tooltip-text": "Use a clinometer to obtain the percent of the slope for the site"
+          },
+          "site_slope_variability": {
+            "type": "string",
+            "title": "Site Slope Variability",
+            "enum": ["Unknown", "Yes", "No"],
+            "default": "No",
+            "x-tooltip-text": "If a plant infestation extends over more than one significant slope, select Yes"
+          },
+          "site_elevation": {
+            "type": "number",
+            "title": "Site Elevation",
+            "minimum": 0,
+            "maximum": 4000,
+            "x-tooltip-text": "Use a GPS to obtain and record the average elevation"
+          },
+          "cloud_cover_code": {
+            "type": "string",
+            "title": "Cloud Cover",
+            "x-tooltip-text": "Select the most representative cloud cover"
+          },
+          "beaufort_wind_code": {
+            "type": "string",
+            "title": "Wind",
+            "x-tooltip-text": "Select the most representative wind conditions"
+          },
+          "precipitation_code": {
+            "type": "string",
+            "title": "Precipitation",
+            "x-tooltip-text": "Select the most representative precipitation state"
+          },
+          "burn_severity_code": {
+            "type": "string",
+            "title": "Burn Severity",
+            "enum": ["Yes", "No Burn"],
+            "default": "No Burn",
+            "x-tooltip-text": "Has the observation area been burnt?"
+          },
+          "ecological_moisture_regime_code": {
+            "type": "string",
+            "title": "Ecological Moisture",
+            "x-tooltip-text": "Select the average ecological moisture"
+          },
+          "mesoslope_position_code": {
+            "type": "string",
+            "title": "Mesoslope Position",
+            "x-tooltip-text": "Select the most representative mesoslope condition"
+          },
+          "site_surface_shape_code": {
+            "type": "string",
+            "title": "Site Surface Shape",
+            "x-tooltip-text": "Select the most representative slope shape"
+          },
+          "soil_properties_code": {
+            "type": "string",
+            "title": "Soil Properties",
+            "x-tooltip-text": "Select the most representative soil property"
+          },
+          "surface_substrate_code": {
+            "type": "string",
+            "title": "Surface Substrate",
+            "x-tooltip-text": "Select the most representative subsurface condition"
+          },
+          "site_activity_disturbance": {
+            "type": "string",
+            "title": "Site Activity/Disturbance",
+            "enum": ["Unknown", "Yes", "No"],
+            "default": "No",
+            "x-tooltip-text": "If the site is disturbed, select Yes"
+          },
+          "disturbance_site_defunct": {
+            "type": "string",
+            "title": "Disturbance Site Defunct",
+            "enum": ["Unknown", "Yes", "No"],
+            "default": "No",
+            "x-tooltip-text": "If the site is defunct, select Yes"
+          },
+          "disturbance_condition_code": {
+            "type": "string",
+            "title": "Disturbance Condition",
+            "x-tooltip-text": "Select the most representative disturbance condition"
+          },
+          "disturbance_type_code": {
+            "type": "string",
+            "title": "Disturbance Type",
+            "x-tooltip-text": "Select the most representative disturbance type"
+          },
+          "invasive_plant_change_code": {
+            "type": "string",
+            "title": "Invasive Plant Change",
+            "x-tooltip-text": "Select the observed change on all species"
+          },
+          "target_plant_change_code": {
+            "type": "string",
+            "title": "Target Plant Change",
+            "x-tooltip-text": "Select the observed change on the target species"
+          },
+          "treatment_seeded": {
+            "type": "string",
+            "title": "Treatment Seeded",
+            "enum": ["Unknown", "Yes", "No"],
+            "default": "No",
+            "x-tooltip-text": "If the observation area has been seeded, select Yes"
+          },
+          "density_count_type_code": {
+            "type": "string",
+            "title": "Density Count Type",
+            "x-tooltip-text": "Specify the density type"
+          },
+          "trace_plants": {
+            "type": "string",
+            "title": "Trace Plants",
+            "enum": ["Unknown", "Present", "Absent"],
+            "default": "Absent",
+            "x-tooltip-text": "If the observation has trace plants present, select Present"
+          },
+          "growth_pattern": {
+            "type": "string",
+            "title": "Growth Pattern",
+            "enum": ["Unknown", "Single", "Patches"],
+            "default": "Unknown",
+            "x-tooltip-text": "Select the growth pattern on the target species"
+          },
+          "frame_size_code": {
+            "type": "string",
+            "title": "Frame Size",
+            "x-tooltip-text": "Set the frame size for the collections"
+          },
+          "biocontrol_noted_code": {
+            "type": "string",
+            "title": "Biocontrol Noted",
+            "x-tooltip-text": "If biological control agents are noted while completing the transects, select Yes and record the species found in the comments"
+          },
+          "photoplot_start": {
+            "type": "string",
+            "title": "Photoplot Start",
+            "enum": ["Unknown", "Yes", "No"],
+            "default": "Unknown",
+            "x-tooltip-text": "If photos were taken at the start point, select Yes"
+          },
+          "photoplot_end": {
+            "type": "string",
+            "title": "Photoplot End",
+            "enum": ["Unknown", "Yes", "No"],
+            "default": "Unknown",
+            "x-tooltip-text": "If photos were taken at the end point, select Yes"
+          },
+          "photoplot_aerials": {
+            "type": "string",
+            "title": "Photoplot Aerials",
+            "enum": ["Unknown", "Yes", "No"],
+            "default": "Unknown",
+            "x-tooltip-text": "Were aerial photos taken at 0, 10, 20, 30, 40, and 50m? If so, select Yes"
+          },
+          "photoplot_full_25m": {
+            "type": "string",
+            "title": "Photoplot Full at 25m",
+            "x-tooltip-text": "Provide the Full Photoplot form number"
+          },
+          "transect_invasive_plants": {
+            "type": "array",
+            "title": "Targeted Species",
+            "items": {
+              "$ref": "#/components/schemas/TransectInvasivePlants"
+            }
           }
         }
       },
