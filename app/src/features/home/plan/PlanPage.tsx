@@ -143,7 +143,20 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Grid container spacing={3} className={classes.tripGrid}>
         <Grid item md={6}>
           <Paper className={classes.paper}>
-            THIS IS HOW YOU DO YOUR JOB
+              <Typography variant="h5">How to get the data you need:</Typography>
+              <br></br>
+              <br></br>
+              <Typography variant="body1">
+                This is where you'll load data on to your device before you go out into the field.  The general flow is to use the filters in the accoridans below,
+                and once you've added some filters hit the 'Fetch' button to pull data onto your device.
+              </Typography>
+              <br></br>
+              <Typography variant="body1">
+                You can perform as many 'Fetches' as you like.  If you are starting a new trip it is a good idea to wipe the
+                data off your device prio
+
+              </Typography>
+
            </Paper>
           <Accordion defaultExpanded={false}>
             <AccordionSummary
@@ -194,7 +207,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           </Accordion>
           <Accordion defaultExpanded={false}>
             <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-kml-content" id="panel-kml-header">
-              <Typography variant="h5">Load KML</Typography>
+              <Typography variant="h5">Load a KML search boundary</Typography>
               <Tooltip title="Upload a shape to search by.  Overrides polygon drawn by user with one from a KML." arrow>
                 <HelpIcon />
               </Tooltip>
@@ -221,6 +234,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         </Grid>
         <Grid item md={6}>
           <Paper className={classes.paper}>
+              <Typography variant="h5">Search boundary</Typography>
             <Tooltip
               title="Use this map along with the controls on the left to cache data.  Draw a shape to search by, or search without a spatial filter by using the trash can to delete the shape.  Hit the save icon on the map to save map tiles up to the zoom level you are in for a given area."
               arrow>
