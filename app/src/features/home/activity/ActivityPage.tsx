@@ -391,8 +391,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             <Typography variant="h4">Current Activity</Typography>
           </Box>
           <Typography>
-            There is no current activity. When you start creating an activity,
-            it will become your current activity and show up in this tab.
+            There is no current activity. When you start creating an activity, it will become your current activity and
+            show up in this tab.
           </Typography>
         </>
       )}
