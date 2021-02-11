@@ -24,9 +24,12 @@ const AccessDenied = () => {
     history.push('/home');
   };
 
-  const emailSubject = encodeURIComponent('Invasives BC Access Request');
-  const emailBody = encodeURIComponent('Please grant me access to the Invasives BC application.');
-  const emailHref = `mailto:temp@fakeemailaddress.ca?subject=${emailSubject}&body=${emailBody}`;
+  const emailSubject = encodeURIComponent('InvasivesBC Access Request');
+  const emailBody = encodeURIComponent(
+    `I wish to be granted access to the InvasivesBC application, find
+    below my IDIR or BCeID username.`
+  );
+  const emailHref = `mailto:michael.shasko@gov.bc.ca?subject=${emailSubject}&body=${emailBody}`;
 
   return (
     <Container>
@@ -38,7 +41,10 @@ const AccessDenied = () => {
           </Typography>
         </Box>
         <Box mb={4}>
-          <Typography variant="h4">You must request access by email to view this application </Typography>
+          <Typography variant="h4">
+            You must request access by email to view this application.
+            Please provide your IDIR/BCeID username in the email body.
+          </Typography>
         </Box>
         <Box mb={4}>
           <Typography variant="body1" component="span">
