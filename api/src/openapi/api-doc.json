@@ -2873,21 +2873,21 @@
           }
         }
       },
-      "InvasiveAnimals": {
+      "InvasivePlants": {
         "type": "object",
-        "required": ["invasive_animal_code"],
+        "required": ["invasive_plant_code"],
         "properties": {
-          "invasive_animal_code": {
+          "invasive_plant_code": {
             "type": "string",
-            "title": "Invasive Animal",
+            "title": "Invasive Plant",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_animal_code",
+              "x-enum-code-header-name": "invasive_plant_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Target invasive animal species at this location"
+            "x-tooltip-text": "Invasive plant species observed at this location"
           }
         }
       },
@@ -3177,7 +3177,7 @@
         "type": "object",
         "title": "Transect Line Information",
         "required": [
-          "transect_id",
+          "transect_line_id",
           "transect_comment",
           "start_x_utm",
           "start_y_utm",
@@ -3187,10 +3187,10 @@
           "transect_bearing"
         ],
         "properties": {
-          "transect_id": {
+          "transect_line_id": {
             "type": "string",
-            "title": "Transect ID",
-            "x-tooltip-text": "Provide a unique transect identifier (ie ABC123)"
+            "title": "Transect Line ID",
+            "x-tooltip-text": "Provide a unique transect line identifier (ie ABC123)"
           },
           "transect_comment": {
             "type": "string",
@@ -3326,10 +3326,88 @@
       },
       "FireMonitoringTransectPoints": {
         "type": "object",
+        "required": [
+          "sample_point_id",
+          "offset_distance",
+          "utm_x",
+          "utm_y",
+          "veg_transect_sampler",
+          "veg_transect_recorder",
+          "veg_transect_native_forbs",
+          "veg_transect_grasses",
+          "veg_transect_bare_ground",
+          "veg_transect_shrubs",
+          "veg_transect_bryophytes",
+          "veg_transect_litter"
+        ],
         "properties": {
+          "sample_point_id": {
+            "type": "string",
+            "title": "Sample Point ID",
+            "x-tooltip-text": "Provide a unique transect point identifier (ie ABC123)"
+          },
           "offset_distance": {
             "type": "number",
-            "title": "Offset Distance"
+            "title": "Offset Distance",
+            "x-tooltip-text": "Provide the offset distance from the start point"
+          },
+          "utm_x": {
+            "type": "number",
+            "title": "Offset Point UTM X",
+            "x-tooltip-text": "UTM X point at the offset distance"
+          },
+          "utm_y": {
+            "type": "number",
+            "title": "Offset Point UTM Y",
+            "x-tooltip-text": "UTM Y point at the offset distance"
+          },
+          "veg_transect_sampler": {
+            "type": "string",
+            "title": "Vegetation Transect Sampler",
+            "x-tooltip-text": "Initials of the sampler"
+          },
+          "veg_transect_recorder": {
+            "type": "string",
+            "title": "Vegetation Transect Recorder",
+            "x-tooltip-text": "Initials of the recorder"
+          },
+          "veg_transect_native_forbs": {
+            "type": "number",
+            "title": "Vegetation Transect Native Forbs",
+            "x-tooltip-text": "Number of native forbs observed"
+          },
+          "veg_transect_grasses": {
+            "type": "number",
+            "title": "Vegetation Transect Grasses",
+            "x-tooltip-text": "Number of grasses observed"
+          },
+          "veg_transect_bare_ground": {
+            "type": "number",
+            "title": "Vegetation Transect Bare Ground Patches",
+            "x-tooltip-text": "Number of bare ground patches observed"
+          },
+          "veg_transect_shrubs": {
+            "type": "number",
+            "title": "Vegetation Transect Shrubs/Trees",
+            "x-tooltip-text": "Number of shrubs/trees observed"
+          },
+          "veg_transect_bryophytes": {
+            "type": "number",
+            "title": "Vegetation Transect Bryophytes",
+            "x-tooltip-text": "Number of bryophytes observed"
+          },
+          "veg_transect_litter": {
+            "type": "number",
+            "title": "Vegetation Transect Litter",
+            "x-tooltip-text": "Number of litter observed"
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "$ref": "#/components/schemas/InvasivePlants"
+            },
+            "x-tooltip-text": "List all the invasive plant species at this location"
           }
         }
       },

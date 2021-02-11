@@ -75,10 +75,16 @@ export function populateTransectLinesLengthAndBearing(newSubtypeData: any): any 
     const { start_x_utm, end_x_utm, start_y_utm, end_y_utm } = transectLine;
 
     if (start_x_utm && end_x_utm && start_y_utm && end_y_utm) {
-      transectLine.transect_bearing = (
-        Math.atan((end_x_utm - start_x_utm) / (end_y_utm - start_y_utm)) *
-        (180 / Math.PI)
-      ).toFixed(1);
+      let angle = Math.atan((end_x_utm - start_x_utm) / (end_y_utm - start_y_utm)) *
+        (180 / Math.PI);
+
+      if (end_x_utm - start_x_utm > 0 && end_y_utm - start_y_utm < 0) {
+        angle = angle + 180;
+      } else if (end_x_utm - start_x_utm < 0 && end_y_utm - start_y_utm < 0) {
+        angle = angle - 180;
+      }
+
+      transectLine.transect_bearing = angle.toFixed(1);
       transectLine.transect_length = Math.hypot(end_x_utm - start_x_utm, end_y_utm - start_y_utm).toFixed(1);
     }
 

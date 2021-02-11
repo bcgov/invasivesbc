@@ -212,6 +212,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
       updatedActivitySubtypeData = populateTransectLinesLengthAndBearing(updatedActivitySubtypeData);
 
+      console.log(updatedActivitySubtypeData);
+
       const updatedFormValues = {
         formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
