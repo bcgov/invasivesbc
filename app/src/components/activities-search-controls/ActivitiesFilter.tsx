@@ -176,9 +176,6 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12}>
-                      <SpeciesTree />
-                    </Grid>
                     <Grid container item justify="flex-end">
                       <Button
                         variant="contained"

@@ -7,6 +7,7 @@ import {
   LinearProgress,
   makeStyles,
   Paper,
+  Tooltip,
   Typography
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
@@ -21,6 +22,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
+import HelpIcon from '@material-ui/icons/Help';
 
 interface IPlanPageProps {
   classes?: any;
@@ -139,18 +141,22 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   return (
     <Container className={props.classes.container}>
       <Grid container spacing={3} className={classes.tripGrid}>
-        <Grid container item xs={12} justify="space-between">
-          <TripDataControls />
-          <ManageDatabaseComponent />
-        </Grid>
         <Grid item md={6}>
+          <Paper className={classes.paper}>
+            THIS IS HOW YOU DO YOUR JOB
+           </Paper>
           <Accordion defaultExpanded={false}>
             <AccordionSummary
               expandIcon={<ExpandMore />}
               aria-controls="panel-layer-picker-content"
-              disabled={true}
+              disabled={false}
               id="panel-layer-picker-header">
               <Typography variant="h5">Pick Layers</Typography>
+              <Tooltip
+                title="Click the layer chooser on the map to select layers.  We'll add more layer features here soon."
+                arrow>
+                <HelpIcon />
+              </Tooltip>
             </AccordionSummary>
             <AccordionDetails className={classes.layerPicker}></AccordionDetails>
           </Accordion>
@@ -160,6 +166,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               aria-controls="panel-activiity-record-picker-content"
               id="panel-activity-record-picker-header">
               <Typography variant="h5">Pick Activity Records</Typography>
+              <Tooltip
+                title="This is where you can cache past activities (observations etc.) to the app.  If you want to search for records in a particular area, draw a polygon on the map."
+                arrow>
+                <HelpIcon />
+              </Tooltip>
             </AccordionSummary>
             <AccordionDetails className={classes.activityRecordList}>
               <ActivityDataFilter />
@@ -171,6 +182,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               aria-controls="panel-pointOfInterest-record-picker-content"
               id="panel-pointOfInterest-record-picker-header">
               <Typography variant="h5">{'Points Of Interest & IAPP Data'}</Typography>
+              <Tooltip
+                title="This is where you can cache IAPP sites, and later other points of interest.  If you want to search for records in a particular area, draw a polygon on the map."
+                arrow>
+                <HelpIcon />
+              </Tooltip>
             </AccordionSummary>
             <AccordionDetails className={classes.pointOfInterestList}>
               <PointOfInterestDataFilter />
@@ -179,6 +195,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           <Accordion defaultExpanded={false}>
             <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-kml-content" id="panel-kml-header">
               <Typography variant="h5">Load KML</Typography>
+              <Tooltip title="Upload a shape to search by.  Overrides polygon drawn by user with one from a KML." arrow>
+                <HelpIcon />
+              </Tooltip>
             </AccordionSummary>
             <AccordionDetails>
               <KMLUpload />
@@ -187,14 +206,26 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           <Accordion defaultExpanded={false}>
             <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-kml-content" id="panel-kml-header">
               <Typography variant="h5">Load Metabase Searches</Typography>
+              <Tooltip
+                title="Need to do a more advanced search?  Make a question in Metabase and fetch the associated data here."
+                arrow>
+                <HelpIcon />
+              </Tooltip>
             </AccordionSummary>
             <AccordionDetails>
               <MetabaseSearch />
             </AccordionDetails>
           </Accordion>
+            <ManageDatabaseComponent />
+            <TripDataControls />
         </Grid>
         <Grid item md={6}>
           <Paper className={classes.paper}>
+            <Tooltip
+              title="Use this map along with the controls on the left to cache data.  Draw a shape to search by, or search without a spatial filter by using the trash can to delete the shape.  Hit the save icon on the map to save map tiles up to the zoom level you are in for a given area."
+              arrow>
+              <HelpIcon />
+            </Tooltip>
             <MapContainer
               {...props}
               classes={classes}
