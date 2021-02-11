@@ -324,7 +324,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       if (!activityResults) {
         setIsLoading(false);
-        setDoc(false);
         return;
       }
 
