@@ -143,19 +143,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           <TripDataControls />
           <ManageDatabaseComponent />
         </Grid>
-        <Grid item xs={12}>
-          <Paper className={classes.paper}>
-            <Typography variant="h5">Storage Used By This Trip:</Typography>
-            <LinearProgress className={classes.tripStorageUsageBar} value={50} variant={'determinate'} />
-            <Typography variant="h5">Total Storage Used:</Typography>
-            <LinearProgress className={classes.totalStorageUsageBar} value={70} variant={'determinate'} />
-          </Paper>
-        </Grid>
         <Grid item md={6}>
           <Accordion defaultExpanded={false}>
             <AccordionSummary
               expandIcon={<ExpandMore />}
               aria-controls="panel-layer-picker-content"
+              disabled={true}
               id="panel-layer-picker-header">
               <Typography variant="h5">Pick Layers</Typography>
             </AccordionSummary>
