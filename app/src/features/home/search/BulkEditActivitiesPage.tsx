@@ -11,7 +11,10 @@ import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getAct
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { populateHerbicideDilutionAndArea, populateTransectLinesLengthAndBearing } from 'rjsf/business-rules/populateCalculatedFields';
+import {
+  populateHerbicideDilutionAndArea,
+  populateTransectLinesLengthAndBearing
+} from 'rjsf/business-rules/populateCalculatedFields';
 import { getCustomValidator, getHerbicideApplicationRateValidator } from 'rjsf/business-rules/customValidation';
 
 interface IBulkEditActivitiesPage {

@@ -11,7 +11,10 @@ import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { populateHerbicideDilutionAndArea, populateTransectLinesLengthAndBearing } from 'rjsf/business-rules/populateCalculatedFields';
+import {
+  populateHerbicideDilutionAndArea,
+  populateTransectLinesLengthAndBearing
+} from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';

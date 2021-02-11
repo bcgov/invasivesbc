@@ -15,7 +15,10 @@ import {
   getWindValidator,
   getHerbicideApplicationRateValidator
 } from 'rjsf/business-rules/customValidation';
-import { populateHerbicideDilutionAndArea, populateTransectLinesLengthAndBearing } from 'rjsf/business-rules/populateCalculatedFields';
+import {
+  populateHerbicideDilutionAndArea,
+  populateTransectLinesLengthAndBearing
+} from 'rjsf/business-rules/populateCalculatedFields';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';

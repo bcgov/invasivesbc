@@ -53,7 +53,7 @@ export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
 export function populateTransectLinesLengthAndBearing(newSubtypeData: any): any {
   let updatedActivitySubtypeData = { ...newSubtypeData };
 
-  const transectLinesMatchingKeys = Object.keys(updatedActivitySubtypeData).filter(key =>
+  const transectLinesMatchingKeys = Object.keys(updatedActivitySubtypeData).filter((key) =>
     key.includes('transect_lines')
   );
 
@@ -76,11 +76,10 @@ export function populateTransectLinesLengthAndBearing(newSubtypeData: any): any 
 
     if (start_x_utm && end_x_utm && start_y_utm && end_y_utm) {
       transectLine.transect_bearing = (
-        Math.atan((end_x_utm - start_x_utm) / (end_y_utm - start_y_utm)) * (180 / Math.PI)
+        Math.atan((end_x_utm - start_x_utm) / (end_y_utm - start_y_utm)) *
+        (180 / Math.PI)
       ).toFixed(1);
-      transectLine.transect_length = (
-        Math.hypot(end_x_utm - start_x_utm, end_y_utm - start_y_utm)
-      ).toFixed(1);
+      transectLine.transect_length = Math.hypot(end_x_utm - start_x_utm, end_y_utm - start_y_utm).toFixed(1);
     }
 
     updatedTransectLinesList.push({ ...transectLineObjToUpdate, transect_line: transectLine });
