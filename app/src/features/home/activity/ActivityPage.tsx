@@ -15,7 +15,7 @@ import {
   getWindValidator,
   getHerbicideApplicationRateValidator
 } from 'rjsf/business-rules/customValidation';
-import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
+import { populateHerbicideDilutionAndArea, populateTransectLinesLengthAndBearing } from 'rjsf/business-rules/populateCalculatedFields';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
@@ -207,7 +207,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
-      const updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      updatedActivitySubtypeData = populateTransectLinesLengthAndBearing(updatedActivitySubtypeData);
 
       const updatedFormValues = {
         formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },

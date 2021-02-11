@@ -300,7 +300,7 @@ const TransectInvasivePlants = {
   biological_agent_code: {}
 };
 
-const TransectLines = {
+const TransectLine = {
   transect_id: {},
   transect_comment: {},
   start_x_utm: {},
@@ -362,9 +362,9 @@ const FireMonitoringTransectPoints = {
 };
 
 const FireMonitoringTransectLines = {
-  transect_lines: {
+  transect_line: {
     ...TwoColumnStyle,
-    ...TransectLines
+    ...TransectLine
   },
   fire_monitoring_transect_points: {
     items: {
@@ -397,9 +397,9 @@ const InvasivePlantDensityTransectPoints = {
 };
 
 const InvasivePlantDensityTransectLines = {
-  transect_lines: {
+  transect_line: {
     ...TwoColumnStyle,
-    ...TransectLines
+    ...TransectLine
   },
   invasive_plant_density_transect_points: {
     items: {
@@ -432,9 +432,9 @@ const FullVegetationTransectPoints = {
 };
 
 const FullVegetationTransectLines = {
-  transect_lines: {
+  transect_line: {
     ...TwoColumnStyle,
-    ...TransectLines
+    ...TransectLine
   },
   full_vegetation_transect_points: {
     items: {
@@ -467,9 +467,9 @@ const LumpedSpeciesVegetationTransectPoints = {
 };
 
 const LumpedSpeciesVegetationTransectLines = {
-  transect_lines: {
+  transect_line: {
     ...TwoColumnStyle,
-    ...TransectLines
+    ...TransectLine
   },
   lumped_species_vegetation_transect_points: {
     items: {
@@ -502,9 +502,9 @@ const BiocontrolEfficacyTransectPoints = {
 };
 
 const BiocontrolEfficacyTransectLines = {
-  transect_lines: {
+  transect_line: {
     ...TwoColumnStyle,
-    ...TransectLines
+    ...TransectLine
   },
   biocontrol_efficacy_transect_points: {
     items: {

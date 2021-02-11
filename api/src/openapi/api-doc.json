@@ -3173,9 +3173,9 @@
           }
         }
       },
-      "TransectLines": {
+      "TransectLine": {
         "type": "object",
-        "title": "Transect Lines Information",
+        "title": "Transect Line Information",
         "required": [
           "transect_id",
           "transect_comment",
@@ -3219,25 +3219,25 @@
           },
           "transect_length": {
             "type": "number",
-            "title": "Transect Length",
-            "x-tooltip-text": "Transect length based on distance between start and end points"
+            "title": "Transect Length (m)",
+            "x-tooltip-text": "Transect length in meters based on distance between start and end points"
           },
           "transect_bearing": {
             "type": "number",
-            "title": "Transect Bearing",
-            "x-tooltip-text": "Transect bearing based on the vector from start and end points"
+            "title": "Transect Bearing (Degrees)",
+            "x-tooltip-text": "Transect bearing in degrees based on the vector from start and end points"
           }
         }
       },
       "FireMonitoringTransectLines": {
         "type": "object",
         "required": [
-          "transect_lines",
+          "transect_line",
           "fire_monitoring_transect_points"
         ],
         "properties": {
-          "transect_lines": {
-            "$ref": "#/components/schemas/TransectLines"
+          "transect_line": {
+            "$ref": "#/components/schemas/TransectLine"
           },
           "fire_monitoring_transect_points": {
             "type": "array",
@@ -3251,12 +3251,12 @@
       "InvasivePlantDensityTransectLines": {
         "type": "object",
         "required": [
-          "transect_lines",
+          "transect_line",
           "invasive_plant_density_transect_points"
         ],
         "properties": {
-          "transect_lines": {
-            "$ref": "#/components/schemas/TransectLines"
+          "transect_line": {
+            "$ref": "#/components/schemas/TransectLine"
           },
           "invasive_plant_density_transect_points": {
             "type": "array",
@@ -3270,12 +3270,12 @@
       "FullVegetationTransectLines": {
         "type": "object",
         "required": [
-          "transect_lines",
+          "transect_line",
           "full_vegetation_transect_points"
         ],
         "properties": {
-          "transect_lines": {
-            "$ref": "#/components/schemas/TransectLines"
+          "transect_line": {
+            "$ref": "#/components/schemas/TransectLine"
           },
           "full_vegetation_transect_points": {
             "type": "array",
@@ -3289,12 +3289,12 @@
       "LumpedSpeciesVegetationTransectLines": {
         "type": "object",
         "required": [
-          "transect_lines",
+          "transect_line",
           "lumped_species_vegetation_transect_points"
         ],
         "properties": {
-          "transect_lines": {
-            "$ref": "#/components/schemas/TransectLines"
+          "transect_line": {
+            "$ref": "#/components/schemas/TransectLine"
           },
           "lumped_species_vegetation_transect_points": {
             "type": "array",
@@ -3308,12 +3308,12 @@
       "BiocontrolEfficacyTransectLines": {
         "type": "object",
         "required": [
-          "transect_lines",
+          "transect_line",
           "biocontrol_efficacy_transect_points"
         ],
         "properties": {
-          "transect_lines": {
-            "$ref": "#/components/schemas/TransectLines"
+          "transect_line": {
+            "$ref": "#/components/schemas/TransectLine"
           },
           "biocontrol_efficacy_transect_points": {
             "type": "array",
