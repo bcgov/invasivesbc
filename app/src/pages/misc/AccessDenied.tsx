@@ -42,8 +42,7 @@ const AccessDenied = () => {
         </Box>
         <Box mb={4}>
           <Typography variant="h4">
-            You must request access by email to view this application.
-            Please provide your IDIR/BCeID username in the email body.
+            You must request access by email to view this application. Please provide your IDIR/BCeID username in the email body.
           </Typography>
         </Box>
         <Box mb={4}>
