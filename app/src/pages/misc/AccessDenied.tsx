@@ -44,7 +44,7 @@ const AccessDenied = () => {
           <Typography variant="body1" component="span">
             <Box>Send an email requesting access to:</Box>
             <Box mb={2} className={classes.emailLink}>
-              youremailhere@email.com
+              michael.shasko@gov.bc.ca
             </Box>
             <Box mb={2}>or</Box>
             <Box>
