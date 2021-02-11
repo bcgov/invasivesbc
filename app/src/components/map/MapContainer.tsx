@@ -84,6 +84,27 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
+  const getRISO = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:regional_invasive_species_organization_areas@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.8,
+      tms:true
+    });
+  };
+
+  const getAggregate = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:aggregate_tenures@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.8,
+      tms:true
+    });
+  };
+
+  const getIPMA = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.8,
+      tms:true
+    });
+  };
+
   const addZoomControls = () => {
     const zoomControlOptions = { position: 'bottomleft' };
 
@@ -177,9 +198,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     };
 
     const nRDistricts = getNRDistricts();
+
+    const riso = getRISO();
+    const ipma = getIPMA();
+    const aggregate = getAggregate();
     
     const overlays = {
       'Placenames': esriPlacenames,
+      'Gravel Pits': aggregate,
+      'Invasive Plant Management Areas': ipma,
+      'Regional Invasive Species Organization Areas': riso,
       'Natural Resource Districts': nRDistricts
     };
 
