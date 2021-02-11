@@ -15,8 +15,11 @@ import {
   getWindValidator,
   getHerbicideApplicationRateValidator
 } from 'rjsf/business-rules/customValidation';
-import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
-import { notifySuccess } from 'utils/NotificationUtils';
+import {
+  populateHerbicideDilutionAndArea,
+  populateTransectLinesLengthAndBearing
+} from 'rjsf/business-rules/populateCalculatedFields';
+import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { addClonedActivityToDB } from 'utils/addActivity';
@@ -40,6 +43,8 @@ interface IActivityPageProps {
   classes?: any;
   activityId?: string;
   setObservation?: Function;
+  setFormHasErrors?: Function;
+  setParentFormRef?: Function;
 }
 
 //why does this page think I need a map context menu ?
@@ -159,12 +164,24 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     [databaseContext.database, doc]
   );
 
+  /*
+    Function that runs if the form submit fails and has errors
+  */
+  const onFormSubmitError = () => {
+    notifyError(
+      databaseContext,
+      'There are errors in your form. Please make sure your form contains no errors and try again.'
+    );
+  };
+
   /**
    * Save the form when it is submitted.
    *
    * @param {*} event the form submit event
    */
   const onFormSubmitSuccess = async (event: any, formRef: any) => {
+    props.setFormHasErrors(false);
+
     const updatedFormValues = {
       formData: event.formData,
       status: ActivityStatus.EDITED,
@@ -193,7 +210,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
-      const updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      updatedActivitySubtypeData = populateTransectLinesLengthAndBearing(updatedActivitySubtypeData);
 
       const updatedFormValues = {
         formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
@@ -374,6 +392,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         linkedActivity={linkedActivity}
         onFormChange={onFormChange}
         onFormSubmitSuccess={onFormSubmitSuccess}
+        onFormSubmitError={onFormSubmitError}
         photoState={{ photos, setPhotos }}
         mapId={doc._id}
         geometryState={{ geometry, setGeometry }}
@@ -382,6 +401,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         pasteFormData={() => pasteFormData()}
         copyFormData={() => copyFormData()}
         cloneActivityButton={generateCloneActivityButton}
+        setParentFormRef={props.setParentFormRef}
       />
     </Container>
   );

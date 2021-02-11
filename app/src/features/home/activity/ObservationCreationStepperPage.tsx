@@ -55,6 +55,8 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   const [activeStep, setActiveStep] = useState(0);
   const [observation, setObservation] = useState(null);
   const [observationSubtype, setObservationSubtype] = useState(null);
+  const [parentFormRef, setParentFormRef] = useState(null);
+  const [formHasErrors, setFormHasErrors] = useState(true);
 
   // Define the steps of the workflow
   const steps = ['Create Observation', 'Create Optional Treatment'];
@@ -77,6 +79,12 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
       getObservation();
     }
   }, []);
+
+  useEffect(() => {
+    if (!formHasErrors) {
+      setActiveStep(activeStep + 1);
+    }
+  }, [formHasErrors]);
 
   /*
     When we have completed the workflow and wish to create the treatment record,
@@ -108,9 +116,25 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
       <Box>
         {activeStep === 0 && observation && (
           <>
-            <ActivityPage classes={classes} activityId={observation._id} setObservation={setObservation} />
+            <ActivityPage
+              classes={classes}
+              activityId={observation._id}
+              setObservation={setObservation}
+              setFormHasErrors={setFormHasErrors}
+              setParentFormRef={setParentFormRef}
+            />
             <Box mt={5} display="flex" justifyContent="center">
-              <Button size="large" variant="contained" color="primary" onClick={() => setActiveStep(activeStep + 1)}>
+              <Button
+                size="large"
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  if (formHasErrors) {
+                    parentFormRef?.submit();
+                  } else {
+                    setActiveStep(activeStep + 1);
+                  }
+                }}>
                 Continue
               </Button>
             </Box>

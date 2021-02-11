@@ -84,15 +84,9 @@ const post_put_apiDoc = {
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_MechanicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Treatment_ChemicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Treatment_BiologicalTerrestrialAnimal' },
                 { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
                 { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialAnimal' }
+                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' }
               ]
             }
           }

@@ -49,3 +49,49 @@ export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
 
   return updatedActivitySubtypeData;
 }
+
+export function populateTransectLinesLengthAndBearing(newSubtypeData: any): any {
+  let updatedActivitySubtypeData = { ...newSubtypeData };
+
+  const transectLinesMatchingKeys = Object.keys(updatedActivitySubtypeData).filter((key) =>
+    key.includes('transect_lines')
+  );
+
+  // If transect lines field is not edited at all just return existing activity subtype data
+  if (!transectLinesMatchingKeys.length) {
+    return newSubtypeData;
+  }
+
+  /*
+    Otherwise, check to see if transect lines fields have been populated
+    If yes, calculate the bearing and length of each transect line
+  */
+  const transectLinesList = [...newSubtypeData[transectLinesMatchingKeys[0]]];
+  const updatedTransectLinesList = [];
+
+  transectLinesList.forEach((transectLineObj: any) => {
+    const transectLineObjToUpdate = { ...transectLineObj };
+    const transectLine = { ...transectLineObjToUpdate.transect_line };
+    const { start_x_utm, end_x_utm, start_y_utm, end_y_utm } = transectLine;
+
+    if (start_x_utm && end_x_utm && start_y_utm && end_y_utm) {
+      transectLine.transect_bearing = (
+        Math.atan((end_x_utm - start_x_utm) / (end_y_utm - start_y_utm)) *
+        (180 / Math.PI)
+      ).toFixed(1);
+      transectLine.transect_length = Math.hypot(end_x_utm - start_x_utm, end_y_utm - start_y_utm).toFixed(1);
+    }
+
+    updatedTransectLinesList.push({ ...transectLineObjToUpdate, transect_line: transectLine });
+  });
+
+  /*
+    Update the activity subtype data with the new transect line values
+  */
+  updatedActivitySubtypeData = {
+    ...newSubtypeData,
+    [transectLinesMatchingKeys[0]]: updatedTransectLinesList.length && updatedTransectLinesList
+  };
+
+  return updatedActivitySubtypeData;
+}
