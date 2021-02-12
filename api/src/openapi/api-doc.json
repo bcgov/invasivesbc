@@ -2958,11 +2958,25 @@
           "research_trial_code": {
             "type": "string",
             "title": "Research Trial",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "research_trial_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Is this observation part of a research project or trial. If yes, add details in Project Code or Comments fields"
           },
           "realm_code": {
             "type": "string",
             "title": "Realm/Class",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "realm_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Ecosystem classification"
           },
           "site_aspect": {
@@ -3003,16 +3017,37 @@
           "cloud_cover_code": {
             "type": "string",
             "title": "Cloud Cover",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "cloud_cover_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the most representative cloud cover"
           },
           "beaufort_wind_code": {
             "type": "string",
             "title": "Wind",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "beaufort_wind_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the most representative wind conditions"
           },
           "precipitation_code": {
             "type": "string",
             "title": "Precipitation",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "precipitation_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the most representative precipitation state"
           },
           "burn_severity_code": {
@@ -3025,26 +3060,61 @@
           "ecological_moisture_regime_code": {
             "type": "string",
             "title": "Ecological Moisture",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "ecological_moisture_regime_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the average ecological moisture"
           },
           "mesoslope_position_code": {
             "type": "string",
             "title": "Mesoslope Position",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "mesoslope_position_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the most representative mesoslope condition"
           },
           "site_surface_shape_code": {
             "type": "string",
             "title": "Site Surface Shape",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "site_surface_shape_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the most representative slope shape"
           },
           "soil_properties_code": {
             "type": "string",
             "title": "Soil Properties",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "soil_properties_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the most representative soil property"
           },
           "surface_substrate_code": {
             "type": "string",
             "title": "Surface Substrate",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "surface_substrate_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the most representative subsurface condition"
           },
           "site_activity_disturbance": {
@@ -3064,21 +3134,49 @@
           "disturbance_condition_code": {
             "type": "string",
             "title": "Disturbance Condition",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "disturbance_condition_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the most representative disturbance condition"
           },
           "disturbance_type_code": {
             "type": "string",
             "title": "Disturbance Type",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "disturbance_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the most representative disturbance type"
           },
           "invasive_plant_change_code": {
             "type": "string",
             "title": "Invasive Plant Change",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_change_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the observed change on all species"
           },
           "target_plant_change_code": {
             "type": "string",
             "title": "Target Plant Change",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "target_plant_change_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Select the observed change on the target species"
           },
           "treatment_seeded": {
@@ -3091,6 +3189,13 @@
           "density_count_type_code": {
             "type": "string",
             "title": "Density Count Type",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "density_count_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Specify the density type"
           },
           "trace_plants": {
@@ -3110,11 +3215,25 @@
           "frame_size_code": {
             "type": "string",
             "title": "Frame Size",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "frame_size_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "Set the frame size for the collections"
           },
           "biocontrol_noted_code": {
             "type": "string",
             "title": "Biocontrol Noted",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biocontrol_noted_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "x-tooltip-text": "If biological control agents are noted while completing the transects, select Yes and record the species found in the comments"
           },
           "photoplot_start": {
