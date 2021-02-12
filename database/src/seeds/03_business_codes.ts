@@ -41,8 +41,7 @@ async function _load_headers(knex: Knex, category_id: number): Promise<Map<strin
     fs.createReadStream(file)
       .pipe(
         parse({
-          columns: true,
-          trim: true
+          columns: true
         })
       )
       .on('data', (dataRow) => {
@@ -91,8 +90,7 @@ async function _load_codes(knex: Knex, header_name_map: Map<string, number>): Pr
     fs.createReadStream(file)
       .pipe(
         parse({
-          columns: true,
-          trim: true
+          columns: true
         })
       )
       .on('data', (dataRow) => {
