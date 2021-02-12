@@ -358,7 +358,22 @@ const TransectData = {
 };
 
 const FireMonitoringTransectPoints = {
-  offset_distance: {}
+  sample_point_id: {},
+  offset_distance: {},
+  utm_x: {
+    'ui:readonly': true
+  },
+  utm_y: {
+    'ui:readonly': true
+  },
+  veg_transect_sampler: {},
+  veg_transect_recorder: {},
+  veg_transect_native_forbs: {},
+  veg_transect_grasses: {},
+  veg_transect_bare_ground: {},
+  veg_transect_shrubs: {},
+  veg_transect_bryophytes: {},
+  veg_transect_litter: {}
 };
 
 const FireMonitoringTransectLines = {
