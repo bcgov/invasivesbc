@@ -52,8 +52,6 @@ async function _load_headers(knex: Knex, category_id: number): Promise<Map<strin
           // record the new header name
           header_name_map.set(dataRow.code_header_name, header_id);
 
-          console.log(dataRow);
-
           // construct the header row and add it to the header rows array
           const extendedRow = {
             code_category_id: category_id,
@@ -93,7 +91,8 @@ async function _load_codes(knex: Knex, header_name_map: Map<string, number>): Pr
     fs.createReadStream(file)
       .pipe(
         parse({
-          columns: true
+          columns: true,
+          trim: true
         })
       )
       .on('data', (dataRow) => {
