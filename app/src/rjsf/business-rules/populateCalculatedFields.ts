@@ -78,6 +78,9 @@ export function populateTransectLinesLengthAndBearing(newSubtypeData: any): any 
       let angle = Math.atan((end_x_utm - start_x_utm) / (end_y_utm - start_y_utm)) *
         (180 / Math.PI);
 
+      /*
+        Because we want the angle relative from the North direction
+      */
       if (end_x_utm - start_x_utm > 0 && end_y_utm - start_y_utm < 0) {
         angle = angle + 180;
       } else if (end_x_utm - start_x_utm < 0 && end_y_utm - start_y_utm < 0) {

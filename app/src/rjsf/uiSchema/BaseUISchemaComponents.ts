@@ -301,7 +301,7 @@ const TransectInvasivePlants = {
 };
 
 const TransectLine = {
-  transect_id: {},
+  transect_line_id: {},
   transect_comment: {},
   start_x_utm: {},
   start_y_utm: {},
