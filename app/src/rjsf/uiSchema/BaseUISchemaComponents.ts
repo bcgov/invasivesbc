@@ -379,12 +379,6 @@ const Transect_FireMonitoring = {
     ...ThreeColumnStyle,
     ...TransectData
   },
-  transect_invasive_plants: {
-    items: {
-      ...ThreeColumnStyle,
-      ...TransectInvasivePlants
-    }
-  },
   fire_monitoring_transect_lines: {
     items: {
       ...FireMonitoringTransectLines
@@ -413,12 +407,6 @@ const Transect_InvasivePlantDensity = {
   transect_data: {
     ...ThreeColumnStyle,
     ...TransectData
-  },
-  transect_invasive_plants: {
-    items: {
-      ...ThreeColumnStyle,
-      ...TransectInvasivePlants
-    }
   },
   invasive_plant_density_transect_lines: {
     items: {
@@ -449,12 +437,6 @@ const Transect_FullVegetation = {
     ...ThreeColumnStyle,
     ...TransectData
   },
-  transect_invasive_plants: {
-    items: {
-      ...ThreeColumnStyle,
-      ...TransectInvasivePlants
-    }
-  },
   full_vegetation_transect_lines: {
     items: {
       ...FullVegetationTransectLines
@@ -483,12 +465,6 @@ const Transect_LumpedSpeciesVegetation = {
   transect_data: {
     ...ThreeColumnStyle,
     ...TransectData
-  },
-  transect_invasive_plants: {
-    items: {
-      ...ThreeColumnStyle,
-      ...TransectInvasivePlants
-    }
   },
   lumped_species_vegetation_transect_lines: {
     items: {
