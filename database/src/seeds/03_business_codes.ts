@@ -37,7 +37,7 @@ async function _load_headers(knex: Knex, category_id: number): Promise<Map<strin
 
   const headerRows = [];
 
-  await new Promise<void>((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     fs.createReadStream(file)
       .pipe(
         parse({
