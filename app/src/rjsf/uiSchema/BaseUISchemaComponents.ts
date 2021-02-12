@@ -287,6 +287,10 @@ const Biological = {
   comment: {}
 };
 
+const InvasivePlants = {
+  invasive_plant_code: {}
+};
+
 /*
   Transect
 */
@@ -301,7 +305,7 @@ const TransectInvasivePlants = {
 };
 
 const TransectLine = {
-  transect_id: {},
+  transect_line_id: {},
   transect_comment: {},
   start_x_utm: {},
   start_y_utm: {},
@@ -358,7 +362,27 @@ const TransectData = {
 };
 
 const FireMonitoringTransectPoints = {
-  offset_distance: {}
+  sample_point_id: {},
+  offset_distance: {},
+  utm_x: {
+    'ui:readonly': true
+  },
+  utm_y: {
+    'ui:readonly': true
+  },
+  veg_transect_sampler: {},
+  veg_transect_recorder: {},
+  veg_transect_native_forbs: {},
+  veg_transect_grasses: {},
+  veg_transect_bare_ground: {},
+  veg_transect_shrubs: {},
+  veg_transect_bryophytes: {},
+  veg_transect_litter: {},
+  invasive_plants: {
+    items: {
+      ...InvasivePlants
+    }
+  }
 };
 
 const FireMonitoringTransectLines = {
@@ -378,12 +402,6 @@ const Transect_FireMonitoring = {
   transect_data: {
     ...ThreeColumnStyle,
     ...TransectData
-  },
-  transect_invasive_plants: {
-    items: {
-      ...ThreeColumnStyle,
-      ...TransectInvasivePlants
-    }
   },
   fire_monitoring_transect_lines: {
     items: {
@@ -414,12 +432,6 @@ const Transect_InvasivePlantDensity = {
     ...ThreeColumnStyle,
     ...TransectData
   },
-  transect_invasive_plants: {
-    items: {
-      ...ThreeColumnStyle,
-      ...TransectInvasivePlants
-    }
-  },
   invasive_plant_density_transect_lines: {
     items: {
       ...InvasivePlantDensityTransectLines
@@ -449,12 +461,6 @@ const Transect_FullVegetation = {
     ...ThreeColumnStyle,
     ...TransectData
   },
-  transect_invasive_plants: {
-    items: {
-      ...ThreeColumnStyle,
-      ...TransectInvasivePlants
-    }
-  },
   full_vegetation_transect_lines: {
     items: {
       ...FullVegetationTransectLines
@@ -483,12 +489,6 @@ const Transect_LumpedSpeciesVegetation = {
   transect_data: {
     ...ThreeColumnStyle,
     ...TransectData
-  },
-  transect_invasive_plants: {
-    items: {
-      ...ThreeColumnStyle,
-      ...TransectInvasivePlants
-    }
   },
   lumped_species_vegetation_transect_lines: {
     items: {
