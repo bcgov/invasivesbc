@@ -1576,13 +1576,6 @@
           "transect_data": {
             "$ref": "#/components/schemas/TransectData"
           },
-          "transect_invasive_plants": {
-            "type": "array",
-            "title": "Targeted Species",
-            "items": {
-              "$ref": "#/components/schemas/TransectInvasivePlants"
-            }
-          },
           "fire_monitoring_transect_lines": {
             "type": "array",
             "title": "Fire Monitoring Transect Lines",
@@ -1602,13 +1595,6 @@
         "properties": {
           "transect_data": {
             "$ref": "#/components/schemas/TransectData"
-          },
-          "transect_invasive_plants": {
-            "type": "array",
-            "title": "Targeted Species",
-            "items": {
-              "$ref": "#/components/schemas/TransectInvasivePlants"
-            }
           },
           "full_vegetation_transect_lines": {
             "type": "array",
@@ -1630,13 +1616,6 @@
           "transect_data": {
             "$ref": "#/components/schemas/TransectData"
           },
-          "transect_invasive_plants": {
-            "type": "array",
-            "title": "Targeted Species",
-            "items": {
-              "$ref": "#/components/schemas/TransectInvasivePlants"
-            }
-          },
           "invasive_plant_density_transect_lines": {
             "type": "array",
             "title": "Invasive Plant Density Transect Lines",
@@ -1656,13 +1635,6 @@
         "properties": {
           "transect_data": {
             "$ref": "#/components/schemas/TransectData"
-          },
-          "transect_invasive_plants": {
-            "type": "array",
-            "title": "Targeted Species",
-            "items": {
-              "$ref": "#/components/schemas/TransectInvasivePlants"
-            }
           },
           "lumped_species_vegetation_transect_lines": {
             "type": "array",
