@@ -98,8 +98,8 @@ async function _load_codes(knex: Knex, header_name_map: Map<string, number>): Pr
       .on('data', (dataRow) => {
         const extendedRow = {
           code_header_id: header_name_map.get(dataRow.code_header_name),
-          code_name: dataRow.code_name.trim(),
-          code_description: dataRow.code_description.trim(),
+          code_name: dataRow.code_name,
+          code_description: dataRow.code_description,
           code_sort_order: dataRow.code_sort_order,
           valid_from: knex.fn.now(),
           created_by_user_id: 1,
