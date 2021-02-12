@@ -287,6 +287,10 @@ const Biological = {
   comment: {}
 };
 
+const InvasivePlants = {
+  invasive_plant_code: {}
+};
+
 /*
   Transect
 */
@@ -373,7 +377,12 @@ const FireMonitoringTransectPoints = {
   veg_transect_bare_ground: {},
   veg_transect_shrubs: {},
   veg_transect_bryophytes: {},
-  veg_transect_litter: {}
+  veg_transect_litter: {},
+  invasive_plants: {
+    items: {
+      ...InvasivePlants
+    }
+  }
 };
 
 const FireMonitoringTransectLines = {
