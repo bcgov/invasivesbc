@@ -67,7 +67,7 @@ async function _load_headers(knex: Knex, category_id: number): Promise<Map<strin
       })
       .on('error', (error) => reject(error))
       .on('end', () => {
-        resolve();
+        resolve(header_name_map);
       });
   });
 
@@ -87,7 +87,7 @@ async function _load_codes(knex: Knex, header_name_map: Map<string, number>): Pr
 
   const results = [];
 
-  await new Promise<void>((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     fs.createReadStream(file)
       .pipe(
         parse({
