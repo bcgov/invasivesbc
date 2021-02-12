@@ -67,7 +67,7 @@ async function _load_headers(knex: Knex, category_id: number): Promise<Map<strin
       })
       .on('error', (error) => reject(error))
       .on('end', () => {
-        resolve(header_name_map);
+        resolve();
       });
   });
 
