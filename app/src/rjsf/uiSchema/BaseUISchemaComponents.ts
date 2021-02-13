@@ -498,7 +498,47 @@ const Transect_LumpedSpeciesVegetation = {
 };
 
 const BiocontrolEfficacyTransectPoints = {
-  offset_distance: {}
+  sample_point_id: {},
+  offset_distance: {},
+  utm_x: {
+    'ui:readonly': true
+  },
+  utm_y: {
+    'ui:readonly': true
+  },
+  veg_transect_sampler: {},
+  veg_transect_recorder: {},
+  veg_transect_target: {},
+  veg_transect_other_lps: {},
+  veg_transect_native_forbs: {},
+  veg_transect_grasses: {},
+  veg_transect_bare_ground: {},
+  veg_transect_shrubs: {},
+  veg_transect_bryophytes: {},
+  veg_transect_litter: {},
+  phen_transect_sampler: {},
+  phen_transect_recorder: {},
+  phen_transect_seedlings: {},
+  phen_transect_rosettes: {},
+  phen_transect_bolting: {},
+  phen_transect_flowering: {},
+  phen_transect_seeds: {},
+  phen_transect_senescent: {},
+  phen_total_plants: {},
+  phen_number_stems: {},
+  phen_tallest_1: {},
+  phen_tallest_2: {},
+  phen_tallest_3: {},
+  phen_tallest_4: {},
+  phen_level_se: {},
+  phen_level_ro: {},
+  phen_level_bo: {},
+  phen_level_fl: {},
+  phen_level_sf: {},
+  phen_level_sc: {},
+  phen_total_percentage: {
+    'ui:readonly': true
+  }
 };
 
 const BiocontrolEfficacyTransectLines = {

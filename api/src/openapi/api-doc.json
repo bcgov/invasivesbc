@@ -3531,10 +3531,218 @@
       },
       "BiocontrolEfficacyTransectPoints": {
         "type": "object",
+        "required": [
+          "sample_point_id",
+          "offset_distance",
+          "utm_x",
+          "utm_y",
+          "veg_transect_sampler",
+          "veg_transect_recorder",
+          "veg_transect_target",
+          "veg_transect_other_lps",
+          "veg_transect_native_forbs",
+          "veg_transect_grasses",
+          "veg_transect_bare_ground",
+          "veg_transect_shrubs",
+          "veg_transect_bryophytes",
+          "veg_transect_litter",
+          "phen_transect_sampler",
+          "phen_transect_recorder",
+          "phen_transect_seedlings",
+          "phen_transect_rosettes",
+          "phen_transect_bolting",
+          "phen_transect_flowering",
+          "phen_transect_seeds",
+          "phen_transect_senescent",
+          "phen_total_plants",
+          "phen_number_stems",
+          "phen_tallest_1",
+          "phen_tallest_2",
+          "phen_tallest_3",
+          "phen_tallest_4",
+          "phen_level_se",
+          "phen_level_ro",
+          "phen_level_bo",
+          "phen_level_fl",
+          "phen_level_sf",
+          "phen_level_sc",
+          "phen_total_percentage"
+        ],
         "properties": {
+          "sample_point_id": {
+            "type": "string",
+            "title": "Sample Point ID",
+            "x-tooltip-text": "Provide a unique transect point identifier (ie ABC123)"
+          },
           "offset_distance": {
             "type": "number",
-            "title": "Offset Distance"
+            "title": "Offset Distance",
+            "x-tooltip-text": "Provide the offset distance from the start point"
+          },
+          "utm_x": {
+            "type": "number",
+            "title": "Offset Point UTM X",
+            "x-tooltip-text": "UTM X point at the offset distance"
+          },
+          "utm_y": {
+            "type": "number",
+            "title": "Offset Point UTM Y",
+            "x-tooltip-text": "UTM Y point at the offset distance"
+          },
+          "veg_transect_sampler": {
+            "type": "string",
+            "title": "Vegetation Transect Sampler",
+            "x-tooltip-text": "Initials of the sampler"
+          },
+          "veg_transect_recorder": {
+            "type": "string",
+            "title": "Vegetation Transect Recorder",
+            "x-tooltip-text": "Initials of the recorder"
+          },
+          "veg_transect_target": {
+            "type": "number",
+            "title": "Vegetation Transect Target",
+            "x-tooltip-text": "Number of transect target observed"
+          },
+          "veg_transect_other_lps": {
+            "type": "number",
+            "title": "Vegetation Transect Other Lps",
+            "x-tooltip-text": "Number of other lps observed"
+          },
+          "veg_transect_native_forbs": {
+            "type": "number",
+            "title": "Vegetation Transect Native Forbs",
+            "x-tooltip-text": "Number of native forbs observed"
+          },
+          "veg_transect_grasses": {
+            "type": "number",
+            "title": "Vegetation Transect Grasses",
+            "x-tooltip-text": "Number of grasses observed"
+          },
+          "veg_transect_bare_ground": {
+            "type": "number",
+            "title": "Vegetation Transect Bare Ground Patches",
+            "x-tooltip-text": "Number of bare ground patches observed"
+          },
+          "veg_transect_shrubs": {
+            "type": "number",
+            "title": "Vegetation Transect Shrubs/Trees",
+            "x-tooltip-text": "Number of shrubs/trees observed"
+          },
+          "veg_transect_bryophytes": {
+            "type": "number",
+            "title": "Vegetation Transect Bryophytes",
+            "x-tooltip-text": "Number of bryophytes observed"
+          },
+          "veg_transect_litter": {
+            "type": "number",
+            "title": "Vegetation Transect Litter",
+            "x-tooltip-text": "Number of litter observed"
+          },
+          "phen_transect_sampler": {
+            "type": "string",
+            "title": "Phenology Transect Sampler",
+            "x-tooltip-text": "Initials of the sampler"
+          },
+          "phen_transect_recorder": {
+            "type": "string",
+            "title": "Phenology Transect Recorder",
+            "x-tooltip-text": "Initials of the recorder"
+          },
+          "phen_transect_seedlings": {
+            "type": "number",
+            "title": "Phenology Transect Seedlings",
+            "x-tooltip-text": "Number of seedlings observed"
+          },
+          "phen_transect_rosettes": {
+            "type": "number",
+            "title": "Phenology Transect Rosettes",
+            "x-tooltip-text": "Number of rosettes observed"
+          },
+          "phen_transect_bolting": {
+            "type": "number",
+            "title": "Phenology Transect Bolting",
+            "x-tooltip-text": "Number of bolting observed"
+          },
+          "phen_transect_flowering": {
+            "type": "number",
+            "title": "Phenology Transect Flowering",
+            "x-tooltip-text": "Number of flowering observed"
+          },
+          "phen_transect_seeds": {
+            "type": "number",
+            "title": "Phenology Transect Seeds",
+            "x-tooltip-text": "Number of seeds observed"
+          },
+          "phen_transect_senescent": {
+            "type": "number",
+            "title": "Phenology Transect Senescent",
+            "x-tooltip-text": "Number of senescent observed"
+          },
+          "phen_total_plants": {
+            "type": "number",
+            "title": "Phenology Transect Plants",
+            "x-tooltip-text": "Number of plants observed"
+          },
+          "phen_number_stems": {
+            "type": "number",
+            "title": "Phenology Transect Stems",
+            "x-tooltip-text": "Number of stems observed"
+          },
+          "phen_tallest_1": {
+            "type": "number",
+            "title": "Phenology Transect Tallest Stem 1",
+            "x-tooltip-text": "Enter stem height in centimetres"
+          },
+          "phen_tallest_2": {
+            "type": "number",
+            "title": "Phenology Transect Tallest Stem 2",
+            "x-tooltip-text": "Enter stem height in centimetres"
+          },
+          "phen_tallest_3": {
+            "type": "number",
+            "title": "Phenology Transect Tallest Stem 3",
+            "x-tooltip-text": "Enter stem height in centimetres"
+          },
+          "phen_tallest_4": {
+            "type": "number",
+            "title": "Phenology Transect Tallest Stem 4",
+            "x-tooltip-text": "Enter stem height in centimetres"
+          },
+          "phen_level_se": {
+            "type": "number",
+            "title": "Phenology Transect Level SE",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_ro": {
+            "type": "number",
+            "title": "Phenology Transect Level RO",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_bo": {
+            "type": "number",
+            "title": "Phenology Transect Level BO",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_fl": {
+            "type": "number",
+            "title": "Phenology Transect Level FL",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_sf": {
+            "type": "number",
+            "title": "Phenology Transect Level SF",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_sc": {
+            "type": "number",
+            "title": "Phenology Transect Level SC",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_total_percentage": {
+            "type": "number",
+            "title": "Phenology Transect Total Percentage",
+            "x-tooltip-text": "Total percentage (sum of all 6 levels)"
           }
         }
       },
