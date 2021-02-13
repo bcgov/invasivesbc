@@ -95,3 +95,49 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
     return errors;
   };
 }
+
+export function getTransectOffsetDistanceValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_subtype_data) {
+      return errors;
+    }
+
+    const transectLinesMatchingKeys = Object.keys(formData.activity_subtype_data).filter((key) =>
+      key.includes('transect_lines')
+    );
+
+    // If transect lines field is not present at all
+    if (!transectLinesMatchingKeys.length) {
+      return errors;
+    }
+
+    const transectLinesList = [...formData.activity_subtype_data[transectLinesMatchingKeys[0]]];
+
+    transectLinesList.forEach((transectLineObj: any, lineIndex: number) => {
+      const transectLineLength = transectLineObj?.transect_line?.transect_length;
+      const transectPointsMatchingKeys = Object.keys(transectLineObj).filter((key) => key.includes('transect_points'));
+
+      if (!transectPointsMatchingKeys.length) {
+        return errors;
+      }
+
+      const transectPointsList = transectLineObj[transectPointsMatchingKeys[0]];
+
+      transectPointsList.forEach((transectPoint: any, pointIndex: any) => {
+        errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][
+          pointIndex
+        ]['offset_distance'].__errors = [];
+
+        if (transectPoint.offset_distance > transectLineLength) {
+          errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][
+            pointIndex
+          ]['offset_distance'].addError(
+            'Offset distance for a transect point cannot exceed the length of the associated transect line'
+          );
+        }
+      });
+    });
+
+    return errors;
+  };
+}

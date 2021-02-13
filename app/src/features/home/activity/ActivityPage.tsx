@@ -13,7 +13,8 @@ import {
   getCustomValidator,
   getAreaValidator,
   getWindValidator,
-  getHerbicideApplicationRateValidator
+  getHerbicideApplicationRateValidator,
+  getTransectOffsetDistanceValidator
 } from 'rjsf/business-rules/customValidation';
 import {
   populateHerbicideDilutionAndArea,
@@ -401,7 +402,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           customValidation={getCustomValidator([
             getAreaValidator(doc.activitySubtype),
             getWindValidator(doc.activitySubtype),
-            getHerbicideApplicationRateValidator()
+            getHerbicideApplicationRateValidator(),
+            getTransectOffsetDistanceValidator()
           ])}
           classes={classes}
           activity={doc}

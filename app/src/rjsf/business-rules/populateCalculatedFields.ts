@@ -117,7 +117,7 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
         const transectPointToUpdate = { ...transectPointObj };
         const { offset_distance } = transectPointToUpdate;
 
-        if (offset_distance) {
+        if (offset_distance && offset_distance <= transectLine.transect_length) {
           const ratio = offset_distance / transectLine.transect_length;
 
           transectPointToUpdate.utm_x = (start_x_utm + ratio * deltaX).toFixed(1);
