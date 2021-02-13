@@ -98,8 +98,8 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
         angle = angle - 180;
       }
 
-      transectLine.transect_bearing = angle.toFixed(1);
-      transectLine.transect_length = Math.hypot(deltaX, deltaY).toFixed(1);
+      transectLine.transect_bearing = parseFloat(angle.toFixed(1));
+      transectLine.transect_length = parseFloat(Math.hypot(deltaX, deltaY).toFixed(1));
     } else {
       delete transectLine.transect_bearing;
       delete transectLine.transect_length;
@@ -120,8 +120,8 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
         if (offset_distance && offset_distance <= transectLine.transect_length) {
           const ratio = offset_distance / transectLine.transect_length;
 
-          transectPointToUpdate.utm_x = (start_x_utm + ratio * deltaX).toFixed(1);
-          transectPointToUpdate.utm_y = (start_y_utm + ratio * deltaY).toFixed(1);
+          transectPointToUpdate.utm_x = parseFloat((start_x_utm + ratio * deltaX).toFixed(1));
+          transectPointToUpdate.utm_y = parseFloat((start_y_utm + ratio * deltaY).toFixed(1));
         } else {
           delete transectPointToUpdate.utm_x;
           delete transectPointToUpdate.utm_y;
