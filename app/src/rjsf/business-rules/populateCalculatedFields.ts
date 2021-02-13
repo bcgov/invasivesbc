@@ -34,6 +34,10 @@ export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
       herbicideToUpdate.tank_volume = parseFloat(
         ((herbicideToUpdate.herbicide_amount * 100) / herbicideToUpdate.dilution).toFixed(4)
       );
+    } else {
+      delete herbicideToUpdate.specific_treatment_area;
+      delete herbicideToUpdate.dilution;
+      delete herbicideToUpdate.tank_volume;
     }
 
     updatedHerbicides.push(herbicideToUpdate);
