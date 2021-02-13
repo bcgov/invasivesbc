@@ -97,8 +97,8 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
       transectLine.transect_bearing = angle.toFixed(1);
       transectLine.transect_length = Math.hypot(deltaX, deltaY).toFixed(1);
     } else {
-      transectLine.transect_bearing = null;
-      transectLine.transect_length = null;
+      delete transectLine.transect_bearing;
+      delete transectLine.transect_length;
     }
 
     // If transect points field is not edited at all no need to calculate point UTM values
@@ -119,10 +119,13 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
           transectPointToUpdate.utm_x = (start_x_utm + ratio * deltaX).toFixed(1);
           transectPointToUpdate.utm_y = (start_y_utm + ratio * deltaY).toFixed(1);
         } else {
-          transectPointToUpdate.utm_x = null;
-          transectPointToUpdate.utm_y = null;
+          delete transectPointToUpdate.utm_x;
+          delete transectPointToUpdate.utm_y;
         }
 
+        /*
+          If biocontrol efficacy transect, need to calculate sum of all phen levels for total %
+        */
         if (isBiocontrolEfficacyTransect) {
           const {
             phen_level_se,
@@ -137,7 +140,7 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
             transectPointToUpdate.phen_total_percentage =
               phen_level_se + phen_level_ro + phen_level_bo + phen_level_fl + phen_level_sf + phen_level_sc;
           } else {
-            transectPointToUpdate.phen_total_percentage = null;
+            delete transectPointToUpdate.phen_total_percentage;
           }
         }
 
