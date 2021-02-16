@@ -609,7 +609,7 @@ const Observation_PlantTerrestrial_Data = {
   research_detection_ind: {},
   well_ind: {},
   special_care_ind: {},
-  biological_ind: {},
+  biological_ind: {}
 };
 
 const Observation_PlantTerrestrial = {
@@ -627,7 +627,7 @@ const Observation_PlantTerrestrial = {
 
 const Observation_PlantTerrestrial_BulkEdit = {
   specific_use_code: {},
-  invasive_plant_code: {},
+  invasive_plant_code: {}
 };
 
 const Observation_PlantAquatic = {
