@@ -39,7 +39,7 @@ On MacOS, in the app directory:
 
 1. `npm install`
 2. `ionic build`
-3. `ionic cap add android` (Only the first time, does not need to be repeated after)
+3. `ionic cap add ios` (Only the first time, does not need to be repeated after)
 4. `ionic cap copy`
 5. `ionic cap sync`
 6. `npx cap open ios`
