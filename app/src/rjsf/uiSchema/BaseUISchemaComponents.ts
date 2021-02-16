@@ -8,6 +8,10 @@
  * }
  */
 
+/*
+  Styling
+*/
+
 const ThreeColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 6,
@@ -18,10 +22,6 @@ const TwoColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 6,
   'ui:column-lg': 6
-};
-
-const InvasivePlants = {
-  invasive_plant_code: {}
 };
 
 const TreatmentPersons = {
@@ -72,15 +72,6 @@ const AquaticAnimals = {
   genetic_structure_collected: {}
 };
 
-const LakeBathymetry = {
-  survey_type: {},
-  littoral_area: {},
-  max_depth: {},
-  benchmark: {},
-  max_water_level: {},
-  benchmark_type: {}
-};
-
 const AquaticPlants = {
   invasive_plant_code: {},
   invasive_plant_density_code: {},
@@ -100,6 +91,15 @@ const AquaticPlants = {
   negative_obs_ind: {
     'ui:widget': 'radio'
   }
+};
+
+const LakeBathymetry = {
+  survey_type: {},
+  littoral_area: {},
+  max_depth: {},
+  benchmark: {},
+  max_water_level: {},
+  benchmark_type: {}
 };
 
 const WaterbodyData = {
@@ -287,18 +287,125 @@ const Biological = {
   comment: {}
 };
 
-const FireMonitoringTransectPoints = {
-  offset_distance: {}
+const InvasivePlants = {
+  invasive_plant_code: {}
 };
 
-const FireMonitoringTransectLines = {
+/*
+  Transect
+*/
+
+const TransectInvasivePlants = {
+  invasive_plant_code: {},
+  invasive_plant_density_code: {},
+  invasive_plant_distribution_code: {},
+  soil_texture_code: {},
+  linear_infestation: {},
+  biological_agent_code: {}
+};
+
+const TransectLine = {
+  transect_line_id: {},
+  transect_comment: {},
   start_x_utm: {},
   start_y_utm: {},
   end_x_utm: {},
   end_y_utm: {},
+  transect_length: {
+    'ui:readonly': true
+  },
+  transect_bearing: {
+    'ui:readonly': true
+  }
+};
+
+const TransectData = {
+  utm_zone: {},
+  transect_start_date_time: {},
+  transect_end_date_time: {},
+  project_number: {},
+  surveyor1_name: {},
+  surveyor2_name: {},
+  field_recorder_name: {},
+  research_trial_code: {},
+  realm_code: {},
+  site_aspect: {},
+  site_aspect_variability: {},
+  site_slope: {},
+  site_slope_variability: {},
+  site_elevation: {},
+  cloud_cover_code: {},
+  beaufort_wind_code: {},
+  precipitation_code: {},
+  burn_severity_code: {},
+  ecological_moisture_regime_code: {},
+  mesoslope_position_code: {},
+  site_surface_shape_code: {},
+  soil_properties_code: {},
+  surface_substrate_code: {},
+  site_activity_disturbance: {},
+  disturbance_site_defunct: {},
+  disturbance_condition_code: {},
+  disturbance_type_code: {},
+  invasive_plant_change_code: {},
+  target_plant_change_code: {},
+  treatment_seeded: {},
+  density_count_type_code: {},
+  trace_plants: {},
+  growth_pattern: {},
+  frame_size_code: {},
+  biocontrol_noted_code: {},
+  photoplot_start: {},
+  photoplot_end: {},
+  photoplot_aerials: {},
+  photoplot_full_25m: {}
+};
+
+const FireMonitoringTransectPoints = {
+  sample_point_id: {},
+  offset_distance: {},
+  utm_x: {
+    'ui:readonly': true
+  },
+  utm_y: {
+    'ui:readonly': true
+  },
+  veg_transect_sampler: {},
+  veg_transect_recorder: {},
+  veg_transect_native_forbs: {},
+  veg_transect_grasses: {},
+  veg_transect_bare_ground: {},
+  veg_transect_shrubs: {},
+  veg_transect_bryophytes: {},
+  veg_transect_litter: {},
+  invasive_plants: {
+    items: {
+      ...InvasivePlants
+    }
+  }
+};
+
+const FireMonitoringTransectLines = {
+  transect_line: {
+    ...TwoColumnStyle,
+    ...TransectLine
+  },
   fire_monitoring_transect_points: {
     items: {
+      ...ThreeColumnStyle,
       ...FireMonitoringTransectPoints
+    }
+  }
+};
+
+const Transect_FireMonitoring = {
+  transect_data: {
+    ...ThreeColumnStyle,
+    ...TransectData
+  },
+  fire_monitoring_transect_lines: {
+    items: {
+      ...FireMonitoringTransectLines
     }
   }
 };
@@ -308,13 +415,26 @@ const InvasivePlantDensityTransectPoints = {
 };
 
 const InvasivePlantDensityTransectLines = {
-  start_x_utm: {},
-  start_y_utm: {},
-  end_x_utm: {},
-  end_y_utm: {},
+  transect_line: {
+    ...TwoColumnStyle,
+    ...TransectLine
+  },
   invasive_plant_density_transect_points: {
     items: {
+      ...ThreeColumnStyle,
       ...InvasivePlantDensityTransectPoints
+    }
+  }
+};
+
+const Transect_InvasivePlantDensity = {
+  transect_data: {
+    ...ThreeColumnStyle,
+    ...TransectData
+  },
+  invasive_plant_density_transect_lines: {
+    items: {
+      ...InvasivePlantDensityTransectLines
     }
   }
 };
@@ -324,13 +444,26 @@ const FullVegetationTransectPoints = {
 };
 
 const FullVegetationTransectLines = {
-  start_x_utm: {},
-  start_y_utm: {},
-  end_x_utm: {},
-  end_y_utm: {},
+  transect_line: {
+    ...TwoColumnStyle,
+    ...TransectLine
+  },
   full_vegetation_transect_points: {
     items: {
+      ...ThreeColumnStyle,
       ...FullVegetationTransectPoints
+    }
+  }
+};
+
+const Transect_FullVegetation = {
+  transect_data: {
+    ...ThreeColumnStyle,
+    ...TransectData
+  },
+  full_vegetation_transect_lines: {
+    items: {
+      ...FullVegetationTransectLines
     }
   }
 };
@@ -340,13 +473,26 @@ const LumpedSpeciesVegetationTransectPoints = {
 };
 
 const LumpedSpeciesVegetationTransectLines = {
-  start_x_utm: {},
-  start_y_utm: {},
-  end_x_utm: {},
-  end_y_utm: {},
+  transect_line: {
+    ...TwoColumnStyle,
+    ...TransectLine
+  },
   lumped_species_vegetation_transect_points: {
     items: {
+      ...ThreeColumnStyle,
       ...LumpedSpeciesVegetationTransectPoints
+    }
+  }
+};
+
+const Transect_LumpedSpeciesVegetation = {
+  transect_data: {
+    ...ThreeColumnStyle,
+    ...TransectData
+  },
+  lumped_species_vegetation_transect_lines: {
+    items: {
+      ...LumpedSpeciesVegetationTransectLines
     }
   }
 };
@@ -356,16 +502,39 @@ const BiocontrolEfficacyTransectPoints = {
 };
 
 const BiocontrolEfficacyTransectLines = {
-  start_x_utm: {},
-  start_y_utm: {},
-  end_x_utm: {},
-  end_y_utm: {},
+  transect_line: {
+    ...TwoColumnStyle,
+    ...TransectLine
+  },
   biocontrol_efficacy_transect_points: {
     items: {
+      ...ThreeColumnStyle,
       ...BiocontrolEfficacyTransectPoints
     }
   }
 };
+
+const Transect_BiocontrolEfficacy = {
+  transect_data: {
+    ...ThreeColumnStyle,
+    ...TransectData
+  },
+  transect_invasive_plants: {
+    items: {
+      ...ThreeColumnStyle,
+      ...TransectInvasivePlants
+    }
+  },
+  biocontrol_efficacy_transect_lines: {
+    items: {
+      ...BiocontrolEfficacyTransectLines
+    }
+  }
+};
+
+/*
+  Observation
+*/
 
 const Observation = {
   observation_type_code: {},
@@ -373,56 +542,6 @@ const Observation = {
   observer_last_name: {},
   negative_obs_ind: {
     'ui:widget': 'radio'
-  }
-};
-
-const Activity_AnimalTerrestrial = {
-  comment: {
-    'ui:widget': 'textarea'
-  }
-};
-
-const Activity_AnimalAquatic = {
-  invasive_aquatic_animals: {
-    items: {
-      ...ThreeColumnStyle,
-      ...AquaticAnimals
-    }
-  },
-  comment: {
-    'ui:widget': 'textarea'
-  },
-  net_trap_specifications: {
-    ...ThreeColumnStyle,
-    ...NetTrapSpecifications
-  },
-  electrofisher_specifications: {
-    ...ThreeColumnStyle,
-    ...ElectrofisherSpecifications
-  },
-  plankton_tow_sample: {
-    ...ThreeColumnStyle,
-    ...PlanktonTowSample
-  },
-  substrate_sample: {
-    ...ThreeColumnStyle,
-    ...SubstrateSample
-  },
-  edna: {
-    ...ThreeColumnStyle,
-    ...EDna
-  },
-  habitat_alteration: {
-    ...ThreeColumnStyle,
-    ...HabitatAlteration
-  },
-  chemical: {
-    ...ThreeColumnStyle,
-    ...Chemical
-  },
-  biological: {
-    ...ThreeColumnStyle,
-    ...Biological
   }
 };
 
@@ -447,69 +566,6 @@ const Observation_PlantTerrestrial = {
   biological_ind: {
     'ui:widget': 'radio'
   }
-};
-
-const Transect_FireMonitoring = {
-  utm_zone: {},
-  fire_monitoring_transect_lines: {
-    items: {
-      ...ThreeColumnStyle,
-      ...FireMonitoringTransectLines
-    }
-  }
-};
-
-const Transect_InvasivePlantDensity = {
-  utm_zone: {},
-  invasive_plant_density_transect_lines: {
-    items: {
-      ...ThreeColumnStyle,
-      ...InvasivePlantDensityTransectLines
-    }
-  }
-};
-
-const Transect_FullVegetation = {
-  utm_zone: {},
-  full_vegetation_transect_lines: {
-    items: {
-      ...ThreeColumnStyle,
-      ...FullVegetationTransectLines
-    }
-  }
-};
-
-const Transect_LumpedSpeciesVegetation = {
-  utm_zone: {},
-  lumped_species_vegetation_transect_lines: {
-    items: {
-      ...ThreeColumnStyle,
-      ...LumpedSpeciesVegetationTransectLines
-    }
-  }
-};
-
-const Transect_BiocontrolEfficacy = {
-  utm_zone: {},
-  biocontrol_efficacy_transect_lines: {
-    items: {
-      ...ThreeColumnStyle,
-      ...BiocontrolEfficacyTransectLines
-    }
-  }
-};
-
-const Dispersal_BiologicalDispersal = {
-  monitoring_organization: {},
-  biological_agent_presence_code: {},
-  count_duration: {},
-  biological_agent_code: {},
-  plant_count: {},
-  biological_agent_count: {},
-  applicator1_name: {},
-  applicator2_name: {},
-  treatment_organization: {},
-  invasive_plant_code: {}
 };
 
 const Observation_PlantTerrestrial_BulkEdit = {
@@ -565,6 +621,81 @@ const Observation_PlantAquatic = {
   }
 };
 
+/*
+  Animal Activity
+*/
+
+const Activity_AnimalTerrestrial = {
+  comment: {
+    'ui:widget': 'textarea'
+  }
+};
+
+const Activity_AnimalAquatic = {
+  invasive_aquatic_animals: {
+    items: {
+      ...ThreeColumnStyle,
+      ...AquaticAnimals
+    }
+  },
+  comment: {
+    'ui:widget': 'textarea'
+  },
+  net_trap_specifications: {
+    ...ThreeColumnStyle,
+    ...NetTrapSpecifications
+  },
+  electrofisher_specifications: {
+    ...ThreeColumnStyle,
+    ...ElectrofisherSpecifications
+  },
+  plankton_tow_sample: {
+    ...ThreeColumnStyle,
+    ...PlanktonTowSample
+  },
+  substrate_sample: {
+    ...ThreeColumnStyle,
+    ...SubstrateSample
+  },
+  edna: {
+    ...ThreeColumnStyle,
+    ...EDna
+  },
+  habitat_alteration: {
+    ...ThreeColumnStyle,
+    ...HabitatAlteration
+  },
+  chemical: {
+    ...ThreeColumnStyle,
+    ...Chemical
+  },
+  biological: {
+    ...ThreeColumnStyle,
+    ...Biological
+  }
+};
+
+/*
+  Dispersal
+*/
+
+const Dispersal_BiologicalDispersal = {
+  monitoring_organization: {},
+  biological_agent_presence_code: {},
+  count_duration: {},
+  biological_agent_code: {},
+  plant_count: {},
+  biological_agent_count: {},
+  applicator1_name: {},
+  applicator2_name: {},
+  treatment_organization: {},
+  invasive_plant_code: {}
+};
+
+/*
+  Treatment
+*/
+
 const Treatment = {
   activity_id: {
     'ui:readonly': true
@@ -616,26 +747,9 @@ const Treatment_BiologicalPlant_BulkEdit = {
   bioagent_maturity_status_code: {}
 };
 
-const Treatment_MechanicalTerrestrialAnimal = {
-  treatment_details: {
-    'ui:widget': 'textarea'
-  },
-  invasive_animal_code: {}
-};
-
-const Treatment_ChemicalTerrestrialAnimal = {
-  treatment_details: {
-    'ui:widget': 'textarea'
-  },
-  invasive_animal_code: {}
-};
-
-const Treatment_BiologicalTerrestrialAnimal = {
-  treatment_details: {
-    'ui:widget': 'textarea'
-  },
-  invasive_animal_code: {}
-};
+/*
+  Monitoring
+*/
 
 const Monitoring = {
   activity_id: {
@@ -683,17 +797,9 @@ const Monitoring_BiologicalTerrestrialPlant = {
   biological_agent_spread: {}
 };
 
-const Monitoring_MechanicalTerrestrialAnimal = {
-  monitoring_details: {}
-};
-
-const Monitoring_ChemicalTerrestrialAnimal = {
-  monitoring_details: {}
-};
-
-const Monitoring_BiologicalTerrestrialAnimal = {
-  monitoring_details: {}
-};
+/*
+  Export
+*/
 
 const BaseUISchemaComponents = {
   Activity_AnimalTerrestrial,
@@ -713,17 +819,10 @@ const BaseUISchemaComponents = {
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
-  Treatment_MechanicalTerrestrialAnimal,
-  Treatment_ChemicalTerrestrialAnimal,
-  Treatment_BiologicalTerrestrialAnimal,
   Monitoring,
   Monitoring_BiologicalTerrestrialPlant,
-  Monitoring_MechanicalTerrestrialAnimal,
-  Monitoring_ChemicalTerrestrialAnimal,
-  Monitoring_BiologicalTerrestrialAnimal,
   ProjectCode,
   Herbicide,
-  InvasivePlants,
   ThreeColumnStyle,
   TwoColumnStyle
 };

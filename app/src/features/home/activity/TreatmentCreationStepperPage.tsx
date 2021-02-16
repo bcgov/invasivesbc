@@ -71,6 +71,8 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
   const [observation, setObservation] = useState(null);
   const [observationGeos, setObservationGeos] = useState([]);
   const [observationSubtype, setObservationSubtype] = useState(null);
+  const [parentFormRef, setParentFormRef] = useState(null);
+  const [formHasErrors, setFormHasErrors] = useState(true);
 
   // Define the steps of the workflow
   const steps = [
@@ -296,7 +298,13 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
 
         {activeStep === 3 && observation && (
           <>
-            <ActivityPage classes={classes} activityId={observation._id} setObservation={setObservation} />
+            <ActivityPage
+              classes={classes}
+              activityId={observation._id}
+              setObservation={setObservation}
+              setFormHasErrors={setFormHasErrors}
+              setParentFormRef={setParentFormRef}
+            />
             <Box mt={5} display="flex" justifyContent="center">
               <Button
                 size="large"
@@ -314,8 +322,12 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  setPrevStep(activeStep);
-                  setActiveStep(activeStep + 1);
+                  if (formHasErrors) {
+                    parentFormRef?.submit();
+                  } else {
+                    setPrevStep(activeStep);
+                    setActiveStep(activeStep + 1);
+                  }
                 }}>
                 Continue
               </Button>

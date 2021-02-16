@@ -11,7 +11,10 @@ import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
+import {
+  populateHerbicideDilutionAndArea,
+  populateTransectLineAndPointData
+} from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
@@ -135,7 +138,8 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
-      const updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
       return setActivity({
         ...activity,

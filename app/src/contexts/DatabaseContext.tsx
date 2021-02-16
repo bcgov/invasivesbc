@@ -95,9 +95,11 @@ export const DatabaseContextProvider: React.FC = (props) => {
   useEffect(() => {
     setupDatabase();
 
-    return async () => {
+    const callCleanupDatabase = async () => {
       await cleanupDatabase();
     };
+
+    callCleanupDatabase();
   }, [setupDatabase, cleanupDatabase]);
 
   return <DatabaseContext.Provider value={databaseContext}>{props.children}</DatabaseContext.Provider>;

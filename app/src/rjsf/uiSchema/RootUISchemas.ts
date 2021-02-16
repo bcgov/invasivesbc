@@ -203,51 +203,6 @@ const Activity_Treatment_BiologicalPlant_BulkEdit = {
   }
 };
 
-const Activity_Treatment_MechanicalTerrestrialAnimal = {
-  activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.Activity
-  },
-  activity_type_data: {
-    ...BaseUISchemaComponents.TwoColumnStyle,
-    ...BaseUISchemaComponents.Treatment
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Treatment_MechanicalTerrestrialAnimal
-  }
-};
-
-const Activity_Treatment_ChemicalTerrestrialAnimal = {
-  activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.Activity
-  },
-  activity_type_data: {
-    ...BaseUISchemaComponents.TwoColumnStyle,
-    ...BaseUISchemaComponents.Treatment
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Treatment_ChemicalTerrestrialAnimal
-  }
-};
-
-const Activity_Treatment_BiologicalTerrestrialAnimal = {
-  activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.Activity
-  },
-  activity_type_data: {
-    ...BaseUISchemaComponents.TwoColumnStyle,
-    ...BaseUISchemaComponents.Treatment
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Treatment_BiologicalTerrestrialAnimal
-  }
-};
-
 const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
@@ -285,51 +240,6 @@ const Activity_Monitoring_BiologicalTerrestrialPlant = {
   }
 };
 
-const Activity_Monitoring_MechanicalTerrestrialAnimal = {
-  activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.MonitoringActivity
-  },
-  activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring_MechanicalTerrestrialAnimal
-  }
-};
-
-const Activity_Monitoring_ChemicalTerrestrialAnimal = {
-  activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.MonitoringActivity
-  },
-  activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring_ChemicalTerrestrialAnimal
-  }
-};
-
-const Activity_Monitoring_BiologicalTerrestrialAnimal = {
-  activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.MonitoringActivity
-  },
-  activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring_BiologicalTerrestrialAnimal
-  }
-};
-
 const RootUISchemas = {
   Activity_Observation_PlantTerrestrial,
   Activity_Observation_PlantTerrestrial_BulkEdit,
@@ -348,15 +258,9 @@ const RootUISchemas = {
   Activity_Treatment_MechanicalPlant_BulkEdit,
   Activity_Treatment_BiologicalPlant,
   Activity_Treatment_BiologicalPlant_BulkEdit,
-  Activity_Treatment_MechanicalTerrestrialAnimal,
-  Activity_Treatment_ChemicalTerrestrialAnimal,
-  Activity_Treatment_BiologicalTerrestrialAnimal,
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant,
-  Activity_Monitoring_BiologicalTerrestrialPlant,
-  Activity_Monitoring_MechanicalTerrestrialAnimal,
-  Activity_Monitoring_ChemicalTerrestrialAnimal,
-  Activity_Monitoring_BiologicalTerrestrialAnimal
+  Activity_Monitoring_BiologicalTerrestrialPlant
 };
 
 export default RootUISchemas;
