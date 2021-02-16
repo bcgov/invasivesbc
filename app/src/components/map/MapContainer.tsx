@@ -84,6 +84,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
+  const getWells = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.8,
+      tms:true
+    });
+  };
+
+  const getFWA = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.8,
+      tms:true
+    });
+  };
+
   const getRISO = () => {
     return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:regional_invasive_species_organization_areas@EPSG:900913@png/{z}/{x}/{y}.png',{
       opacity: 0.8,
@@ -199,13 +213,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     const nRDistricts = getNRDistricts();
 
+    const wells = getWells();
+    const fwa = getFWA();
+
     const riso = getRISO();
     const ipma = getIPMA();
     const aggregate = getAggregate();
     
     const overlays = {
       'Placenames': esriPlacenames,
+      'Wells': wells,
       'Gravel Pits': aggregate,
+      'Fresh Water Atlas': fwa,
       'Invasive Plant Management Areas': ipma,
       'Regional Invasive Species Organization Areas': riso,
       'Natural Resource Districts': nRDistricts
