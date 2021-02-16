@@ -91,8 +91,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
-  const getFWA = () => {
+  const getStreams = () => {
     return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.8,
+      tms:true
+    });
+  };
+
+  const getWetlands = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_WETLANDS_POLY@EPSG:900913@png/{z}/{x}/{y}.png',{
       opacity: 0.8,
       tms:true
     });
@@ -214,7 +221,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const nRDistricts = getNRDistricts();
 
     const wells = getWells();
-    const fwa = getFWA();
+    const streams = getStreams();
+    const wetlands = getWetlands();
 
     const riso = getRISO();
     const ipma = getIPMA();
@@ -224,7 +232,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Placenames': esriPlacenames,
       'Wells': wells,
       'Gravel Pits': aggregate,
-      'Fresh Water Atlas': fwa,
+      'Streams': streams,
+      'Wetlands': wetlands,
       'Invasive Plant Management Areas': ipma,
       'Regional Invasive Species Organization Areas': riso,
       'Natural Resource Districts': nRDistricts
