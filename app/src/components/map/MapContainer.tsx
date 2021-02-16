@@ -219,11 +219,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     };
 
     const nRDistricts = getNRDistricts();
-
     const wells = getWells();
     const streams = getStreams();
     const wetlands = getWetlands();
-
     const riso = getRISO();
     const ipma = getIPMA();
     const aggregate = getAggregate();
