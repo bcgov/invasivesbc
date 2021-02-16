@@ -14,7 +14,8 @@ import {
   getAreaValidator,
   getWindValidator,
   getHerbicideApplicationRateValidator,
-  getTransectOffsetDistanceValidator
+  getTransectOffsetDistanceValidator,
+  getJurisdictionPercentValidator
 } from 'rjsf/business-rules/customValidation';
 import {
   populateHerbicideDilutionAndArea,
@@ -403,7 +404,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             getAreaValidator(doc.activitySubtype),
             getWindValidator(doc.activitySubtype),
             getHerbicideApplicationRateValidator(),
-            getTransectOffsetDistanceValidator()
+            getTransectOffsetDistanceValidator(),
+            getJurisdictionPercentValidator()
           ])}
           classes={classes}
           activity={doc}

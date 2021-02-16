@@ -14,6 +14,30 @@ export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
   };
 }
 
+export function getJurisdictionPercentValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_data || !formData.activity_data.jurisdictions) {
+      return errors;
+    }
+
+    const { jurisdictions } = formData.activity_data;
+    let totalPercent = 0;
+
+    jurisdictions.forEach((jurisdiction: any) => {
+      totalPercent += jurisdiction.percent_covered;
+    });
+
+    errors.activity_data['jurisdictions'].__errors = [];
+    if (totalPercent > 100) {
+      errors.activity_data['jurisdictions'].addError(
+        'Total percentage of area covered by jurisdictions cannot exceed 100%'
+      );
+    }
+
+    return errors;
+  };
+}
+
 export function getAreaValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     let areaLimit = Number.POSITIVE_INFINITY;

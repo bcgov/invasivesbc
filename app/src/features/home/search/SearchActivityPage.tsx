@@ -21,7 +21,8 @@ import {
   getAreaValidator,
   getWindValidator,
   getHerbicideApplicationRateValidator,
-  getTransectOffsetDistanceValidator
+  getTransectOffsetDistanceValidator,
+  getJurisdictionPercentValidator
 } from 'rjsf/business-rules/customValidation';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 
@@ -206,7 +207,8 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
           getAreaValidator(activity.activitySubtype),
           getWindValidator(activity.activitySubtype),
           getHerbicideApplicationRateValidator(),
-          getTransectOffsetDistanceValidator()
+          getTransectOffsetDistanceValidator(),
+          getJurisdictionPercentValidator()
         ])}
         classes={classes}
         activity={activity}

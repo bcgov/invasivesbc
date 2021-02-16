@@ -12,6 +12,12 @@
   Styling
 */
 
+const FourColumnStyle = {
+  'ui:column-xs': 12,
+  'ui:column-md': 6,
+  'ui:column-lg': 3
+};
+
 const ThreeColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 6,
@@ -26,6 +32,11 @@ const TwoColumnStyle = {
 
 const TreatmentPersons = {
   person_name: {}
+};
+
+const Jurisdictions = {
+  jurisdiction_code: {},
+  percent_covered: {}
 };
 
 const Herbicide = {
@@ -46,6 +57,13 @@ const Herbicide = {
 
 const ProjectCode = {
   description: {}
+};
+
+const TerrestrialPlants = {
+  invasive_plant_code: {},
+  plant_life_stage_code: {},
+  invasive_plant_density_code: {},
+  invasive_plant_distribution_code: {}
 };
 
 const AquaticAnimals = {
@@ -392,7 +410,7 @@ const FireMonitoringTransectLines = {
   },
   fire_monitoring_transect_points: {
     items: {
-      ...ThreeColumnStyle,
+      ...FourColumnStyle,
       ...FireMonitoringTransectPoints
     }
   }
@@ -509,7 +527,7 @@ const BiocontrolEfficacyTransectPoints = {
   veg_transect_sampler: {},
   veg_transect_recorder: {},
   veg_transect_target: {},
-  veg_transect_other_lps: {},
+  veg_transect_other_ips: {},
   veg_transect_native_forbs: {},
   veg_transect_grasses: {},
   veg_transect_bare_ground: {},
@@ -548,7 +566,7 @@ const BiocontrolEfficacyTransectLines = {
   },
   biocontrol_efficacy_transect_points: {
     items: {
-      ...ThreeColumnStyle,
+      ...FourColumnStyle,
       ...BiocontrolEfficacyTransectPoints
     }
   }
@@ -580,40 +598,36 @@ const Observation = {
   observation_type_code: {},
   observer_first_name: {},
   observer_last_name: {},
-  negative_obs_ind: {
-    'ui:widget': 'radio'
-  }
+  negative_obs_ind: {}
 };
 
-const Observation_PlantTerrestrial = {
-  invasive_plant_density_code: {},
-  invasive_plant_distribution_code: {},
+const Observation_PlantTerrestrial_Data = {
   soil_texture_code: {},
   specific_use_code: {},
   slope_code: {},
   aspect_code: {},
-  invasive_plant_code: {},
-  plant_life_stage_code: {},
-  research_detection_ind: {
-    'ui:widget': 'radio'
+  research_detection_ind: {},
+  well_ind: {},
+  special_care_ind: {},
+  biological_ind: {},
+};
+
+const Observation_PlantTerrestrial = {
+  observation_plant_terrestrial_data: {
+    ...FourColumnStyle,
+    ...Observation_PlantTerrestrial_Data
   },
-  well_ind: {
-    'ui:widget': 'radio'
-  },
-  special_care_ind: {
-    'ui:widget': 'radio'
-  },
-  biological_ind: {
-    'ui:widget': 'radio'
+  terrestrial_plants: {
+    items: {
+      ...FourColumnStyle,
+      ...TerrestrialPlants
+    }
   }
 };
 
 const Observation_PlantTerrestrial_BulkEdit = {
   specific_use_code: {},
   invasive_plant_code: {},
-  early_detection_rapid_resp_ind: {
-    'ui:widget': 'radio'
-  }
 };
 
 const Observation_PlantAquatic = {
@@ -863,8 +877,10 @@ const BaseUISchemaComponents = {
   Monitoring_BiologicalTerrestrialPlant,
   ProjectCode,
   Herbicide,
+  FourColumnStyle,
   ThreeColumnStyle,
-  TwoColumnStyle
+  TwoColumnStyle,
+  Jurisdictions
 };
 
 export default BaseUISchemaComponents;

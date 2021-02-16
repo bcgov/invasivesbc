@@ -70,10 +70,12 @@ const Activity = {
     'ui:readonly': true
   },
   invasive_species_agency_code: {},
-  jurisdiction_code: {},
-  general_comment: {
-    'ui:widget': 'textarea'
+  jurisdictions: {
+    items: {
+      ...BaseUISchemaComponents.Jurisdictions
+    }
   },
+  general_comment: {},
   access_description: {
     'ui:widget': 'textarea'
   },
