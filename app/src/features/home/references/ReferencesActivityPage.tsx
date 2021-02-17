@@ -77,6 +77,7 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
         activity={doc}
         mapId={doc._id}
         photoState={{ photos, setPhotos }}
+        showDrawControls={false}
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y

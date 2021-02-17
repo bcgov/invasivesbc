@@ -435,6 +435,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           copyFormData={() => copyFormData()}
           cloneActivityButton={generateCloneActivityButton}
           setParentFormRef={props.setParentFormRef}
+          showDrawControls={true}
         />
       )}
     </Container>

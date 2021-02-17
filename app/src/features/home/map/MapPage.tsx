@@ -346,6 +346,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             {isReadyToLoadMap ? (
               <MapContainer
                 classes={classes}
+                showDrawControls={false}
                 mapId={'mainMap'}
                 geometryState={{ geometry, setGeometry }}
                 interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}

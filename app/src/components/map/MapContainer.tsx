@@ -20,6 +20,7 @@ export type MapControl = (map: any, ...args: any) => void;
 export interface IMapContainerProps {
   classes?: any;
   mapId: string;
+  showDrawControls: boolean;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
   interactiveGeometryState?: {
     interactiveGeometry: any[];
@@ -152,7 +153,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     addLocateControls();
 
-    addDrawControls();
+    if (props.showDrawControls) {
+      addDrawControls();
+    }
 
     const esriBaseLayer = getESRIBaseLayer();
     const bcBaseLayer = getBCGovBaseLayer();

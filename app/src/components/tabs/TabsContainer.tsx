@@ -25,6 +25,7 @@ export interface ITabConfig {
 }
 
 const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
+const invbclogo = require('../../../../../inv2/app/src/InvasivesBC_Icon.svg')
 
 const TabsContainer: React.FC = () => {
   const keycloak = useKeycloakWrapper();
@@ -140,8 +141,8 @@ const TabsContainer: React.FC = () => {
         <Grid className={classes.alignment} container>
           <img
             className={classes.pointer}
-            src={bcGovLogoRev}
-            width="181"
+            src={invbclogo}
+            width="50"
             alt="B.C. Government Logo"
             onClick={() => history.push('/')}
           />

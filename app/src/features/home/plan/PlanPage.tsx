@@ -243,6 +243,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             <MapContainer
               {...props}
               classes={classes}
+              showDrawControls={true}
               mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
               geometryState={{ geometry, setGeometry }}
               extentState={{ extent, setExtent }}
