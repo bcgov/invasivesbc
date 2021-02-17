@@ -147,6 +147,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           onCopy={props.copyFormData ? () => props.copyFormData() : null}
           onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
           activitySubtype={props.activity.activitySubtype}
+          hideCheckFormForErrors={props.hideCheckFormForErrors}
         />
       </Box>
     </Box>

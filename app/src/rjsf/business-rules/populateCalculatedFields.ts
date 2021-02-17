@@ -5,7 +5,7 @@ export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
   let updatedActivitySubtypeData = { ...newSubtypeData };
 
   // If herbicide field is not edited at all just return existing activity subtype data
-  if (!newSubtypeData.herbicide || JSON.stringify(newSubtypeData.herbicide[0]) === '{}') {
+  if (!newSubtypeData || !newSubtypeData.herbicide || JSON.stringify(newSubtypeData.herbicide[0]) === '{}') {
     return newSubtypeData;
   }
 
@@ -34,6 +34,10 @@ export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
       herbicideToUpdate.tank_volume = parseFloat(
         ((herbicideToUpdate.herbicide_amount * 100) / herbicideToUpdate.dilution).toFixed(4)
       );
+    } else {
+      delete herbicideToUpdate.specific_treatment_area;
+      delete herbicideToUpdate.dilution;
+      delete herbicideToUpdate.tank_volume;
     }
 
     updatedHerbicides.push(herbicideToUpdate);
@@ -61,6 +65,8 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
   if (!transectLinesMatchingKeys.length) {
     return newSubtypeData;
   }
+
+  const isBiocontrolEfficacyTransect = transectLinesMatchingKeys[0] === 'biocontrol_efficacy_transect_lines';
 
   /*
     Otherwise, check to see if transect lines fields have been populated
@@ -92,8 +98,11 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
         angle = angle - 180;
       }
 
-      transectLine.transect_bearing = angle.toFixed(1);
-      transectLine.transect_length = Math.hypot(deltaX, deltaY).toFixed(1);
+      transectLine.transect_bearing = parseFloat(angle.toFixed(1));
+      transectLine.transect_length = parseFloat(Math.hypot(deltaX, deltaY).toFixed(1));
+    } else {
+      delete transectLine.transect_bearing;
+      delete transectLine.transect_length;
     }
 
     // If transect points field is not edited at all no need to calculate point UTM values
@@ -108,11 +117,35 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
         const transectPointToUpdate = { ...transectPointObj };
         const { offset_distance } = transectPointToUpdate;
 
-        if (offset_distance) {
+        if (offset_distance && offset_distance <= transectLine.transect_length) {
           const ratio = offset_distance / transectLine.transect_length;
 
-          transectPointToUpdate.utm_x = (start_x_utm + ratio * deltaX).toFixed(1);
-          transectPointToUpdate.utm_y = (start_y_utm + ratio * deltaY).toFixed(1);
+          transectPointToUpdate.utm_x = parseFloat((start_x_utm + ratio * deltaX).toFixed(1));
+          transectPointToUpdate.utm_y = parseFloat((start_y_utm + ratio * deltaY).toFixed(1));
+        } else {
+          delete transectPointToUpdate.utm_x;
+          delete transectPointToUpdate.utm_y;
+        }
+
+        /*
+          If biocontrol efficacy transect, need to calculate sum of all phen levels for total %
+        */
+        if (isBiocontrolEfficacyTransect) {
+          const {
+            phen_level_se,
+            phen_level_ro,
+            phen_level_bo,
+            phen_level_fl,
+            phen_level_sf,
+            phen_level_sc
+          } = transectPointToUpdate;
+
+          if (phen_level_se && phen_level_ro && phen_level_bo && phen_level_fl && phen_level_sf && phen_level_sc) {
+            transectPointToUpdate.phen_total_percentage =
+              phen_level_se + phen_level_ro + phen_level_bo + phen_level_fl + phen_level_sf + phen_level_sc;
+          } else {
+            delete transectPointToUpdate.phen_total_percentage;
+          }
         }
 
         updatedTransectPointsList.push(transectPointToUpdate);

@@ -13,7 +13,10 @@ import {
   getCustomValidator,
   getAreaValidator,
   getWindValidator,
-  getHerbicideApplicationRateValidator
+  getHerbicideApplicationRateValidator,
+  getTransectOffsetDistanceValidator,
+  getJurisdictionPercentValidator,
+  getInvasivePlantsValidator
 } from 'rjsf/business-rules/customValidation';
 import {
   populateHerbicideDilutionAndArea,
@@ -179,7 +182,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} event the form submit event
    */
   const onFormSubmitSuccess = async (event: any, formRef: any) => {
-    props.setFormHasErrors(false);
+    if (props.setFormHasErrors) {
+      props.setFormHasErrors(false);
+    }
 
     const updatedFormValues = {
       formData: event.formData,
@@ -330,11 +335,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
 
-      if (updatedDoc.activityType === 'Monitoring') {
-        const linkedRecordActivityResults = await getActivityResultsFromDB(
-          updatedDoc.formData.activity_type_data.activity_id
-        );
+      let linkedRecordId: string = null;
+      if (updatedDoc.activitySubtype.includes('ChemicalPlant')) {
+        linkedRecordId = updatedDoc.formData.activity_subtype_data.activity_id;
+      } else if (
+        ['Treatment', 'Monitoring'].includes(updatedDoc.activityType) &&
+        updatedDoc.activitySubtype.includes('Plant')
+      ) {
+        linkedRecordId = updatedDoc.formData.activity_type_data.activity_id;
+      }
 
+      if (linkedRecordId) {
+        const linkedRecordActivityResults = await getActivityResultsFromDB(linkedRecordId);
         setLinkedActivity(linkedRecordActivityResults.docs[0]);
       }
 
@@ -401,7 +413,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           customValidation={getCustomValidator([
             getAreaValidator(doc.activitySubtype),
             getWindValidator(doc.activitySubtype),
-            getHerbicideApplicationRateValidator()
+            getHerbicideApplicationRateValidator(),
+            getTransectOffsetDistanceValidator(),
+            getJurisdictionPercentValidator(),
+            getInvasivePlantsValidator(linkedActivity)
           ])}
           classes={classes}
           activity={doc}

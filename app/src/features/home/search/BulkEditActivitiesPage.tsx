@@ -15,7 +15,11 @@ import {
   populateHerbicideDilutionAndArea,
   populateTransectLineAndPointData
 } from 'rjsf/business-rules/populateCalculatedFields';
-import { getCustomValidator, getHerbicideApplicationRateValidator } from 'rjsf/business-rules/customValidation';
+import {
+  getCustomValidator,
+  getHerbicideApplicationRateValidator,
+  getJurisdictionPercentValidator
+} from 'rjsf/business-rules/customValidation';
 
 interface IBulkEditActivitiesPage {
   classes?: any;
@@ -129,7 +133,10 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
             activity={activity}
             onFormChange={onFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}
-            customValidation={getCustomValidator([getHerbicideApplicationRateValidator()])}
+            customValidation={getCustomValidator([
+              getHerbicideApplicationRateValidator(),
+              getJurisdictionPercentValidator()
+            ])}
             setParentFormRef={setParentFormRef}
             onFormSubmitError={onFormSubmitError}
             hideCheckFormForErrors={true}

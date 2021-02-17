@@ -13,23 +13,18 @@ const Activity_Observation_PlantTerrestrial = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Observation_PlantTerrestrial
   }
 };
 
 const Activity_Observation_PlantTerrestrial_BulkEdit = {
   activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...UISchemaComponents.Activity_BulkEdit
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Observation_PlantTerrestrial_BulkEdit
   }
 };
 
@@ -39,7 +34,7 @@ const Activity_Observation_PlantAquatic = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.Observation
   },
   activity_subtype_data: {
