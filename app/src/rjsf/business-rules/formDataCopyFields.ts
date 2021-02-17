@@ -22,10 +22,10 @@ export function getFieldsToCopy(activityData: any, activitySubtypeData: any, act
     }
 
     /*
-      When creating a treatment linked to a terrestrial plant observation, we copy the invasive plant
+      When creating a treatment linked to a plant observation, we copy the invasive plant
       species from the subtype data to prevent/reduce data entry errors
     */
-    if (activitySubtype.includes('PlantTerrestrial')) {
+    if (activitySubtype.includes('Observation_Plant')) {
       activitySubtypeDataToCopy = { invasive_plant_code: activitySubtypeData.invasive_plants[0].invasive_plant_code };
     }
   }

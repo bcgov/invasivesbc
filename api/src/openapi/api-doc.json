@@ -692,7 +692,7 @@
         "title": "Aquatic Plant Information",
         "type": "object",
         "required": [
-          "invasive_aquatic_plants"
+          "invasive_plants"
         ],
         "properties": {
           "waterbody_data": {

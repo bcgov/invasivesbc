@@ -336,7 +336,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       let linkedRecordId: string = null;
       if (updatedDoc.activitySubtype.includes('ChemicalPlant')) {
         linkedRecordId = updatedDoc.formData.activity_subtype_data.activity_id;
-      } else if (updatedDoc.activityType.includes(['Treatment', 'Monitoring']) && updatedDoc.activitySubtype.includes('Plant')) {
+      } else if (
+        ['Treatment', 'Monitoring'].includes(updatedDoc.activityType) &&
+        updatedDoc.activitySubtype.includes('Plant')
+      ) {
         linkedRecordId = updatedDoc.formData.activity_type_data.activity_id;
       }
 
