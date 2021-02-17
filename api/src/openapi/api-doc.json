@@ -415,7 +415,7 @@
             "type": "number",
             "title": "Area (m\u00B2)",
             "minimum": 1,
-            "x-tooltip-text": "Area of the activity automatically created from the geometry in square"
+            "x-tooltip-text": "Area of the activity automatically created from the geometry in square metres"
           },
           "invasive_species_agency_code": {
             "type": "string",
@@ -641,7 +641,7 @@
         "type": "object",
         "required": [
           "observation_plant_terrestrial_data",
-          "terrestrial_plants"
+          "invasive_plants"
         ],
         "properties": {
           "observation_plant_terrestrial_data": {
@@ -649,7 +649,7 @@
             "title": "Observation Data",
             "$ref": "#/components/schemas/ObservationPlantTerrestrialData"
           },
-          "terrestrial_plants": {
+          "invasive_plants": {
             "type": "array",
             "title": "Terrestrial Invasive Plants",
             "items": {
@@ -1101,7 +1101,7 @@
               }
             }
           },
-          "invasive_aquatic_plants": {
+          "invasive_plants": {
             "type": "array",
             "title": "Aquatic Plants",
             "items": {

@@ -26,7 +26,7 @@ export function getFieldsToCopy(activityData: any, activitySubtypeData: any, act
       species from the subtype data to prevent/reduce data entry errors
     */
     if (activitySubtype.includes('PlantTerrestrial')) {
-      activitySubtypeDataToCopy = { invasive_plant_code: activitySubtypeData.invasive_plant_code };
+      activitySubtypeDataToCopy = { invasive_plant_code: activitySubtypeData.invasive_plants[0].invasive_plant_code };
     }
   }
 

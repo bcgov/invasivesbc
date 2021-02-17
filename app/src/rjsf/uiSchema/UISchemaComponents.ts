@@ -26,9 +26,7 @@ const Treatment_ChemicalPlant = {
   temperature: {},
   humidity: {},
   pest_management_plan: {},
-  invasive_plant_code: {
-    'ui:readonly': true
-  },
+  invasive_plant_code: {},
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide

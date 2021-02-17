@@ -15,7 +15,8 @@ import {
   getWindValidator,
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
-  getJurisdictionPercentValidator
+  getJurisdictionPercentValidator,
+  getInvasivePlantsValidator
 } from 'rjsf/business-rules/customValidation';
 import {
   populateHerbicideDilutionAndArea,
@@ -332,11 +333,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
 
-      if (updatedDoc.activityType === 'Monitoring') {
-        const linkedRecordActivityResults = await getActivityResultsFromDB(
-          updatedDoc.formData.activity_type_data.activity_id
-        );
+      let linkedRecordId: string = null;
+      if (updatedDoc.activitySubtype.includes('ChemicalPlant')) {
+        linkedRecordId = updatedDoc.formData.activity_subtype_data.activity_id;
+      } else if (updatedDoc.activityType.includes(['Treatment', 'Monitoring']) && updatedDoc.activitySubtype.includes('Plant')) {
+        linkedRecordId = updatedDoc.formData.activity_type_data.activity_id;
+      }
 
+      if (linkedRecordId) {
+        const linkedRecordActivityResults = await getActivityResultsFromDB(linkedRecordId);
         setLinkedActivity(linkedRecordActivityResults.docs[0]);
       }
 
@@ -405,7 +410,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             getWindValidator(doc.activitySubtype),
             getHerbicideApplicationRateValidator(),
             getTransectOffsetDistanceValidator(),
-            getJurisdictionPercentValidator()
+            getJurisdictionPercentValidator(),
+            getInvasivePlantsValidator(linkedActivity)
           ])}
           classes={classes}
           activity={doc}

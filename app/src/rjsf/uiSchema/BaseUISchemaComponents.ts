@@ -617,7 +617,7 @@ const Observation_PlantTerrestrial = {
     ...FourColumnStyle,
     ...Observation_PlantTerrestrial_Data
   },
-  terrestrial_plants: {
+  invasive_plants: {
     items: {
       ...FourColumnStyle,
       ...TerrestrialPlants
@@ -667,7 +667,7 @@ const Observation_PlantAquatic = {
     ...ThreeColumnStyle,
     ...SubstrateSample
   },
-  invasive_aquatic_plants: {
+  invasive_plants: {
     items: {
       ...ThreeColumnStyle,
       ...AquaticPlants
@@ -766,9 +766,7 @@ const Treatment = {
 };
 
 const Treatment_MechanicalPlant = {
-  invasive_plant_code: {
-    'ui:readonly': true
-  },
+  invasive_plant_code: {},
   mechanical_method_code: {},
   mechanical_disposal_code: {}
 };
@@ -780,9 +778,7 @@ const Treatment_MechanicalPlant_BulkEdit = {
 };
 
 const Treatment_BiologicalPlant = {
-  invasive_plant_code: {
-    'ui:readonly': true
-  },
+  invasive_plant_code: {},
   treatment_issues_code: {},
   classified_area_code: {},
   release_quantity: {},

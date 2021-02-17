@@ -28,9 +28,10 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
     });
 
     errors.activity_data['jurisdictions'].__errors = [];
-    if (totalPercent > 100) {
+
+    if (totalPercent > 100 || totalPercent < 100) {
       errors.activity_data['jurisdictions'].addError(
-        'Total percentage of area covered by jurisdictions cannot exceed 100%'
+        'Total percentage of area covered by jurisdictions must equal 100%'
       );
     }
 
@@ -80,6 +81,31 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
     if (wind_speed === 0 && wind_direction_code !== 'No Wind') {
       errors.activity_subtype_data['wind_direction_code'].addError(
         'Cannot specify a wind direction when wind speed is 0'
+      );
+    }
+
+    return errors;
+  };
+}
+
+export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData ||
+      !linkedActivity ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.invasive_plant_code
+    ) {
+      return errors;
+    }
+
+    const linkedActivityInvasivePlants = linkedActivity.formData.activity_subtype_data.invasive_plants;
+    const { invasive_plant_code } = formData.activity_subtype_data;
+
+    errors.activity_subtype_data['invasive_plant_code'].__errors = [];
+    if (!linkedActivityInvasivePlants.some((lip: any) => lip.invasive_plant_code === invasive_plant_code)) {
+      errors.activity_subtype_data['invasive_plant_code'].addError(
+        'You must select a species that was previously observed in the linked activity'
       );
     }
 
