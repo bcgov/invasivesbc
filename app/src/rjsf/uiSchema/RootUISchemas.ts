@@ -73,33 +73,13 @@ const Activity_Transect_FireMonitoring = {
   }
 };
 
-const Activity_Transect_InvasivePlantDensity = {
+const Activity_Transect_Vegetation = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   activity_subtype_data: {
-    ...BaseUISchemaComponents.Transect_InvasivePlantDensity
-  }
-};
-
-const Activity_Transect_FullVegetation = {
-  activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.Activity
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.Transect_FullVegetation
-  }
-};
-
-const Activity_Transect_LumpedSpeciesVegetation = {
-  activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.Activity
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.Transect_LumpedSpeciesVegetation
+    ...BaseUISchemaComponents.Transect_Vegetation
   }
 };
 
@@ -242,9 +222,7 @@ const RootUISchemas = {
   Activity_AnimalActivity_AnimalTerrestrial,
   Activity_AnimalActivity_AnimalAquatic,
   Activity_Transect_FireMonitoring,
-  Activity_Transect_InvasivePlantDensity,
-  Activity_Transect_FullVegetation,
-  Activity_Transect_LumpedSpeciesVegetation,
+  Activity_Transect_Vegetation,
   Activity_Transect_BiocontrolEfficacy,
   Activity_Dispersal_BiologicalDispersal,
   Activity_Treatment_ChemicalPlant,

@@ -10,11 +10,14 @@ export function calculateGeometryArea(geometry: Feature[]) {
   let totalArea = 0;
 
   if (!geometry || !geometry.length || geometry[geometry.length - 1].geometry.type === 'LineString') {
-    return parseFloat(totalArea.toFixed(0));
+    return totalArea;
   }
 
   const geo = geometry[geometry.length - 1];
-  if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
+
+  if (geo.geometry.type === 'Point' && !geo.properties.hasOwnProperty('radius')) {
+    totalArea = 1;
+  } else if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
     totalArea = Math.PI * Math.pow(geo.properties.radius, 2);
   } else if (geo.geometry.type === 'Polygon') {
     totalArea = turf.area(turf.polygon(geo.geometry['coordinates']));

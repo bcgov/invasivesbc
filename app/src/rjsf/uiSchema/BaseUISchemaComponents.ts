@@ -406,89 +406,52 @@ const Transect_FireMonitoring = {
   }
 };
 
-const InvasivePlantDensityTransectPoints = {
-  offset_distance: {}
+const VegetationTransectPoints = {
+  sample_point_id: {},
+  offset_distance: {},
+  utm_x: {},
+  utm_y: {}
 };
 
-const InvasivePlantDensityTransectLines = {
+const VegetationTransectPointsPercentCover = {
+  vegetation_transect_points: {
+    ...FourColumnStyle,
+    VegetationTransectPoints
+  }
+};
+
+const VegetationTransectPointsNumberPlants = {
+  vegetation_transect_points: {
+    ...FourColumnStyle,
+    VegetationTransectPoints
+  }
+};
+
+const VegetationTransectLines = {
   transect_line: {
     ...TwoColumnStyle,
     ...TransectLine
   },
-  invasive_plant_density_transect_points: {
+  vegetation_transect_points_percent_cover: {
     items: {
-      ...ThreeColumnStyle,
-      ...InvasivePlantDensityTransectPoints
+      ...VegetationTransectPointsPercentCover
+    }
+  },
+  vegetation_transect_points_number_plants: {
+    items: {
+      ...VegetationTransectPointsNumberPlants
     }
   }
 };
 
-const Transect_InvasivePlantDensity = {
+const Transect_Vegetation = {
   transect_data: {
     ...ThreeColumnStyle,
     ...TransectData
   },
-  invasive_plant_density_transect_lines: {
+  vegetation_transect_lines: {
     items: {
-      ...InvasivePlantDensityTransectLines
-    }
-  }
-};
-
-const FullVegetationTransectPoints = {
-  offset_distance: {}
-};
-
-const FullVegetationTransectLines = {
-  transect_line: {
-    ...TwoColumnStyle,
-    ...TransectLine
-  },
-  full_vegetation_transect_points: {
-    items: {
-      ...ThreeColumnStyle,
-      ...FullVegetationTransectPoints
-    }
-  }
-};
-
-const Transect_FullVegetation = {
-  transect_data: {
-    ...ThreeColumnStyle,
-    ...TransectData
-  },
-  full_vegetation_transect_lines: {
-    items: {
-      ...FullVegetationTransectLines
-    }
-  }
-};
-
-const LumpedSpeciesVegetationTransectPoints = {
-  offset_distance: {}
-};
-
-const LumpedSpeciesVegetationTransectLines = {
-  transect_line: {
-    ...TwoColumnStyle,
-    ...TransectLine
-  },
-  lumped_species_vegetation_transect_points: {
-    items: {
-      ...ThreeColumnStyle,
-      ...LumpedSpeciesVegetationTransectPoints
-    }
-  }
-};
-
-const Transect_LumpedSpeciesVegetation = {
-  transect_data: {
-    ...ThreeColumnStyle,
-    ...TransectData
-  },
-  lumped_species_vegetation_transect_lines: {
-    items: {
-      ...LumpedSpeciesVegetationTransectLines
+      ...VegetationTransectLines
     }
   }
 };
@@ -811,9 +774,7 @@ const BaseUISchemaComponents = {
   Observation_PlantTerrestrial,
   Observation_PlantAquatic,
   Transect_FireMonitoring,
-  Transect_InvasivePlantDensity,
-  Transect_FullVegetation,
-  Transect_LumpedSpeciesVegetation,
+  Transect_Vegetation,
   Transect_BiocontrolEfficacy,
   Dispersal_BiologicalDispersal,
   Treatment,

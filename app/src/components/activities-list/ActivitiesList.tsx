@@ -292,9 +292,7 @@ const ActivitiesList: React.FC = () => {
 
   const specialFunctions = [
     { label: 'Fire Monitoring', type: ActivitySubtype.Transect_FireMonitoring },
-    { label: 'Invasive Plant Density Transects', type: ActivitySubtype.Transect_InvasivePlantDensity },
-    { label: 'Vegetation Transect (Full Vegetation)', type: ActivitySubtype.Transect_FullVegetation },
-    { label: 'Vegetation Transect (Lumped Species)', type: ActivitySubtype.Transect_LumpedSpeciesVegetation },
+    { label: 'Vegetation Transect (Full, Lumped, Invasive Plant Density)', type: ActivitySubtype.Transect_Vegetation },
     { label: 'Biocontrol Efficacy', type: ActivitySubtype.Transect_BiocontrolEfficacy }
   ];
 
