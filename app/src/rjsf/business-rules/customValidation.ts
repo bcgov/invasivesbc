@@ -29,7 +29,7 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
 
     errors.activity_data['jurisdictions'].__errors = [];
 
-    if (totalPercent > 100 || totalPercent < 100) {
+    if (totalPercent !== 100) {
       errors.activity_data['jurisdictions'].addError(
         'Total percentage of area covered by jurisdictions must equal 100%'
       );
