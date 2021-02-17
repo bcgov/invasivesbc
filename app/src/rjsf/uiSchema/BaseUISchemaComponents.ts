@@ -68,12 +68,8 @@ const TerrestrialPlants = {
 
 const AquaticAnimals = {
   invasive_animal_code: {},
-  early_detection_rapid_resp_ind: {
-    'ui:widget': 'radio'
-  },
-  negative_obs_ind: {
-    'ui:widget': 'radio'
-  },
+  early_detection_rapid_resp_ind: {},
+  negative_obs_ind: {},
   number_of_individuals_observed: {},
   length_method: {},
   length: {},
@@ -100,15 +96,9 @@ const AquaticPlants = {
   voucher_sample_id: {},
   genetic_sample_id: {},
   genetic_structure_collected: {},
-  flowering: {
-    'ui:widget': 'radio'
-  },
-  early_detection_rapid_resp_ind: {
-    'ui:widget': 'radio'
-  },
-  negative_obs_ind: {
-    'ui:widget': 'radio'
-  }
+  flowering: {},
+  early_detection_rapid_resp_ind: {},
+  negative_obs_ind: {}
 };
 
 const LakeBathymetry = {
@@ -131,9 +121,7 @@ const WaterbodyData = {
   substrate_type: {},
   watershed_code: {},
   waterbody_id: {},
-  tidal_influence: {
-    'ui:widget': 'radio'
-  }
+  tidal_influence: {}
 };
 
 const ProjectData = {
@@ -169,9 +157,7 @@ const AquaticFlora = {
   submergent_vegetation: {},
   submergent_vegetation_dominant_species: {},
   voucher_specimens_collected: {},
-  floating_algae_present: {
-    'ui:widget': 'radio'
-  }
+  floating_algae_present: {}
 };
 
 const LimnologicalStationWaterQuality = {
@@ -225,12 +211,8 @@ const SubstrateSample = {
   e_dna_sample: {
     'ui:widget': 'textarea'
   },
-  adult_suspected_presence: {
-    'ui:widget': 'radio'
-  },
-  sample_collected: {
-    'ui:widget': 'radio'
-  }
+  adult_suspected_presence: {},
+  sample_collected: {}
 };
 
 const PlanktonTowSample = {
@@ -245,12 +227,8 @@ const PlanktonTowSample = {
   preservative_type: {},
   preservation_concentration: {},
   other_species: {},
-  veliger_positive: {
-    'ui:widget': 'radio'
-  },
-  buffered: {
-    'ui:widget': 'radio'
-  }
+  veliger_positive: {},
+  buffered: {}
 };
 
 const NetTrapSpecifications = {
@@ -625,11 +603,6 @@ const Observation_PlantTerrestrial = {
   }
 };
 
-const Observation_PlantTerrestrial_BulkEdit = {
-  specific_use_code: {},
-  invasive_plant_code: {}
-};
-
 const Observation_PlantAquatic = {
   waterbody_data: {
     ...ThreeColumnStyle,
@@ -814,36 +787,16 @@ const Monitoring_BiologicalTerrestrialPlant = {
   plant_count: {},
   agent_count: {},
   count_duration: {},
-  agent_destroyed_ind: {
-    'ui:widget': 'radio'
-  },
-  legacy_presence_ind: {
-    'ui:widget': 'radio'
-  },
-  foliar_feeding_damage_ind: {
-    'ui:widget': 'radio'
-  },
-  root_feeding_damage_ind: {
-    'ui:widget': 'radio'
-  },
-  oviposition_marks_ind: {
-    'ui:widget': 'radio'
-  },
-  eggs_present_ind: {
-    'ui:widget': 'radio'
-  },
-  larvae_present_ind: {
-    'ui:widget': 'radio'
-  },
-  pupae_present_ind: {
-    'ui:widget': 'radio'
-  },
-  adults_present_ind: {
-    'ui:widget': 'radio'
-  },
-  tunnels_present_ind: {
-    'ui:widget': 'radio'
-  },
+  agent_destroyed_ind: {},
+  legacy_presence_ind: {},
+  foliar_feeding_damage_ind: {},
+  root_feeding_damage_ind: {},
+  oviposition_marks_ind: {},
+  eggs_present_ind: {},
+  larvae_present_ind: {},
+  pupae_present_ind: {},
+  adults_present_ind: {},
+  tunnels_present_ind: {},
   biological_agent_spread: {}
 };
 
@@ -856,7 +809,6 @@ const BaseUISchemaComponents = {
   Activity_AnimalAquatic,
   Observation,
   Observation_PlantTerrestrial,
-  Observation_PlantTerrestrial_BulkEdit,
   Observation_PlantAquatic,
   Transect_FireMonitoring,
   Transect_InvasivePlantDensity,

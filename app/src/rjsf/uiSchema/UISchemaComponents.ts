@@ -35,9 +35,7 @@ const Treatment_ChemicalPlant = {
   wind_speed: {},
   wind_direction_code: {},
   pesticide_use_permit_PUP: {},
-  signage_on_site: {
-    'ui:widget': 'radio'
-  }
+  signage_on_site: {}
 };
 
 const Treatment_ChemicalPlant_BulkEdit = {

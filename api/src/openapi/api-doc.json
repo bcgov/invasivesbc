@@ -160,9 +160,6 @@
         "properties": {
           "activity_data": {
             "$ref": "#/components/schemas/Activity_BulkEdit"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Observation_PlantTerrestrial_BulkEdit"
           }
         }
       },
@@ -647,44 +644,16 @@
           "observation_plant_terrestrial_data": {
             "type": "object",
             "title": "Observation Data",
-            "$ref": "#/components/schemas/ObservationPlantTerrestrialData"
+            "$ref": "#/components/schemas/ObservationPlantTerrestrialData",
+            "x-tooltip-text": "Please specify your observation specific data"
           },
           "invasive_plants": {
             "type": "array",
             "title": "Terrestrial Invasive Plants",
             "items": {
               "$ref": "#/components/schemas/TerrestrialPlants"
-            }
-          }
-        }
-      },
-      "Observation_PlantTerrestrial_BulkEdit": {
-        "title": "Terrestrial Plant Information",
-        "type": "object",
-        "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Target invasive plant species for this observation at this location. Create a separate observation for any other species at this location"
-          },
-          "specific_use_code": {
-            "type": "string",
-            "title": "Specific Use",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "specific_use_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Notable land uses or attributes within the observation area"
+            "x-tooltip-text": "Specify one or more terrestrial invasive plants for this observation"
           }
         }
       },
@@ -760,8 +729,14 @@
                 "title": "Waterbody ID"
               },
               "tidal_influence": {
-                "type": "boolean",
-                "title": "Tidal Influence"
+                "type": "string",
+                "title": "Tidal Influence",
+                "enum": [
+                  "Yes",
+                  "No",
+                  "Unknown"
+                ],
+                "default": "No"
               }
             }
           },
@@ -893,8 +868,14 @@
                 "title": "Voucher Specimens Collected"
               },
               "floating_algae_present": {
-                "type": "boolean",
-                "title": "Floating Algae Present"
+                "type": "string",
+                "title": "Floating Algae Present",
+                "enum": [
+                  "Yes",
+                  "No",
+                  "Unknown"
+                ],
+                "default": "No"
               }
             }
           },
@@ -1092,12 +1073,24 @@
                 "title": "eDNA Sample"
               },
               "adult_suspected_presence": {
-                "type": "boolean",
-                "title": "Suspected Presence of Adults"
+                "type": "string",
+                "title": "Suspected Presence of Adults",
+                "enum": [
+                  "Yes",
+                  "No",
+                  "Unknown"
+                ],
+                "default": "No"
               },
               "sample_collected": {
-                "type": "boolean",
-                "title": "Sample Collected"
+                "type": "string",
+                "title": "Sample Collected",
+                "enum": [
+                  "Yes",
+                  "No",
+                  "Unknown"
+                ],
+                "default": "No"
               }
             }
           },
@@ -1793,9 +1786,14 @@
             "x-tooltip-text": "Relative humidity expressed as a percentage"
           },
           "signage_on_site": {
-            "type": "boolean",
+            "type": "string",
             "title": "Treatment Notice Signs",
-            "default": false,
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
             "x-tooltip-text": "Treatment notice sign placed at site prior to treatment"
           },
           "invasive_plant_code": {
@@ -2273,44 +2271,114 @@
             "title": "Count Duration"
           },
           "agent_destroyed_ind": {
-            "type": "boolean",
-            "title": "Agent Destroyed"
+            "type": "string",
+            "title": "Agent Destroyed",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate whether the agent was destroyed"
           },
           "legacy_presence_ind": {
-            "type": "boolean",
-            "title": "Legacy Presence"
+            "type": "string",
+            "title": "Legacy Presence",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate the presence of legacy IAPP records"
           },
           "foliar_feeding_damage_ind": {
-            "type": "boolean",
-            "title": "Foliar Feeding Damage"
+            "type": "string",
+            "title": "Foliar Feeding Damage",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate the presence of foliar feeding damage"
           },
           "root_feeding_damage_ind": {
-            "type": "boolean",
-            "title": "Root Feeding Damage"
+            "type": "string",
+            "title": "Root Feeding Damage",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate the presence of root feeding damage"
           },
           "oviposition_marks_ind": {
-            "type": "boolean",
-            "title": "Oviposition Marks"
+            "type": "string",
+            "title": "Oviposition Marks",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate the presence of oviposition marks"
           },
           "eggs_present_ind": {
-            "type": "boolean",
-            "title": "Eggs Present"
+            "type": "string",
+            "title": "Eggs Present",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate the presence of eggs"
           },
           "larvae_present_ind": {
-            "type": "boolean",
-            "title": "Larvae Present"
+            "type": "string",
+            "title": "Larvae Present",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate the presence of larvae"
           },
           "pupae_present_ind": {
-            "type": "boolean",
-            "title": "Pupae Present"
+            "type": "string",
+            "title": "Pupae Present",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate the presence of pupae"
           },
           "adults_present_ind": {
-            "type": "boolean",
-            "title": "Adults Present"
+            "type": "string",
+            "title": "Adults Present",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate the presence of adults"
           },
           "tunnels_present_ind": {
-            "type": "boolean",
-            "title": "Tunnels Present"
+            "type": "string",
+            "title": "Tunnels Present",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No",
+            "x-tooltip-text": "Please indicate the presence of tunnels"
           },
           "biological_agent_spread": {
             "type": "string",
@@ -2658,14 +2726,24 @@
             ]
           },
           "early_detection_rapid_resp_ind": {
-            "type": "boolean",
+            "type": "string",
             "title": "Early Detection",
-            "default": false
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No"
           },
           "negative_obs_ind": {
-            "type": "boolean",
+            "type": "string",
             "title": "Negative Observation",
-            "default": false
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No"
           }
         }
       },
@@ -2756,19 +2834,34 @@
             ]
           },
           "flowering": {
-            "type": "boolean",
+            "type": "string",
             "title": "Flowering",
-            "default": false
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No"
           },
           "early_detection_rapid_resp_ind": {
-            "type": "boolean",
+            "type": "string",
             "title": "Early Detection",
-            "default": false
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No"
           },
           "negative_obs_ind": {
-            "type": "boolean",
+            "type": "string",
             "title": "Negative Observation",
-            "default": false
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No"
           }
         }
       },
@@ -3965,12 +4058,24 @@
             "title": "eDNA Sample"
           },
           "adult_suspected_presence": {
-            "type": "boolean",
-            "title": "Suspected Presence of Adults"
+            "type": "string",
+            "title": "Suspected Presence of Adults",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No"
           },
           "sample_collected": {
-            "type": "boolean",
-            "title": "Sample Collected"
+            "type": "string",
+            "title": "Sample Collected",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No"
           }
         }
       },
@@ -4024,12 +4129,24 @@
             "title": "Other Species"
           },
           "veliger_positive": {
-            "type": "boolean",
-            "title": "Veliger Positive"
+            "type": "string",
+            "title": "Veliger Positive",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No"
           },
           "buffered": {
-            "type": "boolean",
-            "title": "Buffered"
+            "type": "string",
+            "title": "Buffered",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ],
+            "default": "No"
           }
         }
       },

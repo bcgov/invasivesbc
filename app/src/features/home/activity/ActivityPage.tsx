@@ -182,7 +182,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} event the form submit event
    */
   const onFormSubmitSuccess = async (event: any, formRef: any) => {
-    props.setFormHasErrors(false);
+    if (props.setFormHasErrors) {
+      props.setFormHasErrors(false);
+    }
 
     const updatedFormValues = {
       formData: event.formData,

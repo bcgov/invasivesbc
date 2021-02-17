@@ -5,7 +5,7 @@ export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
   let updatedActivitySubtypeData = { ...newSubtypeData };
 
   // If herbicide field is not edited at all just return existing activity subtype data
-  if (!newSubtypeData.herbicide || JSON.stringify(newSubtypeData.herbicide[0]) === '{}') {
+  if (!newSubtypeData || !newSubtypeData.herbicide || JSON.stringify(newSubtypeData.herbicide[0]) === '{}') {
     return newSubtypeData;
   }
 

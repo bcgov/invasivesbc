@@ -23,12 +23,8 @@ const Activity_Observation_PlantTerrestrial = {
 
 const Activity_Observation_PlantTerrestrial_BulkEdit = {
   activity_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...UISchemaComponents.Activity_BulkEdit
-  },
-  activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Observation_PlantTerrestrial_BulkEdit
   }
 };
 
