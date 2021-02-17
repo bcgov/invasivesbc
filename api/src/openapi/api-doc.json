@@ -232,28 +232,6 @@
           }
         }
       },
-      "Activity_Transect_FullVegetation": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Transect_FullVegetation"
-          }
-        }
-      },
-      "Activity_Transect_LumpedSpeciesVegetation": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Transect_LumpedSpeciesVegetation"
-          }
-        }
-      },
       "Activity_Treatment_ChemicalPlant": {
         "type": "object",
         "properties": {
