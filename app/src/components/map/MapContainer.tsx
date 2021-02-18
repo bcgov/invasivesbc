@@ -105,6 +105,28 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
+  const getOwnership = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.4,
+      tms:true
+    });
+  };
+
+  const getRegionalDistricts = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.4,
+      tms:true
+    });
+  };
+
+  const getMunicipalites = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.4,
+      tms:true
+    });
+  };
+
+
   const getRISO = () => {
     return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:regional_invasive_species_organization_areas@EPSG:900913@png/{z}/{x}/{y}.png',{
       opacity: 0.6,
@@ -118,14 +140,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       tms:true
     });
   };
-
-  const getOwnership = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.4,
-      tms:true
-    });
-  };
-
   const getIPMA = () => {
     return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png',{
       opacity: 0.6,
@@ -199,7 +213,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const addLayerControls = (baseLayerControlOptions: any, overlayControlOptions: any) => {
-    mapRef.current.addControl(L.control.layers(baseLayerControlOptions, overlayControlOptions));
+    mapRef.current.addControl(
+      L.control.layers(baseLayerControlOptions, overlayControlOptions,{position:'topleft'})
+    );
   };
 
   const initMap = () => {
@@ -233,6 +249,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const ipma = getIPMA();
     const aggregate = getAggregate();
     const ownership = getOwnership();
+    const municipalities = getMunicipalites();
+    const regionalDistricts = getRegionalDistricts();
     
     const overlays = {
       'Placenames': esriPlacenames,
@@ -243,14 +261,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Ownership': ownership,
       'Invasive Plant Management Areas': ipma,
       'Regional Invasive Species Organization Areas': riso,
-      'Natural Resource Districts': nRDistricts
+      'Natural Resource Districts': nRDistricts,
+      'Municipalites': municipalities,
+      'Regional Districts': regionalDistricts
     };
 
     mapRef.current.addLayer(esriPlacenames);
 
-    addLayerControls(basemaps, overlays);
-
     addSaveTilesControl(esriBaseLayer);
+
+    addLayerControls(basemaps, overlays);
 
     setMapBounds(mapRef.current.getBounds());
 
