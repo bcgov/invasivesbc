@@ -409,21 +409,99 @@ const Transect_FireMonitoring = {
 const VegetationTransectPoints = {
   sample_point_id: {},
   offset_distance: {},
-  utm_x: {},
-  utm_y: {}
+  utm_x: {
+    'ui:readonly': true
+  },
+  utm_y: {
+    'ui:readonly': true
+  }
+};
+
+const InvasivePlantsPercentCover = {
+  invasive_plant_code: {},
+  percent_covered: {}
+};
+
+const InvasivePlantsNumberPlants = {
+  invasive_plant_code: {},
+  number_plants: {}
+};
+
+const LumpedSpeciesNumberPlants = {
+  lumped_species_type: {},
+  number_plants: {}
+};
+
+const LumpedSpeciesPercentCover = {
+  lumped_species_type: {},
+  percent_covered: {}
+};
+
+const CustomSpeciesPercentCover = {
+  custom_species_type: {},
+  percent_covered: {}
+};
+
+const CustomSpeciesNumberPlants = {
+  custom_species_type: {},
+  number_plants: {}
+};
+
+const VegetationTransectSpeciesPercentCover = {
+  invasive_plants: {
+    items: {
+      ...InvasivePlantsPercentCover
+    }
+  },
+  lumped_species: {
+    items: {
+      ...LumpedSpeciesPercentCover
+    }
+  },
+  custom_species: {
+    items: {
+      ...CustomSpeciesPercentCover
+    }
+  }
+};
+
+const VegetationTransectSpeciesNumberPlants = {
+  invasive_plants: {
+    items: {
+      ...InvasivePlantsNumberPlants
+    }
+  },
+  lumped_species: {
+    items: {
+      ...LumpedSpeciesNumberPlants
+    }
+  },
+  custom_species: {
+    items: {
+      ...CustomSpeciesNumberPlants
+    }
+  }
 };
 
 const VegetationTransectPointsPercentCover = {
   vegetation_transect_points: {
     ...FourColumnStyle,
-    VegetationTransectPoints
+    ...VegetationTransectPoints
+  },
+  vegetation_transect_species: {
+    ...ThreeColumnStyle,
+    ...VegetationTransectSpeciesPercentCover
   }
 };
 
 const VegetationTransectPointsNumberPlants = {
   vegetation_transect_points: {
     ...FourColumnStyle,
-    VegetationTransectPoints
+    ...VegetationTransectPoints
+  },
+  vegetation_transect_species: {
+    ...ThreeColumnStyle,
+    ...VegetationTransectSpeciesNumberPlants
   }
 };
 

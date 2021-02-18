@@ -3609,15 +3609,11 @@
           }
         }
       },
-      "VegetationTransectPointsPercentCover": {
+      "VegetationTransectSpeciesNumberPlants": {
         "type": "object",
-        "required": [
-          "vegetation_transect_points"
-        ],
+        "title": "Vegetation Transect Species",
+        "x-tooltip-text": "Specify your vegetation transect species",
         "properties": {
-          "vegetation_transect_points": {
-            "$ref": "#/components/schemas/VegetationTransectPoints"
-          },
           "invasive_plants": {
             "type": "array",
             "title": "Invasive Plants",
@@ -3629,35 +3625,65 @@
               ],
               "properties": {
                 "invasive_plant_code": {
-                  "type": "string",
-                  "title": "Invasive Plant",
-                  "x-enum-code": {
-                    "x-enum-code-category-name": "invasives",
-                    "x-enum-code-header-name": "invasive_plant_code",
-                    "x-enum-code-name": "code_name",
-                    "x-enum-code-text": "code_description",
-                    "x-enum-code-sort-order": "code_sort_order"
-                  },
-                  "x-tooltip-text": "Target invasive plant species at this location"
+                  "$ref": "#/components/schemas/InvasivePlantType",
+                  "x-tooltip-text": "Invasive plant species at this location"
                 },
                 "number_plants": {
-                  "type": "number",
-                  "title": "Number of Plants"
+                  "$ref": "#/components/schemas/NumberPlants",
+                  "x-tooltip-text": "Number of plants of this species"
+                }
+              }
+            }
+          },
+          "lumped_species": {
+            "type": "array",
+            "title": "Lumped Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "lumped_species_type",
+                "number_plants"
+              ],
+              "properties": {
+                "lumped_species_type": {
+                  "$ref": "#/components/schemas/LumpedSpeciesType",
+                  "x-tooltip-text": "Lumped species at this location"
+                },
+                "number_plants": {
+                  "$ref": "#/components/schemas/NumberPlants",
+                  "x-tooltip-text": "Number of plants of this species"
+                }
+              }
+            }
+          },
+          "custom_species": {
+            "type": "array",
+            "title": "Custom Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "custom_species_type",
+                "number_plants"
+              ],
+              "properties": {
+                "custom_species_type": {
+                  "$ref": "#/components/schemas/CustomSpeciesType",
+                  "x-tooltip-text": "Custom species at this location"
+                },
+                "number_plants": {
+                  "$ref": "#/components/schemas/NumberPlants",
+                  "x-tooltip-text": "Number of plants of this species"
                 }
               }
             }
           }
         }
       },
-      "VegetationTransectPointsNumberPlants": {
+      "VegetationTransectSpeciesPercentCover": {
         "type": "object",
-        "required": [
-          "vegetation_transect_points"
-        ],
+        "title": "Vegetation Transect Species",
+        "x-tooltip-text": "Specify your vegetation transect species",
         "properties": {
-          "vegetation_transect_points": {
-            "$ref": "#/components/schemas/VegetationTransectPoints"
-          },
           "invasive_plants": {
             "type": "array",
             "title": "Invasive Plants",
@@ -3665,28 +3691,91 @@
               "type": "object",
               "required": [
                 "invasive_plant_code",
-                "percent_cover"
+                "percent_covered"
               ],
               "properties": {
                 "invasive_plant_code": {
-                  "type": "string",
-                  "title": "Invasive Plant",
-                  "x-enum-code": {
-                    "x-enum-code-category-name": "invasives",
-                    "x-enum-code-header-name": "invasive_plant_code",
-                    "x-enum-code-name": "code_name",
-                    "x-enum-code-text": "code_description",
-                    "x-enum-code-sort-order": "code_sort_order"
-                  },
-                  "x-tooltip-text": "Target invasive plant species at this location"
+                  "$ref": "#/components/schemas/InvasivePlantType",
+                  "x-tooltip-text": "Invasive plant species at this location"
                 },
-                "percent_cover": {
-                  "type": "number",
-                  "title": "Percent Covered",
-                  "maximum": 100
+                "percent_covered": {
+                  "$ref": "#/components/schemas/PercentCovered",
+                  "x-tooltip-text": "Percent of area covered by this species"
                 }
               }
             }
+          },
+          "lumped_species": {
+            "type": "array",
+            "title": "Lumped Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "lumped_species_type",
+                "percent_covered"
+              ],
+              "properties": {
+                "lumped_species_type": {
+                  "$ref": "#/components/schemas/LumpedSpeciesType",
+                  "x-tooltip-text": "Lumped species at this location"
+                },
+                "percent_covered": {
+                  "$ref": "#/components/schemas/PercentCovered",
+                  "x-tooltip-text": "Percent of area covered by this species"
+                }
+              }
+            }
+          },
+          "custom_species": {
+            "type": "array",
+            "title": "Custom Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "custom_species_type",
+                "percent_covered"
+              ],
+              "properties": {
+                "custom_species_type": {
+                  "$ref": "#/components/schemas/CustomSpeciesType",
+                  "x-tooltip-text": "Custom species at this location"
+                },
+                "percent_covered": {
+                  "$ref": "#/components/schemas/PercentCovered",
+                  "x-tooltip-text": "Percent of area covered by this species"
+                }
+              }
+            }
+          }
+        }
+      },
+      "VegetationTransectPointsPercentCover": {
+        "type": "object",
+        "required": [
+          "vegetation_transect_points",
+          "vegetation_transect_species"
+        ],
+        "properties": {
+          "vegetation_transect_points": {
+            "$ref": "#/components/schemas/VegetationTransectPoints"
+          },
+          "vegetation_transect_species": {
+            "$ref": "#/components/schemas/VegetationTransectSpeciesPercentCover"
+          }
+        }
+      },
+      "VegetationTransectPointsNumberPlants": {
+        "type": "object",
+        "required": [
+          "vegetation_transect_points",
+          "vegetation_transect_species"
+        ],
+        "properties": {
+          "vegetation_transect_points": {
+            "$ref": "#/components/schemas/VegetationTransectPoints"
+          },
+          "vegetation_transect_species": {
+            "$ref": "#/components/schemas/VegetationTransectSpeciesNumberPlants"
           }
         }
       },
@@ -3939,6 +4028,42 @@
             "x-tooltip-text": "Total percentage (sum of all 6 levels)"
           }
         }
+      },
+      "PercentCovered": {
+        "type": "number",
+        "title": "Percent Covered",
+        "maximum": 100
+      },
+      "NumberPlants": {
+        "type": "number",
+        "title": "Number of Plants"
+      },
+      "LumpedSpeciesType": {
+        "type": "string",
+        "title": "Lumped Species Type",
+        "enum": [
+          "Native Forbs",
+          "Grasses",
+          "Bare Ground",
+          "Shrubs/Trees",
+          "Bryophytes",
+          "Litter/Feces"
+        ]
+      },
+      "InvasivePlantType": {
+        "type": "string",
+        "title": "Invasive Plant",
+        "x-enum-code": {
+          "x-enum-code-category-name": "invasives",
+          "x-enum-code-header-name": "invasive_plant_code",
+          "x-enum-code-name": "code_name",
+          "x-enum-code-text": "code_description",
+          "x-enum-code-sort-order": "code_sort_order"
+        }
+      },
+      "CustomSpeciesType": {
+        "type": "string",
+        "title": "Custom Species Type"
       },
       "NetTrapSpecifications": {
         "type": "object",
