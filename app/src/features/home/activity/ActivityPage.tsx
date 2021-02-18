@@ -419,9 +419,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             getJurisdictionPercentValidator(),
             getInvasivePlantsValidator(linkedActivity)
           ])}
-          customErrorTransformer={
-            getCustomErrorTransformer()
-          }
+          customErrorTransformer={getCustomErrorTransformer()}
           classes={classes}
           activity={doc}
           linkedActivity={linkedActivity}

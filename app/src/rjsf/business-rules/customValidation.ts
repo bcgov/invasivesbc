@@ -176,9 +176,8 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
       const transectPointsList = transectLineObj[transectPointsMatchingKeys[0]];
 
       transectPointsList.forEach((transectPoint: any, pointIndex: any) => {
-        const errorState = errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][
-          pointIndex
-        ];
+        const errorState =
+          errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][pointIndex];
 
         if (isVegetationTransect) {
           // If offset distance field has not been entered, no need to validate anything

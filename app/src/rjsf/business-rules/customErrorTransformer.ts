@@ -1,10 +1,10 @@
 import { AjvError } from '@rjsf/core';
 
 /**
-* Returns a custom error transformer.
-*
-* @return {*}
-*/
+ * Returns a custom error transformer.
+ *
+ * @return {*}
+ */
 export const getCustomErrorTransformer = () => {
   return (errors: AjvError[]) => {
     return errors.filter((error) => {

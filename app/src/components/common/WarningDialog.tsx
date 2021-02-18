@@ -2,11 +2,11 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import React from 'react';
 
 interface IWarningDialog {
-  isOpen: boolean,
-  handleDisagree: Function,
-  handleAgree: Function,
-  message: string,
-  heading: string
+  isOpen: boolean;
+  handleDisagree: Function;
+  handleAgree: Function;
+  message: string;
+  heading: string;
 }
 
 const WarningDialog: React.FC<IWarningDialog> = (props) => {
