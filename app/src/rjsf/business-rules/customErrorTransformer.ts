@@ -1,7 +1,5 @@
 import { AjvError } from '@rjsf/core';
 
-// TODO enhance to be generic like functions in customValidation.ts
-
 /**
 * Returns a custom error transformer.
 *
@@ -9,7 +7,7 @@ import { AjvError } from '@rjsf/core';
 */
 export const getCustomErrorTransformer = () => {
   return (errors: AjvError[]) => {
-    const transformedErrors = errors.filter((error) => {
+    return errors.filter((error) => {
       if (error.message === 'should be equal to one of the allowed values') {
         return false;
       }
@@ -24,7 +22,5 @@ export const getCustomErrorTransformer = () => {
 
       return true;
     });
-
-    return transformedErrors;
   };
 };

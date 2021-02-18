@@ -39,6 +39,7 @@ import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUti
 import ActivityListDate from './ActivityListDate';
 import { getErrorMessages } from 'utils/errorHandling';
 import { addNewActivityToDB } from 'utils/addActivity';
+import WarningDialog from 'components/common/WarningDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -195,6 +196,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [docs, setDocs] = useState<any[]>([]);
+  const [isWarningDialogOpen, setIsWarningDialogOpen] = useState(false);
 
   const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
@@ -267,11 +269,18 @@ const ActivityList: React.FC<IActivityList> = (props) => {
               </ListItemIcon>
               <ActivityListItem isDisabled={props.isDisabled} activity={doc} />
               <ListItemSecondaryAction>
-                <IconButton disabled={isDisabled} onClick={() => removeActivity(doc)}>
+                <IconButton disabled={isDisabled} onClick={() => setIsWarningDialogOpen(true)}>
                   <DeleteForever />
                 </IconButton>
               </ListItemSecondaryAction>
             </ListItem>
+            <WarningDialog
+              isOpen={isWarningDialogOpen}
+              handleDisagree={() => setIsWarningDialogOpen(false)}
+              handleAgree={() => removeActivity(doc)}
+              heading="Delete Activity?"
+              message="Are you sure you would like to delete this activity? Once deleted, this activity cannot be recovered"
+            />
           </Paper>
         );
       })}
