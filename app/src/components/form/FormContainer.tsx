@@ -113,7 +113,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             props.onFormChange(event, formRef);
           }}
           onError={(error) => {
-            console.log(error)
             if (!props.onFormSubmitError) {
               return;
             }
