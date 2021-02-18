@@ -177,7 +177,9 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
 
       transectPointsList.forEach((transectPoint: any, pointIndex: any) => {
         const errorState =
-          errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][pointIndex];
+          errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][
+            pointIndex
+          ];
 
         if (isVegetationTransect) {
           // If offset distance field has not been entered, no need to validate anything
@@ -195,13 +197,16 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
           errorState['offset_distance'].__errors = [];
         }
 
-        const transectPointOffsetDistance = isVegetationTransect ? transectPoint.vegetation_transect_points.offset_distance : transectPoint.offset_distance;
+        const transectPointOffsetDistance = isVegetationTransect
+          ? transectPoint.vegetation_transect_points.offset_distance
+          : transectPoint.offset_distance;
 
         if (transectPointOffsetDistance > transectLineLength) {
-          const errorMessage = 'Offset distance for a transect point cannot exceed the length of the associated transect line';
+          const errorMessage =
+            'Offset distance for a transect point cannot exceed the length of the associated transect line';
 
           if (isVegetationTransect) {
-            errorState.vegetation_transect_points['offset_distance'].addError(errorMessage)
+            errorState.vegetation_transect_points['offset_distance'].addError(errorMessage);
           } else {
             errorState['offset_distance'].addError(errorMessage);
           }
