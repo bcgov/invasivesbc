@@ -277,7 +277,10 @@ const ActivityList: React.FC<IActivityList> = (props) => {
             <WarningDialog
               isOpen={isWarningDialogOpen}
               handleDisagree={() => setIsWarningDialogOpen(false)}
-              handleAgree={() => removeActivity(doc)}
+              handleAgree={async () => {
+                await removeActivity(doc);
+                setIsWarningDialogOpen(false);
+              }}
               heading="Delete Activity?"
               message="Are you sure you would like to delete this activity? Once deleted, this activity cannot be recovered"
             />
