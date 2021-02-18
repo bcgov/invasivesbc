@@ -2,8 +2,12 @@
   transform: scale(1.4) translate(0, 28px);
 }
 
+.leaflet-draw.leaflet-control .leaflet-draw-section:nth-child(2) {
+  transform: translate(0, -13px);
+}
+
 .leaflet-control-layers.leaflet-control {
-  transform: scale(0.955) translate(-7px, 20px);
+  transform: translate(-7px, 20px);
 }
 
 
@@ -12,11 +16,11 @@
 }
 
 .leaflet-control-locate.leaflet-control {
-  transform: scale(1.4);
+  transform: scale(1.5);
 }
 
 .savetiles.leaflet-control {
-  transform: scale(1.4) translate(0, 9px);
+  transform: scale(1.5) translate(0, 9px);
 }
 
 .leaflet-control-locate.leaflet-control .bullseye {
