@@ -232,7 +232,6 @@ const PlanktonTowSample = {
 };
 
 const NetTrapSpecifications = {
-  fish_permit_number: {},
   haul_number: {},
   date_time_in: {},
   date_time_out: {},
@@ -243,13 +242,10 @@ const NetTrapSpecifications = {
   mesh_description: {},
   zone: {},
   habitat: {},
-  number_of_fish: {},
-  min_length: {},
-  max_length: {}
+  substrate_type: {}
 };
 
 const ElectrofisherSpecifications = {
-  fish_permit_number: {},
   passes: {},
   date_time_in: {},
   date_time_out: {},
@@ -261,10 +257,7 @@ const ElectrofisherSpecifications = {
   frequency: {},
   pulse: {},
   make: {},
-  model: {},
-  number_of_fish: {},
-  min_length: {},
-  max_length: {}
+  model: {}
 };
 
 const EDna = {
@@ -738,6 +731,13 @@ const Observation_PlantAquatic = {
   }
 };
 
+const SurveyData = {
+  survey_design: {},
+  survey_start_date_time: {},
+  survey_end_date_time: {},
+  survey_details: {}
+};
+
 /*
   Animal Activity
 */
@@ -755,40 +755,43 @@ const Activity_AnimalAquatic = {
       ...AquaticAnimals
     }
   },
-  comment: {
-    'ui:widget': 'textarea'
-  },
-  net_trap_specifications: {
-    ...ThreeColumnStyle,
-    ...NetTrapSpecifications
-  },
-  electrofisher_specifications: {
-    ...ThreeColumnStyle,
-    ...ElectrofisherSpecifications
-  },
-  plankton_tow_sample: {
-    ...ThreeColumnStyle,
-    ...PlanktonTowSample
-  },
-  substrate_sample: {
-    ...ThreeColumnStyle,
-    ...SubstrateSample
-  },
-  edna: {
-    ...ThreeColumnStyle,
-    ...EDna
-  },
-  habitat_alteration: {
-    ...ThreeColumnStyle,
-    ...HabitatAlteration
-  },
-  chemical: {
-    ...ThreeColumnStyle,
-    ...Chemical
-  },
-  biological: {
-    ...ThreeColumnStyle,
-    ...Biological
+  activity_data: {
+    survey_data: {
+      ...TwoColumnStyle,
+      ...SurveyData
+    },
+    net_trap_specifications: {
+      ...ThreeColumnStyle,
+      ...NetTrapSpecifications
+    },
+    electrofisher_specifications: {
+      ...ThreeColumnStyle,
+      ...ElectrofisherSpecifications
+    },
+    plankton_tow_sample: {
+      ...ThreeColumnStyle,
+      ...PlanktonTowSample
+    },
+    substrate_sample: {
+      ...ThreeColumnStyle,
+      ...SubstrateSample
+    },
+    edna: {
+      ...ThreeColumnStyle,
+      ...EDna
+    },
+    habitat_alteration: {
+      ...ThreeColumnStyle,
+      ...HabitatAlteration
+    },
+    chemical: {
+      ...ThreeColumnStyle,
+      ...Chemical
+    },
+    biological: {
+      ...ThreeColumnStyle,
+      ...Biological
+    }
   }
 };
 

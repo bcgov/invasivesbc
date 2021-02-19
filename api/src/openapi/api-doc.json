@@ -1084,333 +1084,368 @@
       "Activity_AnimalAquatic": {
         "title": "Aquatic Animal Information",
         "type": "object",
-        "required": ["activity_type"],
+        "required": ["activity_data", "invasive_aquatic_animals"],
         "properties": {
-          "activity_type": {
-            "type": "string",
-            "title": "Activity Type",
-            "enum": [
-              "Observation",
-              "Treatment",
-              "Efficacy Monitoring"
-            ]
-          }
-        },
-        "dependencies": {
-          "activity_type": {
-            "oneOf": [
-              {
-                "required": [
-                  "observation_type",
-                  "observation_method"
-                ],
-                "properties": {
-                  "activity_type": {
-                    "enum": [
-                      "Observation"
-                    ]
-                  },
-                  "observation_type": {
-                    "type": "string",
-                    "title": "Observation Type",
-                    "enum": [
-                      "Incidental (Citizen)",
-                      "Incidental (Specialist)",
-                      "Survey"
-                    ]
-                  },
-                  "observation_method": {
-                    "type": "string",
-                    "title": "Observation Method",
-                    "enum": [
-                      "Net/Trap",
-                      "Electrofishing",
-                      "Plankton Tow",
-                      "Substrate Sample",
-                      "eDNA",
-                      "Habitat Alteration",
-                      "Chemical",
-                      "Biological"
-                    ]
-                  },
-                  "comment": {
-                    "type": "string",
-                    "title": "Comment",
-                    "maxLength": 300
-                  },
-                  "invasive_aquatic_animals": {
-                    "type": "array",
-                    "title": "Aquatic Animals",
-                    "items": {
-                      "$ref": "#/components/schemas/AquaticAnimals"
-                    }
-                  }
-                },
-                "dependencies": {
-                  "observation_method": {
-                    "oneOf": [
-                      {
-                        "properties": {
-                          "observation_method": {
-                            "enum": [
-                              "Net/Trap"
-                            ]
-                          },
-                          "net_trap_specifications": {
-                            "$ref": "#/components/schemas/NetTrapSpecifications"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "observation_method": {
-                            "enum": [
-                              "Electrofishing"
-                            ]
-                          },
-                          "electrofisher_specifications": {
-                            "$ref": "#/components/schemas/ElectrofisherSpecifications"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "observation_method": {
-                            "enum": [
-                              "Plankton Tow"
-                            ]
-                          },
-                          "plankton_tow_sample": {
-                            "$ref": "#/components/schemas/PlanktonTowSample"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "observation_method": {
-                            "enum": [
-                              "Substrate Sample"
-                            ]
-                          },
-                          "substrate_sample": {
-                            "$ref": "#/components/schemas/SubstrateSample"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "observation_method": {
-                            "enum": [
-                              "eDNA"
-                            ]
-                          },
-                          "edna": {
-                            "$ref": "#/components/schemas/EDna"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "observation_method": {
-                            "enum": [
-                              "Habitat Alteration"
-                            ]
-                          },
-                          "habitat_alteration": {
-                            "$ref": "#/components/schemas/HabitatAlteration"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "observation_method": {
-                            "enum": [
-                              "Chemical"
-                            ]
-                          },
-                          "chemical": {
-                            "$ref": "#/components/schemas/Chemical"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "observation_method": {
-                            "enum": [
-                              "Biological"
-                            ]
-                          },
-                          "biological": {
-                            "$ref": "#/components/schemas/Biological"
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "properties": {
-                  "activity_type": {
-                    "enum": [
-                      "Treatment"
-                    ]
-                  },
-                  "treatment_method": {
-                    "type": "string",
-                    "title": "Treatment Method",
-                    "enum": [
-                      "Net/Trap",
-                      "Electrofishing",
-                      "Plankton Tow",
-                      "Substrate Sample",
-                      "eDNA",
-                      "Habitat Alteration",
-                      "Chemical",
-                      "Biological"
-                    ]
-                  },
-                  "comment": {
-                    "type": "string",
-                    "title": "Comment",
-                    "maxLength": 300
-                  },
-                  "invasive_aquatic_animals": {
-                    "type": "array",
-                    "title": "Aquatic Animals",
-                    "items": {
-                      "$ref": "#/components/schemas/AquaticAnimals"
-                    }
-                  }
-                },
-                "required": [
-                  "treatment_method"
-                ],
-                "dependencies": {
-                  "treatment_method": {
-                    "oneOf": [
-                      {
-                        "properties": {
-                          "treatment_method": {
-                            "enum": [
-                              "Net/Trap"
-                            ]
-                          },
-                          "net_trap_specifications": {
-                            "$ref": "#/components/schemas/NetTrapSpecifications"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "treatment_method": {
-                            "enum": [
-                              "Electrofishing"
-                            ]
-                          },
-                          "electrofisher_specifications": {
-                            "$ref": "#/components/schemas/ElectrofisherSpecifications"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "treatment_method": {
-                            "enum": [
-                              "Plankton Tow"
-                            ]
-                          },
-                          "plankton_tow_sample": {
-                            "$ref": "#/components/schemas/PlanktonTowSample"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "treatment_method": {
-                            "enum": [
-                              "Substrate Sample"
-                            ]
-                          },
-                          "substrate_sample": {
-                            "$ref": "#/components/schemas/SubstrateSample"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "treatment_method": {
-                            "enum": [
-                              "eDNA"
-                            ]
-                          },
-                          "edna": {
-                            "$ref": "#/components/schemas/EDna"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "treatment_method": {
-                            "enum": [
-                              "Habitat Alteration"
-                            ]
-                          },
-                          "habitat_alteration": {
-                            "$ref": "#/components/schemas/HabitatAlteration"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "treatment_method": {
-                            "enum": [
-                              "Chemical"
-                            ]
-                          },
-                          "chemical": {
-                            "$ref": "#/components/schemas/Chemical"
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "treatment_method": {
-                            "enum": [
-                              "Biological"
-                            ]
-                          },
-                          "biological": {
-                            "$ref": "#/components/schemas/Biological"
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "properties": {
-                  "activity_type": {
-                    "enum": [
-                      "Efficacy Monitoring"
-                    ]
-                  },
-                  "comment": {
-                    "type": "string",
-                    "title": "Comment",
-                    "maxLength": 300
-                  },
-                  "invasive_aquatic_animals": {
-                    "type": "array",
-                    "title": "Aquatic Animals",
-                    "items": {
-                      "$ref": "#/components/schemas/AquaticAnimals"
-                    }
-                  }
-                }
+          "activity_data": {
+            "type": "object",
+            "title": "Activity Data",
+            "required": [
+              "activity_type"
+            ],
+            "properties": {
+              "activity_type": {
+                "type": "string",
+                "title": "Activity Type",
+                "enum": [
+                  "Observation",
+                  "Treatment",
+                  "Efficacy Monitoring"
+                ]
               }
-            ]
+            },
+            "dependencies": {
+              "activity_type": {
+                "oneOf": [
+                  {
+                    "required": [
+                      "observation_type"
+                    ],
+                    "properties": {
+                      "activity_type": {
+                        "enum": [
+                          "Observation"
+                        ]
+                      },
+                      "observation_type": {
+                        "type": "string",
+                        "title": "Observation Type",
+                        "enum": [
+                          "Incidental",
+                          "Survey"
+                        ]
+                      }
+                    },
+                    "dependencies": {
+                      "observation_type": {
+                        "oneOf": [
+                          {
+                            "required": [
+                              "observation_method"
+                            ],
+                            "properties": {
+                              "observation_type": {
+                                "enum": [
+                                  "Survey"
+                                ]
+                              },
+                              "observation_method": {
+                                "type": "string",
+                                "title": "Observation Method",
+                                "enum": [
+                                  "Net/Trap",
+                                  "Electrofishing",
+                                  "Plankton Tow",
+                                  "Substrate Sample",
+                                  "eDNA",
+                                  "Habitat Alteration",
+                                  "Chemical",
+                                  "Biological"
+                                ]
+                              },
+                              "survey_data": {
+                                "type": "object",
+                                "title": "Survey Data",
+                                "properties": {
+                                  "survey_start_date_time": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "title": "Survey Start Date and Time"
+                                  },
+                                  "survey_end_date_time": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "title": "Survey End Date and Time"
+                                  },
+                                  "survey_design": {
+                                    "type": "string",
+                                    "title": "Survey Design"
+                                  },
+                                  "survey_details": {
+                                    "type": "string",
+                                    "title": "Additional Survey Details",
+                                    "maxLength": 300
+                                  }
+                                }  
+                              }
+                            },
+                            "dependencies": {
+                              "observation_method": {
+                                "oneOf": [
+                                  {
+                                    "properties": {
+                                      "observation_method": {
+                                        "enum": [
+                                          "Net/Trap"
+                                        ]
+                                      },
+                                      "net_trap_specifications": {
+                                        "$ref": "#/components/schemas/NetTrapSpecifications"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "observation_method": {
+                                        "enum": [
+                                          "Electrofishing"
+                                        ]
+                                      },
+                                      "electrofisher_specifications": {
+                                        "$ref": "#/components/schemas/ElectrofisherSpecifications"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "observation_method": {
+                                        "enum": [
+                                          "Plankton Tow"
+                                        ]
+                                      },
+                                      "plankton_tow_sample": {
+                                        "$ref": "#/components/schemas/PlanktonTowSample"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "observation_method": {
+                                        "enum": [
+                                          "Substrate Sample"
+                                        ]
+                                      },
+                                      "substrate_sample": {
+                                        "$ref": "#/components/schemas/SubstrateSample"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "observation_method": {
+                                        "enum": [
+                                          "eDNA"
+                                        ]
+                                      },
+                                      "edna": {
+                                        "$ref": "#/components/schemas/EDna"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "observation_method": {
+                                        "enum": [
+                                          "Habitat Alteration"
+                                        ]
+                                      },
+                                      "habitat_alteration": {
+                                        "$ref": "#/components/schemas/HabitatAlteration"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "observation_method": {
+                                        "enum": [
+                                          "Chemical"
+                                        ]
+                                      },
+                                      "chemical": {
+                                        "$ref": "#/components/schemas/Chemical"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "properties": {
+                                      "observation_method": {
+                                        "enum": [
+                                          "Biological"
+                                        ]
+                                      },
+                                      "biological": {
+                                        "$ref": "#/components/schemas/Biological"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "activity_type": {
+                        "enum": [
+                          "Treatment"
+                        ]
+                      },
+                      "treatment_method": {
+                        "type": "string",
+                        "title": "Treatment Method",
+                        "enum": [
+                          "Net/Trap",
+                          "Electrofishing",
+                          "Plankton Tow",
+                          "Substrate Sample",
+                          "eDNA",
+                          "Habitat Alteration",
+                          "Chemical",
+                          "Biological"
+                        ]
+                      },
+                      "invasive_aquatic_animals": {
+                        "type": "array",
+                        "title": "Aquatic Animals",
+                        "items": {
+                          "$ref": "#/components/schemas/AquaticAnimals"
+                        }
+                      }
+                    },
+                    "required": [
+                      "treatment_method"
+                    ],
+                    "dependencies": {
+                      "treatment_method": {
+                        "oneOf": [
+                          {
+                            "properties": {
+                              "treatment_method": {
+                                "enum": [
+                                  "Net/Trap"
+                                ]
+                              },
+                              "net_trap_specifications": {
+                                "$ref": "#/components/schemas/NetTrapSpecifications"
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "treatment_method": {
+                                "enum": [
+                                  "Electrofishing"
+                                ]
+                              },
+                              "electrofisher_specifications": {
+                                "$ref": "#/components/schemas/ElectrofisherSpecifications"
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "treatment_method": {
+                                "enum": [
+                                  "Plankton Tow"
+                                ]
+                              },
+                              "plankton_tow_sample": {
+                                "$ref": "#/components/schemas/PlanktonTowSample"
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "treatment_method": {
+                                "enum": [
+                                  "Substrate Sample"
+                                ]
+                              },
+                              "substrate_sample": {
+                                "$ref": "#/components/schemas/SubstrateSample"
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "treatment_method": {
+                                "enum": [
+                                  "eDNA"
+                                ]
+                              },
+                              "edna": {
+                                "$ref": "#/components/schemas/EDna"
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "treatment_method": {
+                                "enum": [
+                                  "Habitat Alteration"
+                                ]
+                              },
+                              "habitat_alteration": {
+                                "$ref": "#/components/schemas/HabitatAlteration"
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "treatment_method": {
+                                "enum": [
+                                  "Chemical"
+                                ]
+                              },
+                              "chemical": {
+                                "$ref": "#/components/schemas/Chemical"
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "treatment_method": {
+                                "enum": [
+                                  "Biological"
+                                ]
+                              },
+                              "biological": {
+                                "$ref": "#/components/schemas/Biological"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "activity_type": {
+                        "enum": [
+                          "Efficacy Monitoring"
+                        ]
+                      },
+                      "invasive_aquatic_animals": {
+                        "type": "array",
+                        "title": "Aquatic Animals",
+                        "items": {
+                          "$ref": "#/components/schemas/AquaticAnimals"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "invasive_aquatic_animals": {
+            "type": "array",
+            "title": "Aquatic Animals",
+            "items": {
+              "$ref": "#/components/schemas/AquaticAnimals"
+            }
           }
         }
       },
@@ -4185,10 +4220,6 @@
         "type": "object",
         "title": "Net/Trap Specifications",
         "properties": {
-          "fish_permit_number": {
-            "type": "number",
-            "title": "Fish Permit Number"
-          },
           "haul_number": {
             "type": "number",
             "title": "Haul Number"
@@ -4250,17 +4281,17 @@
               "Both"
             ]
           },
-          "number_of_fish": {
-            "type": "number",
-            "title": "Total Number of Fish"
-          },
-          "min_length": {
-            "type": "number",
-            "title": "Min Length (mm)"
-          },
-          "max_length": {
-            "type": "number",
-            "title": "Max Length (mm)"
+          "substrate_type": {
+            "type": "string",
+            "title": "Substrate Type",
+            "enum": [
+              "Silt/Organic",
+              "Clay",
+              "Sand",
+              "Compact Gravel",
+              "Cobble",
+              "Rip-rap"
+            ]
           }
         }
       },
@@ -4467,35 +4498,37 @@
         "type": "object",
         "title": "Electrofisher Specifications",
         "properties": {
-          "fish_permit_number": {
-            "type": "number",
-            "title": "Fish Permit Number"
-          },
           "passes": {
             "type": "number",
-            "title": "Number of Passes"
+            "title": "Number of Passes",
+            "x-tooltip-text": "The number of electrofishing passes"
           },
           "date_time_in": {
             "type": "string",
             "format": "date-time",
-            "title": "Date and Time In"
+            "title": "Date and Time In",
+            "x-tooltip-text": "Start date and time of the survey"
           },
           "date_time_out": {
             "type": "string",
             "format": "date-time",
-            "title": "Date and Time Out"
+            "title": "Date and Time Out",
+            "x-tooltip-text": "End date and time of the survey"
           },
           "one_pass_time": {
             "type": "number",
-            "title": "Time of One Pass (s)"
+            "title": "Time of One Pass (seconds)",
+            "x-tooltip-text": "Total time for one pass in seconds"
           },
           "length": {
             "type": "number",
-            "title": "Length (m)"
+            "title": "Length (m)",
+            "x-tooltip-text": "The linear length of the electrofishing pass"
           },
           "width": {
             "type": "number",
-            "title": "Width (m)"
+            "title": "Width (m)",
+            "x-tooltip-text": "The linear length of the zone of stream in which the electrofishing was conducted"
           },
           "enclosure": {
             "type": "string",
@@ -4504,39 +4537,33 @@
               "Open",
               "Closed",
               "Partially Enclosed"
-            ]
+            ],
+            "x-tooltip-text": "An area enclosed with stop nets or natural barriers to prevent fish from escaping capture during electrofishing: Open/Closed/Partially enclosed"
           },
           "voltage": {
             "type": "number",
-            "title": "Voltage"
+            "title": "Voltage",
+            "x-tooltip-text": "The electric potential used during the pass"
           },
           "frequency": {
             "type": "number",
-            "title": "Frequency (Hz)"
+            "title": "Frequency (Hz)",
+            "x-tooltip-text": "The number of pulses per second"
           },
           "pulse": {
             "type": "number",
-            "title": "Pulse (ms)"
+            "title": "Pulse (ms)",
+            "x-tooltip-text": "Pulse width is the amount of time the current is truned on during one pulse"
           },
           "make": {
             "type": "string",
-            "title": "Make"
+            "title": "Make",
+            "x-tooltip-text": "Name of the company that manufactured the electrofisher"
           },
           "model": {
             "type": "string",
-            "title": "Model"
-          },
-          "number_of_fish": {
-            "type": "number",
-            "title": "Total Number of Fish"
-          },
-          "min_length": {
-            "type": "number",
-            "title": "Min Length (mm)"
-          },
-          "max_length": {
-            "type": "number",
-            "title": "Max Length (mm)"
+            "title": "Model",
+            "x-tooltip-text": "Model of electrofisher"
           }
         }
       },
