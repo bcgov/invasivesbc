@@ -265,15 +265,24 @@ const EDna = {
 };
 
 const HabitatAlteration = {
-  comment: {}
+  type: {},
+  description: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const Chemical = {
-  comment: {}
+  type: {},
+  description: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const Biological = {
-  comment: {}
+  type: {},
+  description: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const InvasivePlants = {
@@ -781,15 +790,15 @@ const Activity_AnimalAquatic = {
       ...EDna
     },
     habitat_alteration: {
-      ...ThreeColumnStyle,
+      ...TwoColumnStyle,
       ...HabitatAlteration
     },
     chemical: {
-      ...ThreeColumnStyle,
+      ...TwoColumnStyle,
       ...Chemical
     },
     biological: {
-      ...ThreeColumnStyle,
+      ...TwoColumnStyle,
       ...Biological
     }
   }

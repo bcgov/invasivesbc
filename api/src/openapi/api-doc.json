@@ -4468,9 +4468,22 @@
         "type": "object",
         "title": "Habitat Alteration",
         "properties": {
-          "comment": {
+          "type": {
             "type": "string",
-            "title": "Habitat Comment"
+            "title": "Habitat Alteration Type",
+            "enum": [
+              "Nest Supression",
+              "Habitat Removal",
+              "Draining",
+              "Infill",
+              "Overwinter Freezing",
+              "Benthic Mats"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "maxLength": 300
           }
         }
       },
@@ -4478,9 +4491,15 @@
         "type": "object",
         "title": "Chemical",
         "properties": {
-          "comment": {
+          "type": {
             "type": "string",
-            "title": "Chemical Comment"
+            "title": "Chemical Type",
+            "maxLength": 300
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "maxLength": 300
           }
         }
       },
@@ -4488,9 +4507,15 @@
         "type": "object",
         "title": "Biological",
         "properties": {
-          "comment": {
+          "type": {
             "type": "string",
-            "title": "Biological Comment"
+            "title": "Biological Type",
+            "maxLength": 300
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "maxLength": 300
           }
         }
       },
