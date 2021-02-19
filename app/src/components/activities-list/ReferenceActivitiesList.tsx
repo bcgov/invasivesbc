@@ -459,6 +459,36 @@ const ReferenceActivitiesList: React.FC = () => {
   }, [activeDoc]);
 
   /*
+    When an activity is selected in the list, change the color of the activity in geo
+    Also change all callbacks, since the map will not sense state updates by itself
+  */
+  useEffect(() => {
+    let updatedInteractiveGeos = [...interactiveGeometry];
+
+    updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
+      const allButThis = selectedActivities.filter((activity) => geo.recordDocID !== activity.id);
+      if (selectedActivities.length > allButThis.length) {
+        geo.color = '#9E1A1A';
+        geo.onClickCallback = () => {
+          setSelectedActivities(allButThis);
+        }
+      } else {
+        geo.color = geoColors[geo.recordType];
+        geo.onClickCallback = () => {
+          setSelectedActivities([...selectedActivities, {
+            id: geo.recordDocID,
+            subtype: geo.recordSubtype
+          }]);
+        }
+      }
+
+      return geo;
+    });
+
+    setInteractiveGeometry(updatedInteractiveGeos);
+  }, [selectedActivities, setSelectedActivities]);
+
+  /*
     Get updated interactive geometries based on the activities/selected map activity type
   */
   const getUpdatedGeoInfo = (documents: any) => {
@@ -491,14 +521,19 @@ const ReferenceActivitiesList: React.FC = () => {
     Function to generate interactive geometry data object
   */
   const getInteractiveGeoData = (doc: any) => {
+
     return {
       recordDocID: doc._id,
       recordType: doc.activityType,
+      recordSubtype: doc.activitySubtype,
       geometry: doc.geometry,
       color: geoColors[doc.activityType],
       description: `${doc.activityType}: ${doc._id}`,
       popUpComponent: ActivityPopup,
-      onClickCallback: () => {}
+      onClickCallback: () => {setSelectedActivities([{
+        id: doc._id,
+        subtype: doc.activitySubtype  // TODO subtype?
+      }])}
     };
   };
 
