@@ -35,6 +35,7 @@ export const TripDataControls: React.FC = (props) => {
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [trip, setTrip] = useState(null);
+  const [fetching, setFetching] = useState(false);
 
   const getTrip = useCallback(async () => {
     let docs = await databaseContext.database.find({ selector: { _id: 'trip' } });
@@ -189,6 +190,14 @@ export const TripDataControls: React.FC = (props) => {
 
       let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
 
+      await databaseContext.database.upsert('trip', (tripDoc) => ({
+        ...tripDoc, 
+        metabaseQueryNames: {
+         ...trip.metabaseQueryNames,
+         [setOfChoices.metabaseQueryId]: response.name
+        }
+      }));
+
       let responseRows = [];
       if (response?.activities?.length) responseRows = response.activities;
       if (response?.points_of_interest?.length) responseRows = [responseRows, ...response.points_of_interest];
@@ -257,26 +266,27 @@ export const TripDataControls: React.FC = (props) => {
     );
   };
 
-  const deleteTripAndFetch = () => {
+  const deleteTripAndFetch = async () => {
     //wipe activities associated to that trip here:
     const deleteOldTrip = () => {};
     deleteOldTrip();
 
     //fetch what is selected here:
-    const fetchNewTrip = () => {
-      fetchActivities();
-      fetchPointsOfInterest();
-      fetchMetabaseQueries();
-    };
-    fetchNewTrip();
+    await setFetching(true);
+    Promise.all([
+      fetchActivities(), fetchPointsOfInterest(), fetchMetabaseQueries()
+    ])
+    .finally(() => setFetching(false))
+    .catch((error) => {
+      setFetching(false);
+      notifyError(databaseContext, 'Error when fetching from network: ' + error);
+    });
   };
 
   return (
-    <>
-      <Button variant="contained" color="primary" onClick={deleteTripAndFetch}>
-        Fetch
-      </Button>
-    </>
+    <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
+      {fetching ? 'Fetching...' : 'Fetch'}
+    </Button>
   );
 };
 
