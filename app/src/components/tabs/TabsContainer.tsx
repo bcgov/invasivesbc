@@ -24,7 +24,7 @@ export interface ITabConfig {
   icon: React.ReactElement;
 }
 
-const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
+//const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
 const invbclogo = require('../../../../../inv2/app/src/InvasivesBC_Icon.svg');
 
 const TabsContainer: React.FC = () => {
