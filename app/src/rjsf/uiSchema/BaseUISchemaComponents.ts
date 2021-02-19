@@ -848,7 +848,7 @@ const Activity_AnimalAquatic = {
     conductivity_profile: {
       ...ThreeColumnStyle,
       ...ConductivityProfile
-    },
+    }
   },
   activity_data: {
     survey_data: {
