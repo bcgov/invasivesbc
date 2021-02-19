@@ -3453,7 +3453,8 @@
             "title": "Count Type",
             "enum": [
               "Percent Cover",
-              "Number of Plants"
+              "Number of Plants",
+              "Daubenmire Classification"
             ],
             "x-tooltip-text": "Please specify the count type"
           }
@@ -3495,6 +3496,25 @@
                     "title": "Transect Points Information",
                     "items": {
                       "$ref": "#/components/schemas/VegetationTransectPointsNumberPlants"
+                    }
+                  }
+                }
+              },
+              {
+                "required": [
+                  "vegetation_transect_points_daubenmire"
+                ],
+                "properties": {
+                  "count_type": {
+                    "enum": [
+                      "Daubenmire Classification"
+                    ]
+                  },
+                  "vegetation_transect_points_daubenmire": {
+                    "type": "array",
+                    "title": "Transect Points Information",
+                    "items": {
+                      "$ref": "#/components/schemas/VegetationTransectPointsDaubenmire"
                     }
                   }
                 }
@@ -3679,6 +3699,76 @@
           }
         }
       },
+      "VegetationTransectSpeciesDaubenmire": {
+        "type": "object",
+        "title": "Vegetation Transect Species",
+        "x-tooltip-text": "Specify your vegetation transect species",
+        "properties": {
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "type": "object",
+              "required": [
+                "invasive_plant_code",
+                "daubenmire_classification"
+              ],
+              "properties": {
+                "invasive_plant_code": {
+                  "$ref": "#/components/schemas/InvasivePlantType",
+                  "x-tooltip-text": "Invasive plant species at this location"
+                },
+                "daubenmire_classification": {
+                  "$ref": "#/components/schemas/DaubenmireClassification",
+                  "x-tooltip-text": "Daubenmire classification for this species"
+                }
+              }
+            }
+          },
+          "lumped_species": {
+            "type": "array",
+            "title": "Lumped Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "lumped_species_type",
+                "daubenmire_classification"
+              ],
+              "properties": {
+                "lumped_species_type": {
+                  "$ref": "#/components/schemas/LumpedSpeciesType",
+                  "x-tooltip-text": "Lumped species at this location"
+                },
+                "daubenmire_classification": {
+                  "$ref": "#/components/schemas/DaubenmireClassification",
+                  "x-tooltip-text": "Daubenmire classification for this species"
+                }
+              }
+            }
+          },
+          "custom_species": {
+            "type": "array",
+            "title": "Custom Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "custom_species_type",
+                "daubenmire_classification"
+              ],
+              "properties": {
+                "custom_species_type": {
+                  "$ref": "#/components/schemas/CustomSpeciesType",
+                  "x-tooltip-text": "Custom species at this location"
+                },
+                "daubenmire_classification": {
+                  "$ref": "#/components/schemas/DaubenmireClassification",
+                  "x-tooltip-text": "Daubenmire classification for this species"
+                }
+              }
+            }
+          }
+        }
+      },
       "VegetationTransectSpeciesPercentCover": {
         "type": "object",
         "title": "Vegetation Transect Species",
@@ -3776,6 +3866,21 @@
           },
           "vegetation_transect_species": {
             "$ref": "#/components/schemas/VegetationTransectSpeciesNumberPlants"
+          }
+        }
+      },
+      "VegetationTransectPointsDaubenmire": {
+        "type": "object",
+        "required": [
+          "vegetation_transect_points",
+          "vegetation_transect_species"
+        ],
+        "properties": {
+          "vegetation_transect_points": {
+            "$ref": "#/components/schemas/VegetationTransectPoints"
+          },
+          "vegetation_transect_species": {
+            "$ref": "#/components/schemas/VegetationTransectSpeciesDaubenmire"
           }
         }
       },
@@ -4064,6 +4169,17 @@
       "CustomSpeciesType": {
         "type": "string",
         "title": "Custom Species Type"
+      },
+      "DaubenmireClassification": {
+        "type": "string",
+        "title": "Daubenmire Classification",
+        "x-enum-code": {
+          "x-enum-code-category-name": "invasives",
+          "x-enum-code-header-name": "daubenmire_cover_code",
+          "x-enum-code-name": "code_name",
+          "x-enum-code-text": "code_description",
+          "x-enum-code-sort-order": "code_sort_order"
+        }
       },
       "NetTrapSpecifications": {
         "type": "object",

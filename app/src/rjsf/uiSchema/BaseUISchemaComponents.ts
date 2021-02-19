@@ -427,6 +427,11 @@ const InvasivePlantsNumberPlants = {
   number_plants: {}
 };
 
+const InvasivePlantsDaubenmire = {
+  invasive_plant_code: {},
+  daubenmire_classification: {}
+};
+
 const LumpedSpeciesNumberPlants = {
   lumped_species_type: {},
   number_plants: {}
@@ -437,6 +442,11 @@ const LumpedSpeciesPercentCover = {
   percent_covered: {}
 };
 
+const LumpedSpeciesDaubenmire = {
+  lumped_species_type: {},
+  daubenmire_classification: {}
+};
+
 const CustomSpeciesPercentCover = {
   custom_species_type: {},
   percent_covered: {}
@@ -445,6 +455,11 @@ const CustomSpeciesPercentCover = {
 const CustomSpeciesNumberPlants = {
   custom_species_type: {},
   number_plants: {}
+};
+
+const CustomSpeciesDaubenmire = {
+  custom_species_type: {},
+  daubenmire_classification: {}
 };
 
 const VegetationTransectSpeciesPercentCover = {
@@ -483,6 +498,24 @@ const VegetationTransectSpeciesNumberPlants = {
   }
 };
 
+const VegetationTransectSpeciesDaubenmire = {
+  invasive_plants: {
+    items: {
+      ...InvasivePlantsDaubenmire
+    }
+  },
+  lumped_species: {
+    items: {
+      ...LumpedSpeciesDaubenmire
+    }
+  },
+  custom_species: {
+    items: {
+      ...CustomSpeciesDaubenmire
+    }
+  }
+};
+
 const VegetationTransectPointsPercentCover = {
   vegetation_transect_points: {
     ...FourColumnStyle,
@@ -505,6 +538,17 @@ const VegetationTransectPointsNumberPlants = {
   }
 };
 
+const VegetationTransectPointsDaubenmire = {
+  vegetation_transect_points: {
+    ...FourColumnStyle,
+    ...VegetationTransectPoints
+  },
+  vegetation_transect_species: {
+    ...ThreeColumnStyle,
+    ...VegetationTransectSpeciesDaubenmire
+  }
+};
+
 const VegetationTransectLines = {
   transect_line: {
     ...TwoColumnStyle,
@@ -518,6 +562,11 @@ const VegetationTransectLines = {
   vegetation_transect_points_number_plants: {
     items: {
       ...VegetationTransectPointsNumberPlants
+    }
+  },
+  vegetation_transect_points_daubenmire: {
+    items: {
+      ...VegetationTransectPointsDaubenmire
     }
   }
 };
