@@ -13,8 +13,19 @@ export function calculateGeometryArea(geometry: Feature[]) {
     return totalArea;
   }
 
+  /*
+    Use the last index because sometimes we allow multiple geos on map
+  */
   const geo = geometry[geometry.length - 1];
 
+  /*
+    If the geometry is a point, then the area is nominally 1 square metre
+
+    Since circles are represented as points, if the geo has the radius property
+    we use it to calculate the area of the circle
+
+    Otherwise, calculate the area of the polygon using turf
+  */
   if (geo.geometry.type === 'Point' && !geo.properties.hasOwnProperty('radius')) {
     totalArea = 1;
   } else if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
@@ -40,6 +51,10 @@ export function calculateLatLng(geom: Feature[]) {
   let latitude = null;
   let longitude = null;
 
+  /*
+    Calculations based on business rules as to how anchor points need to be calculated
+    for different geometry types
+  */
   if (geo.type === 'Point') {
     latitude = geo.coordinates[1];
     longitude = firstCoord;

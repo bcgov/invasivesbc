@@ -14,6 +14,9 @@ export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
   };
 }
 
+/*
+  Function to validate that the total percent value of all jurisdictions combined = 100
+*/
 export function getJurisdictionPercentValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (!formData || !formData.activity_data || !formData.activity_data.jurisdictions) {
@@ -39,6 +42,10 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
   };
 }
 
+/*
+  Function to validate that the net geo area selected does not exceed the limits
+  specified by business area for various activity types
+*/
 export function getAreaValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     let areaLimit = Number.POSITIVE_INFINITY;
@@ -62,6 +69,12 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
   };
 }
 
+/*
+  Function to validate wind fields on chemical treatment forms
+
+  If no wind there should be no wind direction
+  If wind, there must be a wind direction
+*/
 export function getWindValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (activitySubtype !== 'Activity_Treatment_ChemicalPlant') {
@@ -88,6 +101,12 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
   };
 }
 
+/*
+  Function to validate that the value selected for invasive plant in dropdown
+  is one of the plants from the linked record
+
+  Ex: cannot create a treatment for a plant that was not observed in linked observation
+*/
 export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (
@@ -113,6 +132,10 @@ export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
   };
 }
 
+/*
+  Function to validate that the application rate specified for a given herbicide
+  does not exceed the limit based on guideline values
+*/
 export function getHerbicideApplicationRateValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (
@@ -146,6 +169,10 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
   };
 }
 
+/*
+  Function used by offset distance validation function to identify and set error
+  on specific field of nested object structure based on transect type
+*/
 const determineErrorStateOnTransectPoint = (
   isVegetationTransect: boolean,
   transectPoint: any,
@@ -186,6 +213,10 @@ const determineErrorStateOnTransectPoint = (
   return errorState;
 };
 
+/*
+  Function to validate that the offset distance for a point on a transect line
+  does not exceed the length of the associated transect line
+*/
 export function getTransectOffsetDistanceValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (!formData || !formData.activity_subtype_data) {
