@@ -70,20 +70,22 @@ const AquaticAnimals = {
   invasive_animal_code: {},
   early_detection_rapid_resp_ind: {},
   negative_obs_ind: {},
-  number_of_individuals_observed: {},
-  length_method: {},
-  length: {},
-  weight: {},
+  life_stage: {},
   sex: {},
   reproductive_maturity: {},
-  life_stage: {},
+  length: {},
+  length_method: {},
+  weight: {},
   behaviour: {},
-  age_sample_id: {},
-  age_structure_collected: {},
-  age: {},
-  voucher_sample_id: {},
-  genetic_sample_id: {},
-  genetic_structure_collected: {}
+  condition: {},
+  captured: {},
+  disposed: {},
+  specimen_id: {},
+  sample_collected: {},
+  sample_id: {},
+  sample_type: {},
+  age_analysis: {},
+  genetic_analysis: {}
 };
 
 const AquaticPlants = {
@@ -115,13 +117,16 @@ const WaterbodyData = {
   waterbody_name_local: {},
   waterbody_type: {},
   reach_number: {},
-  water_level_management: {},
   waterbody_use: {},
   adjacent_land_use: {},
-  substrate_type: {},
   watershed_code: {},
   waterbody_id: {},
-  tidal_influence: {}
+  additional_site_features: {
+    'ui:widget': 'textarea'
+  },
+  comment: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const ProjectData = {
@@ -139,16 +144,28 @@ const TerrainCharacteristics = {
   setting: {},
   aspect: {},
   hillslope_coupling: {},
-  lake_basin_genesis: {},
-  land_use_percent: {},
   shoreline_type: {},
-  percentage_of_type: {},
   cover: {},
   recreational_features: {},
-  permanent_inlets: {},
-  other_inlets: {},
-  outlets: {},
-  inlet_spawning_habitat: {}
+  number_inlets: {},
+  inlet_type: {},
+  number_outlets: {},
+  outlet_type: {}
+};
+
+const Access = {
+  access_air: {},
+  access_road: {},
+  access_auto: {},
+  access_off_road: {},
+  access_off_road_distance: {},
+  access_trail: {},
+  access_trail_distance: {},
+  access_closest_community: {},
+  access_water_access: {},
+  comments: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const AquaticFlora = {
@@ -156,8 +173,15 @@ const AquaticFlora = {
   emergent_vegetation_dominant_species: {},
   submergent_vegetation: {},
   submergent_vegetation_dominant_species: {},
-  voucher_specimens_collected: {},
-  floating_algae_present: {}
+  floating_algae_present: {},
+  lake_bathymetry: {},
+  littoral_area: {},
+  max_depth: {},
+  benchmark: {},
+  max_water_level: {},
+  benchmark_type: {
+    'ui:widget': 'textarea'
+  }
 };
 
 const LimnologicalStationWaterQuality = {
@@ -179,7 +203,7 @@ const WaterQuality = {
   ice_depth: {}
 };
 
-const Profile = {
+const ConductivityProfile = {
   depth: {},
   dissolved_oxygen: {},
   temperature: {},
@@ -281,6 +305,49 @@ const Chemical = {
 const Biological = {
   type: {},
   description: {
+    'ui:widget': 'textarea'
+  }
+};
+
+const ShorelineSurveys = {
+  date_time: {},
+  waterbody: {},
+  target_species: {},
+  weather_conditions: {},
+  sampling_distance: {},
+  sampling_location_lat: {},
+  sampling_location_lng: {},
+  substrate_type: {},
+  species_present: {},
+  density: {},
+  diameter_largest_individual: {},
+  other_species_found: {},
+  comments: {
+    'ui:widget': 'textarea'
+  }
+};
+
+const SurveyData = {
+  survey_design: {},
+  survey_start_date_time: {},
+  survey_end_date_time: {},
+  survey_details: {}
+};
+
+const TreatmentData = {
+  treatment_start_date_time: {},
+  treatment_end_date_time: {},
+  permit_number: {},
+  survey_details: {}
+};
+
+const MonitoringData = {
+  monitoring_start_date_time: {},
+  monitoring_end_date_time: {},
+  monitoring_results: {
+    'ui:widget': 'textarea'
+  },
+  comment: {
     'ui:widget': 'textarea'
   }
 };
@@ -724,9 +791,9 @@ const Observation_PlantAquatic = {
     ...ThreeColumnStyle,
     ...WaterQuality
   },
-  profile: {
+  conductivity_profile: {
     ...ThreeColumnStyle,
-    ...Profile
+    ...ConductivityProfile
   },
   substrate_sample: {
     ...ThreeColumnStyle,
@@ -738,13 +805,6 @@ const Observation_PlantAquatic = {
       ...AquaticPlants
     }
   }
-};
-
-const SurveyData = {
-  survey_design: {},
-  survey_start_date_time: {},
-  survey_end_date_time: {},
-  survey_details: {}
 };
 
 /*
@@ -764,10 +824,44 @@ const Activity_AnimalAquatic = {
       ...AquaticAnimals
     }
   },
+  site_information: {
+    waterbody_data: {
+      ...FourColumnStyle,
+      ...WaterbodyData
+    },
+    terrain_characteristics: {
+      ...FourColumnStyle,
+      ...TerrainCharacteristics
+    },
+    access: {
+      ...FourColumnStyle,
+      ...Access
+    },
+    aquatic_flora: {
+      ...ThreeColumnStyle,
+      ...AquaticFlora
+    },
+    water_quality: {
+      ...ThreeColumnStyle,
+      ...WaterQuality
+    },
+    conductivity_profile: {
+      ...ThreeColumnStyle,
+      ...ConductivityProfile
+    },
+  },
   activity_data: {
     survey_data: {
       ...TwoColumnStyle,
       ...SurveyData
+    },
+    treatment_data: {
+      ...TwoColumnStyle,
+      ...TreatmentData
+    },
+    monitoring_data: {
+      ...TwoColumnStyle,
+      ...MonitoringData
     },
     net_trap_specifications: {
       ...ThreeColumnStyle,
@@ -784,6 +878,10 @@ const Activity_AnimalAquatic = {
     substrate_sample: {
       ...ThreeColumnStyle,
       ...SubstrateSample
+    },
+    shoreline_surveys: {
+      ...ThreeColumnStyle,
+      ...ShorelineSurveys
     },
     edna: {
       ...ThreeColumnStyle,
