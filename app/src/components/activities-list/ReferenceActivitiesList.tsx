@@ -18,15 +18,19 @@ import {
   Select,
   InputLabel
 } from '@material-ui/core';
-import { Add } from '@material-ui/icons';
+import { Add, Check } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import {
+  ICreateMetabaseQuery
+} from 'interfaces/useInvasivesApi-interfaces';
 import ActivityListItem from './ActivityListItem';
 import ActivityListDate from './ActivityListDate';
-import { notifyError } from 'utils/NotificationUtils';
+import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
@@ -65,6 +69,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: 500,
     width: '100%',
     zIndex: 0
+  },
+  metabaseAddButton: {
+    marginLeft: 10,
+    marginRight: 10
   }
 }));
 
@@ -199,6 +207,8 @@ interface IReferenceActivityList {
   docs: any;
   databaseContext: any;
   setActiveDoc: Function;
+  selectedObservations: Array<any>;
+  setSelectedObservations: Function;
 }
 
 const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
@@ -206,8 +216,10 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
 
   const classes = useStyles();
   const history = useHistory();
+  const invasivesApi = useInvasivesApi();
+  const [lastCreatedMetabaseQuery, setLastCreatedMetabaseQuery] = useState([]);
 
-  const [selectedObservations, setSelectedObservations] = useState([]);
+  const {selectedObservations, setSelectedObservations} = props;
 
   const observations = docs.filter((doc: any) => doc.activityType === 'Observation');
   const treatments = docs.filter((doc: any) => doc.activityType === 'Treatment');
@@ -237,29 +249,66 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
     });
   };
 
+  const selectedIds = selectedObservations.map((activity) => '' + activity.id);
+
+  const createMetabaseQuery = async () => {
+    await setLastCreatedMetabaseQuery(selectedIds);
+    const queryCreate: ICreateMetabaseQuery = {
+      // name: 'Test Metabase Query',
+      // description: 'Testing testing',
+      // point_of_interest_ids: [],
+      activity_ids: selectedIds
+    };
+    try {
+      let response = await invasivesApi.createMetabaseQuery(queryCreate);
+      if (response?.activity_query_id && response?.activity_query_name)
+        notifySuccess(databaseContext, `Created a new Metabase Query, with name "${response.activity_query_name}" and ID ${response.activity_query_id}`);
+      else throw response;
+    } catch (error) {
+      notifyError(databaseContext, 'Unable to create new Metabase Query.  There may an issue with your connection to the Metabase API: ' + error);
+      await setLastCreatedMetabaseQuery([]);
+    }
+  };
+
+  const metabaseQuerySubmitted = JSON.stringify(lastCreatedMetabaseQuery) == JSON.stringify(selectedIds);
+
   return (
     <List className={classes.activityList}>
       {observations.length > 0 && (
         <Box mb={3} display="flex" justifyContent="space-between">
           <Typography variant="h5">Observations</Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={!selectedObservations.length}
-            onClick={() => {
-              if (!validateSelectedObservationTypes()) {
-                notifyError(
-                  databaseContext,
-                  `You have selected activities of different subtypes.
-                  Please make sure they are all of the same subtype.`
-                );
-                return;
-              }
+          <Box display="flex" justifyContent="space-between">
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.metabaseAddButton}
+              disabled={!selectedObservations.length || metabaseQuerySubmitted}
+              startIcon={selectedObservations.length && metabaseQuerySubmitted ? <Check /> : undefined}
+              onClick={async (e) => {
+                e.stopPropagation();
+                await createMetabaseQuery();
+              }}>
+              Create Metabase Query
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!selectedObservations.length}
+              onClick={() => {
+                if (!validateSelectedObservationTypes()) {
+                  notifyError(
+                    databaseContext,
+                    `You have selected activities of different subtypes.
+                    Please make sure they are all of the same subtype.`
+                  );
+                  return;
+                }
 
-              navigateToCreateActivityPage();
-            }}>
-            Create Treatment
-          </Button>
+                navigateToCreateActivityPage();
+              }}>
+              Create Treatment
+            </Button>
+          </Box>
         </Box>
       )}
       {observations.map((doc) => (
@@ -313,6 +362,7 @@ const ReferenceActivitiesList: React.FC = () => {
   const [interactiveGeometry, setInteractiveGeometry] = useState([]);
   const [extent, setExtent] = useState(null);
   const [docs, setDocs] = useState<any[]>([]);
+  const [selectedActivities, setSelectedActivities] = useState([]);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
@@ -487,7 +537,13 @@ const ReferenceActivitiesList: React.FC = () => {
       )}
       {!interactiveGeometry.length && <Typography>No activities available of the selected type.</Typography>}
       <br />
-      <ReferenceActivityList docs={docs} databaseContext={databaseContext} setActiveDoc={setActiveDoc} />
+      <ReferenceActivityList
+        docs={docs}
+        databaseContext={databaseContext}
+        setActiveDoc={setActiveDoc}
+        selectedObservations={selectedActivities}
+        setSelectedObservations={setSelectedActivities}
+      />
     </Container>
   );
 };

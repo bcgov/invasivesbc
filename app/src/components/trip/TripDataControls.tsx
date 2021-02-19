@@ -6,10 +6,11 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import {
   IActivitySearchCriteria,
   IPointOfInterestSearchCriteria,
-  IMetabaseQuerySearchCriteria
+  IMetabaseQuerySearchCriteria,
+  ICreateMetabaseQuery
 } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { notifySuccess } from 'utils/NotificationUtils';
+import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

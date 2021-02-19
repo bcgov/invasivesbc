@@ -1,9 +1,21 @@
 import DateFnsUtils from '@date-io/date-fns';
-import { Button, Grid, List, ListItem, makeStyles, Paper, TextField } from '@material-ui/core';
+import moment from 'moment';
+import {
+  Button,
+  Grid,
+  List,
+  ListItem,
+  makeStyles,
+  MenuItem,
+  Paper,
+  Select,
+  TextField
+} from '@material-ui/core';
 import { Add, DeleteForever } from '@material-ui/icons';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 
 interface IMetabaseChoices {
@@ -20,7 +32,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2)
   },
   metabaseSearchField: {
-    width: '250px'
+    width: 'fit-content',
+    minWidth: 200
   },
   metabaseFilter: {
     flexDirection: 'column'
@@ -34,13 +47,17 @@ export const MetabaseSearch: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const databaseChangesContext = useContext(DatabaseChangesContext);
   const [metabaseChoices, setMetabaseChoices] = useState([]);
+  const [metabaseOptions, setMetabaseOptions] = useState([]);
+  const invasivesApi = useInvasivesApi();
 
   const getMetabaseChoicesFromTrip = useCallback(async () => {
+
     let docs = await databaseContext.database.find({
       selector: {
         _id: 'trip'
       }
     });
+
     if (docs.docs.length) {
       let tripDoc = docs.docs[0];
       if (tripDoc.metabaseChoices) {
