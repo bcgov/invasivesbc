@@ -66,12 +66,45 @@ export const MetabaseSearch: React.FC<any> = (props) => {
     }
   }, [databaseContext.database]);
 
+  const getMetabaseQueryOptions = useCallback(async () => {
+
+    let docs = await databaseContext.database.find({
+      selector: {
+        _id: 'trip'
+      }
+    });
+
+    if (docs.docs.length) {
+      let tripDoc = docs.docs[0];
+
+      // update metabase query options (rate limited to once per minute so we don't break metabase)
+      if (
+        !tripDoc.metabaseQueryOptionsLastChecked ||
+        moment().diff(tripDoc.metabaseQueryOptionsLastChecked, 'minutes') >= 1
+      ) {
+        let options : Array<object> = await invasivesApi.getMetabaseQueryOptions();
+        await databaseContext.database.upsert('trip', (tripDoc) => {
+          return {
+            ...tripDoc,
+            metabaseQueryOptionsLastChecked: moment().valueOf(),
+            metabaseQueryOptions: options
+          };
+        });
+        setMetabaseOptions(options);
+      } else {
+        if (tripDoc.metabaseQueryOptions)
+          setMetabaseOptions(tripDoc.metabaseQueryOptions);
+      }
+    }
+  }, [databaseContext.database]);
+
   useEffect(() => {
     const updateComponent = () => {
+      getMetabaseQueryOptions();
       getMetabaseChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext, getMetabaseChoicesFromTrip]);
+  }, [databaseChangesContext, getMetabaseChoicesFromTrip, getMetabaseQueryOptions]);
 
   const saveChoices = async (newMetabaseChoices) => {
     await databaseContext.database.upsert('trip', (tripDoc) => {
@@ -106,20 +139,39 @@ export const MetabaseSearch: React.FC<any> = (props) => {
               return (
                 <ListItem key={index}>
                   <Paper className={classes.metabaseRecordsChoice}>
-                    <Grid container spacing={3}>
-                      <Grid item xs={4}>
-                        <div>
-                          <TextField
-                            className={classes.metabaseSearchField}
-                            label="Metabase Query ID"
-                            value={metabaseChoice.metabaseQueryId}
-                            onChange={(e) => {
-                              updateMetabaseChoice({ ...metabaseChoice, metabaseQueryId: e.target.value }, index);
-                            }}
-                          />
-                        </div>
+                    <Grid container spacing={2} direction="row">
+                      <Grid container item xs={8}>
+                        {metabaseOptions && metabaseOptions.length
+                          ? <Select
+                              className={classes.metabaseSearchField}
+                              label="Metabase Query"
+                              id="select"
+                              value={metabaseChoice.metabaseQueryId}
+                              onChange={(e) => {
+                                updateMetabaseChoice({
+                                    ...metabaseChoice,
+                                    metabaseQueryId: '' + e.target.value,
+                                    metabaseQueryName: metabaseOptions
+                                      .filter((option) => option.id === e.target.value)
+                                      .map((option) => option.name)
+                                  },
+                                  index
+                                );
+                              }}
+                            >
+                              {metabaseOptions.map((option) => <MenuItem key={option.id} value={option.id}>{option.name}</MenuItem>)}
+                            </Select>
+                          : <TextField
+                              className={classes.metabaseSearchField}
+                              label="Metabase Query ID"
+                              value={metabaseChoice.metabaseQueryId}
+                              onChange={(e) => {
+                                updateMetabaseChoice({ ...metabaseChoice, metabaseQueryId: e.target.value }, index);
+                              }}
+                            />
+                        }
                       </Grid>
-                      <Grid container item justify="flex-end">
+                      <Grid container item xs={4} justify="flex-end">
                         <Button
                           variant="contained"
                           startIcon={<DeleteForever />}
