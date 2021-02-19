@@ -1185,7 +1185,10 @@
                           }
                         }
                       }
-                    }
+                    },
+                    "required": [
+                      "monitoring_type"
+                    ]
                   }
                 ]
               }
