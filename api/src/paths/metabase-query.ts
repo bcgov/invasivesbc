@@ -195,71 +195,6 @@ export async function closeMetabaseSession(): Promise<any> {
   metabaseSessionTimestamp = undefined;
 }
 
-/*
- description: null,
- archived: false,
- collection_position: null,
- table_id: 11,
- result_metadata:
-  [ [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object],
-    [Object] ],
- creator:
-  { email: 'warren.koch@quartech.com',
-    first_name: 'Warren',
-    last_login: '2021-02-09T01:51:26.846612Z',
-    is_qbnewb: false,
-    is_superuser: true,
-    id: 3,
-    last_name: 'Koch',
-    date_joined: '2021-01-28T22:18:26.938792Z',
-    common_name: 'Warren Koch' },
- can_write: true,
- database_id: 2,
- enable_embedding: false,
- collection_id: null,
- query_type: 'query',
- name: 'Activity Incoming Data, Filtered by Utm Zone',
- dashboard_count: 0,
- creator_id: 3,
- updated_at: '2021-02-08T20:52:11.704815Z',
- made_public_by_id: null,
- embedding_params: null,
- cache_ttl: null,
- dataset_query: { type: 'query', query: [Object], database: 2 },
- id: 10,
- display: 'table',
- visualization_settings:
-  { 'table.pivot_column': 'version',
-    'table.cell_column': 'elevation' },
- collection: null,
- created_at: '2021-02-08T20:50:49.942192Z',
- public_uuid: null }
- */
-
 /**
  * Creates a new Metabase Query, given a list of activity and point-of-interest ids
  *
@@ -357,7 +292,6 @@ function createMetabaseQuery(): RequestHandler {
           }
         };
 
-        console.log(activitiesRequest.data.dataset_query.query);
         activitesResponse = await axios(activitiesRequest);
 
         if (!activitesResponse || !activitesResponse.data) {

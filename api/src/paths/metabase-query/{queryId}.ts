@@ -98,20 +98,8 @@ function getMetabaseQueryResults(): RequestHandler {
           'Content-Type': 'application/json',
           'X-Metabase-Session': session
         },
-        timeout: METABASE_TIMEOUT*METABASE_TIMEOUT
+        timeout: METABASE_TIMEOUT
       });
-
-
-      const response2 = await axios({
-        method: 'get',
-        url: `${METABASE_URL}/api/card/${queryId}`,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Metabase-Session': session
-        },
-        timeout: METABASE_TIMEOUT*METABASE_TIMEOUT
-      });
-      console.log(11111111, response2.data.dataset_query.query.filter);
 
       if (!response || !response.data || !response.data.length) {
         throw {
@@ -119,8 +107,6 @@ function getMetabaseQueryResults(): RequestHandler {
           message: 'Failed to find metabase query with id ' + queryId
         };
       }
-      console.log(response.data);
-      console.log(response2.data);
 
       // extract just the ids from results, so we can re-fetch from the db using our own security layers
       return res.status(200).json({
