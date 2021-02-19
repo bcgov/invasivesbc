@@ -1,4 +1,11 @@
 /*
+  NOTE:
+
+  Need to spread and create new objects anywhere while accessing fields within objects because
+  if the object is mutated then the form field autopopulation will not happen as expected
+*/
+
+/*
   Function that calculates the herbicide dilution rate and specific treatment area
 */
 export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
@@ -54,9 +61,18 @@ export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
   return updatedActivitySubtypeData;
 }
 
+/*
+  Function that calculates the transect line and point data
+
+  Specifically the transect line length and bearing and
+  the transect point utm x/y values based on offset distance
+
+  If biocontrol efficacy transect, also calculates the phen total percentage
+*/
 export function populateTransectLineAndPointData(newSubtypeData: any): any {
   let updatedActivitySubtypeData = { ...newSubtypeData };
 
+  // Can be different keys for the object depending on the transect type, so extract it here
   const transectLinesMatchingKeys = Object.keys(updatedActivitySubtypeData).filter((key) =>
     key.includes('transect_lines')
   );
@@ -66,6 +82,10 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
     return newSubtypeData;
   }
 
+  /*
+    Determine if we are dealing with a biocontrol efficacy/vegetation transect because those cases
+    need to be handled slightly differently
+  */
   const isBiocontrolEfficacyTransect = transectLinesMatchingKeys[0] === 'biocontrol_efficacy_transect_lines';
   const isVegetationTransect = transectLinesMatchingKeys[0] === 'vegetation_transect_lines';
 
@@ -78,6 +98,8 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
 
   transectLinesList.forEach((transectLineObj: any) => {
     const transectLineObjToUpdate = { ...transectLineObj };
+
+    // Can be different keys for the object depending on the transect type, so extract it here
     const transectPointsMatchingKeys = Object.keys(transectLineObjToUpdate).filter((key) =>
       key.includes('transect_points')
     );
@@ -91,7 +113,8 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
       let angle = Math.atan(deltaX / deltaY) * (180 / Math.PI);
 
       /*
-        Because we want the angle relative from the North direction
+        Because we want the angle relative from the North direction, depending on quadrant
+        we have to modify the calculated angle to get the northing version
       */
       if (deltaX > 0 && deltaY < 0) {
         angle = angle + 180;
@@ -124,6 +147,10 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
           const utmX = parseFloat((start_x_utm + ratio * deltaX).toFixed(1));
           const utmY = parseFloat((start_y_utm + ratio * deltaY).toFixed(1));
 
+          /*
+            The utm x and y values are located in a different section of the object if it is
+            a vegetation transect, so access it as required and update the values
+          */
           if (isVegetationTransect) {
             vegetationTransectPoints.utm_x = utmX;
             vegetationTransectPoints.utm_y = utmY;
@@ -133,6 +160,9 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
             transectPointToUpdate.utm_y = utmY;
           }
         } else {
+          /*
+            If one of the fields is no longer filled in, remove autopopulated fields
+          */
           if (isVegetationTransect) {
             delete vegetationTransectPoints.utm_x;
             delete vegetationTransectPoints.utm_y;
