@@ -112,6 +112,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
+  const getRFI = () => {
+    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
+      opacity: 0.8,
+      tms:true
+    });
+  };
+
   const getRegionalDistricts = () => {
     return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
       opacity: 0.4,
@@ -251,6 +258,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const ownership = getOwnership();
     const municipalities = getMunicipalites();
     const regionalDistricts = getRegionalDistricts();
+    const rfi = getRFI();
     
     const overlays = {
       'Placenames': esriPlacenames,
@@ -263,7 +271,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Regional Invasive Species Organization Areas': riso,
       'Natural Resource Districts': nRDistricts,
       'Municipalites': municipalities,
-      'Regional Districts': regionalDistricts
+      'Regional Districts': regionalDistricts,
+      'Road Features Inventory': rfi
     };
 
     mapRef.current.addLayer(esriPlacenames);
