@@ -1,5 +1,4 @@
 import { Button, Tooltip } from '@material-ui/core';
-import { DeleteForever } from '@material-ui/icons';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext } from 'react';
 import WarningIcon from '@material-ui/icons/Warning';

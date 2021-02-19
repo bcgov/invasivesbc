@@ -4,7 +4,6 @@ import {
   AccordionSummary,
   Container,
   Grid,
-  LinearProgress,
   makeStyles,
   Paper,
   Tooltip,

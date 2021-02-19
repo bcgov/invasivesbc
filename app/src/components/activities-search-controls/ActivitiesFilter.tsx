@@ -16,7 +16,6 @@ import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/picker
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import SpeciesTree from './SpeciesInput';
 
 interface IActivityChoices {
   activityType: string;
