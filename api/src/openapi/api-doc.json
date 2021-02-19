@@ -210,39 +210,6 @@
           }
         }
       },
-      "Activity_Transect_InvasivePlantDensity": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Transect_InvasivePlantDensity"
-          }
-        }
-      },
-      "Activity_Transect_FullVegetation": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Transect_FullVegetation"
-          }
-        }
-      },
-      "Activity_Transect_LumpedSpeciesVegetation": {
-        "type": "object",
-        "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_subtype_data": {
-            "$ref": "#/components/schemas/Transect_LumpedSpeciesVegetation"
-          }
-        }
-      },
       "Activity_Transect_BiocontrolEfficacy": {
         "type": "object",
         "properties": {
@@ -251,6 +218,17 @@
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Transect_BiocontrolEfficacy"
+          }
+        }
+      },
+      "Activity_Transect_Vegetation": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Transect_Vegetation"
           }
         }
       },
@@ -1456,62 +1434,22 @@
           }
         }
       },
-      "Transect_FullVegetation": {
-        "title": "Full Vegetation Transect Information",
+      "Transect_Vegetation": {
+        "title": "Vegetation Transect Information",
         "type": "object",
         "required": [
           "transect_data",
-          "full_vegetation_transect_lines"
+          "vegetation_transect_lines"
         ],
         "properties": {
           "transect_data": {
             "$ref": "#/components/schemas/TransectData"
           },
-          "full_vegetation_transect_lines": {
+          "vegetation_transect_lines": {
             "type": "array",
-            "title": "Full Vegetation Transect Lines",
+            "title": "Vegetation Transect Lines",
             "items": {
-              "$ref": "#/components/schemas/FullVegetationTransectLines"
-            }
-          }
-        }
-      },
-      "Transect_InvasivePlantDensity": {
-        "title": "Invasive Plant Density Transect Information",
-        "type": "object",
-        "required": [
-          "transect_data",
-          "invasive_plant_density_transect_lines"
-        ],
-        "properties": {
-          "transect_data": {
-            "$ref": "#/components/schemas/TransectData"
-          },
-          "invasive_plant_density_transect_lines": {
-            "type": "array",
-            "title": "Invasive Plant Density Transect Lines",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlantDensityTransectLines"
-            }
-          }
-        }
-      },
-      "Transect_LumpedSpeciesVegetation": {
-        "title": "Lumped Species Vegetation Transect Information",
-        "type": "object",
-        "required": [
-          "transect_data",
-          "lumped_species_vegetation_transect_lines"
-        ],
-        "properties": {
-          "transect_data": {
-            "$ref": "#/components/schemas/TransectData"
-          },
-          "lumped_species_vegetation_transect_lines": {
-            "type": "array",
-            "title": "Lumped Species Vegetation Transect Lines",
-            "items": {
-              "$ref": "#/components/schemas/LumpedSpeciesVegetationTransectLines"
+              "$ref": "#/components/schemas/VegetationTransectLines"
             }
           }
         }
@@ -3500,60 +3438,88 @@
           }
         }
       },
-      "InvasivePlantDensityTransectLines": {
+      "VegetationTransectLines": {
         "type": "object",
         "required": [
           "transect_line",
-          "invasive_plant_density_transect_points"
+          "count_type"
         ],
         "properties": {
           "transect_line": {
             "$ref": "#/components/schemas/TransectLine"
           },
-          "invasive_plant_density_transect_points": {
-            "type": "array",
-            "title": "Transect Points Information",
-            "items": {
-              "$ref": "#/components/schemas/InvasivePlantDensityTransectPoints"
-            }
+          "count_type": {
+            "type": "string",
+            "title": "Count Type",
+            "enum": [
+              "Percent Cover",
+              "Number of Plants",
+              "Daubenmire Classification"
+            ],
+            "x-tooltip-text": "Please specify the count type"
           }
-        }
-      },
-      "FullVegetationTransectLines": {
-        "type": "object",
-        "required": [
-          "transect_line",
-          "full_vegetation_transect_points"
-        ],
-        "properties": {
-          "transect_line": {
-            "$ref": "#/components/schemas/TransectLine"
-          },
-          "full_vegetation_transect_points": {
-            "type": "array",
-            "title": "Transect Points Information",
-            "items": {
-              "$ref": "#/components/schemas/FullVegetationTransectPoints"
-            }
-          }
-        }
-      },
-      "LumpedSpeciesVegetationTransectLines": {
-        "type": "object",
-        "required": [
-          "transect_line",
-          "lumped_species_vegetation_transect_points"
-        ],
-        "properties": {
-          "transect_line": {
-            "$ref": "#/components/schemas/TransectLine"
-          },
-          "lumped_species_vegetation_transect_points": {
-            "type": "array",
-            "title": "Transect Points Information",
-            "items": {
-              "$ref": "#/components/schemas/LumpedSpeciesVegetationTransectPoints"
-            }
+        },
+        "dependencies": {
+          "count_type": {
+            "oneOf": [
+              {
+                "required": [
+                  "vegetation_transect_points_percent_cover"
+                ],
+                "properties": {
+                  "count_type": {
+                    "enum": [
+                      "Percent Cover"
+                    ]
+                  },
+                  "vegetation_transect_points_percent_cover": {
+                    "type": "array",
+                    "title": "Transect Points Information",
+                    "items": {
+                      "$ref": "#/components/schemas/VegetationTransectPointsPercentCover"
+                    }
+                  }
+                }
+              },
+              {
+                "required": [
+                  "vegetation_transect_points_number_plants"
+                ],
+                "properties": {
+                  "count_type": {
+                    "enum": [
+                      "Number of Plants"
+                    ]
+                  },
+                  "vegetation_transect_points_number_plants": {
+                    "type": "array",
+                    "title": "Transect Points Information",
+                    "items": {
+                      "$ref": "#/components/schemas/VegetationTransectPointsNumberPlants"
+                    }
+                  }
+                }
+              },
+              {
+                "required": [
+                  "vegetation_transect_points_daubenmire"
+                ],
+                "properties": {
+                  "count_type": {
+                    "enum": [
+                      "Daubenmire Classification"
+                    ]
+                  },
+                  "vegetation_transect_points_daubenmire": {
+                    "type": "array",
+                    "title": "Transect Points Information",
+                    "items": {
+                      "$ref": "#/components/schemas/VegetationTransectPointsDaubenmire"
+                    }
+                  }
+                }
+              }
+            ]
           }
         }
       },
@@ -3663,30 +3629,290 @@
           }
         }
       },
-      "InvasivePlantDensityTransectPoints": {
+      "VegetationTransectSpeciesNumberPlants": {
         "type": "object",
+        "title": "Vegetation Transect Species",
+        "x-tooltip-text": "Specify your vegetation transect species",
         "properties": {
-          "offset_distance": {
-            "type": "number",
-            "title": "Offset Distance"
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "type": "object",
+              "required": [
+                "invasive_plant_code",
+                "number_plants"
+              ],
+              "properties": {
+                "invasive_plant_code": {
+                  "$ref": "#/components/schemas/InvasivePlantType",
+                  "x-tooltip-text": "Invasive plant species at this location"
+                },
+                "number_plants": {
+                  "$ref": "#/components/schemas/NumberPlants",
+                  "x-tooltip-text": "Number of plants of this species"
+                }
+              }
+            }
+          },
+          "lumped_species": {
+            "type": "array",
+            "title": "Lumped Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "lumped_species_type",
+                "number_plants"
+              ],
+              "properties": {
+                "lumped_species_type": {
+                  "$ref": "#/components/schemas/LumpedSpeciesType",
+                  "x-tooltip-text": "Lumped species at this location"
+                },
+                "number_plants": {
+                  "$ref": "#/components/schemas/NumberPlants",
+                  "x-tooltip-text": "Number of plants of this species"
+                }
+              }
+            }
+          },
+          "custom_species": {
+            "type": "array",
+            "title": "Custom Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "custom_species_type",
+                "number_plants"
+              ],
+              "properties": {
+                "custom_species_type": {
+                  "$ref": "#/components/schemas/CustomSpeciesType",
+                  "x-tooltip-text": "Custom species at this location"
+                },
+                "number_plants": {
+                  "$ref": "#/components/schemas/NumberPlants",
+                  "x-tooltip-text": "Number of plants of this species"
+                }
+              }
+            }
           }
         }
       },
-      "FullVegetationTransectPoints": {
+      "VegetationTransectSpeciesDaubenmire": {
         "type": "object",
+        "title": "Vegetation Transect Species",
+        "x-tooltip-text": "Specify your vegetation transect species",
         "properties": {
-          "offset_distance": {
-            "type": "number",
-            "title": "Offset Distance"
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "type": "object",
+              "required": [
+                "invasive_plant_code",
+                "daubenmire_classification"
+              ],
+              "properties": {
+                "invasive_plant_code": {
+                  "$ref": "#/components/schemas/InvasivePlantType",
+                  "x-tooltip-text": "Invasive plant species at this location"
+                },
+                "daubenmire_classification": {
+                  "$ref": "#/components/schemas/DaubenmireClassification",
+                  "x-tooltip-text": "Daubenmire classification for this species"
+                }
+              }
+            }
+          },
+          "lumped_species": {
+            "type": "array",
+            "title": "Lumped Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "lumped_species_type",
+                "daubenmire_classification"
+              ],
+              "properties": {
+                "lumped_species_type": {
+                  "$ref": "#/components/schemas/LumpedSpeciesType",
+                  "x-tooltip-text": "Lumped species at this location"
+                },
+                "daubenmire_classification": {
+                  "$ref": "#/components/schemas/DaubenmireClassification",
+                  "x-tooltip-text": "Daubenmire classification for this species"
+                }
+              }
+            }
+          },
+          "custom_species": {
+            "type": "array",
+            "title": "Custom Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "custom_species_type",
+                "daubenmire_classification"
+              ],
+              "properties": {
+                "custom_species_type": {
+                  "$ref": "#/components/schemas/CustomSpeciesType",
+                  "x-tooltip-text": "Custom species at this location"
+                },
+                "daubenmire_classification": {
+                  "$ref": "#/components/schemas/DaubenmireClassification",
+                  "x-tooltip-text": "Daubenmire classification for this species"
+                }
+              }
+            }
           }
         }
       },
-      "LumpedSpeciesVegetationTransectPoints": {
+      "VegetationTransectSpeciesPercentCover": {
         "type": "object",
+        "title": "Vegetation Transect Species",
+        "x-tooltip-text": "Specify your vegetation transect species",
         "properties": {
+          "invasive_plants": {
+            "type": "array",
+            "title": "Invasive Plants",
+            "items": {
+              "type": "object",
+              "required": [
+                "invasive_plant_code",
+                "percent_covered"
+              ],
+              "properties": {
+                "invasive_plant_code": {
+                  "$ref": "#/components/schemas/InvasivePlantType",
+                  "x-tooltip-text": "Invasive plant species at this location"
+                },
+                "percent_covered": {
+                  "$ref": "#/components/schemas/PercentCovered",
+                  "x-tooltip-text": "Percent of area covered by this species"
+                }
+              }
+            }
+          },
+          "lumped_species": {
+            "type": "array",
+            "title": "Lumped Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "lumped_species_type",
+                "percent_covered"
+              ],
+              "properties": {
+                "lumped_species_type": {
+                  "$ref": "#/components/schemas/LumpedSpeciesType",
+                  "x-tooltip-text": "Lumped species at this location"
+                },
+                "percent_covered": {
+                  "$ref": "#/components/schemas/PercentCovered",
+                  "x-tooltip-text": "Percent of area covered by this species"
+                }
+              }
+            }
+          },
+          "custom_species": {
+            "type": "array",
+            "title": "Custom Species",
+            "items": {
+              "type": "object",
+              "required": [
+                "custom_species_type",
+                "percent_covered"
+              ],
+              "properties": {
+                "custom_species_type": {
+                  "$ref": "#/components/schemas/CustomSpeciesType",
+                  "x-tooltip-text": "Custom species at this location"
+                },
+                "percent_covered": {
+                  "$ref": "#/components/schemas/PercentCovered",
+                  "x-tooltip-text": "Percent of area covered by this species"
+                }
+              }
+            }
+          }
+        }
+      },
+      "VegetationTransectPointsPercentCover": {
+        "type": "object",
+        "required": [
+          "vegetation_transect_points",
+          "vegetation_transect_species"
+        ],
+        "properties": {
+          "vegetation_transect_points": {
+            "$ref": "#/components/schemas/VegetationTransectPoints"
+          },
+          "vegetation_transect_species": {
+            "$ref": "#/components/schemas/VegetationTransectSpeciesPercentCover"
+          }
+        }
+      },
+      "VegetationTransectPointsNumberPlants": {
+        "type": "object",
+        "required": [
+          "vegetation_transect_points",
+          "vegetation_transect_species"
+        ],
+        "properties": {
+          "vegetation_transect_points": {
+            "$ref": "#/components/schemas/VegetationTransectPoints"
+          },
+          "vegetation_transect_species": {
+            "$ref": "#/components/schemas/VegetationTransectSpeciesNumberPlants"
+          }
+        }
+      },
+      "VegetationTransectPointsDaubenmire": {
+        "type": "object",
+        "required": [
+          "vegetation_transect_points",
+          "vegetation_transect_species"
+        ],
+        "properties": {
+          "vegetation_transect_points": {
+            "$ref": "#/components/schemas/VegetationTransectPoints"
+          },
+          "vegetation_transect_species": {
+            "$ref": "#/components/schemas/VegetationTransectSpeciesDaubenmire"
+          }
+        }
+      },
+      "VegetationTransectPoints": {
+        "type": "object",
+        "title": "Vegetation Transect Points",
+        "required": [
+          "sample_point_id",
+          "offset_distance",
+          "utm_x",
+          "utm_y"
+        ],
+        "properties": {
+          "sample_point_id": {
+            "type": "string",
+            "title": "Sample Point ID",
+            "x-tooltip-text": "Provide a unique transect point identifier (ie ABC123)"
+          },
           "offset_distance": {
             "type": "number",
-            "title": "Offset Distance"
+            "title": "Offset Distance",
+            "x-tooltip-text": "Provide the offset distance from the start point"
+          },
+          "utm_x": {
+            "type": "number",
+            "title": "Offset Point UTM X",
+            "x-tooltip-text": "UTM X point at the offset distance"
+          },
+          "utm_y": {
+            "type": "number",
+            "title": "Offset Point UTM Y",
+            "x-tooltip-text": "UTM Y point at the offset distance"
           }
         }
       },
@@ -3906,6 +4132,53 @@
             "maximum": 100,
             "x-tooltip-text": "Total percentage (sum of all 6 levels)"
           }
+        }
+      },
+      "PercentCovered": {
+        "type": "number",
+        "title": "Percent Covered",
+        "maximum": 100
+      },
+      "NumberPlants": {
+        "type": "number",
+        "title": "Number of Plants"
+      },
+      "LumpedSpeciesType": {
+        "type": "string",
+        "title": "Lumped Species Type",
+        "enum": [
+          "Native Forbs",
+          "Grasses",
+          "Bare Ground",
+          "Shrubs/Trees",
+          "Bryophytes",
+          "Litter/Feces"
+        ]
+      },
+      "InvasivePlantType": {
+        "type": "string",
+        "title": "Invasive Plant",
+        "x-enum-code": {
+          "x-enum-code-category-name": "invasives",
+          "x-enum-code-header-name": "invasive_plant_code",
+          "x-enum-code-name": "code_name",
+          "x-enum-code-text": "code_description",
+          "x-enum-code-sort-order": "code_sort_order"
+        }
+      },
+      "CustomSpeciesType": {
+        "type": "string",
+        "title": "Custom Species Type"
+      },
+      "DaubenmireClassification": {
+        "type": "string",
+        "title": "Daubenmire Classification",
+        "x-enum-code": {
+          "x-enum-code-category-name": "invasives",
+          "x-enum-code-header-name": "daubenmire_cover_code",
+          "x-enum-code-name": "code_name",
+          "x-enum-code-text": "code_description",
+          "x-enum-code-sort-order": "code_sort_order"
         }
       },
       "NetTrapSpecifications": {

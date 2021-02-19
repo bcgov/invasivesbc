@@ -406,89 +406,179 @@ const Transect_FireMonitoring = {
   }
 };
 
-const InvasivePlantDensityTransectPoints = {
-  offset_distance: {}
+const VegetationTransectPoints = {
+  sample_point_id: {},
+  offset_distance: {},
+  utm_x: {
+    'ui:readonly': true
+  },
+  utm_y: {
+    'ui:readonly': true
+  }
 };
 
-const InvasivePlantDensityTransectLines = {
+const InvasivePlantsPercentCover = {
+  invasive_plant_code: {},
+  percent_covered: {}
+};
+
+const InvasivePlantsNumberPlants = {
+  invasive_plant_code: {},
+  number_plants: {}
+};
+
+const InvasivePlantsDaubenmire = {
+  invasive_plant_code: {},
+  daubenmire_classification: {}
+};
+
+const LumpedSpeciesNumberPlants = {
+  lumped_species_type: {},
+  number_plants: {}
+};
+
+const LumpedSpeciesPercentCover = {
+  lumped_species_type: {},
+  percent_covered: {}
+};
+
+const LumpedSpeciesDaubenmire = {
+  lumped_species_type: {},
+  daubenmire_classification: {}
+};
+
+const CustomSpeciesPercentCover = {
+  custom_species_type: {},
+  percent_covered: {}
+};
+
+const CustomSpeciesNumberPlants = {
+  custom_species_type: {},
+  number_plants: {}
+};
+
+const CustomSpeciesDaubenmire = {
+  custom_species_type: {},
+  daubenmire_classification: {}
+};
+
+const VegetationTransectSpeciesPercentCover = {
+  invasive_plants: {
+    items: {
+      ...InvasivePlantsPercentCover
+    }
+  },
+  lumped_species: {
+    items: {
+      ...LumpedSpeciesPercentCover
+    }
+  },
+  custom_species: {
+    items: {
+      ...CustomSpeciesPercentCover
+    }
+  }
+};
+
+const VegetationTransectSpeciesNumberPlants = {
+  invasive_plants: {
+    items: {
+      ...InvasivePlantsNumberPlants
+    }
+  },
+  lumped_species: {
+    items: {
+      ...LumpedSpeciesNumberPlants
+    }
+  },
+  custom_species: {
+    items: {
+      ...CustomSpeciesNumberPlants
+    }
+  }
+};
+
+const VegetationTransectSpeciesDaubenmire = {
+  invasive_plants: {
+    items: {
+      ...InvasivePlantsDaubenmire
+    }
+  },
+  lumped_species: {
+    items: {
+      ...LumpedSpeciesDaubenmire
+    }
+  },
+  custom_species: {
+    items: {
+      ...CustomSpeciesDaubenmire
+    }
+  }
+};
+
+const VegetationTransectPointsPercentCover = {
+  vegetation_transect_points: {
+    ...FourColumnStyle,
+    ...VegetationTransectPoints
+  },
+  vegetation_transect_species: {
+    ...ThreeColumnStyle,
+    ...VegetationTransectSpeciesPercentCover
+  }
+};
+
+const VegetationTransectPointsNumberPlants = {
+  vegetation_transect_points: {
+    ...FourColumnStyle,
+    ...VegetationTransectPoints
+  },
+  vegetation_transect_species: {
+    ...ThreeColumnStyle,
+    ...VegetationTransectSpeciesNumberPlants
+  }
+};
+
+const VegetationTransectPointsDaubenmire = {
+  vegetation_transect_points: {
+    ...FourColumnStyle,
+    ...VegetationTransectPoints
+  },
+  vegetation_transect_species: {
+    ...ThreeColumnStyle,
+    ...VegetationTransectSpeciesDaubenmire
+  }
+};
+
+const VegetationTransectLines = {
   transect_line: {
     ...TwoColumnStyle,
     ...TransectLine
   },
-  invasive_plant_density_transect_points: {
+  vegetation_transect_points_percent_cover: {
     items: {
-      ...ThreeColumnStyle,
-      ...InvasivePlantDensityTransectPoints
+      ...VegetationTransectPointsPercentCover
+    }
+  },
+  vegetation_transect_points_number_plants: {
+    items: {
+      ...VegetationTransectPointsNumberPlants
+    }
+  },
+  vegetation_transect_points_daubenmire: {
+    items: {
+      ...VegetationTransectPointsDaubenmire
     }
   }
 };
 
-const Transect_InvasivePlantDensity = {
+const Transect_Vegetation = {
   transect_data: {
     ...ThreeColumnStyle,
     ...TransectData
   },
-  invasive_plant_density_transect_lines: {
+  vegetation_transect_lines: {
     items: {
-      ...InvasivePlantDensityTransectLines
-    }
-  }
-};
-
-const FullVegetationTransectPoints = {
-  offset_distance: {}
-};
-
-const FullVegetationTransectLines = {
-  transect_line: {
-    ...TwoColumnStyle,
-    ...TransectLine
-  },
-  full_vegetation_transect_points: {
-    items: {
-      ...ThreeColumnStyle,
-      ...FullVegetationTransectPoints
-    }
-  }
-};
-
-const Transect_FullVegetation = {
-  transect_data: {
-    ...ThreeColumnStyle,
-    ...TransectData
-  },
-  full_vegetation_transect_lines: {
-    items: {
-      ...FullVegetationTransectLines
-    }
-  }
-};
-
-const LumpedSpeciesVegetationTransectPoints = {
-  offset_distance: {}
-};
-
-const LumpedSpeciesVegetationTransectLines = {
-  transect_line: {
-    ...TwoColumnStyle,
-    ...TransectLine
-  },
-  lumped_species_vegetation_transect_points: {
-    items: {
-      ...ThreeColumnStyle,
-      ...LumpedSpeciesVegetationTransectPoints
-    }
-  }
-};
-
-const Transect_LumpedSpeciesVegetation = {
-  transect_data: {
-    ...ThreeColumnStyle,
-    ...TransectData
-  },
-  lumped_species_vegetation_transect_lines: {
-    items: {
-      ...LumpedSpeciesVegetationTransectLines
+      ...VegetationTransectLines
     }
   }
 };
@@ -811,9 +901,7 @@ const BaseUISchemaComponents = {
   Observation_PlantTerrestrial,
   Observation_PlantAquatic,
   Transect_FireMonitoring,
-  Transect_InvasivePlantDensity,
-  Transect_FullVegetation,
-  Transect_LumpedSpeciesVegetation,
+  Transect_Vegetation,
   Transect_BiocontrolEfficacy,
   Dispersal_BiologicalDispersal,
   Treatment,

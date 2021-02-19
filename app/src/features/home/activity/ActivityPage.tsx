@@ -18,6 +18,7 @@ import {
   getJurisdictionPercentValidator,
   getInvasivePlantsValidator
 } from 'rjsf/business-rules/customValidation';
+import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import {
   populateHerbicideDilutionAndArea,
   populateTransectLineAndPointData
@@ -418,6 +419,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             getJurisdictionPercentValidator(),
             getInvasivePlantsValidator(linkedActivity)
           ])}
+          customErrorTransformer={getCustomErrorTransformer()}
           classes={classes}
           activity={doc}
           linkedActivity={linkedActivity}

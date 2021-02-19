@@ -201,13 +201,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     const convertLineStringToPoly = (aGeo: any) => {
       if (aGeo.geometry.type === 'LineString') {
-        const shouldConvertToPoly = window.confirm('Convert to buffered polygon?');
-
-        if (!shouldConvertToPoly) {
-          return aGeo;
-        }
-
-        const buffer = prompt('Enter buffer width (total) in meters', '5');
+        const buffer = prompt('Enter buffer width (total) in meters', '1');
         const buffered = turf.buffer(aGeo.geometry, parseInt(buffer) / 1000, { units: 'kilometers', steps: 1 });
         const result = turf.featureCollection([buffered, aGeo.geometry]);
 

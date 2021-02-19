@@ -146,6 +146,46 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
   };
 }
 
+const determineErrorStateOnTransectPoint = (
+  isVegetationTransect: boolean,
+  transectPoint: any,
+  transectLineLength: number,
+  errorState: any
+) => {
+  if (isVegetationTransect) {
+    // If offset distance field has not been entered, no need to validate anything
+    if (!transectPoint.vegetation_transect_points.offset_distance) {
+      return null;
+    }
+    // Clear all existing errors to validate properly at start
+    errorState.vegetation_transect_points['offset_distance'].__errors = [];
+  } else {
+    // If offset distance field has not been entered, no need to validate anything
+    if (!transectPoint.offset_distance) {
+      return null;
+    }
+    // Clear all existing errors to validate properly at start
+    errorState['offset_distance'].__errors = [];
+  }
+
+  const transectPointOffsetDistance = isVegetationTransect
+    ? transectPoint.vegetation_transect_points.offset_distance
+    : transectPoint.offset_distance;
+
+  if (transectPointOffsetDistance > transectLineLength) {
+    const errorMessage =
+      'Offset distance for a transect point cannot exceed the length of the associated transect line';
+
+    if (isVegetationTransect) {
+      errorState.vegetation_transect_points['offset_distance'].addError(errorMessage);
+    } else {
+      errorState['offset_distance'].addError(errorMessage);
+    }
+  }
+
+  return errorState;
+};
+
 export function getTransectOffsetDistanceValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (!formData || !formData.activity_subtype_data) {
@@ -161,12 +201,14 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
       return errors;
     }
 
+    const isVegetationTransect = transectLinesMatchingKeys[0] === 'vegetation_transect_lines';
     const transectLinesList = [...formData.activity_subtype_data[transectLinesMatchingKeys[0]]];
 
     transectLinesList.forEach((transectLineObj: any, lineIndex: number) => {
       const transectLineLength = transectLineObj?.transect_line?.transect_length;
       const transectPointsMatchingKeys = Object.keys(transectLineObj).filter((key) => key.includes('transect_points'));
 
+      // If transect points field is not present at all
       if (!transectPointsMatchingKeys.length) {
         return errors;
       }
@@ -174,16 +216,20 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
       const transectPointsList = transectLineObj[transectPointsMatchingKeys[0]];
 
       transectPointsList.forEach((transectPoint: any, pointIndex: any) => {
-        errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][
-          pointIndex
-        ]['offset_distance'].__errors = [];
-
-        if (transectPoint.offset_distance > transectLineLength) {
+        let errorState =
           errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][
             pointIndex
-          ]['offset_distance'].addError(
-            'Offset distance for a transect point cannot exceed the length of the associated transect line'
-          );
+          ];
+
+        errorState = determineErrorStateOnTransectPoint(
+          isVegetationTransect,
+          transectPoint,
+          transectLineLength,
+          errorState
+        );
+
+        if (!errorState) {
+          return errors;
         }
       });
     });

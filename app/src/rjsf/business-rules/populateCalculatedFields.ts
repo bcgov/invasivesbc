@@ -67,6 +67,7 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
   }
 
   const isBiocontrolEfficacyTransect = transectLinesMatchingKeys[0] === 'biocontrol_efficacy_transect_lines';
+  const isVegetationTransect = transectLinesMatchingKeys[0] === 'vegetation_transect_lines';
 
   /*
     Otherwise, check to see if transect lines fields have been populated
@@ -77,14 +78,14 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
 
   transectLinesList.forEach((transectLineObj: any) => {
     const transectLineObjToUpdate = { ...transectLineObj };
+    const transectPointsMatchingKeys = Object.keys(transectLineObjToUpdate).filter((key) =>
+      key.includes('transect_points')
+    );
+
     const transectLine = { ...transectLineObjToUpdate.transect_line };
     const { start_x_utm, end_x_utm, start_y_utm, end_y_utm } = transectLine;
     const deltaX = end_x_utm - start_x_utm;
     const deltaY = end_y_utm - start_y_utm;
-
-    const transectPointsMatchingKeys = Object.keys(transectLineObjToUpdate).filter((key) =>
-      key.includes('transect_points')
-    );
 
     if (start_x_utm && end_x_utm && start_y_utm && end_y_utm) {
       let angle = Math.atan(deltaX / deltaY) * (180 / Math.PI);
@@ -115,16 +116,31 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
 
       transectPointsList.forEach((transectPointObj: any) => {
         const transectPointToUpdate = { ...transectPointObj };
-        const { offset_distance } = transectPointToUpdate;
+        const vegetationTransectPoints = { ...transectPointToUpdate.vegetation_transect_points };
+        const { offset_distance } = vegetationTransectPoints || transectPointToUpdate;
 
         if (offset_distance && offset_distance <= transectLine.transect_length) {
           const ratio = offset_distance / transectLine.transect_length;
+          const utmX = parseFloat((start_x_utm + ratio * deltaX).toFixed(1));
+          const utmY = parseFloat((start_y_utm + ratio * deltaY).toFixed(1));
 
-          transectPointToUpdate.utm_x = parseFloat((start_x_utm + ratio * deltaX).toFixed(1));
-          transectPointToUpdate.utm_y = parseFloat((start_y_utm + ratio * deltaY).toFixed(1));
+          if (isVegetationTransect) {
+            vegetationTransectPoints.utm_x = utmX;
+            vegetationTransectPoints.utm_y = utmY;
+            transectPointToUpdate.vegetation_transect_points = vegetationTransectPoints;
+          } else {
+            transectPointToUpdate.utm_x = utmX;
+            transectPointToUpdate.utm_y = utmY;
+          }
         } else {
-          delete transectPointToUpdate.utm_x;
-          delete transectPointToUpdate.utm_y;
+          if (isVegetationTransect) {
+            delete vegetationTransectPoints.utm_x;
+            delete vegetationTransectPoints.utm_y;
+            transectPointToUpdate.vegetation_transect_points = vegetationTransectPoints;
+          } else {
+            delete transectPointToUpdate.utm_x;
+            delete transectPointToUpdate.utm_y;
+          }
         }
 
         /*
