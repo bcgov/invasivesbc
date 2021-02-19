@@ -151,7 +151,7 @@ export const useInvasivesApi = () => {
    */
   const getMetabaseQueryOptions = async (): Promise<any> => {
     const { data } = await api.get('/api/metabase-query');
-  
+
     return data.options;
   };
 

@@ -208,7 +208,6 @@ export interface IMetabaseQuerySearchCriteria {
   search_feature?: Feature;
 }
 
-
 /**
  * Create Metabase Query post body
  *

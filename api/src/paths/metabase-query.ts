@@ -9,7 +9,8 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('metabase-query');
 
-export const METABASE_URL: string = process.env.METABASE_URL || 'https://metabase-7068ad-dev.apps.silver.devops.gov.bc.ca';
+export const METABASE_URL: string =
+  process.env.METABASE_URL || 'https://metabase-7068ad-dev.apps.silver.devops.gov.bc.ca';
 export const METABASE_USER: string = process.env.METABASE_USER || 'hello';
 export const METABASE_PASS: string = process.env.METABASE_PASS || 'world';
 export const METABASE_COLLECTION_ID: any = process.env.METABASE_COLLECTION_ID || 'root';
@@ -156,8 +157,7 @@ GET.apiDoc = {
  * @return {string}
  */
 export async function getMetabaseSession(): Promise<any> {
-  if (metabaseSession && moment().valueOf() < metabaseSessionTimestamp + METABASE_TIMEOUT)
-    return metabaseSession;
+  if (metabaseSession && moment().valueOf() < metabaseSessionTimestamp + METABASE_TIMEOUT) return metabaseSession;
 
   const response = await axios({
     method: 'post',
@@ -205,12 +205,7 @@ function createMetabaseQuery(): RequestHandler {
     defaultLog.debug({ label: 'metabase', message: 'createMetabaseQuery', body: req.body });
 
     try {
-      let {
-        name,
-        description,
-        activity_ids,
-        point_of_interest_ids
-      } = req?.body;
+      let { name, description, activity_ids, point_of_interest_ids } = req?.body;
       let activitesResponse, poiResponse;
 
       if (!activity_ids && !point_of_interest_ids) {
@@ -221,16 +216,13 @@ function createMetabaseQuery(): RequestHandler {
       }
 
       // sanitize and remove duplicates from the lists, just in case:
-      activity_ids = activity_ids && activity_ids.length
-        ? Array.from(new Set(activity_ids))
-        : [];
-      point_of_interest_ids = point_of_interest_ids && point_of_interest_ids.length
-        ? Array.from(new Set(point_of_interest_ids))
-        : [];
+      activity_ids = activity_ids && activity_ids.length ? Array.from(new Set(activity_ids)) : [];
+      point_of_interest_ids =
+        point_of_interest_ids && point_of_interest_ids.length ? Array.from(new Set(point_of_interest_ids)) : [];
 
       const session = await getMetabaseSession();
 
-      const todaysDateTime = moment().format("YYYY-MM-DD HH:mm:ss");
+      const todaysDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
       const METABASE_DATABASE_ID = 2;
       const ACTIVITIES_METABASE_SOURCE_TABLE_ID = 11;
       const ACTIVITIES_METABASE_QUERY_FIELD_ID = 42;
@@ -238,7 +230,7 @@ function createMetabaseQuery(): RequestHandler {
       const POI_METABASE_SOURCE_TABLE_ID = 21;
       const POI_METABASE_QUERY_FIELD_ID = 215;
 
-      const request : AxiosRequestConfig = {
+      const request: AxiosRequestConfig = {
         method: 'post',
         url: `${METABASE_URL}/api/card`,
         headers: {
@@ -246,15 +238,17 @@ function createMetabaseQuery(): RequestHandler {
           'X-Metabase-Session': session
         },
         data: {
-          "description value": description ? description : `Custom InvasivesBC Query, created at time: ${todaysDateTime}`,
+          'description value': description
+            ? description
+            : `Custom InvasivesBC Query, created at time: ${todaysDateTime}`,
           dataset_query: {
             type: 'query',
             database: METABASE_DATABASE_ID
           },
           display: 'table',
           visualization_settings: {
-            "table.pivot_column": "QUANTITY",
-            "table.cell_column": "SUBTOTAL"
+            'table.pivot_column': 'QUANTITY',
+            'table.cell_column': 'SUBTOTAL'
           },
           collection_position: 1,
           result_metadata: null,
@@ -265,7 +259,7 @@ function createMetabaseQuery(): RequestHandler {
       };
 
       if (activity_ids && activity_ids.length) {
-        const activitiesRequest : AxiosRequestConfig = {
+        const activitiesRequest: AxiosRequestConfig = {
           ...request,
           data: {
             ...request.data,
@@ -276,14 +270,16 @@ function createMetabaseQuery(): RequestHandler {
                 'source-table': ACTIVITIES_METABASE_SOURCE_TABLE_ID,
                 filter: [
                   'and',
-                  [ // row is IN (...activity_ids)
+                  [
+                    // row is IN (...activity_ids)
                     '=',
-                    [ 'field-id', ACTIVITIES_METABASE_QUERY_FIELD_ID ],
+                    ['field-id', ACTIVITIES_METABASE_QUERY_FIELD_ID],
                     ...activity_ids
                   ],
-                  [ // row deleted_date IS NULL
+                  [
+                    // row deleted_date IS NULL
                     'is-null',
-                    [ 'field-id', ACTIVITIES_METABASE_DELETED_DATE_FIELD_ID ]
+                    ['field-id', ACTIVITIES_METABASE_DELETED_DATE_FIELD_ID]
                   ]
                 ],
                 limit: SEARCH_LIMIT_MAX
@@ -303,7 +299,7 @@ function createMetabaseQuery(): RequestHandler {
       }
 
       if (point_of_interest_ids && point_of_interest_ids.length) {
-        const poiRequest : AxiosRequestConfig = {
+        const poiRequest: AxiosRequestConfig = {
           ...request,
           data: {
             ...request.data,
@@ -314,9 +310,10 @@ function createMetabaseQuery(): RequestHandler {
                 'source-table': POI_METABASE_SOURCE_TABLE_ID,
                 filter: [
                   'and',
-                  [ // row is IN (...point_of_interest_ids)
+                  [
+                    // row is IN (...point_of_interest_ids)
                     '=',
-                    [ 'field-id', POI_METABASE_QUERY_FIELD_ID ],
+                    ['field-id', POI_METABASE_QUERY_FIELD_ID],
                     ...point_of_interest_ids
                   ]
                 ],
@@ -339,7 +336,7 @@ function createMetabaseQuery(): RequestHandler {
         activity_query_id: activitesResponse?.data?.id,
         activity_query_name: activitesResponse?.data?.name,
         point_of_interest_query_id: poiResponse?.data?.id,
-        point_of_interest_query_name: poiResponse?.data?.name,
+        point_of_interest_query_name: poiResponse?.data?.name
       });
     } catch (error) {
       // reset session on error (just in case):

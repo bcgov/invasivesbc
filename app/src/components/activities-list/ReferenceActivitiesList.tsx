@@ -25,9 +25,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import {
-  ICreateMetabaseQuery
-} from 'interfaces/useInvasivesApi-interfaces';
+import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
 import ActivityListItem from './ActivityListItem';
 import ActivityListDate from './ActivityListDate';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
@@ -219,7 +217,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
   const invasivesApi = useInvasivesApi();
   const [lastCreatedMetabaseQuery, setLastCreatedMetabaseQuery] = useState([]);
 
-  const {selectedObservations, setSelectedObservations} = props;
+  const { selectedObservations, setSelectedObservations } = props;
 
   const observations = docs.filter((doc: any) => doc.activityType === 'Observation');
   const treatments = docs.filter((doc: any) => doc.activityType === 'Treatment');
@@ -262,10 +260,16 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
     try {
       let response = await invasivesApi.createMetabaseQuery(queryCreate);
       if (response?.activity_query_id && response?.activity_query_name)
-        notifySuccess(databaseContext, `Created a new Metabase Query, with name "${response.activity_query_name}" and ID ${response.activity_query_id}`);
+        notifySuccess(
+          databaseContext,
+          `Created a new Metabase Query, with name "${response.activity_query_name}" and ID ${response.activity_query_id}`
+        );
       else throw response;
     } catch (error) {
-      notifyError(databaseContext, 'Unable to create new Metabase Query.  There may an issue with your connection to the Metabase API: ' + error);
+      notifyError(
+        databaseContext,
+        'Unable to create new Metabase Query.  There may an issue with your connection to the Metabase API: ' + error
+      );
       await setLastCreatedMetabaseQuery([]);
     }
   };
@@ -471,15 +475,18 @@ const ReferenceActivitiesList: React.FC = () => {
         geo.color = '#9E1A1A';
         geo.onClickCallback = () => {
           setSelectedActivities(allButThis);
-        }
+        };
       } else {
         geo.color = geoColors[geo.recordType];
         geo.onClickCallback = () => {
-          setSelectedActivities([...selectedActivities, {
-            id: geo.recordDocID,
-            subtype: geo.recordSubtype
-          }]);
-        }
+          setSelectedActivities([
+            ...selectedActivities,
+            {
+              id: geo.recordDocID,
+              subtype: geo.recordSubtype
+            }
+          ]);
+        };
       }
 
       return geo;
@@ -521,7 +528,6 @@ const ReferenceActivitiesList: React.FC = () => {
     Function to generate interactive geometry data object
   */
   const getInteractiveGeoData = (doc: any) => {
-
     return {
       recordDocID: doc._id,
       recordType: doc.activityType,
@@ -530,10 +536,14 @@ const ReferenceActivitiesList: React.FC = () => {
       color: geoColors[doc.activityType],
       description: `${doc.activityType}: ${doc._id}`,
       popUpComponent: ActivityPopup,
-      onClickCallback: () => {setSelectedActivities([{
-        id: doc._id,
-        subtype: doc.activitySubtype  // TODO subtype?
-      }])}
+      onClickCallback: () => {
+        setSelectedActivities([
+          {
+            id: doc._id,
+            subtype: doc.activitySubtype // TODO subtype?
+          }
+        ]);
+      }
     };
   };
 

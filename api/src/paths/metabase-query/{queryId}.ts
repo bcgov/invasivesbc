@@ -5,7 +5,14 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SEARCH_LIMIT_MAX } from '../../constants/misc';
 import { getLogger } from '../../utils/logger';
-import { getMetabaseSession, closeMetabaseSession, METABASE_URL, METABASE_USER, METABASE_PASS, METABASE_TIMEOUT } from '../metabase-query';
+import {
+  getMetabaseSession,
+  closeMetabaseSession,
+  METABASE_URL,
+  METABASE_USER,
+  METABASE_PASS,
+  METABASE_TIMEOUT
+} from '../metabase-query';
 
 const defaultLog = getLogger('metabase-query/{queryId}');
 

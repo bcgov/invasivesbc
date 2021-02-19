@@ -191,10 +191,10 @@ export const TripDataControls: React.FC = (props) => {
       let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
 
       await databaseContext.database.upsert('trip', (tripDoc) => ({
-        ...tripDoc, 
+        ...tripDoc,
         metabaseQueryNames: {
-         ...trip.metabaseQueryNames,
-         [setOfChoices.metabaseQueryId]: response.name
+          ...trip.metabaseQueryNames,
+          [setOfChoices.metabaseQueryId]: response.name
         }
       }));
 
@@ -273,14 +273,12 @@ export const TripDataControls: React.FC = (props) => {
 
     //fetch what is selected here:
     await setFetching(true);
-    Promise.all([
-      fetchActivities(), fetchPointsOfInterest(), fetchMetabaseQueries()
-    ])
-    .finally(() => setFetching(false))
-    .catch((error) => {
-      setFetching(false);
-      notifyError(databaseContext, 'Error when fetching from network: ' + error);
-    });
+    Promise.all([fetchActivities(), fetchPointsOfInterest(), fetchMetabaseQueries()])
+      .finally(() => setFetching(false))
+      .catch((error) => {
+        setFetching(false);
+        notifyError(databaseContext, 'Error when fetching from network: ' + error);
+      });
   };
 
   return (
