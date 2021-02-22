@@ -16,23 +16,17 @@ const Treatment_ChemicalPlant = {
   activity_id: {
     'ui:readonly': true
   },
-  applicator1_first_name: {},
-  applicator1_last_name: {},
-  applicator1_licence_number: {},
-  applicator2_first_name: {},
-  applicator2_last_name: {},
-  applicator2_licence_number: {},
+  applicator1_name: {},
+  applicator1_license: {},
+  applicator2_name: {},
+  applicator2_license: {},
   pesticide_employer_code: {},
+  pesticide_user_license_number: {},
   chemical_method_code: {},
   temperature: {},
   humidity: {},
   pest_management_plan: {},
-  invasive_plants: {
-    items: {
-      ...BaseUISchemaComponents.InvasivePlants
-    }
-  },
-  treatment_issues_code: {},
+  invasive_plant_code: {},
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide
@@ -41,9 +35,7 @@ const Treatment_ChemicalPlant = {
   wind_speed: {},
   wind_direction_code: {},
   pesticide_use_permit_PUP: {},
-  signage_on_site: {
-    'ui:widget': 'radio'
-  }
+  signage_on_site: {}
 };
 
 const Treatment_ChemicalPlant_BulkEdit = {
@@ -57,11 +49,7 @@ const Treatment_ChemicalPlant_BulkEdit = {
       ...BaseUISchemaComponents.Herbicide
     }
   },
-  invasive_plants: {
-    items: {
-      ...BaseUISchemaComponents.InvasivePlants
-    }
-  }
+  invasive_plant_code: {}
 };
 
 const Activity = {
@@ -78,10 +66,12 @@ const Activity = {
     'ui:readonly': true
   },
   invasive_species_agency_code: {},
-  jurisdiction_code: {},
-  general_comment: {
-    'ui:widget': 'textarea'
+  jurisdictions: {
+    items: {
+      ...BaseUISchemaComponents.Jurisdictions
+    }
   },
+  general_comment: {},
   access_description: {
     'ui:widget': 'textarea'
   },

@@ -15,6 +15,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
   activity: any;
   customValidation?: any;
+  customErrorTransformer?: any;
   isDisabled?: boolean;
   pasteFormData?: Function;
   copyFormData?: Function;
@@ -90,6 +91,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           liveValidate={false}
           showErrorList={true}
           validate={props.customValidation}
+          transformErrors={props.customErrorTransformer}
           autoComplete="off"
           ErrorList={() => {
             return (
@@ -147,6 +149,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           onCopy={props.copyFormData ? () => props.copyFormData() : null}
           onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
           activitySubtype={props.activity.activitySubtype}
+          hideCheckFormForErrors={props.hideCheckFormForErrors}
         />
       </Box>
     </Box>

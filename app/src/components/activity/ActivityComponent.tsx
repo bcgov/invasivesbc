@@ -10,6 +10,7 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
   activity: any;
   linkedActivity?: any;
   customValidation?: any;
+  customErrorTransformer?: any;
   pasteFormData?: Function;
   copyFormData?: Function;
   cloneActivityButton?: Function;

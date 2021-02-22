@@ -1,4 +1,4 @@
-import { CircularProgress, Container, makeStyles, Box, Button } from '@material-ui/core';
+import { CircularProgress, Container, makeStyles, Box, Button, Typography } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
@@ -13,10 +13,17 @@ import {
   getCustomValidator,
   getAreaValidator,
   getWindValidator,
-  getHerbicideApplicationRateValidator
+  getHerbicideApplicationRateValidator,
+  getTransectOffsetDistanceValidator,
+  getJurisdictionPercentValidator,
+  getInvasivePlantsValidator
 } from 'rjsf/business-rules/customValidation';
-import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
-import { notifySuccess } from 'utils/NotificationUtils';
+import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
+import {
+  populateHerbicideDilutionAndArea,
+  populateTransectLineAndPointData
+} from 'rjsf/business-rules/populateCalculatedFields';
+import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { addClonedActivityToDB } from 'utils/addActivity';
@@ -40,6 +47,8 @@ interface IActivityPageProps {
   classes?: any;
   activityId?: string;
   setObservation?: Function;
+  setFormHasErrors?: Function;
+  setParentFormRef?: Function;
 }
 
 //why does this page think I need a map context menu ?
@@ -55,13 +64,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const [extent, setExtent] = useState(null);
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
-  //const [contextMenuState, setContextMenuState] = useState({ isOpen: false });
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
-  const handleContextMenuClose = () => {
-    setContextMenuState({ ...contextMenuState, isOpen: false });
-  };
+    const handleContextMenuClose = () => {
+      setContextMenuState({ ...contextMenuState, isOpen: false });
+    };
   */
 
   const [doc, setDoc] = useState(null);
@@ -159,12 +167,26 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     [databaseContext.database, doc]
   );
 
+  /*
+    Function that runs if the form submit fails and has errors
+  */
+  const onFormSubmitError = () => {
+    notifyError(
+      databaseContext,
+      'There are errors in your form. Please make sure your form contains no errors and try again.'
+    );
+  };
+
   /**
    * Save the form when it is submitted.
    *
    * @param {*} event the form submit event
    */
   const onFormSubmitSuccess = async (event: any, formRef: any) => {
+    if (props.setFormHasErrors) {
+      props.setFormHasErrors(false);
+    }
+
     const updatedFormValues = {
       formData: event.formData,
       status: ActivityStatus.EDITED,
@@ -193,7 +215,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, async (event: any) => {
-      const updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
       const updatedFormValues = {
         formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
@@ -301,20 +324,42 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     );
   };
 
+  /*
+    Function to extract linked record id from record if it exists
+    and then set the linkedActivity in state for reference within
+    the form as an accordion and for population of certain fields later/validation
+  */
+  const handleRecordLinking = async (updatedDoc: any) => {
+    let linkedRecordId: string = null;
+
+    if (updatedDoc.activitySubtype.includes('ChemicalPlant')) {
+      linkedRecordId = updatedDoc.formData.activity_subtype_data.activity_id;
+    } else if (
+      ['Treatment', 'Monitoring'].includes(updatedDoc.activityType) &&
+      updatedDoc.activitySubtype.includes('Plant')
+    ) {
+      linkedRecordId = updatedDoc.formData.activity_type_data.activity_id;
+    }
+
+    if (linkedRecordId) {
+      const linkedRecordActivityResults = await getActivityResultsFromDB(linkedRecordId);
+      setLinkedActivity(linkedRecordActivityResults.docs[0]);
+    }
+  };
+
   useEffect(() => {
     const getActivityData = async () => {
       const activityResults = await getActivityResultsFromDB(props.activityId || null);
 
+      if (!activityResults) {
+        setIsLoading(false);
+        return;
+      }
+
       const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
 
-      if (updatedDoc.activityType === 'Monitoring') {
-        const linkedRecordActivityResults = await getActivityResultsFromDB(
-          updatedDoc.formData.activity_type_data.activity_id
-        );
-
-        setLinkedActivity(linkedRecordActivityResults.docs[0]);
-      }
+      await handleRecordLinking(updatedDoc);
 
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
@@ -328,7 +373,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   }, [databaseContext, isCloned]);
 
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || !doc) {
       return;
     }
 
@@ -336,7 +381,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   }, [geometry, isLoading, saveGeometry]);
 
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || !doc) {
       return;
     }
 
@@ -344,7 +389,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   }, [extent, isLoading, saveExtent]);
 
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || !doc) {
       return;
     }
 
@@ -363,26 +408,45 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   return (
     <Container className={props.classes.container}>
-      <ActivityComponent
-        customValidation={getCustomValidator([
-          getAreaValidator(doc.activitySubtype),
-          getWindValidator(doc.activitySubtype),
-          getHerbicideApplicationRateValidator()
-        ])}
-        classes={classes}
-        activity={doc}
-        linkedActivity={linkedActivity}
-        onFormChange={onFormChange}
-        onFormSubmitSuccess={onFormSubmitSuccess}
-        photoState={{ photos, setPhotos }}
-        mapId={doc._id}
-        geometryState={{ geometry, setGeometry }}
-        extentState={{ extent, setExtent }}
-        contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-        pasteFormData={() => pasteFormData()}
-        copyFormData={() => copyFormData()}
-        cloneActivityButton={generateCloneActivityButton}
-      />
+      {!doc && (
+        <>
+          <Box mb={3}>
+            <Typography variant="h4">Current Activity</Typography>
+          </Box>
+          <Typography>
+            There is no current activity. When you start creating an activity, it will become your current activity and
+            show up in this tab.
+          </Typography>
+        </>
+      )}
+      {doc && (
+        <ActivityComponent
+          customValidation={getCustomValidator([
+            getAreaValidator(doc.activitySubtype),
+            getWindValidator(doc.activitySubtype),
+            getHerbicideApplicationRateValidator(),
+            getTransectOffsetDistanceValidator(),
+            getJurisdictionPercentValidator(),
+            getInvasivePlantsValidator(linkedActivity)
+          ])}
+          customErrorTransformer={getCustomErrorTransformer()}
+          classes={classes}
+          activity={doc}
+          linkedActivity={linkedActivity}
+          onFormChange={onFormChange}
+          onFormSubmitSuccess={onFormSubmitSuccess}
+          onFormSubmitError={onFormSubmitError}
+          photoState={{ photos, setPhotos }}
+          mapId={doc._id}
+          geometryState={{ geometry, setGeometry }}
+          extentState={{ extent, setExtent }}
+          contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+          pasteFormData={() => pasteFormData()}
+          copyFormData={() => copyFormData()}
+          cloneActivityButton={generateCloneActivityButton}
+          setParentFormRef={props.setParentFormRef}
+        />
+      )}
     </Container>
   );
 };

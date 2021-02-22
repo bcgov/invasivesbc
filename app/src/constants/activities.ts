@@ -2,9 +2,10 @@ import { SvgIconComponent, Assignment, Build, Visibility } from '@material-ui/ic
 
 export enum ActivityType {
   Observation = 'Observation',
+  AnimalActivity = 'AnimalActivity',
+  Dispersal = 'Dispersal',
   Transect = 'Transect',
   Treatment = 'Treatment',
-  Treatment_BulkEdit = 'Treatment_BulkEdit',
   Monitoring = 'Monitoring'
 }
 
@@ -12,13 +13,14 @@ export enum ActivitySubtype {
   Observation_PlantTerrestrial = 'Activity_Observation_PlantTerrestrial',
   Observation_PlantTerrestrial_BulkEdit = 'Activity_Observation_PlantTerrestrial_BulkEdit',
   Observation_PlantAquatic = 'Activity_Observation_PlantAquatic',
-  Observation_AnimalTerrestrial = 'Activity_Observation_AnimalTerrestrial',
-  Observation_AnimalAquatic = 'Activity_Observation_AnimalAquatic',
+
+  Activity_AnimalTerrestrial = 'Activity_AnimalActivity_AnimalTerrestrial',
+  Activity_AnimalAquatic = 'Activity_AnimalActivity_AnimalAquatic',
+
+  Activity_BiologicalDispersal = 'Activity_Dispersal_BiologicalDispersal',
 
   Transect_FireMonitoring = 'Activity_Transect_FireMonitoring',
-  Transect_InvasivePlantDensity = 'Activity_Transect_InvasivePlantDensity',
-  Transect_FullVegetation = 'Activity_Transect_FullVegetation',
-  Transect_LumpedSpeciesVegetation = 'Activity_Transect_LumpedSpeciesVegetation',
+  Transect_Vegetation = 'Activity_Transect_Vegetation',
   Transect_BiocontrolEfficacy = 'Activity_Transect_BiocontrolEfficacy',
 
   Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlant',
@@ -27,23 +29,19 @@ export enum ActivitySubtype {
   Treatment_MechanicalPlant_BulkEdit = 'Activity_Treatment_MechanicalPlant_BulkEdit',
   Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
   Treatment_BiologicalPlant_BulkEdit = 'Activity_Treatment_BiologicalPlant_BulkEdit',
-  Treatment_MechanicalTerrestrialAnimal = 'Activity_Treatment_MechanicalTerrestrialAnimal',
-  Treatment_ChemicalTerrestrialAnimal = 'Activity_Treatment_ChemicalTerrestrialAnimal',
-  Treatment_BiologicalTerrestrialAnimal = 'Activity_Treatment_BiologicalTerrestrialAnimal',
 
   Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
   Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-  Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
-  Monitoring_MechanicalTerrestrialAnimal = 'Activity_Monitoring_MechanicalTerrestrialAnimal',
-  Monitoring_ChemicalTerrestrialAnimal = 'Activity_Monitoring_ChemicalTerrestrialAnimal',
-  Monitoring_BiologicalTerrestrialAnimal = 'Activity_Monitoring_BiologicalTerrestrialAnimal'
+  Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant'
 }
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
   [ActivityType.Observation]: Assignment,
+  [ActivityType.AnimalActivity]: Assignment,
   [ActivityType.Transect]: Assignment,
   [ActivityType.Treatment]: Build,
-  [ActivityType.Monitoring]: Visibility
+  [ActivityType.Monitoring]: Visibility,
+  [ActivityType.Dispersal]: Visibility
 };
 
 export enum ActivityStatus {

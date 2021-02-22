@@ -11,8 +11,15 @@ import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getAct
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { populateHerbicideDilutionAndArea } from 'rjsf/business-rules/populateCalculatedFields';
-import { getCustomValidator, getHerbicideApplicationRateValidator } from 'rjsf/business-rules/customValidation';
+import {
+  populateHerbicideDilutionAndArea,
+  populateTransectLineAndPointData
+} from 'rjsf/business-rules/populateCalculatedFields';
+import {
+  getCustomValidator,
+  getHerbicideApplicationRateValidator,
+  getJurisdictionPercentValidator
+} from 'rjsf/business-rules/customValidation';
 
 interface IBulkEditActivitiesPage {
   classes?: any;
@@ -94,7 +101,8 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
-      const updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
       return setActivity({
         ...activity,
@@ -125,7 +133,10 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
             activity={activity}
             onFormChange={onFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}
-            customValidation={getCustomValidator([getHerbicideApplicationRateValidator()])}
+            customValidation={getCustomValidator([
+              getHerbicideApplicationRateValidator(),
+              getJurisdictionPercentValidator()
+            ])}
             setParentFormRef={setParentFormRef}
             onFormSubmitError={onFormSubmitError}
             hideCheckFormForErrors={true}

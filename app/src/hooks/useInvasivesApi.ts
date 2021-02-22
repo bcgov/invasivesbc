@@ -3,7 +3,7 @@ import axios from 'axios';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
-  ICreateOrUpdateActivity,
+  ICreateOrUpdateActivity,\
   IMetabaseQuerySearchCriteria,
   ICreateMetabaseQuery
 } from 'interfaces/useInvasivesApi-interfaces';

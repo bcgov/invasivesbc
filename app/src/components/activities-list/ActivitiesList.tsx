@@ -39,6 +39,7 @@ import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUti
 import ActivityListDate from './ActivityListDate';
 import { getErrorMessages } from 'utils/errorHandling';
 import { addNewActivityToDB } from 'utils/addActivity';
+import WarningDialog from 'components/common/WarningDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -195,6 +196,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [docs, setDocs] = useState<any[]>([]);
+  const [isWarningDialogOpen, setIsWarningDialogOpen] = useState(false);
 
   const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
@@ -242,7 +244,10 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       {sortedActivities.map((doc) => {
         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
 
-        if (!doc.activitySubtype.includes(props.workflowFunction) && doc.activityType !== 'Transect') {
+        if (
+          !doc.activitySubtype.includes(props.workflowFunction) &&
+          !['Transect', 'Dispersal'].includes(doc.activityType)
+        ) {
           return null;
         }
 
@@ -264,11 +269,21 @@ const ActivityList: React.FC<IActivityList> = (props) => {
               </ListItemIcon>
               <ActivityListItem isDisabled={props.isDisabled} activity={doc} />
               <ListItemSecondaryAction>
-                <IconButton disabled={isDisabled} onClick={() => removeActivity(doc)}>
+                <IconButton disabled={isDisabled} onClick={() => setIsWarningDialogOpen(true)}>
                   <DeleteForever />
                 </IconButton>
               </ListItemSecondaryAction>
             </ListItem>
+            <WarningDialog
+              isOpen={isWarningDialogOpen}
+              handleDisagree={() => setIsWarningDialogOpen(false)}
+              handleAgree={async () => {
+                await removeActivity(doc);
+                setIsWarningDialogOpen(false);
+              }}
+              heading="Delete Activity?"
+              message="Are you sure you would like to delete this activity? Once deleted, this activity cannot be recovered"
+            />
           </Paper>
         );
       })}
@@ -276,7 +291,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   );
 };
 
-const ActivitiesList: React.FC = (props) => {
+const ActivitiesList: React.FC = () => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
@@ -289,9 +304,7 @@ const ActivitiesList: React.FC = (props) => {
 
   const specialFunctions = [
     { label: 'Fire Monitoring', type: ActivitySubtype.Transect_FireMonitoring },
-    { label: 'Invasive Plant Density Transects', type: ActivitySubtype.Transect_InvasivePlantDensity },
-    { label: 'Vegetation Transect (Full Vegetation)', type: ActivitySubtype.Transect_FullVegetation },
-    { label: 'Vegetation Transect (Lumped Species)', type: ActivitySubtype.Transect_LumpedSpeciesVegetation },
+    { label: 'Vegetation Transect (Full, Lumped, Invasive Plant Density)', type: ActivitySubtype.Transect_Vegetation },
     { label: 'Biocontrol Efficacy', type: ActivitySubtype.Transect_BiocontrolEfficacy }
   ];
 
@@ -387,7 +400,8 @@ const ActivitiesList: React.FC = (props) => {
           {workflowFunction !== 'Special' && (
             <Box>
               <Box>
-                <Typography variant="h5">Observations</Typography>
+                {workflowFunction === 'Plant' && <Typography variant="h5">Observations</Typography>}
+                {workflowFunction === 'Animal' && <Typography variant="h5">Activities</Typography>}
               </Box>
               <Box className={classes.newActivityButtonsRow}>
                 {workflowFunction === 'Plant' && (
@@ -420,6 +434,15 @@ const ActivitiesList: React.FC = (props) => {
                     </Button>
                   </>
                 )}
+
+                <ActivityList
+                  workflowFunction={workflowFunction}
+                  isDisabled={isDisabled}
+                  activityType={ActivityType.Observation}
+                />
+              </Box>
+
+              <Box className={classes.newActivityButtonsRow}>
                 {workflowFunction === 'Animal' && (
                   <>
                     <Button
@@ -429,8 +452,8 @@ const ActivitiesList: React.FC = (props) => {
                       onClick={() =>
                         addNewActivityToDB(
                           databaseContext,
-                          ActivityType.Observation,
-                          ActivitySubtype.Observation_AnimalTerrestrial
+                          ActivityType.AnimalActivity,
+                          ActivitySubtype.Activity_AnimalTerrestrial
                         )
                       }>
                       Animal Terrestrial
@@ -442,8 +465,8 @@ const ActivitiesList: React.FC = (props) => {
                       onClick={() =>
                         addNewActivityToDB(
                           databaseContext,
-                          ActivityType.Observation,
-                          ActivitySubtype.Observation_AnimalAquatic
+                          ActivityType.AnimalActivity,
+                          ActivitySubtype.Activity_AnimalAquatic
                         )
                       }>
                       Animal Aquatic
@@ -454,12 +477,12 @@ const ActivitiesList: React.FC = (props) => {
                 <ActivityList
                   workflowFunction={workflowFunction}
                   isDisabled={isDisabled}
-                  activityType={ActivityType.Observation}
+                  activityType={ActivityType.AnimalActivity}
                 />
               </Box>
             </Box>
           )}
-          {workflowFunction !== 'Special' && (
+          {workflowFunction !== 'Special' && workflowFunction !== 'Animal' && (
             <Box>
               <Box>
                 <Typography variant="h5">Treatments</Typography>
@@ -473,7 +496,7 @@ const ActivitiesList: React.FC = (props) => {
               </Box>
             </Box>
           )}
-          {workflowFunction !== 'Special' && (
+          {workflowFunction !== 'Special' && workflowFunction !== 'Animal' && (
             <Box>
               <Box>
                 <Typography variant="h5">Efficacy Monitorings</Typography>
@@ -489,7 +512,7 @@ const ActivitiesList: React.FC = (props) => {
             <>
               <Box>
                 <Box>
-                  <Typography variant="h5">Special Activities</Typography>
+                  <Typography variant="h5">Transects</Typography>
                 </Box>
                 <Box className={classes.newActivityButtonsRow}>
                   {specialFunctions.map((item) => (
@@ -510,6 +533,33 @@ const ActivitiesList: React.FC = (props) => {
                   workflowFunction={workflowFunction}
                   isDisabled={isDisabled}
                   activityType={ActivityType.Transect}
+                />
+              </Box>
+              <br />
+              <Box>
+                <Box>
+                  <Typography variant="h5">Dispersals</Typography>
+                </Box>
+                <Box className={classes.newActivityButtonsRow}>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => {
+                      addNewActivityToDB(
+                        databaseContext,
+                        ActivityType.Dispersal,
+                        ActivitySubtype.Activity_BiologicalDispersal
+                      );
+                    }}>
+                    Biological Dispersal
+                  </Button>
+                </Box>
+
+                <ActivityList
+                  workflowFunction={workflowFunction}
+                  isDisabled={isDisabled}
+                  activityType={ActivityType.Dispersal}
                 />
               </Box>
               <br />

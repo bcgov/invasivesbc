@@ -97,10 +97,19 @@ export async function addLinkedActivityToDB(
   activitySubtype: ActivitySubtype,
   linkedRecord: any
 ): Promise<IActivity> {
+  const { activityData, activitySubtypeData } = getFieldsToCopy(
+    linkedRecord.formData.activity_data,
+    linkedRecord.formData.activity_subtype_data,
+    linkedRecord.activitySubtype
+  );
+
   let formData: any = {
     activity_data: {
-      ...getFieldsToCopy(linkedRecord.formData.activity_data, linkedRecord.activitySubtype),
+      ...activityData,
       activity_date_time: moment(new Date()).format()
+    },
+    activity_subtype_data: {
+      ...activitySubtypeData
     }
   };
   const geometry = linkedRecord.geometry;
@@ -110,7 +119,10 @@ export async function addLinkedActivityToDB(
     the linked record activity id field is present in the activity_subtype_data
   */
   if (activitySubtype === ActivitySubtype.Treatment_ChemicalPlant) {
-    formData.activity_subtype_data = { activity_id: linkedRecord._id };
+    formData.activity_subtype_data = {
+      ...formData.activity_subtype_data,
+      activity_id: linkedRecord._id
+    };
   } else {
     formData.activity_type_data = { activity_id: linkedRecord._id };
   }

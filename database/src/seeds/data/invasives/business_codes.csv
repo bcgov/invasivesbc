@@ -38,10 +38,10 @@ plant_seed_stage_code,SF,Seeds forming,3
 plant_seed_stage_code,SM,Seeds mature,4
 plant_seed_stage_code,SD,Seeds have dropped,5
 plant_seed_stage_code,OT,Other - Add notes in comments,6
-animal_behavior_code,U,Unknown,2
-animal_behavior_code,M,Moving,3
-animal_behavior_code,R,Resting,4
-animal_behavior_code,D,Deceased,5
+animal_behavior_code,U,Unknown,1
+animal_behavior_code,M,Moving,2
+animal_behavior_code,R,Resting,3
+animal_behavior_code,D,Deceased,4
 bioagent_maturity_status_code,X,unknown,1
 bioagent_maturity_status_code,P,Primary,2
 bioagent_maturity_status_code,S,Secondary,3
@@ -51,8 +51,10 @@ biological_agent_stage_code,AD,Adult,2
 biological_agent_stage_code,EG,Egg,3
 biological_agent_stage_code,PU,Pupa,4
 biological_agent_stage_code,LA,Larva,5
-biological_agent_stage_code,OT,Other,6
-biological_agent_stage_code,AL,All,7
+biological_agent_stage_code,NY,Nymph,6
+biological_agent_stage_code,DE,Dead,7
+biological_agent_stage_code,OT,Other,8
+biological_agent_stage_code,AL,All,9
 biological_agent_presence_code,NA,unknown,1
 biological_agent_presence_code,FF,Foliar Feeding Damage,2
 biological_agent_presence_code,EP,Eggs Present,3
@@ -63,6 +65,10 @@ biological_agent_presence_code,AP,Adults Present,7
 biological_agent_presence_code,OM,Oviposition Marks,8
 biological_agent_presence_code,PP,Pupa(e) Present,9
 biological_agent_presence_code,EH,Exit Holes/Tunnels,10
+biological_agent_presence_code,ST,Stem Feeding Damage,11
+biological_agent_presence_code,FE,Feeding,12
+biological_agent_presence_code,FR,Frass,13
+biological_agent_presence_code,GA,In Gall,14
 classified_area_code,X,unknown,1
 classified_area_code,C,Collection,2
 classified_area_code,R,Research,3
@@ -795,7 +801,7 @@ jurisdiction_code,HYDR,BC Hydro and Power Authority,3
 jurisdiction_code,MW,Ministry of Environment & Climate Change Strategy,4
 jurisdiction_code,MAFF,Ministry of Agriculture,5
 jurisdiction_code,PP,Provincial Parks,6
-jurisdiction_code,P ,Private Land,7
+jurisdiction_code,P,Private Land,7
 jurisdiction_code,MOP,Municipality owned land,8
 jurisdiction_code,PCAN,Parks Canada,9
 jurisdiction_code,BCR,BC Rail,10
@@ -818,116 +824,116 @@ jurisdiction_code,PNG,Pacific Northern Gas,26
 jurisdiction_code,TRP,TransCanada Pipelines,27
 pesticide_employer_code,19603,19603 A.R.M. CONTRACTORS,1
 pesticide_employer_code,22691,22691 ACCURATEW6 WELLSITE SOLUTIONS LTD.,2
-pesticide_employer_code,00691,00691 ACE VEGETATION CONTROL SERVICE LTD.,3
+pesticide_employer_code,691,00691 ACE VEGETATION CONTROL SERVICE LTD.,3
 pesticide_employer_code,21003,21003 ACTUAL LANDSCAPING INC.,4
-pesticide_employer_code,03921,03921 ADEPT VEGETATION MANAGEMENT INC,5
-pesticide_employer_code,02485,"02485 ASHCROFT, CORPORATION OF THE VILLAGE",6
+pesticide_employer_code,3921,03921 ADEPT VEGETATION MANAGEMENT INC,5
+pesticide_employer_code,2485,"02485 ASHCROFT, CORPORATION OF THE VILLAGE",6
 pesticide_employer_code,23637,23637 ASPEN TREE SERVICES INC.,7
-pesticide_employer_code,00594,00594 ASPLUNDH CANADA ULC,8
+pesticide_employer_code,594,00594 ASPLUNDH CANADA ULC,8
 pesticide_employer_code,19583,19583 B BAR S RANCH,9
 pesticide_employer_code,14062,14062 BACKROAD CONTRACTING LTD,10
 pesticide_employer_code,22026,22026 BACKWOODS RESOURCES INC.,11
-pesticide_employer_code,00235,00235 BARE GROUND VEGETATION SERVICES LTD,12
+pesticide_employer_code,235,00235 BARE GROUND VEGETATION SERVICES LTD,12
 pesticide_employer_code,17145,17145 BDK RESOURCE SERVICES LTD.,13
 pesticide_employer_code,17204,17204 BLACKTAIL RESOURCES INC.,14
-pesticide_employer_code,00907,00907 BOULTBEE PEST CONTROL LTD.,15
-pesticide_employer_code,00651,00651 BUGS-GON TREE SERVICE,16
+pesticide_employer_code,907,00907 BOULTBEE PEST CONTROL LTD.,15
+pesticide_employer_code,651,00651 BUGS-GON TREE SERVICE,16
 pesticide_employer_code,25578,25578 BURLEY BOYS TREE SERVICE LTD.,17
 pesticide_employer_code,17406,17406 BUSY BEE SPRAY SERVICES,18
-pesticide_employer_code,08625,08625 CAM CAMPBELL HOLDINGS LTD.,19
+pesticide_employer_code,8625,08625 CAM CAMPBELL HOLDINGS LTD.,19
 pesticide_employer_code,15462,15462 CAPITAL REGIONAL DISTRICT PARKS,20
-pesticide_employer_code,00458,00458 CARIBOO REGIONAL DISTRICT,21
-pesticide_employer_code,06361,06361 CITY OF CHILLIWACK PUBLIC WORKS DEPARTMENT,22
-pesticide_employer_code,00303,00303 CITY OF COQUITLAM,23
+pesticide_employer_code,458,00458 CARIBOO REGIONAL DISTRICT,21
+pesticide_employer_code,6361,06361 CITY OF CHILLIWACK PUBLIC WORKS DEPARTMENT,22
+pesticide_employer_code,303,00303 CITY OF COQUITLAM,23
 pesticide_employer_code,24557,24557 CITY OF FORT ST. JOHN,24
-pesticide_employer_code,00267,00267 CITY OF POWELL RIVER,25
-pesticide_employer_code,03142,03142 CITY OF PRINCE GEORGE,26
+pesticide_employer_code,267,00267 CITY OF POWELL RIVER,25
+pesticide_employer_code,3142,03142 CITY OF PRINCE GEORGE,26
 pesticide_employer_code,22147,22147 CITY OF WEST KELOWNA,27
 pesticide_employer_code,20444,20444 COLEBRAN VEGETATION LTD,28
-pesticide_employer_code,02986,02986 CORPORATION OF THE CITY OF CRANBROOK,29
-pesticide_employer_code,00271,00271 CORPORATION OF THE CITY OF PENTICTON,30
+pesticide_employer_code,2986,02986 CORPORATION OF THE CITY OF CRANBROOK,29
+pesticide_employer_code,271,00271 CORPORATION OF THE CITY OF PENTICTON,30
 pesticide_employer_code,25637,25637 COWICHAN VALLEY REGIONAL DISTRICT,31
 pesticide_employer_code,24817,24817 CRABBE CONTRACTING LTD,32
-pesticide_employer_code,03198,03198 D.C. FORESTRY SERVICES LTD.,33
-pesticide_employer_code,01899,01899 D.J. SILVICULTURE ENTERPRISES ULC,34
-pesticide_employer_code,03616,03616 DAVEY TREE SERVICES LTD.,35
+pesticide_employer_code,3198,03198 D.C. FORESTRY SERVICES LTD.,33
+pesticide_employer_code,1899,01899 D.J. SILVICULTURE ENTERPRISES ULC,34
+pesticide_employer_code,3616,03616 DAVEY TREE SERVICES LTD.,35
 pesticide_employer_code,19065,19065 DIAMOND HEAD CONSULTING LTD.,36
 pesticide_employer_code,22476,22476 DISTRICT OF HUDSON'S HOPE,37
-pesticide_employer_code,09585,09585 DISTRICT OF TAYLOR RECREATION DEPARTMENT,38
+pesticide_employer_code,9585,09585 DISTRICT OF TAYLOR RECREATION DEPARTMENT,38
 pesticide_employer_code,21643,21643 DOUGLAS LAKE CATTLE COMPANY,39
 pesticide_employer_code,17824,17824 DRINKWATER ENVIRONMENTAL SERVICES LTD,40
-pesticide_employer_code,00796,00796 DUKA ENVIRONMENTAL SERVICES LTD.,41
+pesticide_employer_code,796,00796 DUKA ENVIRONMENTAL SERVICES LTD.,41
 pesticide_employer_code,20484,20484 EAST KOOTENAY INVASIVE SPECIES COUNCIL,42
 pesticide_employer_code,24757,24757 EAST KOOTENAY OUTDOOR SPECIALIST / METCALF LAWN CARE,43
-pesticide_employer_code,02013,02013 EASY FEED FERTILIZER,44
+pesticide_employer_code,2013,02013 EASY FEED FERTILIZER,44
 pesticide_employer_code,23678,23678 ELEVATE ENERGY SERVICES LTD.,45
 pesticide_employer_code,24438,24438 ETHIX CONTRACTING LTD.,46
-pesticide_employer_code,03281,03281 FRASER VALLEY REGIONAL DISTRICT,47
+pesticide_employer_code,3281,03281 FRASER VALLEY REGIONAL DISTRICT,47
 pesticide_employer_code,15843,15843 GARNER VEGETATION CONTROL,48
 pesticide_employer_code,22229,22229 GREEN ADMIRAL NATURE RESTORATION LTD.,49
 pesticide_employer_code,22389,22389 GREENER THIS SIDE INVASIVE PLANT MANAGEMENT,50
-pesticide_employer_code,02641,02641 H.P. CONTRACTING,51
+pesticide_employer_code,2641,02641 H.P. CONTRACTING,51
 pesticide_employer_code,24519,24519 HIGH MOUNTAIN CONTRACTING,52
 pesticide_employer_code,21563,21563 INTEGRITY INDUSTRIAL SERVICES LTD.,53
 pesticide_employer_code,25677,25677 INVASIVE CONTROL SOLUTIONS,54
 pesticide_employer_code,16882,16882 INVASIVE SPECIES COUNCIL OF BRITISH COLUMBIA SOCIETY,55
 pesticide_employer_code,18943,18943 INVASIVE SPECIES COUNCIL OF METRO VANCOUVER SOCIETY,56
 pesticide_employer_code,25117,25117 J. FOX CONSULTING,57
-pesticide_employer_code,08401,"08401 JANZEN ENTERPRISES LIMITED, DBA: LEWY'S LAWNCARE",58
+pesticide_employer_code,8401,"08401 JANZEN ENTERPRISES LIMITED, DBA: LEWY'S LAWNCARE",58
 pesticide_employer_code,19243,19243 JL VEGETATION SOLUTIONS,59
-pesticide_employer_code,03410,03410 K W B CONTRACTING LTD,60
+pesticide_employer_code,3410,03410 K W B CONTRACTING LTD,60
 pesticide_employer_code,18884,18884 KINGSCLERE RANCH LTD.,61
 pesticide_employer_code,23777,23777 KOOTENAY GROUND MAINTENANCE,62
 pesticide_employer_code,11282,11282 KOOTENAY WEED CONTROL,63
 pesticide_employer_code,10041,10041 LATINA LANDSCAPES AND MAINTENANCE,64
 pesticide_employer_code,23573,23573 LOWER NICOLA SITE SERVICES LIMITED PARTNERSHIP,65
-pesticide_employer_code,02620,"02620 MAILLOUX, BRUNO",66
+pesticide_employer_code,2620,"02620 MAILLOUX, BRUNO",66
 pesticide_employer_code,20763,20763 MAPLE LEAF FORESTRY LTD.,67
-pesticide_employer_code,03391,03391 MARJORI SUSAN REAY,68
-pesticide_employer_code,08706,08706 MELBERN VEGETATION LTD,69
+pesticide_employer_code,3391,03391 MARJORI SUSAN REAY,68
+pesticide_employer_code,8706,08706 MELBERN VEGETATION LTD,69
 pesticide_employer_code,18463,18463 MGP CONTRACTING,70
 pesticide_employer_code,24998,24998 MIKE FADUM AND ASSOCIATES LTD.,71
-pesticide_employer_code,00259,00259 MORROW BIOSCIENCE LTD.,72
+pesticide_employer_code,259,00259 MORROW BIOSCIENCE LTD.,72
 pesticide_employer_code,12682,12682 MOUNTAIN VIEW RESOURCES,73
 pesticide_employer_code,18144,18144 MYRNA JOY GAMMIE,74
 pesticide_employer_code,14042,14042 NORTH ASCENT ENVIRONMENTAL INC.,75
 pesticide_employer_code,23511,23511 NORTH SHORE ENVIRONMENTAL CONSULTANTS INC.,76
 pesticide_employer_code,20824,20824 NORTHERN ROCKY MOUNTAIN ENTERPRISES LTD.,77
 pesticide_employer_code,19044,19044 OKANAGAN AND SIMILKAMEEN INVASIVE SPECIES SOCIETY (OASISS),78
-pesticide_employer_code,02990,02990 PACIFIC WEED SERVICE LTD,79
-pesticide_employer_code,01086,01086 PARA SPACE LANDSCAPING INC.,80
-pesticide_employer_code,00295,00295 PARKS OPERATIONS SECTION,81
+pesticide_employer_code,2990,02990 PACIFIC WEED SERVICE LTD,79
+pesticide_employer_code,1086,01086 PARA SPACE LANDSCAPING INC.,80
+pesticide_employer_code,295,00295 PARKS OPERATIONS SECTION,81
 pesticide_employer_code,12045,12045 PATHFINDER ENDEAVOURS LTD.,82
 pesticide_employer_code,23618,23618 PINCHIN LTD.,83
-pesticide_employer_code,03663,03663 PINEVIEW MANAGEMENT LTD,84
+pesticide_employer_code,3663,03663 PINEVIEW MANAGEMENT LTD,84
 pesticide_employer_code,22606,22606 PRIMROSE LANDSCAPING & HORTICULTURE LTD.,85
 pesticide_employer_code,14322,14322 PRONTO ENTERPRISES LTD,86
-pesticide_employer_code,00902,00902 REGIONAL DISTRICT OF NORTH OKANAGAN,87
-pesticide_employer_code,00491,00491 RICHBAR NURSERY LTD.,88
+pesticide_employer_code,902,00902 REGIONAL DISTRICT OF NORTH OKANAGAN,87
+pesticide_employer_code,491,00491 RICHBAR NURSERY LTD.,88
 pesticide_employer_code,14843,14843 ROCKY MOUNTAIN FORESTRY CONSULTING INC.,89
 pesticide_employer_code,18603,18603 SEA TO SKY INVASIVE SPECIES COUNCIL,90
 pesticide_employer_code,24937,24937 SEA WOLF FORESTRY LTD.,91
 pesticide_employer_code,18243,18243 SELLENTIN'S HABITAT RESTORATION,92
 pesticide_employer_code,22971,22971 SETETKWE ENVIRONMENTAL INC.,93
 pesticide_employer_code,23579,23579 SOUTHERN FRONTIER FORESTRY SERVICES,94
-pesticide_employer_code,03195,03195 SPECTRUM RESOURCE GROUP INC.,95
+pesticide_employer_code,3195,03195 SPECTRUM RESOURCE GROUP INC.,95
 pesticide_employer_code,21683,21683 STAT ENERGY SERVICES INC.,96
 pesticide_employer_code,18143,18143 STERLING OPERATIONS,97
 pesticide_employer_code,20063,20063 STRATEGIC NATURAL RESOURCE CONSULTANTS INC.,98
 pesticide_employer_code,11642,11642 SYLVIS ENVIRONMENTAL SERVICES INC,99
-pesticide_employer_code,03573,03573 T & J FORESTRY CONTRACTING LTD.,100
-pesticide_employer_code,03727,03727 THE CITY OF COLWOOD,101
-pesticide_employer_code,01271,01271 THE CORPORATION OF THE CITY OF VICTORIA,102
-pesticide_employer_code,02200,02200 THE CORPORATION OF THE DISTRICT OF SAANICH,103
-pesticide_employer_code,02481,02481 THE CORPORATION OF THE VILLAGE OF KEREMEOS,104
+pesticide_employer_code,3573,03573 T & J FORESTRY CONTRACTING LTD.,100
+pesticide_employer_code,3727,03727 THE CITY OF COLWOOD,101
+pesticide_employer_code,1271,01271 THE CORPORATION OF THE CITY OF VICTORIA,102
+pesticide_employer_code,2200,02200 THE CORPORATION OF THE DISTRICT OF SAANICH,103
+pesticide_employer_code,2481,02481 THE CORPORATION OF THE VILLAGE OF KEREMEOS,104
 pesticide_employer_code,25080,25080 THE GRASS GUY,105
 pesticide_employer_code,22086,22086 THOMPSON NICOLA INVASIVES MANAGMENT,106
 pesticide_employer_code,19804,19804 TK' EMLUPSEMC FORESTRY DEVELOPMENT CORPORATION,107
-pesticide_employer_code,00345,00345 TOWN OF OLIVER,108
+pesticide_employer_code,345,00345 TOWN OF OLIVER,108
 pesticide_employer_code,25617,25617 UPPER NICOLA INDIAN BAND,109
-pesticide_employer_code,03873,03873 VILLAGE OF NAKUSP,110
+pesticide_employer_code,3873,03873 VILLAGE OF NAKUSP,110
 pesticide_employer_code,20663,20663 WEST FORK RESOURCE MANAGMENT LTD.,111
-pesticide_employer_code,01838,01838 WESTERN WEED CONTROL (1980) LTD.,112
+pesticide_employer_code,1838,01838 WESTERN WEED CONTROL (1980) LTD.,112
 pesticide_employer_code,23531,23531 YENDOR LOGGING,113
 pesticide_employer_code,15142,15142 ZEDI FIELD SERVICES,114
 liquid_herbicide_code,14725,"AM500a [2,4-D 2,4-D Amine 500] 14725",1
@@ -978,3 +984,235 @@ granule_herbicide_code,30065,Overdrive [diflufenzopyr Overdrive] 30065,7
 granule_herbicide_code,30062,ReclaimIIA [aminopyralid/metsulfuron-methyl Reclaim II A] 30062,8
 granule_herbicide_code,30920,Truvist [chlorsulfuron/aminocyclopyrachlor Truvist] 30920,9
 granule_herbicide_code,30917,Method50SG [aminocyclopyrachlor Method 50SG] 30917,10
+research_trial_code,NA,Unknown or indeterminant,1
+research_trial_code,Y,Yes,2
+research_trial_code,N,No,3
+research_trial_code,X,Future,4
+realm_code,Af,Alpine field,1
+realm_code,Ag,Alpine grassland,2
+realm_code,Ah,Alpine heath,3
+realm_code,Am,Alpine meadow,4
+realm_code,As,Alpine nivation,5
+realm_code,At,Alpine tundra,6
+realm_code,Az,Alpine zoogenic,7
+realm_code,Bb,Beach beachland,8
+realm_code,Br,Beach headland,9
+realm_code,Ed,Estuary meadow,10
+realm_code,Em,Estuary marsh,11
+realm_code,Et,Estuary tidal flat,12
+realm_code,Fa,Flood active channel,13
+realm_code,Ff,Flood fringe,14
+realm_code,Fl,Flood lowbench,15
+realm_code,Fm,Flood midbench,16
+realm_code,Ga,Grassland alkali meadow,17
+realm_code,Gb,Grassland brushland,18
+realm_code,Gg,Grassland,19
+realm_code,Gs,Grassland shrub steppe,20
+realm_code,Hh,Halophyte,21
+realm_code,Hs,Spring-seepage,22
+realm_code,Hv,Vernal pool,23
+realm_code,Hw,Waterfall,24
+realm_code,Rc,Cliff,25
+realm_code,Ro,Rock outcrop,26
+realm_code,Rt,Talus,27
+realm_code,Sc,Subalpine shrub carr,28
+realm_code,Sk,Krummholz,29
+realm_code,Ss,Subalpine shrub seepage,30
+realm_code,Vh,Avalanche herb,31
+realm_code,Vs,Avalanche shrub,32
+realm_code,Vt,Avalanche treed,33
+realm_code,Wa,Wetland alpine,34
+realm_code,Wb,Wetland bog,35
+realm_code,Wf,Wetland fen,36
+realm_code,Wm,Wetland marsh,37
+realm_code,Ws,Wetland swamp,38
+realm_code,Ww,Wetland shallow water,39
+realm_code,Xh,Disclimax herb,40
+realm_code,Xs,Disclimax shrub,41
+ecological_moisture_regime_code,NA,Unknown or indeterminant,1
+ecological_moisture_regime_code,VX,Very xeric,2
+ecological_moisture_regime_code,XR,Xeric,3
+ecological_moisture_regime_code,XS,Xeric to Subxeric,4
+ecological_moisture_regime_code,SX,Subxeric,5
+ecological_moisture_regime_code,MS,Mesic,6
+ecological_moisture_regime_code,SM,Submesic,7
+ecological_moisture_regime_code,HY,Hygric,8
+ecological_moisture_regime_code,SH,Subhygric,9
+ecological_moisture_regime_code,HD,Hydric,10
+ecological_moisture_regime_code,SD,Subhydric,11
+ecological_moisture_regime_code,XX,Subhydric to hydric,12
+mesoslope_position_code,NA,Unknown or indeterminant,1
+mesoslope_position_code,CR,Crest,2
+mesoslope_position_code,US,Upper slope,3
+mesoslope_position_code,MS,Middle slope,4
+mesoslope_position_code,LS,Lower slope,5
+mesoslope_position_code,TO,Toe,6
+mesoslope_position_code,DP,Depression,7
+mesoslope_position_code,LV,Level,8
+mesoslope_position_code,GL,Gully,9
+site_surface_shape_code,NA,Unknown or indeterminant,1
+site_surface_shape_code,HO,Hollow,2
+site_surface_shape_code,RD,Rounded,3
+site_surface_shape_code,LN,Linear,4
+soil_properties_code,NA,Unknown or indeterminant,1
+soil_properties_code,SD,Sand,2
+soil_properties_code,SL,Silt,3
+soil_properties_code,CL,Clay,4
+soil_properties_code,GR,Gravel,5
+soil_properties_code,VA,Variable,6
+soil_properties_code,CP,Compact,7
+surface_substrate_code,NA,Unknown or indeterminant,1
+surface_substrate_code,BS,Bare soil,2
+surface_substrate_code,MS,Moss,3
+surface_substrate_code,OM,Organic matter,4
+surface_substrate_code,DW,Decaying wood,5
+surface_substrate_code,SD,Sand,6
+surface_substrate_code,GR,Gravel,7
+surface_substrate_code,CO,Cobble,8
+surface_substrate_code,BR,Bedrock,9
+surface_substrate_code,CP,Compact,10
+disturbance_condition_code,NA,Unknown or indeterminant,1
+disturbance_condition_code,PR,Predicted,2
+disturbance_condition_code,CR,Current,3
+disturbance_type_code,NA,Unknown or indeterminant,1
+disturbance_type_code,CU,Cultivation,2
+disturbance_type_code,FI,Fire,3
+disturbance_type_code,FG,Fire guard,4
+disturbance_type_code,FL,Flooded,5
+disturbance_type_code,GZ,Grazing,6
+disturbance_type_code,LG,Logging,7
+disturbance_type_code,MN,Mining,8
+disturbance_type_code,MW,Mowing,9
+disturbance_type_code,RC,Recreation,10
+disturbance_type_code,RD,Roads,11
+disturbance_type_code,CM,Chemical,12
+disturbance_type_code,MR,MOTI Roadside,13
+disturbance_type_code,FR,FLNRO Roadside,14
+invasive_plant_change_code,NA,Unknown or indeterminant,1
+invasive_plant_change_code,NC,No change,2
+invasive_plant_change_code,IN,General increase,3
+invasive_plant_change_code,DE,General decrease,4
+invasive_plant_change_code,NW,New Species,5
+invasive_plant_change_code,AB,Species absent,6
+target_plant_change_code,NA,Unknown or indeterminant,7
+target_plant_change_code,NC,No change,8
+target_plant_change_code,LW,Increased < 35%,9
+target_plant_change_code,MD,Increase 35 to 70%,10
+target_plant_change_code,HI,Increase Greater than 70%,11
+biocontrol_noted_code,NA,Unknown or indeterminant,1
+biocontrol_noted_code,Y,Yes,2
+biocontrol_noted_code,N,No,3
+biocontrol_noted_code,U,Unsure,4
+biocontrol_noted_code,SP,Species,5
+daubenmire_cover_code,-1,Unknown or indeterminant,1
+daubenmire_cover_code,0,0,2
+daubenmire_cover_code,1,1 to 5%,3
+daubenmire_cover_code,2,6 to 25%,4
+daubenmire_cover_code,3,25 to 50%,5
+daubenmire_cover_code,4,51 to 75%,6
+daubenmire_cover_code,5,76 to 95%,7
+daubenmire_cover_code,6,96 to 100%,8
+vegetation_transect_data_code,NA,Unknown or indeterminant,1
+vegetation_transect_data_code,IP,Invasive Plants,2
+vegetation_transect_data_code,NF,Native Forbs,3
+vegetation_transect_data_code,GR,Grasses,4
+vegetation_transect_data_code,BG,Bare ground,5
+vegetation_transect_data_code,ST,Shrubs / trees,6
+vegetation_transect_data_code,BY,Byrophytes,7
+vegetation_transect_data_code,LF,Litter / Feces,8
+cloud_cover_code,-1,Unknown or indeterminant,1
+cloud_cover_code,0,Clear Sky,2
+cloud_cover_code,1,Few 10% clouds,3
+cloud_cover_code,2,Few 20-30% clouds,4
+cloud_cover_code,3,Scattered 40% clouds,5
+cloud_cover_code,4,Scattered 50% clouds,6
+cloud_cover_code,5,Broken 50% clouds,7
+cloud_cover_code,6,Broken 60-70% clouds,8
+cloud_cover_code,7,Broken 90% clouds,9
+cloud_cover_code,8,Overcast 100% clouds,10
+cloud_cover_code,9,Obscured,11
+beaufort_wind_code,-1,Unknown or indeterminant,1
+beaufort_wind_code,0,Calm < 1 km/h,2
+beaufort_wind_code,1,Light air 1-5 km/h,3
+beaufort_wind_code,2,Light breeze 6-11 km/h,4
+beaufort_wind_code,3,Gentle breeze 12-19 km/h,5
+beaufort_wind_code,4,Moderate breeze 20-28 km/h,6
+beaufort_wind_code,5,Fresh breeze 29-38 km/h,7
+beaufort_wind_code,6,Strong breeze 39-49 km/h,8
+beaufort_wind_code,7,Near gale 50-61 km/h,9
+beaufort_wind_code,8,Gale 62-74 km/h,10
+beaufort_wind_code,9,Strong gale 75-88 km/h,11
+beaufort_wind_code,10,Storm 89-102 km/h,12
+beaufort_wind_code,11,Violent storm 103-117 km/h,13
+beaufort_wind_code,12,Hurricane 118-133 km/h,14
+precipitation_code,NA,Unknown or indeterminant,1
+precipitation_code,NO,No Precipitation,2
+precipitation_code,DR,Drizzle,3
+precipitation_code,IN,Intermittent showers,4
+precipitation_code,SR,Steady Rain,5
+precipitation_code,DP,Down pour,6
+precipitation_code,RW,Residual Wet,7
+precipitation_code,SN,Snow,8
+precipitation_code,HA,Hail,9
+monitoring_duration_of_count_code,NA,Unknown or indeterminant,1
+monitoring_duration_of_count_code,OB,Observe (= handpick),2
+monitoring_duration_of_count_code,OT,Othre (timed),3
+monitoring_duration_of_count_code,SW,Sweep,4
+monitoring_duration_of_count_code,TT,Tap and Tray,5
+monitoring_duration_of_count_code,CL,Clip,6
+monitoring_duration_of_count_code,EX,Excavate,7
+monitoring_plant_count_code,NA,Unknown or indeterminant,1
+monitoring_plant_count_code,OC,Observe (= handpick),2
+monitoring_plant_count_code,OD,Other (counted),3
+monitoring_plant_count_code,PC,Plant(s),4
+monitoring_plant_count_code,CS,Sweep,5
+collecting_duration_of_count_code,NA,Unknown or indeterminant,1
+collecting_duration_of_count_code,AS,Aspirate,2
+collecting_duration_of_count_code,HP,Hand Pick,3
+collecting_duration_of_count_code,OT,Other (counted),4
+collecting_duration_of_count_code,SW,Sweep,5
+collecting_plant_count_code,NA,Unknown or indeterminant,1
+collecting_plant_count_code,CL,Clip,2
+collecting_plant_count_code,CS,Sweep,3
+collecting_plant_count_code,OC,Other (counted),4
+collecting_plant_count_code,TP,Transplant,5
+collecting_plant_count_code,TT,Tap and Tray,6
+target_plant_location_code,NA,Unknown or indeterminant,1
+target_plant_location_code,PT,Plant terminal (very top of plant),2
+target_plant_location_code,PU,Plant (upper half),3
+target_plant_location_code,PL,Plant (lower half),4
+target_plant_location_code,RE,Root (externally),5
+target_plant_location_code,RI,Root (internally),6
+target_plant_location_code,RO,Rosette,7
+target_plant_location_code,BG,Basal growth,8
+target_plant_location_code,ST,Stolon,9
+target_plant_location_code,AX,Axils,10
+target_plant_location_code,FI,Flower (inside),11
+target_plant_location_code,FS,Flower surface,12
+target_plant_location_code,IH,In seedhead,13
+target_plant_location_code,SH,On seed head,14
+target_plant_location_code,LS,Leaf/leaves (upper side/surface),15
+target_plant_location_code,LU,Leaf/leaves (underside),16
+target_plant_location_code,LT,Stem/stalk (external),17
+target_plant_location_code,SI,Stem/stalk (internal),18
+target_plant_location_code,PE,Petiole,19
+non-target_plant_location_code,NA,Unknown or indeterminant,1
+non-target_plant_location_code,DL,Duff/litter,2
+non-target_plant_location_code,IL,In litter,3
+non-target_plant_location_code,IS,In soil,4
+non-target_plant_location_code,OL,On litter,5
+non-target_plant_location_code,OS,On soil,6
+non-target_plant_location_code,OT,Other,7
+activity_of_agent_adults_code,NA,Unknown or indeterminant,1
+activity_of_agent_adults_code,BR,Breeding,2
+activity_of_agent_adults_code,OV,Ovipositioning,3
+density_count_type_code,NA,Unknown or indeterminant,1
+density_count_type_code,RD,Random Toss,2
+density_count_type_code,RT,Random Transect,3
+density_count_type_code,PT,Placed Toss,4
+density_count_type_code,TT,Timed Toss,5
+density_count_type_code,OT,Other,6
+frame_size_code,NA,Unknown or indeterminant,1
+frame_size_code,L,1.0 sq metre,2
+frame_size_code,M,0.75 sq metre,3
+frame_size_code,S,0.1 sq metre,4

@@ -73,25 +73,18 @@ const post_put_apiDoc = {
               oneOf: [
                 { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
                 { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
-                { $ref: '#/components/schemas/Activity_Observation_AnimalTerrestrial' },
-                { $ref: '#/components/schemas/Activity_Observation_AnimalAquatic' },
+                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
                 { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
-                { $ref: '#/components/schemas/Activity_Transect_InvasivePlantDensity' },
-                { $ref: '#/components/schemas/Activity_Transect_FullVegetation' },
-                { $ref: '#/components/schemas/Activity_Transect_LumpedSpeciesVegetation' },
+                { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
                 { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' },
+                { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_MechanicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Treatment_ChemicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Treatment_BiologicalTerrestrialAnimal' },
                 { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
                 { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialAnimal' }
+                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' }
               ]
             }
           }
