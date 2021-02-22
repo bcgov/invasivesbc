@@ -364,7 +364,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
-  return <div id={props.mapId} className={props.classes.map} />;
+  return (<div id={props.mapId} className={props.classes.map}>
+    <div id='feed-me'></div>
+    <div id='yum-yum'></div>
+  </div>);
 };
 
 export default MapContainer;
