@@ -89,7 +89,6 @@ function getMetabaseQueryResults(): RequestHandler {
       }
 
       const session = await getMetabaseSession();
-      console.log(session);
 
       const response = await axios({
         method: 'post',
