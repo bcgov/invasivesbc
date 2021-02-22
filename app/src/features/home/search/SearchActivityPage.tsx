@@ -217,6 +217,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
         onFormSubmitError={onFormSubmitError}
         photoState={{ photos, setPhotos }}
         mapId={activity._id}
+        showDrawControls={false}
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }}
