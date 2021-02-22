@@ -13,8 +13,12 @@ import {
   getCustomValidator,
   getAreaValidator,
   getWindValidator,
-  getHerbicideApplicationRateValidator
+  getHerbicideApplicationRateValidator,
+  getTransectOffsetDistanceValidator,
+  getJurisdictionPercentValidator,
+  getInvasivePlantsValidator
 } from 'rjsf/business-rules/customValidation';
+import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import {
   populateHerbicideDilutionAndArea,
   populateTransectLineAndPointData
@@ -179,7 +183,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} event the form submit event
    */
   const onFormSubmitSuccess = async (event: any, formRef: any) => {
-    props.setFormHasErrors(false);
+    if (props.setFormHasErrors) {
+      props.setFormHasErrors(false);
+    }
 
     const updatedFormValues = {
       formData: event.formData,
@@ -318,6 +324,29 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     );
   };
 
+  /*
+    Function to extract linked record id from record if it exists
+    and then set the linkedActivity in state for reference within
+    the form as an accordion and for population of certain fields later/validation
+  */
+  const handleRecordLinking = async (updatedDoc: any) => {
+    let linkedRecordId: string = null;
+
+    if (updatedDoc.activitySubtype.includes('ChemicalPlant')) {
+      linkedRecordId = updatedDoc.formData.activity_subtype_data.activity_id;
+    } else if (
+      ['Treatment', 'Monitoring'].includes(updatedDoc.activityType) &&
+      updatedDoc.activitySubtype.includes('Plant')
+    ) {
+      linkedRecordId = updatedDoc.formData.activity_type_data.activity_id;
+    }
+
+    if (linkedRecordId) {
+      const linkedRecordActivityResults = await getActivityResultsFromDB(linkedRecordId);
+      setLinkedActivity(linkedRecordActivityResults.docs[0]);
+    }
+  };
+
   useEffect(() => {
     const getActivityData = async () => {
       const activityResults = await getActivityResultsFromDB(props.activityId || null);
@@ -330,13 +359,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
 
-      if (updatedDoc.activityType === 'Monitoring') {
-        const linkedRecordActivityResults = await getActivityResultsFromDB(
-          updatedDoc.formData.activity_type_data.activity_id
-        );
-
-        setLinkedActivity(linkedRecordActivityResults.docs[0]);
-      }
+      await handleRecordLinking(updatedDoc);
 
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
@@ -401,8 +424,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           customValidation={getCustomValidator([
             getAreaValidator(doc.activitySubtype),
             getWindValidator(doc.activitySubtype),
-            getHerbicideApplicationRateValidator()
+            getHerbicideApplicationRateValidator(),
+            getTransectOffsetDistanceValidator(),
+            getJurisdictionPercentValidator(),
+            getInvasivePlantsValidator(linkedActivity)
           ])}
+          customErrorTransformer={getCustomErrorTransformer()}
           classes={classes}
           activity={doc}
           linkedActivity={linkedActivity}
@@ -418,6 +445,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           copyFormData={() => copyFormData()}
           cloneActivityButton={generateCloneActivityButton}
           setParentFormRef={props.setParentFormRef}
+          showDrawControls={true}
         />
       )}
     </Container>

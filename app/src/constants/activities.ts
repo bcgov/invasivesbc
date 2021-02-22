@@ -20,9 +20,7 @@ export enum ActivitySubtype {
   Activity_BiologicalDispersal = 'Activity_Dispersal_BiologicalDispersal',
 
   Transect_FireMonitoring = 'Activity_Transect_FireMonitoring',
-  Transect_InvasivePlantDensity = 'Activity_Transect_InvasivePlantDensity',
-  Transect_FullVegetation = 'Activity_Transect_FullVegetation',
-  Transect_LumpedSpeciesVegetation = 'Activity_Transect_LumpedSpeciesVegetation',
+  Transect_Vegetation = 'Activity_Transect_Vegetation',
   Transect_BiocontrolEfficacy = 'Activity_Transect_BiocontrolEfficacy',
 
   Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlant',

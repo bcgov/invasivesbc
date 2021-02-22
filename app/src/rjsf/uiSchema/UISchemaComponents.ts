@@ -26,9 +26,7 @@ const Treatment_ChemicalPlant = {
   temperature: {},
   humidity: {},
   pest_management_plan: {},
-  invasive_plant_code: {
-    'ui:readonly': true
-  },
+  invasive_plant_code: {},
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide
@@ -37,9 +35,7 @@ const Treatment_ChemicalPlant = {
   wind_speed: {},
   wind_direction_code: {},
   pesticide_use_permit_PUP: {},
-  signage_on_site: {
-    'ui:widget': 'radio'
-  }
+  signage_on_site: {}
 };
 
 const Treatment_ChemicalPlant_BulkEdit = {
@@ -70,10 +66,12 @@ const Activity = {
     'ui:readonly': true
   },
   invasive_species_agency_code: {},
-  jurisdiction_code: {},
-  general_comment: {
-    'ui:widget': 'textarea'
+  jurisdictions: {
+    items: {
+      ...BaseUISchemaComponents.Jurisdictions
+    }
   },
+  general_comment: {},
   access_description: {
     'ui:widget': 'textarea'
   },

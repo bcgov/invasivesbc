@@ -16,7 +16,14 @@ import {
   populateTransectLineAndPointData
 } from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
-import { getCustomValidator, getAreaValidator, getWindValidator } from 'rjsf/business-rules/customValidation';
+import {
+  getCustomValidator,
+  getAreaValidator,
+  getWindValidator,
+  getHerbicideApplicationRateValidator,
+  getTransectOffsetDistanceValidator,
+  getJurisdictionPercentValidator
+} from 'rjsf/business-rules/customValidation';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 
 const useStyles = makeStyles((theme) => ({
@@ -198,7 +205,10 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       <ActivityComponent
         customValidation={getCustomValidator([
           getAreaValidator(activity.activitySubtype),
-          getWindValidator(activity.activitySubtype)
+          getWindValidator(activity.activitySubtype),
+          getHerbicideApplicationRateValidator(),
+          getTransectOffsetDistanceValidator(),
+          getJurisdictionPercentValidator()
         ])}
         classes={classes}
         activity={activity}
@@ -207,6 +217,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
         onFormSubmitError={onFormSubmitError}
         photoState={{ photos, setPhotos }}
         mapId={activity._id}
+        showDrawControls={false}
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }}

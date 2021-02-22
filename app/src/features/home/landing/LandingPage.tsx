@@ -10,10 +10,14 @@ import {
   Grid,
   makeStyles,
   Theme,
-  Divider
+  Divider,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary
 } from '@material-ui/core';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import { useHistory } from 'react-router-dom';
+import planTripGIF from '../../../gifs/Plan Page.gif';
 
 const useStyles = makeStyles((theme: Theme) => ({
   userInfoItemGrid: {
@@ -83,6 +87,12 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           </Typography>
           <Typography variant="body2" component="p">
             {content}
+            <Accordion>
+              <AccordionSummary>Expand for Demo</AccordionSummary>
+              <AccordionDetails>
+                <img src={planTripGIF} alt="loading..." />
+              </AccordionDetails>
+            </Accordion>
           </Typography>
         </CardContent>
         <CardActions>

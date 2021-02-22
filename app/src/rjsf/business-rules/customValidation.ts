@@ -14,6 +14,38 @@ export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
   };
 }
 
+/*
+  Function to validate that the total percent value of all jurisdictions combined = 100
+*/
+export function getJurisdictionPercentValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_data || !formData.activity_data.jurisdictions) {
+      return errors;
+    }
+
+    const { jurisdictions } = formData.activity_data;
+    let totalPercent = 0;
+
+    jurisdictions.forEach((jurisdiction: any) => {
+      totalPercent += jurisdiction.percent_covered;
+    });
+
+    errors.activity_data['jurisdictions'].__errors = [];
+
+    if (totalPercent !== 100) {
+      errors.activity_data['jurisdictions'].addError(
+        'Total percentage of area covered by jurisdictions must equal 100%'
+      );
+    }
+
+    return errors;
+  };
+}
+
+/*
+  Function to validate that the net geo area selected does not exceed the limits
+  specified by business area for various activity types
+*/
 export function getAreaValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     let areaLimit = Number.POSITIVE_INFINITY;
@@ -37,6 +69,12 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
   };
 }
 
+/*
+  Function to validate wind fields on chemical treatment forms
+
+  If no wind there should be no wind direction
+  If wind, there must be a wind direction
+*/
 export function getWindValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (activitySubtype !== 'Activity_Treatment_ChemicalPlant') {
@@ -63,6 +101,41 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
   };
 }
 
+/*
+  Function to validate that the value selected for invasive plant in dropdown
+  is one of the plants from the linked record
+
+  Ex: cannot create a treatment for a plant that was not observed in linked observation
+*/
+export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData ||
+      !linkedActivity ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.invasive_plant_code
+    ) {
+      return errors;
+    }
+
+    const linkedActivityInvasivePlants = linkedActivity.formData.activity_subtype_data.invasive_plants;
+    const { invasive_plant_code } = formData.activity_subtype_data;
+
+    errors.activity_subtype_data['invasive_plant_code'].__errors = [];
+    if (!linkedActivityInvasivePlants.some((lip: any) => lip.invasive_plant_code === invasive_plant_code)) {
+      errors.activity_subtype_data['invasive_plant_code'].addError(
+        'You must select a species that was previously observed in the linked activity'
+      );
+    }
+
+    return errors;
+  };
+}
+
+/*
+  Function to validate that the application rate specified for a given herbicide
+  does not exceed the limit based on guideline values
+*/
 export function getHerbicideApplicationRateValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (
@@ -90,6 +163,106 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
           } L/ha for this herbicide`
         );
       }
+    });
+
+    return errors;
+  };
+}
+
+/*
+  Function used by offset distance validation function to identify and set error
+  on specific field of nested object structure based on transect type
+*/
+const determineErrorStateOnTransectPoint = (
+  isVegetationTransect: boolean,
+  transectPoint: any,
+  transectLineLength: number,
+  errorState: any
+) => {
+  if (isVegetationTransect) {
+    // If offset distance field has not been entered, no need to validate anything
+    if (!transectPoint.vegetation_transect_points.offset_distance) {
+      return null;
+    }
+    // Clear all existing errors to validate properly at start
+    errorState.vegetation_transect_points['offset_distance'].__errors = [];
+  } else {
+    // If offset distance field has not been entered, no need to validate anything
+    if (!transectPoint.offset_distance) {
+      return null;
+    }
+    // Clear all existing errors to validate properly at start
+    errorState['offset_distance'].__errors = [];
+  }
+
+  const transectPointOffsetDistance = isVegetationTransect
+    ? transectPoint.vegetation_transect_points.offset_distance
+    : transectPoint.offset_distance;
+
+  if (transectPointOffsetDistance > transectLineLength) {
+    const errorMessage =
+      'Offset distance for a transect point cannot exceed the length of the associated transect line';
+
+    if (isVegetationTransect) {
+      errorState.vegetation_transect_points['offset_distance'].addError(errorMessage);
+    } else {
+      errorState['offset_distance'].addError(errorMessage);
+    }
+  }
+
+  return errorState;
+};
+
+/*
+  Function to validate that the offset distance for a point on a transect line
+  does not exceed the length of the associated transect line
+*/
+export function getTransectOffsetDistanceValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_subtype_data) {
+      return errors;
+    }
+
+    const transectLinesMatchingKeys = Object.keys(formData.activity_subtype_data).filter((key) =>
+      key.includes('transect_lines')
+    );
+
+    // If transect lines field is not present at all
+    if (!transectLinesMatchingKeys.length) {
+      return errors;
+    }
+
+    const isVegetationTransect = transectLinesMatchingKeys[0] === 'vegetation_transect_lines';
+    const transectLinesList = [...formData.activity_subtype_data[transectLinesMatchingKeys[0]]];
+
+    transectLinesList.forEach((transectLineObj: any, lineIndex: number) => {
+      const transectLineLength = transectLineObj?.transect_line?.transect_length;
+      const transectPointsMatchingKeys = Object.keys(transectLineObj).filter((key) => key.includes('transect_points'));
+
+      // If transect points field is not present at all
+      if (!transectPointsMatchingKeys.length) {
+        return errors;
+      }
+
+      const transectPointsList = transectLineObj[transectPointsMatchingKeys[0]];
+
+      transectPointsList.forEach((transectPoint: any, pointIndex: any) => {
+        let errorState =
+          errors.activity_subtype_data[transectLinesMatchingKeys[0]][lineIndex][transectPointsMatchingKeys[0]][
+            pointIndex
+          ];
+
+        errorState = determineErrorStateOnTransectPoint(
+          isVegetationTransect,
+          transectPoint,
+          transectLineLength,
+          errorState
+        );
+
+        if (!errorState) {
+          return errors;
+        }
+      });
     });
 
     return errors;
