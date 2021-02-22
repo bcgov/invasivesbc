@@ -9,8 +9,6 @@ import {
   getMetabaseSession,
   closeMetabaseSession,
   METABASE_URL,
-  METABASE_USER,
-  METABASE_PASS,
   METABASE_TIMEOUT
 } from '../metabase-query';
 

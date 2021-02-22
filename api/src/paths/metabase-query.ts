@@ -322,7 +322,7 @@ function createMetabaseQuery(): RequestHandler {
             }
           }
         };
-        const poiResponse = await axios(poiRequest);
+        poiResponse = await axios(poiRequest);
 
         if (!poiResponse || !poiResponse.data) {
           throw {

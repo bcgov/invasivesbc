@@ -6,8 +6,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import {
   IActivitySearchCriteria,
   IPointOfInterestSearchCriteria,
-  IMetabaseQuerySearchCriteria,
-  ICreateMetabaseQuery
+  IMetabaseQuerySearchCriteria
 } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';

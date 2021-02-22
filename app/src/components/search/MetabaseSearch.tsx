@@ -70,9 +70,9 @@ export const MetabaseSearch: React.FC<any> = (props) => {
         moment().diff(tripDoc.metabaseQueryOptionsLastChecked, 'minutes') >= 1
       ) {
         let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
-        await databaseContext.database.upsert('trip', (tripDoc) => {
+        await databaseContext.database.upsert('trip', (doc) => {
           return {
-            ...tripDoc,
+            ...doc,
             metabaseQueryOptionsLastChecked: moment().valueOf(),
             metabaseQueryOptions: options
           };

@@ -540,7 +540,7 @@ const ReferenceActivitiesList: React.FC = () => {
         setSelectedActivities([
           {
             id: doc._id,
-            subtype: doc.activitySubtype // TODO subtype?
+            subtype: doc.activitySubtype
           }
         ]);
       }
