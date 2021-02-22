@@ -14,7 +14,7 @@ export const METABASE_URL: string =
 export const METABASE_USER: string = process.env.METABASE_USER || 'hello';
 export const METABASE_PASS: string = process.env.METABASE_PASS || 'world';
 export const METABASE_COLLECTION_ID: any = process.env.METABASE_COLLECTION_ID || 'root';
-export const METABASE_TIMEOUT = 10000; // ms
+export const METABASE_TIMEOUT = 60000; // ms
 
 let metabaseSession: string;
 let metabaseSessionTimestamp: number;
