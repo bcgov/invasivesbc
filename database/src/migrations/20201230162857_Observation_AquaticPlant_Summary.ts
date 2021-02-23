@@ -6,7 +6,40 @@ export async function up(knex: Knex): Promise<void> {
   drop view if exists invasivesbc.Observation_AquaticPlant_Summary cascade;
   CREATE OR REPLACE VIEW Observation_AquaticPlant_Summary as (
         select
-        activity_id as activity_id,
+    record.activity_id,
+    record.version,
+    record.activity_date_time,
+    record.submitted_time,
+    record.received_timestamp,
+    record.deleted_timestamp,
+
+    record.biogeoclimatic_zones,
+    record.regional_invasive_species_organization_areas,
+    record.invasive_plant_management_areas,
+    record.ownership,
+    record.regional_districts,
+    record.flnro_districts,
+    record.moti_districts,
+    record.elevation,
+    record.well_proximity,
+    record.utm_zone,
+    record.utm_northing,
+    record.utm_easting,
+    record.albers_northing,
+    record.albers_easting,
+
+    record.latitude,
+    record.longitude,
+    record.reported_area,
+    record.invasive_species_agency_code,
+    record.general_comment,
+    record.access_description,
+    record.jurisdictions,
+    record.project_code
+    record.geom,
+    record.geog,
+    record.media_keys,
+
 	      invasive_plant_codes.code_description as invasive_plant,
         record.invasive_plant_code,
         specific_use_codes.code_description as specific_use,
@@ -56,6 +89,8 @@ export async function up(knex: Knex): Promise<void> {
   left join code_header plant_seed_stage_code_header on plant_seed_stage_code_header.code_header_title = 'plant_seed_stage_code' and plant_seed_stage_code_header.valid_to is null
   left join code plant_seed_stage_codes on plant_seed_stage_codes.code_header_id = plant_seed_stage_code_header.code_header_id
   and record.plant_seed_stage_code = plant_seed_stage_codes.code_name
+
+where record.deleted_timestamp is null
   )    `);
 }
 
