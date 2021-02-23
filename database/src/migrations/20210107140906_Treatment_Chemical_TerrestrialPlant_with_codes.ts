@@ -4,7 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   knex.raw(`
 
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Treatment_Chemical_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Activity_Treatment_Chemical_TerrestrialPlant_with_codes;
   CREATE OR REPLACE VIEW Activity_Treatment_Chemical_TerrestrialPlant_with_codes as (
       select
       activity_id,
@@ -29,7 +29,7 @@ export async function up(knex: Knex): Promise<void> {
 
       from activity_incoming_data
       where activity_incoming_data.activity_type = 'Treatment'
-      and activity_incoming_data.activity_subtype = 'Activity_Treatment_ChemicalPlant'
+      and activity_incoming_data.activity_subtype = 'Treatment_ChemicalPlant'
       )
     COMMENT ON VIEW Activity_Treatment_Chemical_TerrestrialPlant_with_codes IS 'View on terrestrial plant chemical treatments specific fields, with raw code table values';
   `);

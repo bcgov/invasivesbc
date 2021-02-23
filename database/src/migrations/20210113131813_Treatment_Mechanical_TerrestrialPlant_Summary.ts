@@ -3,20 +3,52 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Treatment_Mechanical_TerrestrialPlant ;
-  CREATE OR REPLACE VIEW Activity_Treatment_Mechanical_TerrestrialPlant as (
+  drop view if exists invasivesbc.Treatment_Mechanical_TerrestrialPlant_Summary ;
+  CREATE OR REPLACE VIEW Treatment_Mechanical_TerrestrialPlant_Summary as (
         select
-        record.activity_id,
+    record.activity_id,
+    record.version,
+    record.activity_date_time,
+    record.submitted_time,
+    record.received_timestamp,
+    record.deleted_timestamp,
+
+    record.biogeoclimatic_zones,
+    record.regional_invasive_species_organization_areas,
+    record.invasive_plant_management_areas,
+    record.ownership,
+    record.regional_districts,
+    record.flnro_districts,
+    record.moti_districts,
+    record.elevation,
+    record.well_proximity,
+    record.utm_zone,
+    record.utm_northing,
+    record.utm_easting,
+    record.albers_northing,
+    record.albers_easting,
+
+    record.latitude,
+    record.longitude,
+    record.reported_area,
+    record.invasive_species_agency_code,
+    record.general_comment,
+    record.access_description,
+    record.jurisdictions,
+    record.project_code
+    record.geom,
+    record.geog,
+    record.media_keys,
         record.invasive_plant_code,
-        invasive_plant_codes.description,
+        invasive_plant_codes.code_description as invasive_plant,
         record.mechanical_method_code,
-        mechanical_method_codes.description,
+        mechanical_method_codes.code_description as mechanical_method,
         record.mechanical_disposal_code,
-        mechanical_disposal_codes.description,
+        mechanical_disposal_codes.code_description as mechanical_disposal,
         record.root_removal_code,
-        root_removal_codes.description,
+        root_removal_codes.code_description as root_removal,
         record.soil_disturbance_code,
-        soil_disturbance_codes.description,
+        soil_disturbance_codes.code_description as soil_disturbance,
         record.signage_on_site
 
         from invasivesbc.Activity_Treatment_Mechanical_TerrestrialPlant_with_codes record
@@ -44,10 +76,10 @@ and record.soil_disturbance_code = soil_disturbance_codes.code_name
 )
 
 
-    COMMENT ON VIEW Activity_Treatment_Chemical_MechanicalPlant IS 'View on biological treatments for terrestrial plant specific fields, with code table values resolved';
+    COMMENT ON VIEW Treatment_Mechanical_TerrestrialPlant_Summary IS 'View on biological treatments for terrestrial plant specific fields, with code table values resolved';
   `);
 }
 
 export async function down(knex: Knex): Promise<void> {
-  knex.raw(`drop view if exists invasivesbc.Activity_Treatment_Mechanical_TerrestrialPlant ;`);
+  knex.raw(`drop view if exists invasivesbc.Treatment_Mechanical_TerrestrialPlant_Summary cascade ;`);
 }
