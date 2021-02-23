@@ -45,7 +45,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       props.contextMenuState.setContextMenuState({ isOpen: true, lat: e.latlng.lat, lng: e.latlng.lng });
     });
   };
-  
 
   const getESRIBaseLayer = () => {
     return L.tileLayer.offline(
@@ -59,16 +58,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
-  const getESRIPlacenames = () => {
-    return L.tileLayer.offline(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-      {
-        maxZoom: 24,
-        maxNativeZoom: 17
-      }
-    );
-  };
-
   const getBCGovBaseLayer = () => {
     return L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 24,
@@ -77,81 +66,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
-
-  const getNRDistricts = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.8,
-      tms:true
-    });
-  };
-
-  const getWells = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.8,
-      tms:true
-    });
-  };
-
-  const getStreams = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.8,
-      tms:true
-    });
-  };
-
-  const getWetlands = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_WETLANDS_POLY@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.8,
-      tms:true
-    });
-  };
-
-  const getOwnership = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.4,
-      tms:true
-    });
-  };
-
-  const getRFI = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.8,
-      tms:true
-    });
-  };
-
-  const getRegionalDistricts = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.4,
-      tms:true
-    });
-  };
-
-  const getMunicipalites = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.4,
-      tms:true
-    });
-  };
-
-
-  const getRISO = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:regional_invasive_species_organization_areas@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.6,
-      tms:true
-    });
-  };
-
-  const getAggregate = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:aggregate_tenures@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.8,
-      tms:true
-    });
-  };
-  const getIPMA = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png',{
-      opacity: 0.6,
-      tms:true
+  const getSteepSlopes = () => {
+    return L.tileLayer.offline('https://forest-bridges.s3.amazonaws.com/steep-areas/{z}/{x}/{y}.png', {
+      maxZoom: 24,
+      tms: true,
+      opacity: 0.5,
+      maxNativeZoom: 15
     });
   };
 
@@ -221,9 +141,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const addLayerControls = (baseLayerControlOptions: any, overlayControlOptions: any) => {
-    mapRef.current.addControl(
-      L.control.layers(baseLayerControlOptions, overlayControlOptions,{position:'topleft'})
-    );
+    mapRef.current.addControl(L.control.layers(baseLayerControlOptions, overlayControlOptions));
   };
 
   const initMap = () => {
@@ -240,7 +158,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     const esriBaseLayer = getESRIBaseLayer();
-    const esriPlacenames = getESRIPlacenames();
     const bcBaseLayer = getBCGovBaseLayer();
 
     // Set initial base map
@@ -251,38 +168,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'BC Government': bcBaseLayer
     };
 
-    const nRDistricts = getNRDistricts();
-    const wells = getWells();
-    const streams = getStreams();
-    const wetlands = getWetlands();
-    const riso = getRISO();
-    const ipma = getIPMA();
-    const aggregate = getAggregate();
-    const ownership = getOwnership();
-    const municipalities = getMunicipalites();
-    const regionalDistricts = getRegionalDistricts();
-    const rfi = getRFI();
-    
+    const steepSlopes = getSteepSlopes();
     const overlays = {
-      'Placenames': esriPlacenames,
-      'Wells': wells,
-      'Gravel Pits': aggregate,
-      'Streams': streams,
-      'Wetlands': wetlands,
-      'Ownership': ownership,
-      'Invasive Plant Management Areas': ipma,
-      'Regional Invasive Species Organization Areas': riso,
-      'Natural Resource Districts': nRDistricts,
-      'Municipalites': municipalities,
-      'Regional Districts': regionalDistricts,
-      'Road Features Inventory': rfi
+      'Steep Slopes': steepSlopes
     };
 
-    mapRef.current.addLayer(esriPlacenames);
+    addLayerControls(basemaps, overlays);
 
     addSaveTilesControl(esriBaseLayer);
-
-    addLayerControls(basemaps, overlays);
 
     setMapBounds(mapRef.current.getBounds());
 
@@ -471,7 +364,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
-  return <div id={props.mapId} className={props.classes.map} />;
+  return (
+    <div> 
+      <div id='feed-me'></div>
+      <div id='yum-yum'></div>
+      <div id={props.mapId} className={props.classes.map}> </div>
+    </div>
+  );
 };
 
 export default MapContainer;
