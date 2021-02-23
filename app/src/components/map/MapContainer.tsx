@@ -34,27 +34,26 @@ export interface IMapContainerProps {
   };
 }
 
+const host = window.location.hostname;
+let geoserver
+switch (true) {
+  case /^localhost/.test(host):
+    geoserver = 'http://localhost:8080'
+    break;
+  case /^dev.*/.test(host):
+    geoserver = 'https://invasivesbci-geoserver-dev-7068ad-dev.apps.silver.devops.gov.bc.ca'
+    break;
+  case /^test.*/.test(host):
+    geoserver = 'https://invasivesbci-geoserver-tst-7068ad-tst.apps.silver.devops.gov.bc.ca'
+    break;
+  case /^invasivesbc.*/.test(host):
+    geoserver = 'https://invasivesbci-geoserver-7068ad.apps.silver.devops.gov.bc.ca'
+    break;
+}
+
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
-  // TODO: Would like to eventually proxy Geoserver through
-  // the API. This will do for now.
-  const host = window.location.hostname;
-  let geoserver
-  switch (true) {
-    case /^localhost/.test(host):
-      geoserver = 'http://localhost:8080'
-      break;
-    case /^dev.*/.test(host):
-      geoserver = 'https://invasivesbci-geoserver-dev-7068ad-dev.apps.silver.devops.gov.bc.ca'
-      break;
-    case /^test.*/.test(host):
-      geoserver = 'https://invasivesbci-geoserver-tst-7068ad-tst.apps.silver.devops.gov.bc.ca'
-      break;
-    case /^invasivesbc.*/.test(host):
-      geoserver = 'https://invasivesbci-geoserver-7068ad.apps.silver.devops.gov.bc.ca'
-      break;
-  }
 
   const mapRef = useRef(null);
 
