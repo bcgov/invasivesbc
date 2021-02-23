@@ -15,6 +15,7 @@ import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
 
+
 export type MapControl = (map: any, ...args: any) => void;
 
 export interface IMapContainerProps {
@@ -35,6 +36,25 @@ export interface IMapContainerProps {
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
+
+  // TODO: Would like to eventually proxy Geoserver through
+  // the API. This will do for now.
+  const host = window.location.hostname;
+  let geoserver
+  switch (true) {
+    case /^localhost/.test(host):
+      geoserver = 'http://localhost:8080'
+      break;
+    case /^dev.*/.test(host):
+      geoserver = 'https://invasivesbci-geoserver-dev-7068ad-dev.apps.silver.devops.gov.bc.ca'
+      break;
+    case /^test.*/.test(host):
+      geoserver = 'https://invasivesbci-geoserver-tst-7068ad-tst.apps.silver.devops.gov.bc.ca'
+      break;
+    case /^invasivesbc.*/.test(host):
+      geoserver = 'https://invasivesbci-geoserver-7068ad.apps.silver.devops.gov.bc.ca'
+      break;
+  }
 
   const mapRef = useRef(null);
 
@@ -79,56 +99,56 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
 
   const getNRDistricts = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.8,
       tms:true
     });
   };
 
   const getWells = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.8,
       tms:true
     });
   };
 
   const getStreams = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.8,
       tms:true
     });
   };
 
   const getWetlands = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_WETLANDS_POLY@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_WETLANDS_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.8,
       tms:true
     });
   };
 
   const getOwnership = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.4,
       tms:true
     });
   };
 
   const getRFI = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.8,
       tms:true
     });
   };
 
   const getRegionalDistricts = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.4,
       tms:true
     });
   };
 
   const getMunicipalites = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.4,
       tms:true
     });
@@ -136,20 +156,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
 
   const getRISO = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:regional_invasive_species_organization_areas@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:regional_invasive_species_organization_areas@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.6,
       tms:true
     });
   };
 
   const getAggregate = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:aggregate_tenures@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:aggregate_tenures@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.8,
       tms:true
     });
   };
   const getIPMA = () => {
-    return L.tileLayer.offline('http://localhost:8080/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png',{
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png`,{
       opacity: 0.6,
       tms:true
     });
