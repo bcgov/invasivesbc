@@ -25,7 +25,7 @@ export interface ITabConfig {
 }
 
 //const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
-const invbclogo = require('../../../../../inv2/app/src/InvasivesBC_Icon.svg');
+const invbclogo = require('InvasivesBC_Icon.svg');
 
 const TabsContainer: React.FC = () => {
   const keycloak = useKeycloakWrapper();

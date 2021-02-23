@@ -3,23 +3,22 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Treatment_Biological_TerrestrialPlant ;
-  CREATE OR REPLACE VIEW Activity_Treatment_Biological_TerrestrialPlant as (
+  drop view if exists invasivesbc.Treatment_Biological_TerrestrialPlant_Summary ;
+  CREATE OR REPLACE VIEW Treatment_Biological_TerrestrialPlant_Summary as (
         select
         record.activity_id,
         record.invasive_plant_code,
-        invasive_plant_codes.description,
+        invasive_plant_codes.code_description as invasive_plant,
         record.classified_area_code,
-        classified_area_codes.description,
-        record.applicator1_license_number,
+        classified_area_codes.code_description as classified_area,
+        record.applicator1_licence_number,
         record.agent_source,
-        biological_agent_codes.description,
+        biological_agent_codes.code_description as biological_agent,
         record.biological_agent_stage_code,
-        biological_agent_stage_codes.description,
         record.bioagent_maturity_status_code,
-        bioagent_maturity_status_codes.description
+        bioagent_maturity_status_codes.code_description as bioagent_maturity_status
 
-        from invasivesbc.Activity_Treatment_Biological_TerrestrialPlant_with_codes
+        from invasivesbc.Activity_Treatment_Biological_TerrestrialPlant_with_codes record
 
 left join code_header invasive_plant_code_header on invasive_plant_code_header.code_header_title = 'invasive_plant_code' and invasive_plant_code_header.valid_to is null
 left join code invasive_plant_codes on invasive_plant_codes.code_header_id = invasive_plant_code_header.code_header_id
@@ -37,17 +36,17 @@ left join code_header biological_agent_stage_code_header on biological_agent_sta
 left join code biological_agent_stage_codes on biological_agent_stage_codes.code_header_id = biological_agent_stage_code_header.code_header_id
 and record.biological_agent_stage_code = biological_agent_stage_codes.code_name
 
-left join code_header bioloagent_maturity_status_code_header on bioloagent_maturity_status_code_header.code_header_title = 'bioloagent_maturity_status_code' and bioloagent_maturity_status_code_header.valid_to is null
-left join code bioloagent_maturity_status_codes on bioloagent_maturity_status_codes.code_header_id = bioloagent_maturity_status_code_header.code_header_id
-and record.bioloagent_maturity_status_code = bioloagent_maturity_status_codes.code_name
+left join code_header bioagent_maturity_status_code_header on bioagent_maturity_status_code_header.code_header_title = 'bioagent_maturity_status_code' and bioagent_maturity_status_code_header.valid_to is null
+left join code bioagent_maturity_status_codes on bioagent_maturity_status_codes.code_header_id = bioagent_maturity_status_code_header.code_header_id
+and record.bioagent_maturity_status_code = bioagent_maturity_status_codes.code_name
 
 )
 
 
-    COMMENT ON VIEW Activity_Treatment_Chemical_BiologicalPlant IS 'View on biological treatments for terrestrial plant specific fields, with code table values resolved';
+    COMMENT ON VIEW Treatment_Chemical_BiologicalPlant_Summary IS 'View on biological treatments for terrestrial plant specific fields, with code table values resolved';
   `);
 }
 
 export async function down(knex: Knex): Promise<void> {
-  knex.raw(`drop view if exists invasivesbc.Activity_Treatment_Biological_TerrestrialPlant ;`);
+  knex.raw(`drop view if exists invasivesbc.Treatment_Biological_TerrestrialPlant_Summary ;`);
 }
