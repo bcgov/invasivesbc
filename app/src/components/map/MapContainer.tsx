@@ -45,7 +45,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       props.contextMenuState.setContextMenuState({ isOpen: true, lat: e.latlng.lat, lng: e.latlng.lng });
     });
   };
-  
+
 
   const getESRIBaseLayer = () => {
     return L.tileLayer.offline(
@@ -262,7 +262,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const municipalities = getMunicipalites();
     const regionalDistricts = getRegionalDistricts();
     const rfi = getRFI();
-    
+
     const overlays = {
       'Placenames': esriPlacenames,
       'Wells': wells,
@@ -312,7 +312,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const convertLineStringToPoly = (aGeo: any) => {
       if (aGeo.geometry.type === 'LineString') {
         const buffer = prompt('Enter buffer width (total) in meters', '1');
-        const buffered = turf.buffer(aGeo.geometry, parseInt(buffer) / 1000, { units: 'kilometers', steps: 1 });
+        const buffered = turf.buffer(aGeo.geometry, parseInt(buffer,10) / 1000, { units: 'kilometers', steps: 1 });
         const result = turf.featureCollection([buffered, aGeo.geometry]);
 
         return { ...aGeo, geometry: result.features[0].geometry };
@@ -321,14 +321,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       return aGeo;
     };
 
-    mapRef.current.on('draw:editstop', async function () {
+    mapRef.current.on('draw:editstop', async () => {
       // The current feature isn't passed to this function, so grab it from the acetate layer
       let aGeo = drawnItems?.toGeoJSON()?.features[0];
 
       // If this is a circle feature... Grab the radius and store in the GeoJSON
       if (drawnItems.getLayers()[0]._mRadius) {
         const radius = drawnItems.getLayers()[0]?.getRadius();
-        aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: radius } };
+        aGeo = { ...aGeo, properties: { ...aGeo.properties, radius } };
       }
 
       aGeo = convertLineStringToPoly(aGeo);
@@ -339,7 +339,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     });
 
-    mapRef.current.on('draw:deleted', function () {
+    mapRef.current.on('draw:deleted', () => {
       const aGeo = drawnItems?.toGeoJSON()?.features[0];
 
       props.geometryState.setGeometry(
@@ -367,7 +367,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         };
 
         L.geoJSON(collection, {
-          style: style,
+          style,
           pointToLayer: (feature: any, latLng: any) => {
             if (feature.properties.radius) {
               return L.circle(latLng, { radius: feature.properties.radius });
@@ -375,7 +375,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               return L.circleMarker(latLng, markerStyle);
             }
           },
-          onEachFeature: function (feature: any, layer: any) {
+          onEachFeature: (feature: any, layer: any) => {
             drawnItems.addLayer(layer);
           }
         });
@@ -396,7 +396,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         };
 
         L.geoJSON(interactObj.geometry, {
-          style: style,
+          style,
           pointToLayer: (feature: any, latLng: any) => {
             if (feature.properties.radius) {
               return L.circle(latLng, { radius: feature.properties.radius });
@@ -404,10 +404,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               return L.circleMarker(latLng, markerStyle);
             }
           },
-          onEachFeature: function (feature: any, layer: any) {
+          onEachFeature: (feature: any, layer: any) => {
             drawnItems.addLayer(layer);
-            let content = interactObj.popUpComponent(interactObj.description);
-            layer.on('click', function () {
+            const content = interactObj.popUpComponent(interactObj.description);
+            layer.on('click', () => {
               // Fires on click of single feature
               interactObj.onClickCallback();
               if (feature.geometry.type !== 'Polygon') {
