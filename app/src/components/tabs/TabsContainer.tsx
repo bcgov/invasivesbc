@@ -25,7 +25,7 @@ export interface ITabConfig {
 }
 
 //const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
-// const invbclogo = require('../../../../../inv2/app/src/InvasivesBC_Icon.svg');
+const invbclogo = require('../../../../../inv2/app/src/InvasivesBC_Icon.svg');
 
 const TabsContainer: React.FC = () => {
   const keycloak = useKeycloakWrapper();
@@ -139,13 +139,13 @@ const TabsContainer: React.FC = () => {
     <AppBar position="static">
       <Toolbar>
         <Grid className={classes.alignment} container>
-          {/* <img
+          <img
             className={classes.pointer}
             src={invbclogo}
             width="50"
             alt="B.C. Government Logo"
             onClick={() => history.push('/')}
-          /> */}
+          />
           <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
             {tabConfig.map((tab) => (
               <Tab
