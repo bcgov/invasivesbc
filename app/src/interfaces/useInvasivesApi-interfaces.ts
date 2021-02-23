@@ -209,6 +209,19 @@ export interface IMetabaseQuerySearchCriteria {
 }
 
 /**
+ * Create Metabase Query post body
+ *
+ * @export
+ * @interface ICreateMetabaseQuery
+ */
+export interface ICreateMetabaseQuery {
+  name?: string;
+  description?: string;
+  activity_ids?: string[];
+  point_of_interest_ids?: string[];
+}
+
+/**
  * Create point_of_interest endpoint post body.
  *
  * @export
