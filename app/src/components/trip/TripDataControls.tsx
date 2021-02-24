@@ -172,7 +172,7 @@ export const TripDataControls: React.FC = (props) => {
   };
 
   const fetchMetabaseQueries = async () => {
-    if (!trip || !trip.metabaseChoices) {
+    if (!trip || !trip.metabaseChoices || !trip.metabaseChoices.length) {
       return;
     }
 
@@ -186,6 +186,11 @@ export const TripDataControls: React.FC = (props) => {
         ...((setOfChoices.metabaseQueryId && { metabaseQueryId: setOfChoices.metabaseQueryId }) || {}),
         ...((geometry && { search_feature: geometry }) || {})
       };
+
+      if (!setOfChoices.metabaseQueryId) {
+        notifyError(databaseContext, 'Metabase Query ID cannot be blank, please select a query');
+        return;
+      }
 
       let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
 

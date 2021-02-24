@@ -355,7 +355,7 @@ function createMetabaseQuery(): RequestHandler {
  */
 function getMetabaseQueryOptions(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'metabase', message: 'getMetabaseQueryResults', body: req.body });
+    defaultLog.debug({ label: 'metabase', message: 'getMetabaseQueryOptions', body: req.body });
 
     try {
       const session = await getMetabaseSession();
@@ -392,7 +392,7 @@ function getMetabaseQueryOptions(): RequestHandler {
     } catch (error) {
       // reset session on error (just in case):
       closeMetabaseSession();
-      defaultLog.debug({ label: 'getMetabaseQueryResults', message: 'error', error });
+      defaultLog.debug({ label: 'getMetabaseQueryOptions', message: 'error', error });
       throw error;
     }
   };
