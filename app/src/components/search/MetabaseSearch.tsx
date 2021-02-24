@@ -66,8 +66,10 @@ export const MetabaseSearch: React.FC<any> = (props) => {
 
       // update metabase query options (rate limited to once per minute so we don't break metabase)
       if (
-        !tripDoc.metabaseQueryOptionsLastChecked ||
-        moment().diff(tripDoc.metabaseQueryOptionsLastChecked, 'minutes') >= 1
+        tripDoc.metabaseChoices && (
+          !tripDoc.metabaseQueryOptionsLastChecked ||
+          moment().diff(tripDoc.metabaseQueryOptionsLastChecked, 'minutes') >= 1
+        )
       ) {
         let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
         await databaseContext.database.upsert('trip', (doc) => {

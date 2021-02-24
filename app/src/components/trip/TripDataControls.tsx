@@ -172,7 +172,7 @@ export const TripDataControls: React.FC = (props) => {
   };
 
   const fetchMetabaseQueries = async () => {
-    if (!trip || !trip.metabaseChoices) {
+    if (!trip || !trip.metabaseChoices || !trip.metabaseChoices.length) {
       return;
     }
 
