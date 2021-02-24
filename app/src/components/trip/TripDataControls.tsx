@@ -187,6 +187,11 @@ export const TripDataControls: React.FC = (props) => {
         ...((geometry && { search_feature: geometry }) || {})
       };
 
+      if (!setOfChoices.metabaseQueryId) {
+        notifyError(databaseContext, 'Metabase Query ID cannot be blank, please select a query');
+        return;
+      }
+
       let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
 
       await databaseContext.database.upsert('trip', (tripDoc) => ({
