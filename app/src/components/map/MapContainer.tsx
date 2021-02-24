@@ -14,7 +14,6 @@ import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
-import KMLUpload from 'components/map-buddy-components/KMLUpload2';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -315,7 +314,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       Placenames: esriPlacenames,
       Wells: wells,
       'Gravel Pits': aggregate,
-      Streams: streams,
+      '<span style="color:blue;"><b>Streams</b></span>': streams,
       Wetlands: wetlands,
       Ownership: ownership,
       'Invasive Plant Management Areas': ipma,
@@ -519,11 +518,40 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
+  const dragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Drag enter',e);
+  }
+
+  const dragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Drag leave',e);
+  }
+
+  const dragDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Drag drop',e.dataTransfer.files[0].name);
+  }
+
+  /* ## dragOver
+    This cancels the default behaviour of trying to open 
+    the file in the browser window.
+    @param e {object} Dragging event
+   */
+  const dragOver = (e) => e.preventDefault();
+
   return (
-    <div>
-      <KMLUpload /> 
-      <div id={props.mapId} className={props.classes.map}> </div>
-    </div>
+    <div
+      id={props.mapId}
+      className={props.classes.map}
+      onDragEnter={dragEnter}
+      onDragLeave={dragLeave}
+      onDragOver={dragOver}
+      onDrop={dragDrop}
+    ></div>
   );
 };
 
