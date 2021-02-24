@@ -14,6 +14,7 @@ import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
+import KMLUpload from 'components/map-buddy-components/KMLUpload2';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -518,10 +519,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
-  return (<div id={props.mapId} className={props.classes.map}>
-    <div id='feed-me'></div>
-    <div id='yum-yum'></div>
-  </div>);
+  return (
+    <div>
+      <KMLUpload /> 
+      <div id={props.mapId} className={props.classes.map}> </div>
+    </div>
+  );
 };
 
 export default MapContainer;

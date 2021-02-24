@@ -2,6 +2,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { kml } from '@tmcw/togeojson';
+import { NONAME } from 'dns';
 // node doesn't have xml parsing or a dom. use xmldom
 const DOMParser = require('xmldom').DOMParser;
 
@@ -33,13 +34,18 @@ export const KMLUpload: React.FC<any> = (props) => {
     }
   }, [aFile]);
 
+  const dropStyle = {
+      opacity: 0.5,
+      display: 'none'
+  }
+
   return (
-    <DropzoneArea
-      dropzoneText="Upload KML here"
-      onChange={(e) => {
-        setAFile(e[0]);
-      }}
-    />
+     <div style={dropStyle}>
+        <DropzoneArea
+        dropzoneText="Feed me some KML"
+        onChange={(e) => { setAFile(e[0]); }}
+        />
+     </div>
   );
 };
 
