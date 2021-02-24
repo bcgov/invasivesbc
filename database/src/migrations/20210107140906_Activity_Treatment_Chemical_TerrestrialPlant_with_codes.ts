@@ -30,7 +30,8 @@ export async function up(knex: Knex): Promise<void> {
       from activity_incoming_data
       where activity_incoming_data.activity_type = 'Treatment'
       and activity_incoming_data.activity_subtype = 'Activity_Treatment_ChemicalPlant'
-      )
+      and deleted_timestamp is null
+      );
     COMMENT ON VIEW Activity_Treatment_Chemical_TerrestrialPlant_with_codes IS 'View on terrestrial plant chemical treatments specific fields, with raw code table values';
   `);
 }

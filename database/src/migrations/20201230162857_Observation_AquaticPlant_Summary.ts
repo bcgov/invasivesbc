@@ -35,7 +35,7 @@ export async function up(knex: Knex): Promise<void> {
     record.general_comment,
     record.access_description,
     record.jurisdictions,
-    record.project_code
+    record.project_code,
     record.geom,
     record.geog,
     record.media_keys,

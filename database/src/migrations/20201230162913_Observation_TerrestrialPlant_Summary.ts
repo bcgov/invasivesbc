@@ -7,38 +7,38 @@ export async function up(knex: Knex): Promise<void> {
   CREATE OR REPLACE VIEW Activity_Observation_TerrestrialPlant as (
         select
     record.activity_id,
-    record.version,
-    record.activity_date_time,
-    record.submitted_time,
-    record.received_timestamp,
-    record.deleted_timestamp,
+    summary.version,
+    summary.activity_date_time,
+    summary.submitted_time,
+    summary.received_timestamp,
+    summary.deleted_timestamp,
 
-    record.biogeoclimatic_zones,
-    record.regional_invasive_species_organization_areas,
-    record.invasive_plant_management_areas,
-    record.ownership,
-    record.regional_districts,
-    record.flnro_districts,
-    record.moti_districts,
-    record.elevation,
-    record.well_proximity,
-    record.utm_zone,
-    record.utm_northing,
-    record.utm_easting,
-    record.albers_northing,
-    record.albers_easting,
+    summary.biogeoclimatic_zones,
+    summary.regional_invasive_species_organization_areas,
+    summary.invasive_plant_management_areas,
+    summary.ownership,
+    summary.regional_districts,
+    summary.flnro_districts,
+    summary.moti_districts,
+    summary.elevation,
+    summary.well_proximity,
+    summary.utm_zone,
+    summary.utm_northing,
+    summary.utm_easting,
+    summary.albers_northing,
+    summary.albers_easting,
 
-    record.latitude,
-    record.longitude,
-    record.reported_area,
-    record.invasive_species_agency_code,
-    record.general_comment,
-    record.access_description,
-    record.jurisdictions,
-    record.project_code
-    record.geom,
-    record.geog,
-    record.media_keys,
+    summary.latitude,
+    summary.longitude,
+    summary.reported_area,
+    summary.invasive_species_agency_code,
+    summary.general_comment,
+    summary.access_description,
+    summary.jurisdictions,
+    summary.project_code,
+    summary.geom,
+    summary.geog,
+    summary.media_keys,
 	      invasive_plant_codes.code_description as invasive_plant,
 	      record.invasive_plant_code,
 		    invasive_plant_density_codes.code_description as invasive_plant_density,
@@ -70,6 +70,9 @@ export async function up(knex: Knex): Promise<void> {
         special_care_ind,
         biological_ind
         from invasivesbc.Activity_Observation_TerrestrialPlant_with_codes record
+
+
+        inner join observation_summary summary on summary.activity_id = record.activity_id
 
 left join code_header invasive_plant_code_header on invasive_plant_code_header.code_header_title = 'invasive_plant_code' and invasive_plant_code_header.valid_to is null
 left join code invasive_plant_codes on invasive_plant_codes.code_header_id = invasive_plant_code_header.code_header_id
@@ -115,9 +118,8 @@ left join code_header plant_seed_stage_code_header on plant_seed_stage_code_head
 left join code plant_seed_stage_codes on plant_seed_stage_codes.code_header_id = plant_seed_stage_code_header.code_header_id
 and record.plant_seed_stage_code = aspect_codes.code_name
 
-where record.deleted_timestamp is null
-)
-    COMMENT ON VIEW Activity_Observation_TerrestrialPlant IS 'View on terrestrial plant observation specific fields, with code table values resolved';
+);
+    COMMENT ON VIEW Observation_TerrestrialPlant IS 'View on terrestrial plant observation specific fields, with code table values resolved';
   `);
 }
 

@@ -7,6 +7,7 @@ export async function up(knex: Knex): Promise<void> {
   CREATE OR REPLACE VIEW Activity_Observation_AquaticPlant_with_codes as (
       select
       activity_id as activity_id,
+      version,
       trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'invasive_plant_code')::text)) as invasive_plant_code,
       trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'specific_use_code')::text)) as specific_use_code,
       trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'proposed_treatment_code')::text)) as proposed_treatment_code,

@@ -19,7 +19,8 @@ CREATE OR REPLACE VIEW Activity_Treatment_Biological_TerrestrialPlant_with_codes
     from activity_incoming_data
     where activity_incoming_data.activity_type = 'Treatment'
     and activity_incoming_data.activity_subtype = 'Treatment_BiologicalPlant'
-    )
+    and deleted_timestamp is null
+    );
     COMMENT ON VIEW Activity_Treatment_Chemical_BiologicalPlant_with_codes IS 'View on terrestrial plant biological treatments specific fields, with raw code table values';
   `);
 }

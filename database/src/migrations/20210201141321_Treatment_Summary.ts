@@ -50,7 +50,7 @@ export async function up(knex: Knex): Promise<void> {
     from activity_incoming_data
     where activity_incoming_data.activity_type = 'Treatment'
 	and deleted_timestamp is null
-    )
+    );
     COMMENT ON VIEW Treatment_Summary IS 'View on fields common to all types of observations, with table activity_incoming_data as source.';
   `);
 }

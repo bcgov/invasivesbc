@@ -3,8 +3,8 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
   set search_path=invasivesbc;
-  drop VIEW if exists Observation_Summary cascade;
-  CREATE OR REPLACE VIEW Observation_Summary as (
+  drop VIEW if exists invasivesbc.Observation_Summary cascade;
+  CREATE OR REPLACE VIEW invasivesbc.Observation_Summary as (
     select
     activity_id,
     activity_subtype as observation_type,
@@ -37,7 +37,7 @@ export async function up(knex: Knex): Promise<void> {
     activity_payload::json->'form_data'->'activity_data'->'general_comment' as general_comment,
     activity_payload::json->'form_data'->'activity_data'->'access_description' as access_description,
     activity_payload::json->'form_data'->'activity_data'->'jurisdictions' as jurisdictions,
-    activity_payload::json->'form_data'->'activity_data'->'project_code' as project_code
+    activity_payload::json->'form_data'->'activity_data'->'project_code' as project_code,
 
     geom,
     geog,
@@ -49,14 +49,14 @@ export async function up(knex: Knex): Promise<void> {
     activity_payload::json->'location_comment' as location_comment__NEEDS_VERIFY,
     activity_payload::json->'form_data'->'activity_data'->'general_comment' as general_observation_comment__NEEDS_VERIFY
 
-    from activity_incoming_data
-    where activity_incoming_data.activity_type = 'Observation'
+    from invasivesbc.activity_incoming_data
+    where invasivesbc.activity_incoming_data.activity_type = 'Observation'
 	and deleted_timestamp is null
-    )
-    COMMENT ON VIEW Observation_Summary IS 'View on fields common to all types of observations, with table activity_incoming_data as source.';
+    );
+    COMMENT ON VIEW invasivesbc.Observation_Summary IS 'View on fields common to all types of observations, with table activity_incoming_data as source.';
   `);
 }
 
 export async function down(knex: Knex): Promise<void> {
-  knex.raw(`drop view if exists Observation_Summary cascade`);
+  knex.raw(`drop view if exists invasivesbc.Observation_Summary cascade`);
 }
