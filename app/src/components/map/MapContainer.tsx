@@ -15,7 +15,6 @@ import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
 
-
 export type MapControl = (map: any, ...args: any) => void;
 
 export interface IMapContainerProps {
@@ -35,25 +34,24 @@ export interface IMapContainerProps {
 }
 
 const host = window.location.hostname;
-let geoserver
+let geoserver;
 switch (true) {
   case /^localhost/.test(host):
-    geoserver = 'http://localhost:8080'
+    geoserver = 'http://localhost:8080';
     break;
   case /^dev.*/.test(host):
-    geoserver = 'https://invasivesbci-geoserver-dev-7068ad-dev.apps.silver.devops.gov.bc.ca'
+    geoserver = 'https://invasivesbci-geoserver-dev-7068ad-dev.apps.silver.devops.gov.bc.ca';
     break;
   case /^test.*/.test(host):
-    geoserver = 'https://invasivesbci-geoserver-tst-7068ad-tst.apps.silver.devops.gov.bc.ca'
+    geoserver = 'https://invasivesbci-geoserver-tst-7068ad-tst.apps.silver.devops.gov.bc.ca';
     break;
   case /^invasivesbc.*/.test(host):
-    geoserver = 'https://invasivesbci-geoserver-7068ad.apps.silver.devops.gov.bc.ca'
+    geoserver = 'https://invasivesbci-geoserver-7068ad.apps.silver.devops.gov.bc.ca';
     break;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-
 
   const mapRef = useRef(null);
 
@@ -64,7 +62,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       props.contextMenuState.setContextMenuState({ isOpen: true, lat: e.latlng.lat, lng: e.latlng.lng });
     });
   };
-
 
   const getESRIBaseLayer = () => {
     return L.tileLayer.offline(
@@ -96,82 +93,113 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
-
   const getNRDistricts = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.8,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
   };
 
   const getWells = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.8,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
   };
 
   const getStreams = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.8,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
   };
 
   const getWetlands = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_WETLANDS_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.8,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_WETLANDS_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
   };
 
   const getOwnership = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.4,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.4,
+        tms: true
+      }
+    );
   };
 
   const getRFI = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.8,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
   };
 
   const getRegionalDistricts = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.4,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.4,
+        tms: true
+      }
+    );
   };
 
   const getMunicipalites = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.4,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.4,
+        tms: true
+      }
+    );
   };
 
-
   const getRISO = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:regional_invasive_species_organization_areas@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.6,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:regional_invasive_species_organization_areas@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
   };
 
   const getAggregate = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:aggregate_tenures@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.8,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:aggregate_tenures@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
   };
   const getIPMA = () => {
-    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png`,{
-      opacity: 0.6,
-      tms:true
-    });
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
   };
 
   const addZoomControls = () => {
@@ -241,7 +269,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const addLayerControls = (baseLayerControlOptions: any, overlayControlOptions: any) => {
     mapRef.current.addControl(
-      L.control.layers(baseLayerControlOptions, overlayControlOptions,{position:'topleft'})
+      L.control.layers(baseLayerControlOptions, overlayControlOptions, { position: 'topleft' })
     );
   };
 
@@ -283,16 +311,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const rfi = getRFI();
 
     const overlays = {
-      'Placenames': esriPlacenames,
-      'Wells': wells,
+      Placenames: esriPlacenames,
+      Wells: wells,
       'Gravel Pits': aggregate,
-      'Streams': streams,
-      'Wetlands': wetlands,
-      'Ownership': ownership,
+      Streams: streams,
+      Wetlands: wetlands,
+      Ownership: ownership,
       'Invasive Plant Management Areas': ipma,
       'Regional Invasive Species Organization Areas': riso,
       'Natural Resource Districts': nRDistricts,
-      'Municipalites': municipalities,
+      Municipalites: municipalities,
       'Regional Districts': regionalDistricts,
       'Road Features Inventory': rfi
     };
@@ -331,7 +359,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const convertLineStringToPoly = (aGeo: any) => {
       if (aGeo.geometry.type === 'LineString') {
         const buffer = prompt('Enter buffer width (total) in meters', '1');
-        const buffered = turf.buffer(aGeo.geometry, parseInt(buffer,10) / 1000, { units: 'kilometers', steps: 1 });
+        const buffered = turf.buffer(aGeo.geometry, parseInt(buffer, 10) / 1000, { units: 'kilometers', steps: 1 });
         const result = turf.featureCollection([buffered, aGeo.geometry]);
 
         return { ...aGeo, geometry: result.features[0].geometry };
