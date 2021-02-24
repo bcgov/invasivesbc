@@ -4,7 +4,8 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
   ICreateOrUpdateActivity,
-  IMetabaseQuerySearchCriteria
+  IMetabaseQuerySearchCriteria,
+  ICreateMetabaseQuery
 } from 'interfaces/useInvasivesApi-interfaces';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
@@ -47,9 +48,9 @@ export const useInvasivesApi = () => {
   const databaseContext = useContext(DatabaseContext);
 
   /**
-   * Fetch activities by search criteria.
-   *
-   * @param {activitiesSearchCriteria} activitiesSearchCriteria
+   * Fetch*
+ activities by search criteria.
+      * @param {activitiesSearchCriteria} activitiesSearchCriteria
    * @return {*}  {Promise<any>}
    */
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
@@ -111,14 +112,14 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getMetabaseQueryResults = async (metabaseQueriesSearchCriteria: IMetabaseQuerySearchCriteria): Promise<any> => {
-    const { data } = await api.post('/api/metabase-fetch', metabaseQueriesSearchCriteria);
+    const { data } = await api.get(`/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`);
     let activities, points_of_interest;
-    if (data.activity_ids.length)
+    if (data?.activity_ids?.length)
       activities = await getActivities({
         activity_ids: data.activity_ids,
         search_feature: metabaseQueriesSearchCriteria.search_feature
       });
-    if (data.point_of_interest_ids.length)
+    if (data?.point_of_interest_ids?.length)
       points_of_interest = await getPointsOfInterest({
         point_of_interest_ids: data.point_of_interest_ids,
         search_feature: metabaseQueriesSearchCriteria.search_feature
@@ -129,6 +130,29 @@ export const useInvasivesApi = () => {
       activities: activities?.rows?.length ? activities.rows : [],
       points_of_interest: points_of_interest?.length ? points_of_interest : []
     };
+  };
+
+  /**
+   * Create Metabase Query from a list of activity ids and point of interest ids
+   *
+   * @param {metabaseQueriesCreateCriteria} ICreateMetabaseQuery
+   * @return {*}  {Promise<any>}
+   */
+  const createMetabaseQuery = async (metabaseQueriesCreateCriteria: ICreateMetabaseQuery): Promise<any> => {
+    const { data } = await api.post(`/api/metabase-query`, metabaseQueriesCreateCriteria);
+
+    return data;
+  };
+
+  /**
+   * Fetch list of all Metabase query options (collections/questions/cards) to present to the user dropdown
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getMetabaseQueryOptions = async (): Promise<any> => {
+    const { data } = await api.get('/api/metabase-query');
+
+    return data.options;
   };
 
   /**
@@ -246,6 +270,8 @@ export const useInvasivesApi = () => {
     getApiSpec,
     getCachedApiSpec,
     getPointsOfInterest,
-    getMetabaseQueryResults
+    getMetabaseQueryResults,
+    getMetabaseQueryOptions,
+    createMetabaseQuery
   };
 };

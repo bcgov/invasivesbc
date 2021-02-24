@@ -3,18 +3,15 @@
 import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SEARCH_LIMIT_MAX } from '../constants/misc';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SEARCH_LIMIT_MAX } from '../../constants/misc';
+import { getLogger } from '../../utils/logger';
+import { getMetabaseSession, closeMetabaseSession, METABASE_URL, METABASE_TIMEOUT } from '../metabase-query';
 
-const defaultLog = getLogger('activity');
+const defaultLog = getLogger('metabase-query/{queryId}');
 
-const METABASE_URL: string = process.env.METABASE_URL || 'https://metabase-7068ad-dev.apps.silver.devops.gov.bc.ca';
-const METABASE_USER: string = process.env.METABASE_USER || 'hello';
-const METABASE_PASS: string = process.env.METABASE_PASS || 'world';
+export const GET: Operation = [getMetabaseQueryResults()];
 
-export const POST: Operation = [getMetabaseQueryResults()];
-
-POST.apiDoc = {
+GET.apiDoc = {
   description: 'Fetches all activity and point of interest ids from an existing Metabase query.',
   tags: ['metabase'],
   security: [
@@ -22,20 +19,13 @@ POST.apiDoc = {
       Bearer: ALL_ROLES
     }
   ],
-  requestBody: {
-    description: 'Metabase Search filter.',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {
-            metabaseQueryId: {
-              type: 'string'
-            }
-          }
-        }
-      }
+  parameters: [
+    {
+      in: 'path',
+      name: 'queryId',
+      required: true
     }
-  },
+  ],
   responses: {
     200: {
       description: 'Metabase response array of ids.',
@@ -46,6 +36,9 @@ POST.apiDoc = {
             items: {
               type: 'object',
               properties: {
+                name: {
+                  type: 'string'
+                },
                 activity_ids: {
                   type: 'array',
                   items: {
@@ -83,10 +76,10 @@ POST.apiDoc = {
  */
 function getMetabaseQueryResults(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'metabase', message: 'getMetabaseQueryResults', body: req.body });
+    defaultLog.debug({ label: '{queryId}', message: 'getMetabaseQueryResults', body: req.params });
 
     try {
-      const queryId = req?.body?.metabaseQueryId;
+      const queryId = req?.params?.queryId;
 
       if (!queryId) {
         throw {
@@ -95,41 +88,22 @@ function getMetabaseQueryResults(): RequestHandler {
         };
       }
 
-      const metabaseSession = await axios({
-        method: 'post',
-        url: METABASE_URL + `/api/session`,
-        data: {
-          username: METABASE_USER,
-          password: METABASE_PASS
-        },
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        timeout: 10000
-      });
+      const session = await getMetabaseSession();
 
-      if (!metabaseSession.data.id) {
-        throw {
-          status: 503,
-          message: 'Failed to establish metabase session'
-        };
-      }
-
-      const sessionId = metabaseSession.data.id;
       const response = await axios({
         method: 'post',
         url: `${METABASE_URL}/api/card/${queryId}/query/json`,
         headers: {
           'Content-Type': 'application/json',
-          'X-Metabase-Session': sessionId
+          'X-Metabase-Session': session
         },
-        timeout: 10000
+        timeout: METABASE_TIMEOUT
       });
 
       if (!response || !response.data || !response.data.length) {
         throw {
           status: 400,
-          message: 'Failed to find metabase query with id ' + queryId
+          message: 'Failed to fetch metabase query with id ' + queryId
         };
       }
 
@@ -146,6 +120,8 @@ function getMetabaseQueryResults(): RequestHandler {
           .splice(0, SEARCH_LIMIT_MAX)
       });
     } catch (error) {
+      // reset session on error (just in case):
+      closeMetabaseSession();
       defaultLog.debug({ label: 'getMetabaseQueryResults', message: 'error', error });
       throw error;
     }
