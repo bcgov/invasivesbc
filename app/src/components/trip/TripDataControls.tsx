@@ -36,11 +36,51 @@ export const TripDataControls: React.FC = (props) => {
   const [trip, setTrip] = useState(null);
   const [fetching, setFetching] = useState(false);
 
-  const getTrip = useCallback(async () => {
-    let docs = await databaseContext.database.find({ selector: { _id: 'trip' } });
+  const bulkUpsert = async (databaseContext, upserts) => {
+    let allDocs = await databaseContext.database.allDocs({include_docs: true}).rows;
+    if (!allDocs) allDocs = [];
 
-    if (!docs || !docs.docs || !docs.docs.length) {
-      return;
+    console.log(allDocs.length);
+    const newUpserts = {...upserts};
+
+    const modifiedDocs = allDocs
+      .filter((doc) => {
+        newUpserts[doc.id] = undefined; // remove found docs
+        return upserts[doc.id];
+      })
+      .map((doc) => upserts[doc.id](doc));
+    const newDocs = Object.keys(newUpserts)
+        .filter((id) => newUpserts[id])
+        .map((id) => upserts[id]());
+
+    const resultDocs = [
+      // ...modifiedDocs,
+      ...newDocs
+    ];
+    resultDocs.sort((a, b) => {
+      if (a.id < b.id) return -1;
+      if (a.id > b.id) return 1;
+      return 0;
+    });
+    //console.log(1111);
+    await databaseContext.database.bulkDocs(resultDocs);
+    //console.log(2222);
+
+    return Object.keys(upserts).length;
+  };
+
+  const getPhotos = async (row) => {
+    const photos = [];
+    if (row.media_keys && row.media_keys.length) {
+      try {
+        const mediaResults = await invasivesApi.getMedia(row.media_keys);
+
+        mediaResults.forEach((media) => {
+          photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
+        });
+      } catch {
+        // TODO handle errors appropriately
+      }
     }
 
     setTrip(docs.docs[0]);
@@ -73,40 +113,32 @@ export const TripDataControls: React.FC = (props) => {
 
       let response = await invasivesApi.getActivities(activitySearchCriteria);
 
+      let upserts = [];
+
       for (const row of response.rows) {
-        const photos = [];
+        let photos = [];
+        if (setOfChoices.includePhotos) photos = await getPhotos(row);
 
-        if (setOfChoices.includePhotos && row.media_keys && row.media_keys.length) {
-          try {
-            const mediaResults = await invasivesApi.getMedia(row.media_keys);
-
-            mediaResults.forEach((media) => {
-              photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
-            });
-          } catch {
-            // TODO handle errors appropriately
-          }
-        }
-
-        try {
-          await databaseContext.database.upsert(row.activity_id, (existingDoc) => {
-            return {
-              ...existingDoc,
-              docType: DocType.REFERENCE_ACTIVITY,
-              tripID: 'trip',
-              ...row,
-              formData: row.activity_payload.form_data,
-              activityType: row.activity_type,
-              activitySubtype: row.activity_subtype,
-              geometry: row.activity_payload.geometry,
-              photos: photos
-            };
-          });
-
-          numberActivitiesFetched++;
-        } catch (error) {
-          // TODO handle errors appropriately
-        }
+        upserts = {
+          ...upserts,
+          [row.activity_id] : (existingDoc: {}) => ({
+            ...existingDoc,
+            docType: DocType.REFERENCE_ACTIVITY,
+            tripID: 'trip',
+            ...row,
+            formData: row.activity_payload.form_data,
+            activityType: row.activity_type,
+            activitySubtype: row.activity_subtype,
+            geometry: row.activity_payload.geometry,
+            photos: photos
+          })
+        };
+      }
+      try {
+        numberActivitiesFetched += await bulkUpsert(databaseContext, upserts);
+      } catch (error) {
+        // TODO handle errors appropriately
+        console.log(error);
       }
     }
 
@@ -132,40 +164,31 @@ export const TripDataControls: React.FC = (props) => {
 
       let response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
 
+      let upserts = {};
       for (const row of response) {
-        const photos = [];
+        let photos = [];
+        if (setOfChoices.includePhotos) photos = await getPhotos(row);
 
-        if (setOfChoices.includePhotos && row.media_keys && row.media_keys.length) {
-          try {
-            const mediaResults = await invasivesApi.getMedia(row.media_keys);
-
-            mediaResults.forEach((media) => {
-              photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
-            });
-          } catch {
-            // TODO handle errors appropriately
-          }
-        }
-
-        try {
-          await databaseContext.database.upsert('POI' + row.point_of_interest_id, (existingDoc) => {
-            return {
-              ...existingDoc,
-              docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              tripID: 'trip',
-              ...row,
-              formData: row.point_of_interest_payload.form_data,
-              pointOfInterestType: row.point_of_interest_type,
-              pointOfInterestSubtype: row.point_of_interest_subtype,
-              geometry: [...row.point_of_interest_payload.geometry],
-              photos: photos
-            };
-          });
-
-          numberPointsOfInterestFetched++;
-        } catch (error) {
-          // TODO handle errors appropriately
-        }
+        upserts = {
+          ...upserts,
+          ['POI' + row.point_of_interest_id] : (existingDoc: {}) => ({
+            ...existingDoc,
+            docType: DocType.REFERENCE_POINT_OF_INTEREST,
+            tripID: 'trip',
+            ...row,
+            formData: row.point_of_interest_payload.form_data,
+            pointOfInterestType: row.point_of_interest_type,
+            pointOfInterestSubtype: row.point_of_interest_subtype,
+            geometry: [...row.point_of_interest_payload.geometry],
+            photos: photos
+          })
+        };
+      }
+      try {
+        numberPointsOfInterestFetched += await bulkUpsert(databaseContext, upserts);
+      } catch (error) {
+        // TODO handle errors appropriately
+        console.log(error);
       }
     }
     notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
@@ -205,58 +228,53 @@ export const TripDataControls: React.FC = (props) => {
       let responseRows = [];
       if (response?.activities?.length) responseRows = response.activities;
       if (response?.points_of_interest?.length) responseRows = [responseRows, ...response.points_of_interest];
+ 
+      let upserts = {};
       for (const row of responseRows) {
-        const photos = [];
+        let photos = [];
+        if (setOfChoices.includePhotos) photos = await getPhotos(row);
 
-        if (setOfChoices.includePhotos && row.media_keys && row.media_keys.length) {
-          try {
-            const mediaResults = await invasivesApi.getMedia(row.media_keys);
-
-            mediaResults.forEach((media) => {
-              photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
-            });
-          } catch {
-            // TODO handle errors appropriately
-          }
+        if (row.activity_id) {
+          upserts = {
+            ...upserts,
+            [row.activity_id] : (existingDoc: {}) => ({
+              ...existingDoc,
+              docType: DocType.REFERENCE_ACTIVITY,
+              tripID: 'trip',
+              ...row,
+              formData: row.activity_payload.form_data,
+              activityType: row.activity_type,
+              activitySubtype: row.activity_subtype,
+              geometry: row.activity_payload.geometry,
+              photos
+            })
+          };
+          countActivities++;
         }
 
-        try {
-          if (row.activity_id) {
-            await databaseContext.database.upsert(row.activity_id, (existingDoc) => {
-              return {
-                ...existingDoc,
-                docType: DocType.REFERENCE_ACTIVITY,
-                tripID: 'trip',
-                ...row,
-                formData: row.activity_payload.form_data,
-                activityType: row.activity_type,
-                activitySubtype: row.activity_subtype,
-                geometry: row.activity_payload.geometry,
-                photos
-              };
-            });
-            countActivities++;
-          }
-
-          if (row.point_of_interest_id) {
-            await databaseContext.database.upsert('POI' + row.point_of_interest_id, (existingDoc) => {
-              return {
-                ...existingDoc,
-                docType: DocType.REFERENCE_POINT_OF_INTEREST,
-                tripID: 'trip',
-                ...row,
-                formData: row.point_of_interest_payload.form_data,
-                pointOfInterestType: row.point_of_interest_type,
-                pointOfInterestSubtype: row.point_of_interest_subtype,
-                geometry: [...row.point_of_interest_payload.geometry],
-                photos
-              };
-            });
-            countPois++;
-          }
-        } catch (error) {
-          // TODO handle errors appropriately
+        if (row.point_of_interest_id) {
+          upserts = {
+            ...upserts,
+            ['POI' + row.point_of_interest_id] : (existingDoc: {}) => ({
+              ...existingDoc,
+              docType: DocType.REFERENCE_POINT_OF_INTEREST,
+              tripID: 'trip',
+              ...row,
+              formData: row.point_of_interest_payload.form_data,
+              pointOfInterestType: row.point_of_interest_type,
+              pointOfInterestSubtype: row.point_of_interest_subtype,
+              geometry: [...row.point_of_interest_payload.geometry],
+              photos
+            })
+          };
+          countPois++;
         }
+      }
+      try {
+        bulkUpsert(databaseContext, upserts);
+      } catch (error) {
+        // TODO handle errors appropriately
+        console.log(error);
       }
     }
 
