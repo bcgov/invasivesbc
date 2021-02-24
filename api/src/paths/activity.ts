@@ -72,19 +72,19 @@ const post_put_apiDoc = {
             form_data: {
               oneOf: [
                 { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
-                { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
-                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
-                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
-                { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
-                { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
-                { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' },
+                /*{ $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },*/
                 { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
                 { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
                 { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' }
+                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
+                { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
+                { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
+                { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
               ]
             }
           }
