@@ -103,7 +103,7 @@ function getMetabaseQueryResults(): RequestHandler {
       if (!response || !response.data || !response.data.length) {
         throw {
           status: 400,
-          message: 'Failed to find metabase query with id ' + queryId
+          message: 'Failed to fetch metabase query with id ' + queryId
         };
       }
 
