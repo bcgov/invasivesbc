@@ -88,11 +88,10 @@ export const MetabaseSearch: React.FC<any> = (props) => {
 
   useEffect(() => {
     const updateComponent = () => {
-      getMetabaseQueryOptions();
       getMetabaseChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext, getMetabaseChoicesFromTrip, getMetabaseQueryOptions]);
+  }, [databaseChangesContext, getMetabaseChoicesFromTrip]);
 
   const saveChoices = async (newMetabaseChoices) => {
     await databaseContext.database.upsert('trip', (tripDoc) => {
@@ -118,6 +117,9 @@ export const MetabaseSearch: React.FC<any> = (props) => {
 
   const classes = useStyles();
 
+  if (!metabaseOptions?.length)
+    getMetabaseQueryOptions();
+
   return (
     <>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -135,6 +137,9 @@ export const MetabaseSearch: React.FC<any> = (props) => {
                             label="Metabase Query"
                             id="select"
                             value={metabaseChoice.metabaseQueryId}
+                            onClick={() => {
+                              getMetabaseQueryOptions();
+                            }}
                             onChange={(e) => {
                               updateMetabaseChoice(
                                 {
@@ -158,6 +163,9 @@ export const MetabaseSearch: React.FC<any> = (props) => {
                             className={classes.metabaseSearchField}
                             label="Metabase Query ID"
                             value={metabaseChoice.metabaseQueryId}
+                            onClick={() => {
+                              getMetabaseQueryOptions();
+                            }}
                             onChange={(e) => {
                               updateMetabaseChoice({ ...metabaseChoice, metabaseQueryId: e.target.value }, index);
                             }}
