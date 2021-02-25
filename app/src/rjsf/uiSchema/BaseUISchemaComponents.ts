@@ -130,14 +130,8 @@ const WaterbodyData = {
 };
 
 const ProjectData = {
-  project_id: {},
-  fish_permit_number: {},
-  start_date: {},
-  completion_date: {},
-  crew: {},
-  purpose: {},
-  targeted_species: {},
-  method: {}
+  surveyors: {},
+  survey_type: {}
 };
 
 const TerrainCharacteristics = {
@@ -768,7 +762,7 @@ const Observation_PlantAquatic = {
     ...WaterbodyData
   },
   project_data: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     ...ProjectData
   },
   terrain_characteristics: {

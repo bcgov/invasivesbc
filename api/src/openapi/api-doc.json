@@ -643,90 +643,115 @@
         ],
         "properties": {
           "waterbody_data": {
-            "$ref": "#/components/schemas/WaterbodyData"
+            "type": "object",
+            "title": "Waterbody Data",
+            "allOf": [
+              { "$ref": "#/components/schemas/WaterbodyData" },
+              {
+                "properties": {
+                  "water_level_management": {
+                    "type": "string",
+                    "title": "Water Level Management",
+                    "enum": [
+                      "None",
+                      "Weir",
+                      "Pump Station",
+                      "Dam",
+                      "Other"
+                    ],
+                    "x-tooltip-text": "Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field"
+                  },
+                  "substrate_type": {
+                    "type": "string",
+                    "title": "Substrate Type",
+                    "enum": [
+                      "Silt/Organic",
+                      "Clay",
+                      "Sand",
+                      "Gravel",
+                      "Cobble",
+                      "Rip-rap"
+                    ],
+                    "x-tooltip-text": "Select the most prevalent substrate composition"
+                  },
+                  "tidal_influence": {
+                    "type": "string",
+                    "title": "Tidal Influence",
+                    "enum": [
+                      "Yes",
+                      "No",
+                      "Unknown"
+                    ],
+                    "x-tooltip-text": "Indicate if the water level at the observation point is influenced by tides"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "title": "Comment",
+                    "maxLength": 300,
+                    "x-tooltip-text": "Add a comment"
+                  }
+                }
+              }
+            ]
           },
           "project_data": {
             "type": "object",
             "title": "Project Data",
             "properties": {
-              "project_id": {
+              "surveyors": {
                 "type": "string",
-                "title": "Project ID"
+                "title": "Surveyors",
+                "x-tooltip-text": "Supply surveyor names"
               },
-              "fish_permit_number": {
+              "survey_type": {
                 "type": "string",
-                "title": "Fish Permit Number"
-              },
-              "start_date": {
-                "type": "string",
-                "format": "date",
-                "title": "Start Date"
-              },
-              "completion_date": {
-                "type": "string",
-                "format": "date",
-                "title": "Completion Date"
-              },
-              "crew": {
-                "type": "string",
-                "title": "Crew"
-              },
-              "purpose": {
-                "type": "string",
-                "title": "Purpose",
+                "title": "Survey Type",
                 "enum": [
-                  "Survey",
-                  "Monitoring",
-                  "Species Verification"
-                ]
-              },
-              "targeted_species": {
-                "type": "string",
-                "title": "Targeted Species"
-              },
-              "method": {
-                "type": "string",
-                "title": "Method"
+                  "Presence Survey",
+                  "Extent Survey"
+                ],
+                "x-tooltip-text": "Presence survey used to determine general presence of invasive species in waterbody. Extent survey used to delineate each point and polygon of a target species prior to treatment"
               }
             }
           },
           "terrain_characteristics": {
-            "$ref": "#/components/schemas/TerrainCharacteristics"
-          },
-          "aquatic_flora": {
-            "$ref": "#/components/schemas/AquaticFlora"
-          },
-          "limnological_station_water_quality": {
             "type": "object",
-            "title": "Limnological Station Water Quality",
+            "title": "Terrain Characteristics",
             "properties": {
-              "station_number": {
+              "adjacent_land_use": {
                 "type": "string",
-                "title": "Station Number"
+                "title": "Adjacent Land Use",
+                "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
               },
-              "date_time": {
+              "inflow_permanent": {
                 "type": "string",
-                "format": "date-time",
-                "title": "Date and Time"
+                "title": "Inflow (Permanent)",
+                "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
               },
-              "location": {
+              "inflow_other": {
                 "type": "string",
-                "title": "Location UTM"
+                "title": "Inflow (Other)",
+                "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
               },
-              "ems_number": {
+              "outflow": {
                 "type": "string",
-                "title": "EMS Number"
+                "title": "Outflow",
+                "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
+              },
+              "shoreline_types": {
+                "type": "array",
+                "title": "Shoreline Types",
+                "items": {
+                  "$ref": "#/components/schemas/ShorelineTypes"
+                },
+                "x-tooltip-text": "Specify shoreline types with their respective percentages"
               }
             }
           },
           "water_quality": {
+            "type": "object",
+            "title": "Water Quality",
             "$ref": "#/components/schemas/WaterQuality"
-          },
-          "conductivity_profile": {
-            "$ref": "#/components/schemas/ConductivityProfile"
-          },
-          "substrate_sample": {
-            "$ref": "#/components/schemas/SubstrateSample"
           },
           "invasive_plants": {
             "type": "array",
@@ -747,7 +772,47 @@
             "title": "Site Information",
             "properties": {
               "waterbody_data": {
-                "$ref": "#/components/schemas/WaterbodyData"
+                "type": "object",
+                "title": "Waterbody Data",
+                "allOf": [
+                  { "$ref": "#/components/schemas/WaterbodyData" },
+                  {
+                    "properties": {
+                      "reach_number": {
+                        "type": "string",
+                        "title": "Reach Number",
+                        "x-tooltip-text": "A homogenous channel segment in sequence starting at 1 at the downstream end"
+                      },
+                      "adjacent_land_use": {
+                        "type": "string",
+                        "title": "Adjacent Land Use",
+                        "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
+                      },
+                      "watershed_code": {
+                        "type": "string",
+                        "title": "Watershed Code",
+                        "x-tooltip-text": "45 digit number, reference the BC Watershed Atlas"
+                      },
+                      "waterbody_id": {
+                        "type": "string",
+                        "title": "Waterbody ID",
+                        "x-tooltip-text": "Alphanumeric, string of 9 characters"
+                      },
+                      "additional_site_features": {
+                        "type": "string",
+                        "title": "Additional Site Features",
+                        "maxLength": 300,
+                        "x-tooltip-text": "Add in details regarding additional site features"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "title": "Comment",
+                        "maxLength": 300,
+                        "x-tooltip-text": "Add a comment"
+                      }
+                    }
+                  }
+                ]
               },
               "terrain_characteristics": {
                 "$ref": "#/components/schemas/TerrainCharacteristics"
@@ -759,7 +824,45 @@
                 "$ref": "#/components/schemas/AquaticFlora"
               },
               "water_quality": {
-                "$ref": "#/components/schemas/WaterQuality"
+                "type": "object",
+                "title": "Water Quality",
+                "allOf": [
+                  { "$ref": "#/components/schemas/WaterQuality" },
+                  {
+                    "properties": {
+                      "water_sample": {
+                        "type": "number",
+                        "title": "Water Sample"
+                      },
+                      "water_sample_requisition_number": {
+                        "type": "number",
+                        "title": "Water Sample Requisition Number"
+                      },
+                      "surface_water_temperature": {
+                        "type": "number",
+                        "title": "Surface Water Temperature (C)"
+                      },
+                      "field_ph": {
+                        "type": "number",
+                        "title": "Field pH (Surface/Bottom)"
+                      },
+                      "turbidity": {
+                        "type": "string",
+                        "title": "Turbidity",
+                        "enum": [
+                          "Turbid",
+                          "Moderately Turbid",
+                          "Lightly Turbid",
+                          "Clear"
+                        ]
+                      },
+                      "ice_depth": {
+                        "type": "number",
+                        "title": "Ice Depth (m)"
+                      }
+                    }
+                  }
+                ]
               },
               "conductivity_profile": {
                 "$ref": "#/components/schemas/ConductivityProfile"
@@ -2173,6 +2276,22 @@
           }
         }
       },
+      "ShorelineTypes": {
+        "type": "object",
+        "properties": {
+          "shoreline_type": {
+            "type": "string",
+            "title": "Shoreline Type",
+            "x-tooltip-text": "Describe shoreline composition adjacent to observation (e.g. rip rap, road/parking lot, overhanging natural riparian veg, turf, fence, etc)"
+          },
+          "percent_covered": {
+            "type": "number",
+            "title": "Percent Covered",
+            "maximum": 100,
+            "x-tooltip-text": "Percent covered by this shoreline type"
+          }
+        }
+      },
       "ObservationPlantTerrestrialData": {
         "type": "object",
         "required": [
@@ -2505,6 +2624,11 @@
       "AquaticPlants": {
         "type": "object",
         "properties": {
+          "sample_point_id": {
+            "type": "string",
+            "title": "Sample Point ID",
+            "x-tooltip-text": "For Presence Surveys. Number each sample point in the same waterbody (e.g. 001, 002, 003, etc). Do not use for Extent Surveys"
+          },
           "invasive_plant_code": {
             "type": "string",
             "title": "Invasive Plant",
@@ -2515,7 +2639,16 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             },
-            "x-tooltip-text": "Target invasive plant species at this location"
+            "x-tooltip-text": "For Presence survey: select species observed at coordinates. For Extent Survey: select target species for survey"
+          },
+          "provincial_edrr": {
+            "type": "string",
+            "title": "Provincial EDRR",
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "x-tooltip-text": "The target species you have selected is a candidate for provincial eradication. Please contact the provincial government Invasive Plant Program to verify this report"
           },
           "invasive_plant_density_code": {
             "type": "string",
@@ -2526,7 +2659,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Average number of individual plants per square meter expressed as a density class code"
           },
           "invasive_plant_distribution_code": {
             "type": "string",
@@ -2537,7 +2671,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
           },
           "plant_life_stage_code": {
             "type": "string",
@@ -2548,7 +2683,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Select description of life stage that best describes the target plant(s)"
           },
           "plant_health_code": {
             "type": "string",
@@ -2559,7 +2695,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Select description of plant vigour that best describes the target plant(s)"
           },
           "plant_seed_stage_code": {
             "type": "string",
@@ -2570,43 +2707,32 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Select appropriate seed stage"
           },
-          "voucher_sample_id": {
+          "voucher_specimen_collected": {
             "type": "string",
-            "title": "Voucher Sample ID"
+            "title": "Voucher Specimen Collected",
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "x-tooltip-text": "If specimen collected, provide details in observation comments"
+          },
+          "e_dna_sample": {
+            "type": "string",
+            "title": "eDNA Sample",
+            "x-tooltip-text": "Genetic material that can be extracted from bulk environmental samples such as water and soil"
           },
           "genetic_sample_id": {
             "type": "string",
-            "title": "Genetic Sample ID"
+            "title": "Genetic Sample ID",
+            "x-tooltip-text": "Unique identifier for each voucher collected. Helpful to include abbreviation of waterbody name"
           },
           "genetic_structure_collected": {
             "type": "string",
             "title": "Genetic Structure Collected",
-            "enum": [
-              "Tissue",
-              "Fin Ray"
-            ]
-          },
-          "flowering": {
-            "type": "string",
-            "title": "Flowering",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ],
-            "default": "No"
-          },
-          "early_detection_rapid_resp_ind": {
-            "type": "string",
-            "title": "Early Detection",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ],
-            "default": "No"
+            "x-tooltip-text": "Describe plant parts collected. Ideal to collect entire plant structure for verification purposes"
           },
           "negative_obs_ind": {
             "type": "string",
@@ -2616,7 +2742,8 @@
               "No",
               "Unknown"
             ],
-            "default": "No"
+            "default": "No",
+            "x-tooltip-text": "The observation describes the absence of target invasive plants within a defined area"
           }
         }
       },
@@ -4465,7 +4592,8 @@
           },
           "shoreline_type": {
             "type": "string",
-            "title": "Shoreline Type"
+            "title": "Shoreline Type",
+            "x-tooltip-text": "Describe shoreline composition adjacent to observation (e.g. rip rap, road/parking lot, overhanging natural riparian veg, turf, fence, etc)"
           },
           "cover": {
             "type": "string",
@@ -4540,50 +4668,21 @@
         }
       },
       "WaterQuality": {
-        "type": "object",
-        "title": "Water Quality",
         "properties": {
-          "water_sample": {
-            "type": "number",
-            "title": "Water Sample"
-          },
           "water_sample_depth": {
             "type": "number",
-            "title": "Water Sample Depth (m)"
-          },
-          "water_sample_requisition_number": {
-            "type": "number",
-            "title": "Water Sample Requisition Number"
-          },
-          "surface_water_temperature": {
-            "type": "number",
-            "title": "Surface Water Temperature (C)"
-          },
-          "field_ph": {
-            "type": "number",
-            "title": "Field pH (Surface/Bottom)"
-          },
-          "turbidity": {
-            "type": "string",
-            "title": "Turbidity",
-            "enum": [
-              "Turbid",
-              "Moderately Turbid",
-              "Lightly Turbid",
-              "Clear"
-            ]
+            "title": "Water Depth (m)",
+            "x-tooltip-text": "Enter the water depth in metres"
           },
           "secchi_depth": {
             "type": "number",
-            "title": "Secchi Depth (m)"
+            "title": "Secchi Depth (m)",
+            "x-tooltip-text": "Enter the secchi depth in metres"
           },
           "water_colour": {
             "type": "string",
-            "title": "Water Colour"
-          },
-          "ice_depth": {
-            "type": "number",
-            "title": "Ice Depth (m)"
+            "title": "Water Colour",
+            "x-tooltip-text": "Specify the water colour"
           }
         }
       },
@@ -4676,8 +4775,6 @@
         }
       },
       "WaterbodyData": {
-        "type": "object",
-        "title": "Waterbody Data",
         "properties": {
           "waterbody_type": {
             "type": "string",
@@ -4693,45 +4790,23 @@
               "Slough",
               "River",
               "Stream"
-            ]
+            ],
+            "x-tooltip-text": "Select best description of waterbody type"
           },
           "waterbody_name_gazetted": {
             "type": "string",
-            "title": "Waterbody Name (Gazetted)"
+            "title": "Waterbody Name (Gazetted)",
+            "x-tooltip-text": "Legal gazetted name of waterbody"
           },
           "waterbody_name_local": {
             "type": "string",
-            "title": "Waterbody Name (Local)"
-          },
-          "reach_number": {
-            "type": "string",
-            "title": "Reach Number"
+            "title": "Waterbody Name (Local)",
+            "x-tooltip-text": "Locally referred to name of waterbody"
           },
           "waterbody_use": {
             "type": "string",
-            "title": "Waterbody Use"
-          },
-          "adjacent_land_use": {
-            "type": "string",
-            "title": "Adjacent Land Use"
-          },
-          "watershed_code": {
-            "type": "string",
-            "title": "Watershed Code"
-          },
-          "waterbody_id": {
-            "type": "string",
-            "title": "Waterbody ID"
-          },
-          "additional_site_features": {
-            "type": "string",
-            "title": "Additional Site Features",
-            "maxLength": 300
-          },
-          "comment": {
-            "type": "string",
-            "title": "Comment",
-            "maxLength": 300
+            "title": "Waterbody Use",
+            "x-tooltip-text": "Comment box to describe all observed uses of waterbody (e.g. fishing, boating, swimming, agriculture intake, industrial discharge, spawning channel, etc)"
           }
         }
       },
