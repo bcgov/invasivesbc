@@ -518,21 +518,32 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
+
+  const [dropSpatial, setDropSpatial] = useState(null);
+
   const dragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Drag enter',e);
+    console.log('Drag enter',);
+    const type = e?.dataTransfer?.items[0]?.type;
+    if (type === 'application/vnd.google-earth.kmz') {
+      setDropSpatial("testing");
+    }
   }
 
+  // TODO: This needs to get fired from the dropzone 
+  // Not the map 
   const dragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Drag leave',e);
+    setDropSpatial(null);
+    console.log('dragLeave');
   }
 
   const dragDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    setDropSpatial(null);
     console.log('Drag drop',e.dataTransfer.files[0].name);
   }
 
@@ -543,15 +554,36 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
    */
   const dragOver = (e) => e.preventDefault();
 
+  const dropZoneVisible = {
+    color: 'red',
+    backgroundColor: 'rgba(255,255,255,0.5)',
+    zIndex: 10000,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    display: 'block'
+  } as React.CSSProperties;
+
+  const dropZoneInvisible = {
+    display: 'none'
+  };
+
+
   return (
     <div
       id={props.mapId}
       className={props.classes.map}
       onDragEnter={dragEnter}
-      onDragLeave={dragLeave}
       onDragOver={dragOver}
       onDrop={dragDrop}
-    ></div>
+    >
+      <div
+        style={dropSpatial ? dropZoneVisible : dropZoneInvisible}
+        onDragLeave={dragLeave}
+      >
+        {dropSpatial}
+      </div>
+    </div>
   );
 };
 
