@@ -104,14 +104,14 @@ export enum X_ENUM_CODE {
  *
  * @type {number}
  */
-export const SEARCH_LIMIT_DEFAULT = 500;
+export const SEARCH_LIMIT_DEFAULT = 5000;
 
 /**
  * The maximum number of records the search endpoint can return.
  *
  * @type {number}
  */
-export const SEARCH_LIMIT_MAX = 1000;
+export const SEARCH_LIMIT_MAX = 10000;
 
 /**
  * Supported PSQL `ORDER BY` directions.
