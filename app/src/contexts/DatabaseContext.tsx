@@ -61,8 +61,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
     } else {
       db = createDatabase();
     }
-    db.createIndex({index: { fields: ['id'] }});
-
+    db.createIndex({ index: { fields: ['id'] } });
 
     /**
      * Destroy and re-create the database.

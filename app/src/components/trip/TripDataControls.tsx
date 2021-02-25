@@ -37,12 +37,10 @@ export const TripDataControls: React.FC = (props) => {
   const [fetching, setFetching] = useState(false);
 
   const bulkUpsert = async (databaseContext, upserts) => {
-    let allDocsFetch = await databaseContext.database.allDocs({include_docs: true});
-    let allDocs = (allDocsFetch?.rows)
-        ? allDocsFetch.rows
-        : [];
+    let allDocsFetch = await databaseContext.database.allDocs({ include_docs: true });
+    let allDocs = allDocsFetch?.rows ? allDocsFetch.rows : [];
 
-    const newUpserts = {...upserts};
+    const newUpserts = { ...upserts };
 
     const modifiedDocs = allDocs
       .filter((doc) => {
@@ -93,8 +91,7 @@ export const TripDataControls: React.FC = (props) => {
       }
     });
 
-    if (!docs || !docs.docs || !docs.docs.length)
-      return;
+    if (!docs || !docs.docs || !docs.docs.length) return;
 
     setTrip(docs.docs[0]);
   }, [databaseContext.database]);
@@ -134,7 +131,7 @@ export const TripDataControls: React.FC = (props) => {
 
         upserts = {
           ...upserts,
-          [row.activity_id] : (existingDoc: {}) => ({
+          [row.activity_id]: (existingDoc: {}) => ({
             ...existingDoc,
             _id: row.activity_id,
             docType: DocType.REFERENCE_ACTIVITY,
@@ -184,7 +181,7 @@ export const TripDataControls: React.FC = (props) => {
 
         upserts = {
           ...upserts,
-          ['POI' + row.point_of_interest_id] : (existingDoc: {}) => ({
+          ['POI' + row.point_of_interest_id]: (existingDoc: {}) => ({
             ...existingDoc,
             _id: 'POI' + row.point_of_interest_id,
             docType: DocType.REFERENCE_POINT_OF_INTEREST,
@@ -241,7 +238,7 @@ export const TripDataControls: React.FC = (props) => {
       let responseRows = [];
       if (response?.activities?.length) responseRows = response.activities;
       if (response?.points_of_interest?.length) responseRows = [responseRows, ...response.points_of_interest];
- 
+
       let upserts = {};
       for (const row of responseRows) {
         let photos = [];
@@ -250,7 +247,7 @@ export const TripDataControls: React.FC = (props) => {
         if (row.activity_id) {
           upserts = {
             ...upserts,
-            [row.activity_id] : (existingDoc: {}) => ({
+            [row.activity_id]: (existingDoc: {}) => ({
               ...existingDoc,
               _id: row.activity_id,
               docType: DocType.REFERENCE_ACTIVITY,
@@ -269,7 +266,7 @@ export const TripDataControls: React.FC = (props) => {
         if (row.point_of_interest_id) {
           upserts = {
             ...upserts,
-            ['POI' + row.point_of_interest_id] : (existingDoc: {}) => ({
+            ['POI' + row.point_of_interest_id]: (existingDoc: {}) => ({
               ...existingDoc,
               _id: 'POI' + row.point_of_interest_id,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,

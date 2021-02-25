@@ -24,25 +24,27 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
   // speed limit for changes notifications:
   const MIN_INTERVAL = 1000;
 
-  const addChange = useCallback(async (change) => {
-    const now = moment().valueOf();
-    setLastChangeTimestamp(now);
-    if (!lastChangeTimestamp || now > lastChangeTimestamp + MIN_INTERVAL) {
-      setDatabaseChanges([...buffer, change]);
-      setBuffer([]);
-      setBufferTimeout(null);
-      clearTimeout(bufferTimeout);
-    } else {
-      // delay changes until after the timeout
-      // any other changes within this time will wipe the timeout and display only the new change
-      // later version (requires refactor): might want to buffer these changes and print them all in an array
-      setBuffer([...buffer, change]);
-      setBufferTimeout(setTimeout(
-        () => setDatabaseChanges([...buffer, change]),
-        now - lastChangeTimestamp + MIN_INTERVAL
-      ));
-    }
-  }, [databaseChanges, lastChangeTimestamp, bufferTimeout, setBufferTimeout, setDatabaseChanges]);
+  const addChange = useCallback(
+    async (change) => {
+      const now = moment().valueOf();
+      setLastChangeTimestamp(now);
+      if (!lastChangeTimestamp || now > lastChangeTimestamp + MIN_INTERVAL) {
+        setDatabaseChanges([...buffer, change]);
+        setBuffer([]);
+        setBufferTimeout(null);
+        clearTimeout(bufferTimeout);
+      } else {
+        // delay changes until after the timeout
+        // any other changes within this time will wipe the timeout and display only the new change
+        // later version (requires refactor): might want to buffer these changes and print them all in an array
+        setBuffer([...buffer, change]);
+        setBufferTimeout(
+          setTimeout(() => setDatabaseChanges([...buffer, change]), now - lastChangeTimestamp + MIN_INTERVAL)
+        );
+      }
+    },
+    [databaseChanges, lastChangeTimestamp, bufferTimeout, setBufferTimeout, setDatabaseChanges]
+  );
 
   const setupDatabaseChanges = useCallback(async () => {
     if (!changesListener || changesListener['isCancelled']) {
