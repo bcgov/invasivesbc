@@ -34,9 +34,8 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
         setBufferTimeout(null);
         clearTimeout(bufferTimeout);
       } else {
-        // delay changes until after the timeout
+        // buffer changes until after the timeout
         // any other changes within this time will wipe the timeout and display only the new change
-        // later version (requires refactor): might want to buffer these changes and print them all in an array
         setBuffer([...buffer, change]);
         setBufferTimeout(
           setTimeout(() => setDatabaseChanges([...buffer, change]), now - lastChangeTimestamp + MIN_INTERVAL)
