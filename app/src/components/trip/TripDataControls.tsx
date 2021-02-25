@@ -37,21 +37,23 @@ export const TripDataControls: React.FC = (props) => {
   const [fetching, setFetching] = useState(false);
 
   const bulkUpsert = async (databaseContext, upserts) => {
-    let allDocs = await databaseContext.database.allDocs({include_docs: true}).rows;
-    if (!allDocs) allDocs = [];
+    let allDocsFetch = await databaseContext.database.allDocs({include_docs: true});
+    let allDocs = (allDocsFetch?.rows)
+        ? allDocsFetch.rows
+        : [];
 
-    console.log(allDocs.length);
     const newUpserts = {...upserts};
 
     const modifiedDocs = allDocs
       .filter((doc) => {
-        newUpserts[doc.id] = undefined; // remove found docs
-        return upserts[doc.id];
+        const id = doc.doc?._id;
+        newUpserts[id] = undefined; // remove found docs
+        return upserts[id];
       })
       .map((doc) => upserts[doc.id](doc));
     const newDocs = Object.keys(newUpserts)
-        .filter((id) => newUpserts[id])
-        .map((id) => upserts[id]());
+      .filter((id) => newUpserts[id] !== undefined)
+      .map((id) => upserts[id]());
 
     const resultDocs = [
       // ...modifiedDocs,
@@ -62,9 +64,8 @@ export const TripDataControls: React.FC = (props) => {
       if (a.id > b.id) return 1;
       return 0;
     });
-    //console.log(1111);
+
     await databaseContext.database.bulkDocs(resultDocs);
-    //console.log(2222);
 
     return Object.keys(upserts).length;
   };
@@ -82,6 +83,18 @@ export const TripDataControls: React.FC = (props) => {
         // TODO handle errors appropriately
       }
     }
+    return [];
+  };
+
+  const getTrip = useCallback(async () => {
+    let docs = await databaseContext.database.find({
+      selector: {
+        _id: 'trip'
+      }
+    });
+
+    if (!docs || !docs.docs || !docs.docs.length)
+      return;
 
     setTrip(docs.docs[0]);
   }, [databaseContext.database]);
@@ -123,6 +136,7 @@ export const TripDataControls: React.FC = (props) => {
           ...upserts,
           [row.activity_id] : (existingDoc: {}) => ({
             ...existingDoc,
+            _id: row.activity_id,
             docType: DocType.REFERENCE_ACTIVITY,
             tripID: 'trip',
             ...row,
@@ -137,8 +151,7 @@ export const TripDataControls: React.FC = (props) => {
       try {
         numberActivitiesFetched += await bulkUpsert(databaseContext, upserts);
       } catch (error) {
-        // TODO handle errors appropriately
-        console.log(error);
+        notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
       }
     }
 
@@ -173,6 +186,7 @@ export const TripDataControls: React.FC = (props) => {
           ...upserts,
           ['POI' + row.point_of_interest_id] : (existingDoc: {}) => ({
             ...existingDoc,
+            _id: 'POI' + row.point_of_interest_id,
             docType: DocType.REFERENCE_POINT_OF_INTEREST,
             tripID: 'trip',
             ...row,
@@ -187,8 +201,7 @@ export const TripDataControls: React.FC = (props) => {
       try {
         numberPointsOfInterestFetched += await bulkUpsert(databaseContext, upserts);
       } catch (error) {
-        // TODO handle errors appropriately
-        console.log(error);
+        notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
       }
     }
     notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
@@ -239,6 +252,7 @@ export const TripDataControls: React.FC = (props) => {
             ...upserts,
             [row.activity_id] : (existingDoc: {}) => ({
               ...existingDoc,
+              _id: row.activity_id,
               docType: DocType.REFERENCE_ACTIVITY,
               tripID: 'trip',
               ...row,
@@ -257,6 +271,7 @@ export const TripDataControls: React.FC = (props) => {
             ...upserts,
             ['POI' + row.point_of_interest_id] : (existingDoc: {}) => ({
               ...existingDoc,
+              _id: 'POI' + row.point_of_interest_id,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,
               tripID: 'trip',
               ...row,
@@ -271,10 +286,9 @@ export const TripDataControls: React.FC = (props) => {
         }
       }
       try {
-        bulkUpsert(databaseContext, upserts);
+        await bulkUpsert(databaseContext, upserts);
       } catch (error) {
-        // TODO handle errors appropriately
-        console.log(error);
+        notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
       }
     }
 
