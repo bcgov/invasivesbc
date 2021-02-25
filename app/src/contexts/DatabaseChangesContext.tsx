@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { DatabaseContext } from './DatabaseContext';
+import moment from 'moment';
 
 export type IDatabaseChanges = PouchDB.Core.ChangesResponseChange<any> | PouchDB.Core.ChangesResponse<any> | any;
 
@@ -16,20 +17,41 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
 
   const [databaseChanges, setDatabaseChanges] = useState<IDatabaseChanges>(null);
   const [changesListener, setChangesListener] = useState<PouchDB.Core.Changes<any>>(null);
+  const [lastChangeTimestamp, setLastChangeTimestamp] = useState(null);
+  const [bufferTimeout, setBufferTimeout] = useState(null)
+
+  // speed limit for changes notifications:
+  const MIN_INTERVAL = 1000;
+
+  const addChange = useCallback(async (change) => {
+    const now = moment().valueOf();
+    setLastChangeTimestamp(now);
+    if (!lastChangeTimestamp || now > lastChangeTimestamp + MIN_INTERVAL) {
+      setDatabaseChanges(change);
+      setBufferTimeout(null);
+      clearTimeout(bufferTimeout);
+    } else {
+      // delay changes until after the timeout
+      // any other changes within this time will wipe the timeout and display only the new change
+      // later version (requires refactor): might want to buffer these changes and print them all in an array
+      setBufferTimeout(setTimeout(
+        () => setDatabaseChanges(change),
+        now - lastChangeTimestamp + MIN_INTERVAL
+      ));
+    }
+  }, [databaseChanges, lastChangeTimestamp, bufferTimeout, setBufferTimeout, setDatabaseChanges]);
 
   const setupDatabaseChanges = useCallback(async () => {
     if (!changesListener || changesListener['isCancelled']) {
       const listener = databaseContext.database
         .changes({ live: true, since: 'now' })
-        .on('change', (change) => {
-          setDatabaseChanges(change);
-        })
-        .on('complete', (final) => () => setDatabaseChanges(final))
-        .on('error', (error) => () => setDatabaseChanges(error));
+        .on('change', (change) => addChange(change))
+        .on('complete', (final) => () => addChange(final))
+        .on('error', (error) => () => addChange(error));
 
       setChangesListener(listener);
     }
-  }, [changesListener, databaseContext.database]);
+  }, [changesListener, databaseContext.database, addChange]);
 
   const cleanupDatabaseChanges = useCallback(() => {
     if (changesListener) {
