@@ -523,17 +523,21 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const dragEnter = (e) => {
     e.preventDefault();
-    console.log('Drag enter',);
     const type = e?.dataTransfer?.items[0]?.type;
-    if (type === 'application/vnd.google-earth.kmz') {
-      setDropSpatial("testing testing testing testing testing testing testing");
+    console.log('Drag this file type',type);
+    switch(type) {
+      case 'application/vnd.google-earth.kmz':
+        setDropSpatial("Sorry... KMZ files are currently not supported. Please unzip and provide the internal KML.");
+        break;
+      case 'application/vnd.google-earth.kml+xml':
+        setDropSpatial("I love to eat KML files");
+        break;
+      default:
+        setDropSpatial(null);
     }
   }
 
-  // TODO: This needs to get fired from the dropzone 
-  // Not the map 
   const dragLeave = (e) => {
-    // if (e.target.id === 'drop-spatial-label') return;
     e.preventDefault();
     setDropSpatial(null);
     console.log('dragLeave');
@@ -543,6 +547,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     e.preventDefault();
     setDropSpatial(null);
     console.log('Drag drop',e.dataTransfer.files[0].name);
+    console.log('Find me the file type',e?.dataTransfer?.items[0]?.type);
   }
 
   /* ## dragOver
