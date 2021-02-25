@@ -36,19 +36,21 @@ export const TripDataControls: React.FC = (props) => {
   const [trip, setTrip] = useState(null);
   const [fetching, setFetching] = useState(false);
 
-  const bulkUpsert = async (databaseContext, upserts) => {
+  const bulkUpsert = async (upserts) => {
     let allDocsFetch = await databaseContext.database.allDocs({ include_docs: true });
     let allDocs = allDocsFetch?.rows ? allDocsFetch.rows : [];
 
     const newUpserts = { ...upserts };
 
-    const modifiedDocs = allDocs
+    // go through all docs, flagging those already existing:
+    allDocs
       .filter((doc) => {
         const id = doc.doc?._id;
         newUpserts[id] = undefined; // remove found docs
         return upserts[id];
       })
       .map((doc) => upserts[doc.id](doc));
+
     const newDocs = Object.keys(newUpserts)
       .filter((id) => newUpserts[id] !== undefined)
       .map((id) => upserts[id]());
@@ -78,8 +80,9 @@ export const TripDataControls: React.FC = (props) => {
           photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
         });
       } catch {
-        // TODO handle errors appropriately
+        notifyError(databaseContext, 'Could not fetch photos for ' + row._id);
       }
+      return photos;
     }
     return [];
   };
@@ -146,7 +149,7 @@ export const TripDataControls: React.FC = (props) => {
         };
       }
       try {
-        numberActivitiesFetched += await bulkUpsert(databaseContext, upserts);
+        numberActivitiesFetched += await bulkUpsert(upserts);
       } catch (error) {
         notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
       }
@@ -196,7 +199,7 @@ export const TripDataControls: React.FC = (props) => {
         };
       }
       try {
-        numberPointsOfInterestFetched += await bulkUpsert(databaseContext, upserts);
+        numberPointsOfInterestFetched += await bulkUpsert(upserts);
       } catch (error) {
         notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
       }
@@ -283,7 +286,7 @@ export const TripDataControls: React.FC = (props) => {
         }
       }
       try {
-        await bulkUpsert(databaseContext, upserts);
+        await bulkUpsert(upserts);
       } catch (error) {
         notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
       }
