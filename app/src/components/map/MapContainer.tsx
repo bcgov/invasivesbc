@@ -523,26 +523,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const dragEnter = (e) => {
     e.preventDefault();
-    e.stopPropagation();
     console.log('Drag enter',);
     const type = e?.dataTransfer?.items[0]?.type;
     if (type === 'application/vnd.google-earth.kmz') {
-      setDropSpatial("testing");
+      setDropSpatial("testing testing testing testing testing testing testing");
     }
   }
 
   // TODO: This needs to get fired from the dropzone 
   // Not the map 
   const dragLeave = (e) => {
+    // if (e.target.id === 'drop-spatial-label') return;
     e.preventDefault();
-    e.stopPropagation();
     setDropSpatial(null);
     console.log('dragLeave');
   }
 
   const dragDrop = (e) => {
     e.preventDefault();
-    e.stopPropagation();
     setDropSpatial(null);
     console.log('Drag drop',e.dataTransfer.files[0].name);
   }
@@ -552,22 +550,28 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     the file in the browser window.
     @param e {object} Dragging event
    */
-  const dragOver = (e) => e.preventDefault();
+  const dragOver = (e) => e.preventDefault() ;
 
   const dropZoneVisible = {
-    color: 'red',
-    backgroundColor: 'rgba(255,255,255,0.5)',
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    fontSize: '2.5rem',
+    fontWeight: 800,
+    color: 'white',
     zIndex: 10000,
     position: 'absolute',
     width: '100%',
     height: '100%',
-    display: 'block'
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '10rem',
+    outline: '1rem dashed white',
+    outlineOffset: '-6rem'
   } as React.CSSProperties;
 
   const dropZoneInvisible = {
     display: 'none'
   };
-
 
   return (
     <div
@@ -577,12 +581,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       onDragOver={dragOver}
       onDrop={dragDrop}
     >
+
       <div
         style={dropSpatial ? dropZoneVisible : dropZoneInvisible}
         onDragLeave={dragLeave}
-      >
-        {dropSpatial}
-      </div>
+      > {dropSpatial} </div>
+
     </div>
   );
 };
