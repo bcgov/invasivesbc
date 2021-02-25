@@ -18,7 +18,8 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
   const [databaseChanges, setDatabaseChanges] = useState<IDatabaseChanges>(null);
   const [changesListener, setChangesListener] = useState<PouchDB.Core.Changes<any>>(null);
   const [lastChangeTimestamp, setLastChangeTimestamp] = useState(null);
-  const [bufferTimeout, setBufferTimeout] = useState(null)
+  const [buffer, setBuffer] = useState([]);
+  const [bufferTimeout, setBufferTimeout] = useState(null);
 
   // speed limit for changes notifications:
   const MIN_INTERVAL = 1000;
@@ -27,15 +28,17 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
     const now = moment().valueOf();
     setLastChangeTimestamp(now);
     if (!lastChangeTimestamp || now > lastChangeTimestamp + MIN_INTERVAL) {
-      setDatabaseChanges(change);
+      setDatabaseChanges([...buffer, change]);
+      setBuffer([]);
       setBufferTimeout(null);
       clearTimeout(bufferTimeout);
     } else {
       // delay changes until after the timeout
       // any other changes within this time will wipe the timeout and display only the new change
       // later version (requires refactor): might want to buffer these changes and print them all in an array
+      setBuffer([...buffer, change]);
       setBufferTimeout(setTimeout(
-        () => setDatabaseChanges(change),
+        () => setDatabaseChanges([...buffer, change]),
         now - lastChangeTimestamp + MIN_INTERVAL
       ));
     }
