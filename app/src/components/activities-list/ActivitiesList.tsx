@@ -196,6 +196,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [docs, setDocs] = useState<any[]>([]);
+  const [docToDelete, setDocToDelete] = useState(null);
   const [isWarningDialogOpen, setIsWarningDialogOpen] = useState(false);
 
   const updateActivityList = useCallback(async () => {
@@ -269,7 +270,12 @@ const ActivityList: React.FC<IActivityList> = (props) => {
               </ListItemIcon>
               <ActivityListItem isDisabled={props.isDisabled} activity={doc} />
               <ListItemSecondaryAction>
-                <IconButton disabled={isDisabled} onClick={() => setIsWarningDialogOpen(true)}>
+                <IconButton
+                  disabled={isDisabled}
+                  onClick={() => {
+                    setDocToDelete(doc);
+                    setIsWarningDialogOpen(true);
+                  }}>
                   <DeleteForever />
                 </IconButton>
               </ListItemSecondaryAction>
@@ -278,7 +284,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
               isOpen={isWarningDialogOpen}
               handleDisagree={() => setIsWarningDialogOpen(false)}
               handleAgree={async () => {
-                await removeActivity(doc);
+                await removeActivity(docToDelete);
                 setIsWarningDialogOpen(false);
               }}
               heading="Delete Activity?"
