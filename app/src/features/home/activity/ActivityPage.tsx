@@ -67,6 +67,24 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
+const { Geolocation } = Plugins;
+
+/*
+  const getCurrentPosition = async () => {
+    const coordinates = await Geolocation.getCurrentPosition();
+    console.log('Current', coordinates);
+  };
+  */
+
+  const watchPosition= () => {
+    const wait = Geolocation.watchPosition({}, (position, err) => {
+      console.log(position)
+    })
+  };
+
+  watchPosition();
+
+
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
     const handleContextMenuClose = () => {
       setContextMenuState({ ...contextMenuState, isOpen: false });
