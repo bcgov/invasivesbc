@@ -72,7 +72,7 @@ const post_put_apiDoc = {
             form_data: {
               oneOf: [
                 { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
-                /*{ $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },*/
+                { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
                 { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
                 { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
                 { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
