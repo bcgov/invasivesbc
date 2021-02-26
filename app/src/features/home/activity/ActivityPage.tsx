@@ -67,25 +67,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
-const { Geolocation } = Plugins;
-
-/*
-  const getCurrentPosition = async () => {
-    const coordinates = await Geolocation.getCurrentPosition();
-    console.log('Current', coordinates);
-  };
-  */
-
-  const watchPosition = async () => {
-    const coordinates = await Geolocation.getCurrentPosition();
-    //console.log('Current', coordinates);
-    const wait = Geolocation.watchPosition({enableHighAccuracy: true, timeout:3000}, (position, err) => {
-      console.log(position)
-    })
-  };
-
-  setTimeout(watchPosition, 3000);
-
 
 
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
@@ -433,7 +414,7 @@ const { Geolocation } = Plugins;
       {!doc && (
         <>
           <Box mb={3}>
-            <Typography variant="h4">Current Activity</Typography>
+            <Typography variant="h4">Current Activity </Typography>
           </Box>
           <Typography>
             There is no current activity. When you start creating an activity, it will become your current activity and
