@@ -153,7 +153,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             <br></br>
             <Typography variant="body1">
               You can perform as many 'Fetches' as you like. If you are starting a new trip it is a good idea to wipe
-              the data off your device prio
+              the data off your device prior to Fetching.
             </Typography>
           </Paper>
           <Accordion defaultExpanded={false}>
