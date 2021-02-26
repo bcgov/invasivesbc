@@ -76,13 +76,16 @@ const { Geolocation } = Plugins;
   };
   */
 
-  const watchPosition= () => {
-    const wait = Geolocation.watchPosition({}, (position, err) => {
+  const watchPosition = async () => {
+    const coordinates = await Geolocation.getCurrentPosition();
+    //console.log('Current', coordinates);
+    const wait = Geolocation.watchPosition({enableHighAccuracy: true, timeout:3000}, (position, err) => {
       console.log(position)
     })
   };
 
-  watchPosition();
+  setTimeout(watchPosition, 3000);
+
 
 
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
