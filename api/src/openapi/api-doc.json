@@ -4592,8 +4592,7 @@
           },
           "shoreline_type": {
             "type": "string",
-            "title": "Shoreline Type",
-            "x-tooltip-text": "Describe shoreline composition adjacent to observation (e.g. rip rap, road/parking lot, overhanging natural riparian veg, turf, fence, etc)"
+            "title": "Shoreline Type"
           },
           "cover": {
             "type": "string",
