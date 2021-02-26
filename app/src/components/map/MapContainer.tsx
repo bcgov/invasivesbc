@@ -542,7 +542,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     e.preventDefault();
     setDropSpatial(null);
     console.log('dragLeave');
-  }
+  };
 
   const dragDrop = async (e) => {
     e.preventDefault();
@@ -560,17 +560,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     console.log(xml);
     console.log(geojson);
 
-    // const reader = new FileReader();
-    // reader.onloadend = (e) => {
-    //   console.log(e.target.result)
-    //   const dom = new DOMParser().parseFromString(e.target.result);
-    // }
-    // reader.readAsText(file);
 
     console.log('Drag drop',name);
     console.log('Find me the file type',type);
-    // console.log('Here is the file',file.text());
-  }
+  };
 
   /* ## dragOver
     This cancels the default behaviour of trying to open 
