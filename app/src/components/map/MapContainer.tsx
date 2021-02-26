@@ -14,6 +14,7 @@ import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
+import { kml } from '@tmcw/togeojson';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -543,11 +544,32 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     console.log('dragLeave');
   }
 
-  const dragDrop = (e) => {
+  const dragDrop = async (e) => {
     e.preventDefault();
     setDropSpatial(null);
-    console.log('Drag drop',e.dataTransfer.files[0].name);
-    console.log('Find me the file type',e?.dataTransfer?.items[0]?.type);
+    const file = e?.dataTransfer?.files[0]
+    const type = file?.type;
+    const name = file?.name;
+
+    const xml = await file.text().then((xmlstring) => {
+      return xmlstring;
+    })
+    const dom = new DOMParser()
+      .parseFromString(xml,'application/xml');
+    const geojson = kml(dom);
+    console.log(xml);
+    console.log(geojson);
+
+    // const reader = new FileReader();
+    // reader.onloadend = (e) => {
+    //   console.log(e.target.result)
+    //   const dom = new DOMParser().parseFromString(e.target.result);
+    // }
+    // reader.readAsText(file);
+
+    console.log('Drag drop',name);
+    console.log('Find me the file type',type);
+    // console.log('Here is the file',file.text());
   }
 
   /* ## dragOver
