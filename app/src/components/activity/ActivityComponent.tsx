@@ -27,12 +27,14 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const { error, currentPosition, getPosition } = useCurrentPosition();
 
   const databaseContext = useContext(DatabaseContext);
-  const buttonClickWatch = async () => {
-    startWatch();
+  const startTrack = async () => {
+     startWatch();
+      notifySuccess(databaseContext, JSON.stringify("Starting track @ Latitude: " + watchPosition.coords.latitude + ", Longitude: " + watchPosition.coords.longitude));
   };
 
-  const buttonClickGet = async () => {
-    await getPosition();
+  const endTrack = async () => {
+    // convert poly to polygon
+    clearWatch();
   };
 
   useEffect(() => {
@@ -78,8 +80,8 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.mapContainer}>
-          <Button variant="contained" color="primary" onClick={buttonClickWatch}></Button>
-          <Button variant="contained" color="secondary" onClick={buttonClickGet}></Button>
+          <Button variant="contained" color="primary" onClick={startTrack}></Button>
+          <Button variant="contained" color="secondary" onClick={endTrack}></Button>
           {JSON.stringify(watchPosition)}
           {JSON.stringify(currentPosition)}
           <MapContainer {...props} />
