@@ -124,6 +124,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getBEC = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+
   const getWells = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
@@ -322,6 +332,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const nRDistricts = getNRDistricts();
     const motiDistricts = getMOTIDistricts();
     const motiRegions = getMOTIRegions();
+    const bec = getBEC();
     const wells = getWells();
     const streams = getStreams();
     const wetlands = getWetlands();
@@ -346,6 +357,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       Municipalites: municipalities,
       'Regional Districts': regionalDistricts,
       'Road Features Inventory': rfi,
+      'Biogeoclimatic': bec,
       'MOTI Regions': motiRegions,
       'MOTI Districts': motiDistricts
     };
