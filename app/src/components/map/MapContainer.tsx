@@ -104,6 +104,26 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getMOTIDistricts = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+
+  const getMOTIRegions = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.TADM_MOT_REGIONAL_BNDRY_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+
   const getWells = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
@@ -300,6 +320,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     };
 
     const nRDistricts = getNRDistricts();
+    const motiDistricts = getMOTIDistricts();
+    const motiRegions = getMOTIRegions();
     const wells = getWells();
     const streams = getStreams();
     const wetlands = getWetlands();
@@ -323,7 +345,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Natural Resource Districts': nRDistricts,
       Municipalites: municipalities,
       'Regional Districts': regionalDistricts,
-      'Road Features Inventory': rfi
+      'Road Features Inventory': rfi,
+      'MOTI Regions': motiRegions,
+      'MOTI Districts': motiDistricts
     };
 
     mapRef.current.addLayer(esriPlacenames);
