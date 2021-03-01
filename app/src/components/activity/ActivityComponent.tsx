@@ -1,13 +1,9 @@
-import { Plugins } from '@capacitor/core';
-import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState } from 'react';
-import { notifySuccess } from 'utils/NotificationUtils';
-import { useCurrentPosition, useWatchPosition, availableFeatures } from '@ionic/react-hooks/geolocation';
+import React from 'react';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -23,29 +19,6 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
-
-
-  const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
-  const { error, currentPosition, getPosition } = useCurrentPosition();
-
-  const databaseContext = useContext(DatabaseContext);
-  const buttonClickWatch = async () => {
-    startWatch();
-  };
-
-  const buttonClickGet = async () => {
-
-    await getPosition();
-
-  };
-
-  useEffect(() => {
-    if (watchPosition) {
-      notifySuccess(databaseContext, JSON.stringify("Latitude: " + watchPosition.coords.latitude + ", Longitude: " + watchPosition.coords.longitude));
-      console.log(watchPosition);
-    }
-  }, [watchPosition]);;
-
   return (
     <>
       {props.cloneActivityButton && props.cloneActivityButton()}
@@ -79,10 +52,6 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.mapContainer}>
-          <Button variant="contained" color="primary" onClick={buttonClickWatch}></Button>
-          <Button variant="contained" color="secondary" onClick={buttonClickGet}></Button>
-          {JSON.stringify(watchPosition)}
-          {JSON.stringify(currentPosition)}
           <MapContainer {...props} />
         </AccordionDetails>
       </Accordion>
