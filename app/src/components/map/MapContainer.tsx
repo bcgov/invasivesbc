@@ -580,21 +580,42 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     console.log('dragLeave');
   };
 
-  const dragDrop = async (e) => {
+  const addKML = async (file) => {
+    setDropSpatial("Yum yum yum");
+    const name = file?.name;
+    const layerName = name
+      .replace(/\..*/g,'')
+      .replace(/[^\w]/g,'_');
+    const xml = await file.text().then((xmlstring) => {
+      return xmlstring;
+    })
+    const dom = new DOMParser().parseFromString(xml,'application/xml');
+    const geojson = kml(dom);
+    console.log('geojson',geojson);
+    console.log('kml',xml);
+    const myLayer = L.geoJSON(geojson).addTo(mapRef.current);
+    debugger;
+    setDropSpatial(null);
+  };
+
+  const dragDrop = (e) => {
     e.preventDefault();
     setDropSpatial(null);
     const file = e?.dataTransfer?.files[0]
     const type = file?.type;
     const name = file?.name;
 
-    const xml = await file.text().then((xmlstring) => {
-      return xmlstring;
-    })
-    const dom = new DOMParser()
-      .parseFromString(xml,'application/xml');
-    const geojson = kml(dom);
-    console.log(xml);
-    console.log(geojson);
+
+    switch(type) {
+      case 'application/vnd.google-earth.kmz':
+        setDropSpatial("Yuck! KMZs are nasty");
+        break;
+      case 'application/vnd.google-earth.kml+xml':
+        addKML(file)
+        break;
+      default:
+        setDropSpatial(null);
+    }
 
 
     console.log('Drag drop',name);
