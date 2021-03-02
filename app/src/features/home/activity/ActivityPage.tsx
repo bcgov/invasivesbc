@@ -9,7 +9,6 @@ import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
-import { Plugins } from '@capacitor/core';
 import {
   getCustomValidator,
   getAreaValidator,
@@ -66,6 +65,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
+
 
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
     const handleContextMenuClose = () => {

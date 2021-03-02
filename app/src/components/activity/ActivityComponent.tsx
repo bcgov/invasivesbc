@@ -1,4 +1,3 @@
-import { Plugins } from '@capacitor/core';
 import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
@@ -7,7 +6,8 @@ import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoCont
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
-import { useCurrentPosition, useWatchPosition, availableFeatures } from '@ionic/react-hooks/geolocation';
+import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
+import * as turf from '@turf/turf';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -24,24 +24,53 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
-  const { error, currentPosition, getPosition } = useCurrentPosition();
+  const { currentPosition } = useCurrentPosition();
+  const [workingPolyline, setWorkingPolyline] = useState([]);
 
   const databaseContext = useContext(DatabaseContext);
-  const buttonClickWatch = async () => {
-    startWatch();
+
+  const isGreaterDistanceThan = (from, to, distance) => {
+    var fromAsPoint = turf.point(from);
+    var toAsPoint = turf.point(to);
+
+    return turf.distance(fromAsPoint, toAsPoint, { units: 'kilometers' }) > distance;
   };
 
-  const buttonClickGet = async () => {
-    await getPosition();
+  const startTrack = async () => {
+    startWatch();
+    notifySuccess(databaseContext, JSON.stringify('Starting track.'));
+  };
+
+  const endTrack = async () => {
+    // convert poly to polygon
+    if (workingPolyline.length > 2) {
+      var line = turf.lineString(workingPolyline);
+      var polygon = turf.lineToPolygon(line);
+      if (window.confirm('Convert track to polygon?')) {
+        notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  ' + JSON.stringify(polygon)));
+        clearWatch();
+      } else {
+        notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  ' + JSON.stringify(line)));
+        clearWatch();
+      }
+    } else {
+      if (window.confirm("Sure you're done walkin'?  Didn't collect 2 points.")) {
+        alert('Cancelled track.');
+        clearWatch();
+      }
+    }
   };
 
   useEffect(() => {
     if (watchPosition) {
-      notifySuccess(
-        databaseContext,
-        JSON.stringify('Latitude: ' + watchPosition.coords.latitude + ', Longitude: ' + watchPosition.coords.longitude)
-      );
-      console.log(watchPosition);
+      if (workingPolyline.length == 0) {
+        setWorkingPolyline([[watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]]);
+      } else if (isGreaterDistanceThan(watchPosition.coords.longitude, watchPosition.coords.latitude, 0.01)) {
+        setWorkingPolyline([
+          ...workingPolyline,
+          [watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]
+        ]);
+      }
     }
   }, [watchPosition]);
 
@@ -78,8 +107,8 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.mapContainer}>
-          <Button variant="contained" color="primary" onClick={buttonClickWatch}></Button>
-          <Button variant="contained" color="secondary" onClick={buttonClickGet}></Button>
+          <Button variant="contained" color="primary" onClick={startTrack}></Button>
+          <Button variant="contained" color="secondary" onClick={endTrack}></Button>
           {JSON.stringify(watchPosition)}
           {JSON.stringify(currentPosition)}
           <MapContainer {...props} />
