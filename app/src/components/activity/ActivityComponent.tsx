@@ -23,8 +23,6 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
-
-
   const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
   const { error, currentPosition, getPosition } = useCurrentPosition();
 
@@ -34,17 +32,18 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   };
 
   const buttonClickGet = async () => {
-
     await getPosition();
-
   };
 
   useEffect(() => {
     if (watchPosition) {
-      notifySuccess(databaseContext, JSON.stringify("Latitude: " + watchPosition.coords.latitude + ", Longitude: " + watchPosition.coords.longitude));
+      notifySuccess(
+        databaseContext,
+        JSON.stringify('Latitude: ' + watchPosition.coords.latitude + ', Longitude: ' + watchPosition.coords.longitude)
+      );
       console.log(watchPosition);
     }
-  }, [watchPosition]);;
+  }, [watchPosition]);
 
   return (
     <>

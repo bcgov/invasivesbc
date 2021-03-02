@@ -384,7 +384,8 @@ const ReferenceActivitiesList: React.FC = () => {
   */
   const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
-      selector: { docType: DocType.REFERENCE_ACTIVITY }
+      selector: { docType: DocType.REFERENCE_ACTIVITY },
+      use_index: 'docTypeIndex'
     });
 
     storeInteractiveGeoInfo(activityResult.docs);
