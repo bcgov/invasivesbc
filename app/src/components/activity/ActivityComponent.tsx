@@ -67,12 +67,34 @@ const isGreaterDistanceThan = (from, to, distance) => {
 
   const startTrack = async () => {
      startWatch();
-      notifySuccess(databaseContext, JSON.stringify("Starting track @ Latitude: " + watchPosition.coords.latitude + ", Longitude: " + watchPosition.coords.longitude));
+      notifySuccess(databaseContext, JSON.stringify("Starting track."));
   };
 
   const endTrack = async () => {
     // convert poly to polygon
-    clearWatch();
+    if(workingPolyline.length > 2)
+    {
+      var line = turf.lineString(workingPolyline);
+      var polygon = turf.lineToPolygon(line);
+      if(window.confirm('Convert track to polygon?'))
+      {
+        notifySuccess(databaseContext, JSON.stringify("Made a polygon!!  " + JSON.stringify(polygon)));
+        clearWatch();
+      }
+      else
+      {
+        notifySuccess(databaseContext, JSON.stringify("Made a polyine!!  " + JSON.stringify(line)));
+        clearWatch();
+      }
+    }
+    else
+    {
+      if(window.confirm("Sure you're done walkin'?  Didn't collect 2 points."))
+      {
+        alert('Cancelled track.')
+        clearWatch();
+      }
+    }
   };
 
   useEffect(() => {
