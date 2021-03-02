@@ -217,12 +217,25 @@ const MapPage: React.FC<IMapProps> = (props) => {
       geos.push(row.geometry[0]);
 
       let coordinatesString = 'Polygon';
-      if (row.geometry[0].geometry.type !== 'Polygon') {
-        const coords = [
-          Number(row.geometry[0]?.geometry.coordinates[1]).toFixed(2),
-          Number(row.geometry[0]?.geometry.coordinates[0]).toFixed(2)
-        ];
-        coordinatesString = `(${coords[0]}, ${coords[1]})`;
+      const coords = row.geometry[0]?.geometry.coordinates;
+      if (row.geometry[0].geometry.type !== 'Polygon')
+        coordinatesString = `(${Number(coords[1]).toFixed(2)}, ${Number(coords[0]).toFixed(2)})`;
+
+      let height = 0;
+      let zIndex = 9999999999;
+      if (row.geometry[0].geometry.type === 'Polygon' && coords[0]) {       
+        let highestLat = coords[0].reduce((max, point) => {
+          if (point[1] > max)
+            return point[1];
+          return max;
+        }, 0);
+        let lowestLat = coords[0].reduce((min, point) => {
+          if (point[1] < min)
+            return point[1];
+          return min;
+        }, zIndex);
+
+        zIndex = zIndex - (highestLat - lowestLat) * 1000000;
       }
 
       switch (row.docType) {
@@ -236,7 +249,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // basic display:
             geometry: row.geometry[0],
             color: '#99E472',
-            zIndex: 1, // need to ask jamie how to implement this
+            zIndex: zIndex,
 
             // interactive
             onClickCallback: () => {
@@ -266,7 +279,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // basic display:
             geometry: row.geometry[0],
             color: '#F3C911',
-            zIndex: 1, // need to ask jamie how to implement this
+            zIndex: zIndex,
 
             // interactive
             onClickCallback: () => {
@@ -287,7 +300,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // basic display:
             geometry: row.geometry[0],
             color: '#E044A7',
-            zIndex: 1, // need to ask jamie how to implement this
+            zIndex: zIndex,
 
             // interactive
             onClickCallback: () => {
@@ -317,7 +330,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             // basic display:
             geometry: row.geometry[0],
             color: '#FF5733',
-            zIndex: 1, // need to ask jamie how to implement this
+            zIndex: zIndex,
 
             // interactive
             onClickCallback: () => {

@@ -1,5 +1,6 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
+import { DocType } from 'constants/database';
 import { Feature } from 'geojson';
 import * as L from 'leaflet';
 import 'leaflet-draw';
