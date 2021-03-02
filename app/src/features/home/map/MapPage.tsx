@@ -155,7 +155,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
             DocType.REFERENCE_ACTIVITY,
             DocType.ACTIVITY,
             DocType.REFERENCE_POINT_OF_INTEREST,
-            DocType.POINT_OF_INTEREST
+            DocType.POINT_OF_INTEREST,
+            DocType.SPATIAL_UPLOADS
           ]
         }
       }
@@ -185,6 +186,18 @@ const MapPage: React.FC<IMapProps> = (props) => {
       }
 
       switch (row.docType) {
+        case DocType.SPATIAL_UPLOADS:
+          console.log('here is a spatial upload',row);
+          interactiveGeos.push({
+            recordDocID: row._id,
+            recordDocType: row.docType,
+            description: 'Uploaded spatial content:\n ' + row._id + '\n' + coordinatesString,
+            geometry: row.geometry[0],
+            onClickCallback: () => {
+              console.log('uploaded content clicked')
+            }
+          });
+          break;
         case DocType.POINT_OF_INTEREST:
           interactiveGeos.push({
             //mapContext: MapContext.MAIN_MAP,

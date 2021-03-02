@@ -59,7 +59,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
 
-  const uploadLayer = new L.GeoJSON()
+  // const uploadLayer = new L.GeoJSON()
 
   const addContextMenuClickListener = () => {
     mapRef.current.on('contextmenu', (e) => {
@@ -370,11 +370,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     // Layer for uploading files to
     // console.log('{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-127.073595802093,51.4657046840097],[-125.799763698192,50.8987794069989],[-123.350086575305,49.4639685207368],[-122.657177903403,48.169139184354],[-123.952007239786,48.1481419518721],[-125.771767388216,48.701069073895],[-127.738508164019,49.4429712882549],[-128.578397463294,51.1997397392392],[-127.073595802093,51.4657046840097]]]},"properties":{"name":"blah"}}]}');
-    const myData = JSON.parse('{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-127.073595802093,51.4657046840097],[-125.799763698192,50.8987794069989],[-123.350086575305,49.4639685207368],[-122.657177903403,48.169139184354],[-123.952007239786,48.1481419518721],[-125.771767388216,48.701069073895],[-127.738508164019,49.4429712882549],[-128.578397463294,51.1997397392392],[-127.073595802093,51.4657046840097]]]},"properties":{"name":"blah","stroke-opacity":1,"stroke":"#ff0000","fill-opacity":0}}]}');
+    // const myData = JSON.parse('{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-127.073595802093,51.4657046840097],[-125.799763698192,50.8987794069989],[-123.350086575305,49.4639685207368],[-122.657177903403,48.169139184354],[-123.952007239786,48.1481419518721],[-125.771767388216,48.701069073895],[-127.738508164019,49.4429712882549],[-128.578397463294,51.1997397392392],[-127.073595802093,51.4657046840097]]]},"properties":{"name":"blah","stroke-opacity":1,"stroke":"#ff0000","fill-opacity":0}}]}');
     // console.log('myData',myData);
 
-    mapRef.current.addLayer(uploadLayer);
-    uploadLayer.addData(myData);
+    // mapRef.current.addLayer(uploadLayer);
+    // uploadLayer.addData(myData);
 
     addSaveTilesControl(esriBaseLayer);
 
@@ -603,9 +603,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     })
     const dom = new DOMParser().parseFromString(xml,'application/xml');
     const geojson = kml(dom);
-    console.log('upload here',JSON.stringify(geojson));
-    const myData = JSON.parse('{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-127.073595802093,51.4657046840097],[-125.799763698192,50.8987794069989],[-123.350086575305,49.4639685207368],[-122.657177903403,48.169139184354],[-123.952007239786,48.1481419518721],[-125.771767388216,48.701069073895],[-127.738508164019,49.4429712882549],[-128.578397463294,51.1997397392392],[-127.073595802093,51.4657046840097]]]},"properties":{"name":"blah"}}]}');
-    uploadLayer.addData(geojson);
+    
+    if (geojson?.features) {
+      console.log('saving uploaded spatial data');
+      await databaseContext.database.upsert('spatial_uploads', (spatial) => {
+        return {...spatial, geometry: geojson.features};
+      })
+    }
+    // console.log('upload here',JSON.stringify(geojson));
+    // const myData = JSON.parse('{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-127.073595802093,51.4657046840097],[-125.799763698192,50.8987794069989],[-123.350086575305,49.4639685207368],[-122.657177903403,48.169139184354],[-123.952007239786,48.1481419518721],[-125.771767388216,48.701069073895],[-127.738508164019,49.4429712882549],[-128.578397463294,51.1997397392392],[-127.073595802093,51.4657046840097]]]},"properties":{"name":"blah"}}]}');
+    // uploadLayer.addData(geojson.features);
     // const myLayer = L.geoJSON(geojson).addTo(mapRef.current);
     setDropSpatial(null);
   };
