@@ -254,7 +254,7 @@ function createMetabaseQuery(): RequestHandler {
           collection_position: 1,
           result_metadata: null,
           metadata_checksum: null,
-          collection_id: isNaN(METABASE_COLLECTION_ID) ? null : METABASE_COLLECTION_ID
+          collection_id: isNaN(METABASE_COLLECTION_ID) ? null : Number(METABASE_COLLECTION_ID)
         },
         timeout: METABASE_TIMEOUT
       };
@@ -316,6 +316,7 @@ function createMetabaseQuery(): RequestHandler {
                     '=',
                     ['field-id', POI_METABASE_QUERY_FIELD_ID],
                     ...point_of_interest_ids
+                    // note: points of interest has no deleted_date at the base level at this time
                   ]
                 ],
                 limit: SEARCH_LIMIT_MAX
