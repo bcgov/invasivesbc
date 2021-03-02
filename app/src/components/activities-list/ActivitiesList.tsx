@@ -201,7 +201,8 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
   const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
-      selector: { docType: DocType.ACTIVITY, activityType: props.activityType }
+      selector: { docType: DocType.ACTIVITY, activityType: props.activityType },
+      use_index: 'activitiesIndex'
     });
 
     setDocs([...activityResult.docs]);
@@ -325,7 +326,8 @@ const ActivitiesList: React.FC = () => {
         formStatus: FormValidationStatus.VALID,
         'sync.ready': true,
         'sync.status': { $ne: ActivitySyncStatus.SYNC_SUCCESSFUL }
-      }
+      },
+      use_index: 'formStatusIndex'
     });
 
     let errorMessages = [];

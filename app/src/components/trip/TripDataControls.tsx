@@ -108,7 +108,7 @@ export const TripDataControls: React.FC = (props) => {
   }, [databaseChangesContext, getTrip]);
 
   const fetchActivities = async () => {
-    if (!trip || !trip.activityChoices) {
+    if (!trip || !trip.activityChoices || !trip.activityChoices.length) {
       return;
     }
 
@@ -159,7 +159,7 @@ export const TripDataControls: React.FC = (props) => {
   };
 
   const fetchPointsOfInterest = async () => {
-    if (!trip || !trip.pointOfInterestChoices) {
+    if (!trip || !trip.pointOfInterestChoices || !trip.pointOfInterestChoices.length) {
       return;
     }
 
