@@ -65,7 +65,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     if (watchPosition) {
       if (workingPolyline.length == 0) {
         setWorkingPolyline([[watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]]);
-      } else if (isGreaterDistanceThan(watchPosition.coords.longitude, watchPosition.coords.latitude, 0.01)) {
+      } else if (isGreaterDistanceThan(watchPosition.coords.longitude, watchPosition.coords.latitude, 0.001)) {
         setWorkingPolyline([
           ...workingPolyline,
           [watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]
