@@ -8,7 +8,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { useCurrentPosition, useWatchPosition, availableFeatures } from '@ionic/react-hooks/geolocation';
-import * as turf  from '@turf/turf'
+import * as turf from '@turf/turf';
 import { Units, unitsFactors } from '@turf/turf';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
@@ -27,71 +27,73 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
   const { error, currentPosition, getPosition } = useCurrentPosition();
-  const [ workingPolyline, setWorkingPolyline] = useState([])
-
+  const [workingPolyline, setWorkingPolyline] = useState([]);
 
   const databaseContext = useContext(DatabaseContext);
 
   const makeGeoFromLatLong = (long: number, lat: number) => {
-    return JSON.parse(`
+    return JSON.parse(
+      `
     {
      "type": "Feature",
      "geometry": {
        "type": "Point",
-       "coordinates": [` + long.toFixed(6) + `, ` + lat.toFixed(6) +`]
+       "coordinates": [` +
+        long.toFixed(6) +
+        `, ` +
+        lat.toFixed(6) +
+        `]
      },
      "properties": {
      }
-   }`)
- }
+   }`
+    );
+  };
 
   const makeGeoFromArray = (input) => {
-    return JSON.parse(`
+    return JSON.parse(
+      `
     {
      "type": "Feature",
      "geometry": {
        "type": "Point",
-       "coordinates": ` + input + `
+       "coordinates": ` +
+        input +
+        `
      },
      "properties": {
      }
-   }`)
- }
+   }`
+    );
+  };
 
-const isGreaterDistanceThan = (from, to, distance) => {
+  const isGreaterDistanceThan = (from, to, distance) => {
     var fromAsPoint = turf.point(from);
     var toAsPoint = turf.point(to);
 
-    return turf.distance(from, to, { units: 'kilometers'}) > distance;
-}
+    return turf.distance(from, to, { units: 'kilometers' }) > distance;
+  };
 
   const startTrack = async () => {
-     startWatch();
-      notifySuccess(databaseContext, JSON.stringify("Starting track."));
+    startWatch();
+    notifySuccess(databaseContext, JSON.stringify('Starting track.'));
   };
 
   const endTrack = async () => {
     // convert poly to polygon
-    if(workingPolyline.length > 2)
-    {
+    if (workingPolyline.length > 2) {
       var line = turf.lineString(workingPolyline);
       var polygon = turf.lineToPolygon(line);
-      if(window.confirm('Convert track to polygon?'))
-      {
-        notifySuccess(databaseContext, JSON.stringify("Made a polygon!!  " + JSON.stringify(polygon)));
+      if (window.confirm('Convert track to polygon?')) {
+        notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  ' + JSON.stringify(polygon)));
+        clearWatch();
+      } else {
+        notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  ' + JSON.stringify(line)));
         clearWatch();
       }
-      else
-      {
-        notifySuccess(databaseContext, JSON.stringify("Made a polyine!!  " + JSON.stringify(line)));
-        clearWatch();
-      }
-    }
-    else
-    {
-      if(window.confirm("Sure you're done walkin'?  Didn't collect 2 points."))
-      {
-        alert('Cancelled track.')
+    } else {
+      if (window.confirm("Sure you're done walkin'?  Didn't collect 2 points.")) {
+        alert('Cancelled track.');
         clearWatch();
       }
     }
@@ -99,12 +101,13 @@ const isGreaterDistanceThan = (from, to, distance) => {
 
   useEffect(() => {
     if (watchPosition) {
-      if(workingPolyline.length == 0)
-      {
-        setWorkingPolyline([[watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]])
-      }
-      else if(isGreaterDistanceThan(watchPosition.coords.longitude, watchPosition.coords.latitude, .01)){
-        setWorkingPolyline([...workingPolyline, [watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]])
+      if (workingPolyline.length == 0) {
+        setWorkingPolyline([[watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]]);
+      } else if (isGreaterDistanceThan(watchPosition.coords.longitude, watchPosition.coords.latitude, 0.01)) {
+        setWorkingPolyline([
+          ...workingPolyline,
+          [watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]
+        ]);
       }
     }
   }, [watchPosition]);
