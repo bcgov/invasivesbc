@@ -1,4 +1,3 @@
-import { Plugins } from '@capacitor/core';
 import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
@@ -7,9 +6,8 @@ import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoCont
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
-import { useCurrentPosition, useWatchPosition, availableFeatures } from '@ionic/react-hooks/geolocation';
+import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
-import { Units, unitsFactors } from '@turf/turf';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -26,52 +24,16 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
-  const { error, currentPosition, getPosition } = useCurrentPosition();
+  const { currentPosition } = useCurrentPosition();
   const [workingPolyline, setWorkingPolyline] = useState([]);
 
   const databaseContext = useContext(DatabaseContext);
-
-  const makeGeoFromLatLong = (long: number, lat: number) => {
-    return JSON.parse(
-      `
-    {
-     "type": "Feature",
-     "geometry": {
-       "type": "Point",
-       "coordinates": [` +
-        long.toFixed(6) +
-        `, ` +
-        lat.toFixed(6) +
-        `]
-     },
-     "properties": {
-     }
-   }`
-    );
-  };
-
-  const makeGeoFromArray = (input) => {
-    return JSON.parse(
-      `
-    {
-     "type": "Feature",
-     "geometry": {
-       "type": "Point",
-       "coordinates": ` +
-        input +
-        `
-     },
-     "properties": {
-     }
-   }`
-    );
-  };
 
   const isGreaterDistanceThan = (from, to, distance) => {
     var fromAsPoint = turf.point(from);
     var toAsPoint = turf.point(to);
 
-    return turf.distance(from, to, { units: 'kilometers' }) > distance;
+    return turf.distance(fromAsPoint, toAsPoint, { units: 'kilometers' }) > distance;
   };
 
   const startTrack = async () => {
