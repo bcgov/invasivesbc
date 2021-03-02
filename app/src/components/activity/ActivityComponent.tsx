@@ -77,7 +77,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         }
         catch(e)
         {
-          notifySuccess(databaseContext, JSON.stringify('Computer says no.  ' + JSON.stringify(e)));
+          notifySuccess(databaseContext, JSON.stringify('Computer says no...  ' + JSON.stringify(e)));
         }
       }
     }
