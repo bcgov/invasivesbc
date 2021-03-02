@@ -608,7 +608,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     uploadLayer.addData(geojson);
     // const myLayer = L.geoJSON(geojson).addTo(mapRef.current);
     setDropSpatial(null);
-    debugger;
   };
 
   const dragDrop = (e) => {
