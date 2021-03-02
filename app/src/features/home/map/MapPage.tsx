@@ -155,10 +155,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
   }, [databaseContext.database]);
 
   const getEverythingWithAGeo = useCallback(async () => {
-    // TODO set default location
-
     const now = moment().valueOf();
-    if (geoUpdateTimestamp !== null && now < geoUpdateTimestamp + GEO_UPDATE_MIN_INTERVAL ) {
+    if (geoUpdateTimestamp !== null && now < geoUpdateTimestamp + GEO_UPDATE_MIN_INTERVAL) {
       return;
     }
 
@@ -173,7 +171,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             DocType.REFERENCE_POINT_OF_INTEREST,
             DocType.POINT_OF_INTEREST
           ]
-        },
+        }
         /* 
         // Only needed if memory size from too many points on the map becomes an issue.
         // currently the main problem is just update frequency
@@ -223,15 +221,13 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       let height = 0;
       let zIndex = 9999999999;
-      if (row.geometry[0].geometry.type === 'Polygon' && coords[0]) {       
+      if (row.geometry[0].geometry.type === 'Polygon' && coords[0]) {
         let highestLat = coords[0].reduce((max, point) => {
-          if (point[1] > max)
-            return point[1];
+          if (point[1] > max) return point[1];
           return max;
         }, 0);
         let lowestLat = coords[0].reduce((min, point) => {
-          if (point[1] < min)
-            return point[1];
+          if (point[1] < min) return point[1];
           return min;
         }, zIndex);
 
@@ -356,9 +352,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
     });
 
     setGeometry(geos);
-    setInteractiveGeometry(
-      interactiveGeos
-    );
+    setInteractiveGeometry(interactiveGeos);
 
     //setIsReadyToLoadMap(true)
   }, [databaseContext.database, extent]);

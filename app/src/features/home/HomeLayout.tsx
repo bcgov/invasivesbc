@@ -18,18 +18,17 @@ const HomeLayout = (props: any) => {
   const [notificationCount, setNotificationCount] = useState(0);
 
   const addNotificationsToPage = useCallback(async () => {
-
     let notifications = await databaseContext.database.find({
       selector: {
         docType: DocType.NOTIFICATION,
         acknowledged: false
       },
-      fields: [ 'dateCreated', '_id', 'notificationType', 'text', 'docType', 'acknowledged'],
+      fields: ['dateCreated', '_id', 'notificationType', 'text', 'docType', 'acknowledged'],
       use_index: 'notificationsIndex'
     });
 
     notifications.docs = notifications.docs.filter((note) => note._id && note.notificationType && note.text);
-    notifications.docs.sort(( a, b ) => {
+    notifications.docs.sort((a, b) => {
       if (a.dateCreated < b.dateCreated) return 1;
       if (a.dateCreated > b.dateCreated) return -1;
       return 0;
