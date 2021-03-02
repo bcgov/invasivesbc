@@ -90,7 +90,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const getBCGovBaseLayer = () => {
-    return L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', {
+    return L.tileLayer.offline('https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 24,
       useCache: true,
       cacheMaxAge: 6.048e8 // 1 week
@@ -603,6 +603,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     })
     const dom = new DOMParser().parseFromString(xml,'application/xml');
     const geojson = kml(dom);
+
+    const bbox = turf.bbox(geojson);
+    console.log('bbox',bbox);
+    const corner1 = L.latLng(bbox[1],bbox[0])
+    const corner2 = L.latLng(bbox[3],bbox[2])
+    console.log('corner1:', corner1);
+    mapRef.current.flyToBounds([corner1,corner2]);
     
     if (geojson?.features) {
       console.log('saving uploaded spatial data');
