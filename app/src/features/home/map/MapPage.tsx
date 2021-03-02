@@ -161,6 +161,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
         }
       }
     });
+    console.log('i am a docs',docs);
 
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
@@ -184,6 +185,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
         ];
         coordinatesString = `(${coords[0]}, ${coords[1]})`;
       }
+
 
       switch (row.docType) {
         case DocType.SPATIAL_UPLOADS:
