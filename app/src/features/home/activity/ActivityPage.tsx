@@ -9,7 +9,6 @@ import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
-import { Plugins } from '@capacitor/core';
 import {
   getCustomValidator,
   getAreaValidator,
