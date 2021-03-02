@@ -1,5 +1,6 @@
 import { Button, CircularProgress, Container, Grid, makeStyles, Theme, Box } from '@material-ui/core';
 import clsx from 'clsx';
+import moment from 'moment';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import MapContainer from 'components/map/MapContainer';
@@ -11,6 +12,8 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
+
+const GEO_UPDATE_MIN_INTERVAL = 60000; // 60s
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -110,6 +113,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const [extent, setExtent] = useState(null);
   const [formActivityData, setFormActivityData] = useState(null);
   const [photos, setPhotos] = useState<IPhoto[]>([]);
+  const [geoUpdateTimestamp, setGeoUpdateTimestamp] = useState(null);
 
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
@@ -125,9 +129,12 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
-  const handleGeoClick = (geo: any) => {
+  const handleGeoClick = async (geo: any) => {
     setShowPopOut(true);
-    setSelectedInteractiveGeometry(geo);
+    // fetch all data for the given geo
+    const results = await databaseContext.database.find({ selector: { _id: geo._id } });
+
+    setSelectedInteractiveGeometry(results.docs[0]);
   };
 
   const getActivityData = useCallback(async () => {
@@ -148,6 +155,15 @@ const MapPage: React.FC<IMapProps> = (props) => {
   }, [databaseContext.database]);
 
   const getEverythingWithAGeo = useCallback(async () => {
+    // TODO set default location
+
+    const now = moment().valueOf();
+    if (geoUpdateTimestamp !== null && now < geoUpdateTimestamp + GEO_UPDATE_MIN_INTERVAL ) {
+      return;
+    }
+
+    setGeoUpdateTimestamp(now);
+
     let docs = await databaseContext.database.find({
       selector: {
         docType: {
@@ -157,8 +173,33 @@ const MapPage: React.FC<IMapProps> = (props) => {
             DocType.REFERENCE_POINT_OF_INTEREST,
             DocType.POINT_OF_INTEREST
           ]
-        }
-      }
+        },
+        /* 
+        // Only needed if memory size from too many points on the map becomes an issue.
+        // currently the main problem is just update frequency
+        // so this isn't needed with a long interval timer.
+        // Leaving this here just in case it's needed:
+        $or: [
+          {
+            $exists: 'lat'
+          },
+          extent
+            ? {
+              lat: {
+                $gte: extent._southWest.lat,
+                $lte: extent._northEast.lat
+              },
+              lon: {
+                $gte: extent._southWest.lng,
+                $lte: extent._northEast.lng
+              }
+            }
+            : {}
+        ]*/
+      },
+      use_index: 'docTypeIndex',
+      // limit to only necessary fields:
+      fields: ['_id', 'docType', 'geometry', 'lat', 'lon']
     });
 
     if (!docs || !docs.docs || !docs.docs.length) {
@@ -302,14 +343,12 @@ const MapPage: React.FC<IMapProps> = (props) => {
     });
 
     setGeometry(geos);
-
     setInteractiveGeometry(
       interactiveGeos
-    ); /*/todo figure out to have this as a dictionary with only the delta
-        getting written to on updates*/
+    );
 
     //setIsReadyToLoadMap(true)
-  }, [databaseContext.database]);
+  }, [databaseContext.database, extent]);
 
   useEffect(() => {
     const updateComponent = () => {
