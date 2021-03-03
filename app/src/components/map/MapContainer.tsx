@@ -498,19 +498,32 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             const content = interactObj.popUpComponent(interactObj.description);
             layer.on('click', () => {
               // Fires on click of single feature
-              interactObj.onClickCallback();
-              if (feature.geometry.type !== 'Polygon') {
+
+              // Formulate a table containing all attributes
+              let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+              Object.keys(feature.properties).forEach((f) => {
+                if (f !== 'uploadedSpatial') {
+                  table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`
+                }
+              })
+              table += '</table>'
+
+              const loc = turf.centroid(feature);
+              const center = [loc.geometry.coordinates[1],loc.geometry.coordinates[0]];
+
+              if (feature.properties.uploadedSpatial) {
                 L.popup()
-                  .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
-                  .setContent(content)
+                  .setLatLng(center)
+                  .setContent(table)
                   .openOn(mapRef.current);
-              } else {
-                // If polygon use the first point as the coordinate for popup
+              } else  {
                 L.popup()
-                  .setLatLng([feature.geometry.coordinates[0][0][1], feature.geometry.coordinates[0][0][0]])
+                  .setLatLng(center)
                   .setContent(content)
                   .openOn(mapRef.current);
               }
+
+              interactObj.onClickCallback();
             });
           }
         });
@@ -566,7 +579,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const dragEnter = (e) => {
     e.preventDefault();
     const type = e?.dataTransfer?.items[0]?.type;
-    console.log('Drag this file type',type);
     switch(type) {
       case 'application/vnd.google-earth.kmz':
         setDropSpatial("Sorry... KMZ files are currently not supported. Please unzip and provide the internal KML.");
@@ -582,7 +594,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const dragLeave = (e) => {
     e.preventDefault();
     setDropSpatial(null);
-    console.log('dragLeave');
   };
 
   const addKML = async (file) => {
@@ -603,12 +614,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.flyToBounds([corner1,corner2]);
     
     if (geojson?.features) {
-      console.log('saving uploaded spatial data');
       await databaseContext.database.upsert('spatial_uploads', (spatial) => {
+        // Add a special flag to distinguish from other features
+        geojson.features.forEach((_,i) => {
+          geojson.features[i].properties.uploadedSpatial = true;
+        });
         return {
           ...spatial,
           docType: DocType.SPATIAL_UPLOADS,
-          geometry: [...geojson.features,...spatial.geometry]
+          geometry: (spatial.geometry) ? [...geojson.features,...spatial.geometry] : geojson.features
         };
       })
     }
@@ -633,10 +647,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       default:
         setDropSpatial(null);
     }
-
-
-    console.log('Drag drop',name);
-    console.log('Find me the file type',type);
   };
 
   /* ## dragOver

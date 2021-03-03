@@ -57,6 +57,11 @@ const PointOfInterestPopUp = (name: string) => {
   return '<div>' + name + '</div>';
 };
 
+const UploadedSpatialPopUp = (content: any) => {
+ console.log(content); 
+ return 'yo'
+}
+
 interface popOutComponentProps {
   classes?: any;
   selectedGeo?: any;
@@ -165,7 +170,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
     }
-    console.log('i am a docs',docs);
 
     let geos = [];
     let interactiveGeos = [];
@@ -189,12 +193,12 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       switch (row.docType) {
         case DocType.SPATIAL_UPLOADS:
-          console.log('here is a spatial upload',row);
           interactiveGeos.push({
             recordDocID: row._id,
             recordDocType: row.docType,
             description: 'Uploaded spatial content:\n ' + row._id + '\n' + coordinatesString,
             geometry: row.geometry,
+            color: 'orange',
             onClickCallback: () => {
               console.log('uploaded content clicked')
             },
@@ -209,7 +213,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             description: 'New Point of Interest:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
-            geometry: row.geometry[0],
+            geometry: row.geometry,
             color: '#99E472',
             zIndex: 1, // need to ask jamie how to implement this
 
