@@ -9,7 +9,6 @@ import { notifySuccess } from 'utils/NotificationUtils';
 import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
 import { Feature } from 'geojson';
-import { FeatureCollection } from '@turf/turf';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -26,7 +25,6 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
-  const { currentPosition } = useCurrentPosition();
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
 
@@ -44,7 +42,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   };
 
   const startTrack = async () => {
-    startWatch();
+    startWatch({ enableHighAccuracy: true})
     notifySuccess(databaseContext, JSON.stringify('Starting track.'));
   };
 
