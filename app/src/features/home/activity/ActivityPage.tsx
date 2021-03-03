@@ -411,7 +411,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       {!doc && (
         <>
           <Box mb={3}>
-            <Typography variant="h4">Current Activity</Typography>
+            <Typography variant="h4">Current Activity </Typography>
           </Box>
           <Typography>
             There is no current activity. When you start creating an activity, it will become your current activity and

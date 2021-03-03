@@ -196,11 +196,13 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [docs, setDocs] = useState<any[]>([]);
+  const [docToDelete, setDocToDelete] = useState(null);
   const [isWarningDialogOpen, setIsWarningDialogOpen] = useState(false);
 
   const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
-      selector: { docType: DocType.ACTIVITY, activityType: props.activityType }
+      selector: { docType: DocType.ACTIVITY, activityType: props.activityType },
+      use_index: 'activitiesIndex'
     });
 
     setDocs([...activityResult.docs]);
@@ -269,7 +271,12 @@ const ActivityList: React.FC<IActivityList> = (props) => {
               </ListItemIcon>
               <ActivityListItem isDisabled={props.isDisabled} activity={doc} />
               <ListItemSecondaryAction>
-                <IconButton disabled={isDisabled} onClick={() => setIsWarningDialogOpen(true)}>
+                <IconButton
+                  disabled={isDisabled}
+                  onClick={() => {
+                    setDocToDelete(doc);
+                    setIsWarningDialogOpen(true);
+                  }}>
                   <DeleteForever />
                 </IconButton>
               </ListItemSecondaryAction>
@@ -278,7 +285,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
               isOpen={isWarningDialogOpen}
               handleDisagree={() => setIsWarningDialogOpen(false)}
               handleAgree={async () => {
-                await removeActivity(doc);
+                await removeActivity(docToDelete);
                 setIsWarningDialogOpen(false);
               }}
               heading="Delete Activity?"
@@ -319,7 +326,8 @@ const ActivitiesList: React.FC = () => {
         formStatus: FormValidationStatus.VALID,
         'sync.ready': true,
         'sync.status': { $ne: ActivitySyncStatus.SYNC_SUCCESSFUL }
-      }
+      },
+      use_index: 'formStatusIndex'
     });
 
     let errorMessages = [];

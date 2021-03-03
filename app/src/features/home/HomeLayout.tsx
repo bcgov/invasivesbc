@@ -18,30 +18,20 @@ const HomeLayout = (props: any) => {
   const [notificationCount, setNotificationCount] = useState(0);
 
   const addNotificationsToPage = useCallback(async () => {
-    await databaseContext.database.createIndex({
-      index: {
-        name: 'notifyIndex',
-        fields: ['dateCreated', '_id', 'docType', 'notificationType', 'text', 'acknowledged']
-      }
-    });
-
-    const notifyIndex = await (await databaseContext.database.getIndexes()).indexes.find(
-      (e) => e.name === 'notifyIndex'
-    );
-
-    const notifications = await databaseContext.database.find({
+    let notifications = await databaseContext.database.find({
       selector: {
-        dateCreated: { $gte: null },
-        _id: { $gte: null },
         docType: DocType.NOTIFICATION,
-        notificationType: { $gte: null },
-        text: { $gte: null },
         acknowledged: false
       },
+      fields: ['dateCreated', '_id', 'notificationType', 'text', 'docType', 'acknowledged'],
+      use_index: 'notificationsIndex'
+    });
 
-      fields: ['dateCreated', '_id', 'docType', 'notificationType', 'text', 'acknowledged'],
-      sort: [{ dateCreated: 'desc' }], //    <--   can't find or use index
-      use_index: notifyIndex.ddoc
+    notifications.docs = notifications.docs.filter((note) => note._id && note.notificationType && note.text);
+    notifications.docs.sort((a, b) => {
+      if (a.dateCreated < b.dateCreated) return 1;
+      if (a.dateCreated > b.dateCreated) return -1;
+      return 0;
     });
 
     setNotificationCount(notifications.docs.length);
