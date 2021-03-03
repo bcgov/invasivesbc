@@ -42,7 +42,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   };
 
   const startTrack = async () => {
-    startWatch({ enableHighAccuracy: true})
+    startWatch({ enableHighAccuracy: true });
     notifySuccess(databaseContext, JSON.stringify('Starting track.'));
   };
 
