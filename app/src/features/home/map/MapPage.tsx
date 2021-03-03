@@ -161,11 +161,11 @@ const MapPage: React.FC<IMapProps> = (props) => {
         }
       }
     });
-    console.log('i am a docs',docs);
 
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
     }
+    console.log('i am a docs',docs);
 
     let geos = [];
     let interactiveGeos = [];
@@ -178,10 +178,10 @@ const MapPage: React.FC<IMapProps> = (props) => {
       geos.push(row.geometry[0]);
 
       let coordinatesString = 'Polygon';
-      if (row.geometry[0].geometry.type !== 'Polygon') {
+      if (row.geometry[0]?.geometry?.type !== 'Polygon') {
         const coords = [
-          Number(row.geometry[0]?.geometry.coordinates[1]).toFixed(2),
-          Number(row.geometry[0]?.geometry.coordinates[0]).toFixed(2)
+          Number(row.geometry[0]?.geometry?.coordinates[1]).toFixed(2),
+          Number(row.geometry[0]?.geometry?.coordinates[0]).toFixed(2)
         ];
         coordinatesString = `(${coords[0]}, ${coords[1]})`;
       }
@@ -194,10 +194,11 @@ const MapPage: React.FC<IMapProps> = (props) => {
             recordDocID: row._id,
             recordDocType: row.docType,
             description: 'Uploaded spatial content:\n ' + row._id + '\n' + coordinatesString,
-            geometry: row.geometry[0],
+            geometry: row.geometry,
             onClickCallback: () => {
               console.log('uploaded content clicked')
-            }
+            },
+            popUpComponent: PointOfInterestPopUp
           });
           break;
         case DocType.POINT_OF_INTEREST:

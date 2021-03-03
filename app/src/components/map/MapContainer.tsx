@@ -16,6 +16,7 @@ import './MapContainer.css';
 import * as turf from '@turf/turf';
 import { kml } from '@tmcw/togeojson';
 import { CloudUploadOutlined } from '@material-ui/icons';
+import { DocType } from 'constants/database';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -604,7 +605,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     if (geojson?.features) {
       console.log('saving uploaded spatial data');
       await databaseContext.database.upsert('spatial_uploads', (spatial) => {
-        return {...spatial, geometry: geojson.features};
+        return {
+          ...spatial,
+          docType: DocType.SPATIAL_UPLOADS,
+          geometry: [...geojson.features,...spatial.geometry]
+        };
       })
     }
     setDropSpatial(null);
