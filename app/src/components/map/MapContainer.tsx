@@ -15,7 +15,6 @@ import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
 import { kml } from '@tmcw/togeojson';
-import { CloudUploadOutlined } from '@material-ui/icons';
 import { DocType } from 'constants/database';
 
 export type MapControl = (map: any, ...args: any) => void;
@@ -59,8 +58,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const mapRef = useRef(null);
 
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
-
-  // const uploadLayer = new L.GeoJSON()
 
   const addContextMenuClickListener = () => {
     mapRef.current.on('contextmenu', (e) => {
