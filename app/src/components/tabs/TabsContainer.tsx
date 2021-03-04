@@ -138,24 +138,29 @@ const TabsContainer: React.FC = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Grid className={classes.alignment} container>
-          <img
-            className={classes.pointer}
-            src={invbclogo}
-            width="50"
-            alt="B.C. Government Logo"
-            onClick={() => history.push('/')}
-          />
-          <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
-            {tabConfig.map((tab) => (
-              <Tab
-                label={tab.label}
-                key={tab.label.split(' ').join('_')}
-                icon={tab.icon}
-                onClick={() => history.push(tab.path)}
-              />
-            ))}
-          </Tabs>
+        <Grid className={classes.alignment} flex-direction="row" container>
+          <Grid xs={1} item>
+            <img
+              className={classes.pointer}
+              src={invbclogo}
+              width="50"
+              height="50"
+              alt="B.C. Government Logo"
+              onClick={() => history.push('/')}
+            />
+          </Grid>
+          <Grid xs={11} item>
+            <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
+              {tabConfig.map((tab) => (
+                <Tab
+                  label={tab.label}
+                  key={tab.label.split(' ').join('_')}
+                  icon={tab.icon}
+                  onClick={() => history.push(tab.path)}
+                />
+              ))}
+            </Tabs>
+          </Grid>
         </Grid>
       </Toolbar>
     </AppBar>
