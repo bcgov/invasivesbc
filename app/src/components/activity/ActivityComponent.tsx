@@ -25,8 +25,15 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
+  const { getPosition } = useCurrentPosition();
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
+
+
+  useEffect(()=>{
+    getPosition();
+  }
+  ,[])
 
   const isGreaterDistanceThan = (from, to, distance) => {
     let returnVal = null;
@@ -51,8 +58,8 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     if (workingPolyline.length >= 4) {
       var line = turf.lineString(workingPolyline);
       var polygon = turf.lineToPolygon(line);
-      props.geometryState.setGeometry([polygon as any]);
       if (window.confirm('Convert track to polygon?')) {
+        props.geometryState.setGeometry([polygon as any]);
         notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  '));
         clearWatch();
       } else {
