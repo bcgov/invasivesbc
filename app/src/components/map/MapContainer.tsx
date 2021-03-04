@@ -14,6 +14,8 @@ import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
+import { kml } from '@tmcw/togeojson';
+import { DocType } from 'constants/database';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -86,16 +88,49 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const getBCGovBaseLayer = () => {
-    return L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 24,
-      useCache: true,
-      cacheMaxAge: 6.048e8 // 1 week
-    });
+    return L.tileLayer.offline(
+      'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 24,
+        useCache: true,
+        cacheMaxAge: 6.048e8 // 1 week
+      }
+    );
   };
 
   const getNRDistricts = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+
+  const getMOTIDistricts = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+
+  const getMOTIRegions = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.TADM_MOT_REGIONAL_BNDRY_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+
+  const getBEC = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
       {
         opacity: 0.8,
         tms: true
@@ -299,6 +334,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     };
 
     const nRDistricts = getNRDistricts();
+    const motiDistricts = getMOTIDistricts();
+    const motiRegions = getMOTIRegions();
+    const bec = getBEC();
     const wells = getWells();
     const streams = getStreams();
     const wetlands = getWetlands();
@@ -314,7 +352,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       Placenames: esriPlacenames,
       Wells: wells,
       'Gravel Pits': aggregate,
-      Streams: streams,
+      '<span style="color:blue;"><b>Streams</b></span>': streams,
       Wetlands: wetlands,
       Ownership: ownership,
       'Invasive Plant Management Areas': ipma,
@@ -322,7 +360,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Natural Resource Districts': nRDistricts,
       Municipalites: municipalities,
       'Regional Districts': regionalDistricts,
-      'Road Features Inventory': rfi
+      'Road Features Inventory': rfi,
+      Biogeoclimatic: bec,
+      'MOTI Regions': motiRegions,
+      'MOTI Districts': motiDistricts
     };
 
     mapRef.current.addLayer(esriPlacenames);
@@ -456,19 +497,26 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             const content = interactObj.popUpComponent(interactObj.description);
             layer.on('click', () => {
               // Fires on click of single feature
-              interactObj.onClickCallback();
-              if (feature.geometry.type !== 'Polygon') {
-                L.popup()
-                  .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
-                  .setContent(content)
-                  .openOn(mapRef.current);
+
+              // Formulate a table containing all attributes
+              let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+              Object.keys(feature.properties).forEach((f) => {
+                if (f !== 'uploadedSpatial') {
+                  table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+                }
+              });
+              table += '</table>';
+
+              const loc = turf.centroid(feature);
+              const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+              if (feature.properties.uploadedSpatial) {
+                L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
               } else {
-                // If polygon use the first point as the coordinate for popup
-                L.popup()
-                  .setLatLng([feature.geometry.coordinates[0][0][1], feature.geometry.coordinates[0][0][0]])
-                  .setContent(content)
-                  .openOn(mapRef.current);
+                L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
               }
+
+              interactObj.onClickCallback();
             });
           }
         });
@@ -518,7 +566,114 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
-  return <div id={props.mapId} className={props.classes.map} />;
+  const [dropSpatial, setDropSpatial] = useState(null);
+
+  const dragEnter = (e) => {
+    e.preventDefault();
+    const type = e?.dataTransfer?.items[0]?.type;
+    switch (type) {
+      case 'application/vnd.google-earth.kmz':
+        setDropSpatial('Sorry... KMZ files are currently not supported. Please unzip and provide the internal KML.');
+        break;
+      case 'application/vnd.google-earth.kml+xml':
+        setDropSpatial('I love to eat KML files');
+        break;
+      default:
+        setDropSpatial(null);
+    }
+  };
+
+  const dragLeave = (e) => {
+    e.preventDefault();
+    setDropSpatial(null);
+  };
+
+  const addKML = async (file) => {
+    setDropSpatial('Yum yum yum');
+    const name = file?.name;
+    const layerName = name.replace(/\..*/g, '').replace(/[^\w]/g, '_');
+    const xml = await file.text().then((xmlstring) => {
+      return xmlstring;
+    });
+    const dom = new DOMParser().parseFromString(xml, 'application/xml');
+    const geojson = kml(dom);
+
+    const bbox = turf.bbox(geojson);
+    const corner1 = L.latLng(bbox[1], bbox[0]);
+    const corner2 = L.latLng(bbox[3], bbox[2]);
+    mapRef.current.flyToBounds([corner1, corner2]);
+
+    if (geojson?.features) {
+      await databaseContext.database.upsert('spatial_uploads', (spatial) => {
+        // Add a special flag to distinguish from other features
+        geojson.features.forEach((_, i) => {
+          geojson.features[i].properties.uploadedSpatial = true;
+        });
+        return {
+          ...spatial,
+          docType: DocType.SPATIAL_UPLOADS,
+          geometry: spatial.geometry ? [...geojson.features, ...spatial.geometry] : geojson.features
+        };
+      });
+    }
+    setDropSpatial(null);
+  };
+
+  const dragDrop = (e) => {
+    e.preventDefault();
+    setDropSpatial(null);
+    const file = e?.dataTransfer?.files[0];
+    const type = file?.type;
+    const name = file?.name;
+
+    switch (type) {
+      case 'application/vnd.google-earth.kmz':
+        setDropSpatial('Yuck! KMZs are nasty');
+        break;
+      case 'application/vnd.google-earth.kml+xml':
+        addKML(file);
+        break;
+      default:
+        setDropSpatial(null);
+    }
+  };
+
+  /* ## dragOver
+    This cancels the default behaviour of trying to open
+    the file in the browser window.
+    @param e {object} Dragging event
+   */
+  const dragOver = (e) => e.preventDefault();
+
+  const dropZoneVisible = {
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    fontSize: '2.5rem',
+    fontWeight: 800,
+    color: 'white',
+    zIndex: 10000,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '10rem',
+    outline: '1rem dashed white',
+    outlineOffset: '-6rem'
+  } as React.CSSProperties;
+
+  const dropZoneInvisible = {
+    display: 'none'
+  };
+
+  return (
+    <div id={props.mapId} className={props.classes.map} onDragEnter={dragEnter} onDragOver={dragOver} onDrop={dragDrop}>
+      <div style={dropSpatial ? dropZoneVisible : dropZoneInvisible} onDragLeave={dragLeave}>
+        {' '}
+        {dropSpatial}{' '}
+      </div>
+    </div>
+  );
 };
 
 export default MapContainer;

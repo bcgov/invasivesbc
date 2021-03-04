@@ -60,6 +60,11 @@ const PointOfInterestPopUp = (name: string) => {
   return '<div>' + name + '</div>';
 };
 
+const UploadedSpatialPopUp = (content: any) => {
+  console.log(content);
+  return 'yo';
+};
+
 interface popOutComponentProps {
   classes?: any;
   selectedGeo?: any;
@@ -169,10 +174,11 @@ const MapPage: React.FC<IMapProps> = (props) => {
             DocType.REFERENCE_ACTIVITY,
             DocType.ACTIVITY,
             DocType.REFERENCE_POINT_OF_INTEREST,
-            DocType.POINT_OF_INTEREST
+            DocType.POINT_OF_INTEREST,
+            DocType.SPATIAL_UPLOADS
           ]
         }
-        /* 
+        /*
         // Only needed if memory size from too many points on the map becomes an issue.
         // currently the main problem is just update frequency
         // so this isn't needed with a long interval timer.
@@ -215,6 +221,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
       geos.push(row.geometry[0]);
 
       let coordinatesString = 'Polygon';
+
       const coords = row.geometry[0]?.geometry.coordinates;
       if (row.geometry[0].geometry.type !== 'Polygon')
         coordinatesString = `(${Number(coords[1]).toFixed(2)}, ${Number(coords[0]).toFixed(2)})`;
@@ -235,6 +242,19 @@ const MapPage: React.FC<IMapProps> = (props) => {
       }
 
       switch (row.docType) {
+        case DocType.SPATIAL_UPLOADS:
+          interactiveGeos.push({
+            recordDocID: row._id,
+            recordDocType: row.docType,
+            description: 'Uploaded spatial content:\n ' + row._id + '\n' + coordinatesString,
+            geometry: row.geometry,
+            color: 'orange',
+            onClickCallback: () => {
+              console.log('uploaded content clicked');
+            },
+            popUpComponent: PointOfInterestPopUp
+          });
+          break;
         case DocType.POINT_OF_INTEREST:
           interactiveGeos.push({
             //mapContext: MapContext.MAIN_MAP,
@@ -243,7 +263,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             description: 'New Point of Interest:\n ' + row._id + '\n' + coordinatesString,
 
             // basic display:
-            geometry: row.geometry[0],
+            geometry: row.geometry,
             color: '#99E472',
             zIndex: zIndex,
 
