@@ -237,6 +237,34 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getOGMA = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+  const getWHA = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+  const getTesting = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/testing@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
   const addZoomControls = () => {
     const zoomControlOptions = { position: 'bottomleft' };
 
@@ -347,6 +375,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const municipalities = getMunicipalites();
     const regionalDistricts = getRegionalDistricts();
     const rfi = getRFI();
+    const ogma = getOGMA();
+    const wha = getWHA();
+    const testing = getTesting();
 
     const overlays = {
       Placenames: esriPlacenames,
@@ -363,7 +394,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Road Features Inventory': rfi,
       Biogeoclimatic: bec,
       'MOTI Regions': motiRegions,
-      'MOTI Districts': motiDistricts
+      'MOTI Districts': motiDistricts,
+      'Old Growth Management Areas': ogma,
+      'Wildlife Habitat Areas': wha,
+      'testing group': testing
     };
 
     mapRef.current.addLayer(esriPlacenames);
