@@ -88,11 +88,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const getBCGovBaseLayer = () => {
-    return L.tileLayer.offline('https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 24,
-      useCache: true,
-      cacheMaxAge: 6.048e8 // 1 week
-    });
+    return L.tileLayer.offline(
+      'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 24,
+        useCache: true,
+        cacheMaxAge: 6.048e8 // 1 week
+      }
+    );
   };
 
   const getNRDistricts = () => {
@@ -345,7 +348,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const regionalDistricts = getRegionalDistricts();
     const rfi = getRFI();
 
-
     const overlays = {
       Placenames: esriPlacenames,
       Wells: wells,
@@ -359,7 +361,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       Municipalites: municipalities,
       'Regional Districts': regionalDistricts,
       'Road Features Inventory': rfi,
-      'Biogeoclimatic': bec,
+      Biogeoclimatic: bec,
       'MOTI Regions': motiRegions,
       'MOTI Districts': motiDistricts
     };
@@ -500,24 +502,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
               Object.keys(feature.properties).forEach((f) => {
                 if (f !== 'uploadedSpatial') {
-                  table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`
+                  table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
                 }
-              })
-              table += '</table>'
+              });
+              table += '</table>';
 
               const loc = turf.centroid(feature);
-              const center = [loc.geometry.coordinates[1],loc.geometry.coordinates[0]];
+              const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
 
               if (feature.properties.uploadedSpatial) {
-                L.popup()
-                  .setLatLng(center)
-                  .setContent(table)
-                  .openOn(mapRef.current);
-              } else  {
-                L.popup()
-                  .setLatLng(center)
-                  .setContent(content)
-                  .openOn(mapRef.current);
+                L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+              } else {
+                L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
               }
 
               interactObj.onClickCallback();
@@ -570,23 +566,22 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
-
   const [dropSpatial, setDropSpatial] = useState(null);
 
   const dragEnter = (e) => {
     e.preventDefault();
     const type = e?.dataTransfer?.items[0]?.type;
-    switch(type) {
+    switch (type) {
       case 'application/vnd.google-earth.kmz':
-        setDropSpatial("Sorry... KMZ files are currently not supported. Please unzip and provide the internal KML.");
+        setDropSpatial('Sorry... KMZ files are currently not supported. Please unzip and provide the internal KML.');
         break;
       case 'application/vnd.google-earth.kml+xml':
-        setDropSpatial("I love to eat KML files");
+        setDropSpatial('I love to eat KML files');
         break;
       default:
         setDropSpatial(null);
     }
-  }
+  };
 
   const dragLeave = (e) => {
     e.preventDefault();
@@ -594,34 +589,32 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const addKML = async (file) => {
-    setDropSpatial("Yum yum yum");
+    setDropSpatial('Yum yum yum');
     const name = file?.name;
-    const layerName = name
-      .replace(/\..*/g,'')
-      .replace(/[^\w]/g,'_');
+    const layerName = name.replace(/\..*/g, '').replace(/[^\w]/g, '_');
     const xml = await file.text().then((xmlstring) => {
       return xmlstring;
-    })
-    const dom = new DOMParser().parseFromString(xml,'application/xml');
+    });
+    const dom = new DOMParser().parseFromString(xml, 'application/xml');
     const geojson = kml(dom);
 
     const bbox = turf.bbox(geojson);
-    const corner1 = L.latLng(bbox[1],bbox[0])
-    const corner2 = L.latLng(bbox[3],bbox[2])
-    mapRef.current.flyToBounds([corner1,corner2]);
-    
+    const corner1 = L.latLng(bbox[1], bbox[0]);
+    const corner2 = L.latLng(bbox[3], bbox[2]);
+    mapRef.current.flyToBounds([corner1, corner2]);
+
     if (geojson?.features) {
       await databaseContext.database.upsert('spatial_uploads', (spatial) => {
         // Add a special flag to distinguish from other features
-        geojson.features.forEach((_,i) => {
+        geojson.features.forEach((_, i) => {
           geojson.features[i].properties.uploadedSpatial = true;
         });
         return {
           ...spatial,
           docType: DocType.SPATIAL_UPLOADS,
-          geometry: (spatial.geometry) ? [...geojson.features,...spatial.geometry] : geojson.features
+          geometry: spatial.geometry ? [...geojson.features, ...spatial.geometry] : geojson.features
         };
-      })
+      });
     }
     setDropSpatial(null);
   };
@@ -629,17 +622,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const dragDrop = (e) => {
     e.preventDefault();
     setDropSpatial(null);
-    const file = e?.dataTransfer?.files[0]
+    const file = e?.dataTransfer?.files[0];
     const type = file?.type;
     const name = file?.name;
 
-
-    switch(type) {
+    switch (type) {
       case 'application/vnd.google-earth.kmz':
-        setDropSpatial("Yuck! KMZs are nasty");
+        setDropSpatial('Yuck! KMZs are nasty');
         break;
       case 'application/vnd.google-earth.kml+xml':
-        addKML(file)
+        addKML(file);
         break;
       default:
         setDropSpatial(null);
@@ -647,11 +639,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   /* ## dragOver
-    This cancels the default behaviour of trying to open 
+    This cancels the default behaviour of trying to open
     the file in the browser window.
     @param e {object} Dragging event
    */
-  const dragOver = (e) => e.preventDefault() ;
+  const dragOver = (e) => e.preventDefault();
 
   const dropZoneVisible = {
     backgroundColor: 'rgba(255,255,255,0.4)',
@@ -675,19 +667,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   return (
-    <div
-      id={props.mapId}
-      className={props.classes.map}
-      onDragEnter={dragEnter}
-      onDragOver={dragOver}
-      onDrop={dragDrop}
-    >
-
-      <div
-        style={dropSpatial ? dropZoneVisible : dropZoneInvisible}
-        onDragLeave={dragLeave}
-      > {dropSpatial} </div>
-
+    <div id={props.mapId} className={props.classes.map} onDragEnter={dragEnter} onDragOver={dragOver} onDrop={dragDrop}>
+      <div style={dropSpatial ? dropZoneVisible : dropZoneInvisible} onDragLeave={dragLeave}>
+        {' '}
+        {dropSpatial}{' '}
+      </div>
     </div>
   );
 };
