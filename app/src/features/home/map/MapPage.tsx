@@ -61,9 +61,9 @@ const PointOfInterestPopUp = (name: string) => {
 };
 
 const UploadedSpatialPopUp = (content: any) => {
- console.log(content); 
- return 'yo'
-}
+  console.log(content);
+  return 'yo';
+};
 
 interface popOutComponentProps {
   classes?: any;
@@ -178,7 +178,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             DocType.SPATIAL_UPLOADS
           ]
         }
-        /* 
+        /*
         // Only needed if memory size from too many points on the map becomes an issue.
         // currently the main problem is just update frequency
         // so this isn't needed with a long interval timer.
@@ -241,7 +241,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
         zIndex = zIndex - (highestLat - lowestLat) * 1000000;
       }
 
-
       switch (row.docType) {
         case DocType.SPATIAL_UPLOADS:
           interactiveGeos.push({
@@ -251,7 +250,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             geometry: row.geometry,
             color: 'orange',
             onClickCallback: () => {
-              console.log('uploaded content clicked')
+              console.log('uploaded content clicked');
             },
             popUpComponent: PointOfInterestPopUp
           });
