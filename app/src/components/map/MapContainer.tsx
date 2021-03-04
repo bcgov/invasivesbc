@@ -255,6 +255,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     );
   };
+
+  /**
+   * XXX: Testing of a layer group
+   */
   const getTesting = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/testing@EPSG:900913@png/{z}/{x}/{y}.png`,
