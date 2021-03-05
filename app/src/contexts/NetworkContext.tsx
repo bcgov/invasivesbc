@@ -14,6 +14,10 @@ export const NetworkContextProvider: React.FC = (props) => {
   useEffect(() => {
     // Remove old listeners, if any
     Network.removeAllListeners();
+    //grab on startup
+    Network.getStatus().then((status) => {
+      setNetworkContext(status);
+    });
 
     // Add new listener
     Network.addListener('networkStatusChange', (status) => {
