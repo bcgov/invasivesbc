@@ -108,3 +108,4 @@ dist
 
 # Apple macOS folder attributes file
 **/.DS_Store
+app/buildArchive
