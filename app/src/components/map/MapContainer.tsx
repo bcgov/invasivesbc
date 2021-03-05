@@ -16,6 +16,7 @@ import './MapContainer.css';
 import * as turf from '@turf/turf';
 import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
+import { CompassCalibrationOutlined } from '@material-ui/icons';
 
 export type MapControl = (map: any, ...args: any) => void;
 
