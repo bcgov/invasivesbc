@@ -83,10 +83,11 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
   }
 
   /*
-    Determine if we are dealing with a biocontrol efficacy/vegetation transect because those cases
+    Determine if we are dealing with a biocontrol efficacy/vegetation transect/biological dispersal because those cases
     need to be handled slightly differently
   */
   const isBiocontrolEfficacyTransect = transectLinesMatchingKeys[0] === 'biocontrol_efficacy_transect_lines';
+  const isBiocontrolDispersal = transectLinesMatchingKeys[0] === 'biological_dispersals';
   const isVegetationTransect = transectLinesMatchingKeys[0] === 'vegetation_transect_lines';
 
   /*
@@ -174,7 +175,7 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
         }
 
         /*
-          If biocontrol efficacy transect, need to calculate sum of all phen levels for total %
+          If biocontrol efficacy transect, need to calculate sum of all veg levels for total %
         */
         if (isBiocontrolEfficacyTransect) {
           const {
@@ -201,7 +202,12 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
           } else {
             delete transectPointToUpdate.veg_total_percentage;
           }
+        }
 
+        /*
+          If biocontrol dispersal, need to calculate sum of all phen levels for total %
+        */
+        if (isBiocontrolDispersal) {
           const {
             phen_level_se,
             phen_level_ro,

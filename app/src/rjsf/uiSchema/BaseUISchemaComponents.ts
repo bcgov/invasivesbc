@@ -634,6 +634,9 @@ const BiocontrolEfficacyTransectPoints = {
   veg_transect_shrubs: {},
   veg_transect_bryophytes: {},
   veg_transect_litter: {},
+  veg_total_percentage: {
+    'ui:readonly': true
+  },
   phen_transect_sampler: {},
   phen_transect_recorder: {},
   phen_transect_seedlings: {},
