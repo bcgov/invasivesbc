@@ -386,7 +386,8 @@ const TransectData = {
   photoplot_start: {},
   photoplot_end: {},
   photoplot_aerials: {},
-  photoplot_full_25m: {}
+  photoplot_full_25m: {},
+  plot_location: {}
 };
 
 const FireMonitoringTransectPoints = {
