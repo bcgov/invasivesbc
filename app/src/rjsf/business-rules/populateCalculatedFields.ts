@@ -178,6 +178,31 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
         */
         if (isBiocontrolEfficacyTransect) {
           const {
+            veg_transect_target,
+            veg_transect_other_ips,
+            veg_transect_native_forbs,
+            veg_transect_grasses,
+            veg_transect_bare_ground,
+            veg_transect_shrubs,
+            veg_transect_bryophytes,
+            veg_transect_litter
+          } = transectPointToUpdate;
+
+          if (veg_transect_target && veg_transect_other_ips && veg_transect_native_forbs && veg_transect_grasses && veg_transect_bare_ground && veg_transect_shrubs && veg_transect_bryophytes && veg_transect_litter) {
+            transectPointToUpdate.veg_total_percentage =
+              veg_transect_target +
+              veg_transect_other_ips +
+              veg_transect_native_forbs +
+              veg_transect_grasses +
+              veg_transect_bare_ground +
+              veg_transect_shrubs +
+              veg_transect_bryophytes +
+              veg_transect_litter;
+          } else {
+            delete transectPointToUpdate.veg_total_percentage;
+          }
+
+          const {
             phen_level_se,
             phen_level_ro,
             phen_level_bo,

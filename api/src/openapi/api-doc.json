@@ -3887,6 +3887,7 @@
           "veg_transect_shrubs",
           "veg_transect_bryophytes",
           "veg_transect_litter",
+          "veg_total_percentage",
           "phen_transect_sampler",
           "phen_transect_recorder",
           "phen_transect_seedlings",
@@ -3933,42 +3934,48 @@
           "veg_transect_target": {
             "type": "number",
             "title": "Vegetation Target",
-            "x-tooltip-text": "Number of transect targets observed"
+            "x-tooltip-text": "Percentage of transect targets observed"
           },
           "veg_transect_other_ips": {
             "type": "number",
             "title": "Vegetation Other IPs",
-            "x-tooltip-text": "Number of other IPs observed"
+            "x-tooltip-text": "Percentage of other IPs observed"
           },
           "veg_transect_native_forbs": {
             "type": "number",
             "title": "Vegetation Native Forbs",
-            "x-tooltip-text": "Number of native forbs observed"
+            "x-tooltip-text": "Percentage of native forbs observed"
           },
           "veg_transect_grasses": {
             "type": "number",
             "title": "Vegetation Grasses",
-            "x-tooltip-text": "Number of grasses observed"
+            "x-tooltip-text": "Percentage of grasses observed"
           },
           "veg_transect_bare_ground": {
             "type": "number",
             "title": "Vegetation Bare Ground Patches",
-            "x-tooltip-text": "Number of bare ground patches observed"
+            "x-tooltip-text": "Percentage of bare ground patches observed"
           },
           "veg_transect_shrubs": {
             "type": "number",
             "title": "Vegetation Shrubs/Trees",
-            "x-tooltip-text": "Number of shrubs/trees observed"
+            "x-tooltip-text": "Percentage of shrubs/trees observed"
           },
           "veg_transect_bryophytes": {
             "type": "number",
             "title": "Vegetation Bryophytes",
-            "x-tooltip-text": "Number of bryophytes observed"
+            "x-tooltip-text": "Percentage of bryophytes observed"
           },
           "veg_transect_litter": {
             "type": "number",
             "title": "Vegetation Litter",
-            "x-tooltip-text": "Number of litter observed"
+            "x-tooltip-text": "Percentage of litter observed"
+          },
+          "veg_total_percentage": {
+            "type": "number",
+            "title": "Vegetaton Total Percentage",
+            "maximum": 100,
+            "x-tooltip-text": "Total percentage (sum of all 8 levels)"
           },
           "phen_transect_sampler": {
             "type": "string",
