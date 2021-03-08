@@ -257,6 +257,26 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getFSW = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_FISH_SENSITIVE_WS_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getIR = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
   /**
    * XXX: Testing of a layer group
    */
@@ -346,7 +366,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     addContextMenuClickListener();
 
-    addZoomControls();
+    // addZoomControls();
 
     addLocateControls();
 
@@ -382,13 +402,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const rfi = getRFI();
     const ogma = getOGMA();
     const wha = getWHA();
+    const fsw = getFSW();
+    const ir = getIR();
     const testing = getTesting();
 
     const overlays = {
       Placenames: esriPlacenames,
       Wells: wells,
       'Gravel Pits': aggregate,
-      '<span style="color:blue;"><b>Streams</b></span>': streams,
+      'Streams': streams,
       Wetlands: wetlands,
       Ownership: ownership,
       'Invasive Plant Management Areas': ipma,
@@ -402,6 +424,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'MOTI Districts': motiDistricts,
       'Old Growth Management Areas': ogma,
       'Wildlife Habitat Areas': wha,
+      'Native Reserves': ir,
+      'Fisheries Sensitive Watersheds': fsw,
       'testing group': testing
     };
 
