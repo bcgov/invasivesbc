@@ -424,7 +424,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'MOTI Districts': motiDistricts,
       'Old Growth Management Areas': ogma,
       'Wildlife Habitat Areas': wha,
-      'Native Reserves': ir,
+      'First Nations Reserves': ir,
       'Fisheries Sensitive Watersheds': fsw,
       'testing group': testing
     };
