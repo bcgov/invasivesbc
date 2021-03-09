@@ -29,11 +29,9 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     getPosition();
-  }
-  ,[])
+  }, []);
 
   const isGreaterDistanceThan = (from, to, distance) => {
     let returnVal = null;
