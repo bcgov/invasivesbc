@@ -269,24 +269,29 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.addControl(L.control.locate(locateControlOptions));
   };
 
-  const addSaveTilesControl = (layerToSave: any) => {
-    mapRef.current.addControl(
-      L.control.savetiles(layerToSave, {
-        zoomlevels: [13, 14, 15, 16, 17],
-        confirm(layer, succescallback) {
-          if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
-            succescallback(notifySuccess(databaseContext, `Saved ${layer._tilesforSave.length} tiles`));
-          }
-        },
-        confirmRemoval(layer, succescallback) {
-          if (window.confirm('Remove all the stored tiles')) {
-            succescallback(notifySuccess(databaseContext, `Removed tiles`));
-          }
-        },
-        saveText: '<span title="Save me some basemap">&#128190;</span>',
-        rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
-      })
-    );
+  const getSaveControl = (layerToSave: any) => {
+    return L.control.savetiles(layerToSave, {
+      zoomlevels: [13, 14, 15, 16, 17],
+      confirm(layer, succescallback) {
+        if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
+          succescallback(notifySuccess(databaseContext, `Saved ${layer._tilesforSave.length} tiles`));
+        }
+      },
+      confirmRemoval(layer, succescallback) {
+        if (window.confirm('Remove all the stored tiles')) {
+          succescallback(notifySuccess(databaseContext, `Removed tiles`));
+        }
+      },
+      saveText: '<span title="Save me some basemap">&#128190;</span>',
+      rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
+    });
+  };
+
+  const addASaveTilesControl = (layerSaveControl: any) => {
+    layerSaveControl.remove(mapRef.current);
+    if (mapRef.current.getZoom() > 16) {
+      layerSaveControl.addTo(mapRef.current);
+    }
   };
 
   const setMapBounds = (extent) => {
@@ -368,7 +373,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     mapRef.current.addLayer(esriPlacenames);
 
-    addSaveTilesControl(esriBaseLayer);
+    const esriSaveTilesControl = getSaveControl(esriBaseLayer);
 
     addLayerControls(basemaps, overlays);
 
@@ -380,6 +385,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     mapRef.current.on('zoomend', () => {
       props.extentState.setExtent(mapRef.current.getBounds());
+      addASaveTilesControl(esriSaveTilesControl);
     });
 
     mapRef.current.on('draw:created', (feature) => {
