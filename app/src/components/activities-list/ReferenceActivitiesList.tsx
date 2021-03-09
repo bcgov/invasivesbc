@@ -577,7 +577,7 @@ const ReferenceActivitiesList: React.FC = () => {
             geometryState={{ geometry, setGeometry }}
             interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
             extentState={{ extent, setExtent }}
-            showDrawControls={false}
+            showDrawControls={true}
             contextMenuState={{ state: contextMenuState, setContextMenuState }}
           />
         </Paper>
