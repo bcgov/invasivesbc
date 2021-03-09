@@ -144,18 +144,21 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         <Grid item md={6}>
           <Paper className={classes.paper}>
             <Typography variant="body1">
-              This page does two things, Cache records and save map tiles for going offline.  Here are the instructions:
+              This page does two things, Cache records and save map tiles for going offline. Here are the instructions:
             </Typography>
             <br></br>
             <Typography variant="body1">
-              1.  Cache records.  Use the activity, point of interest, or metabase filters to choose records to download to your device.
-                  Drawing a shape on the map adds a spatial filter.  Hit the FETCH button to cache records.  You may perform this more than once.
-            <br></br>
-            <Typography variant="body1">Go to the main map tab to view cached records.</Typography>
+              1. Cache records. Use the activity, point of interest, or metabase filters to choose records to download
+              to your device. Drawing a shape on the map adds a spatial filter. Hit the FETCH button to cache records.
+              You may perform this more than once.
+              <br></br>
+              <Typography variant="body1">Go to the main map tab to view cached records.</Typography>
             </Typography>
             <br></br>
             <Typography variant="body1">
-              2.  Save map tiles/layers.  Hitting the save icon on the map will save tiles for going offline.  Zoom in as much as possible before hitting save.  Try to keep tiles to save at a time under 2000.  You can do this more than once.  Note this should include all layers automatically.  The layer picker is just to toggle display.
+              2. Save map tiles/layers. Hitting the save icon on the map will save tiles for going offline. Zoom in as
+              much as possible before hitting save. Try to keep tiles to save at a time under 2000. You can do this more
+              than once. Note this should include all layers automatically. The layer picker is just to toggle display.
             </Typography>
             <br></br>
             <Typography variant="body1">
@@ -220,16 +223,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={false}>
-            <AccordionSummary expandIcon={<SettingsIcon/>} aria-controls="panel-kml-content" id="panel-kml-header">
+            <AccordionSummary expandIcon={<SettingsIcon />} aria-controls="panel-kml-content" id="panel-kml-header">
               <Typography variant="h5">Advanced</Typography>
-              <Tooltip
-                title="Home of the almighty nuke button."
-                arrow>
+              <Tooltip title="Home of the almighty nuke button." arrow>
                 <HelpIcon />
               </Tooltip>
             </AccordionSummary>
             <AccordionDetails>
-          <ManageDatabaseComponent />
+              <ManageDatabaseComponent />
             </AccordionDetails>
           </Accordion>
           <TripDataControls />
