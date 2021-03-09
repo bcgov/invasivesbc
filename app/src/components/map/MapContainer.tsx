@@ -228,6 +228,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     );
   };
+  const getJurisdiction = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:jurisdiction@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
   const getIPMA = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png`,
@@ -396,6 +405,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const riso = getRISO();
     const ipma = getIPMA();
     const aggregate = getAggregate();
+    const jurisdiction = getJurisdiction();
     const ownership = getOwnership();
     const municipalities = getMunicipalites();
     const regionalDistricts = getRegionalDistricts();
@@ -407,19 +417,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const testing = getTesting();
 
     const overlays = {
-      Placenames: esriPlacenames,
-      Wells: wells,
+      'Placenames': esriPlacenames,
+      'Wells': wells,
       'Gravel Pits': aggregate,
+      'Jurisdictions': jurisdiction,
       'Streams': streams,
-      Wetlands: wetlands,
-      Ownership: ownership,
+      'Wetlands': wetlands,
+      'Ownership': ownership,
       'Invasive Plant Management Areas': ipma,
       'Regional Invasive Species Organization Areas': riso,
       'Natural Resource Districts': nRDistricts,
-      Municipalites: municipalities,
+      'Municipalites': municipalities,
       'Regional Districts': regionalDistricts,
       'Road Features Inventory': rfi,
-      Biogeoclimatic: bec,
+      'Biogeoclimatic': bec,
       'MOTI Regions': motiRegions,
       'MOTI Districts': motiDistricts,
       'Old Growth Management Areas': ogma,
