@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { CircularProgress } from '@material-ui/core';
 import { NetworkContext } from 'contexts/NetworkContext';
 import HomeRouter from 'features/home/HomeRouter';
@@ -26,7 +27,11 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
 
   useEffect(() => {
     // If on mobile and have no internet connection, then bypass keycloak
-    const newLayout = window['cordova'] && !networkContext?.connected ? PublicLayout : AuthLayout;
+    //const newLayout = window['cordova'] && !networkContext?.connected ? PublicLayout : AuthLayout;
+    const newLayout = Capacitor.getPlatform() == 'ios' && !networkContext?.connected ? PublicLayout : AuthLayout;
+
+    //const newLayout = PublicLayout;
+    //const newLayout = AuthLayout;
 
     setLayout(() => newLayout);
   }, [networkContext]);

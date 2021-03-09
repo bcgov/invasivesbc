@@ -22,6 +22,7 @@ import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import HelpIcon from '@material-ui/icons/Help';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 interface IPlanPageProps {
   classes?: any;
@@ -142,13 +143,22 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Grid container spacing={3} className={classes.tripGrid}>
         <Grid item md={6}>
           <Paper className={classes.paper}>
-            <Typography variant="h5">How to get the data you need:</Typography>
-            <br></br>
+            <Typography variant="body1">
+              This page does two things, Cache records and save map tiles for going offline. Here are the instructions:
+            </Typography>
             <br></br>
             <Typography variant="body1">
-              This is where you'll load data on to your device before you go out into the field. The general flow is to
-              use the filters in the accoridans below, and once you've added some filters hit the 'Fetch' button to pull
-              data onto your device.
+              1. Cache records. Use the activity, point of interest, or metabase filters to choose records to download
+              to your device. Drawing a shape on the map adds a spatial filter. Hit the FETCH button to cache records.
+              You may perform this more than once.
+              <br></br>
+              <Typography variant="body1">Go to the main map tab to view cached records.</Typography>
+            </Typography>
+            <br></br>
+            <Typography variant="body1">
+              2. Save map tiles/layers. Hitting the save icon on the map will save tiles for going offline. Zoom in as
+              much as possible before hitting save. Try to keep tiles to save at a time under 2000. You can do this more
+              than once. Note this should include all layers automatically. The layer picker is just to toggle display.
             </Typography>
             <br></br>
             <Typography variant="body1">
@@ -156,21 +166,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               the data off your device prior to Fetching.
             </Typography>
           </Paper>
-          <Accordion defaultExpanded={false}>
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-              aria-controls="panel-layer-picker-content"
-              disabled={false}
-              id="panel-layer-picker-header">
-              <Typography variant="h5">Pick Layers</Typography>
-              <Tooltip
-                title="Click the layer chooser on the map to select layers.  We'll add more layer features here soon."
-                arrow>
-                <HelpIcon />
-              </Tooltip>
-            </AccordionSummary>
-            <AccordionDetails className={classes.layerPicker}></AccordionDetails>
-          </Accordion>
           <Accordion defaultExpanded={false}>
             <AccordionSummary
               expandIcon={<ExpandMore />}
@@ -227,7 +222,17 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               <MetabaseSearch />
             </AccordionDetails>
           </Accordion>
-          <ManageDatabaseComponent />
+          <Accordion defaultExpanded={false}>
+            <AccordionSummary expandIcon={<SettingsIcon />} aria-controls="panel-kml-content" id="panel-kml-header">
+              <Typography variant="h5">Advanced</Typography>
+              <Tooltip title="Home of the almighty nuke button." arrow>
+                <HelpIcon />
+              </Tooltip>
+            </AccordionSummary>
+            <AccordionDetails>
+              <ManageDatabaseComponent />
+            </AccordionDetails>
+          </Accordion>
           <TripDataControls />
         </Grid>
         <Grid item md={6}>
