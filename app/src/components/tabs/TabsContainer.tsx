@@ -97,14 +97,14 @@ const TabsContainer: React.FC = () => {
           });
 
           tabsUserHasAccessTo.push({
-            label: 'Cached Activities',
+            label: 'Cached Records',
             path: '/home/references',
             childPaths: ['/home/references/activity'],
             icon: <Bookmarks />
           });
 
           tabsUserHasAccessTo.push({
-            label: 'Local Activities',
+            label: 'My Records',
             path: '/home/activities',
             icon: <HomeWork />
           });
