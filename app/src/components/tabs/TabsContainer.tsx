@@ -24,10 +24,17 @@ export interface ITabConfig {
   icon: React.ReactElement;
 }
 
+export interface ITabsContainerProps {
+  isMobileNoNetwork: boolean;
+}
+
 //const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
 const invbclogo = require('InvasivesBC_Icon.svg');
 
-const TabsContainer: React.FC = () => {
+const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
+
+  console.log(props.isMobileNoNetwork)
+
   const keycloak = useKeycloakWrapper();
 
   const classes = useStyles();
@@ -77,7 +84,7 @@ const TabsContainer: React.FC = () => {
       setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
 
-        if (keycloak.hasRole(ALL_ROLES)) {
+        if (keycloak.hasRole(ALL_ROLES) || props.isMobileNoNetwork) {
           tabsUserHasAccessTo.push({
             label: 'Home',
             path: '/home/landing',

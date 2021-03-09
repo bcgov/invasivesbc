@@ -17,9 +17,12 @@ interface IPrivateRouteProps extends RouteProps {
  * @return {*}
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
+  console.log(props)
   const keycloak = useKeycloakWrapper();
 
   let { component: Component, layout: Layout, ...rest } = props;
+
+  console.log(Layout.displayName);
 
   document.title = props.title;
 
@@ -27,7 +30,7 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
     <Route
       {...rest}
       render={(renderProps) => {
-        if (!keycloak.obj?.authenticated || !rest.roles || !keycloak.hasRole(rest.roles)) {
+        if ((!keycloak.obj?.authenticated || !rest.roles || !keycloak.hasRole(rest.roles)) && !props.componentProps?.isMobileNoNetwork) {
           return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
         } else {
           return (
