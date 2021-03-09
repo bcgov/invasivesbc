@@ -19,12 +19,9 @@ const AppRoute: React.FC<IAppRouteProps> = ({
   isMobileNoNetwork,
   ...rest
 }) => {
-  console.log(layout);
   const Layout = layout === undefined ? (props: any) => <>{props.children}</> : layout;
 
   document.title = title;
-
-  console.log(isMobileNoNetwork)
 
   return (
     <Route

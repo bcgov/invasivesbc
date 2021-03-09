@@ -14,7 +14,6 @@ export interface IHomeLayoutProps {
 }
 
 const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
-  console.log(props.children.props);
   const databaseContext = useContext(DatabaseContext);
   const databaseChangesContext = useContext(DatabaseChangesContext);
 

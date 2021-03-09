@@ -22,7 +22,6 @@ interface IHomeRouterProps {
 }
 
 const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
-  console.log(props);
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };

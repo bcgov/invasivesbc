@@ -17,12 +17,9 @@ interface IPrivateRouteProps extends RouteProps {
  * @return {*}
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  console.log(props)
   const keycloak = useKeycloakWrapper();
 
   let { component: Component, layout: Layout, ...rest } = props;
-
-  console.log(Layout.displayName);
 
   document.title = props.title;
 

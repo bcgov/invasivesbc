@@ -32,9 +32,6 @@ export interface ITabsContainerProps {
 const invbclogo = require('InvasivesBC_Icon.svg');
 
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
-
-  console.log(props.isMobileNoNetwork)
-
   const keycloak = useKeycloakWrapper();
 
   const classes = useStyles();
