@@ -3481,23 +3481,23 @@
           },
           "start_x_utm": {
             "type": "number",
-            "title": "Start UTM X",
-            "x-tooltip-text": "Provide a UTM start x coordinate"
+            "title": "Start UTM Easting",
+            "x-tooltip-text": "Provide a UTM start Easting coordinate"
           },
           "start_y_utm": {
             "type": "number",
-            "title": "Start UTM Y",
-            "x-tooltip-text": "Provide a UTM start y coordinate"
+            "title": "Start UTM Northing",
+            "x-tooltip-text": "Provide a UTM start Northing coordinate"
           },
           "end_x_utm": {
             "type": "number",
-            "title": "End UTM X",
-            "x-tooltip-text": "Provide a UTM end x coordinate"
+            "title": "End UTM Easting",
+            "x-tooltip-text": "Provide a UTM end Easting coordinate"
           },
           "end_y_utm": {
             "type": "number",
-            "title": "End UTM Y",
-            "x-tooltip-text": "Provide a UTM end y coordinate"
+            "title": "End UTM Northing",
+            "x-tooltip-text": "Provide a UTM end Northing coordinate"
           },
           "transect_length": {
             "type": "number",
@@ -4040,12 +4040,12 @@
           "veg_transect_target": {
             "type": "number",
             "title": "Vegetation Target",
-            "x-tooltip-text": "Percentage of transect targets observed"
+            "x-tooltip-text": "Number of transect targets observed"
           },
           "veg_transect_other_ips": {
             "type": "number",
             "title": "Vegetation Other IPs",
-            "x-tooltip-text": "Percentage of other IPs observed"
+            "x-tooltip-text": "Number of other IPs observed"
           },
           "veg_transect_native_forbs": {
             "type": "number",
@@ -4081,7 +4081,7 @@
             "type": "number",
             "title": "Vegetaton Total Percentage",
             "maximum": 100,
-            "x-tooltip-text": "Total percentage (sum of all 8 levels)"
+            "x-tooltip-text": "Total percentage (sum of all 6 levels)"
           }
         }
       },
