@@ -105,13 +105,25 @@ objects:
                 - name: API_HOST
                   value: ${HOST}
                 - name: METABASE_URL
-                  value: ${METABASE_URL}
+                  valueFrom:
+                    secretKeyRef:
+                      key: METABASE_URL
+                      name: ${METABASE_URL}
                 - name: METABASE_USER
-                  value: ${METABASE_USER}
+                  valueFrom:
+                    secretKeyRef:
+                      key: METABASE_USER
+                      name: ${METABASE_USER}
                 - name: METABASE_PASS
-                  value: ${METABASE_PASS}
+                  valueFrom:
+                    secretKeyRef:
+                      key: METABASE_PASS
+                      name: ${METABASE_PASS}
                 - name: METABASE_COLLECTION_ID
-                  value: ${METABASE_COLLECTION_ID}
+                  valueFrom:
+                    secretKeyRef:
+                      key: METABASE_COLLECTION_ID
+                      name: ${METABASE_COLLECTION_ID}
                 - name: DB_HOST
                   value: ${DB_SERVICE_NAME}
                 - name: DB_USER
