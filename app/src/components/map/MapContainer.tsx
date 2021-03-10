@@ -290,13 +290,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
    * XXX: Testing of a layer group
    */
   const getTesting = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/testing@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.6,
-        tms: true
-      }
-    );
+    return L.tileLayer.offline(`${geoserver}/geoserver/gwc/service/tms/1.0.0/testing@EPSG:900913@png/{z}/{x}/{y}.png`, {
+      opacity: 0.6,
+      tms: true
+    });
   };
 
   const addZoomControls = () => {
@@ -422,20 +419,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const testing = getTesting();
 
     const overlays = {
-      'Placenames': esriPlacenames,
-      'Wells': wells,
+      Placenames: esriPlacenames,
+      Wells: wells,
       'Gravel Pits': aggregate,
-      'Jurisdictions': jurisdiction,
-      'Streams': streams,
-      'Wetlands': wetlands,
-      'Ownership': ownership,
+      Jurisdictions: jurisdiction,
+      Streams: streams,
+      Wetlands: wetlands,
+      Ownership: ownership,
       'Invasive Plant Management Areas': ipma,
       'Regional Invasive Species Organization Areas': riso,
       'Natural Resource Districts': nRDistricts,
-      'Municipalites': municipalities,
+      Municipalites: municipalities,
       'Regional Districts': regionalDistricts,
       'Road Features Inventory': rfi,
-      'Biogeoclimatic': bec,
+      Biogeoclimatic: bec,
       'MOTI Regions': motiRegions,
       'MOTI Districts': motiDistricts,
       'Old Growth Management Areas': ogma,
