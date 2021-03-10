@@ -675,7 +675,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const storeLayers = () => {
-    console.log('I have been clicked');
+    // Calculate the extent
+    const bounds = mapRef.current.getBounds();
+    const x1 = bounds.getWest();
+    const y1 = bounds.getSouth();
+    const x2 = bounds.getEast();
+    const y2 = bounds.getNorth();
+    const extent = ([x1,y1,x2,y2] as turf.BBox)
+    const poly = turf.bboxPolygon(extent);
+    // TODO: Add poly to map
   };
 
   const storeLayersStyle = {
