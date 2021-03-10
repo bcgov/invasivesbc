@@ -9,6 +9,7 @@ import FieldTemplate from 'rjsf/templates/FieldTemplate';
 import ObjectFieldTemplate from 'rjsf/templates/ObjectFieldTemplate';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import MultiSelectAutoComplete from 'rjsf/widgets/MultiSelectAutoComplete';
+import SingleSelectAutoComplete from 'rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from 'themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 
@@ -85,7 +86,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           FieldTemplate={FieldTemplate}
           ArrayFieldTemplate={ArrayFieldTemplate}
           widgets={{
-            'multi-select-autocomplete': MultiSelectAutoComplete
+            'multi-select-autocomplete': MultiSelectAutoComplete,
+            'single-select-autocomplete': SingleSelectAutoComplete
           }}
           key={props.activity?._id}
           disabled={isDisabled}

@@ -704,7 +704,7 @@ const Observation = {
 const Observation_PlantTerrestrial_Data = {
   soil_texture_code: {},
   specific_use_code: {
-    'ui:widget': 'multi-select-autocomplete'
+    'ui:widget': 'single-select-autocomplete'
   },
   slope_code: {},
   aspect_code: {},
