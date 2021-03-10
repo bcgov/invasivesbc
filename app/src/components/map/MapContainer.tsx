@@ -684,18 +684,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const y2 = bounds.getNorth();
     const extent = ([x1,y1,x2,y2] as turf.BBox)
     const poly = turf.bboxPolygon(extent);
-    console.log('poly',poly);
 
     // Add a special flag to distinguish from other features
     poly.properties.offlineExtent = true;
     poly.properties.running = true;
 
     await databaseContext.database.upsert('offline_extent', (spatial) => {
-      console.log('spatial',spatial);
       return {
-        ...spatial,
         docType: DocType.OFFLINE_EXTENT,
-        geometry: spatial ? [poly, spatial] : [poly]
+        geometry: spatial ? [poly, ...spatial.geometry] : [poly]
       };
     });
   };

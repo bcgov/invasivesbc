@@ -175,7 +175,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
             DocType.ACTIVITY,
             DocType.REFERENCE_POINT_OF_INTEREST,
             DocType.POINT_OF_INTEREST,
-            DocType.SPATIAL_UPLOADS
+            DocType.SPATIAL_UPLOADS,
+            DocType.OFFLINE_EXTENT
           ]
         }
         /*
@@ -243,6 +244,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
       switch (row.docType) {
         case DocType.OFFLINE_EXTENT:
+          // TODO push this into the interactiveGeos array
+          // Then in the layer addition logic... handle behaviour
+          // If still downloading display differently
           break;
         case DocType.SPATIAL_UPLOADS:
           interactiveGeos.push({
