@@ -690,13 +690,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     poly.properties.offlineExtent = true;
     poly.properties.running = true;
 
-    // await databaseContext.database.upsert('offline_extent', (spatial) => {
-    //   return {
-    //     ...spatial,
-    //     docType: DocType.OFFLINE_EXTENT,
-    //     geometry: spatial ? [poly, spatial] : [poly]
-    //   };
-    // });
+    await databaseContext.database.upsert('offline_extent', (spatial) => {
+      console.log('spatial',spatial);
+      return {
+        ...spatial,
+        docType: DocType.OFFLINE_EXTENT,
+        geometry: spatial ? [poly, spatial] : [poly]
+      };
+    });
   };
 
   const storeLayersStyle = {
