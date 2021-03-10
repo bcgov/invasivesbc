@@ -16,6 +16,8 @@ import './MapContainer.css';
 import * as turf from '@turf/turf';
 import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
+import { yellow } from '@material-ui/core/colors';
+import { isAbsolute } from 'path';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -318,7 +320,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     addContextMenuClickListener();
 
-    addZoomControls();
+    // addZoomControls();
 
     addLocateControls();
 
@@ -672,12 +674,38 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     display: 'none'
   };
 
+  const storeLayers = () => {
+    console.log('I have been clicked');
+  };
+
+  const storeLayersStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    backgroundColor: 'white',
+    color: '#464646',
+    width: '2.7rem',
+    height: '2.7rem',
+    top: '150px',
+    left: '5px',
+    zIndex: 1000,
+    borderRadius: '4px',
+    cursor: 'pointer'
+  } as React.CSSProperties;
+
   return (
     <div id={props.mapId} className={props.classes.map} onDragEnter={dragEnter} onDragOver={dragOver} onDrop={dragDrop}>
       <div style={dropSpatial ? dropZoneVisible : dropZoneInvisible} onDragLeave={dragLeave}>
         {' '}
         {dropSpatial}{' '}
       </div>
+      <div
+        id='offline-layers-button'
+        title='Offline layers'
+        onClick={storeLayers}
+        style={storeLayersStyle}
+      >o</div>
     </div>
   );
 };
