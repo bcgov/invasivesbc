@@ -20,6 +20,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
   const networkContext = useContext(NetworkContext);
 
   const [layout, setLayout] = useState<React.FC<any>>(null);
+  const [isMobileNoNetwork, setIsMobileNoNetwork] = useState(false);
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
@@ -27,13 +28,12 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
 
   useEffect(() => {
     // If on mobile and have no internet connection, then bypass keycloak
-    //const newLayout = window['cordova'] && !networkContext?.connected ? PublicLayout : AuthLayout;
-    const newLayout = Capacitor.getPlatform() == 'ios' && !networkContext?.connected ? PublicLayout : AuthLayout;
-
-    //const newLayout = PublicLayout;
-    //const newLayout = AuthLayout;
-
-    setLayout(() => newLayout);
+    if (Capacitor.getPlatform() == 'ios' && !networkContext?.connected) {
+      setLayout(() => PublicLayout);
+      setIsMobileNoNetwork(true);
+    } else {
+      setLayout(() => AuthLayout);
+    }
   }, [networkContext]);
 
   if (!layout) {
@@ -52,6 +52,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         layout={layout}
         keycloak={props.keycloak}
         keycloakConfig={props.keycloakConfig}
+        isMobileNoNetwork={isMobileNoNetwork}
       />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
