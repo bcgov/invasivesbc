@@ -242,6 +242,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
       }
 
       switch (row.docType) {
+        case DocType.OFFLINE_EXTENT:
+          break;
         case DocType.SPATIAL_UPLOADS:
           interactiveGeos.push({
             recordDocID: row._id,

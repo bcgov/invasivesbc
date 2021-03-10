@@ -614,6 +614,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     if (geojson?.features) {
       await databaseContext.database.upsert('spatial_uploads', (spatial) => {
         // Add a special flag to distinguish from other features
+        console.log('spatial_uploads',spatial);
         geojson.features.forEach((_, i) => {
           geojson.features[i].properties.uploadedSpatial = true;
         });
@@ -674,7 +675,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     display: 'none'
   };
 
-  const storeLayers = () => {
+  const storeLayers = async () => {
     // Calculate the extent
     const bounds = mapRef.current.getBounds();
     const x1 = bounds.getWest();
@@ -683,7 +684,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const y2 = bounds.getNorth();
     const extent = ([x1,y1,x2,y2] as turf.BBox)
     const poly = turf.bboxPolygon(extent);
-    // TODO: Add poly to map
+    console.log('poly',poly);
+
+    // Add a special flag to distinguish from other features
+    poly.properties.offlineExtent = true;
+    poly.properties.running = true;
+
+    // await databaseContext.database.upsert('offline_extent', (spatial) => {
+    //   return {
+    //     ...spatial,
+    //     docType: DocType.OFFLINE_EXTENT,
+    //     geometry: spatial ? [poly, spatial] : [poly]
+    //   };
+    // });
   };
 
   const storeLayersStyle = {
