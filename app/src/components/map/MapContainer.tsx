@@ -314,9 +314,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const [currentZoom, setCurrentZoom] = useState(null);
-  useEffect(()=> {
+  useEffect(() => {
     //custom on-zoom stuff
-  },[currentZoom])
+  }, [currentZoom]);
 
   const initMap = () => {
     mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([55, -128], 10);
