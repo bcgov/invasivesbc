@@ -239,6 +239,46 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getOGMA = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+  const getWHA = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getFSW = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_FISH_SENSITIVE_WS_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getIR = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+
   const getUWR = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
@@ -365,6 +405,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const municipalities = getMunicipalites();
     const regionalDistricts = getRegionalDistricts();
     const rfi = getRFI();
+    const ogma = getOGMA();
+    const wha = getWHA();
+    const fsw = getFSW();
+    const ir = getIR();
 
     const overlays = {
       Placenames: esriPlacenames,
@@ -382,6 +426,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       Biogeoclimatic: bec,
       'MOTI Regions': motiRegions,
       'MOTI Districts': motiDistricts,
+      'Old Growth Management Areas': ogma,
+      'Wildlife Habitat Areas': wha,
+      'First Nations Reserves': ir,
+      'Fisheries Sensitive Watersheds': fsw,
       'Ungulate Winter Range': uwr
     };
 
