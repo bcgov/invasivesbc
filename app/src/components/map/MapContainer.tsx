@@ -239,6 +239,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getUWR = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
   const addZoomControls = () => {
     const zoomControlOptions = { position: 'bottomleft' };
 
@@ -349,6 +359,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const wetlands = getWetlands();
     const riso = getRISO();
     const ipma = getIPMA();
+    const uwr = getUWR();
     const aggregate = getAggregate();
     const ownership = getOwnership();
     const municipalities = getMunicipalites();
@@ -359,7 +370,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       Placenames: esriPlacenames,
       Wells: wells,
       'Gravel Pits': aggregate,
-      '<span style="color:blue;"><b>Streams</b></span>': streams,
+      'Streams': streams,
       Wetlands: wetlands,
       Ownership: ownership,
       'Invasive Plant Management Areas': ipma,
@@ -370,7 +381,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Road Features Inventory': rfi,
       Biogeoclimatic: bec,
       'MOTI Regions': motiRegions,
-      'MOTI Districts': motiDistricts
+      'MOTI Districts': motiDistricts,
+      'Ungulate Winter Range': uwr
     };
 
     mapRef.current.addLayer(esriPlacenames);
