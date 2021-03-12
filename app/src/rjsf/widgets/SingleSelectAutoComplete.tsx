@@ -1,13 +1,8 @@
+import React, {useState} from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { WidgetProps } from '@rjsf/core';
-import React from 'react';
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 // Custom type to support this widget
 export type AutoCompleteSelectOption = { label: string; value: any };
@@ -59,52 +54,39 @@ export type AutoCompleteSelectOption = { label: string; value: any };
  * @return {*}
  */
 const SingleSelectAutoComplete = (props: WidgetProps) => {
-  const enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
-
-  /**
-   * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the
-   * widget.
-   *
-   * @param {React.ChangeEvent<{}>} event
-   * @param {AutoCompleteSelectOption} value
-   */
-  const handleOnChange = (event: React.ChangeEvent<{}>, value: AutoCompleteSelectOption): void => {
-    props.onChange(value);
-  };
-
-  /**
-   * Custom comparator to determine if a given option is selected.
-   *
-   * @param {AutoCompleteSelectOption} option
-   * @param {AutoCompleteSelectOption} value
-   * @return {*}  {boolean}
-   */
-  const handleGetOptionSelected = (
-    option: AutoCompleteSelectOption,
-    value: AutoCompleteSelectOption
-  ): boolean => {
-    if (!option?.value || !value?.value) {
-      return false;
-    }
-
-    return option.value === value.value;
-  };
+  let enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
+  if (!enumOptions)
+    enumOptions = [];
+  const [value, setValue] = React.useState(enumOptions?.[0].value);
+  const [inputValue, setInputValue] = React.useState('');
 
   return (
     <div>
       <Autocomplete
-        multiple={false}
+        autoComplete
+        autoSelect
         autoHighlight={true}
         id={props.id}
-        value={props.value}
-        getOptionSelected={handleGetOptionSelected}
         disabled={props.disabled}
+        disableClearable
+        clearOnBlur={false}
+        clearOnEscape={false}
+
+        value={value}
+        onChange={(event, selectedOption: AutoCompleteSelectOption) => {
+          setValue(selectedOption?.value);
+          setInputValue(selectedOption?.label);
+          props.onChange(selectedOption);
+        }}
+        
         options={enumOptions}
-        // disableCloseOnSelect
+        getOptionSelected={(option) => option?.label === inputValue}
         filterOptions={createFilterOptions({ limit: 50 })}
-        getOptionLabel={(option) => option.label}
-        onChange={handleOnChange}
-        renderOption={(option) => option.label}
+        getOptionLabel={(option) => option ? option.label : ''}
+        renderOption={(option) => option ? option.label : ''}
+
+        inputValue={inputValue}
+        onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -114,9 +96,10 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
             placeholder={'Begin typing to filter results...'}
           />
         )}
+
       />
     </div>
   );
-};
+}
 
 export default SingleSelectAutoComplete;

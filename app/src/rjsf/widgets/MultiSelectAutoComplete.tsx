@@ -60,7 +60,7 @@ export type AutoCompleteMultiSelectOption = { label: string; value: any };
  */
 const MultiSelectAutoComplete = (props: WidgetProps) => {
   const enumDisabled = props.options.enumDisabled;
-  const enumOptions = props.options.enumOptions as AutoCompleteMultiSelectOption[];
+  const enumOptions = props.options.enumOptions as AutoCompleteMultiSelectOption[] || [];
 
   /**
    * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the
@@ -106,7 +106,6 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
 
     return enumOptions.filter((option) => props.value.includes(option.value));
   };
-  console.log(props);
 
   return (
     <Autocomplete
