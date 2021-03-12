@@ -289,6 +289,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getNationalParks = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.CLAB_NATIONAL_PARKS@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
   const addZoomControls = () => {
     const zoomControlOptions = { position: 'bottomleft' };
 
@@ -400,6 +410,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const riso = getRISO();
     const ipma = getIPMA();
     const uwr = getUWR();
+    const nationalParks = getNationalParks();
     const aggregate = getAggregate();
     const ownership = getOwnership();
     const municipalities = getMunicipalites();
@@ -411,26 +422,27 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const ir = getIR();
 
     const overlays = {
-      Placenames: esriPlacenames,
-      Wells: wells,
+      'Placenames': esriPlacenames,
+      'Wells': wells,
       'Gravel Pits': aggregate,
       'Streams': streams,
-      Wetlands: wetlands,
-      Ownership: ownership,
+      'Wetlands': wetlands,
+      'Ownership': ownership,
       'Invasive Plant Management Areas': ipma,
       'Regional Invasive Species Organization Areas': riso,
       'Natural Resource Districts': nRDistricts,
-      Municipalites: municipalities,
+      'Municipalites': municipalities,
       'Regional Districts': regionalDistricts,
       'Road Features Inventory': rfi,
-      Biogeoclimatic: bec,
+      'Biogeoclimatic': bec,
       'MOTI Regions': motiRegions,
       'MOTI Districts': motiDistricts,
       'Old Growth Management Areas': ogma,
       'Wildlife Habitat Areas': wha,
       'First Nations Reserves': ir,
       'Fisheries Sensitive Watersheds': fsw,
-      'Ungulate Winter Range': uwr
+      'Ungulate Winter Range': uwr,
+      'National Parks': nationalParks
     };
 
     mapRef.current.addLayer(esriPlacenames);
