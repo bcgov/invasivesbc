@@ -53,12 +53,13 @@ export type AutoCompleteSelectOption = { label: string; value: any };
  * @param {WidgetProps} props standard RJSF widget props
  * @return {*}
  */
+
 const SingleSelectAutoComplete = (props: WidgetProps) => {
   let enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
   if (!enumOptions)
     enumOptions = [];
-  const [value, setValue] = React.useState(enumOptions?.[0].value);
-  const [inputValue, setInputValue] = React.useState('');
+  const [value, setValue] = useState(enumOptions?.[0].value);
+  const [inputValue, setInputValue] = useState('');
 
   return (
     <div>
