@@ -98,13 +98,13 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
   return monitoringSubtype;
 };
 
-interface IReferenceActivityListItem {
+interface ICachedRecordListItem {
   activity: any;
   databaseContext: any;
   setActiveDoc: Function;
 }
 
-const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
+const CachedRecordListItem: React.FC<ICachedRecordListItem> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const { activity, databaseContext, setActiveDoc } = props;
@@ -155,7 +155,7 @@ const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) 
   );
 };
 
-interface IReferenceActivityListComponent {
+interface ICachedRecordListComponent {
   doc: any;
   databaseContext: any;
   selectedObservations?: any;
@@ -163,7 +163,7 @@ interface IReferenceActivityListComponent {
   setActiveDoc: Function;
 }
 
-const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> = (props) => {
+const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const { doc, databaseContext, selectedObservations, setSelectedObservations, setActiveDoc } = props;
@@ -195,13 +195,13 @@ const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> 
         <ListItemIcon>
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
-        <ReferenceActivityListItem setActiveDoc={setActiveDoc} databaseContext={databaseContext} activity={doc} />
+        <CachedRecordListItem setActiveDoc={setActiveDoc} databaseContext={databaseContext} activity={doc} />
       </ListItem>
     </Paper>
   );
 };
 
-interface IReferenceActivityList {
+interface ICachedRecordList {
   docs: any;
   databaseContext: any;
   setActiveDoc: Function;
@@ -209,7 +209,7 @@ interface IReferenceActivityList {
   setSelectedObservations: Function;
 }
 
-const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
+const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
   const { docs, databaseContext, setActiveDoc } = props;
 
   const classes = useStyles();
@@ -316,7 +316,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {observations.map((doc) => (
-        <ReferenceActivityListComponent
+        <CachedRecordListComponent
           selectedObservations={selectedObservations}
           setSelectedObservations={setSelectedObservations}
           databaseContext={databaseContext}
@@ -332,7 +332,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {treatments.map((doc) => (
-        <ReferenceActivityListComponent
+        <CachedRecordListComponent
           setActiveDoc={setActiveDoc}
           databaseContext={databaseContext}
           key={doc._id}
@@ -346,7 +346,7 @@ const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
         </Box>
       )}
       {monitorings.map((doc) => (
-        <ReferenceActivityListComponent
+        <CachedRecordListComponent
           setActiveDoc={setActiveDoc}
           databaseContext={databaseContext}
           key={doc._id}
@@ -584,7 +584,7 @@ const ReferenceActivitiesList: React.FC = () => {
       )}
       {!interactiveGeometry.length && <Typography>No activities available of the selected type.</Typography>}
       <br />
-      <ReferenceActivityList
+      <CachedRecordList
         docs={docs}
         databaseContext={databaseContext}
         setActiveDoc={setActiveDoc}
