@@ -8,6 +8,7 @@ import 'leaflet.locatecontrol';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import 'leaflet.offline';
+import {getStorageInfo} from 'leaflet.offline';
 import 'leaflet/dist/leaflet.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
@@ -58,6 +59,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const mapRef = useRef(null);
+
+  const layerRef = useRef([]);
 
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
 
@@ -359,6 +362,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
+  const getSaveControl2 = (layerToSave: any) => {
+    return L.control.savetiles(layerToSave, {
+      zoomlevels: [13, 14, 15, 16, 17]
+    });
+  };
+
   const addASaveTilesControl = (layerSaveControl: any) => {
     layerSaveControl.remove(mapRef.current);
     if (mapRef.current.getZoom() > 16) {
@@ -460,6 +469,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.addLayer(esriPlacenames);
 
     const esriSaveTilesControl = getSaveControl(esriBaseLayer);
+
+    const testControl = getSaveControl2(streams);
+    testControl._map = mapRef.current;
+    layerRef.current.push(testControl);
+    // console.log('testControl',testControl.getStorageSize);
 
     addLayerControls(basemaps, overlays);
 
@@ -776,9 +790,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     await databaseContext.database.upsert('offline_extent', (spatial) => {
       return {
         docType: DocType.OFFLINE_EXTENT,
-        geometry: spatial ? [poly, ...spatial.geometry] : [poly]
+        geometry: spatial.geometry ? [poly, ...spatial.geometry] : [poly]
       };
     });
+
+    // XXX: This is now working. But getting hit with CORS errors
+    layerRef.current[0]._saveTiles();
+
   };
 
   const storeLayersStyle = {
