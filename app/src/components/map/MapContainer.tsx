@@ -200,6 +200,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getJurisdiction = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:jurisdiction@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.4,
+        tms: true
+      }
+    );
+  };
+
   const getMunicipalites = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
@@ -415,6 +425,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const ownership = getOwnership();
     const municipalities = getMunicipalites();
     const regionalDistricts = getRegionalDistricts();
+    const jurisdictions = getJurisdiction();
     const rfi = getRFI();
     const ogma = getOGMA();
     const wha = getWHA();
@@ -437,6 +448,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Biogeoclimatic': bec,
       'MOTI Regions': motiRegions,
       'MOTI Districts': motiDistricts,
+      'Jurisdictions': jurisdictions,
       'Old Growth Management Areas': ogma,
       'Wildlife Habitat Areas': wha,
       'First Nations Reserves': ir,
