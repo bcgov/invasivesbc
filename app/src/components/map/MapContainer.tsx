@@ -8,7 +8,6 @@ import 'leaflet.locatecontrol';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.mapbox.css';
 import 'leaflet.offline';
-import {getStorageInfo} from 'leaflet.offline';
 import 'leaflet/dist/leaflet.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
@@ -17,8 +16,6 @@ import './MapContainer.css';
 import * as turf from '@turf/turf';
 import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
-import { yellow } from '@material-ui/core/colors';
-import { isAbsolute } from 'path';
 
 export type MapControl = (map: any, ...args: any) => void;
 
