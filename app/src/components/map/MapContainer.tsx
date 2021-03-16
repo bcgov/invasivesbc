@@ -370,7 +370,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const addASaveTilesControl = (layerSaveControl: any) => {
     layerSaveControl.remove(mapRef.current);
-    if (mapRef.current.getZoom() > 16) {
+    if (mapRef.current.getZoom() > 13) {
       layerSaveControl.addTo(mapRef.current);
     }
   };
@@ -394,9 +394,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const [currentZoom, setCurrentZoom] = useState(null);
+  useEffect(() => {
+    //custom on-zoom stuff
+  }, [currentZoom]);
+
   const initMap = () => {
     mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([55, -128], 10);
 
+    setCurrentZoom(mapRef.current.getZoom());
     addContextMenuClickListener();
 
     // addZoomControls();
@@ -485,6 +491,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     mapRef.current.on('zoomend', () => {
       props.extentState.setExtent(mapRef.current.getBounds());
+      setCurrentZoom(mapRef.current.getZoom());
       addASaveTilesControl(esriSaveTilesControl);
     });
 
