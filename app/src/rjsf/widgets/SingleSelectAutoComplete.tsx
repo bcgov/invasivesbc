@@ -57,7 +57,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   let enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
   if (!enumOptions)
     enumOptions = [];
-  const [value, setValue] = useState(enumOptions?.[0].value);
+  const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState('');
 
   return (
@@ -65,24 +65,29 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
       <Autocomplete
         autoComplete
         autoSelect
-        autoHighlight={true}
+        autoHighlight
+        blurOnSelect
+        openOnFocus
+        selectOnFocus
+        clearOnEscape
         id={props.id}
         disabled={props.disabled}
         disableClearable
         clearOnBlur={false}
-        clearOnEscape={false}
 
         value={value}
         onChange={(event, selectedOption: AutoCompleteSelectOption) => {
           setValue(selectedOption?.value);
-          setInputValue(selectedOption?.label);
           props.onChange(selectedOption);
         }}
         
         options={enumOptions}
         getOptionSelected={(option) => option?.label === inputValue}
-        filterOptions={createFilterOptions({ limit: 50 })}
-        getOptionLabel={(option) => option ? option.label : ''}
+        filterOptions={createFilterOptions({
+          limit: 50,
+          stringify: (option) => option.value + ' ' + option.label
+        })}
+        getOptionLabel={(option) => value}
         renderOption={(option) => option ? option.label : ''}
 
         inputValue={inputValue}
