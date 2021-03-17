@@ -288,7 +288,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
-
   const getUWR = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
@@ -445,22 +444,22 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const ir = getIR();
 
     const overlays = {
-      'Placenames': esriPlacenames,
-      'Wells': wells,
+      Placenames: esriPlacenames,
+      Wells: wells,
       'Gravel Pits': aggregate,
-      'Streams': streams,
-      'Wetlands': wetlands,
-      'Ownership': ownership,
+      Streams: streams,
+      Wetlands: wetlands,
+      Ownership: ownership,
       'Invasive Plant Management Areas': ipma,
       'Regional Invasive Species Organization Areas': riso,
       'Natural Resource Districts': nRDistricts,
-      'Municipalites': municipalities,
+      Municipalites: municipalities,
       'Regional Districts': regionalDistricts,
       'Road Features Inventory': rfi,
-      'Biogeoclimatic': bec,
+      Biogeoclimatic: bec,
       'MOTI Regions': motiRegions,
       'MOTI Districts': motiDistricts,
-      'Jurisdictions': jurisdictions,
+      Jurisdictions: jurisdictions,
       'Old Growth Management Areas': ogma,
       'Wildlife Habitat Areas': wha,
       'First Nations Reserves': ir,
@@ -716,7 +715,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     if (geojson?.features) {
       await databaseContext.database.upsert('spatial_uploads', (spatial) => {
         // Add a special flag to distinguish from other features
-        console.log('spatial_uploads',spatial);
+        console.log('spatial_uploads', spatial);
         geojson.features.forEach((_, i) => {
           geojson.features[i].properties.uploadedSpatial = true;
         });
@@ -784,7 +783,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const y1 = bounds.getSouth();
     const x2 = bounds.getEast();
     const y2 = bounds.getNorth();
-    const extent = ([x1,y1,x2,y2] as turf.BBox)
+    const extent = [x1, y1, x2, y2] as turf.BBox;
     const poly = turf.bboxPolygon(extent);
 
     // Add a special flag to distinguish from other features
@@ -800,7 +799,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     // XXX: This is now working. But getting hit with CORS errors
     layerRef.current[0]._saveTiles();
-
   };
 
   const storeLayersStyle = {
@@ -825,12 +823,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         {' '}
         {dropSpatial}{' '}
       </div>
-      <div
-        id='offline-layers-button'
-        title='Offline layers'
-        onClick={storeLayers}
-        style={storeLayersStyle}
-      >o</div>
+      <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
+        o
+      </div>
     </div>
   );
 };
