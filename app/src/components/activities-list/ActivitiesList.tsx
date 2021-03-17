@@ -392,7 +392,7 @@ const ActivitiesList: React.FC = () => {
             <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Workflow Function">
               <MenuItem value="Plant">Plant</MenuItem>
               <MenuItem value="Animal">Animal</MenuItem>
-              <MenuItem value="Special">Special</MenuItem>
+              <MenuItem value="Special">Enhanced Collection</MenuItem>
             </Select>
           </FormControl>
           <Button
