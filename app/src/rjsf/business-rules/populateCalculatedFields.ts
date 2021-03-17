@@ -187,7 +187,14 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
             veg_transect_litter
           } = transectPointToUpdate;
 
-          if (veg_transect_native_forbs && veg_transect_grasses && veg_transect_bare_ground && veg_transect_shrubs && veg_transect_bryophytes && veg_transect_litter) {
+          if (
+            veg_transect_native_forbs &&
+            veg_transect_grasses &&
+            veg_transect_bare_ground &&
+            veg_transect_shrubs &&
+            veg_transect_bryophytes &&
+            veg_transect_litter
+          ) {
             transectPointToUpdate.veg_total_percentage =
               veg_transect_native_forbs +
               veg_transect_grasses +
