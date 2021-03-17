@@ -11,6 +11,7 @@ import 'leaflet.offline';
 import 'leaflet/dist/leaflet.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
+import Spinner from 'components/spinner/Spinner';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
@@ -801,6 +802,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     layerRef.current[0]._saveTiles();
   };
 
+  // Style the download button
   const storeLayersStyle = {
     display: 'flex',
     justifyContent: 'center',
@@ -810,21 +812,42 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     color: '#464646',
     width: '2.7rem',
     height: '2.7rem',
-    top: '150px',
+    top: '148px',
     left: '5px',
     zIndex: 1000,
     borderRadius: '4px',
     cursor: 'pointer'
   } as React.CSSProperties;
 
+  // Style the image inside the download button
+  const iconStyle = {
+    transform: 'scale(0.7)',
+    opacity: '0.7'
+  }
+
   return (
     <div id={props.mapId} className={props.classes.map} onDragEnter={dragEnter} onDragOver={dragOver} onDrop={dragDrop}>
+
+      // The drop zone for uploading files
       <div style={dropSpatial ? dropZoneVisible : dropZoneInvisible} onDragLeave={dragLeave}>
         {' '}
         {dropSpatial}{' '}
       </div>
-      <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
-        o
+
+      {/* The offload layers button*/}
+      <div
+        id="offline-layers-button"
+        title="Offline layers"
+        onClick={storeLayers}
+        style={storeLayersStyle}
+      >
+        {/* TODO:
+          1. Toggle between spinner and image depending on 'thinking' status
+          2. Swap image style based on zoom level
+        */}
+        <img src='/assets/icon/download.svg' style={iconStyle}></img>
+        <Spinner></Spinner>
+
       </div>
     </div>
   );
