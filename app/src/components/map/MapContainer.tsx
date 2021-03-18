@@ -14,6 +14,8 @@ import { notifySuccess } from 'utils/NotificationUtils';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
+import { kml } from '@tmcw/togeojson';
+import { DocType } from 'constants/database';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -55,6 +57,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const mapRef = useRef(null);
 
+  const layerRef = useRef([]);
+
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
 
   const addContextMenuClickListener = () => {
@@ -86,16 +90,49 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const getBCGovBaseLayer = () => {
-    return L.tileLayer('https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 24,
-      useCache: true,
-      cacheMaxAge: 6.048e8 // 1 week
-    });
+    return L.tileLayer.offline(
+      'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 24,
+        useCache: true,
+        cacheMaxAge: 6.048e8 // 1 week
+      }
+    );
   };
 
   const getNRDistricts = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+
+  const getMOTIDistricts = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+
+  const getMOTIRegions = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.TADM_MOT_REGIONAL_BNDRY_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+
+  const getBEC = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
       {
         opacity: 0.8,
         tms: true
@@ -163,6 +200,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getJurisdiction = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:jurisdiction@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.4,
+        tms: true
+      }
+    );
+  };
+
   const getMunicipalites = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
@@ -202,6 +249,65 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getOGMA = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+  const getWHA = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getFSW = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_FISH_SENSITIVE_WS_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getIR = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getUWR = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getNationalParks = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.CLAB_NATIONAL_PARKS@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
   const addZoomControls = () => {
     const zoomControlOptions = { position: 'bottomleft' };
 
@@ -234,24 +340,35 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.addControl(L.control.locate(locateControlOptions));
   };
 
-  const addSaveTilesControl = (layerToSave: any) => {
-    mapRef.current.addControl(
-      L.control.savetiles(layerToSave, {
-        zoomlevels: [13, 14, 15, 16, 17],
-        confirm(layer, succescallback) {
-          if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
-            succescallback(notifySuccess(databaseContext, `Saved ${layer._tilesforSave.length} tiles`));
-          }
-        },
-        confirmRemoval(layer, succescallback) {
-          if (window.confirm('Remove all the stored tiles')) {
-            succescallback(notifySuccess(databaseContext, `Removed tiles`));
-          }
-        },
-        saveText: '<span title="Save me some basemap">&#128190;</span>',
-        rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
-      })
-    );
+  const getSaveControl = (layerToSave: any) => {
+    return L.control.savetiles(layerToSave, {
+      zoomlevels: [13, 14, 15, 16, 17],
+      confirm(layer, succescallback) {
+        if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
+          succescallback(notifySuccess(databaseContext, `Saved ${layer._tilesforSave.length} tiles`));
+        }
+      },
+      confirmRemoval(layer, succescallback) {
+        if (window.confirm('Remove all the stored tiles')) {
+          succescallback(notifySuccess(databaseContext, `Removed tiles`));
+        }
+      },
+      saveText: '<span title="Save me some basemap">&#128190;</span>',
+      rmText: '<span title="Delete all stored basemap tiles">&#128465;</span>'
+    });
+  };
+
+  const getSaveControl2 = (layerToSave: any) => {
+    return L.control.savetiles(layerToSave, {
+      zoomlevels: [13, 14, 15, 16, 17]
+    });
+  };
+
+  const addASaveTilesControl = (layerSaveControl: any) => {
+    layerSaveControl.remove(mapRef.current);
+    if (mapRef.current.getZoom() > 13) {
+      layerSaveControl.addTo(mapRef.current);
+    }
   };
 
   const setMapBounds = (extent) => {
@@ -273,12 +390,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const [currentZoom, setCurrentZoom] = useState(null);
+  useEffect(() => {
+    //custom on-zoom stuff
+  }, [currentZoom]);
+
   const initMap = () => {
     mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([55, -128], 10);
 
+    setCurrentZoom(mapRef.current.getZoom());
     addContextMenuClickListener();
 
-    addZoomControls();
+    // addZoomControls();
 
     addLocateControls();
 
@@ -299,16 +422,26 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     };
 
     const nRDistricts = getNRDistricts();
+    const motiDistricts = getMOTIDistricts();
+    const motiRegions = getMOTIRegions();
+    const bec = getBEC();
     const wells = getWells();
     const streams = getStreams();
     const wetlands = getWetlands();
     const riso = getRISO();
     const ipma = getIPMA();
+    const uwr = getUWR();
+    const nationalParks = getNationalParks();
     const aggregate = getAggregate();
     const ownership = getOwnership();
     const municipalities = getMunicipalites();
     const regionalDistricts = getRegionalDistricts();
+    const jurisdictions = getJurisdiction();
     const rfi = getRFI();
+    const ogma = getOGMA();
+    const wha = getWHA();
+    const fsw = getFSW();
+    const ir = getIR();
 
     const overlays = {
       Placenames: esriPlacenames,
@@ -322,12 +455,27 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Natural Resource Districts': nRDistricts,
       Municipalites: municipalities,
       'Regional Districts': regionalDistricts,
-      'Road Features Inventory': rfi
+      'Road Features Inventory': rfi,
+      Biogeoclimatic: bec,
+      'MOTI Regions': motiRegions,
+      'MOTI Districts': motiDistricts,
+      Jurisdictions: jurisdictions,
+      'Old Growth Management Areas': ogma,
+      'Wildlife Habitat Areas': wha,
+      'First Nations Reserves': ir,
+      'Fisheries Sensitive Watersheds': fsw,
+      'Ungulate Winter Range': uwr,
+      'National Parks': nationalParks
     };
 
     mapRef.current.addLayer(esriPlacenames);
 
-    addSaveTilesControl(esriBaseLayer);
+    const esriSaveTilesControl = getSaveControl(esriBaseLayer);
+
+    const testControl = getSaveControl2(streams);
+    testControl._map = mapRef.current;
+    layerRef.current.push(testControl);
+    // console.log('testControl',testControl.getStorageSize);
 
     addLayerControls(basemaps, overlays);
 
@@ -339,6 +487,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     mapRef.current.on('zoomend', () => {
       props.extentState.setExtent(mapRef.current.getBounds());
+      setCurrentZoom(mapRef.current.getZoom());
+      addASaveTilesControl(esriSaveTilesControl);
     });
 
     mapRef.current.on('draw:created', (feature) => {
@@ -456,19 +606,26 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             const content = interactObj.popUpComponent(interactObj.description);
             layer.on('click', () => {
               // Fires on click of single feature
-              interactObj.onClickCallback();
-              if (feature.geometry.type !== 'Polygon') {
-                L.popup()
-                  .setLatLng([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
-                  .setContent(content)
-                  .openOn(mapRef.current);
+
+              // Formulate a table containing all attributes
+              let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+              Object.keys(feature.properties).forEach((f) => {
+                if (f !== 'uploadedSpatial') {
+                  table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+                }
+              });
+              table += '</table>';
+
+              const loc = turf.centroid(feature);
+              const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+              if (feature.properties.uploadedSpatial) {
+                L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
               } else {
-                // If polygon use the first point as the coordinate for popup
-                L.popup()
-                  .setLatLng([feature.geometry.coordinates[0][0][1], feature.geometry.coordinates[0][0][0]])
-                  .setContent(content)
-                  .openOn(mapRef.current);
+                L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
               }
+
+              interactObj.onClickCallback();
             });
           }
         });
@@ -518,7 +675,159 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
 
-  return <div id={props.mapId} className={props.classes.map} />;
+  const [dropSpatial, setDropSpatial] = useState(null);
+
+  const dragEnter = (e) => {
+    e.preventDefault();
+    const type = e?.dataTransfer?.items[0]?.type;
+    switch (type) {
+      case 'application/vnd.google-earth.kmz':
+        setDropSpatial('Sorry... KMZ files are currently not supported. Please unzip and provide the internal KML.');
+        break;
+      case 'application/vnd.google-earth.kml+xml':
+        setDropSpatial('I love to eat KML files');
+        break;
+      default:
+        setDropSpatial(null);
+    }
+  };
+
+  const dragLeave = (e) => {
+    e.preventDefault();
+    setDropSpatial(null);
+  };
+
+  const addKML = async (file) => {
+    setDropSpatial('Yum yum yum');
+    const name = file?.name;
+    const layerName = name.replace(/\..*/g, '').replace(/[^\w]/g, '_');
+    const xml = await file.text().then((xmlstring) => {
+      return xmlstring;
+    });
+    const dom = new DOMParser().parseFromString(xml, 'application/xml');
+    const geojson = kml(dom);
+
+    const bbox = turf.bbox(geojson);
+    const corner1 = L.latLng(bbox[1], bbox[0]);
+    const corner2 = L.latLng(bbox[3], bbox[2]);
+    mapRef.current.flyToBounds([corner1, corner2]);
+
+    if (geojson?.features) {
+      await databaseContext.database.upsert('spatial_uploads', (spatial) => {
+        // Add a special flag to distinguish from other features
+        console.log('spatial_uploads', spatial);
+        geojson.features.forEach((_, i) => {
+          geojson.features[i].properties.uploadedSpatial = true;
+        });
+        return {
+          ...spatial,
+          docType: DocType.SPATIAL_UPLOADS,
+          geometry: spatial.geometry ? [...geojson.features, ...spatial.geometry] : geojson.features
+        };
+      });
+    }
+    setDropSpatial(null);
+  };
+
+  const dragDrop = (e) => {
+    e.preventDefault();
+    setDropSpatial(null);
+    const file = e?.dataTransfer?.files[0];
+    const type = file?.type;
+    const name = file?.name;
+
+    switch (type) {
+      case 'application/vnd.google-earth.kmz':
+        setDropSpatial('Yuck! KMZs are nasty');
+        break;
+      case 'application/vnd.google-earth.kml+xml':
+        addKML(file);
+        break;
+      default:
+        setDropSpatial(null);
+    }
+  };
+
+  /* ## dragOver
+    This cancels the default behaviour of trying to open
+    the file in the browser window.
+    @param e {object} Dragging event
+   */
+  const dragOver = (e) => e.preventDefault();
+
+  const dropZoneVisible = {
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    fontSize: '2.5rem',
+    fontWeight: 800,
+    color: 'white',
+    zIndex: 10000,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '10rem',
+    outline: '1rem dashed white',
+    outlineOffset: '-6rem'
+  } as React.CSSProperties;
+
+  const dropZoneInvisible = {
+    display: 'none'
+  };
+
+  const storeLayers = async () => {
+    // Calculate the extent
+    const bounds = mapRef.current.getBounds();
+    const x1 = bounds.getWest();
+    const y1 = bounds.getSouth();
+    const x2 = bounds.getEast();
+    const y2 = bounds.getNorth();
+    const extent = [x1, y1, x2, y2] as turf.BBox;
+    const poly = turf.bboxPolygon(extent);
+
+    // Add a special flag to distinguish from other features
+    poly.properties.offlineExtent = true;
+    poly.properties.running = true;
+
+    await databaseContext.database.upsert('offline_extent', (spatial) => {
+      return {
+        docType: DocType.OFFLINE_EXTENT,
+        geometry: spatial.geometry ? [poly, ...spatial.geometry] : [poly]
+      };
+    });
+
+    // XXX: This is now working. But getting hit with CORS errors
+    layerRef.current[0]._saveTiles();
+  };
+
+  const storeLayersStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    backgroundColor: 'white',
+    color: '#464646',
+    width: '2.7rem',
+    height: '2.7rem',
+    top: '150px',
+    left: '5px',
+    zIndex: 1000,
+    borderRadius: '4px',
+    cursor: 'pointer'
+  } as React.CSSProperties;
+
+  return (
+    <div id={props.mapId} className={props.classes.map} onDragEnter={dragEnter} onDragOver={dragOver} onDrop={dragDrop}>
+      <div style={dropSpatial ? dropZoneVisible : dropZoneInvisible} onDragLeave={dragLeave}>
+        {' '}
+        {dropSpatial}{' '}
+      </div>
+      <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
+        o
+      </div>
+    </div>
+  );
 };
 
 export default MapContainer;

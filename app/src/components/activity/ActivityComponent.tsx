@@ -8,6 +8,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
 import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
+import { Feature } from 'geojson';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -24,37 +25,47 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
-  const { currentPosition } = useCurrentPosition();
+  const { getPosition } = useCurrentPosition();
   const [workingPolyline, setWorkingPolyline] = useState([]);
-
   const databaseContext = useContext(DatabaseContext);
 
-  const isGreaterDistanceThan = (from, to, distance) => {
-    var fromAsPoint = turf.point(from);
-    var toAsPoint = turf.point(to);
+  useEffect(() => {
+    getPosition();
+  }, []);
 
-    return turf.distance(fromAsPoint, toAsPoint, { units: 'kilometers' }) > distance;
+  const isGreaterDistanceThan = (from, to, distance) => {
+    let returnVal = null;
+    try {
+      var fromAsPoint = turf.point(from);
+      var toAsPoint = turf.point(to);
+
+      returnVal = turf.distance(fromAsPoint, toAsPoint, { units: 'kilometers' }) > distance;
+    } catch (e) {
+      console.dir(e);
+    }
+    return returnVal;
   };
 
   const startTrack = async () => {
-    startWatch();
+    startWatch({ enableHighAccuracy: true });
     notifySuccess(databaseContext, JSON.stringify('Starting track.'));
   };
 
   const endTrack = async () => {
     // convert poly to polygon
-    if (workingPolyline.length > 2) {
+    if (workingPolyline.length >= 4) {
       var line = turf.lineString(workingPolyline);
       var polygon = turf.lineToPolygon(line);
       if (window.confirm('Convert track to polygon?')) {
-        notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  ' + JSON.stringify(polygon)));
+        props.geometryState.setGeometry([polygon as any]);
+        notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  '));
         clearWatch();
       } else {
-        notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  ' + JSON.stringify(line)));
+        notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  '));
         clearWatch();
       }
     } else {
-      if (window.confirm("Sure you're done walkin'?  Didn't collect 2 points.")) {
+      if (window.confirm("Sure you're done walkin'?  Didn't collect 4 points.")) {
         alert('Cancelled track.');
         clearWatch();
       }
@@ -64,12 +75,57 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   useEffect(() => {
     if (watchPosition) {
       if (workingPolyline.length == 0) {
-        setWorkingPolyline([[watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]]);
-      } else if (isGreaterDistanceThan(watchPosition.coords.longitude, watchPosition.coords.latitude, 0.001)) {
-        setWorkingPolyline([
-          ...workingPolyline,
-          [watchPosition.coords.longitude.toFixed(6), watchPosition.coords.latitude.toFixed(6)]
-        ]);
+        let newPolyline = [[watchPosition.coords.longitude, watchPosition.coords.latitude]];
+        setWorkingPolyline(newPolyline);
+
+        const userTrack: Feature = JSON.parse(
+          `
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "LineString",
+              "coordinates": ` +
+            JSON.stringify(newPolyline) +
+            `
+            },
+            "properties": {
+            }
+          }
+          `
+        );
+
+        props.geometryState.setGeometry([userTrack as any]);
+      } else {
+        try {
+          if (
+            isGreaterDistanceThan(
+              [watchPosition.coords.longitude, watchPosition.coords.latitude],
+              workingPolyline[workingPolyline.length - 1],
+              0.001
+            )
+          ) {
+            setWorkingPolyline([...workingPolyline, [watchPosition.coords.longitude, watchPosition.coords.latitude]]);
+
+            const userTrack = JSON.parse(
+              `
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "LineString",
+              "coordinates": ` +
+                JSON.stringify(workingPolyline) +
+                `
+            },
+            "properties": {
+            }
+          }
+          `
+            );
+            props.geometryState.setGeometry([userTrack as any]);
+          }
+        } catch (e) {
+          notifySuccess(databaseContext, JSON.stringify('Computer says no.  ' + JSON.stringify(e)));
+        }
       }
     }
   }, [watchPosition]);
@@ -107,10 +163,12 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.mapContainer}>
-          <Button variant="contained" color="primary" onClick={startTrack}></Button>
-          <Button variant="contained" color="secondary" onClick={endTrack}></Button>
-          {JSON.stringify(watchPosition)}
-          {JSON.stringify(currentPosition)}
+          <Button variant="contained" color="primary" onClick={startTrack}>
+            Start Recording a Track!
+          </Button>
+          <Button variant="contained" color="secondary" onClick={endTrack}>
+            End Track
+          </Button>
           <MapContainer {...props} />
         </AccordionDetails>
       </Accordion>

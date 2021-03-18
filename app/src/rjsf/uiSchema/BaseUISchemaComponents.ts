@@ -466,7 +466,8 @@ const TransectData = {
   photoplot_start: {},
   photoplot_end: {},
   photoplot_aerials: {},
-  photoplot_full_25m: {}
+  photoplot_full_25m: {},
+  plot_location: {}
 };
 
 const FireMonitoringTransectPoints = {
@@ -740,27 +741,7 @@ const BiocontrolEfficacyTransectPoints = {
   veg_transect_shrubs: {},
   veg_transect_bryophytes: {},
   veg_transect_litter: {},
-  phen_transect_sampler: {},
-  phen_transect_recorder: {},
-  phen_transect_seedlings: {},
-  phen_transect_rosettes: {},
-  phen_transect_bolting: {},
-  phen_transect_flowering: {},
-  phen_transect_seeds: {},
-  phen_transect_senescent: {},
-  phen_total_plants: {},
-  phen_number_stems: {},
-  phen_tallest_1: {},
-  phen_tallest_2: {},
-  phen_tallest_3: {},
-  phen_tallest_4: {},
-  phen_level_se: {},
-  phen_level_ro: {},
-  phen_level_bo: {},
-  phen_level_fl: {},
-  phen_level_sf: {},
-  phen_level_sc: {},
-  phen_total_percentage: {
+  veg_total_percentage: {
     'ui:readonly': true
   }
 };
@@ -1011,6 +992,30 @@ const Dispersal_BiologicalDispersal = {
   treatment_organization: {},
   invasive_plant_code: {
     'ui:widget': 'single-select-autocomplete'
+  },
+  invasive_plant_code: {},
+  phen_transect_sampler: {},
+  phen_transect_recorder: {},
+  phen_transect_seedlings: {},
+  phen_transect_rosettes: {},
+  phen_transect_bolting: {},
+  phen_transect_flowering: {},
+  phen_transect_seeds: {},
+  phen_transect_senescent: {},
+  phen_total_plants: {},
+  phen_number_stems: {},
+  phen_tallest_1: {},
+  phen_tallest_2: {},
+  phen_tallest_3: {},
+  phen_tallest_4: {},
+  phen_level_se: {},
+  phen_level_ro: {},
+  phen_level_bo: {},
+  phen_level_fl: {},
+  phen_level_sf: {},
+  phen_level_sc: {},
+  phen_total_percentage: {
+    'ui:readonly': true
   }
 };
 
