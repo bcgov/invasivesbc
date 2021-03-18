@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { WidgetProps } from '@rjsf/core';
 
 // Custom type to support this widget
-export type AutoCompleteSelectOption = { label: string; value: any; title: any; };
+export type AutoCompleteSelectOption = { label: string; value: any; title: any };
 
 /**
  * A widget that supports a single-select dropdown field with search filtering.
@@ -55,8 +55,7 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any; 
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
   let enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
-  if (!enumOptions)
-    enumOptions = [];
+  if (!enumOptions) enumOptions = [];
 
   let optionValueLabels = {};
   let optionValues = Object.values(enumOptions).map((option) => {
@@ -78,7 +77,6 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         id={props.id}
         disabled={props.disabled}
         clearOnBlur={false}
-
         value={value}
         onChange={(event: any, option: string, reason: string) => {
           console.log(reason, option);
@@ -93,15 +91,13 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
             props.onChange(option);
           }
         }}
-        
         options={optionValues}
         getOptionSelected={(option) => option === value}
         filterOptions={createFilterOptions({
           limit: 50,
           stringify: (option) => option + ' ' + optionValueLabels[option]
         })}
-        getOptionLabel={(option) => option ? optionValueLabels[option] : ''}
-
+        getOptionLabel={(option) => (option ? optionValueLabels[option] : '')}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
         renderInput={(params) => (
@@ -113,10 +109,9 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
             placeholder={'Begin typing to filter results...'}
           />
         )}
-
       />
     </div>
   );
-}
+};
 
 export default SingleSelectAutoComplete;
