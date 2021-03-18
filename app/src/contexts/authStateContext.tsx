@@ -1,5 +1,6 @@
 import * as React from 'react';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 export interface IAuthState {
   ready?: boolean;
@@ -11,6 +12,7 @@ export const AuthStateContext = React.createContext<IAuthState>({
 
 export const AuthStateContextProvider: React.FC = (props) => {
   const keycloak = useKeycloakWrapper();
+  const invasivesApi = useInvasivesApi();
 
   const [userInfo, setUserInfo] = React.useState<any>(null);
 
@@ -22,6 +24,14 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
     loadUserInfo();
   }, [keycloak.obj]);
+
+  React.useEffect(() => {
+    const getApiSpec = async () => {
+      await invasivesApi.getCachedApiSpec();
+    };
+
+    getApiSpec();
+  }, []);
 
   return (
     <AuthStateContext.Provider value={{ ready: keycloak.obj?.authenticated && !!userInfo }}>
