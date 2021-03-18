@@ -63,14 +63,13 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
     return option.value;
   });
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState('');
   const [inputValue, setInputValue] = useState('');
 
   return (
     <div>
       <Autocomplete
         autoComplete
-        autoSelect
         autoHighlight
         blurOnSelect
         openOnFocus
@@ -78,16 +77,21 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         clearOnEscape
         id={props.id}
         disabled={props.disabled}
-        disableClearable
         clearOnBlur={false}
 
         value={value}
-        onChange={(event, option: string) => {
-          setValue(option);
-          // NOTE: passing value to onChange, which might be expecting format
-          // { value, label }
-          // can't change this without creating many validation errors
-          props.onChange(option);
+        onChange={(event: any, option: string, reason: string) => {
+          console.log(reason, option);
+          if (reason === 'clear') {
+            setValue('');
+            props.onChange('');
+          } else {
+            setValue(option);
+            // NOTE: passing value to onChange, which might be expecting format
+            // { value, label }
+            // can't change this without creating many validation errors
+            props.onChange(option);
+          }
         }}
         
         options={optionValues}
@@ -96,7 +100,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
           limit: 50,
           stringify: (option) => option + ' ' + optionValueLabels[option]
         })}
-        getOptionLabel={(option) => optionValueLabels[option]}
+        getOptionLabel={(option) => option ? optionValueLabels[option] : ''}
 
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
