@@ -7,6 +7,7 @@ export type IAppRouteProps = RouteProps & {
   title: string;
   keycloak?: any;
   keycloakConfig?: any;
+  isMobileNoNetwork?: boolean;
 };
 
 const AppRoute: React.FC<IAppRouteProps> = ({
@@ -15,6 +16,7 @@ const AppRoute: React.FC<IAppRouteProps> = ({
   title,
   keycloak,
   keycloakConfig,
+  isMobileNoNetwork,
   ...rest
 }) => {
   const Layout = layout === undefined ? (props: any) => <>{props.children}</> : layout;
@@ -25,7 +27,7 @@ const AppRoute: React.FC<IAppRouteProps> = ({
     <Route
       {...rest}
       render={(props) => (
-        <Layout keycloak={keycloak} keycloakConfig={keycloakConfig}>
+        <Layout keycloak={keycloak} keycloakConfig={keycloakConfig} isMobileNoNetwork={isMobileNoNetwork}>
           <Component {...props} />
         </Layout>
       )}

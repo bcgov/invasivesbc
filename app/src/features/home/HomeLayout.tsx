@@ -9,7 +9,11 @@ import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 
-const HomeLayout = (props: any) => {
+export interface IHomeLayoutProps {
+  children: any;
+}
+
+const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
   const databaseContext = useContext(DatabaseContext);
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
@@ -60,7 +64,7 @@ const HomeLayout = (props: any) => {
 
   return (
     <Box width="inherit" height="100%" display="flex" flex="1" flexDirection="column">
-      <TabsContainer />
+      <TabsContainer isMobileNoNetwork={props.children.props.isMobileNoNetwork} />
       <Collapse timeout={50} in={isOpen}>
         <Alert
           // severity can't be null so this is a workaround

@@ -30,7 +30,6 @@ const AccessDenied = () => {
     below my IDIR or BCeID username.`
   );
   const emailHref = `mailto:michael.shasko@gov.bc.ca?subject=${emailSubject}&body=${emailBody}`;
-
   return (
     <Container>
       <Box my={6}>
