@@ -60,9 +60,15 @@ describe('MultiSelectAutoComplete', () => {
       formContext: {},
       multiple: true,
       rawErrors: [],
-      onChange: () => {},
-      onFocus: () => {},
-      onBlur: () => {}
+      onChange: () => {
+		// unnecessary for testing
+      },
+      onFocus: () => {
+		// unnecessary for testing
+      },
+      onBlur: () => {
+		// unnecessary for testing
+      }
     };
 
     it('renders the form control', async () => {
@@ -122,19 +128,16 @@ describe('MultiSelectAutoComplete', () => {
       formContext: {},
       multiple: true,
       rawErrors: [],
-      onChange: () => {},
-      onFocus: () => {},
-      onBlur: () => {}
+      onChange: () => {
+		// unnecessary for testing
+      },
+      onFocus: () => {
+		// unnecessary for testing
+      },
+      onBlur: () => {
+		// unnecessary for testing
+      }
     };
-
-    it('renders the form control', async () => {
-      await act(async () => {
-        const { findByText } = renderContainer(props);
-        const formControl = await findByText('Multi Select Field Title');
-
-        expect(formControl).toBeVisible();
-      });
-    });
 
     it('shows the previously selected values', async () => {
       await act(async () => {
