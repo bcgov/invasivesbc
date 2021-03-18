@@ -57,6 +57,12 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   let enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
   if (!enumOptions)
     enumOptions = [];
+
+  let optionValueLabels = {};
+  let optionValues = Object.values(enumOptions).map((option) => {
+    optionValueLabels[option.value] = option.label;
+    return option.value;
+  });
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState('');
 
@@ -76,19 +82,21 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         clearOnBlur={false}
 
         value={value}
-        onChange={(event, selectedOption: AutoCompleteSelectOption) => {
-          setValue(selectedOption?.value);
-          props.onChange(selectedOption);
+        onChange={(event, option: string) => {
+          setValue(option);
+          // NOTE: passing value to onChange, which might be expecting format
+          // { value, label }
+          // can't change this without creating many validation errors
+          props.onChange(option);
         }}
         
-        options={enumOptions}
-        getOptionSelected={(option) => option?.label === inputValue}
+        options={optionValues}
+        getOptionSelected={(option) => option === value}
         filterOptions={createFilterOptions({
           limit: 50,
-          stringify: (option) => option.value + ' ' + option.label
+          stringify: (option) => option + ' ' + optionValueLabels[option]
         })}
-        getOptionLabel={(option) => value}
-        renderOption={(option) => option ? option.label : ''}
+        getOptionLabel={(option) => optionValueLabels[option]}
 
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
