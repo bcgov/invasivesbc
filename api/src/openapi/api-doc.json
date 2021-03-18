@@ -2321,23 +2321,6 @@
           "specific_use_code": {
             "type": "string",
             "title": "Specific Use",
-            "anyOf": [
-              {
-                "type": "string",
-                "title": "Option 1",
-                "enum": ["one"]
-              },
-              {
-                "type": "string",
-                "title": "Option 2",
-                "enum": ["two"]
-              },
-              {
-                "type": "string",
-                "title": "Option 3",
-                "enum": ["three"]
-              }
-            ],
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "specific_use_code",

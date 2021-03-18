@@ -4,7 +4,7 @@ import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete
 import { WidgetProps } from '@rjsf/core';
 
 // Custom type to support this widget
-export type AutoCompleteSelectOption = { label: string; value: any };
+export type AutoCompleteSelectOption = { label: string; value: any; title: any; };
 
 /**
  * A widget that supports a single-select dropdown field with search filtering.
@@ -60,7 +60,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
 
   let optionValueLabels = {};
   let optionValues = Object.values(enumOptions).map((option) => {
-    optionValueLabels[option.value] = option.label;
+    optionValueLabels[option.value] = option.label || option.title || option.value;
     return option.value;
   });
   const [value, setValue] = useState(null);
