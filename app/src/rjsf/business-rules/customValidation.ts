@@ -91,18 +91,14 @@ export function getDuplicateInvasivePlantsValidator(activitySubtype: string): rj
       plantCodeList.push(invasivePlant.invasive_plant_code);
     });
 
-    if (
-      !errors ||
-      !errors.activity_subtype_data ||
-      !errors.activity_subtype_data['invasive_plants']
-    ) {
+    if (!errors || !errors.activity_subtype_data || !errors.activity_subtype_data['invasive_plants']) {
       return errors;
     }
 
     // validate duplicates of the invasive_plant_code within invasive_plants
     errors.activity_subtype_data['invasive_plants'].__errors = [];
 
-    if ((new Set(plantCodeList)).size !== plantCodeList.length) {
+    if (new Set(plantCodeList).size !== plantCodeList.length) {
       errors.activity_subtype_data['invasive_plants'].addError(
         `There are duplicated invasive plant species identified.
         Please remove or fix duplicated species.`
@@ -127,9 +123,7 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
     const { temperature } = formData.activity_subtype_data;
 
     if (temperature < 10 || temperature > 30) {
-      errors.activity_subtype_data['temperature'].addError(
-        'Temperature should ideally be between 15 and 22 degrees'
-      );
+      errors.activity_subtype_data['temperature'].addError('Temperature should ideally be between 15 and 22 degrees');
     }
 
     return errors;
