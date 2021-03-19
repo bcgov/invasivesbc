@@ -376,12 +376,25 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       return;
     }
 
-    const bounds = [
-      [extent._northEast.lat, extent._northEast.lng],
-      [extent._southWest.lat, extent._southWest.lng]
-    ];
+    if (props.geometryState?.geometry?.length) {
+      const allGeosFeatureCollection = {
+        type: 'FeatureCollection',
+        features: [...props.geometryState.geometry]
+      };
+      const bboxCoords = turf.bbox(allGeosFeatureCollection);
 
-    mapRef.current.fitBounds(bounds);
+      mapRef.current.fitBounds([
+        [bboxCoords[1], bboxCoords[0]],
+        [bboxCoords[3], bboxCoords[2]]
+      ]);
+    } else {
+      const bounds = [
+        [extent._northEast.lat, extent._northEast.lng],
+        [extent._southWest.lat, extent._southWest.lng]
+      ];
+
+      mapRef.current.fitBounds(bounds);
+    }
   };
 
   const addLayerControls = (baseLayerControlOptions: any, overlayControlOptions: any) => {
