@@ -11,7 +11,7 @@ const Spinner: React.FC = () => {
             className='path'
             fill='none'
             stroke='rgba(0,0,0,0.7)'
-            strokeWidth='5'
+            strokeWidth='3'
             strokeLinecap='round'
           ></circle>
       </svg>
