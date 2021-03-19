@@ -4987,7 +4987,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Notable land uses or attributes within the observation area"
           },
           "soil_texture_code": {
             "type": "string",
