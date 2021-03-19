@@ -357,7 +357,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
   );
 };
 
-const ReferenceActivitiesList: React.FC = () => {
+const CachedRecordsList: React.FC = () => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
 
@@ -595,4 +595,4 @@ const ReferenceActivitiesList: React.FC = () => {
   );
 };
 
-export default ReferenceActivitiesList;
+export default CachedRecordsList;
