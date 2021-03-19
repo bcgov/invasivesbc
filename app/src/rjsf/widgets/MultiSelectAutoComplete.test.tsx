@@ -61,13 +61,13 @@ describe('MultiSelectAutoComplete', () => {
       multiple: true,
       rawErrors: [],
       onChange: () => {
-		// unnecessary for testing
+        // unnecessary for testing
       },
       onFocus: () => {
-		// unnecessary for testing
+        // unnecessary for testing
       },
       onBlur: () => {
-		// unnecessary for testing
+        // unnecessary for testing
       }
     };
 
@@ -129,13 +129,13 @@ describe('MultiSelectAutoComplete', () => {
       multiple: true,
       rawErrors: [],
       onChange: () => {
-		// unnecessary for testing
+        // unnecessary for testing
       },
       onFocus: () => {
-		// unnecessary for testing
+        // unnecessary for testing
       },
       onBlur: () => {
-		// unnecessary for testing
+        // unnecessary for testing
       }
     };
 
