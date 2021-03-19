@@ -2579,6 +2579,15 @@
                   "invasive_plant_distribution_code",
                   "plant_life_stage_code"
                 ]
+              },
+              {
+                "properties": {
+                  "occurrence": {
+                    "enum": [
+                      "Negative occurrence"
+                    ]
+                  }
+                }
               }
             ]
           }
