@@ -358,6 +358,8 @@ const ActivitiesList: React.FC = () => {
           };
         });
       } catch (error) {
+        notifyError(databaseContext, JSON.stringify(error));
+        alert(JSON.stringify(error));
         const errorMessage = getErrorMessages(error.response.status, 'formSync');
 
         errorMessages.push(`Syncing ${activity.activitySubtype.split('_')[2]} activity has failed: ${errorMessage}`);
