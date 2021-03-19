@@ -993,7 +993,6 @@ const Dispersal_BiologicalDispersal = {
   invasive_plant_code: {
     'ui:widget': 'single-select-autocomplete'
   },
-  invasive_plant_code: {},
   phen_transect_sampler: {},
   phen_transect_recorder: {},
   phen_transect_seedlings: {},
