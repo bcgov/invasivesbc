@@ -572,20 +572,8 @@
       "Observation": {
         "title": "Observation Information",
         "type": "object",
-        "required": ["observation_type_code", "observer_first_name", "observer_last_name", "negative_obs_ind"],
+        "required": ["observation_type_code", "observation_persons"],
         "properties": {
-          "observer_first_name": {
-            "type": "string",
-            "title": "First Name",
-            "maxLength": 50,
-            "x-tooltip-text": "First name of person completing the observation"
-          },
-          "observer_last_name": {
-            "type": "string",
-            "title": "Last Name",
-            "maxLength": 50,
-            "x-tooltip-text": "Last name of person completing the observation"
-          },
           "observation_type_code": {
             "type": "string",
             "title": "Type",
@@ -599,15 +587,13 @@
             "default": "CU",
             "x-tooltip-text": "Choose type of observation from dropdown"
           },
-          "negative_obs_ind": {
-            "type": "string",
-            "title": "Negative Observation",
-            "enum": [
-              "Yes",
-              "No"
-            ],
-            "default": "No",
-            "x-tooltip-text": "The observation describes the absence of target invasive plants within a defined area"
+          "observation_persons": {
+            "type": "array",
+            "title": "Observation Person(s)",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
+            "x-tooltip-text": "Name of person(s) doing the observation"
           }
         }
       },
@@ -1618,7 +1604,7 @@
             "type": "array",
             "title": "Treatment Person(s)",
             "items": {
-              "$ref": "#/components/schemas/TreatmentPersons"
+              "$ref": "#/components/schemas/Persons"
             },
             "x-tooltip-text": "Name of person(s) doing treatment"
           }
@@ -1630,8 +1616,6 @@
         "required": [
           "applicator1_name",
           "applicator1_license",
-          "applicator2_name",
-          "applicator2_license",
           "pesticide_employer_code",
           "pesticide_user_license_number",
           "chemical_method_code",
@@ -1719,9 +1703,7 @@
           "temperature": {
             "type": "number",
             "title": "Temperature (C)",
-            "minimum": 15,
-            "maximum": 30,
-            "x-tooltip-text": "Measured in degrees celcius at time of treatment"
+            "x-tooltip-text": "Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)"
           },
           "wind_speed": {
             "type": "number",
@@ -2400,6 +2382,7 @@
             "type": "number",
             "title": "Percent Covered",
             "maximum": 100,
+            "minimum": 1,
             "x-tooltip-text": "Percent covered by this jurisdiction"
           }
         }
@@ -2423,14 +2406,12 @@
       "ObservationPlantTerrestrialData": {
         "type": "object",
         "required": [
-          "soil_texture_code",
           "specific_use_code",
           "slope_code",
           "aspect_code",
           "research_detection_ind",
           "well_ind",
-          "special_care_ind",
-          "biological_ind"
+          "special_care_ind"
         ],
         "properties": {
           "soil_texture_code": {
@@ -2513,17 +2494,6 @@
             ],
             "default": "No",
             "x-tooltip-text": "Designation to flag the potential for unique circumstances prior to treatment of the observation area"
-          },
-          "biological_ind": {
-            "type": "string",
-            "title": "Biological Release",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ],
-            "default": "No",
-            "x-tooltip-text": "Biocontrol treatment has occurred within the observation area"
           }
         }
       },
@@ -2531,9 +2501,7 @@
         "type": "object",
         "required": [
           "invasive_plant_code",
-          "plant_life_stage_code",
-          "invasive_plant_density_code",
-          "invasive_plant_distribution_code"
+          "occurrence"
         ],
         "properties": {
           "invasive_plant_code": {
@@ -2548,41 +2516,80 @@
             },
             "x-tooltip-text": "Target invasive plant species for this observation at this location. Create a separate observation for any other species at this location"
           },
-          "invasive_plant_density_code": {
+          "occurrence": {
             "type": "string",
-            "title": "Density",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_density_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Average number of individual plants per square meter expressed as a density class code"
-          },
-          "invasive_plant_distribution_code": {
-            "type": "string",
-            "title": "Distribution",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_distribution_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
-          },
-          "plant_life_stage_code": {
-            "type": "string",
-            "title": "Life Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_life_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Average phenological stage of plant; rosette, flowering, etc"
+            "title": "Occurrence",
+            "enum": [
+              "Positive occurrence",
+              "Negative occurrence"
+            ],
+            "default": "Positive occurrence",
+            "x-tooltip-text": "The observation describes the presence or absence of target invasive plants within a defined area"
+          }
+        },
+        "dependencies": {
+          "occurrence": {
+            "oneOf": [
+              {
+                "properties": {
+                  "occurrence": {
+                    "enum": [
+                      "Positive occurrence"
+                    ]
+                  },
+                  "invasive_plant_density_code": {
+                    "type": "string",
+                    "title": "Density",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "invasive_plant_density_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Average number of individual plants per square meter expressed as a density class code"
+                  },
+                  "invasive_plant_distribution_code": {
+                    "type": "string",
+                    "title": "Distribution",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "invasive_plant_distribution_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
+                  },
+                  "plant_life_stage_code": {
+                    "type": "string",
+                    "title": "Life Stage",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "plant_life_stage_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Average phenological stage of plant; rosette, flowering, etc"
+                  }
+                },
+                "required": [
+                  "invasive_plant_density_code",
+                  "invasive_plant_distribution_code",
+                  "plant_life_stage_code"
+                ]
+              },
+              {
+                "properties": {
+                  "occurrence": {
+                    "enum": [
+                      "Negative occurrence"
+                    ]
+                  }
+                }
+              }
+            ]
           }
         }
       },
@@ -3034,7 +3041,7 @@
           }
         }
       },
-      "TreatmentPersons": {
+      "Persons": {
         "type": "object",
         "required": ["person_name"],
         "properties": {

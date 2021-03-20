@@ -30,7 +30,7 @@ const TwoColumnStyle = {
   'ui:column-lg': 6
 };
 
-const TreatmentPersons = {
+const Persons = {
   person_name: {}
 };
 
@@ -785,9 +785,11 @@ const Observation = {
   observation_type_code: {
     'ui:widget': 'single-select-autocomplete'
   },
-  observer_first_name: {},
-  observer_last_name: {},
-  negative_obs_ind: {}
+  observation_persons: {
+    items: {
+      ...Persons
+    }
+  }
 };
 
 const Observation_PlantTerrestrial_Data = {
@@ -805,8 +807,7 @@ const Observation_PlantTerrestrial_Data = {
   },
   research_detection_ind: {},
   well_ind: {},
-  special_care_ind: {},
-  biological_ind: {}
+  special_care_ind: {}
 };
 
 const Observation_PlantTerrestrial = {
@@ -1032,7 +1033,7 @@ const Treatment = {
   },
   treatment_persons: {
     items: {
-      ...TreatmentPersons
+      ...Persons
     }
   }
 };
