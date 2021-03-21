@@ -823,31 +823,23 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const iconStyle = {
     transform: 'scale(0.7)',
     opacity: '0.7'
-  }
+  };
 
   return (
     <div id={props.mapId} className={props.classes.map} onDragEnter={dragEnter} onDragOver={dragOver} onDrop={dragDrop}>
-
       // The drop zone for uploading files
       <div style={dropSpatial ? dropZoneVisible : dropZoneInvisible} onDragLeave={dragLeave}>
         {' '}
         {dropSpatial}{' '}
       </div>
-
       {/* The offload layers button*/}
-      <div
-        id="offline-layers-button"
-        title="Offline layers"
-        onClick={storeLayers}
-        style={storeLayersStyle}
-      >
+      <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
         {/* TODO:
           1. Toggle between spinner and image depending on 'thinking' status
           2. Swap image style based on zoom level
         */}
-        <img src='/assets/icon/download.svg' style={iconStyle}></img>
+        <img src="/assets/icon/download.svg" style={iconStyle}></img>
         <Spinner></Spinner>
-
       </div>
     </div>
   );
