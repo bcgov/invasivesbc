@@ -167,23 +167,21 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const SingleTrip: React.FC = (props) => {
     //todo: add trip_id to props and let trip manage db itself
-    const [stepStatus, setStepStatus] = useState([{},
-      {status: TripStatusCode.initial, expanded: true},
-      {status: TripStatusCode.initial, expanded: false},
-      {status: TripStatusCode.initial, expanded: false},
-      {status: TripStatusCode.initial, expanded: false}])
+    const [stepStatus, setStepStatus] = useState([
+      {},
+      { status: TripStatusCode.initial, expanded: true },
+      { status: TripStatusCode.initial, expanded: false },
+      { status: TripStatusCode.initial, expanded: false },
+      { status: TripStatusCode.initial, expanded: false }
+    ]);
 
-      const helperCheckForGeo = () => {
-        if(geometry)
-        {
-          return TripStatusCode.ready;
-        }
-        else
-        {
-          return stepStatus[1].status;
-        }
-
+    const helperCheckForGeo = () => {
+      if (geometry) {
+        return TripStatusCode.ready;
+      } else {
+        return stepStatus[1].status;
       }
+    };
 
     return (
       <Grid item md={12}>
@@ -274,10 +272,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               </Tooltip>
             </Grid>
             <Grid item>
-              <Typography align='left' variant="h5">{props.title}</Typography>
+              <Typography align="left" variant="h5">
+                {props.title}
+              </Typography>
             </Grid>
             <Grid xs={2} item>
-              <TripStepStatus statusCode={props.stepStatus}/>
+              <TripStepStatus statusCode={props.stepStatus} />
             </Grid>
           </Grid>
         </AccordionSummary>
