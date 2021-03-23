@@ -18,7 +18,7 @@ import {
   TablePagination,
   TableRow
 } from '@material-ui/core';
-import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore } from '@material-ui/icons';
+import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore, DeleteForever } from '@material-ui/icons';
 import React from 'react';
 import RecordTable from '../../common/RecordTable';
 
@@ -184,391 +184,69 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
 
       <CollapseableTable
         tableName={"Survey Details on Site " + site.site_id}
+        keyField="survey_id"
+        startingOrder="survey_date"
         headers={[
-          'Survey ID',
-          'Common Name',
-          'Species',
-          'Genus',
-          'Survey Date',
-          'Agency',
-          'Area (m\u00B2)',
           {
-            align: 'center',
-            children: 'Density'
+            id: 'survey_id',
+            label: 'Survey ID'
           },
           {
-            align: 'center',
-            children: 'Distribution'
+            id: 'common_name',
+            label: 'Common Name'
           },
           {
+            id: 'species',
+            label: 'Species'
+          },
+          {
+            id: 'genus',
+            label: 'Genus'
+          },
+          {
+            id: 'survey_date',
+            label: 'Survey Date'
+          },
+          {
+            id: 'invasive_species_agency_code',
+            label: 'Agency'
+          },
+          {
+            id: 'reported_area',
+            label: 'Area (m\u00B2)'
+          },
+          {
+            id: 'density',
+            align: 'center',
+            label: 'Density'
+          },
+          {
+            id: 'distribution',
+            align: 'center',
+            label: 'Distribution'
+          },
+          {
+            id: 'general_comment',
             className: classes.wideCell,
-            children: 'Comments'
+            label: 'Comments'
+          },
+          {
+            id: 'buttons',
+            // no label
           }
         ]}
         rows={
           !surveys?.length
             ? []
-            : surveys.map((row) => [
-                row.survey_id,
-                row.common_name,
-                row.species,
-                row.genus,
-                row.survey_date,
-                row.invasive_species_agency_code,
-                row.reported_area,
-                {
-                  align: 'center',
-                  children: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : '')
-                },
-                {
-                  align: 'center',
-                  children:
-                    row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
-                },
-                {
-                  className: classes.wideCell,
-                  children: row.general_comment
-                }
-              ])
-        }
-        pagination={true}
-      />
-
-      <CollapseableTable
-        tableName="Mechanical Treatments and Efficacy Monitoring"
-        headers={[
-          'Treatment ID',
-          'Mechanical ID',
-          'Species (Common)',
-          'Treatment Date',
-          'Agency',
-          'Reported Area (m\u00B2)',
-          'Mech Method',
-          'Paper File ID',
-          {
-            className: classes.wideCell,
-            children: 'Comments'
-          }
-        ]}
-        rows={
-          !mechanical_treatments.length
-            ? []
-            : mechanical_treatments.map((row) => [
-                row.treatment_id,
-                row.mechanical_id,
-                row.common_name,
-                row.treatment_date,
-                row.invasive_species_agency_code,
-                row.reported_area,
-                '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
-                row.project_code?.[0]?.description,
-                {
-                  className: classes.wideCell,
-                  children: row.general_comment
-                }
-              ])
-        }
-        dropdown={(i) =>
-          !mechanical_treatments[i].monitoring?.length ? null : (
-            <RecordTable
-              key={'dropdown_' + i}
-              headers={[
-                'Monitoring ID',
-                'Monitoring Date',
-                'Agency',
-                'Efficacy',
-                'Paper File ID',
-                {
-                  className: classes.wideCell,
-                  children: 'Comments'
-                }
-              ]}
-              rows={mechanical_treatments[i].monitoring.map((row, j) => [
-                row.monitoring_id,
-                row.monitoring_date,
-                row.invasive_species_agency_code,
-                row.efficacy_percent,
-                row.project_code?.[0]?.description,
-                {
-                  className: classes.wideCell,
-                  children: row.general_comment
-                }
-              ])}
-            />
-          )
-        }
-        pagination={true}
-      />
-
-      <CollapseableTable
-        tableName="Chemical Treatments and Efficacy Monitoring"
-        headers={[
-          'Treatment ID',
-          'Species (Common)',
-          'Treatment Date',
-          'Agency',
-          'Reported Area (m\u00B2)',
-          'Method',
-          'Paper File ID',
-          {
-            className: classes.wideCell,
-            children: 'Comments'
-          }
-        ]}
-        rows={
-          !chemical_treatments?.length
-            ? []
-            : chemical_treatments.map((row) => [
-                row.treatment_id,
-                row.common_name,
-                row.treatment_date,
-                row.invasive_species_agency_code,
-                row.reported_area,
-                row.chemical_method,
-                row.project_code?.[0]?.description,
-                {
-                  className: classes.wideCell,
-                  children: row.general_comment
-                }
-              ])
-        }
-        dropdown={(i) =>
-          !chemical_treatments[i].monitoring?.length ? null : (
-            <React.Fragment key={'dropdown_' + i}>
-              <RecordTable
-                headers={[
-                  'PMP Confirmation #',
-                  'Herbicide',
-                  'PMRA Reg #',
-                  'Temperature',
-                  'Humidity',
-                  'Wind Velocity',
-                  'Wind Direction',
-                  'Application Rate',
-                  'Amount Used',
-                  'Dilution Rate',
-                  'Mix Delivery Rate'
-                ]}
-                rows={[
-                  [
-                    chemical_treatments[i].pmp_confirmation_number,
-                    chemical_treatments[i].herbicide_description,
-                    chemical_treatments[i].pmra_reg_number,
-                    chemical_treatments[i].temperature,
-                    chemical_treatments[i].humidity,
-                    chemical_treatments[i].wind_speed,
-                    chemical_treatments[i].wind_direction,
-                    chemical_treatments[i].application_rate,
-                    chemical_treatments[i].herbicide_amount,
-                    chemical_treatments[i].dilution,
-                    chemical_treatments[i].mix_delivery_rate
-                  ]
-                ]}
-              />
-              <br />
-              {chemical_treatments[i].monitoring?.length && (
-                <RecordTable
-                  headers={[
-                    'Monitoring ID',
-                    'Monitoring Date',
-                    'Agency',
-                    'Efficacy',
-                    'Paper File ID',
-                    {
-                      className: classes.wideCell,
-                      children: 'Comments'
-                    }
-                  ]}
-                  rows={chemical_treatments[i].monitoring.map((row, j) => [
-                    row.monitoring_id,
-                    row.monitoring_date,
-                    row.invasive_species_agency_code,
-                    row.efficacy_percent,
-                    row.project_code?.[0]?.description,
-                    {
-                      className: classes.wideCell,
-                      children: row.general_comment
-                    }
-                  ])}
-                />
-              )}
-            </React.Fragment>
-          )
-        }
-        pagination={true}
-      />
-
-      <CollapseableTable
-        tableName="Biological Treatments and Efficacy Monitoring"
-        headers={[
-          'Treatment ID',
-          'Species (Common)',
-          'Treatment Date',
-          'Collection Date',
-          'Bioagent Source',
-          'Agency',
-          'Larva Stage',
-          'Egg Stage',
-          'Pupa Stage',
-          'Other Stage',
-          'Release Quantity',
-          'Area Classification Code',
-          'Biological Agent Code',
-          'UTM Zone',
-          'UTM Easting',
-          'UTM Northing',
-          'Paper File ID',
-          {
-            className: classes.wideCell,
-            children: 'Comments'
-          }
-        ]}
-        rows={
-          !biological_treatments?.length
-            ? []
-            : biological_treatments.map((row) => [
-                row.treatment_id,
-                row.common_name,
-                row.treatment_date,
-                row.collection_date,
-                row.bioagent_source,
-                row.invasive_species_agency_code,
-                row.stage_larva_ind,
-                row.stage_egg_ind,
-                row.stage_pupa_ind,
-                row.stage_other_ind,
-                row.release_quantity,
-                row.area_classification_code,
-                row.biological_agent_code,
-                row.utm_zone,
-                row.utm_easting,
-                row.utm_northing,
-                row.project_code?.[0]?.description,
-                {
-                  className: classes.wideCell,
-                  children: row.general_comment
-                }
-              ])
-        }
-        dropdown={(i) =>
-          !biological_treatments[i].monitoring?.length ? null : (
-            <RecordTable
-              key={'dropdown_' + i}
-              headers={[
-                'Monitoring ID',
-                'Inspection Date',
-                'Plant Count',
-                'Agent Count',
-                'Count Duration',
-                'Agent Destroyed',
-                'Legacy Presence',
-                'Foliar Feeding Damage',
-                'Root Feeding Damage',
-                'Seed Feeding Damage',
-                'Oviposition Marks',
-                'Eggs Present',
-                'Larvae Present',
-                'Pupae Present',
-                'Adults Present',
-                'Tunnels Present',
-                'UTM Zone',
-                'UTM Easting',
-                'UTM Northing',
-                'Paper File ID',
-                {
-                  className: classes.wideCell,
-                  children: 'Comment'
-                }
-              ]}
-              rows={biological_treatments[i].monitoring.map((row, j) => [
-                row.monitoring_id,
-                row.monitoring_date,
-                row.plant_count,
-                row.agent_count,
-                row.count_duration,
-                row.agent_destroyed_ind,
-                row.legacy_presence_ind,
-                row.foliar_feeding_damage_ind,
-                row.root_feeding_damage_ind,
-                row.seed_feeding_damage_ind,
-                row.oviposition_marks_ind,
-                row.eggs_present_ind,
-                row.larvae_present_ind,
-                row.pupae_present_ind,
-                row.adults_present_ind,
-                row.tunnels_present_ind,
-                row.utm_zone,
-                row.utm_easting,
-                row.utm_northing,
-                row.project_code?.[0]?.description,
-                {
-                  className: classes.wideCell,
-                  children: row.general_comment
-                }
-              ])}
-            />
-          )
-        }
-        pagination={true}
-      />
-
-      <CollapseableTable
-        tableName="Biological Dispersals"
-        headers={[
-          'Biological ID',
-          'Species (Common)',
-          'Inspection Date',
-          'Paper File ID',
-          'Plant Count',
-          'Agent Count',
-          'Count Duration',
-          'Agent Code',
-          'Foliar Feeding Damage',
-          'Root Feeding Damage',
-          'Seed Feeding Damage',
-          'Oviposition Feeding Damage',
-          'Eggs Present',
-          'Larvae Present',
-          'Pupae Present',
-          'Adults Present',
-          'Tunnels Present',
-          'UTM Zone',
-          'UTM Easting',
-          'UTM Northing',
-          {
-            className: classes.wideCell,
-            children: 'Comments'
-          }
-        ]}
-        rows={
-          !biological_dispersals?.length
-            ? []
-            : biological_dispersals.map((row) => [
-                row.biological_dispersal_id,
-                row.common_name,
-                row.monitoring_date,
-                row.project_code?.[0]?.description,
-                row.plant_count,
-                row.agent_count,
-                row.count_duration,
-                row.biological_agent_code,
-                row.foliar_feeding_damage_ind,
-                row.root_feeding_damage_ind,
-                row.seed_feeding_damage_ind,
-                row.oviposition_marks_ind,
-                row.eggs_present_ind,
-                row.larvae_present_ind,
-                row.pupae_present_ind,
-                row.adults_present_ind,
-                row.tunnels_present_ind,
-                row.utm_zone,
-                row.utm_easting,
-                row.utm_northing,
-                {
-                  className: classes.wideCell,
-                  children: row.general_comment
-                }
-              ])
+            : surveys.map((row) => ({
+              ...row,
+              density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
+              distribution: row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : ''),
+              buttons: (row) =>
+                <IconButton>
+                  <DeleteForever />
+                </IconButton>
+            }))
         }
         pagination={true}
       />
@@ -586,13 +264,6 @@ const CollapseableTable = (props) => {
   const classes = useStyles();
 
   return (
-    <Accordion defaultExpanded={false}>
-      <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-        <Typography className={classes.heading}>{tableName}</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <RecordTable {...etc} />
-      </AccordionDetails>
-    </Accordion>
+    <RecordTable {...props} />
   );
 }
