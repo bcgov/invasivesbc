@@ -318,17 +318,32 @@ export const TripDataControls: React.FC = (props) => {
       });
   };
 
-  const [toggle, setToggle] = useState(TripStatusCode.initial)
+  const [toggle, setToggle] = useState(TripStatusCode.initial);
 
   return (
     <>
-    <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
-      {fetching ? 'Fetching...' : 'Fetch'}
-    </Button>
-    <Button onClick={() => {setToggle(TripStatusCode.initial)}}>initial</Button>
-    <Button onClick={() => {setToggle(TripStatusCode.ready)}}>ready</Button>
-    <Button onClick={() => {setToggle(TripStatusCode.error)}}>error</Button>
-    <TripStatus statusCode={toggle}/>
+      <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
+        {fetching ? 'Fetching...' : 'Fetch'}
+      </Button>
+      <Button
+        onClick={() => {
+          setToggle(TripStatusCode.initial);
+        }}>
+        initial
+      </Button>
+      <Button
+        onClick={() => {
+          setToggle(TripStatusCode.ready);
+        }}>
+        ready
+      </Button>
+      <Button
+        onClick={() => {
+          setToggle(TripStatusCode.error);
+        }}>
+        error
+      </Button>
+      <TripStatus statusCode={toggle} />
     </>
   );
 };
