@@ -166,12 +166,24 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   };
 
   const SingleTrip: React.FC = (props) => {
-    //todo: make step status a prop to be managed by parent state
+    //todo: add trip_id to props and let trip manage db itself
     const [stepStatus, setStepStatus] = useState([{},
-      {status: TripStatusCode.initial},
-      {status: TripStatusCode.initial},
-      {status: TripStatusCode.initial},
-      {status: TripStatusCode.initial}])
+      {status: TripStatusCode.initial, expanded: true},
+      {status: TripStatusCode.initial, expanded: false},
+      {status: TripStatusCode.initial, expanded: false},
+      {status: TripStatusCode.initial, expanded: false}])
+
+      const helperCheckForGeo = () => {
+        if(geometry)
+        {
+          return TripStatusCode.ready;
+        }
+        else
+        {
+          return stepStatus[1].status;
+        }
+
+      }
 
     return (
       <Grid item md={12}>
@@ -187,7 +199,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               additionalText="other"
               expanded={true}
               tripStepDetailsClassName={classes.activityRecordList}
-              stepStatus={stepStatus[1].status}>
+              stepStatus={helperCheckForGeo()}>
               <Paper className={classes.paper}>
                 <Typography variant="body1">
                   Draw a polygon or square on the map, or upload a KML containing 1 shape.
