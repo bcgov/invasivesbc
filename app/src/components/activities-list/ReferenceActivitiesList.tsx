@@ -98,13 +98,13 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
   return monitoringSubtype;
 };
 
-interface ICachedRecordListItem {
+interface IReferenceActivityListItem {
   activity: any;
   databaseContext: any;
   setActiveDoc: Function;
 }
 
-const CachedRecordListItem: React.FC<ICachedRecordListItem> = (props) => {
+const ReferenceActivityListItem: React.FC<IReferenceActivityListItem> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const { activity, databaseContext, setActiveDoc } = props;
@@ -155,7 +155,7 @@ const CachedRecordListItem: React.FC<ICachedRecordListItem> = (props) => {
   );
 };
 
-interface ICachedRecordListComponent {
+interface IReferenceActivityListComponent {
   doc: any;
   databaseContext: any;
   selectedObservations?: any;
@@ -163,7 +163,7 @@ interface ICachedRecordListComponent {
   setActiveDoc: Function;
 }
 
-const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) => {
+const ReferenceActivityListComponent: React.FC<IReferenceActivityListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const { doc, databaseContext, selectedObservations, setSelectedObservations, setActiveDoc } = props;
@@ -195,13 +195,13 @@ const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) 
         <ListItemIcon>
           <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
         </ListItemIcon>
-        <CachedRecordListItem setActiveDoc={setActiveDoc} databaseContext={databaseContext} activity={doc} />
+        <ReferenceActivityListItem setActiveDoc={setActiveDoc} databaseContext={databaseContext} activity={doc} />
       </ListItem>
     </Paper>
   );
 };
 
-interface ICachedRecordList {
+interface IReferenceActivityList {
   docs: any;
   databaseContext: any;
   setActiveDoc: Function;
@@ -209,7 +209,7 @@ interface ICachedRecordList {
   setSelectedObservations: Function;
 }
 
-const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
+const ReferenceActivityList: React.FC<IReferenceActivityList> = (props) => {
   const { docs, databaseContext, setActiveDoc } = props;
 
   const classes = useStyles();
@@ -316,7 +316,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         </Box>
       )}
       {observations.map((doc) => (
-        <CachedRecordListComponent
+        <ReferenceActivityListComponent
           selectedObservations={selectedObservations}
           setSelectedObservations={setSelectedObservations}
           databaseContext={databaseContext}
@@ -332,7 +332,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         </Box>
       )}
       {treatments.map((doc) => (
-        <CachedRecordListComponent
+        <ReferenceActivityListComponent
           setActiveDoc={setActiveDoc}
           databaseContext={databaseContext}
           key={doc._id}
@@ -346,7 +346,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         </Box>
       )}
       {monitorings.map((doc) => (
-        <CachedRecordListComponent
+        <ReferenceActivityListComponent
           setActiveDoc={setActiveDoc}
           databaseContext={databaseContext}
           key={doc._id}
@@ -357,7 +357,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
   );
 };
 
-const CachedRecordsList: React.FC = () => {
+const ReferenceActivitiesList: React.FC = () => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
 
@@ -584,7 +584,7 @@ const CachedRecordsList: React.FC = () => {
       )}
       {!interactiveGeometry.length && <Typography>No activities available of the selected type.</Typography>}
       <br />
-      <CachedRecordList
+      <ReferenceActivityList
         docs={docs}
         databaseContext={databaseContext}
         setActiveDoc={setActiveDoc}
@@ -595,4 +595,4 @@ const CachedRecordsList: React.FC = () => {
   );
 };
 
-export default CachedRecordsList;
+export default ReferenceActivitiesList;

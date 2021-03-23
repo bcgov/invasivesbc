@@ -1,5 +1,5 @@
 import { Container } from '@material-ui/core';
-import CachedRecordsList from 'components/activities-list/CachedRecordsList';
+import ReferenceActivitiesList from 'components/activities-list/ReferenceActivitiesList';
 import React from 'react';
 
 interface IReferencesPagePage {
@@ -9,7 +9,7 @@ interface IReferencesPagePage {
 const ReferencesPage: React.FC<IReferencesPagePage> = (props) => {
   return (
     <Container className={props.classes.container}>
-      <CachedRecordsList />
+      <ReferenceActivitiesList />
     </Container>
   );
 };
