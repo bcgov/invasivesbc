@@ -1,4 +1,7 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Checkbox,
   Collapse,
@@ -22,8 +25,7 @@ import {
 } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles';
 import { Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
-import React from 'react';
-import PropTypes from 'prop-types'; // TODO remove?
+import React, { useState } from 'react';
 import clsx from 'clsx';
 
 /*
@@ -99,8 +101,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const { headers, rows, dropdown = undefined, pagination = undefined, startsOpen = undefined } = props;
 
   const classes = useStyles();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const startingRow = page * rowsPerPage;
 
   const ifApplicable = (value) =>
@@ -116,7 +118,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   };
 
   const IAPPBodyRow = ({ row, index }) => {
-    const [open, setOpen] = React.useState(startsOpen);
+    const [open, setOpen] = useState(startsOpen);
 
     const renderedDropdown = dropdown ? dropdown(index) : null;
     // allow the row to override standard rendering if it is a string or element
@@ -238,18 +240,10 @@ const headCells = [
 */
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headers } = props;
+  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
-  const headCells = headers.map((cell) =>
-    typeof cell === 'string'
-    ? {
-      id: cell,
-      label: cell
-    }
-    : cell
-  );
 
   return (
     <TableHead>
@@ -265,21 +259,22 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
+            align={headCell.align}
+            padding={headCell.padding}
             sortDirection={orderBy === headCell.id ? order : false}
+            className={`${classes.cell} ${headCell.className}`}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : headCell.defaultOrder}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
+              {orderBy === headCell.id && (
                 <span className={classes.visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
-              ) : null}
+              )}
             </TableSortLabel>
           </TableCell>
         ))}
@@ -287,17 +282,6 @@ function EnhancedTableHead(props) {
     </TableHead>
   );
 }
-
-EnhancedTableHead.propTypes = {
-  classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
-  headers: PropTypes.oneOfType([PropTypes.object.isRequired, PropTypes.string.isRequired]),
-};
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -321,55 +305,46 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const { numSelected, tableName, expanded, setExpanded } = props;
 
   return (
-    <Toolbar
-      className={clsx(classes.root, {
-        [classes.highlight]: numSelected > 0,
-      })}
-    >
-      {numSelected > 0 ? (
-        <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Nutrition
-        </Typography>
-      )}
+    <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
+      <Toolbar
+        className={clsx(classes.root, {
+          [classes.highlight]: numSelected > 0,
+        })}
+      >
+        {numSelected > 0 ? (
+          <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
+            {numSelected} selected
+          </Typography>
+        ) : (
+          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            {tableName}
+          </Typography>
+        )}
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton aria-label="delete">
-            <Delete />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterList />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
+        {numSelected > 0 ? (
+          <Tooltip title="Delete">
+            <IconButton aria-label="delete">
+              <Delete />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Filter list">
+            <IconButton aria-label="filter list">
+              <FilterList />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Toolbar>
+    </AccordionSummary>
   );
-};
-
-EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
 };
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
-  },
-  paper: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 750,
+    width: '100%'
   },
   visuallyHidden: {
     border: 0,
@@ -382,39 +357,149 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'left',
+    color: theme.palette.text.primary,
+    flexDirection: 'column'
+  },
+  table: {
+    minWidth: 750,
+    width: 'auto',
+    tableLayout: 'auto'
+  },
+  tableRow: {
+    verticalAlign: 'top'
+  },
+  tableContainer: {
+    display: 'table-row'
+  },
+  cell: {
+    whiteSpace: 'nowrap',
+    width: 1,
+    borderBottom: 0
+  },
+  wideCell: {
+    minWidth: 500,
+    maxWidth: 500
+  },
+  missingValue: {
+    fontStyle: 'italic',
+    color: '#777'
+  },
+  header: {
+    backgroundColor: 'rgba(0, 0, 0, 0.06)'
+  },
+  dropdown: {
+    paddingBottom: 0,
+    paddingTop: 0,
+    paddingLeft: '1em'
+  },
+  dropdownCol: {
+    width: '1px'
+  },
+  openRow: {
+    overflow: 'inherit',
+    whiteSpace: 'inherit'
+  },
+  closedRow: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis'
+  }
 }));
 
-const RecordTable = (props) => {
+
+
+export interface RecordTablePropType {
+  headers: Array<any>;
+  rows: any;
+  tableName?: string;
+  expandable?: boolean;
+  startExpanded?: boolean;
+  keyField?: string;
+  startingOrder?: string;
+  startingOrderBy?: string;
+  startingRowsPerPage?: number;
+  rowsPerPageOptions?: Array<number>;
+  densePadding?: boolean;
+  padEmptyRows?: boolean;
+
+  dropdown?: (index: number) => any;
+  pagination?: boolean | object;
+  startsOpen?: boolean;
+}
+
+const RecordTable : React.FC<RecordTablePropType> = (props) => {
   const classes = useStyles();
-  const { headers, rows, startingOrder, startingOrderBy, startingRowsPerPage, rowsPerPageOptions } = props;
-  const [order, setOrder] = React.useState(startingOrder || 'asc');
-  const [orderBy, setOrderBy] = React.useState(startingOrderBy || rows[0]);
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(startingRowsPerPage || 5);
+  const {
+    tableName,
+    rows,
+    keyField = 'id',
+    startingOrder = 'asc',
+    expandable = true,
+    startExpanded = true,
+    startingRowsPerPage = 10,
+    rowsPerPageOptions = false, // disable ability to change rows per page by default
+    densePadding = false,
+    padEmptyRows = false // whitespace added to make the table the same height
+                         // even on the last page with only e.g. 1 row
+  } = props;
+  const { headers = rows.length ? Object.keys(rows[0]) : []} = props;
+  const { startingOrderBy = headers.length ? headers[0].id : 'id' } = props; // defaults to the first header
+  const headCells : any = headers.map((header : any, i) => {
+    if (typeof header === 'string' || typeof header === 'number')
+      return {
+        id: i,
+        label: header
+      };
+    if (typeof header === 'object')
+      return {
+        // defaults:
+        id: i,
+        align: header.numeric ? 'right' : 'left',
+        padding: 'default',
+        defaultOrder: 'asc',
+        ...header
+      };
+    throw 'Table header not defined correctly - must be a string, number or object';
+  });
+
+  const [order, setOrder] = useState(startingOrder);
+  const [orderBy, setOrderBy] = useState(startingOrderBy);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
+  const [selected, setSelected] = useState([]);
+  const [expandedRows, setExpandedRows] = useState([]);
+  const [dense, setDense] = useState(densePadding);
+  const [expanded, setExpanded] = useState(startExpanded);
+
+  // sort and limit the rows:
+  const pageRows = stableSort(rows, getComparator(order, orderBy))
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
+    setPage(0);
   };
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
+      const newSelecteds = rows.map((row) => row[keyField]);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const selectRow = (event, key) => {
+    const selectedIndex = selected.indexOf(key);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, key);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -442,94 +527,115 @@ const RecordTable = (props) => {
     setDense(event.target.checked);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  const isSelectedRow = (key) => selected.indexOf(key) !== -1;
+  const isExpandedRow = (key) => expandedRows.indexOf(key) !== -1;
+
+  const ifApplicable = (value) =>
+    value && String(value).trim().length ? value : <div className={classes.missingValue}>N/A</div>;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+  const renderCell = (row, id) => {
+    const cell = row[id];
+    switch (typeof cell) {
+      case 'object':
+        return React.createElement(TableCell, {
+          key: id,
+          ...cell
+        });
+      case 'function':
+        return cell(row);
+      default:
+      case 'string':
+        return ifApplicable(cell);
+    }
+  }
+
   return (
+    
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
-          <Table
-            className={classes.table}
-            aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
-            aria-label="enhanced table"
-          >
-            <EnhancedTableHead
-              classes={classes}
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-              headers={headers}
-            />
-            <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+        <Accordion defaultExpanded={false}>
+          <EnhancedTableToolbar numSelected={selected.length} tableName={tableName} expanded={expanded} setExpanded={setExpanded} />
+          <AccordionDetails className={classes.paper}>
+            <TableContainer>
+              <Table
+                className={classes.table}
+                aria-labelledby="tableTitle"
+                size={dense ? 'small' : 'medium'}
+                aria-label="enhanced table"
+              >
+                <EnhancedTableHead
+                  classes={classes}
+                  numSelected={selected.length}
+                  order={order}
+                  orderBy={orderBy}
+                  onSelectAllClick={handleSelectAllClick}
+                  onRequestSort={handleRequestSort}
+                  rowCount={rows.length}
+                  headCells={headCells}
+                />
+                <TableBody>
+                  {pageRows.map((row) => {
+                      const key = row[keyField];
+                      if (!key)
+                        throw 'Error: table row has no matching key defined';
+                      const isItemSelected = isSelectedRow(key);
+                      const labelId = `enhanced-table-checkbox-${key}`;
 
-                  console.log(row);
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.name)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.name}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      {
-                        headers.map(({id, numeric, disablePadding}, i) => 
-                          <TableCell
-                            component="th" // here too
-                            id={labelId} // here also
-                            key={id}
-                            scope="row" // error will be here
-                            align={numeric ? 'right' : 'left'}
-                            padding={disablePadding ? 'none' : undefined}
-                          >
-                            {row[id]}
+                      return (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          key={key}
+                          selected={isItemSelected}
+                          className={isExpandedRow(row[keyField]) ? classes.openRow : classes.closedRow}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={isItemSelected}
+                              onClick={(event) => selectRow(event, key)}
+                              inputProps={{ 'aria-labelledby': labelId }}
+                            />
                           </TableCell>
-                        )
-                      }
+                          {headCells.map(({id, numeric, align, padding, className}, i) => 
+                            <TableCell
+                              component="th"
+                              id={labelId}
+                              key={id}
+                              scope="row"
+                              align={align}
+                              padding={padding}
+                              className={`${classes.cell} ${row[id].className}`}
+                            >
+                              {renderCell(row, id)}
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      );
+                    })}
+                  {padEmptyRows && emptyRows > 0 && (
+                    <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                      <TableCell colSpan={headCells.length} />
                     </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={rowsPerPageOptions ? rowsPerPageOptions : [5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={rowsPerPageOptions === false ? undefined : rowsPerPageOptions}
+              component="div"
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </AccordionDetails>
+        </Accordion>
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
     </div>
   );
 }
