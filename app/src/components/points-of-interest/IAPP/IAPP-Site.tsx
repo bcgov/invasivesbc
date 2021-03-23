@@ -183,7 +183,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
       </Accordion>
 
       <CollapseableTable
-        tableName={"Survey Details on Site " + site.site_id}
+        tableName={'Survey Details on Site ' + site.site_id}
         keyField="survey_id"
         startingOrder="survey_date"
         headers={[
@@ -231,7 +231,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             label: 'Comments'
           },
           {
-            id: 'buttons',
+            id: 'buttons'
             // no label
           }
         ]}
@@ -239,14 +239,16 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           !surveys?.length
             ? []
             : surveys.map((row) => ({
-              ...row,
-              density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
-              distribution: row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : ''),
-              buttons: (row) =>
-                <IconButton>
-                  <DeleteForever />
-                </IconButton>
-            }))
+                ...row,
+                density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
+                distribution:
+                  row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : ''),
+                buttons: (row) => (
+                  <IconButton>
+                    <DeleteForever />
+                  </IconButton>
+                )
+              }))
         }
         pagination={true}
       />
@@ -260,10 +262,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
 };
 
 const CollapseableTable = (props) => {
-  const {tableName, ...etc} = props;
+  const { tableName, ...etc } = props;
   const classes = useStyles();
 
-  return (
-    <RecordTable {...props} />
-  );
-}
+  return <RecordTable {...props} />;
+};

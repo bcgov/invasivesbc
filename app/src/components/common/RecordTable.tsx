@@ -21,7 +21,7 @@ import {
   TableSortLabel,
   Toolbar,
   Tooltip,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles';
 import { Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
@@ -200,9 +200,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
 export default RecordTable;
 */
 
-
-
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -262,13 +259,11 @@ function EnhancedTableHead(props) {
             align={headCell.align}
             padding={headCell.padding}
             sortDirection={orderBy === headCell.id ? order : false}
-            className={`${classes.cell} ${headCell.className}`}
-          >
+            className={`${classes.cell} ${headCell.className}`}>
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : headCell.defaultOrder}
-              onClick={createSortHandler(headCell.id)}
-            >
+              onClick={createSortHandler(headCell.id)}>
               {headCell.label}
               {orderBy === headCell.id && (
                 <span className={classes.visuallyHidden}>
@@ -286,21 +281,21 @@ function EnhancedTableHead(props) {
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
     paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
+    paddingRight: theme.spacing(1)
   },
   highlight:
     theme.palette.type === 'light'
       ? {
           color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
         }
       : {
           color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
+          backgroundColor: theme.palette.secondary.dark
         },
   title: {
-    flex: '1 1 100%',
-  },
+    flex: '1 1 100%'
+  }
 }));
 
 const EnhancedTableToolbar = (props) => {
@@ -311,9 +306,8 @@ const EnhancedTableToolbar = (props) => {
     <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
       <Toolbar
         className={clsx(classes.root, {
-          [classes.highlight]: numSelected > 0,
-        })}
-      >
+          [classes.highlight]: numSelected > 0
+        })}>
         {numSelected > 0 ? (
           <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
             {numSelected} selected
@@ -355,7 +349,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
     position: 'absolute',
     top: 20,
-    width: 1,
+    width: 1
   },
   paper: {
     padding: theme.spacing(2),
@@ -409,8 +403,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
-
 export interface RecordTablePropType {
   headers: Array<any>;
   rows: any;
@@ -430,7 +422,7 @@ export interface RecordTablePropType {
   startsOpen?: boolean;
 }
 
-const RecordTable : React.FC<RecordTablePropType> = (props) => {
+const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const classes = useStyles();
   const {
     tableName,
@@ -443,11 +435,11 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
     rowsPerPageOptions = false, // disable ability to change rows per page by default
     densePadding = false,
     padEmptyRows = false // whitespace added to make the table the same height
-                         // even on the last page with only e.g. 1 row
+    // even on the last page with only e.g. 1 row
   } = props;
-  const { headers = rows.length ? Object.keys(rows[0]) : []} = props;
+  const { headers = rows.length ? Object.keys(rows[0]) : [] } = props;
   const { startingOrderBy = headers.length ? headers[0].id : 'id' } = props; // defaults to the first header
-  const headCells : any = headers.map((header : any, i) => {
+  const headCells: any = headers.map((header: any, i) => {
     if (typeof header === 'string' || typeof header === 'number')
       return {
         id: i,
@@ -475,8 +467,10 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
   const [expanded, setExpanded] = useState(startExpanded);
 
   // sort and limit the rows:
-  const pageRows = stableSort(rows, getComparator(order, orderBy))
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const pageRows = stableSort(rows, getComparator(order, orderBy)).slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -505,10 +499,7 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
+      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
     }
 
     setSelected(newSelected);
@@ -549,22 +540,25 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
       case 'string':
         return ifApplicable(cell);
     }
-  }
+  };
 
   return (
-    
     <div className={classes.root}>
       <Paper className={classes.paper}>
         <Accordion defaultExpanded={false}>
-          <EnhancedTableToolbar numSelected={selected.length} tableName={tableName} expanded={expanded} setExpanded={setExpanded} />
+          <EnhancedTableToolbar
+            numSelected={selected.length}
+            tableName={tableName}
+            expanded={expanded}
+            setExpanded={setExpanded}
+          />
           <AccordionDetails className={classes.paper}>
             <TableContainer>
               <Table
                 className={classes.table}
                 aria-labelledby="tableTitle"
                 size={dense ? 'small' : 'medium'}
-                aria-label="enhanced table"
-              >
+                aria-label="enhanced table">
                 <EnhancedTableHead
                   classes={classes}
                   numSelected={selected.length}
@@ -577,45 +571,42 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
                 />
                 <TableBody>
                   {pageRows.map((row) => {
-                      const key = row[keyField];
-                      if (!key)
-                        throw 'Error: table row has no matching key defined';
-                      const isItemSelected = isSelectedRow(key);
-                      const labelId = `enhanced-table-checkbox-${key}`;
+                    const key = row[keyField];
+                    if (!key) throw 'Error: table row has no matching key defined';
+                    const isItemSelected = isSelectedRow(key);
+                    const labelId = `enhanced-table-checkbox-${key}`;
 
-                      return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={key}
-                          selected={isItemSelected}
-                          className={isExpandedRow(row[keyField]) ? classes.openRow : classes.closedRow}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={isItemSelected}
-                              onClick={(event) => selectRow(event, key)}
-                              inputProps={{ 'aria-labelledby': labelId }}
-                            />
+                    return (
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={key}
+                        selected={isItemSelected}
+                        className={isExpandedRow(row[keyField]) ? classes.openRow : classes.closedRow}>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={isItemSelected}
+                            onClick={(event) => selectRow(event, key)}
+                            inputProps={{ 'aria-labelledby': labelId }}
+                          />
+                        </TableCell>
+                        {headCells.map(({ id, numeric, align, padding, className }, i) => (
+                          <TableCell
+                            component="th"
+                            id={labelId}
+                            key={id}
+                            scope="row"
+                            align={align}
+                            padding={padding}
+                            className={`${classes.cell} ${row[id].className}`}>
+                            {renderCell(row, id)}
                           </TableCell>
-                          {headCells.map(({id, numeric, align, padding, className}, i) => 
-                            <TableCell
-                              component="th"
-                              id={labelId}
-                              key={id}
-                              scope="row"
-                              align={align}
-                              padding={padding}
-                              className={`${classes.cell} ${row[id].className}`}
-                            >
-                              {renderCell(row, id)}
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      );
-                    })}
+                        ))}
+                      </TableRow>
+                    );
+                  })}
                   {padEmptyRows && emptyRows > 0 && (
                     <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                       <TableCell colSpan={headCells.length} />
@@ -638,6 +629,6 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
       </Paper>
     </div>
   );
-}
+};
 
 export default RecordTable;
