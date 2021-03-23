@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Grid, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
@@ -162,14 +162,27 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
-        <AccordionDetails className={props.classes.mapContainer}>
-          <Button variant="contained" color="primary" onClick={startTrack}>
-            Start Recording a Track!
-          </Button>
-          <Button variant="contained" color="secondary" onClick={endTrack}>
-            End Track
-          </Button>
-          <MapContainer {...props} />
+        <AccordionDetails>
+          <Grid xs={12} alignItems="flex-start" container>
+            <Grid xs={2} item>
+              <Button variant="contained" color="primary" onClick={startTrack}>
+                Record a Polygon!
+              </Button>
+            </Grid>
+            <Grid xs={2} item>
+              <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
+                Record Buffered Line!
+              </Button>
+            </Grid>
+            <Grid xs={2} item>
+              <Button variant="contained" color="secondary" onClick={endTrack}>
+                End Track Recording
+              </Button>
+            </Grid>
+            <Grid xs={12} className={props.classes.mapContainer} item>
+              <MapContainer {...props} />
+            </Grid>
+          </Grid>
         </AccordionDetails>
       </Accordion>
       <Accordion>
