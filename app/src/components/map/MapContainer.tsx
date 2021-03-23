@@ -308,12 +308,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
-  const addZoomControls = () => {
-    const zoomControlOptions = { position: 'bottomleft' };
-
-    mapRef.current.addControl(L.control.zoom(zoomControlOptions));
-  };
-
   const addDrawControls = () => {
     const drawControlOptions = new L.Control.Draw({
       position: 'topright',
@@ -371,12 +365,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
   };
 
-  const setMapBounds = (extent) => {
-    if (!extent) {
-      return;
-    }
-
-    if (props.geometryState?.geometry?.length) {
+  const setGeometryMapBounds = () => {
+    if (
+      props.geometryState?.geometry?.length &&
+      !(props.geometryState?.geometry[0].geometry.type === 'Point' && !props.geometryState?.geometry[0].radius)
+    ) {
       const allGeosFeatureCollection = {
         type: 'FeatureCollection',
         features: [...props.geometryState.geometry]
@@ -387,14 +380,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         [bboxCoords[1], bboxCoords[0]],
         [bboxCoords[3], bboxCoords[2]]
       ]);
-    } else {
-      const bounds = [
-        [extent._northEast.lat, extent._northEast.lng],
-        [extent._southWest.lat, extent._southWest.lng]
-      ];
-
-      mapRef.current.fitBounds(bounds);
     }
+  };
+
+  const setMapBounds = (extent) => {
+    if (!extent) {
+      return;
+    }
+
+    const bounds = [
+      [extent._northEast.lat, extent._northEast.lng],
+      [extent._southWest.lat, extent._southWest.lng]
+    ];
+
+    mapRef.current.fitBounds(bounds);
   };
 
   const addLayerControls = (baseLayerControlOptions: any, overlayControlOptions: any) => {
@@ -413,9 +412,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     setCurrentZoom(mapRef.current.getZoom());
     addContextMenuClickListener();
-
-    // addZoomControls();
-
     addLocateControls();
 
     if (props.showDrawControls) {
@@ -488,10 +484,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const testControl = getSaveControl2(streams);
     testControl._map = mapRef.current;
     layerRef.current.push(testControl);
-    // console.log('testControl',testControl.getStorageSize);
 
     addLayerControls(basemaps, overlays);
-
     setMapBounds(mapRef.current.getBounds());
 
     mapRef.current.on('dragend', () => {
@@ -673,6 +667,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       return;
     }
 
+    setGeometryMapBounds();
     updateMapOnGeometryChange();
   }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
 
