@@ -187,7 +187,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="survey_id"
         startingOrderBy="survey_id"
         startingOrder="desc"
-        enableSelection
         className={classes.iappTable}
         headers={[
           {

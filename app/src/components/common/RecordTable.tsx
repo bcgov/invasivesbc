@@ -244,7 +244,19 @@ const EnhancedTableToolbar = (props) => {
 };
 
 const RecordTableRow = (props) => {
-  const { keyField, headers, row, dropdown, hasOverflow, isExpanded, enableSelection, pageHasDropdown, isSelected, toggleExpanded, toggleSelected } = props;
+  const {
+    keyField,
+    headers,
+    row,
+    dropdown,
+    hasOverflow,
+    isExpanded,
+    enableSelection,
+    pageHasDropdown,
+    isSelected,
+    toggleExpanded,
+    toggleSelected
+  } = props;
   const classes = useStyles();
 
   const key = row[keyField];
@@ -286,17 +298,11 @@ const RecordTableRow = (props) => {
         {(enableSelection || pageHasDropdown) && (
           <TableCell padding="checkbox">
             {enableSelection && (
-              <Checkbox
-                checked={isSelected}
-                onClick={toggleSelected}
-                inputProps={{ 'aria-labelledby': labelId }}
-              />
+              <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
             )}
             {pageHasDropdown && (
               <IconButton aria-label="expand row" size="small">
-                {(!!renderedDropdown || hasOverflow) && (
-                  isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />
-                )}
+                {(!!renderedDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
               </IconButton>
             )}
           </TableCell>
@@ -329,7 +335,7 @@ const RecordTableRow = (props) => {
       )}
     </React.Fragment>
   );
-}
+};
 
 /*
   OUTDATED:
@@ -378,7 +384,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     enableSelection = false,
     enableFiltering = false,
     pagination = true,
-    className : tableClassName,
+    className: tableClassName,
     densePadding = false,
     padEmptyRows = false // whitespace added to make the table the same height
     // even on the last page with only e.g. 1 row
@@ -512,7 +518,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                   pageHasDropdown={pageHasDropdown}
                 />
                 <TableBody>
-                  {pageRows.map((row, index) => 
+                  {pageRows.map((row, index) => (
                     <RecordTableRow
                       key={row[keyField]}
                       keyField={keyField}
@@ -526,8 +532,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                       enableSelection={enableSelection}
                       toggleExpanded={() => toggleExpandedRow(row[keyField])}
                       toggleSelected={() => selectRow(row[keyField])}
-                      />
-                  )}
+                    />
+                  ))}
                   {padEmptyRows && emptyRows > 0 && (
                     <TableRow style={{ height: (densePadding ? 33 : 53) * emptyRows }}>
                       <TableCell colSpan={headCells.length} />
