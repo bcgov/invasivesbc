@@ -62,32 +62,40 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
     return option.value;
   });
-  const [value, setValue] = useState('');
-  const [inputValue, setInputValue] = useState('');
+  const startingValue = props.value || '';
+  const [value, setValue] = useState(startingValue);
+  const [inputValue, setInputValue] = useState(startingValue ? optionValueLabels[startingValue] : '');
 
   return (
     <div>
       <Autocomplete
         autoComplete
         autoHighlight
+        autoSelect={props.required}
         blurOnSelect
         openOnFocus
         selectOnFocus
-        clearOnEscape
+        clearOnEscape={!props.required}
+        disableClearable={props.required}
         id={props.id}
         disabled={props.disabled}
         clearOnBlur={false}
         value={value}
+        onLoad={() => {
+          props.onChange(startingValue);
+        }}
         onChange={(event: any, option: string, reason: string) => {
-          console.log(reason, option);
           if (reason === 'clear') {
+            // NOTE: currently disabled.
+            // Creates validaton issues where an empty value will pass even if required
             setValue('');
             props.onChange('');
           } else {
             setValue(option);
-            // NOTE: passing value to onChange, which might be expecting format
-            // { value, label }
-            // can't change this without creating many validation errors
+            // NOTE: passing string value to onChange, which might be expecting format
+            // object: { value, label }
+            // this will likely result in future compatibility errors with custom onChange functions
+            // but can't change this easily without creating many validation errors
             props.onChange(option);
           }
         }}
