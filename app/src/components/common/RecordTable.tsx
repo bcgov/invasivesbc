@@ -368,6 +368,7 @@ export interface RecordTablePropType {
   enableFiltering?: boolean;
   className?: any;
   dropdown?: (row: any) => any;
+  dropdownLimit?: boolean;
   overflowDropdown?: boolean;
   overflowLimit?: number;
   pagination?: boolean;
@@ -382,6 +383,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     startingOrder = 'asc',
     expandable = true,
     dropdown, // default none
+    dropdownLimit = true,
     overflowDropdown = true, // overflow into a dropdown when a cell is very verbose
     overflowLimit = 50, // char limit
     startExpanded = true,
@@ -390,7 +392,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     enableSelection = false,
     enableFiltering = false,
     pagination = true,
-    className: tableClassName,
+    // className: tableClassName,
     densePadding = false,
     padEmptyRows = false // whitespace added to make the table the same height
     // even on the last page with only e.g. 1 row
@@ -491,11 +493,15 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       const expandedRows2 = expandedRows;
       delete expandedRows2[expandedRows.indexOf(key)];
       setExpandedRows(expandedRows2.filter((value) => value));
-    } else setExpandedRows([...expandedRows, key]);
+    } else {
+      if (dropdownLimit) {
+        setExpandedRows([key]);
+      } else setExpandedRows([...expandedRows, key]);
+    }
   };
 
   return (
-    <div className={clsx(classes.paper, tableClassName)}>
+    <div className={clsx(classes.paper)}>
       <Accordion defaultExpanded={startExpanded || !rows.length}>
         <EnhancedTableToolbar
           numSelected={enableSelection && selected.length}
