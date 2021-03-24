@@ -186,7 +186,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
       </Accordion>
 
       <RecordTable
-        tableName={"Survey Details on Site " + site.site_id}
+        tableName={'Survey Details on Site ' + site.site_id}
         keyField="survey_id"
         startingOrderBy="survey_id"
         startingOrder="desc"
@@ -240,10 +240,11 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           !surveys?.length
             ? []
             : surveys.map((row) => ({
-              ...row,
-              density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
-              distribution: row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : ''),
-            }))
+                ...row,
+                density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
+                distribution:
+                  row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
+              }))
         }
       />
 
@@ -257,19 +258,19 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID',
+            title: 'Treatment ID'
           },
           {
             id: 'common_name',
-            title: 'Species (Common)',
+            title: 'Species (Common)'
           },
           {
             id: 'treatment_date',
-            title: 'Treatment Date',
+            title: 'Treatment Date'
           },
           {
             id: 'invasive_species_agency_code',
-            title: 'Agency',
+            title: 'Agency'
           },
           {
             id: 'reported_area',
@@ -278,11 +279,11 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           },
           {
             id: 'mechanical_method_code_label', // custom
-            title: 'Mech Method',
+            title: 'Mech Method'
           },
           {
             id: 'project_code_label',
-            title: 'Project Code',
+            title: 'Project Code'
           },
           {
             id: 'general_comment',
@@ -293,10 +294,10 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           !mechanical_treatments.length
             ? []
             : mechanical_treatments.map((row) => ({
-              ...row,
-              mechanical_method_code_title: '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
-              project_code_title: row.project_code[0].description,
-            }))
+                ...row,
+                mechanical_method_code_title: '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
+                project_code_title: row.project_code[0].description
+              }))
         }
         dropdown={(row) =>
           row.monitoring?.length ? undefined : (
@@ -309,15 +310,15 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               headers={[
                 {
                   id: 'monitoring_id',
-                  title: 'Monitoring ID',
+                  title: 'Monitoring ID'
                 },
                 {
                   id: 'monitoring_date',
-                  title: 'Monitoring Date',
+                  title: 'Monitoring Date'
                 },
                 {
                   id: 'invasive_species_agency_code',
-                  title: 'Agency',
+                  title: 'Agency'
                 },
                 {
                   id: 'efficacy_percent',
@@ -326,20 +327,20 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 },
                 {
                   id: 'project_code_label',
-                  title: 'Project Code',
+                  title: 'Project Code'
                 },
                 {
                   id: 'general_comment',
-                        title: 'Comments'
+                  title: 'Comments'
                 }
               ]}
               rows={
                 !row.monitoring.length
                   ? []
                   : row.monitoring.map((monitor, j) => ({
-                    ...monitor,
-                    project_code_title: monitor.project_code[0].description
-                  }))
+                      ...monitor,
+                      project_code_title: monitor.project_code[0].description
+                    }))
               }
             />
           )
@@ -356,19 +357,19 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID',
+            title: 'Treatment ID'
           },
           {
             id: 'common_name',
-            title: 'Species (Common)',
+            title: 'Species (Common)'
           },
           {
             id: 'treatment_date',
-            title: 'Treatment Date',
+            title: 'Treatment Date'
           },
           {
             id: 'invasive_species_agency_code',
-            title: 'Agency',
+            title: 'Agency'
           },
           {
             id: 'reported_area',
@@ -377,11 +378,11 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           },
           {
             id: 'chemical_method', // custom
-            title: 'Method',
+            title: 'Method'
           },
           {
             id: 'project_code_label',
-            title: 'Project Code',
+            title: 'Project Code'
           },
           {
             id: 'general_comment',
@@ -392,111 +393,110 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           !chemical_treatments.length
             ? []
             : chemical_treatments.map((row) => ({
-              ...row,
-              project_code_title: row.project_code[0].description,
-            }))
+                ...row,
+                project_code_title: row.project_code[0].description
+              }))
         }
         dropdown={(row) => (
-            <React.Fragment key={row.treatment_id + '_expanded'}>
-              <RecordTable
-                startExpanded={true}
-                keyField="treatment_id"
-                headers={[
-                  {
-                    id: 'pmp_confirmation_number',
-                    title: 'PMP Confirmation #',
-                  },
-                  {
-                    id: 'herbicide_description',
-                    title: 'Herbicide',
-                  },
-                  {
-                    id: 'pmra_reg_number',
-                    title: 'PMRA Reg #',
-                  },
-                  {
-                    id: 'temperature',
-                    title: 'Temperature',
-                    numeric: true
-                  },
-                  {
-                    id: 'humidity',
-                    title: 'Humidity',
-                  },
-                  {
-                    id: 'wind_speed',
-                    title: 'Wind Velocity',
-                    numeric: true
-                  },
-                  {
-                    id: 'wind_direction',
-                    title: 'Wind Direction',
-                  },
-                  {
-                    id: 'application_rate',
-                    title: 'Application Rate',
-                  },
-                  {
-                    id: 'herbicide_amount',
-                    title: 'Amount Used',
-                    numeric: true
-                  },
-                  {
-                    id: 'dilution',
-                    title: 'Dilution Rate',
-                  },
-                  {
-                    id: 'mix_delivery_rate',
-                    title: 'Mix Delivery Rate',
-                  }
-                ]}
-                rows={[row]} // singleton expanded table
-                enableFiltering={false}
-              />
-              <RecordTable
-                tableName="Monitoring"
-                startExpanded={true}
-                startingOrderBy="monitoring_date"
-                keyField="monitoring_id"
-                headers={[
-                  {
-                    id: 'monitoring_id',
-                    title: 'Monitoring ID',
-                  },
-                  {
-                    id: 'monitoring_date',
-                    title: 'Monitoring Date',
-                  },
-                  {
-                    id: 'invasive_species_agency_code',
-                    title: 'Agency',
-                  },
-                  {
-                    id: 'efficacy_percent',
-                    title: 'Efficacy',
-                    numeric: true
-                  },
-                  {
-                    id: 'project_code_label',
-                    title: 'Project Code',
-                  },
-                  {
-                    id: 'general_comment',
-                            title: 'Comments'
-                  }
-                ]}
-                rows={
-                  !row.monitoring.length
-                    ? []
-                    : row.monitoring.map((monitor, j) => ({
+          <React.Fragment key={row.treatment_id + '_expanded'}>
+            <RecordTable
+              startExpanded={true}
+              keyField="treatment_id"
+              headers={[
+                {
+                  id: 'pmp_confirmation_number',
+                  title: 'PMP Confirmation #'
+                },
+                {
+                  id: 'herbicide_description',
+                  title: 'Herbicide'
+                },
+                {
+                  id: 'pmra_reg_number',
+                  title: 'PMRA Reg #'
+                },
+                {
+                  id: 'temperature',
+                  title: 'Temperature',
+                  numeric: true
+                },
+                {
+                  id: 'humidity',
+                  title: 'Humidity'
+                },
+                {
+                  id: 'wind_speed',
+                  title: 'Wind Velocity',
+                  numeric: true
+                },
+                {
+                  id: 'wind_direction',
+                  title: 'Wind Direction'
+                },
+                {
+                  id: 'application_rate',
+                  title: 'Application Rate'
+                },
+                {
+                  id: 'herbicide_amount',
+                  title: 'Amount Used',
+                  numeric: true
+                },
+                {
+                  id: 'dilution',
+                  title: 'Dilution Rate'
+                },
+                {
+                  id: 'mix_delivery_rate',
+                  title: 'Mix Delivery Rate'
+                }
+              ]}
+              rows={[row]} // singleton expanded table
+              enableFiltering={false}
+            />
+            <RecordTable
+              tableName="Monitoring"
+              startExpanded={true}
+              startingOrderBy="monitoring_date"
+              keyField="monitoring_id"
+              headers={[
+                {
+                  id: 'monitoring_id',
+                  title: 'Monitoring ID'
+                },
+                {
+                  id: 'monitoring_date',
+                  title: 'Monitoring Date'
+                },
+                {
+                  id: 'invasive_species_agency_code',
+                  title: 'Agency'
+                },
+                {
+                  id: 'efficacy_percent',
+                  title: 'Efficacy',
+                  numeric: true
+                },
+                {
+                  id: 'project_code_label',
+                  title: 'Project Code'
+                },
+                {
+                  id: 'general_comment',
+                  title: 'Comments'
+                }
+              ]}
+              rows={
+                !row.monitoring.length
+                  ? []
+                  : row.monitoring.map((monitor, j) => ({
                       ...monitor,
                       project_code_title: monitor.project_code[0].description
                     }))
-                }
-              />
-            </React.Fragment>
-          )
-        }
+              }
+            />
+          </React.Fragment>
+        )}
       />
 
       <RecordTable
@@ -509,35 +509,35 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID',
+            title: 'Treatment ID'
           },
           {
             id: 'common_name',
-            title: 'Species (Common)',
+            title: 'Species (Common)'
           },
           {
             id: 'treatment_date',
-            title: 'Treatment Date',
+            title: 'Treatment Date'
           },
           {
             id: 'collection_date',
-            title: 'Collection Date',
+            title: 'Collection Date'
           },
           {
             id: 'bioagent_source',
-            title: 'Bioagent Source',
+            title: 'Bioagent Source'
           },
           {
             id: 'invasive_species_agency_code',
-            title: 'Agency',
+            title: 'Agency'
           },
           {
             id: 'stage_larva_ind',
-            title: 'Larvae?',
+            title: 'Larvae?'
           },
           {
             id: 'stage_egg_ind',
-            title: 'Eggs?',
+            title: 'Eggs?'
           },
           {
             id: 'stage_pupa_ind',
@@ -545,23 +545,23 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           },
           {
             id: 'stage_other_ind',
-            title: 'Other?',
+            title: 'Other?'
           },
           {
             id: 'release_quantity',
-            title: 'Release Quantity',
+            title: 'Release Quantity'
           },
           {
             id: 'area_classification_code',
-            title: 'Area Classification Code',
+            title: 'Area Classification Code'
           },
           {
             id: 'biological_agent_code',
-            title: 'Biological Agent Code',
+            title: 'Biological Agent Code'
           },
           {
             id: 'project_code_label',
-            title: 'Project Code',
+            title: 'Project Code'
           },
           {
             id: 'general_comment',
@@ -572,9 +572,9 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           !biological_treatments.length
             ? []
             : biological_treatments.map((row) => ({
-              ...row,
-              project_code_title: row.project_code[0].description,
-            }))
+                ...row,
+                project_code_title: row.project_code[0].description
+              }))
         }
         dropdown={(row) =>
           row.monitoring?.length ? undefined : (
@@ -587,84 +587,84 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               headers={[
                 {
                   id: 'monitoring_id',
-                  title: 'Monitoring ID',
+                  title: 'Monitoring ID'
                 },
                 {
                   id: 'monitoring_date',
-                  title: 'Monitoring Date',
+                  title: 'Monitoring Date'
                 },
                 {
                   id: 'plant_count',
-                  title: 'Plant Count',
+                  title: 'Plant Count'
                 },
                 {
                   id: 'agent_count',
-                  title: 'Agent Count',
+                  title: 'Agent Count'
                 },
                 {
                   id: 'count_duration',
-                  title: 'Count Duration',
+                  title: 'Count Duration'
                 },
                 {
                   id: 'agent_destroyed_ind',
-                  title: 'Agent Destroyed?',
+                  title: 'Agent Destroyed?'
                 },
                 {
                   id: 'legacy_presence_ind',
-                  title: 'Legacy Presence?',
+                  title: 'Legacy Presence?'
                 },
                 {
                   id: 'foliar_feeding_damage_ind',
-                  title: 'Foliar Feeding Damage?',
+                  title: 'Foliar Feeding Damage?'
                 },
                 {
                   id: 'root_feeding_damage_ind',
-                  title: 'Root Feeding Damage?',
+                  title: 'Root Feeding Damage?'
                 },
                 {
                   id: 'seed_feeding_damage_ind',
-                  title: 'Seed Feeding Damage?',
+                  title: 'Seed Feeding Damage?'
                 },
                 {
                   id: 'oviposition_marks_ind',
-                  title: 'Oviposition Marks?',
+                  title: 'Oviposition Marks?'
                 },
                 {
                   id: 'eggs_present_ind',
-                  title: 'Eggs Present?',
+                  title: 'Eggs Present?'
                 },
                 {
                   id: 'larvae_present_ind',
-                  title: 'Larvae Present?',
+                  title: 'Larvae Present?'
                 },
                 {
                   id: 'pupae_present_ind',
-                  title: 'Pupae Present?',
+                  title: 'Pupae Present?'
                 },
                 {
                   id: 'adults_present_ind',
-                  title: 'Adults Present?',
+                  title: 'Adults Present?'
                 },
                 {
                   id: 'tunnels_present_ind',
-                  title: 'Tunnels Present?',
+                  title: 'Tunnels Present?'
                 },
                 {
                   id: 'project_code_label',
-                  title: 'Project Code',
+                  title: 'Project Code'
                 },
                 {
                   id: 'general_comment',
-                        title: 'Comments'
+                  title: 'Comments'
                 }
               ]}
               rows={
                 !row.monitoring.length
                   ? []
                   : row.monitoring.map((monitor, j) => ({
-                    ...monitor,
-                    project_code_title: monitor.project_code[0].description
-                  }))
+                      ...monitor,
+                      project_code_title: monitor.project_code[0].description
+                    }))
               }
             />
           )
@@ -681,51 +681,51 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID',
+            title: 'Treatment ID'
           },
           {
             id: 'common_name',
-            title: 'Species (Common)',
+            title: 'Species (Common)'
           },
           {
             id: 'monitoring_date',
-            title: 'Inspection Date',
+            title: 'Inspection Date'
           },
           {
             id: 'project_code_label',
-            title: 'Project Code',
+            title: 'Project Code'
           },
           {
             id: 'plant_count',
-            title: 'Plant Count',
+            title: 'Plant Count'
           },
           {
             id: 'agent_count',
-            title: 'Agent Count',
+            title: 'Agent Count'
           },
           {
             id: 'count_duration',
-            title: 'Count Duration',
+            title: 'Count Duration'
           },
           {
             id: 'biological_agent_code',
-            title: 'Agent Code',
+            title: 'Agent Code'
           },
           {
             id: 'foliar_feeding_damage_ind',
-            title: 'Foliar Feeding Damage?',
+            title: 'Foliar Feeding Damage?'
           },
           {
             id: 'root_feeding_damage_ind',
-            title: 'Root Feeding Damage?',
+            title: 'Root Feeding Damage?'
           },
           {
             id: 'seed_feeding_damage_ind',
-            title: 'Seed Feeding Damage?',
+            title: 'Seed Feeding Damage?'
           },
           {
             id: 'oviposition_marks_ind',
-            title: 'Oviposition Marks?',
+            title: 'Oviposition Marks?'
           },
           {
             id: 'eggs_present_ind',
@@ -737,11 +737,11 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           },
           {
             id: 'adults_present_ind',
-            title: 'Adults?',
+            title: 'Adults?'
           },
           {
             id: 'tunnels_present_ind',
-            title: 'Tunnels?',
+            title: 'Tunnels?'
           },
           {
             id: 'general_comment',
@@ -752,9 +752,9 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           !biological_dispersals.length
             ? []
             : biological_dispersals.map((row) => ({
-              ...row,
-              project_code_title: row.project_code[0].description,
-            }))
+                ...row,
+                project_code_title: row.project_code[0].description
+              }))
         }
       />
 
