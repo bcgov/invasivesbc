@@ -70,6 +70,67 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
 }
 
 /*
+  Function to validate duplicate invasive plant species on terrestrial plant form
+*/
+export function getDuplicateInvasivePlantsValidator(activitySubtype: string): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      activitySubtype !== 'Activity_Observation_PlantTerrestrial' ||
+      !formData ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.invasive_plants ||
+      !formData.activity_subtype_data.invasive_plants.length
+    ) {
+      return errors;
+    }
+
+    const invasivePlants = formData.activity_subtype_data.invasive_plants;
+    let plantCodeList = [];
+
+    invasivePlants.forEach((invasivePlant: any) => {
+      plantCodeList.push(invasivePlant.invasive_plant_code);
+    });
+
+    if (!errors || !errors.activity_subtype_data || !errors.activity_subtype_data['invasive_plants']) {
+      return errors;
+    }
+
+    // validate duplicates of the invasive_plant_code within invasive_plants
+    errors.activity_subtype_data['invasive_plants'].__errors = [];
+
+    if (new Set(plantCodeList).size !== plantCodeList.length) {
+      errors.activity_subtype_data['invasive_plants'].addError(
+        `There are duplicated invasive plant species identified.
+        Please remove or fix duplicated species.`
+      );
+    }
+
+    return errors;
+  };
+}
+
+/*
+  Function to validate temperature field on chemical treatment form
+*/
+export function getTemperatureValidator(activitySubtype: string): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (activitySubtype !== 'Activity_Treatment_ChemicalPlant') {
+      return errors;
+    }
+
+    // validate temperature
+    errors.activity_subtype_data['temperature'].__errors = [];
+    const { temperature } = formData.activity_subtype_data;
+
+    if (temperature < 10 || temperature > 30) {
+      errors.activity_subtype_data['temperature'].addError('Temperature should ideally be between 15 and 22 degrees');
+    }
+
+    return errors;
+  };
+}
+
+/*
   Function to validate wind fields on chemical treatment forms
 
   If no wind there should be no wind direction
@@ -150,6 +211,16 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
     const herbicides = formData.activity_subtype_data.herbicide;
 
     herbicides.forEach((herbicide: any, index: number) => {
+      if (
+        !errors ||
+        !errors.activity_subtype_data ||
+        !errors.activity_subtype_data['herbicide'] ||
+        !errors.activity_subtype_data['herbicide'][index] ||
+        !errors.activity_subtype_data['herbicide'][index]['application_rate']
+      ) {
+        return errors;
+      }
+
       // validate herbicide application rate maximums
       errors.activity_subtype_data['herbicide'][index]['application_rate'].__errors = [];
 

@@ -20,36 +20,56 @@ const Treatment_ChemicalPlant = {
   applicator1_license: {},
   applicator2_name: {},
   applicator2_license: {},
-  pesticide_employer_code: {},
+  pesticide_employer_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
   pesticide_user_license_number: {},
-  chemical_method_code: {},
+  chemical_method_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
   temperature: {},
   humidity: {},
-  pest_management_plan: {},
-  invasive_plant_code: {},
+  pest_management_plan: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  invasive_plant_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide
     }
   },
   wind_speed: {},
-  wind_direction_code: {},
+  wind_direction_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
   pesticide_use_permit_PUP: {},
   signage_on_site: {}
 };
 
 const Treatment_ChemicalPlant_BulkEdit = {
-  pesticide_employer_code: {},
-  pest_management_plan: {},
+  pesticide_employer_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  pest_management_plan: {
+    'ui:widget': 'single-select-autocomplete'
+  },
   pesticide_use_permit_PUP: {},
-  treatment_issues_code: {},
-  chemical_method_code: {},
+  treatment_issues_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  chemical_method_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
   herbicide: {
     items: {
       ...BaseUISchemaComponents.Herbicide
     }
   },
-  invasive_plant_code: {}
+  invasive_plant_code: {
+    'ui:widget': 'single-select-autocomplete'
+  }
 };
 
 const Activity = {
@@ -65,7 +85,9 @@ const Activity = {
   reported_area: {
     'ui:readonly': true
   },
-  invasive_species_agency_code: {},
+  invasive_species_agency_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
   jurisdictions: {
     items: {
       ...BaseUISchemaComponents.Jurisdictions
@@ -83,8 +105,12 @@ const Activity = {
 };
 
 const Activity_BulkEdit = {
-  invasive_species_agency_code: {},
-  jurisdiction_code: {}
+  invasive_species_agency_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  jurisdiction_code: {
+    'ui:widget': 'single-select-autocomplete'
+  }
 };
 
 const MonitoringActivity = {

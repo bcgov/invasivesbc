@@ -572,20 +572,8 @@
       "Observation": {
         "title": "Observation Information",
         "type": "object",
-        "required": ["observation_type_code", "observer_first_name", "observer_last_name", "negative_obs_ind"],
+        "required": ["observation_type_code", "observation_persons"],
         "properties": {
-          "observer_first_name": {
-            "type": "string",
-            "title": "First Name",
-            "maxLength": 50,
-            "x-tooltip-text": "First name of person completing the observation"
-          },
-          "observer_last_name": {
-            "type": "string",
-            "title": "Last Name",
-            "maxLength": 50,
-            "x-tooltip-text": "Last name of person completing the observation"
-          },
           "observation_type_code": {
             "type": "string",
             "title": "Type",
@@ -599,15 +587,13 @@
             "default": "CU",
             "x-tooltip-text": "Choose type of observation from dropdown"
           },
-          "negative_obs_ind": {
-            "type": "string",
-            "title": "Negative Observation",
-            "enum": [
-              "Yes",
-              "No"
-            ],
-            "default": "No",
-            "x-tooltip-text": "The observation describes the absence of target invasive plants within a defined area"
+          "observation_persons": {
+            "type": "array",
+            "title": "Observation Person(s)",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
+            "x-tooltip-text": "Name of person(s) doing the observation"
           }
         }
       },
@@ -1387,7 +1373,28 @@
           "applicator1_name",
           "applicator2_name",
           "treatment_organization",
-          "invasive_plant_code"
+          "invasive_plant_code",
+          "phen_transect_sampler",
+          "phen_transect_recorder",
+          "phen_transect_seedlings",
+          "phen_transect_rosettes",
+          "phen_transect_bolting",
+          "phen_transect_flowering",
+          "phen_transect_seeds",
+          "phen_transect_senescent",
+          "phen_total_plants",
+          "phen_number_stems",
+          "phen_tallest_1",
+          "phen_tallest_2",
+          "phen_tallest_3",
+          "phen_tallest_4",
+          "phen_level_se",
+          "phen_level_ro",
+          "phen_level_bo",
+          "phen_level_fl",
+          "phen_level_sf",
+          "phen_level_sc",
+          "phen_total_percentage"
         ],
         "properties": {
           "invasive_plant_code": {
@@ -1461,6 +1468,112 @@
             "type": "number",
             "title": "Biological Agent Count",
             "x-tooltip-text": "Numeric value (exact or approximate)"
+          },
+          "phen_transect_sampler": {
+            "type": "string",
+            "title": "Phenology Sampler",
+            "x-tooltip-text": "Initials of the sampler"
+          },
+          "phen_transect_recorder": {
+            "type": "string",
+            "title": "Phenology Recorder",
+            "x-tooltip-text": "Initials of the recorder"
+          },
+          "phen_transect_seedlings": {
+            "type": "number",
+            "title": "Phenology Seedlings",
+            "x-tooltip-text": "Number of seedlings observed"
+          },
+          "phen_transect_rosettes": {
+            "type": "number",
+            "title": "Phenology Rosettes",
+            "x-tooltip-text": "Number of rosettes observed"
+          },
+          "phen_transect_bolting": {
+            "type": "number",
+            "title": "Phenology Bolting",
+            "x-tooltip-text": "Number of bolting observed"
+          },
+          "phen_transect_flowering": {
+            "type": "number",
+            "title": "Phenology Flowering",
+            "x-tooltip-text": "Number of flowering observed"
+          },
+          "phen_transect_seeds": {
+            "type": "number",
+            "title": "Phenology Seeds",
+            "x-tooltip-text": "Number of seeds observed"
+          },
+          "phen_transect_senescent": {
+            "type": "number",
+            "title": "Phenology Senescent",
+            "x-tooltip-text": "Number of senescent observed"
+          },
+          "phen_total_plants": {
+            "type": "number",
+            "title": "Phenology Plants",
+            "x-tooltip-text": "Number of plants observed"
+          },
+          "phen_number_stems": {
+            "type": "number",
+            "title": "Phenology Stems",
+            "x-tooltip-text": "Number of stems observed"
+          },
+          "phen_tallest_1": {
+            "type": "number",
+            "title": "Phenology Tallest Stem 1",
+            "x-tooltip-text": "Enter stem height in centimetres"
+          },
+          "phen_tallest_2": {
+            "type": "number",
+            "title": "Phenology Tallest Stem 2",
+            "x-tooltip-text": "Enter stem height in centimetres"
+          },
+          "phen_tallest_3": {
+            "type": "number",
+            "title": "Phenology Tallest Stem 3",
+            "x-tooltip-text": "Enter stem height in centimetres"
+          },
+          "phen_tallest_4": {
+            "type": "number",
+            "title": "Phenology Tallest Stem 4",
+            "x-tooltip-text": "Enter stem height in centimetres"
+          },
+          "phen_level_se": {
+            "type": "number",
+            "title": "Phenology Level SE",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_ro": {
+            "type": "number",
+            "title": "Phenology Level RO",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_bo": {
+            "type": "number",
+            "title": "Phenology Level BO",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_fl": {
+            "type": "number",
+            "title": "Phenology Level FL",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_sf": {
+            "type": "number",
+            "title": "Phenology Level SF",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_level_sc": {
+            "type": "number",
+            "title": "Phenology Level SC",
+            "x-tooltip-text": "Enter percentage"
+          },
+          "phen_total_percentage": {
+            "type": "number",
+            "title": "Phenology Total Percentage",
+            "maximum": 100,
+            "x-tooltip-text": "Total percentage (sum of all 6 levels)"
           }
         }
       },
@@ -1491,7 +1604,7 @@
             "type": "array",
             "title": "Treatment Person(s)",
             "items": {
-              "$ref": "#/components/schemas/TreatmentPersons"
+              "$ref": "#/components/schemas/Persons"
             },
             "x-tooltip-text": "Name of person(s) doing treatment"
           }
@@ -1503,8 +1616,6 @@
         "required": [
           "applicator1_name",
           "applicator1_license",
-          "applicator2_name",
-          "applicator2_license",
           "pesticide_employer_code",
           "pesticide_user_license_number",
           "chemical_method_code",
@@ -1592,9 +1703,7 @@
           "temperature": {
             "type": "number",
             "title": "Temperature (C)",
-            "minimum": 15,
-            "maximum": 30,
-            "x-tooltip-text": "Measured in degrees celcius at time of treatment"
+            "x-tooltip-text": "Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)"
           },
           "wind_speed": {
             "type": "number",
@@ -2273,6 +2382,7 @@
             "type": "number",
             "title": "Percent Covered",
             "maximum": 100,
+            "minimum": 1,
             "x-tooltip-text": "Percent covered by this jurisdiction"
           }
         }
@@ -2296,14 +2406,12 @@
       "ObservationPlantTerrestrialData": {
         "type": "object",
         "required": [
-          "soil_texture_code",
           "specific_use_code",
           "slope_code",
           "aspect_code",
           "research_detection_ind",
           "well_ind",
-          "special_care_ind",
-          "biological_ind"
+          "special_care_ind"
         ],
         "properties": {
           "soil_texture_code": {
@@ -2386,17 +2494,6 @@
             ],
             "default": "No",
             "x-tooltip-text": "Designation to flag the potential for unique circumstances prior to treatment of the observation area"
-          },
-          "biological_ind": {
-            "type": "string",
-            "title": "Biological Release",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ],
-            "default": "No",
-            "x-tooltip-text": "Biocontrol treatment has occurred within the observation area"
           }
         }
       },
@@ -2404,9 +2501,7 @@
         "type": "object",
         "required": [
           "invasive_plant_code",
-          "plant_life_stage_code",
-          "invasive_plant_density_code",
-          "invasive_plant_distribution_code"
+          "occurrence"
         ],
         "properties": {
           "invasive_plant_code": {
@@ -2421,41 +2516,80 @@
             },
             "x-tooltip-text": "Target invasive plant species for this observation at this location. Create a separate observation for any other species at this location"
           },
-          "invasive_plant_density_code": {
+          "occurrence": {
             "type": "string",
-            "title": "Density",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_density_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Average number of individual plants per square meter expressed as a density class code"
-          },
-          "invasive_plant_distribution_code": {
-            "type": "string",
-            "title": "Distribution",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_distribution_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
-          },
-          "plant_life_stage_code": {
-            "type": "string",
-            "title": "Life Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_life_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Average phenological stage of plant; rosette, flowering, etc"
+            "title": "Occurrence",
+            "enum": [
+              "Positive occurrence",
+              "Negative occurrence"
+            ],
+            "default": "Positive occurrence",
+            "x-tooltip-text": "The observation describes the presence or absence of target invasive plants within a defined area"
+          }
+        },
+        "dependencies": {
+          "occurrence": {
+            "oneOf": [
+              {
+                "properties": {
+                  "occurrence": {
+                    "enum": [
+                      "Positive occurrence"
+                    ]
+                  },
+                  "invasive_plant_density_code": {
+                    "type": "string",
+                    "title": "Density",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "invasive_plant_density_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Average number of individual plants per square meter expressed as a density class code"
+                  },
+                  "invasive_plant_distribution_code": {
+                    "type": "string",
+                    "title": "Distribution",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "invasive_plant_distribution_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
+                  },
+                  "plant_life_stage_code": {
+                    "type": "string",
+                    "title": "Life Stage",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "plant_life_stage_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Average phenological stage of plant; rosette, flowering, etc"
+                  }
+                },
+                "required": [
+                  "invasive_plant_density_code",
+                  "invasive_plant_distribution_code",
+                  "plant_life_stage_code"
+                ]
+              },
+              {
+                "properties": {
+                  "occurrence": {
+                    "enum": [
+                      "Negative occurrence"
+                    ]
+                  }
+                }
+              }
+            ]
           }
         }
       },
@@ -2907,7 +3041,7 @@
           }
         }
       },
-      "TreatmentPersons": {
+      "Persons": {
         "type": "object",
         "required": ["person_name"],
         "properties": {
@@ -2958,7 +3092,10 @@
           "photoplot_start",
           "photoplot_end",
           "photoplot_aerials",
-          "photoplot_full_25m"
+          "photoplot_full_25m",
+          "plot_location",
+          "veg_transect_sampler",
+          "veg_transect_recorder"
         ],
         "properties": {
           "utm_zone": {
@@ -3305,6 +3442,23 @@
             "type": "string",
             "title": "Photoplot Full at 25m",
             "x-tooltip-text": "Provide the Full Photoplot form number"
+          },
+          "plot_location": {
+            "type": "string",
+            "title": "Plot Location",
+            "enum": ["Left", "Middle", "Right"],
+            "default": "Left",
+            "x-tooltip-text": "Set your plot location in relation to the transect"
+          },
+          "veg_transect_sampler": {
+            "type": "string",
+            "title": "Vegetation Sampler",
+            "x-tooltip-text": "Initials of the sampler"
+          },
+          "veg_transect_recorder": {
+            "type": "string",
+            "title": "Vegetation Recorder",
+            "x-tooltip-text": "Initials of the recorder"
           }
         }
       },
@@ -3334,23 +3488,23 @@
           },
           "start_x_utm": {
             "type": "number",
-            "title": "Start UTM X",
-            "x-tooltip-text": "Provide a UTM start x coordinate"
+            "title": "Start UTM Easting",
+            "x-tooltip-text": "Provide a UTM start Easting coordinate"
           },
           "start_y_utm": {
             "type": "number",
-            "title": "Start UTM Y",
-            "x-tooltip-text": "Provide a UTM start y coordinate"
+            "title": "Start UTM Northing",
+            "x-tooltip-text": "Provide a UTM start Northing coordinate"
           },
           "end_x_utm": {
             "type": "number",
-            "title": "End UTM X",
-            "x-tooltip-text": "Provide a UTM end x coordinate"
+            "title": "End UTM Easting",
+            "x-tooltip-text": "Provide a UTM end Easting coordinate"
           },
           "end_y_utm": {
             "type": "number",
-            "title": "End UTM Y",
-            "x-tooltip-text": "Provide a UTM end y coordinate"
+            "title": "End UTM Northing",
+            "x-tooltip-text": "Provide a UTM end Northing coordinate"
           },
           "transect_length": {
             "type": "number",
@@ -3395,13 +3549,13 @@
           },
           "count_type": {
             "type": "string",
-            "title": "Count Type",
+            "title": "Cover Method",
             "enum": [
               "Percent Cover",
-              "Number of Plants",
-              "Daubenmire Classification"
+              "Plant",
+              "Percent Cover Class"
             ],
-            "x-tooltip-text": "Please specify the count type"
+            "x-tooltip-text": "Please specify the method of capturing cover"
           }
         },
         "dependencies": {
@@ -3433,7 +3587,7 @@
                 "properties": {
                   "count_type": {
                     "enum": [
-                      "Number of Plants"
+                      "Plant Count"
                     ]
                   },
                   "vegetation_transect_points_number_plants": {
@@ -3452,7 +3606,7 @@
                 "properties": {
                   "count_type": {
                     "enum": [
-                      "Daubenmire Classification"
+                      "Percent Cover Class"
                     ]
                   },
                   "vegetation_transect_points_daubenmire": {
@@ -3511,28 +3665,18 @@
           },
           "offset_distance": {
             "type": "number",
-            "title": "Offset Distance",
+            "title": "Plot Distance",
             "x-tooltip-text": "Provide the offset distance from the start point"
           },
           "utm_x": {
             "type": "number",
-            "title": "Offset Point UTM X",
-            "x-tooltip-text": "UTM X point at the offset distance"
+            "title": "Offset Point UTM Easting",
+            "x-tooltip-text": "UTM Easting point at the offset distance"
           },
           "utm_y": {
             "type": "number",
-            "title": "Offset Point UTM Y",
-            "x-tooltip-text": "UTM Y point at the offset distance"
-          },
-          "veg_transect_sampler": {
-            "type": "string",
-            "title": "Vegetation Sampler",
-            "x-tooltip-text": "Initials of the sampler"
-          },
-          "veg_transect_recorder": {
-            "type": "string",
-            "title": "Vegetation Recorder",
-            "x-tooltip-text": "Initials of the recorder"
+            "title": "Offset Point UTM Northing",
+            "x-tooltip-text": "UTM Northing point at the offset distance"
           },
           "veg_transect_native_forbs": {
             "type": "number",
@@ -3576,7 +3720,7 @@
       },
       "VegetationTransectSpeciesNumberPlants": {
         "type": "object",
-        "title": "Vegetation Transect Species",
+        "title": "Vegetation Within Plot",
         "x-tooltip-text": "Specify your vegetation transect species",
         "properties": {
           "invasive_plants": {
@@ -3646,7 +3790,7 @@
       },
       "VegetationTransectSpeciesDaubenmire": {
         "type": "object",
-        "title": "Vegetation Transect Species",
+        "title": "Vegetation Within Plot",
         "x-tooltip-text": "Specify your vegetation transect species",
         "properties": {
           "invasive_plants": {
@@ -3665,7 +3809,7 @@
                 },
                 "daubenmire_classification": {
                   "$ref": "#/components/schemas/DaubenmireClassification",
-                  "x-tooltip-text": "Daubenmire classification for this species"
+                  "x-tooltip-text": "Please specify the Percent Cover Class for this species"
                 }
               }
             }
@@ -3686,7 +3830,7 @@
                 },
                 "daubenmire_classification": {
                   "$ref": "#/components/schemas/DaubenmireClassification",
-                  "x-tooltip-text": "Daubenmire classification for this species"
+                  "x-tooltip-text": "Please specify the Percent Cover Class for this species"
                 }
               }
             }
@@ -3707,7 +3851,7 @@
                 },
                 "daubenmire_classification": {
                   "$ref": "#/components/schemas/DaubenmireClassification",
-                  "x-tooltip-text": "Daubenmire classification for this species"
+                  "x-tooltip-text": "Please specify the Percent Cover Class for this species"
                 }
               }
             }
@@ -3716,7 +3860,7 @@
       },
       "VegetationTransectSpeciesPercentCover": {
         "type": "object",
-        "title": "Vegetation Transect Species",
+        "title": "Vegetation Within Plot",
         "x-tooltip-text": "Specify your vegetation transect species",
         "properties": {
           "invasive_plants": {
@@ -3831,7 +3975,8 @@
       },
       "VegetationTransectPoints": {
         "type": "object",
-        "title": "Vegetation Transect Points",
+        "title": "Vegetation Transect Plots",
+        "x-tooltip-text": "Please define two or more plots along this transect",
         "required": [
           "sample_point_id",
           "offset_distance",
@@ -3846,18 +3991,18 @@
           },
           "offset_distance": {
             "type": "number",
-            "title": "Offset Distance",
+            "title": "Plot Distance",
             "x-tooltip-text": "Provide the offset distance from the start point"
           },
           "utm_x": {
             "type": "number",
-            "title": "Offset Point UTM X",
-            "x-tooltip-text": "UTM X point at the offset distance"
+            "title": "Offset Point UTM Easting",
+            "x-tooltip-text": "UTM Easting point at the offset distance"
           },
           "utm_y": {
             "type": "number",
-            "title": "Offset Point UTM Y",
-            "x-tooltip-text": "UTM Y point at the offset distance"
+            "title": "Offset Point UTM Northing",
+            "x-tooltip-text": "UTM Northing point at the offset distance"
           }
         }
       },
@@ -3868,8 +4013,6 @@
           "offset_distance",
           "utm_x",
           "utm_y",
-          "veg_transect_sampler",
-          "veg_transect_recorder",
           "veg_transect_target",
           "veg_transect_other_ips",
           "veg_transect_native_forbs",
@@ -3878,27 +4021,7 @@
           "veg_transect_shrubs",
           "veg_transect_bryophytes",
           "veg_transect_litter",
-          "phen_transect_sampler",
-          "phen_transect_recorder",
-          "phen_transect_seedlings",
-          "phen_transect_rosettes",
-          "phen_transect_bolting",
-          "phen_transect_flowering",
-          "phen_transect_seeds",
-          "phen_transect_senescent",
-          "phen_total_plants",
-          "phen_number_stems",
-          "phen_tallest_1",
-          "phen_tallest_2",
-          "phen_tallest_3",
-          "phen_tallest_4",
-          "phen_level_se",
-          "phen_level_ro",
-          "phen_level_bo",
-          "phen_level_fl",
-          "phen_level_sf",
-          "phen_level_sc",
-          "phen_total_percentage"
+          "veg_total_percentage"
         ],
         "properties": {
           "sample_point_id": {
@@ -3908,33 +4031,23 @@
           },
           "offset_distance": {
             "type": "number",
-            "title": "Offset Distance",
+            "title": "Plot Distance",
             "x-tooltip-text": "Provide the offset distance from the start point"
           },
           "utm_x": {
             "type": "number",
-            "title": "Offset Point UTM X",
-            "x-tooltip-text": "UTM X point at the offset distance"
+            "title": "Offset Point UTM Easting",
+            "x-tooltip-text": "UTM Easting point at the offset distance"
           },
           "utm_y": {
             "type": "number",
-            "title": "Offset Point UTM Y",
-            "x-tooltip-text": "UTM Y point at the offset distance"
-          },
-          "veg_transect_sampler": {
-            "type": "string",
-            "title": "Vegetation Sampler",
-            "x-tooltip-text": "Initials of the sampler"
-          },
-          "veg_transect_recorder": {
-            "type": "string",
-            "title": "Vegetation Recorder",
-            "x-tooltip-text": "Initials of the recorder"
+            "title": "Offset Point UTM Northing",
+            "x-tooltip-text": "UTM Northing point at the offset distance"
           },
           "veg_transect_target": {
             "type": "number",
             "title": "Vegetation Target",
-            "x-tooltip-text": "Number of transect target observed"
+            "x-tooltip-text": "Number of transect targets observed"
           },
           "veg_transect_other_ips": {
             "type": "number",
@@ -3944,136 +4057,36 @@
           "veg_transect_native_forbs": {
             "type": "number",
             "title": "Vegetation Native Forbs",
-            "x-tooltip-text": "Number of native forbs observed"
+            "x-tooltip-text": "Percentage of native forbs observed"
           },
           "veg_transect_grasses": {
             "type": "number",
             "title": "Vegetation Grasses",
-            "x-tooltip-text": "Number of grasses observed"
+            "x-tooltip-text": "Percentage of grasses observed"
           },
           "veg_transect_bare_ground": {
             "type": "number",
             "title": "Vegetation Bare Ground Patches",
-            "x-tooltip-text": "Number of bare ground patches observed"
+            "x-tooltip-text": "Percentage of bare ground patches observed"
           },
           "veg_transect_shrubs": {
             "type": "number",
             "title": "Vegetation Shrubs/Trees",
-            "x-tooltip-text": "Number of shrubs/trees observed"
+            "x-tooltip-text": "Percentage of shrubs/trees observed"
           },
           "veg_transect_bryophytes": {
             "type": "number",
             "title": "Vegetation Bryophytes",
-            "x-tooltip-text": "Number of bryophytes observed"
+            "x-tooltip-text": "Percentage of bryophytes observed"
           },
           "veg_transect_litter": {
             "type": "number",
             "title": "Vegetation Litter",
-            "x-tooltip-text": "Number of litter observed"
+            "x-tooltip-text": "Percentage of litter observed"
           },
-          "phen_transect_sampler": {
-            "type": "string",
-            "title": "Phenology Sampler",
-            "x-tooltip-text": "Initials of the sampler"
-          },
-          "phen_transect_recorder": {
-            "type": "string",
-            "title": "Phenology Recorder",
-            "x-tooltip-text": "Initials of the recorder"
-          },
-          "phen_transect_seedlings": {
+          "veg_total_percentage": {
             "type": "number",
-            "title": "Phenology Seedlings",
-            "x-tooltip-text": "Number of seedlings observed"
-          },
-          "phen_transect_rosettes": {
-            "type": "number",
-            "title": "Phenology Rosettes",
-            "x-tooltip-text": "Number of rosettes observed"
-          },
-          "phen_transect_bolting": {
-            "type": "number",
-            "title": "Phenology Bolting",
-            "x-tooltip-text": "Number of bolting observed"
-          },
-          "phen_transect_flowering": {
-            "type": "number",
-            "title": "Phenology Flowering",
-            "x-tooltip-text": "Number of flowering observed"
-          },
-          "phen_transect_seeds": {
-            "type": "number",
-            "title": "Phenology Seeds",
-            "x-tooltip-text": "Number of seeds observed"
-          },
-          "phen_transect_senescent": {
-            "type": "number",
-            "title": "Phenology Senescent",
-            "x-tooltip-text": "Number of senescent observed"
-          },
-          "phen_total_plants": {
-            "type": "number",
-            "title": "Phenology Plants",
-            "x-tooltip-text": "Number of plants observed"
-          },
-          "phen_number_stems": {
-            "type": "number",
-            "title": "Phenology Stems",
-            "x-tooltip-text": "Number of stems observed"
-          },
-          "phen_tallest_1": {
-            "type": "number",
-            "title": "Phenology Tallest Stem 1",
-            "x-tooltip-text": "Enter stem height in centimetres"
-          },
-          "phen_tallest_2": {
-            "type": "number",
-            "title": "Phenology Tallest Stem 2",
-            "x-tooltip-text": "Enter stem height in centimetres"
-          },
-          "phen_tallest_3": {
-            "type": "number",
-            "title": "Phenology Tallest Stem 3",
-            "x-tooltip-text": "Enter stem height in centimetres"
-          },
-          "phen_tallest_4": {
-            "type": "number",
-            "title": "Phenology Tallest Stem 4",
-            "x-tooltip-text": "Enter stem height in centimetres"
-          },
-          "phen_level_se": {
-            "type": "number",
-            "title": "Phenology Level SE",
-            "x-tooltip-text": "Enter percentage"
-          },
-          "phen_level_ro": {
-            "type": "number",
-            "title": "Phenology Level RO",
-            "x-tooltip-text": "Enter percentage"
-          },
-          "phen_level_bo": {
-            "type": "number",
-            "title": "Phenology Level BO",
-            "x-tooltip-text": "Enter percentage"
-          },
-          "phen_level_fl": {
-            "type": "number",
-            "title": "Phenology Level FL",
-            "x-tooltip-text": "Enter percentage"
-          },
-          "phen_level_sf": {
-            "type": "number",
-            "title": "Phenology Level SF",
-            "x-tooltip-text": "Enter percentage"
-          },
-          "phen_level_sc": {
-            "type": "number",
-            "title": "Phenology Level SC",
-            "x-tooltip-text": "Enter percentage"
-          },
-          "phen_total_percentage": {
-            "type": "number",
-            "title": "Phenology Total Percentage",
+            "title": "Vegetaton Total Percentage",
             "maximum": 100,
             "x-tooltip-text": "Total percentage (sum of all 6 levels)"
           }
@@ -4117,7 +4130,7 @@
       },
       "DaubenmireClassification": {
         "type": "string",
-        "title": "Daubenmire Classification",
+        "title": "Percent Cover Class",
         "x-enum-code": {
           "x-enum-code-category-name": "invasives",
           "x-enum-code-header-name": "daubenmire_cover_code",
@@ -4983,7 +4996,8 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            }
+            },
+            "x-tooltip-text": "Notable land uses or attributes within the observation area"
           },
           "soil_texture_code": {
             "type": "string",

@@ -358,6 +358,8 @@ const ActivitiesList: React.FC = () => {
           };
         });
       } catch (error) {
+        notifyError(databaseContext, JSON.stringify(error));
+        alert(JSON.stringify(error));
         const errorMessage = getErrorMessages(error.response.status, 'formSync');
 
         errorMessages.push(`Syncing ${activity.activitySubtype.split('_')[2]} activity has failed: ${errorMessage}`);
@@ -392,7 +394,7 @@ const ActivitiesList: React.FC = () => {
             <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Workflow Function">
               <MenuItem value="Plant">Plant</MenuItem>
               <MenuItem value="Animal">Animal</MenuItem>
-              <MenuItem value="Special">Special</MenuItem>
+              <MenuItem value="Special">Enhanced Collection</MenuItem>
             </Select>
           </FormControl>
           <Button

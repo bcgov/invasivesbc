@@ -57,6 +57,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const mapRef = useRef(null);
 
+  const layerRef = useRef([]);
+
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
 
   const addContextMenuClickListener = () => {
@@ -198,6 +200,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
+  const getJurisdiction = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:jurisdiction@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.4,
+        tms: true
+      }
+    );
+  };
+
   const getMunicipalites = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
@@ -230,6 +242,65 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const getIPMA = () => {
     return L.tileLayer.offline(
       `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getOGMA = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.8,
+        tms: true
+      }
+    );
+  };
+  const getWHA = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getFSW = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_FISH_SENSITIVE_WS_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getIR = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getUWR = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
+      {
+        opacity: 0.6,
+        tms: true
+      }
+    );
+  };
+
+  const getNationalParks = () => {
+    return L.tileLayer.offline(
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.CLAB_NATIONAL_PARKS@EPSG:900913@png/{z}/{x}/{y}.png`,
       {
         opacity: 0.6,
         tms: true
@@ -287,6 +358,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
+  const getSaveControl2 = (layerToSave: any) => {
+    return L.control.savetiles(layerToSave, {
+      zoomlevels: [13, 14, 15, 16, 17]
+    });
+  };
+
   const addASaveTilesControl = (layerSaveControl: any) => {
     layerSaveControl.remove(mapRef.current);
     if (mapRef.current.getZoom() > 13) {
@@ -299,12 +376,25 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       return;
     }
 
-    const bounds = [
-      [extent._northEast.lat, extent._northEast.lng],
-      [extent._southWest.lat, extent._southWest.lng]
-    ];
+    if (props.geometryState?.geometry?.length) {
+      const allGeosFeatureCollection = {
+        type: 'FeatureCollection',
+        features: [...props.geometryState.geometry]
+      };
+      const bboxCoords = turf.bbox(allGeosFeatureCollection);
 
-    mapRef.current.fitBounds(bounds);
+      mapRef.current.fitBounds([
+        [bboxCoords[1], bboxCoords[0]],
+        [bboxCoords[3], bboxCoords[2]]
+      ]);
+    } else {
+      const bounds = [
+        [extent._northEast.lat, extent._northEast.lng],
+        [extent._southWest.lat, extent._southWest.lng]
+      ];
+
+      mapRef.current.fitBounds(bounds);
+    }
   };
 
   const addLayerControls = (baseLayerControlOptions: any, overlayControlOptions: any) => {
@@ -324,7 +414,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setCurrentZoom(mapRef.current.getZoom());
     addContextMenuClickListener();
 
-    addZoomControls();
+    // addZoomControls();
 
     addLocateControls();
 
@@ -353,17 +443,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const wetlands = getWetlands();
     const riso = getRISO();
     const ipma = getIPMA();
+    const uwr = getUWR();
+    const nationalParks = getNationalParks();
     const aggregate = getAggregate();
     const ownership = getOwnership();
     const municipalities = getMunicipalites();
     const regionalDistricts = getRegionalDistricts();
+    const jurisdictions = getJurisdiction();
     const rfi = getRFI();
+    const ogma = getOGMA();
+    const wha = getWHA();
+    const fsw = getFSW();
+    const ir = getIR();
 
     const overlays = {
       Placenames: esriPlacenames,
       Wells: wells,
       'Gravel Pits': aggregate,
-      '<span style="color:blue;"><b>Streams</b></span>': streams,
+      Streams: streams,
       Wetlands: wetlands,
       Ownership: ownership,
       'Invasive Plant Management Areas': ipma,
@@ -374,12 +471,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'Road Features Inventory': rfi,
       Biogeoclimatic: bec,
       'MOTI Regions': motiRegions,
-      'MOTI Districts': motiDistricts
+      'MOTI Districts': motiDistricts,
+      Jurisdictions: jurisdictions,
+      'Old Growth Management Areas': ogma,
+      'Wildlife Habitat Areas': wha,
+      'First Nations Reserves': ir,
+      'Fisheries Sensitive Watersheds': fsw,
+      'Ungulate Winter Range': uwr,
+      'National Parks': nationalParks
     };
 
     mapRef.current.addLayer(esriPlacenames);
 
     const esriSaveTilesControl = getSaveControl(esriBaseLayer);
+
+    const testControl = getSaveControl2(streams);
+    testControl._map = mapRef.current;
+    layerRef.current.push(testControl);
+    // console.log('testControl',testControl.getStorageSize);
 
     addLayerControls(basemaps, overlays);
 
@@ -619,6 +728,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     if (geojson?.features) {
       await databaseContext.database.upsert('spatial_uploads', (spatial) => {
         // Add a special flag to distinguish from other features
+        console.log('spatial_uploads', spatial);
         geojson.features.forEach((_, i) => {
           geojson.features[i].properties.uploadedSpatial = true;
         });
@@ -679,11 +789,55 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     display: 'none'
   };
 
+  const storeLayers = async () => {
+    // Calculate the extent
+    const bounds = mapRef.current.getBounds();
+    const x1 = bounds.getWest();
+    const y1 = bounds.getSouth();
+    const x2 = bounds.getEast();
+    const y2 = bounds.getNorth();
+    const extent = [x1, y1, x2, y2] as turf.BBox;
+    const poly = turf.bboxPolygon(extent);
+
+    // Add a special flag to distinguish from other features
+    poly.properties.offlineExtent = true;
+    poly.properties.running = true;
+
+    await databaseContext.database.upsert('offline_extent', (spatial) => {
+      return {
+        docType: DocType.OFFLINE_EXTENT,
+        geometry: spatial.geometry ? [poly, ...spatial.geometry] : [poly]
+      };
+    });
+
+    // XXX: This is now working. But getting hit with CORS errors
+    layerRef.current[0]._saveTiles();
+  };
+
+  const storeLayersStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    backgroundColor: 'white',
+    color: '#464646',
+    width: '2.7rem',
+    height: '2.7rem',
+    top: '150px',
+    left: '5px',
+    zIndex: 1000,
+    borderRadius: '4px',
+    cursor: 'pointer'
+  } as React.CSSProperties;
+
   return (
     <div id={props.mapId} className={props.classes.map} onDragEnter={dragEnter} onDragOver={dragOver} onDrop={dragDrop}>
       <div style={dropSpatial ? dropZoneVisible : dropZoneInvisible} onDragLeave={dragLeave}>
         {' '}
         {dropSpatial}{' '}
+      </div>
+      <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
+        o
       </div>
     </div>
   );
