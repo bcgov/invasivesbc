@@ -168,7 +168,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const SingleTrip: React.FC = (props) => {
     //todo: add trip_id to props and let trip manage db itself
     const [stepState, setStepState] = useState([
-      {},//just here so indexes match up with step number
+      {}, //just here so indexes match up with step number
       { status: TripStatusCode.initial, expanded: false },
       { status: TripStatusCode.initial, expanded: false },
       { status: TripStatusCode.initial, expanded: false },
@@ -185,14 +185,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     };
 
     const helperCloseOtherAccordions = (expanded, stepNumber) => {
+      console.dir(expanded);
       let newState: any = [...stepState];
-      for(let i = 1; i < (stepState.length); i++){
-        let expanded2 = (i == stepNumber && expanded)? true: false;
-        newState[i] = {...newState[i], expanded: expanded2}
+      for (let i = 1; i < stepState.length; i++) {
+        let expanded2 = i == stepNumber && expanded ? true : false;
+        newState[i] = { ...newState[i], expanded: expanded2 };
       }
-      setStepState([...newState])
-    }
-
+      setStepState([...newState]);
+    };
 
     return (
       <Grid item md={12}>
@@ -209,7 +209,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               expanded={stepState[1].expanded}
               tripStepDetailsClassName={classes.activityRecordList}
               stepStatus={helperCheckForGeo()}
-              stepAccordionOnChange={(expanded) => {helperCloseOtherAccordions(expanded, 1)}}>
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 1);
+              }}>
               <Paper className={classes.paper}>
                 <Typography variant="body1">
                   Draw a polygon or square on the map, or upload a KML containing 1 shape.
@@ -224,7 +226,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               expanded={stepState[2].expanded}
               tripStepDetailsClassName={classes.activityRecordList}
               stepStatus={stepState[2].status}
-              stepAccordionOnChange={(expanded) => {helperCloseOtherAccordions(expanded, 2)}}>
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 2);
+              }}>
               <ActivityDataFilter />
             </TripStep>
             <TripStep
@@ -234,7 +238,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               expanded={stepState[3].expanded}
               tripStepDetailsClassName={classes.pointOfInterestList}
               stepStatus={stepState[3].status}
-              stepAccordionOnChange={(expanded) => {helperCloseOtherAccordions(expanded, 3)}}>
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 3);
+              }}>
               <PointOfInterestDataFilter />
             </TripStep>
             <TripStep
@@ -244,7 +250,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               expanded={stepState[4].expanded}
               tripStepDetailsClassName={classes.pointOfInterestList}
               stepStatus={stepState[4].status}
-              stepAccordionOnChange={(expanded) => {helperCloseOtherAccordions(expanded, 4)}}>
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 4);
+              }}>
               <MetabaseSearch />
             </TripStep>
             <TripStep
@@ -254,7 +262,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               expanded={stepState[5].expanded}
               tripStepDetailsClassName={classes.pointOfInterestList}
               stepStatus={stepState[5].status}
-              stepAccordionOnChange={(expanded) => {helperCloseOtherAccordions(expanded, 5)}}>
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 5);
+              }}>
               <TripDataControls />
               <ManageDatabaseComponent />
             </TripStep>
@@ -271,12 +281,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     additionalText: string;
     tripStepDetailsClassName: string;
     stepStatus: TripStatusCode;
-    stepAccordionOnChange?: (expanded) => void;
+    stepAccordionOnChange?: (event, expanded) => void;
   }
 
   const TripStep: React.FC<ITripStep> = (props) => {
     return (
-      <Accordion defaultExpanded={props.expanded} onChange={props.stepAccordionOnChange}>
+      <Accordion defaultExpanded={props.expanded} expanded={props.expanded} onChange={props.stepAccordionOnChange}>
         <AccordionSummary
           className={classes.accordionSummary}
           expandIcon={<ExpandMore fontSize="large" />}
