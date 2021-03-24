@@ -243,19 +243,48 @@ const EnhancedTableToolbar = (props) => {
   );
 };
 
+const RecordTableCell = ({ id, align, padding, className, row }) => {
+  const classes = useStyles();
+
+  const ifApplicable = (value) =>
+    value && String(value).trim().length ? value : <div className={classes.missingValue}>N/A</div>;
+
+  const renderCell = (cells, key) => {
+    const cell = cells[key];
+    switch (typeof cell) {
+      case 'object':
+        return React.createElement(TableCell, {
+          key: key,
+          ...cell
+        });
+      case 'function':
+        return cell(cells);
+      case 'string':
+      default:
+        return ifApplicable(cell);
+    }
+  };
+
+  return (
+    <TableCell component="th" scope="row" align={align} padding={padding} className={className}>
+      {renderCell(row, id)}
+    </TableCell>
+  );
+};
+
 const RecordTableRow = (props) => {
   const {
     keyField,
     headers,
     row,
-    dropdown,
-    hasOverflow,
     isExpanded,
-    enableSelection,
-    pageHasDropdown,
-    isSelected,
     toggleExpanded,
-    toggleSelected
+    enableSelection,
+    isSelected,
+    toggleSelected,
+    pageHasDropdown,
+    dropdown,
+    hasOverflow
   } = props;
   const classes = useStyles();
 
@@ -264,27 +293,8 @@ const RecordTableRow = (props) => {
     console.log(row, keyField);
     throw new Error('Error: table row has no matching key defined');
   }
-  const labelId = `enhanced-table-checkbox-${key}`;
   const renderedDropdown = !!dropdown && dropdown(row);
-
-  const ifApplicable = (value) =>
-    value && String(value).trim().length ? value : <div className={classes.missingValue}>N/A</div>;
-
-  const renderCell = (row, id) => {
-    const cell = row[id];
-    switch (typeof cell) {
-      case 'object':
-        return React.createElement(TableCell, {
-          key: id,
-          ...cell
-        });
-      case 'function':
-        return cell(row);
-      case 'string':
-      default:
-        return ifApplicable(cell);
-    }
-  };
+  const labelId = `record-table-checkbox-${key}`;
 
   return (
     <React.Fragment key={key}>
@@ -307,21 +317,17 @@ const RecordTableRow = (props) => {
             )}
           </TableCell>
         )}
-        {headers.map(({ id, numeric, align, padding, className }, i) => (
-          <TableCell
-            component="th"
-            id={labelId}
-            key={id}
-            scope="row"
-            align={align}
-            padding={padding}
+        {headers.map((header) => (
+          <RecordTableCell
+            {...header}
+            key={header.id}
+            row={row}
             className={`
               ${classes.cell}
-              ${row[id]?.className}
+              ${header.className}
               ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
-            `}>
-            {renderCell(row, id)}
-          </TableCell>
+            `}
+          />
         ))}
       </TableRow>
       {!!renderedDropdown && (
