@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   cell: {
     whiteSpace: 'nowrap',
     width: 1,
-    borderBottom: 0
+    borderBottom: 0,
   },
   wideCell: {
     minWidth: 500,
@@ -78,19 +78,22 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: '1em'
   },
   dropdownCol: {
-    width: '1px'
+    width: 1
   },
   openRow: {
     overflow: 'inherit',
-    whiteSpace: 'inherit'
+    whiteSpace: 'inherit',
+    maxWidth: 600 // give it a bit more room to breathe,
+    // but still shouldn't be too wide (has vertical space now)
   },
   closedRow: {
     overflow: 'hidden',
     whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis'
+    textOverflow: 'ellipsis',
+    maxWidth: 350
   },
   emptyTable: {
-    paddingLeft: '30px'
+    paddingLeft: 30
   }
 }));
 
@@ -181,7 +184,7 @@ function EnhancedTableHead(props) {
               direction={orderBy === headCell.id ? order : headCell.defaultOrder}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {headCell.title}
               {orderBy === headCell.id && (
                 <span className={classes.visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -260,6 +263,8 @@ export interface RecordTablePropType {
   enableFiltering?: boolean;
   className?: any;
   dropdown?: (row : any) => any;
+  overflowDropdown?: boolean;
+  overflowLimit?: number;
   pagination?: boolean;
 }
 
@@ -271,7 +276,9 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
     keyField = 'id',
     startingOrder = 'asc',
     expandable = true,
-    dropdown, // default none 
+    dropdown, // default none
+    overflowDropdown = true, // overflow into a dropdown when a cell is very verbose 
+    overflowLimit = 50, // char limit
     startExpanded = true,
     startingRowsPerPage = 10,
     rowsPerPageOptions = false, // disable ability to change rows per page by default
@@ -289,7 +296,7 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
     if (typeof header === 'string' || typeof header === 'number')
       return {
         id: i,
-        label: header
+        title: header
       };
     if (typeof header === 'object')
       return {
@@ -315,6 +322,22 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
   // sort and limit the rows:
   const pageRows = stableSort(rows, getComparator(order, orderBy))
     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // determine if any rows on the current page have a dropdown:
+  // render all dropdowns
+  const renderedDropdowns = pageRows.map((row) => dropdown ? dropdown(row) : undefined);
+  // search for any potential overflows (fields too long).
+  // This returns a list of booleans whether each row overflows
+  const verboseOverflows = pageRows.map((row) =>
+    headCells.filter(({id}) => 
+      String(row[id]).length > overflowLimit
+    ).length > 0
+  );
+  const pageHasDropdown = (
+    !!dropdown && renderedDropdowns.filter((dropdown) => dropdown).length > 0
+  ) || (
+    overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0
+  );
+  
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -426,18 +449,21 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
                 rowCount={rows.length}
                 headCells={headCells}
                 enableSelection={enableSelection}
-                hasDropdown={!!dropdown}
+                hasDropdown={pageHasDropdown}
               />
               <TableBody>
                 {pageRows.map((row, index) => {
-                    const key = row[keyField] || index;
-                    if (!key)
+                    const key = row[keyField];
+                    if (key === undefined) {
+                      console.log(row, keyField);
                       throw 'Error: table row has no matching key defined';
+                    }
                     const isItemSelected = isSelectedRow(key);
                     const labelId = `enhanced-table-checkbox-${key}`;
                     const isOpen = isExpandedRow(key);
-                    const renderedDropdown = dropdown ? dropdown(row) : undefined;
-
+                    const renderedDropdown = renderedDropdowns[index];
+                    const hasOverflow = verboseOverflows[index];
+                    
                     return (
                       <React.Fragment key={key}>
                         <TableRow
@@ -446,10 +472,9 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
                           aria-checked={isItemSelected}
                           tabIndex={-1}
                           selected={isItemSelected}
-                          className={isExpandedRow(row[keyField]) ? classes.openRow : classes.closedRow}
                           onClick={() => toggleExpandedRow(key)}
                         >
-                          {enableSelection || dropdown && (
+                          {enableSelection || pageHasDropdown && (
                             <TableCell padding="checkbox">
                               {enableSelection && (
                                 <Checkbox
@@ -458,9 +483,9 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
                                   inputProps={{ 'aria-labelledby': labelId }}
                                 />
                               )}
-                              {dropdown && (
+                              {pageHasDropdown && (
                                 <IconButton aria-label="expand row" size="small">
-                                  {!!renderedDropdown && (
+                                  {!!renderedDropdown || hasOverflow && (
                                     isOpen ? <KeyboardArrowUp /> : <KeyboardArrowDown />
                                   )}
                                 </IconButton>
@@ -475,13 +500,21 @@ const RecordTable : React.FC<RecordTablePropType> = (props) => {
                               scope="row"
                               align={align}
                               padding={padding}
-                              className={`${classes.cell} ${row[id]?.className}`}
+                              className={`
+                                ${classes.cell}
+                                ${row[id]?.className}
+                                ${hasOverflow && (
+                                  isOpen 
+                                  ? classes.openRow
+                                  : classes.closedRow
+                                )}
+                              `}
                             >
                               {renderCell(row, id)}
                             </TableCell>
                           )}
                         </TableRow>
-                        {renderedDropdown && (
+                        {!!renderedDropdown && (
                           <TableRow className={classes.tableRow}>
                             <TableCell className={classes.dropdown} colSpan={100}>
                               <Collapse in={isOpen} timeout="auto">

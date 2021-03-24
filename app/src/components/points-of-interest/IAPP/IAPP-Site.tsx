@@ -188,51 +188,52 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
       <RecordTable
         tableName={"Survey Details on Site " + site.site_id}
         keyField="survey_id"
-        startingOrderBy="survey_date"
+        startingOrderBy="survey_id"
+        startingOrder="desc"
         className={classes.iappTable}
         headers={[
           {
             id: 'survey_id',
-            label: 'Survey ID'
+            title: 'Survey ID'
           },
           {
             id: 'common_name',
-            label: 'Common Name'
+            title: 'Common Name'
           },
           {
             id: 'species',
-            label: 'Species'
+            title: 'Species'
           },
           {
             id: 'genus',
-            label: 'Genus'
+            title: 'Genus'
           },
           {
             id: 'survey_date',
-            label: 'Survey Date'
+            title: 'Survey Date'
           },
           {
             id: 'invasive_species_agency_code',
-            label: 'Agency'
+            title: 'Agency'
           },
           {
             id: 'reported_area',
-            label: 'Area (m\u00B2)'
+            title: 'Area (m\u00B2)',
+            numeric: true
           },
           {
             id: 'density',
             align: 'center',
-            label: 'Density'
+            title: 'Density'
           },
           {
             id: 'distribution',
             align: 'center',
-            label: 'Distribution'
+            title: 'Distribution'
           },
           {
             id: 'general_comment',
-            className: classes.wideCell,
-            label: 'Comments'
+            title: 'Comments'
           }
         ]}
         rows={
@@ -250,41 +251,42 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         tableName="Mechanical Treatments and Efficacy Monitoring"
         startExpanded={false}
         keyField="treatment_id"
-        startingOrderBy="treatment_date"
+        startingOrderBy="treatment_id"
+        startingOrder="desc"
         className={classes.iappTable}
         headers={[
           {
             id: 'treatment_id',
-            label: 'Treatment ID',
+            title: 'Treatment ID',
           },
           {
             id: 'common_name',
-            label: 'Species (Common)',
+            title: 'Species (Common)',
           },
           {
             id: 'treatment_date',
-            label: 'Treatment Date',
+            title: 'Treatment Date',
           },
           {
             id: 'invasive_species_agency_code',
-            label: 'Agency',
+            title: 'Agency',
           },
           {
             id: 'reported_area',
-            label: 'Reported Area (m\u00B2)',
+            title: 'Reported Area (m\u00B2)',
+            numeric: true
           },
           {
             id: 'mechanical_method_code_label', // custom
-            label: 'Mech Method',
+            title: 'Mech Method',
           },
           {
             id: 'project_code_label',
-            label: 'Project Code',
+            title: 'Project Code',
           },
           {
             id: 'general_comment',
-            className: classes.wideCell,
-            label: 'Comments'
+            title: 'Comments'
           }
         ]}
         rows={
@@ -292,8 +294,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             ? []
             : mechanical_treatments.map((row) => ({
               ...row,
-              mechanical_method_code_label: '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
-              project_code_label: row.project_code[0].description,
+              mechanical_method_code_title: '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
+              project_code_title: row.project_code[0].description,
             }))
         }
         dropdown={(row) =>
@@ -301,33 +303,34 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             <RecordTable
               tableName="Monitoring"
               startExpanded={true}
-              startingOrderBy="monitoring_date"
+              startingOrderBy="monitoring_id"
+              startingOrder="desc"
               keyField="monitoring_id"
               headers={[
                 {
                   id: 'monitoring_id',
-                  label: 'Monitoring ID',
+                  title: 'Monitoring ID',
                 },
                 {
                   id: 'monitoring_date',
-                  label: 'Monitoring Date',
+                  title: 'Monitoring Date',
                 },
                 {
                   id: 'invasive_species_agency_code',
-                  label: 'Agency',
+                  title: 'Agency',
                 },
                 {
                   id: 'efficacy_percent',
-                  label: 'Efficacy',
+                  title: 'Efficacy',
+                  numeric: true
                 },
                 {
                   id: 'project_code_label',
-                  label: 'Project Code',
+                  title: 'Project Code',
                 },
                 {
                   id: 'general_comment',
-                  className: classes.wideCell,
-                  label: 'Comments'
+                        title: 'Comments'
                 }
               ]}
               rows={
@@ -335,7 +338,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   ? []
                   : row.monitoring.map((monitor, j) => ({
                     ...monitor,
-                    project_code_label: monitor.project_code[0].description
+                    project_code_title: monitor.project_code[0].description
                   }))
               }
             />
@@ -347,41 +350,42 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         tableName="Chemical Treatments and Efficacy Monitoring"
         startExpanded={false}
         keyField="treatment_id"
-        startingOrderBy="treatment_date"
+        startingOrderBy="treatment_id"
+        startingOrder="desc"
         className={classes.iappTable}
         headers={[
           {
             id: 'treatment_id',
-            label: 'Treatment ID',
+            title: 'Treatment ID',
           },
           {
             id: 'common_name',
-            label: 'Species (Common)',
+            title: 'Species (Common)',
           },
           {
             id: 'treatment_date',
-            label: 'Treatment Date',
+            title: 'Treatment Date',
           },
           {
             id: 'invasive_species_agency_code',
-            label: 'Agency',
+            title: 'Agency',
           },
           {
             id: 'reported_area',
-            label: 'Reported Area (m\u00B2)',
+            title: 'Reported Area (m\u00B2)',
+            numeric: true
           },
           {
             id: 'chemical_method', // custom
-            label: 'Method',
+            title: 'Method',
           },
           {
             id: 'project_code_label',
-            label: 'Project Code',
+            title: 'Project Code',
           },
           {
             id: 'general_comment',
-            className: classes.wideCell,
-            label: 'Comments'
+            title: 'Comments'
           }
         ]}
         rows={
@@ -389,59 +393,61 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             ? []
             : chemical_treatments.map((row) => ({
               ...row,
-              project_code_label: row.project_code[0].description,
+              project_code_title: row.project_code[0].description,
             }))
         }
         dropdown={(row) => (
             <React.Fragment key={row.treatment_id + '_expanded'}>
               <RecordTable
                 startExpanded={true}
-                startingOrderBy="monitoring_date"
-                keyField="monitoring_id"
+                keyField="treatment_id"
                 headers={[
                   {
                     id: 'pmp_confirmation_number',
-                    label: 'PMP Confirmation #',
+                    title: 'PMP Confirmation #',
                   },
                   {
                     id: 'herbicide_description',
-                    label: 'Herbicide',
+                    title: 'Herbicide',
                   },
                   {
                     id: 'pmra_reg_number',
-                    label: 'PMRA Reg #',
+                    title: 'PMRA Reg #',
                   },
                   {
                     id: 'temperature',
-                    label: 'Temperature',
+                    title: 'Temperature',
+                    numeric: true
                   },
                   {
                     id: 'humidity',
-                    label: 'Humidity',
+                    title: 'Humidity',
                   },
                   {
                     id: 'wind_speed',
-                    label: 'Wind Velocity',
+                    title: 'Wind Velocity',
+                    numeric: true
                   },
                   {
                     id: 'wind_direction',
-                    label: 'Wind Direction',
+                    title: 'Wind Direction',
                   },
                   {
                     id: 'application_rate',
-                    label: 'Application Rate',
+                    title: 'Application Rate',
                   },
                   {
                     id: 'herbicide_amount',
-                    label: 'Amount Used',
+                    title: 'Amount Used',
+                    numeric: true
                   },
                   {
                     id: 'dilution',
-                    label: 'Dilution Rate',
+                    title: 'Dilution Rate',
                   },
                   {
                     id: 'mix_delivery_rate',
-                    label: 'Mix Delivery Rate',
+                    title: 'Mix Delivery Rate',
                   }
                 ]}
                 rows={[row]} // singleton expanded table
@@ -455,28 +461,28 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 headers={[
                   {
                     id: 'monitoring_id',
-                    label: 'Monitoring ID',
+                    title: 'Monitoring ID',
                   },
                   {
                     id: 'monitoring_date',
-                    label: 'Monitoring Date',
+                    title: 'Monitoring Date',
                   },
                   {
                     id: 'invasive_species_agency_code',
-                    label: 'Agency',
+                    title: 'Agency',
                   },
                   {
                     id: 'efficacy_percent',
-                    label: 'Efficacy',
+                    title: 'Efficacy',
+                    numeric: true
                   },
                   {
                     id: 'project_code_label',
-                    label: 'Project Code',
+                    title: 'Project Code',
                   },
                   {
                     id: 'general_comment',
-                    className: classes.wideCell,
-                    label: 'Comments'
+                            title: 'Comments'
                   }
                 ]}
                 rows={
@@ -484,7 +490,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                     ? []
                     : row.monitoring.map((monitor, j) => ({
                       ...monitor,
-                      project_code_label: monitor.project_code[0].description
+                      project_code_title: monitor.project_code[0].description
                     }))
                 }
               />
@@ -497,69 +503,69 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         tableName="Biological Treatments and Efficacy Monitoring"
         startExpanded={false}
         keyField="treatment_id"
-        startingOrderBy="treatment_date"
+        startingOrderBy="treatment_id"
+        startingOrder="desc"
         className={classes.iappTable}
         headers={[
           {
             id: 'treatment_id',
-            label: 'Treatment ID',
+            title: 'Treatment ID',
           },
           {
             id: 'common_name',
-            label: 'Species (Common)',
+            title: 'Species (Common)',
           },
           {
             id: 'treatment_date',
-            label: 'Treatment Date',
+            title: 'Treatment Date',
           },
           {
             id: 'collection_date',
-            label: 'Collection Date',
+            title: 'Collection Date',
           },
           {
             id: 'bioagent_source',
-            label: 'Bioagent Source',
+            title: 'Bioagent Source',
           },
           {
             id: 'invasive_species_agency_code',
-            label: 'Agency',
+            title: 'Agency',
           },
           {
             id: 'stage_larva_ind',
-            label: 'Larvae?',
+            title: 'Larvae?',
           },
           {
             id: 'stage_egg_ind',
-            label: 'Eggs?',
+            title: 'Eggs?',
           },
           {
             id: 'stage_pupa_ind',
-            label: 'Pupae?'
+            title: 'Pupae?'
           },
           {
             id: 'stage_other_ind',
-            label: 'Other?',
+            title: 'Other?',
           },
           {
             id: 'release_quantity',
-            label: 'Release Quantity',
+            title: 'Release Quantity',
           },
           {
             id: 'area_classification_code',
-            label: 'Area Classification Code',
+            title: 'Area Classification Code',
           },
           {
             id: 'biological_agent_code',
-            label: 'Biological Agent Code',
+            title: 'Biological Agent Code',
           },
           {
             id: 'project_code_label',
-            label: 'Project Code',
+            title: 'Project Code',
           },
           {
             id: 'general_comment',
-            className: classes.wideCell,
-            label: 'Comments'
+            title: 'Comments'
           }
         ]}
         rows={
@@ -567,7 +573,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             ? []
             : biological_treatments.map((row) => ({
               ...row,
-              project_code_label: row.project_code[0].description,
+              project_code_title: row.project_code[0].description,
             }))
         }
         dropdown={(row) =>
@@ -575,81 +581,81 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             <RecordTable
               tableName="Monitoring"
               startExpanded={true}
-              startingOrderBy="monitoring_date"
+              startingOrderBy="monitoring_id"
+              startingOrder="desc"
               keyField="monitoring_id"
               headers={[
                 {
                   id: 'monitoring_id',
-                  label: 'Monitoring ID',
+                  title: 'Monitoring ID',
                 },
                 {
                   id: 'monitoring_date',
-                  label: 'Monitoring Date',
+                  title: 'Monitoring Date',
                 },
                 {
                   id: 'plant_count',
-                  label: 'Plant Count',
+                  title: 'Plant Count',
                 },
                 {
                   id: 'agent_count',
-                  label: 'Agent Count',
+                  title: 'Agent Count',
                 },
                 {
                   id: 'count_duration',
-                  label: 'Count Duration',
+                  title: 'Count Duration',
                 },
                 {
                   id: 'agent_destroyed_ind',
-                  label: 'Agent Destroyed?',
+                  title: 'Agent Destroyed?',
                 },
                 {
                   id: 'legacy_presence_ind',
-                  label: 'Legacy Presence?',
+                  title: 'Legacy Presence?',
                 },
                 {
                   id: 'foliar_feeding_damage_ind',
-                  label: 'Foliar Feeding Damage?',
+                  title: 'Foliar Feeding Damage?',
                 },
                 {
                   id: 'root_feeding_damage_ind',
-                  label: 'Root Feeding Damage?',
+                  title: 'Root Feeding Damage?',
                 },
                 {
                   id: 'seed_feeding_damage_ind',
-                  label: 'Seed Feeding Damage?',
+                  title: 'Seed Feeding Damage?',
                 },
                 {
                   id: 'oviposition_marks_ind',
-                  label: 'Oviposition Marks?',
+                  title: 'Oviposition Marks?',
                 },
                 {
                   id: 'eggs_present_ind',
-                  label: 'Eggs Present?',
+                  title: 'Eggs Present?',
                 },
                 {
                   id: 'larvae_present_ind',
-                  label: 'Larvae Present?',
+                  title: 'Larvae Present?',
                 },
                 {
                   id: 'pupae_present_ind',
-                  label: 'Pupae Present?',
+                  title: 'Pupae Present?',
                 },
                 {
                   id: 'adults_present_ind',
-                  label: 'Adults Present?',
+                  title: 'Adults Present?',
                 },
                 {
                   id: 'tunnels_present_ind',
-                  label: 'Tunnels Present?',
+                  title: 'Tunnels Present?',
                 },
                 {
                   id: 'project_code_label',
-                  label: 'Project Code',
+                  title: 'Project Code',
                 },
                 {
                   id: 'general_comment',
-                  className: classes.wideCell,
-                  label: 'Comments'
+                        title: 'Comments'
                 }
               ]}
               rows={
@@ -657,7 +663,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                   ? []
                   : row.monitoring.map((monitor, j) => ({
                     ...monitor,
-                    project_code_label: monitor.project_code[0].description
+                    project_code_title: monitor.project_code[0].description
                   }))
               }
             />
@@ -669,77 +675,77 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         tableName="Biological Dispersals"
         startExpanded={false}
         keyField="biological_id"
-        startingOrderBy="monitoring_date"
+        startingOrderBy="biological_id"
+        startingOrder="desc"
         className={classes.iappTable}
         headers={[
           {
             id: 'treatment_id',
-            label: 'Treatment ID',
+            title: 'Treatment ID',
           },
           {
             id: 'common_name',
-            label: 'Species (Common)',
+            title: 'Species (Common)',
           },
           {
             id: 'monitoring_date',
-            label: 'Inspection Date',
+            title: 'Inspection Date',
           },
           {
             id: 'project_code_label',
-            label: 'Project Code',
+            title: 'Project Code',
           },
           {
             id: 'plant_count',
-            label: 'Plant Count',
+            title: 'Plant Count',
           },
           {
             id: 'agent_count',
-            label: 'Agent Count',
+            title: 'Agent Count',
           },
           {
             id: 'count_duration',
-            label: 'Count Duration',
+            title: 'Count Duration',
           },
           {
             id: 'biological_agent_code',
-            label: 'Agent Code',
+            title: 'Agent Code',
           },
           {
             id: 'foliar_feeding_damage_ind',
-            label: 'Foliar Feeding Damage?',
+            title: 'Foliar Feeding Damage?',
           },
           {
             id: 'root_feeding_damage_ind',
-            label: 'Root Feeding Damage?',
+            title: 'Root Feeding Damage?',
           },
           {
             id: 'seed_feeding_damage_ind',
-            label: 'Seed Feeding Damage?',
+            title: 'Seed Feeding Damage?',
           },
           {
             id: 'oviposition_marks_ind',
-            label: 'Oviposition Marks?',
+            title: 'Oviposition Marks?',
           },
           {
             id: 'eggs_present_ind',
-            label: 'Eggs?'
+            title: 'Eggs?'
           },
           {
             id: 'pupae_present_ind',
-            label: 'Pupae?'
+            title: 'Pupae?'
           },
           {
             id: 'adults_present_ind',
-            label: 'Adults?',
+            title: 'Adults?',
           },
           {
             id: 'tunnels_present_ind',
-            label: 'Tunnels?',
+            title: 'Tunnels?',
           },
           {
             id: 'general_comment',
-            className: classes.wideCell,
-            label: 'Comments'
+            title: 'Comments'
           }
         ]}
         rows={
@@ -747,7 +753,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             ? []
             : biological_dispersals.map((row) => ({
               ...row,
-              project_code_label: row.project_code[0].description,
+              project_code_title: row.project_code[0].description,
             }))
         }
       />
