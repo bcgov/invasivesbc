@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
   missingValue: {
     fontStyle: 'italic',
     color: '#777'
+  },
+  iappTable: {
+    marginTop: '15px'
   }
 }));
 
@@ -182,10 +185,11 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         </AccordionDetails>
       </Accordion>
 
-      <CollapseableTable
+      <RecordTable
         tableName={"Survey Details on Site " + site.site_id}
         keyField="survey_id"
-        startingOrder="survey_date"
+        startingOrderBy="survey_date"
+        className={classes.iappTable}
         headers={[
           {
             id: 'survey_id',
@@ -229,10 +233,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             id: 'general_comment',
             className: classes.wideCell,
             label: 'Comments'
-          },
-          {
-            id: 'buttons',
-            // no label
           }
         ]}
         rows={
@@ -242,13 +242,514 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               ...row,
               density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
               distribution: row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : ''),
-              buttons: (row) =>
-                <IconButton>
-                  <DeleteForever />
-                </IconButton>
             }))
         }
-        pagination={true}
+      />
+
+      <RecordTable
+        tableName="Mechanical Treatments and Efficacy Monitoring"
+        startExpanded={false}
+        keyField="treatment_id"
+        startingOrderBy="treatment_date"
+        className={classes.iappTable}
+        headers={[
+          {
+            id: 'treatment_id',
+            label: 'Treatment ID',
+          },
+          {
+            id: 'common_name',
+            label: 'Species (Common)',
+          },
+          {
+            id: 'treatment_date',
+            label: 'Treatment Date',
+          },
+          {
+            id: 'invasive_species_agency_code',
+            label: 'Agency',
+          },
+          {
+            id: 'reported_area',
+            label: 'Reported Area (m\u00B2)',
+          },
+          {
+            id: 'mechanical_method_code_label', // custom
+            label: 'Mech Method',
+          },
+          {
+            id: 'project_code_label',
+            label: 'Project Code',
+          },
+          {
+            id: 'general_comment',
+            className: classes.wideCell,
+            label: 'Comments'
+          }
+        ]}
+        rows={
+          !mechanical_treatments.length
+            ? []
+            : mechanical_treatments.map((row) => ({
+              ...row,
+              mechanical_method_code_label: '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
+              project_code_label: row.project_code[0].description,
+            }))
+        }
+        dropdown={(row) =>
+          row.monitoring?.length ? undefined : (
+            <RecordTable
+              tableName="Monitoring"
+              startExpanded={true}
+              startingOrderBy="monitoring_date"
+              keyField="monitoring_id"
+              headers={[
+                {
+                  id: 'monitoring_id',
+                  label: 'Monitoring ID',
+                },
+                {
+                  id: 'monitoring_date',
+                  label: 'Monitoring Date',
+                },
+                {
+                  id: 'invasive_species_agency_code',
+                  label: 'Agency',
+                },
+                {
+                  id: 'efficacy_percent',
+                  label: 'Efficacy',
+                },
+                {
+                  id: 'project_code_label',
+                  label: 'Project Code',
+                },
+                {
+                  id: 'general_comment',
+                  className: classes.wideCell,
+                  label: 'Comments'
+                }
+              ]}
+              rows={
+                !row.monitoring.length
+                  ? []
+                  : row.monitoring.map((monitor, j) => ({
+                    ...monitor,
+                    project_code_label: monitor.project_code[0].description
+                  }))
+              }
+            />
+          )
+        }
+      />
+
+      <RecordTable
+        tableName="Chemical Treatments and Efficacy Monitoring"
+        startExpanded={false}
+        keyField="treatment_id"
+        startingOrderBy="treatment_date"
+        className={classes.iappTable}
+        headers={[
+          {
+            id: 'treatment_id',
+            label: 'Treatment ID',
+          },
+          {
+            id: 'common_name',
+            label: 'Species (Common)',
+          },
+          {
+            id: 'treatment_date',
+            label: 'Treatment Date',
+          },
+          {
+            id: 'invasive_species_agency_code',
+            label: 'Agency',
+          },
+          {
+            id: 'reported_area',
+            label: 'Reported Area (m\u00B2)',
+          },
+          {
+            id: 'chemical_method', // custom
+            label: 'Method',
+          },
+          {
+            id: 'project_code_label',
+            label: 'Project Code',
+          },
+          {
+            id: 'general_comment',
+            className: classes.wideCell,
+            label: 'Comments'
+          }
+        ]}
+        rows={
+          !chemical_treatments.length
+            ? []
+            : chemical_treatments.map((row) => ({
+              ...row,
+              project_code_label: row.project_code[0].description,
+            }))
+        }
+        dropdown={(row) => (
+            <React.Fragment key={row.treatment_id + '_expanded'}>
+              <RecordTable
+                startExpanded={true}
+                startingOrderBy="monitoring_date"
+                keyField="monitoring_id"
+                headers={[
+                  {
+                    id: 'pmp_confirmation_number',
+                    label: 'PMP Confirmation #',
+                  },
+                  {
+                    id: 'herbicide_description',
+                    label: 'Herbicide',
+                  },
+                  {
+                    id: 'pmra_reg_number',
+                    label: 'PMRA Reg #',
+                  },
+                  {
+                    id: 'temperature',
+                    label: 'Temperature',
+                  },
+                  {
+                    id: 'humidity',
+                    label: 'Humidity',
+                  },
+                  {
+                    id: 'wind_speed',
+                    label: 'Wind Velocity',
+                  },
+                  {
+                    id: 'wind_direction',
+                    label: 'Wind Direction',
+                  },
+                  {
+                    id: 'application_rate',
+                    label: 'Application Rate',
+                  },
+                  {
+                    id: 'herbicide_amount',
+                    label: 'Amount Used',
+                  },
+                  {
+                    id: 'dilution',
+                    label: 'Dilution Rate',
+                  },
+                  {
+                    id: 'mix_delivery_rate',
+                    label: 'Mix Delivery Rate',
+                  }
+                ]}
+                rows={[row]} // singleton expanded table
+                enableFiltering={false}
+              />
+              <RecordTable
+                tableName="Monitoring"
+                startExpanded={true}
+                startingOrderBy="monitoring_date"
+                keyField="monitoring_id"
+                headers={[
+                  {
+                    id: 'monitoring_id',
+                    label: 'Monitoring ID',
+                  },
+                  {
+                    id: 'monitoring_date',
+                    label: 'Monitoring Date',
+                  },
+                  {
+                    id: 'invasive_species_agency_code',
+                    label: 'Agency',
+                  },
+                  {
+                    id: 'efficacy_percent',
+                    label: 'Efficacy',
+                  },
+                  {
+                    id: 'project_code_label',
+                    label: 'Project Code',
+                  },
+                  {
+                    id: 'general_comment',
+                    className: classes.wideCell,
+                    label: 'Comments'
+                  }
+                ]}
+                rows={
+                  !row.monitoring.length
+                    ? []
+                    : row.monitoring.map((monitor, j) => ({
+                      ...monitor,
+                      project_code_label: monitor.project_code[0].description
+                    }))
+                }
+              />
+            </React.Fragment>
+          )
+        }
+      />
+
+      <RecordTable
+        tableName="Biological Treatments and Efficacy Monitoring"
+        startExpanded={false}
+        keyField="treatment_id"
+        startingOrderBy="treatment_date"
+        className={classes.iappTable}
+        headers={[
+          {
+            id: 'treatment_id',
+            label: 'Treatment ID',
+          },
+          {
+            id: 'common_name',
+            label: 'Species (Common)',
+          },
+          {
+            id: 'treatment_date',
+            label: 'Treatment Date',
+          },
+          {
+            id: 'collection_date',
+            label: 'Collection Date',
+          },
+          {
+            id: 'bioagent_source',
+            label: 'Bioagent Source',
+          },
+          {
+            id: 'invasive_species_agency_code',
+            label: 'Agency',
+          },
+          {
+            id: 'stage_larva_ind',
+            label: 'Larvae?',
+          },
+          {
+            id: 'stage_egg_ind',
+            label: 'Eggs?',
+          },
+          {
+            id: 'stage_pupa_ind',
+            label: 'Pupae?'
+          },
+          {
+            id: 'stage_other_ind',
+            label: 'Other?',
+          },
+          {
+            id: 'release_quantity',
+            label: 'Release Quantity',
+          },
+          {
+            id: 'area_classification_code',
+            label: 'Area Classification Code',
+          },
+          {
+            id: 'biological_agent_code',
+            label: 'Biological Agent Code',
+          },
+          {
+            id: 'project_code_label',
+            label: 'Project Code',
+          },
+          {
+            id: 'general_comment',
+            className: classes.wideCell,
+            label: 'Comments'
+          }
+        ]}
+        rows={
+          !biological_treatments.length
+            ? []
+            : biological_treatments.map((row) => ({
+              ...row,
+              project_code_label: row.project_code[0].description,
+            }))
+        }
+        dropdown={(row) =>
+          row.monitoring?.length ? undefined : (
+            <RecordTable
+              tableName="Monitoring"
+              startExpanded={true}
+              startingOrderBy="monitoring_date"
+              keyField="monitoring_id"
+              headers={[
+                {
+                  id: 'monitoring_id',
+                  label: 'Monitoring ID',
+                },
+                {
+                  id: 'monitoring_date',
+                  label: 'Monitoring Date',
+                },
+                {
+                  id: 'plant_count',
+                  label: 'Plant Count',
+                },
+                {
+                  id: 'agent_count',
+                  label: 'Agent Count',
+                },
+                {
+                  id: 'count_duration',
+                  label: 'Count Duration',
+                },
+                {
+                  id: 'agent_destroyed_ind',
+                  label: 'Agent Destroyed?',
+                },
+                {
+                  id: 'legacy_presence_ind',
+                  label: 'Legacy Presence?',
+                },
+                {
+                  id: 'foliar_feeding_damage_ind',
+                  label: 'Foliar Feeding Damage?',
+                },
+                {
+                  id: 'root_feeding_damage_ind',
+                  label: 'Root Feeding Damage?',
+                },
+                {
+                  id: 'seed_feeding_damage_ind',
+                  label: 'Seed Feeding Damage?',
+                },
+                {
+                  id: 'oviposition_marks_ind',
+                  label: 'Oviposition Marks?',
+                },
+                {
+                  id: 'eggs_present_ind',
+                  label: 'Eggs Present?',
+                },
+                {
+                  id: 'larvae_present_ind',
+                  label: 'Larvae Present?',
+                },
+                {
+                  id: 'pupae_present_ind',
+                  label: 'Pupae Present?',
+                },
+                {
+                  id: 'adults_present_ind',
+                  label: 'Adults Present?',
+                },
+                {
+                  id: 'tunnels_present_ind',
+                  label: 'Tunnels Present?',
+                },
+                {
+                  id: 'project_code_label',
+                  label: 'Project Code',
+                },
+                {
+                  id: 'general_comment',
+                  className: classes.wideCell,
+                  label: 'Comments'
+                }
+              ]}
+              rows={
+                !row.monitoring.length
+                  ? []
+                  : row.monitoring.map((monitor, j) => ({
+                    ...monitor,
+                    project_code_label: monitor.project_code[0].description
+                  }))
+              }
+            />
+          )
+        }
+      />
+
+      <RecordTable
+        tableName="Biological Dispersals"
+        startExpanded={false}
+        keyField="biological_id"
+        startingOrderBy="monitoring_date"
+        className={classes.iappTable}
+        headers={[
+          {
+            id: 'treatment_id',
+            label: 'Treatment ID',
+          },
+          {
+            id: 'common_name',
+            label: 'Species (Common)',
+          },
+          {
+            id: 'monitoring_date',
+            label: 'Inspection Date',
+          },
+          {
+            id: 'project_code_label',
+            label: 'Project Code',
+          },
+          {
+            id: 'plant_count',
+            label: 'Plant Count',
+          },
+          {
+            id: 'agent_count',
+            label: 'Agent Count',
+          },
+          {
+            id: 'count_duration',
+            label: 'Count Duration',
+          },
+          {
+            id: 'biological_agent_code',
+            label: 'Agent Code',
+          },
+          {
+            id: 'foliar_feeding_damage_ind',
+            label: 'Foliar Feeding Damage?',
+          },
+          {
+            id: 'root_feeding_damage_ind',
+            label: 'Root Feeding Damage?',
+          },
+          {
+            id: 'seed_feeding_damage_ind',
+            label: 'Seed Feeding Damage?',
+          },
+          {
+            id: 'oviposition_marks_ind',
+            label: 'Oviposition Marks?',
+          },
+          {
+            id: 'eggs_present_ind',
+            label: 'Eggs?'
+          },
+          {
+            id: 'pupae_present_ind',
+            label: 'Pupae?'
+          },
+          {
+            id: 'adults_present_ind',
+            label: 'Adults?',
+          },
+          {
+            id: 'tunnels_present_ind',
+            label: 'Tunnels?',
+          },
+          {
+            id: 'general_comment',
+            className: classes.wideCell,
+            label: 'Comments'
+          }
+        ]}
+        rows={
+          !biological_dispersals.length
+            ? []
+            : biological_dispersals.map((row) => ({
+              ...row,
+              project_code_label: row.project_code[0].description,
+            }))
+        }
       />
 
       <br />
@@ -258,12 +759,3 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     </Container>
   );
 };
-
-const CollapseableTable = (props) => {
-  const {tableName, ...etc} = props;
-  const classes = useStyles();
-
-  return (
-    <RecordTable {...props} />
-  );
-}
