@@ -5,12 +5,8 @@ import {
   Box,
   Checkbox,
   Collapse,
-  FormControlLabel,
-  Grid,
   IconButton,
   makeStyles,
-  Paper,
-  Switch,
   Table,
   TableBody,
   TableCell,
@@ -249,7 +245,7 @@ const EnhancedTableToolbar = (props) => {
 };
 
 /*
-  TODO outdated:
+  OUTDATED:
   headers: an array of (string/numeric) values (or objects if you want to get fancy and define other object cell properties)
   rows: an array of arrays of columns, which can each contain (string/numeric) values or objects defining overrides to each cell
   dropdown: if defined, gives a function to build the content of a dropdown section for each row, based on the 'source' and the current column index
@@ -295,7 +291,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     enableSelection = false,
     enableFiltering = false,
     pagination = true,
-    className,
+    className : tableClassName,
     densePadding = false,
     padEmptyRows = false // whitespace added to make the table the same height
     // even on the last page with only e.g. 1 row
@@ -317,7 +313,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
         defaultOrder: 'asc',
         ...header
       };
-    throw 'Table header not defined correctly - must be a string, number or object';
+    throw new Error('Table header not defined correctly - must be a string, number or object');
   });
 
   const [order, setOrder] = useState(startingOrder);
@@ -326,8 +322,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
   const [selected, setSelected] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
-  const [dense, setDense] = useState(densePadding);
-  const [expanded, setExpanded] = useState(startExpanded || !rows.length);
 
   // sort and limit the rows:
   const pageRows = stableSort(rows, getComparator(order, orderBy)).slice(
@@ -343,7 +337,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     (row) => headCells.filter(({ id }) => String(row[id]).length > overflowLimit).length > 0
   );
   const pageHasDropdown =
-    (!!dropdown && renderedDropdowns.filter((dropdown) => dropdown).length > 0) ||
+    (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
     (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0);
 
   const handleRequestSort = (event, property) => {
@@ -388,10 +382,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
-
   const isSelectedRow = (key) => selected.indexOf(key) !== -1;
   const isExpandedRow = (key) => expandedRows.indexOf(key) !== -1;
 
@@ -410,8 +400,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
         });
       case 'function':
         return cell(row);
-      default:
       case 'string':
+      default:
         return ifApplicable(cell);
     }
   };
@@ -425,12 +415,11 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   };
 
   return (
-    <div className={clsx(classes.paper, className)}>
-      <Accordion defaultExpanded={expanded}>
+    <div className={clsx(classes.paper, tableClassName)}>
+      <Accordion defaultExpanded={startExpanded || !rows.length}>
         <EnhancedTableToolbar
           numSelected={enableSelection && selected.length}
           tableName={tableName}
-          expanded={expanded}
           enableFiltering={enableFiltering}
         />
         <AccordionDetails className={classes.paper}>
@@ -439,7 +428,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
               <Table
                 className={classes.table}
                 aria-labelledby="tableTitle"
-                size={dense ? 'small' : 'medium'}
+                size={densePadding ? 'small' : 'medium'}
                 aria-label="enhanced table">
                 <EnhancedTableHead
                   classes={classes}
@@ -458,7 +447,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                     const key = row[keyField];
                     if (key === undefined) {
                       console.log(row, keyField);
-                      throw 'Error: table row has no matching key defined';
+                      throw new Error('Error: table row has no matching key defined');
                     }
                     const isItemSelected = isSelectedRow(key);
                     const labelId = `enhanced-table-checkbox-${key}`;
@@ -523,7 +512,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                     );
                   })}
                   {padEmptyRows && emptyRows > 0 && (
-                    <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                    <TableRow style={{ height: (densePadding ? 33 : 53) * emptyRows }}>
                       <TableCell colSpan={headCells.length} />
                     </TableRow>
                   )}
