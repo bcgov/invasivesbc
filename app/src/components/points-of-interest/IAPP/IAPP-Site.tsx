@@ -143,8 +143,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Jurisdiction
             </Grid>
             <Grid item xs={3}>
-              {(surveys?.length &&
-                surveys[0].jurisdictions?.length &&
+              {(surveys?.[0]?.jurisdictions?.length > 0 &&
                 ifApplicable(surveys[0].jurisdictions[0].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[0].percentage +
@@ -152,16 +151,14 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 'Not Provided'}
             </Grid>
             <Grid item xs={3}>
-              {surveys?.length &&
-                surveys[0].jurisdictions?.length > 1 &&
+              {surveys?.[0]?.jurisdictions?.length > 1 &&
                 ifApplicable(surveys[0].jurisdictions[1].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[1].percentage +
                   '%)'}
             </Grid>
             <Grid item xs={3}>
-              {surveys?.length &&
-                surveys[0].jurisdictions?.length > 2 &&
+              {surveys?.[0]?.jurisdictions?.length > 2 &&
                 ifApplicable(surveys[0].jurisdictions[2].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[2].percentage +
@@ -190,6 +187,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="survey_id"
         startingOrderBy="survey_id"
         startingOrder="desc"
+        enableSelection
         className={classes.iappTable}
         headers={[
           {
@@ -300,7 +298,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }))
         }
         dropdown={(row) =>
-          row.monitoring?.length ? undefined : (
+          !row.monitoring?.length ? undefined : (
             <RecordTable
               tableName="Monitoring"
               startExpanded={true}
@@ -577,7 +575,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }))
         }
         dropdown={(row) =>
-          row.monitoring?.length ? undefined : (
+          !row.monitoring?.length ? undefined : (
             <RecordTable
               tableName="Monitoring"
               startExpanded={true}
