@@ -18,33 +18,15 @@ import {
   TablePagination,
   TableRow
 } from '@material-ui/core';
-import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore } from '@material-ui/icons';
+import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore, DeleteForever } from '@material-ui/icons';
 import React from 'react';
+import RecordTable from '../../common/RecordTable';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(18),
     fontWeight: theme.typography.fontWeightRegular,
     align: 'center'
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: 'left',
-    color: theme.palette.text.primary
-  },
-  table: {
-    width: 'auto',
-    tableLayout: 'auto'
-  },
-  tableRow: {
-    verticalAlign: 'top'
-  },
-  tableContainer: {
-    display: 'table-row'
-  },
-  cell: {
-    whiteSpace: 'nowrap',
-    width: 1
   },
   wideCell: {
     minWidth: 500,
@@ -54,25 +36,8 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: 'italic',
     color: '#777'
   },
-  header: {
-    backgroundColor: 'rgba(0, 0, 0, 0.06)'
-  },
-  dropdown: {
-    paddingBottom: 0,
-    paddingTop: 0,
-    paddingLeft: '1em'
-  },
-  dropdownCol: {
-    width: '1px'
-  },
-  openRow: {
-    overflow: 'inherit',
-    whiteSpace: 'inherit'
-  },
-  closedRow: {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis'
+  iappTable: {
+    marginTop: '15px'
   }
 }));
 
@@ -82,9 +47,10 @@ export interface IAPPSitePropType {
 
 export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const classes = useStyles();
+  const form_data = props?.record?.point_of_interest_payload?.form_data;
   const site = {
-    ...props?.record?.point_of_interest_payload?.form_data?.point_of_interest_data,
-    ...props?.record?.point_of_interest_payload?.form_data?.point_of_interest_type_data
+    ...form_data?.point_of_interest_data,
+    ...form_data?.point_of_interest_type_data
   };
   const {
     surveys,
@@ -92,13 +58,10 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     chemical_treatments,
     biological_treatments,
     biological_dispersals
-  } = props?.record?.point_of_interest_payload?.form_data;
-  const longitude = parseFloat(props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(
-    6
-  );
-  const latitude = parseFloat(props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(
-    6
-  );
+  } = form_data;
+  const coordinates = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates;
+  const longitude = parseFloat(coordinates[0]).toFixed(6);
+  const latitude = parseFloat(coordinates[1]).toFixed(6);
 
   const ifApplicable = (value) =>
     value && String(value).trim() ? value : <div className={classes.missingValue}>N/A</div>;
@@ -222,547 +185,583 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion defaultExpanded={false}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={classes.heading}>Survey Details on Site {site.site_id}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <IAPPTable
-            headers={[
-              'Survey ID',
-              'Common Name',
-              'Species',
-              'Genus',
-              'Survey Date',
-              'Agency',
-              'Area (m\u00B2)',
-              {
-                align: 'center',
-                children: 'Density'
-              },
-              {
-                align: 'center',
-                children: 'Distribution'
-              },
-              {
-                className: classes.wideCell,
-                children: 'Comments'
-              }
-            ]}
-            rows={
-              !surveys?.length
-                ? []
-                : surveys.map((row) => [
-                    row.survey_id,
-                    row.common_name,
-                    row.species,
-                    row.genus,
-                    row.survey_date,
-                    row.invasive_species_agency_code,
-                    row.reported_area,
-                    {
-                      align: 'center',
-                      children: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : '')
-                    },
-                    {
-                      align: 'center',
-                      children:
-                        row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
-                    },
-                    {
-                      className: classes.wideCell,
-                      children: row.general_comment
-                    }
-                  ])
-            }
-            pagination={true}
-          />
-        </AccordionDetails>
-      </Accordion>
+      <RecordTable
+        tableName={'Survey Details on Site ' + site.site_id}
+        keyField="survey_id"
+        startingOrderBy="survey_id"
+        startingOrder="desc"
+        className={classes.iappTable}
+        headers={[
+          {
+            id: 'survey_id',
+            title: 'Survey ID'
+          },
+          {
+            id: 'common_name',
+            title: 'Common Name'
+          },
+          {
+            id: 'species',
+            title: 'Species'
+          },
+          {
+            id: 'genus',
+            title: 'Genus'
+          },
+          {
+            id: 'survey_date',
+            title: 'Survey Date'
+          },
+          {
+            id: 'invasive_species_agency_code',
+            title: 'Agency'
+          },
+          {
+            id: 'reported_area',
+            title: 'Area (m\u00B2)',
+            numeric: true
+          },
+          {
+            id: 'density',
+            align: 'center',
+            title: 'Density'
+          },
+          {
+            id: 'distribution',
+            align: 'center',
+            title: 'Distribution'
+          },
+          {
+            id: 'general_comment',
+            title: 'Comments'
+          }
+        ]}
+        rows={
+          !surveys?.length
+            ? []
+            : surveys.map((row) => ({
+                ...row,
+                density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
+                distribution:
+                  row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
+              }))
+        }
+      />
 
-      <Accordion defaultExpanded={false}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={classes.heading}>Mechanical Treatments and Efficacy Monitoring</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <IAPPTable
-            headers={[
-              'Treatment ID',
-              'Mechanical ID',
-              'Species (Common)',
-              'Treatment Date',
-              'Agency',
-              'Reported Area (m\u00B2)',
-              'Mech Method',
-              'Paper File ID',
-              {
-                className: classes.wideCell,
-                children: 'Comments'
+      <RecordTable
+        tableName="Mechanical Treatments and Efficacy Monitoring"
+        startExpanded={false}
+        keyField="treatment_id"
+        startingOrderBy="treatment_id"
+        startingOrder="desc"
+        className={classes.iappTable}
+        headers={[
+          {
+            id: 'treatment_id',
+            title: 'Treatment ID'
+          },
+          {
+            id: 'common_name',
+            title: 'Species (Common)'
+          },
+          {
+            id: 'treatment_date',
+            title: 'Treatment Date'
+          },
+          {
+            id: 'invasive_species_agency_code',
+            title: 'Agency'
+          },
+          {
+            id: 'reported_area',
+            title: 'Reported Area (m\u00B2)',
+            numeric: true
+          },
+          {
+            id: 'mechanical_method_code_label', // custom
+            title: 'Mech Method'
+          },
+          {
+            id: 'project_code_label',
+            title: 'Project Code'
+          },
+          {
+            id: 'general_comment',
+            title: 'Comments'
+          }
+        ]}
+        rows={
+          !mechanical_treatments.length
+            ? []
+            : mechanical_treatments.map((row) => ({
+                ...row,
+                mechanical_method_code_title: '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
+                project_code_title: row.project_code[0].description
+              }))
+        }
+        dropdown={(row) =>
+          row.monitoring?.length ? undefined : (
+            <RecordTable
+              tableName="Monitoring"
+              startExpanded={true}
+              startingOrderBy="monitoring_id"
+              startingOrder="desc"
+              keyField="monitoring_id"
+              headers={[
+                {
+                  id: 'monitoring_id',
+                  title: 'Monitoring ID'
+                },
+                {
+                  id: 'monitoring_date',
+                  title: 'Monitoring Date'
+                },
+                {
+                  id: 'invasive_species_agency_code',
+                  title: 'Agency'
+                },
+                {
+                  id: 'efficacy_percent',
+                  title: 'Efficacy',
+                  numeric: true
+                },
+                {
+                  id: 'project_code_label',
+                  title: 'Project Code'
+                },
+                {
+                  id: 'general_comment',
+                  title: 'Comments'
+                }
+              ]}
+              rows={
+                !row.monitoring.length
+                  ? []
+                  : row.monitoring.map((monitor, j) => ({
+                      ...monitor,
+                      project_code_title: monitor.project_code[0].description
+                    }))
               }
-            ]}
-            rows={
-              !mechanical_treatments.length
-                ? []
-                : mechanical_treatments.map((row) => [
-                    row.treatment_id,
-                    row.mechanical_id,
-                    row.common_name,
-                    row.treatment_date,
-                    row.invasive_species_agency_code,
-                    row.reported_area,
-                    '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
-                    row.project_code[0].description,
-                    {
-                      className: classes.wideCell,
-                      children: row.general_comment
-                    }
-                  ])
-            }
-            dropdown={(i) =>
-              !mechanical_treatments[i].monitoring?.length ? null : (
-                <IAPPTable
-                  key={'dropdown_' + i}
-                  headers={[
-                    'Monitoring ID',
-                    'Monitoring Date',
-                    'Agency',
-                    'Efficacy',
-                    'Paper File ID',
-                    {
-                      className: classes.wideCell,
-                      children: 'Comments'
-                    }
-                  ]}
-                  rows={mechanical_treatments[i].monitoring.map((row, j) => [
-                    row.monitoring_id,
-                    row.monitoring_date,
-                    row.invasive_species_agency_code,
-                    row.efficacy_percent,
-                    row.project_code[0].description,
-                    {
-                      className: classes.wideCell,
-                      children: row.general_comment
-                    }
-                  ])}
-                />
-              )
-            }
-            pagination={true}
-          />
-        </AccordionDetails>
-      </Accordion>
+            />
+          )
+        }
+      />
 
-      <Accordion defaultExpanded={false}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={classes.heading}>Chemical Treatments and Efficacy Monitoring</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <IAPPTable
-            headers={[
-              'Treatment ID',
-              'Species (Common)',
-              'Treatment Date',
-              'Agency',
-              'Reported Area (m\u00B2)',
-              'Method',
-              'Paper File ID',
-              {
-                className: classes.wideCell,
-                children: 'Comments'
+      <RecordTable
+        tableName="Chemical Treatments and Efficacy Monitoring"
+        startExpanded={false}
+        keyField="treatment_id"
+        startingOrderBy="treatment_id"
+        startingOrder="desc"
+        className={classes.iappTable}
+        headers={[
+          {
+            id: 'treatment_id',
+            title: 'Treatment ID'
+          },
+          {
+            id: 'common_name',
+            title: 'Species (Common)'
+          },
+          {
+            id: 'treatment_date',
+            title: 'Treatment Date'
+          },
+          {
+            id: 'invasive_species_agency_code',
+            title: 'Agency'
+          },
+          {
+            id: 'reported_area',
+            title: 'Reported Area (m\u00B2)',
+            numeric: true
+          },
+          {
+            id: 'chemical_method', // custom
+            title: 'Method'
+          },
+          {
+            id: 'project_code_label',
+            title: 'Project Code'
+          },
+          {
+            id: 'general_comment',
+            title: 'Comments'
+          }
+        ]}
+        rows={
+          !chemical_treatments.length
+            ? []
+            : chemical_treatments.map((row) => ({
+                ...row,
+                project_code_title: row.project_code[0].description
+              }))
+        }
+        dropdown={(row) => (
+          <React.Fragment key={row.treatment_id + '_expanded'}>
+            <RecordTable
+              startExpanded={true}
+              keyField="treatment_id"
+              headers={[
+                {
+                  id: 'pmp_confirmation_number',
+                  title: 'PMP Confirmation #'
+                },
+                {
+                  id: 'herbicide_description',
+                  title: 'Herbicide'
+                },
+                {
+                  id: 'pmra_reg_number',
+                  title: 'PMRA Reg #'
+                },
+                {
+                  id: 'temperature',
+                  title: 'Temperature',
+                  numeric: true
+                },
+                {
+                  id: 'humidity',
+                  title: 'Humidity'
+                },
+                {
+                  id: 'wind_speed',
+                  title: 'Wind Velocity',
+                  numeric: true
+                },
+                {
+                  id: 'wind_direction',
+                  title: 'Wind Direction'
+                },
+                {
+                  id: 'application_rate',
+                  title: 'Application Rate'
+                },
+                {
+                  id: 'herbicide_amount',
+                  title: 'Amount Used',
+                  numeric: true
+                },
+                {
+                  id: 'dilution',
+                  title: 'Dilution Rate'
+                },
+                {
+                  id: 'mix_delivery_rate',
+                  title: 'Mix Delivery Rate'
+                }
+              ]}
+              rows={[row]} // singleton expanded table
+              enableFiltering={false}
+            />
+            <RecordTable
+              tableName="Monitoring"
+              startExpanded={true}
+              startingOrderBy="monitoring_date"
+              keyField="monitoring_id"
+              headers={[
+                {
+                  id: 'monitoring_id',
+                  title: 'Monitoring ID'
+                },
+                {
+                  id: 'monitoring_date',
+                  title: 'Monitoring Date'
+                },
+                {
+                  id: 'invasive_species_agency_code',
+                  title: 'Agency'
+                },
+                {
+                  id: 'efficacy_percent',
+                  title: 'Efficacy',
+                  numeric: true
+                },
+                {
+                  id: 'project_code_label',
+                  title: 'Project Code'
+                },
+                {
+                  id: 'general_comment',
+                  title: 'Comments'
+                }
+              ]}
+              rows={
+                !row.monitoring.length
+                  ? []
+                  : row.monitoring.map((monitor, j) => ({
+                      ...monitor,
+                      project_code_title: monitor.project_code[0].description
+                    }))
               }
-            ]}
-            rows={
-              !chemical_treatments?.length
-                ? []
-                : chemical_treatments.map((row) => [
-                    row.treatment_id,
-                    row.common_name,
-                    row.treatment_date,
-                    row.invasive_species_agency_code,
-                    row.reported_area,
-                    row.chemical_method,
-                    row.project_code[0].description,
-                    {
-                      className: classes.wideCell,
-                      children: row.general_comment
-                    }
-                  ])
-            }
-            dropdown={(i) =>
-              !chemical_treatments[i].monitoring?.length ? null : (
-                <React.Fragment key={'dropdown_' + i}>
-                  <IAPPTable
-                    headers={[
-                      'PMP Confirmation #',
-                      'Herbicide',
-                      'PMRA Reg #',
-                      'Temperature',
-                      'Humidity',
-                      'Wind Velocity',
-                      'Wind Direction',
-                      'Application Rate',
-                      'Amount Used',
-                      'Dilution Rate',
-                      'Mix Delivery Rate'
-                    ]}
-                    rows={[
-                      [
-                        chemical_treatments[i].pmp_confirmation_number,
-                        chemical_treatments[i].herbicide_description,
-                        chemical_treatments[i].pmra_reg_number,
-                        chemical_treatments[i].temperature,
-                        chemical_treatments[i].humidity,
-                        chemical_treatments[i].wind_speed,
-                        chemical_treatments[i].wind_direction,
-                        chemical_treatments[i].application_rate,
-                        chemical_treatments[i].herbicide_amount,
-                        chemical_treatments[i].dilution,
-                        chemical_treatments[i].mix_delivery_rate
-                      ]
-                    ]}
-                  />
-                  <br />
-                  {chemical_treatments[i].monitoring?.length && (
-                    <IAPPTable
-                      headers={[
-                        'Monitoring ID',
-                        'Monitoring Date',
-                        'Agency',
-                        'Efficacy',
-                        'Paper File ID',
-                        {
-                          className: classes.wideCell,
-                          children: 'Comments'
-                        }
-                      ]}
-                      rows={chemical_treatments[i].monitoring.map((row, j) => [
-                        row.monitoring_id,
-                        row.monitoring_date,
-                        row.invasive_species_agency_code,
-                        row.efficacy_percent,
-                        row.project_code[0].description,
-                        {
-                          className: classes.wideCell,
-                          children: row.general_comment
-                        }
-                      ])}
-                    />
-                  )}
-                </React.Fragment>
-              )
-            }
-            pagination={true}
-          />
-        </AccordionDetails>
-      </Accordion>
+            />
+          </React.Fragment>
+        )}
+      />
 
-      <Accordion defaultExpanded={false}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={classes.heading}>Biological Treatments and Efficacy Monitoring</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <IAPPTable
-            headers={[
-              'Treatment ID',
-              'Species (Common)',
-              'Treatment Date',
-              'Collection Date',
-              'Bioagent Source',
-              'Agency',
-              'Larva Stage',
-              'Egg Stage',
-              'Pupa Stage',
-              'Other Stage',
-              'Release Quantity',
-              'Area Classification Code',
-              'Biological Agent Code',
-              'UTM Zone',
-              'UTM Easting',
-              'UTM Northing',
-              'Paper File ID',
-              {
-                className: classes.wideCell,
-                children: 'Comments'
+      <RecordTable
+        tableName="Biological Treatments and Efficacy Monitoring"
+        startExpanded={false}
+        keyField="treatment_id"
+        startingOrderBy="treatment_id"
+        startingOrder="desc"
+        className={classes.iappTable}
+        headers={[
+          {
+            id: 'treatment_id',
+            title: 'Treatment ID'
+          },
+          {
+            id: 'common_name',
+            title: 'Species (Common)'
+          },
+          {
+            id: 'treatment_date',
+            title: 'Treatment Date'
+          },
+          {
+            id: 'collection_date',
+            title: 'Collection Date'
+          },
+          {
+            id: 'bioagent_source',
+            title: 'Bioagent Source'
+          },
+          {
+            id: 'invasive_species_agency_code',
+            title: 'Agency'
+          },
+          {
+            id: 'stage_larva_ind',
+            title: 'Larvae?'
+          },
+          {
+            id: 'stage_egg_ind',
+            title: 'Eggs?'
+          },
+          {
+            id: 'stage_pupa_ind',
+            title: 'Pupae?'
+          },
+          {
+            id: 'stage_other_ind',
+            title: 'Other?'
+          },
+          {
+            id: 'release_quantity',
+            title: 'Release Quantity'
+          },
+          {
+            id: 'area_classification_code',
+            title: 'Area Classification Code'
+          },
+          {
+            id: 'biological_agent_code',
+            title: 'Biological Agent Code'
+          },
+          {
+            id: 'project_code_label',
+            title: 'Project Code'
+          },
+          {
+            id: 'general_comment',
+            title: 'Comments'
+          }
+        ]}
+        rows={
+          !biological_treatments.length
+            ? []
+            : biological_treatments.map((row) => ({
+                ...row,
+                project_code_title: row.project_code[0].description
+              }))
+        }
+        dropdown={(row) =>
+          row.monitoring?.length ? undefined : (
+            <RecordTable
+              tableName="Monitoring"
+              startExpanded={true}
+              startingOrderBy="monitoring_id"
+              startingOrder="desc"
+              keyField="monitoring_id"
+              headers={[
+                {
+                  id: 'monitoring_id',
+                  title: 'Monitoring ID'
+                },
+                {
+                  id: 'monitoring_date',
+                  title: 'Monitoring Date'
+                },
+                {
+                  id: 'plant_count',
+                  title: 'Plant Count'
+                },
+                {
+                  id: 'agent_count',
+                  title: 'Agent Count'
+                },
+                {
+                  id: 'count_duration',
+                  title: 'Count Duration'
+                },
+                {
+                  id: 'agent_destroyed_ind',
+                  title: 'Agent Destroyed?'
+                },
+                {
+                  id: 'legacy_presence_ind',
+                  title: 'Legacy Presence?'
+                },
+                {
+                  id: 'foliar_feeding_damage_ind',
+                  title: 'Foliar Feeding Damage?'
+                },
+                {
+                  id: 'root_feeding_damage_ind',
+                  title: 'Root Feeding Damage?'
+                },
+                {
+                  id: 'seed_feeding_damage_ind',
+                  title: 'Seed Feeding Damage?'
+                },
+                {
+                  id: 'oviposition_marks_ind',
+                  title: 'Oviposition Marks?'
+                },
+                {
+                  id: 'eggs_present_ind',
+                  title: 'Eggs Present?'
+                },
+                {
+                  id: 'larvae_present_ind',
+                  title: 'Larvae Present?'
+                },
+                {
+                  id: 'pupae_present_ind',
+                  title: 'Pupae Present?'
+                },
+                {
+                  id: 'adults_present_ind',
+                  title: 'Adults Present?'
+                },
+                {
+                  id: 'tunnels_present_ind',
+                  title: 'Tunnels Present?'
+                },
+                {
+                  id: 'project_code_label',
+                  title: 'Project Code'
+                },
+                {
+                  id: 'general_comment',
+                  title: 'Comments'
+                }
+              ]}
+              rows={
+                !row.monitoring.length
+                  ? []
+                  : row.monitoring.map((monitor, j) => ({
+                      ...monitor,
+                      project_code_title: monitor.project_code[0].description
+                    }))
               }
-            ]}
-            rows={
-              !biological_treatments?.length
-                ? []
-                : biological_treatments.map((row) => [
-                    row.treatment_id,
-                    row.common_name,
-                    row.treatment_date,
-                    row.collection_date,
-                    row.bioagent_source,
-                    row.invasive_species_agency_code,
-                    row.stage_larva_ind,
-                    row.stage_egg_ind,
-                    row.stage_pupa_ind,
-                    row.stage_other_ind,
-                    row.release_quantity,
-                    row.area_classification_code,
-                    row.biological_agent_code,
-                    row.utm_zone,
-                    row.utm_easting,
-                    row.utm_northing,
-                    row.project_code[0].description,
-                    {
-                      className: classes.wideCell,
-                      children: row.general_comment
-                    }
-                  ])
-            }
-            dropdown={(i) =>
-              !biological_treatments[i].monitoring?.length ? null : (
-                <IAPPTable
-                  key={'dropdown_' + i}
-                  headers={[
-                    'Monitoring ID',
-                    'Inspection Date',
-                    'Plant Count',
-                    'Agent Count',
-                    'Count Duration',
-                    'Agent Destroyed',
-                    'Legacy Presence',
-                    'Foliar Feeding Damage',
-                    'Root Feeding Damage',
-                    'Seed Feeding Damage',
-                    'Oviposition Marks',
-                    'Eggs Present',
-                    'Larvae Present',
-                    'Pupae Present',
-                    'Adults Present',
-                    'Tunnels Present',
-                    'UTM Zone',
-                    'UTM Easting',
-                    'UTM Northing',
-                    'Paper File ID',
-                    {
-                      className: classes.wideCell,
-                      children: 'Comment'
-                    }
-                  ]}
-                  rows={biological_treatments[i].monitoring.map((row, j) => [
-                    row.monitoring_id,
-                    row.monitoring_date,
-                    row.plant_count,
-                    row.agent_count,
-                    row.count_duration,
-                    row.agent_destroyed_ind,
-                    row.legacy_presence_ind,
-                    row.foliar_feeding_damage_ind,
-                    row.root_feeding_damage_ind,
-                    row.seed_feeding_damage_ind,
-                    row.oviposition_marks_ind,
-                    row.eggs_present_ind,
-                    row.larvae_present_ind,
-                    row.pupae_present_ind,
-                    row.adults_present_ind,
-                    row.tunnels_present_ind,
-                    row.utm_zone,
-                    row.utm_easting,
-                    row.utm_northing,
-                    row.project_code[0].description,
-                    {
-                      className: classes.wideCell,
-                      children: row.general_comment
-                    }
-                  ])}
-                />
-              )
-            }
-            pagination={true}
-          />
-        </AccordionDetails>
-      </Accordion>
+            />
+          )
+        }
+      />
 
-      <Accordion defaultExpanded={false}>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel-map-content" id="panel-map-header">
-          <Typography className={classes.heading}>Biological Dispersals</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <IAPPTable
-            headers={[
-              'Biological ID',
-              'Species (Common)',
-              'Inspection Date',
-              'Paper File ID',
-              'Plant Count',
-              'Agent Count',
-              'Count Duration',
-              'Agent Code',
-              'Foliar Feeding Damage',
-              'Root Feeding Damage',
-              'Seed Feeding Damage',
-              'Oviposition Feeding Damage',
-              'Eggs Present',
-              'Larvae Present',
-              'Pupae Present',
-              'Adults Present',
-              'Tunnels Present',
-              'UTM Zone',
-              'UTM Easting',
-              'UTM Northing',
-              {
-                className: classes.wideCell,
-                children: 'Comments'
-              }
-            ]}
-            rows={
-              !biological_dispersals?.length
-                ? []
-                : biological_dispersals.map((row) => [
-                    row.biological_dispersal_id,
-                    row.common_name,
-                    row.monitoring_date,
-                    row.project_code[0].description,
-                    row.plant_count,
-                    row.agent_count,
-                    row.count_duration,
-                    row.biological_agent_code,
-                    row.foliar_feeding_damage_ind,
-                    row.root_feeding_damage_ind,
-                    row.seed_feeding_damage_ind,
-                    row.oviposition_marks_ind,
-                    row.eggs_present_ind,
-                    row.larvae_present_ind,
-                    row.pupae_present_ind,
-                    row.adults_present_ind,
-                    row.tunnels_present_ind,
-                    row.utm_zone,
-                    row.utm_easting,
-                    row.utm_northing,
-                    {
-                      className: classes.wideCell,
-                      children: row.general_comment
-                    }
-                  ])
-            }
-            pagination={true}
-          />
-        </AccordionDetails>
-      </Accordion>
+      <RecordTable
+        tableName="Biological Dispersals"
+        startExpanded={false}
+        keyField="biological_id"
+        startingOrderBy="biological_id"
+        startingOrder="desc"
+        className={classes.iappTable}
+        headers={[
+          {
+            id: 'treatment_id',
+            title: 'Treatment ID'
+          },
+          {
+            id: 'common_name',
+            title: 'Species (Common)'
+          },
+          {
+            id: 'monitoring_date',
+            title: 'Inspection Date'
+          },
+          {
+            id: 'project_code_label',
+            title: 'Project Code'
+          },
+          {
+            id: 'plant_count',
+            title: 'Plant Count'
+          },
+          {
+            id: 'agent_count',
+            title: 'Agent Count'
+          },
+          {
+            id: 'count_duration',
+            title: 'Count Duration'
+          },
+          {
+            id: 'biological_agent_code',
+            title: 'Agent Code'
+          },
+          {
+            id: 'foliar_feeding_damage_ind',
+            title: 'Foliar Feeding Damage?'
+          },
+          {
+            id: 'root_feeding_damage_ind',
+            title: 'Root Feeding Damage?'
+          },
+          {
+            id: 'seed_feeding_damage_ind',
+            title: 'Seed Feeding Damage?'
+          },
+          {
+            id: 'oviposition_marks_ind',
+            title: 'Oviposition Marks?'
+          },
+          {
+            id: 'eggs_present_ind',
+            title: 'Eggs?'
+          },
+          {
+            id: 'pupae_present_ind',
+            title: 'Pupae?'
+          },
+          {
+            id: 'adults_present_ind',
+            title: 'Adults?'
+          },
+          {
+            id: 'tunnels_present_ind',
+            title: 'Tunnels?'
+          },
+          {
+            id: 'general_comment',
+            title: 'Comments'
+          }
+        ]}
+        rows={
+          !biological_dispersals.length
+            ? []
+            : biological_dispersals.map((row) => ({
+                ...row,
+                project_code_title: row.project_code[0].description
+              }))
+        }
+      />
 
       <br />
       <br />
       <br />
       <br />
     </Container>
-  );
-};
-
-export interface IAPPTablePropType {
-  headers: Array<any | object>;
-  rows: Array<Array<string | object> | object>;
-  dropdown?: (index: number) => any;
-  pagination?: boolean | object;
-  startsOpen?: boolean;
-}
-
-/*
-  headers: an array of (string/numeric) values (or objects if you want to get fancy and define other object cell properties)
-  rows: an array of arrays of columns, which can each contain (string/numeric) values or objects defining overrides to each cell
-  dropdown: if defined, gives a function to build the content of a dropdown section for each row, based on the 'source' and the current column index
-  pagination: object defining pagination settings, or just boolean true to use defaults.  No pagination if undefined/false
-  startsOpen: boolean to set the dropdown to open by default or not (default closed)
-*/
-// general table with pagination
-const IAPPTable: React.FC<IAPPTablePropType> = (props) => {
-  const { headers, rows, dropdown = undefined, pagination = undefined, startsOpen = undefined } = props;
-
-  const classes = useStyles();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const startingRow = page * rowsPerPage;
-
-  const ifApplicable = (value) =>
-    value && String(value).trim().length ? value : <div className={classes.missingValue}>N/A</div>;
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-  const IAPPBodyRow = ({ row, index }) => {
-    const [open, setOpen] = React.useState(startsOpen);
-
-    const renderedDropdown = dropdown ? dropdown(index) : null;
-    // allow the row to override standard rendering if it is a string or element
-    const renderedCells =
-      typeof row === 'string' || React.isValidElement(row) ? row : row.map((cell, j) => renderCell(cell, j, open));
-
-    return (
-      <React.Fragment key={index}>
-        <TableRow className={classes.tableRow} onClick={() => setOpen(!open)}>
-          {dropdown && (
-            <TableCell className={classes.dropdownCol}>
-              {renderedDropdown !== null && (
-                <IconButton aria-label="expand row" size="small">
-                  {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                </IconButton>
-              )}
-            </TableCell>
-          )}
-          {renderedCells}
-        </TableRow>
-        {dropdown && renderedDropdown !== null && (
-          <TableRow className={classes.tableRow}>
-            <TableCell className={classes.dropdown} colSpan={100}>
-              <Collapse in={open} timeout="auto">
-                <Box margin={2}>{renderedDropdown}</Box>
-              </Collapse>
-            </TableCell>
-          </TableRow>
-        )}
-      </React.Fragment>
-    );
-  };
-
-  const renderCell = (cell, i, open = false) =>
-    typeof cell === 'object' ? (
-      React.createElement(TableCell, {
-        key: i,
-        ...cell,
-        className: `${classes.cell} ${cell.className} ${open ? classes.openRow : classes.closedRow}`
-      })
-    ) : (
-      <TableCell key={i} className={classes.cell}>
-        {ifApplicable(cell)}
-      </TableCell>
-    );
-  const renderedHeaders = headers.map((cell, i) => renderCell(cell, i));
-  const renderedRows = rows
-    .slice(startingRow, startingRow + rowsPerPage)
-    .map((row, i) => <IAPPBodyRow row={row} index={startingRow + i} key={startingRow + i} />);
-
-  return !rows?.length ? (
-    <div>No Data</div>
-  ) : (
-    <TableContainer component={Paper} className={classes.tableContainer}>
-      <Table className={classes.table} aria-label="mechanical treatments">
-        <TableHead className={classes.header}>
-          <TableRow>
-            {dropdown && <TableCell className={classes.dropdownCol} />}
-            {renderedHeaders}
-          </TableRow>
-        </TableHead>
-        <TableBody>{renderedRows}</TableBody>
-      </Table>
-      {pagination && rows && rows.length > rowsPerPage && (
-        <TablePagination
-          rowsPerPageOptions={[rowsPerPage]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-      )}
-    </TableContainer>
   );
 };
