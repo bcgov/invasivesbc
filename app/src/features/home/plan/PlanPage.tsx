@@ -167,9 +167,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const SingleTrip: React.FC = (props) => {
     //todo: add trip_id to props and let trip manage db itself
-    const [stepStatus, setStepStatus] = useState([
-      {},
-      { status: TripStatusCode.initial, expanded: true },
+    const [stepState, setStepState] = useState([
+      {}, //just here so indexes match up with step number
+      { status: TripStatusCode.initial, expanded: false },
+      { status: TripStatusCode.initial, expanded: false },
       { status: TripStatusCode.initial, expanded: false },
       { status: TripStatusCode.initial, expanded: false },
       { status: TripStatusCode.initial, expanded: false }
@@ -179,8 +180,18 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       if (geometry) {
         return TripStatusCode.ready;
       } else {
-        return stepStatus[1].status;
+        return stepState[1].status;
       }
+    };
+
+    const helperCloseOtherAccordions = (expanded, stepNumber) => {
+      console.dir(expanded);
+      let newState: any = [...stepState];
+      for (let i = 1; i < stepState.length; i++) {
+        let expanded2 = i == stepNumber && expanded ? true : false;
+        newState[i] = { ...newState[i], expanded: expanded2 };
+      }
+      setStepState([...newState]);
     };
 
     return (
@@ -195,9 +206,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               title="Step 1: Add a spatial boundary for your trip."
               helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
               additionalText="other"
-              expanded={true}
+              expanded={stepState[1].expanded}
               tripStepDetailsClassName={classes.activityRecordList}
-              stepStatus={helperCheckForGeo()}>
+              stepStatus={helperCheckForGeo()}
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 1);
+              }}>
               <Paper className={classes.paper}>
                 <Typography variant="body1">
                   Draw a polygon or square on the map, or upload a KML containing 1 shape.
@@ -209,36 +223,48 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               title="Step 2: Choose past field activity data."
               helpText="This is where you can cache past activities (observations etc.) to the app.  If you want to search for records in a particular area, draw a polygon on the map."
               additionalText="other"
-              expanded={false}
+              expanded={stepState[2].expanded}
               tripStepDetailsClassName={classes.activityRecordList}
-              stepStatus={stepStatus[1].status}>
+              stepStatus={stepState[2].status}
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 2);
+              }}>
               <ActivityDataFilter />
             </TripStep>
             <TripStep
               title="Step 3: Choose data from other systems, (IAPP)"
               helpText="This is where you can cache IAPP sites, and later other points of interest.  If you want to search for records in a particular area, draw a polygon on the map."
               additionalText="other"
-              expanded={false}
+              expanded={stepState[3].expanded}
               tripStepDetailsClassName={classes.pointOfInterestList}
-              stepStatus={stepStatus[1].status}>
+              stepStatus={stepState[3].status}
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 3);
+              }}>
               <PointOfInterestDataFilter />
             </TripStep>
             <TripStep
               title="OPTIONAL: Get data from a Metabase Question"
               helpText="If you have a Metabase question that contains field activity ID's, you can load those records here."
               additionalText="other"
-              expanded={false}
+              expanded={stepState[4].expanded}
               tripStepDetailsClassName={classes.pointOfInterestList}
-              stepStatus={stepStatus[1].status}>
+              stepStatus={stepState[4].status}
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 4);
+              }}>
               <MetabaseSearch />
             </TripStep>
             <TripStep
               title="Last Step: Cache, Refresh, or Delete data for Trip "
               helpText="Cache the data and map data for the region you have selected, or refresh it, or delete."
               additionalText="other"
-              expanded={false}
+              expanded={stepState[5].expanded}
               tripStepDetailsClassName={classes.pointOfInterestList}
-              stepStatus={stepStatus[1].status}>
+              stepStatus={stepState[5].status}
+              stepAccordionOnChange={(event, expanded) => {
+                helperCloseOtherAccordions(expanded, 5);
+              }}>
               <TripDataControls />
               <ManageDatabaseComponent />
             </TripStep>
@@ -255,11 +281,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     additionalText: string;
     tripStepDetailsClassName: string;
     stepStatus: TripStatusCode;
+    stepAccordionOnChange?: (event, expanded) => void;
   }
 
   const TripStep: React.FC<ITripStep> = (props) => {
     return (
-      <Accordion defaultExpanded={props.expanded}>
+      <Accordion defaultExpanded={props.expanded} expanded={props.expanded} onChange={props.stepAccordionOnChange}>
         <AccordionSummary
           className={classes.accordionSummary}
           expandIcon={<ExpandMore fontSize="large" />}
