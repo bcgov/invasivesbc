@@ -6,12 +6,13 @@ import {
   Button,
   Container,
   Grid,
+  IconButton,
   makeStyles,
   Paper,
   Tooltip,
   Typography
 } from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+import { DeleteForever, ExpandMore } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
 import MetabaseSearch from 'components/search/MetabaseSearch';
 import ManageDatabaseComponent from 'components/database/ManageDatabaseComponent';
@@ -26,6 +27,7 @@ import { MapContextMenuData } from '../map/MapContextMenu';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import TripStepStatus, { ITripStepStatus, TripStatusCode } from 'components/trip/TripStepStatus';
+import RecordTable from 'components/common/RecordTable';
 
 interface IPlanPageProps {
   classes?: any;
@@ -152,10 +154,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     });
   }, [extent, tripLoaded, databaseContext.database]);
 
-  const [trips, setTrips] = useState(0);
+  const [trips, setTrips] = useState([]);
 
   const addTrip = () => {
-    setTrips(trips + 1);
+    setTrips([...trips, {trip_id: trips.length, trip_name: 'initial name'}]);
   };
 
   const TripListComponent: React.FC = (props) => {
@@ -372,6 +374,47 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Button onClick={addTrip} variant="contained">
         Add Trip
       </Button>
+      <RecordTable
+       tableName={"My Trips"}
+       keyField="trip_id" // defaults to just use 'id'
+//       startingOrder="survey_date" // defaults to first table column
+       headers={[ // each id is the key it will look for in each data row object
+         {
+           id: 'trip_id',
+           label: 'Trip ID'
+         },
+         {
+           id: 'trip_name',
+           label: 'Trip Name'
+         },
+         {
+           id: 'buttons',
+           // no label, for a blank header col
+         }
+       ]}
+       rows={ // array of data objects to render
+         !trips?.length
+           ? []
+           : trips.map((row) => ({
+             ...row,
+             // custom map data before it goes to table:
+             buttons: (row) =>  // can render a custom cell like this, to e.g. render custom buttons.  Will build these controls into the table too though
+               <IconButton>
+                 <DeleteForever />
+               </IconButton>
+           }))
+       }
+       dropdown={ (row) => {
+         return <SingleTrip/>
+       }
+       }
+
+       // expandable: defaults true
+       // startExpanded: default true
+       // startingOrder: default asc
+       // startingRowsPerPage: default 10;
+       // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
+    />
       <TripListComponent />
     </Container>
   );
