@@ -22,8 +22,10 @@ import {
 } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
+import { DocType } from 'constants/database';
 import { Edit, Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { DatabaseContext } from 'contexts/DatabaseContext';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
@@ -208,8 +210,8 @@ function EnhancedTableHead(props) {
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { rows, selected, tableName, enableFiltering, actions } = props;
-  const numSelected = selected?.length || 0;
+  const { selectedRows, tableName, enableFiltering, actions } = props;
+  const numSelected = selectedRows?.length || 0;
 
   return (
     <AccordionSummary
@@ -242,7 +244,7 @@ const EnhancedTableToolbar = (props) => {
               startIcon={action.icon}
               onClick={async (e) => {
                 e.stopPropagation();
-                action.action(rows, selected);
+                action.action(selectedRows);
               }}>
               {action.label}
             </Button>
@@ -394,6 +396,7 @@ export interface RecordTablePropType {
 const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const classes = useStyles();
   const history = useHistory();
+  const databaseContext = useContext(DatabaseContext);
 
   const {
     tableName,
@@ -416,82 +419,89 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     padEmptyRows = false // whitespace added to make the table the same height
     // even on the last page with only e.g. 1 row
   } = props;
-  const { // props conditional on previous props:
-    headers = rows.length ? Object.keys(rows[0]) : [],
-    actions = {
-      ...props.actions,
-      edit: {
-        key: 'edit',
-        enabled: enableSelection,
-        action: (rows, selectedIds) => {
-          if (selectedIds.length === 1) {
-            // TODO switch by activity type, I guess...
-            history.push({
-              pathname: `/home/activity`,
-              //search: '?id=' + keys,
-              //state: { id: keys }
-            });
-          } else {
-            history.push({
-              pathname: `/home/search/bulkedit`,
-              search: '?activities=' + selectedIds.join(','),
-              state: { activityIdsToEdit: selectedIds }
-            });
-          }
-        },
-        label: 'Edit',
-        icon: <Edit />,
-        bulkAction: true,
-        rowAction: true,
-        bulkCondition: (rows) => {}, // TODO
-        rowCondition: () => {},
-        ...props.actions?.edit
+  const { headers = rows.length ? Object.keys(rows[0]) : [] } = props;
+  const actions = {
+    ...props.actions,
+    edit: {
+      // NOTE: this might be a good candidate to be broken out to a parent class
+      // since it breaks generality of this multi-purpose table
+      key: 'edit',
+      enabled: enableSelection,
+      action: async (rows) => {
+        const selectedIds = rows.map((row) => row[keyField]);
+        if (selectedIds.length === 1) {
+          // TODO switch by activity type, I guess...
+          await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
+            return { ...appStateDoc, activeActivity: selectedIds[0] };
+          });
+          history.push({ pathname: `/home/activity` });
+        } else {
+          history.push({
+            pathname: `/home/search/bulkedit`,
+            search: '?activities=' + selectedIds.join(','),
+            state: { activityIdsToEdit: selectedIds }
+          });
+        }
       },
-      delete: {
-        key: 'delete',
-        enabled: enableSelection,
-        action: (rows) => {},
-        label: 'Delete',
-        icon: <Delete />,
-        bulkAction: true,
-        rowAction: true,
-        bulkCondition: (rows) => {}, // TODO
-        rowCondition: () => {},
-        ...props.actions?.delete
+      label: 'Edit',
+      icon: <Edit />,
+      bulkAction: true,
+      rowAction: true,
+      bulkCondition: (rows) => {}, // TODO
+      rowCondition: () => {},
+      ...props.actions?.edit
+    },
+    delete: {
+      key: 'delete',
+      enabled: enableSelection,
+      action: (rows) => {},
+      label: 'Delete',
+      icon: <Delete />,
+      bulkAction: true,
+      rowAction: true,
+      bulkCondition: (rows) => {}, // TODO
+      rowCondition: () => {},
+      ...props.actions?.delete
+    },
+    // NOTE: these could probably be defined somewhere else, or in a super-class
+    // since this isn't quite generic.  But meh, fine for now:
+    create_metabase_query: {
+      key: 'create_metabase_query',
+      enabled: false,
+      action: (rows) => {},
+      label: 'Create Metabase Query',
+      bulkAction: true,
+      rowAction: false,
+      ...props.actions?.create_metabase_query
+    },
+    create_treatment: {
+      key: 'create_treatment',
+      enabled: false,
+      action: (rows) => {
+        const ids = rows.map((row: any) => row[keyField]);
+        history.push({
+          pathname: `/home/activity/treatment`,
+          search: '?observations=' + ids.join(','),
+          state: { observations: ids }
+        });
       },
-      // NOTE: these could probably be defined somewhere else, or in a super-class
-      // since this isn't quite generic.  But meh, fine for now:
-      create_metabase_query: {
-        key: 'create_metabase_query',
-        enabled: false,
-        action: (rows) => {},
-        label: 'Create Metabase Query',
-        bulkAction: true,
-        rowAction: false,
-        ...props.actions?.create_metabase_query
-      },
-      create_treatment: {
-        key: 'create_treatment',
-        enabled: false,
-        action: (rows) => {},
-        label: 'Create Treatment',
-        bulkAction: true,
-        rowAction: false,
-        bulkCondition: (rows) => {}, // TODO 
-        ...props.actions?.create_treatment
-      },
-      create_monitoring: {
-        key: 'create_monitoring',
-        enabled: false,
-        action: undefined,
-        label: 'Create Monitoring',
-        bulkAction: false,
-        rowAction: true,
-        rowCondition: (row) => {}, // TODO 
-        ...props.actions?.create_monitoring
-      }
+      label: 'Create Treatment',
+      bulkAction: true,
+      rowAction: false,
+      bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype), 
+      ...props.actions?.create_treatment
+    },
+    create_monitoring: {
+      key: 'create_monitoring',
+      enabled: false,
+      action: undefined,
+      label: 'Create Monitoring',
+      bulkAction: false,
+      rowAction: true,
+      rowCondition: (row) => {}, // TODO 
+      ...props.actions?.create_monitoring
     }
-  } = props;
+  };
   const { startingOrderBy = headers.length ? headers[0].id : 'id' } = props; // defaults to the first header
   const headCells: any = headers.map((header: any, i) => {
     if (typeof header === 'string' || typeof header === 'number')
@@ -520,6 +530,13 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [selected, setSelected] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
 
+  const selectedRows = selected
+    .map((id) => {
+      const matches = rows.find((row) => row[keyField] === id);
+      console.log(111, id, matches);
+      return matches ? matches : undefined
+    })
+    .filter((row) => row);
   // sort and limit the rows:
   const pageRows = stableSort(rows, getComparator(order, orderBy)).slice(
     page * rowsPerPage,
@@ -601,8 +618,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       <Accordion defaultExpanded={startExpanded || !rows.length}>
         {(enableSelection || enableFiltering || tableName.length > 0) && (
           <EnhancedTableToolbar
-            rows={rows}
-            selected={enableSelection ? selected : []}
+            selectedRows={enableSelection ? selectedRows : []}
             tableName={tableName}
             enableFiltering={enableFiltering}
             actions={bulkActions}
