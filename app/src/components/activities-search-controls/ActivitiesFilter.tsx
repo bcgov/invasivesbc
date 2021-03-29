@@ -1,5 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
 import {
+  Box,
   Button,
   Grid,
   InputLabel,
@@ -95,7 +96,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
             return (
               <ListItem key={index}>
                 <Paper className={classes.activityRecordsChoice}>
-                  <Grid container spacing={3}>
+                  <Grid xs={8} container spacing={3}>
                     <Grid item xs={4}>
                       <div>
                         <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
@@ -189,22 +190,24 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
             );
           })}
         </List>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={() => {
-            addActivityChoice({
-              activityType: '',
-              includePhotos: false,
-              includeForms: false,
-              species: [],
-              startDate: null,
-              endDate: null
-            });
-          }}>
-          Add New
-        </Button>
+        <Box>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={() => {
+              addActivityChoice({
+                activityType: '',
+                includePhotos: false,
+                includeForms: false,
+                species: [],
+                startDate: null,
+                endDate: null
+              });
+            }}>
+            Add New
+          </Button>
+        </Box>
       </MuiPickersUtilsProvider>
     </>
   );

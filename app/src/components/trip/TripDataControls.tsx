@@ -10,6 +10,7 @@ import {
 } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
+import TripStatus, { TripStatusCode } from './TripStepStatus';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -317,10 +318,14 @@ export const TripDataControls: React.FC = (props) => {
       });
   };
 
+  const [toggle, setToggle] = useState(TripStatusCode.initial);
+
   return (
-    <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
-      {fetching ? 'Fetching...' : 'Fetch'}
-    </Button>
+    <>
+      <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
+        {fetching ? 'Fetching...' : 'Get Data!'}
+      </Button>
+    </>
   );
 };
 

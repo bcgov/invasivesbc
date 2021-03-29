@@ -311,12 +311,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
-  const addZoomControls = () => {
-    const zoomControlOptions = { position: 'bottomleft' };
-
-    mapRef.current.addControl(L.control.zoom(zoomControlOptions));
-  };
-
   const addDrawControls = () => {
     const drawControlOptions = new L.Control.Draw({
       position: 'topright',
@@ -379,6 +373,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
   };
 
+  const setGeometryMapBounds = () => {
+    if (
+      props.geometryState?.geometry?.length &&
+      !(props.geometryState?.geometry[0].geometry.type === 'Point' && !props.geometryState?.geometry[0].radius)
+    ) {
+      const allGeosFeatureCollection = {
+        type: 'FeatureCollection',
+        features: [...props.geometryState.geometry]
+      };
+      const bboxCoords = turf.bbox(allGeosFeatureCollection);
+
+      mapRef.current.fitBounds([
+        [bboxCoords[1], bboxCoords[0]],
+        [bboxCoords[3], bboxCoords[2]]
+      ]);
+    }
+  };
+
   const setMapBounds = (extent) => {
     if (!extent) {
       return;
@@ -408,9 +420,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     setCurrentZoom(mapRef.current.getZoom());
     addContextMenuClickListener();
-
-    // addZoomControls();
-
     addLocateControls();
 
     if (props.showDrawControls) {
@@ -489,9 +498,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
 
     // console.log('testControl',testControl.getStorageSize);
+    const testControl = getSaveControl2(streams);
+    testControl._map = mapRef.current;
+    layerRef.current.push(testControl);
 
     addLayerControls(basemaps, overlays);
-
     setMapBounds(mapRef.current.getBounds());
 
     mapRef.current.on('dragend', () => {
@@ -674,6 +685,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       return;
     }
 
+    setGeometryMapBounds();
     updateMapOnGeometryChange();
   }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
 

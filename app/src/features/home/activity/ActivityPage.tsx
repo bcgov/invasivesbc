@@ -13,10 +13,12 @@ import {
   getCustomValidator,
   getAreaValidator,
   getWindValidator,
+  getTemperatureValidator,
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
   getJurisdictionPercentValidator,
-  getInvasivePlantsValidator
+  getInvasivePlantsValidator,
+  getDuplicateInvasivePlantsValidator
 } from 'rjsf/business-rules/customValidation';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import {
@@ -424,6 +426,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           customValidation={getCustomValidator([
             getAreaValidator(doc.activitySubtype),
             getWindValidator(doc.activitySubtype),
+            getTemperatureValidator(doc.activitySubtype),
+            getDuplicateInvasivePlantsValidator(doc.activitySubtype),
             getHerbicideApplicationRateValidator(),
             getTransectOffsetDistanceValidator(),
             getJurisdictionPercentValidator(),

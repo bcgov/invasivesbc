@@ -20,9 +20,11 @@ import {
   getCustomValidator,
   getAreaValidator,
   getWindValidator,
+  getTemperatureValidator,
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
-  getJurisdictionPercentValidator
+  getJurisdictionPercentValidator,
+  getDuplicateInvasivePlantsValidator
 } from 'rjsf/business-rules/customValidation';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 
@@ -206,6 +208,8 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
         customValidation={getCustomValidator([
           getAreaValidator(activity.activitySubtype),
           getWindValidator(activity.activitySubtype),
+          getTemperatureValidator(activity.activitySubtype),
+          getDuplicateInvasivePlantsValidator(activity.activitySubtype),
           getHerbicideApplicationRateValidator(),
           getTransectOffsetDistanceValidator(),
           getJurisdictionPercentValidator()

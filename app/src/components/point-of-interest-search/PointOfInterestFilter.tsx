@@ -1,5 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
 import {
+  Box,
   Button,
   Grid,
   InputLabel,
@@ -187,21 +188,23 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
             );
           })}
         </List>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={() => {
-            addPointOfInterestChoice({
-              pointOfInterestType: '',
-              includePhotos: false,
-              includeForms: false,
-              startDate: null,
-              endDate: null
-            });
-          }}>
-          Add New
-        </Button>
+        <Box>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={() => {
+              addPointOfInterestChoice({
+                pointOfInterestType: '',
+                includePhotos: false,
+                includeForms: false,
+                startDate: null,
+                endDate: null
+              });
+            }}>
+            Add New
+          </Button>
+        </Box>
       </MuiPickersUtilsProvider>
     </>
   );
