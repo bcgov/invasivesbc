@@ -3,6 +3,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Button,
   Checkbox,
   Collapse,
   IconButton,
@@ -20,7 +21,8 @@ import {
   Typography
 } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles';
-import { Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
+import { useHistory } from 'react-router-dom';
+import { Edit, Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
 import React, { useState } from 'react';
 import clsx from 'clsx';
 
@@ -113,6 +115,10 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
   toolbar: {
     height: '1px'
+  },
+  button: {
+    marginLeft: 10,
+    marginRight: 10
   }
 }));
 
@@ -163,7 +169,7 @@ function EnhancedTableHead(props) {
     <TableHead className={classes.header}>
       <TableRow>
         {(enableSelection || pageHasDropdown) && (
-          <TableCell padding="checkbox">
+          <TableCell padding="checkbox" className={classes.cell}>
             {enableSelection && (
               <Checkbox
                 indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -202,7 +208,8 @@ function EnhancedTableHead(props) {
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected, tableName, enableFiltering } = props;
+  const { rows, selected, tableName, enableFiltering, actions } = props;
+  const numSelected = selected?.length || 0;
 
   return (
     <AccordionSummary
@@ -224,13 +231,22 @@ const EnhancedTableToolbar = (props) => {
           </Typography>
         )}
 
-        {numSelected > 0 && (
-          <Tooltip title="Delete">
-            <IconButton aria-label="delete">
-              <Delete />
-            </IconButton>
-          </Tooltip>
-        )}
+        {numSelected > 0 &&
+          actions.map((action : any) => action.enabled && action.bulkAction && (
+            <Button
+              key={action.key}
+              variant="contained"
+              color="primary"
+              size="small"
+              className={classes.button}
+              startIcon={action.icon}
+              onClick={async (e) => {
+                e.stopPropagation();
+                action.action(rows, selected);
+              }}>
+              {action.label}
+            </Button>
+        ))}
         {enableFiltering && !numSelected && (
           <Tooltip title="Filter list">
             <IconButton aria-label="filter list">
@@ -306,7 +322,7 @@ const RecordTableRow = (props) => {
         selected={isSelected}
         onClick={toggleExpanded}>
         {(enableSelection || pageHasDropdown) && (
-          <TableCell padding="checkbox">
+          <TableCell padding="checkbox" className={classes.cell}>
             {enableSelection && (
               <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
             )}
@@ -372,10 +388,13 @@ export interface RecordTablePropType {
   overflowDropdown?: boolean;
   overflowLimit?: number;
   pagination?: boolean;
+  actions?: any;
 }
 
 const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const classes = useStyles();
+  const history = useHistory();
+
   const {
     tableName,
     rows,
@@ -397,7 +416,82 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     padEmptyRows = false // whitespace added to make the table the same height
     // even on the last page with only e.g. 1 row
   } = props;
-  const { headers = rows.length ? Object.keys(rows[0]) : [] } = props;
+  const { // props conditional on previous props:
+    headers = rows.length ? Object.keys(rows[0]) : [],
+    actions = {
+      ...props.actions,
+      edit: {
+        key: 'edit',
+        enabled: enableSelection,
+        action: (rows, selectedIds) => {
+          if (selectedIds.length === 1) {
+            // TODO switch by activity type, I guess...
+            history.push({
+              pathname: `/home/activity`,
+              //search: '?id=' + keys,
+              //state: { id: keys }
+            });
+          } else {
+            history.push({
+              pathname: `/home/search/bulkedit`,
+              search: '?activities=' + selectedIds.join(','),
+              state: { activityIdsToEdit: selectedIds }
+            });
+          }
+        },
+        label: 'Edit',
+        icon: <Edit />,
+        bulkAction: true,
+        rowAction: true,
+        bulkCondition: (rows) => {}, // TODO
+        rowCondition: () => {},
+        ...props.actions?.edit
+      },
+      delete: {
+        key: 'delete',
+        enabled: enableSelection,
+        action: (rows) => {},
+        label: 'Delete',
+        icon: <Delete />,
+        bulkAction: true,
+        rowAction: true,
+        bulkCondition: (rows) => {}, // TODO
+        rowCondition: () => {},
+        ...props.actions?.delete
+      },
+      // NOTE: these could probably be defined somewhere else, or in a super-class
+      // since this isn't quite generic.  But meh, fine for now:
+      create_metabase_query: {
+        key: 'create_metabase_query',
+        enabled: false,
+        action: (rows) => {},
+        label: 'Create Metabase Query',
+        bulkAction: true,
+        rowAction: false,
+        ...props.actions?.create_metabase_query
+      },
+      create_treatment: {
+        key: 'create_treatment',
+        enabled: false,
+        action: (rows) => {},
+        label: 'Create Treatment',
+        bulkAction: true,
+        rowAction: false,
+        bulkCondition: (rows) => {}, // TODO 
+        ...props.actions?.create_treatment
+      },
+      create_monitoring: {
+        key: 'create_monitoring',
+        enabled: false,
+        action: undefined,
+        label: 'Create Monitoring',
+        bulkAction: false,
+        rowAction: true,
+        rowCondition: (row) => {}, // TODO 
+        ...props.actions?.create_monitoring
+      }
+    }
+  } = props;
   const { startingOrderBy = headers.length ? headers[0].id : 'id' } = props; // defaults to the first header
   const headCells: any = headers.map((header: any, i) => {
     if (typeof header === 'string' || typeof header === 'number')
@@ -416,6 +510,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       };
     throw new Error('Table header not defined correctly - must be a string, number or object');
   });
+  const bulkActions : Array<any> = Object.values(actions).filter((action : any) => action.enabled && action.bulkAction);
+  const rowActions : Array<any> = Object.values(actions).filter((action : any) => action.enabled && action.rowAction);
 
   const [order, setOrder] = useState(startingOrder);
   const [orderBy, setOrderBy] = useState(startingOrderBy);
@@ -503,11 +599,15 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   return (
     <div className={clsx(classes.paper)}>
       <Accordion defaultExpanded={startExpanded || !rows.length}>
-        <EnhancedTableToolbar
-          numSelected={enableSelection && selected.length}
-          tableName={tableName}
-          enableFiltering={enableFiltering}
-        />
+        {(enableSelection || enableFiltering || tableName.length > 0) && (
+          <EnhancedTableToolbar
+            rows={rows}
+            selected={enableSelection ? selected : []}
+            tableName={tableName}
+            enableFiltering={enableFiltering}
+            actions={bulkActions}
+          />
+        )}
         <AccordionDetails className={classes.paper}>
           {!rows.length && <div className={classes.emptyTable}>No data to display</div>}
           {!!rows.length && (
@@ -542,8 +642,14 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                       isExpanded={isExpandedRow(row[keyField])}
                       isSelected={isSelectedRow(row[keyField])}
                       enableSelection={enableSelection}
-                      toggleExpanded={() => toggleExpandedRow(row[keyField])}
-                      toggleSelected={() => selectRow(row[keyField])}
+                      toggleExpanded={(event) => {
+                        event.stopPropagation();
+                        toggleExpandedRow(row[keyField]);
+                      }}
+                      toggleSelected={(event) => {
+                        event.stopPropagation();
+                        selectRow(row[keyField]);
+                      }}
                     />
                   ))}
                   {padEmptyRows && emptyRows > 0 && (
