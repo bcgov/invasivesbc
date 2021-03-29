@@ -97,7 +97,8 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginLeft: 10,
-    marginRight: 10
+    marginRight: 10,
+    whiteSpace: 'nowrap'
   }
 }));
 
@@ -117,7 +118,9 @@ const useToolbarStyles = makeStyles((theme) => ({
           backgroundColor: theme.palette.secondary.dark
         },
   title: {
-    flex: '1 1 100%'
+    flex: '1 1 100%',
+    fontSize: theme.typography.pxToRem(18),
+    fontWeight: theme.typography.fontWeightRegular
   },
   toolbar: {
     height: '1px'
@@ -509,7 +512,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     // since this isn't quite generic.  But meh, fine for now:
     create_metabase_query: {
       key: 'create_metabase_query',
-      enabled: false,
+      enabled: true,
       action: (rows) => {},
       label: 'Create Metabase Query',
       bulkAction: true,

@@ -436,6 +436,25 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
                 : ''
             }))
         }
+        actions={{
+          create_treatment: {
+            key: 'create_treatment',
+            enabled: true,
+            action: (rows) => {
+              const ids = rows.map((row: any) => row['activity_id']);
+              history.push({
+                pathname: `/home/activity/treatment`,
+                search: '?observations=' + ids.join(','),
+                state: { observations: ids }
+              });
+            },
+            label: 'Create Treatment',
+            bulkAction: true,
+            rowAction: false,
+            disableWhenInvalid: true,
+            bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype)
+          }
+        }}
         enableSelection
       />
       <RecordTable
