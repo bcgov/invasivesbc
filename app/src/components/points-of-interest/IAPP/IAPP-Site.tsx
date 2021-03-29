@@ -143,8 +143,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Jurisdiction
             </Grid>
             <Grid item xs={3}>
-              {(surveys?.length &&
-                surveys[0].jurisdictions?.length &&
+              {(surveys?.[0]?.jurisdictions?.length > 0 &&
                 ifApplicable(surveys[0].jurisdictions[0].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[0].percentage +
@@ -152,16 +151,14 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 'Not Provided'}
             </Grid>
             <Grid item xs={3}>
-              {surveys?.length &&
-                surveys[0].jurisdictions?.length > 1 &&
+              {surveys?.[0]?.jurisdictions?.length > 1 &&
                 ifApplicable(surveys[0].jurisdictions[1].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[1].percentage +
                   '%)'}
             </Grid>
             <Grid item xs={3}>
-              {surveys?.length &&
-                surveys[0].jurisdictions?.length > 2 &&
+              {surveys?.[0]?.jurisdictions?.length > 2 &&
                 ifApplicable(surveys[0].jurisdictions[2].jurisdiction_code) +
                   ' (' +
                   surveys[0].jurisdictions[2].percentage +
@@ -191,6 +188,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         startingOrderBy="survey_id"
         startingOrder="desc"
         className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'survey_id',
@@ -255,6 +253,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         startingOrderBy="treatment_id"
         startingOrder="desc"
         className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'treatment_id',
@@ -300,13 +299,14 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }))
         }
         dropdown={(row) =>
-          row.monitoring?.length ? undefined : (
+          !row.monitoring?.length ? undefined : (
             <RecordTable
               tableName="Monitoring"
               startExpanded={true}
               startingOrderBy="monitoring_id"
               startingOrder="desc"
               keyField="monitoring_id"
+              actions={false}
               headers={[
                 {
                   id: 'monitoring_id',
@@ -354,6 +354,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         startingOrderBy="treatment_id"
         startingOrder="desc"
         className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'treatment_id',
@@ -402,6 +403,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             <RecordTable
               startExpanded={true}
               keyField="treatment_id"
+              actions={false}
               headers={[
                 {
                   id: 'pmp_confirmation_number',
@@ -459,6 +461,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               startExpanded={true}
               startingOrderBy="monitoring_date"
               keyField="monitoring_id"
+              actions={false}
               headers={[
                 {
                   id: 'monitoring_id',
@@ -506,6 +509,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         startingOrderBy="treatment_id"
         startingOrder="desc"
         className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'treatment_id',
@@ -577,13 +581,14 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }))
         }
         dropdown={(row) =>
-          row.monitoring?.length ? undefined : (
+          !row.monitoring?.length ? undefined : (
             <RecordTable
               tableName="Monitoring"
               startExpanded={true}
               startingOrderBy="monitoring_id"
               startingOrder="desc"
               keyField="monitoring_id"
+              actions={false}
               headers={[
                 {
                   id: 'monitoring_id',
@@ -678,6 +683,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         startingOrderBy="biological_id"
         startingOrder="desc"
         className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'treatment_id',
