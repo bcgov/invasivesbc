@@ -2,6 +2,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Button,
   Container,
   Grid,
@@ -194,6 +195,18 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       setStepState([...newState]);
     };
 
+    //generic helper to mark step as done if there isn't a special purpose check
+    const helperStepDoneOrSkip = (stepNumber) => {
+      let newState: any = [...stepState];
+      for (let i = 1; i < stepState.length; i++) {
+        newState[i] = { ...newState[i], expanded: false };
+        if (i == stepNumber && i != 1) {
+          newState[i] = { ...newState[i], status: TripStatusCode.ready };
+        }
+      }
+      setStepState([...newState]);
+    };
+
     return (
       <Grid item md={12}>
         <Accordion>
@@ -211,6 +224,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               stepStatus={helperCheckForGeo()}
               stepAccordionOnChange={(event, expanded) => {
                 helperCloseOtherAccordions(expanded, 1);
+              }}
+              doneButtonCallBack={() => {
+                helperStepDoneOrSkip(1);
               }}>
               <Paper className={classes.paper}>
                 <Typography variant="body1">
@@ -228,6 +244,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               stepStatus={stepState[2].status}
               stepAccordionOnChange={(event, expanded) => {
                 helperCloseOtherAccordions(expanded, 2);
+              }}
+              doneButtonCallBack={() => {
+                helperStepDoneOrSkip(2);
               }}>
               <ActivityDataFilter />
             </TripStep>
@@ -240,6 +259,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               stepStatus={stepState[3].status}
               stepAccordionOnChange={(event, expanded) => {
                 helperCloseOtherAccordions(expanded, 3);
+              }}
+              doneButtonCallBack={() => {
+                helperStepDoneOrSkip(3);
               }}>
               <PointOfInterestDataFilter />
             </TripStep>
@@ -252,6 +274,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               stepStatus={stepState[4].status}
               stepAccordionOnChange={(event, expanded) => {
                 helperCloseOtherAccordions(expanded, 4);
+              }}
+              doneButtonCallBack={() => {
+                helperStepDoneOrSkip(4);
               }}>
               <MetabaseSearch />
             </TripStep>
@@ -264,6 +289,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               stepStatus={stepState[5].status}
               stepAccordionOnChange={(event, expanded) => {
                 helperCloseOtherAccordions(expanded, 5);
+              }}
+              doneButtonCallBack={() => {
+                helperStepDoneOrSkip(5);
               }}>
               <TripDataControls />
               <ManageDatabaseComponent />
@@ -282,6 +310,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     tripStepDetailsClassName: string;
     stepStatus: TripStatusCode;
     stepAccordionOnChange?: (event, expanded) => void;
+    doneButtonCallBack?: () => void;
   }
 
   const TripStep: React.FC<ITripStep> = (props) => {
@@ -308,7 +337,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             </Grid>
           </Grid>
         </AccordionSummary>
-        <AccordionDetails className={props.tripStepDetailsClassName}>{props.children}</AccordionDetails>
+        <AccordionDetails className={props.tripStepDetailsClassName}>
+          {props.children}
+          <Box m={2} alignSelf="center">
+            <Button variant="contained" color="primary" onClick={props.doneButtonCallBack}>
+              I'm done here.
+            </Button>
+          </Box>
+        </AccordionDetails>
       </Accordion>
     );
   };
