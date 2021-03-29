@@ -425,16 +425,16 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
           !observations?.length
             ? []
             : observations.map((activity) => ({
-              ...activity,
-              ...activity?.formData?.activity_data,
-              ...activity?.formData?.activity_subtype_data,
-              id: activity.activity_id,
-              jurisdictions_rendered: activity?.formData?.activity_data?.jurisdictions
-                ? activity?.formData?.activity_data?.jurisdictions
-                  .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-                  .join(', ')
-                : ''
-            }))
+                ...activity,
+                ...activity?.formData?.activity_data,
+                ...activity?.formData?.activity_subtype_data,
+                id: activity.activity_id,
+                jurisdictions_rendered: activity?.formData?.activity_data?.jurisdictions
+                  ? activity?.formData?.activity_data?.jurisdictions
+                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
+                      .join(', ')
+                  : ''
+              }))
         }
         actions={{
           create_treatment: {
@@ -508,16 +508,16 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
           !treatments?.length
             ? []
             : treatments.map((activity) => ({
-              ...activity,
-              ...activity?.formData?.activity_data,
-              ...activity?.formData?.activity_subtype_data,
-              id: activity.activity_id,
-              jurisdictions_rendered: activity?.formData?.activity_data?.jurisdictions
-                ? activity?.formData?.activity_data?.jurisdictions
-                  .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-                  .join(', ')
-                : ''
-            }))
+                ...activity,
+                ...activity?.formData?.activity_data,
+                ...activity?.formData?.activity_subtype_data,
+                id: activity.activity_id,
+                jurisdictions_rendered: activity?.formData?.activity_data?.jurisdictions
+                  ? activity?.formData?.activity_data?.jurisdictions
+                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
+                      .join(', ')
+                  : ''
+              }))
         }
         dropdown={(row) => (
           <>
@@ -577,8 +577,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
                 activity
               );
               setActiveActivityAndNavigateToActivityPage(addedActivity); */
-            },
-
+            }
           }
         }}
         enableSelection

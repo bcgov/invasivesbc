@@ -220,27 +220,28 @@ const EnhancedTableToolbar = (props) => {
   const { selectedRows, tableName, enableFiltering, actions } = props;
   const numSelected = selectedRows?.length || 0;
 
-  const bulkActions : Array<any> = actions.map((action : any) => {
-    const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
-    if (!action.disableWhenInvalid && !isValid)
-      return;
-    return (
-      <Button
-        key={action.key}
-        variant="contained"
-        color="primary"
-        size="small"
-        disabled={action.disableWhenInvalid && !isValid}
-        className={classes.button}
-        startIcon={action.icon}
-        onClick={async (e) => {
-          e.stopPropagation();
-          action.action(selectedRows);
-        }}>
-        {action.label}
-      </Button>
-    );
-  }).filter((button) => button); // remove hidden actions
+  const bulkActions: Array<any> = actions
+    .map((action: any) => {
+      const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
+      if (!action.disableWhenInvalid && !isValid) return;
+      return (
+        <Button
+          key={action.key}
+          variant="contained"
+          color="primary"
+          size="small"
+          disabled={action.disableWhenInvalid && !isValid}
+          className={classes.button}
+          startIcon={action.icon}
+          onClick={async (e) => {
+            e.stopPropagation();
+            action.action(selectedRows);
+          }}>
+          {action.label}
+        </Button>
+      );
+    })
+    .filter((button) => button); // remove hidden actions
 
   return (
     <AccordionSummary
@@ -329,28 +330,29 @@ const RecordTableRow = (props) => {
   }
   const renderedDropdown = !!dropdown && dropdown(row);
   const labelId = `record-table-checkbox-${key}`;
-  const rowActions = actions.map((action : any) => {
-    const isValid = action.rowCondition ? action.rowCondition(row) : true;
-    if (!action.disableWhenInvalid && !isValid)
-      return;
-    return (
-      <Button
-        key={action.key}
-        variant="contained"
-        color="primary"
-        size="small"
-        disabled={action.disableWhenInvalid && !isValid}
-        className={classes.button}
-        startIcon={action.icon}
-        onClick={async (e) => {
-          e.stopPropagation();
-          action.action([row]);
-        }}>
-        {action.label}
-      </Button>
-    )
-  }).filter((button) => button); // remove hidden actions
-  const rowHasDropdown = (!!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0));
+  const rowActions = actions
+    .map((action: any) => {
+      const isValid = action.rowCondition ? action.rowCondition(row) : true;
+      if (!action.disableWhenInvalid && !isValid) return;
+      return (
+        <Button
+          key={action.key}
+          variant="contained"
+          color="primary"
+          size="small"
+          disabled={action.disableWhenInvalid && !isValid}
+          className={classes.button}
+          startIcon={action.icon}
+          onClick={async (e) => {
+            e.stopPropagation();
+            action.action([row]);
+          }}>
+          {action.label}
+        </Button>
+      );
+    })
+    .filter((button) => button); // remove hidden actions
+  const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
 
   return (
     <React.Fragment key={key}>
@@ -430,7 +432,7 @@ export interface RecordTablePropType {
   overflowLimit?: number;
   pagination?: boolean;
   actions?: any;
-  rowActionStyle ?: string;
+  rowActionStyle?: string;
 }
 
 const RecordTable: React.FC<RecordTablePropType> = (props) => {
@@ -461,95 +463,98 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     rowActionStyle = 'dropdown' // || 'column'
   } = props;
   const { headers = rows.length ? Object.keys(rows[0]) : [] } = props;
-  const actions = props.actions === false ? {} : {
-    ...props.actions,
-    edit: {
-      // NOTE: this might be a good candidate to be broken out to a parent class
-      // since it breaks generality of this multi-purpose table
-      key: 'edit',
-      enabled: enableSelection,
-      action: async (rows) => {
-        const selectedIds = rows.map((row) => row[keyField]);
-        if (selectedIds.length === 1) {
-          // TODO switch by activity type, I guess...
-          await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-            return { ...appStateDoc, activeActivity: selectedIds[0] };
-          });
-          history.push({ pathname: `/home/activity` });
-        } else {
-          history.push({
-            pathname: `/home/search/bulkedit`,
-            search: '?activities=' + selectedIds.join(','),
-            state: { activityIdsToEdit: selectedIds }
-          });
-        }
-      },
-      label: 'Edit',
-      icon: <Edit />,
-      bulkAction: true,
-      rowAction: true,
-      bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype),
-        // TODO limit to only some subtypes too
-        // TODO IAPP POIs not editable
-      rowCondition: undefined,
-      disableWhenInvalid: true,
-      ...props.actions?.edit
-    },
-    delete: {
-      key: 'delete',
-      enabled: enableSelection,
-      action: (rows) => {},
-      label: 'Delete',
-      icon: <Delete />,
-      bulkAction: true,
-      rowAction: true,
-      bulkCondition: undefined, // TODO
-      rowCondition: undefined,
-      disableWhenInvalid: true,
-      ...props.actions?.delete
-    },
-    // NOTE: these could probably be defined somewhere else, or in a super-class
-    // since this isn't quite generic.  But meh, fine for now:
-    create_metabase_query: {
-      key: 'create_metabase_query',
-      enabled: true,
-      action: (rows) => {},
-      label: 'Create Metabase Query',
-      bulkAction: true,
-      rowAction: false,
-      disableWhenInvalid: true,
-      ...props.actions?.create_metabase_query
-    },
-    create_treatment: {
-      key: 'create_treatment',
-      enabled: false,
-      action: (rows) => {
-        const ids = rows.map((row: any) => row[keyField]);
-        history.push({
-          pathname: `/home/activity/treatment`,
-          search: '?observations=' + ids.join(','),
-          state: { observations: ids }
-        });
-      },
-      label: 'Create Treatment',
-      bulkAction: true,
-      rowAction: false,
-      disableWhenInvalid: true,
-      bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype), 
-      ...props.actions?.create_treatment
-    },
-    create_monitoring: {
-      key: 'create_monitoring',
-      enabled: false,
-      action: undefined,
-      label: 'Create Monitoring',
-      bulkAction: false,
-      rowAction: true,
-      disableWhenInvalid: true,
-      rowCondition: undefined, // TODO 
-      ...props.actions?.create_monitoring
-    }
-  };
+  const actions =
+    props.actions === false
+      ? {}
+      : {
+          ...props.actions,
+          edit: {
+            // NOTE: this might be a good candidate to be broken out to a parent class
+            // since it breaks generality of this multi-purpose table
+            key: 'edit',
+            enabled: enableSelection,
+            action: async (rows) => {
+              const selectedIds = rows.map((row) => row[keyField]);
+              if (selectedIds.length === 1) {
+                // TODO switch by activity type, I guess...
+                await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
+                  return { ...appStateDoc, activeActivity: selectedIds[0] };
+                });
+                history.push({ pathname: `/home/activity` });
+              } else {
+                history.push({
+                  pathname: `/home/search/bulkedit`,
+                  search: '?activities=' + selectedIds.join(','),
+                  state: { activityIdsToEdit: selectedIds }
+                });
+              }
+            },
+            label: 'Edit',
+            icon: <Edit />,
+            bulkAction: true,
+            rowAction: true,
+            bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype),
+            // TODO limit to only some subtypes too
+            // TODO IAPP POIs not editable
+            rowCondition: undefined,
+            disableWhenInvalid: true,
+            ...props.actions?.edit
+          },
+          delete: {
+            key: 'delete',
+            enabled: enableSelection,
+            action: (rows) => {},
+            label: 'Delete',
+            icon: <Delete />,
+            bulkAction: true,
+            rowAction: true,
+            bulkCondition: undefined, // TODO
+            rowCondition: undefined,
+            disableWhenInvalid: true,
+            ...props.actions?.delete
+          },
+          // NOTE: these could probably be defined somewhere else, or in a super-class
+          // since this isn't quite generic.  But meh, fine for now:
+          create_metabase_query: {
+            key: 'create_metabase_query',
+            enabled: true,
+            action: (rows) => {},
+            label: 'Create Metabase Query',
+            bulkAction: true,
+            rowAction: false,
+            disableWhenInvalid: true,
+            ...props.actions?.create_metabase_query
+          },
+          create_treatment: {
+            key: 'create_treatment',
+            enabled: false,
+            action: (rows) => {
+              const ids = rows.map((row: any) => row[keyField]);
+              history.push({
+                pathname: `/home/activity/treatment`,
+                search: '?observations=' + ids.join(','),
+                state: { observations: ids }
+              });
+            },
+            label: 'Create Treatment',
+            bulkAction: true,
+            rowAction: false,
+            disableWhenInvalid: true,
+            bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype),
+            ...props.actions?.create_treatment
+          },
+          create_monitoring: {
+            key: 'create_monitoring',
+            enabled: false,
+            action: undefined,
+            label: 'Create Monitoring',
+            bulkAction: false,
+            rowAction: true,
+            disableWhenInvalid: true,
+            rowCondition: undefined, // TODO
+            ...props.actions?.create_monitoring
+          }
+        };
   const { startingOrderBy = headers.length ? headers[0].id : 'id' } = props; // defaults to the first header
   const headCells: any = headers.map((header: any, i) => {
     if (typeof header === 'string' || typeof header === 'number')
@@ -568,8 +573,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       };
     throw new Error('Table header not defined correctly - must be a string, number or object');
   });
-  const bulkActions : Array<any> = Object.values(actions).filter((action : any) => action.enabled && action.bulkAction);
-  const rowActions : Array<any> = Object.values(actions).filter((action : any) => action.enabled && action.rowAction);
+  const bulkActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.bulkAction);
+  const rowActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.rowAction);
 
   const [order, setOrder] = useState(startingOrder);
   const [orderBy, setOrderBy] = useState(startingOrderBy);
@@ -581,7 +586,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const selectedRows = selected
     .map((id) => {
       const matches = rows.find((row) => row[keyField] === id);
-      return matches ? matches : undefined
+      return matches ? matches : undefined;
     })
     .filter((row) => row);
   // sort and limit the rows:
