@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
     //todo more spacing, above doesnt work
     textAlign: 'center'
   },
+  tripList: {
+    width: '100%',
+  },
   tripAccordionGridItem: {
     textAlign: 'left'
   },
@@ -211,12 +214,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
     return (
       <Grid item md={12}>
-        <Accordion>
-          <AccordionSummary>Expand/Shrink Trip</AccordionSummary>
-          <AccordionDetails className={classes.tripAccordion}>
-            <Paper className={classes.paper}>
-              <Typography variant="body1">Trip summary details</Typography>
-            </Paper>
             <TripStep
               title="Step 1: Add a spatial boundary for your trip."
               helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
@@ -298,8 +295,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               <TripDataControls />
               <ManageDatabaseComponent />
             </TripStep>
-          </AccordionDetails>
-        </Accordion>
       </Grid>
     );
   };
@@ -329,7 +324,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 <HelpIcon fontSize="large" />
               </Tooltip>
             </Grid>
-            <Grid item>
+            <Grid xs={6} item>
               <Typography align="left" variant="h5">
                 {props.title}
               </Typography>
@@ -354,13 +349,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   return (
     <Container className={props.classes.container}>
       <Paper className={classes.paper}>
-        <Typography variant="h5">My Trips</Typography>
-        <Tooltip
-          color="primary"
-          title="Use this map along with the controls on the left to cache data.  Draw a shape to search by, or search without a spatial filter by using the trash can to delete the shape.  Hit the save icon on the map to save map tiles up to the zoom level you are in for a given area."
-          arrow>
-          <HelpIcon fontSize="large" />
-        </Tooltip>
         <MapContainer
           {...props}
           classes={classes}
@@ -371,10 +359,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
         />
       </Paper>
-      <Button onClick={addTrip} variant="contained">
+      <Button onClick={addTrip} color="primary" variant="contained">
         Add Trip
       </Button>
       <RecordTable
+      className={classes.tripList}
        tableName={"My Trips"}
        keyField="trip_id" // defaults to just use 'id'
 //       startingOrder="survey_date" // defaults to first table column
@@ -415,7 +404,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
        // startingRowsPerPage: default 10;
        // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
     />
-      <TripListComponent />
+   {/*   <TripListComponent />*/}
     </Container>
   );
 };
