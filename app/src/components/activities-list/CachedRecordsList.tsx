@@ -354,9 +354,8 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
           doc={doc}
         />
       ))}
-
       <RecordTable
-        tableName="Treatments"
+        tableName="Observations"
         keyField="activity_id"
         startingOrderBy="activity_id"
         startingOrder="desc"
@@ -420,47 +419,71 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
           {
             id: 'general_comment',
             title: 'Comment'
+          }
+        ]}
+        rows={
+          !observations?.length
+            ? []
+            : observations.map((activity) => ({
+              ...activity,
+              ...activity?.formData?.activity_data,
+              ...activity?.formData?.activity_subtype_data,
+              id: activity.activity_id,
+              jurisdictions_rendered: activity?.formData?.activity_data?.jurisdictions
+                ? activity?.formData?.activity_data?.jurisdictions
+                  .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
+                  .join(', ')
+                : ''
+            }))
+        }
+        enableSelection
+      />
+      <RecordTable
+        tableName="Treatments"
+        keyField="activity_id"
+        startingOrderBy="activity_id"
+        startingOrder="desc"
+        headers={[
+          {
+            id: 'activity_id',
+            title: 'Activity ID'
+          },
+          {
+            id: 'activity_subtype',
+            title: 'Subtype'
+          },
+          {
+            id: 'created_timestamp',
+            title: 'Created Date'
+          },
+          {
+            id: 'invasive_plant_code',
+            title: 'Invasive Plant Code'
+          },
+          {
+            id: 'invasive_species_agency_code',
+            title: 'Agency'
           },
           {
             id: 'chemical_method_code',
             title: 'Chemical Method'
           },
           {
-            id: 'invasive_plant_code',
-            title: 'Invasive Plant Code'
+            id: 'reported_area',
+            title: 'Area (m\u00B2)'
+          },
+          {
+            id: 'latitude',
+            title: 'Latitude'
+          },
+          {
+            id: 'longitude',
+            title: 'Longitude'
+          },
+          {
+            id: 'elevation',
+            title: 'Elevation'
           }
-
-/*        
-          activity_payload
-            activity_data:
-              access_description: "Access is IMPOSSIBLE"
-              activity_date_time: "2021-03-24T20:44:44.000Z"
-              general_comment: "This is a test"
-              invasive_species_agency_code: "MOT"
-              jurisdictions: (2) [{…}, {…}]
-              latitude: 54.506832
-              longitude: -128.574712
-              reported_area: 1
-              __proto__: Object
-            activity_subtype_data:
-              activity_id: "7522954d-3b12-4e06-8c86-da9e657cf75e"
-              applicator1_license: "00000"
-              applicator1_name: "Derek Hogan"
-              applicator2_license: "N/A"
-              applicator2_name: "N/A"
-              chemical_method_code: "BNO"
-              herbicide: [{…}]
-              humidity: 20
-              invasive_plant_code: "RA"
-              pest_management_plan: "FLNR-PMP 402-0677-19/24"
-              pesticide_employer_code: "0"
-              pesticide_use_permit_PUP: "none"
-              pesticide_user_license_number: "00000"
-              signage_on_site: "Yes"
-              temperature: 24
-              wind_direction_code: "SE"
-              wind_speed: 9
-*/
         ]}
         rows={
           !treatments?.length
@@ -469,13 +492,76 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
               ...activity,
               ...activity?.formData?.activity_data,
               ...activity?.formData?.activity_subtype_data,
+              id: activity.activity_id,
               jurisdictions_rendered: activity?.formData?.activity_data?.jurisdictions
                 ? activity?.formData?.activity_data?.jurisdictions
-                  .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + ')')
+                  .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
                   .join(', ')
                 : ''
             }))
         }
+        dropdown={(row) => (
+          <>
+            <RecordTable
+              tableName=""
+              keyField="activity_id"
+              startingOrderBy="activity_id"
+              startingOrder="desc"
+              headers={[
+                {
+                  id: 'jurisdictions_rendered',
+                  title: 'Jurisdictions'
+                },
+                {
+                  id: 'biogeoclimatic_zones',
+                  title: 'Biogeoclimatic Zones'
+                },
+                {
+                  id: 'flnro_districts',
+                  title: 'FLNRO Districts'
+                },
+                {
+                  id: 'ownership',
+                  title: 'Ownership'
+                },
+                {
+                  id: 'regional_districts',
+                  title: 'Regional Districts'
+                },
+                {
+                  id: 'access_description',
+                  title: 'Access Description'
+                },
+                {
+                  id: 'general_comment',
+                  title: 'Comment'
+                }
+              ]}
+              rows={[row]}
+              pagination={false}
+            />
+          </>
+        )}
+        actions={{
+          create_monitoring: {
+            key: 'create_monitoring',
+            enabled: true,
+            label: 'Create Monitoring',
+            bulkAction: false,
+            rowAction: true,
+            rowCondition: (row) => row.activityType === 'Treatment',
+            action: async (activity) => {
+              /* const addedActivity = await addLinkedActivityToDB(
+                databaseContext,
+                ActivityType.Monitoring,
+                calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
+                activity
+              );
+              setActiveActivityAndNavigateToActivityPage(addedActivity); */
+            },
+
+          }
+        }}
         enableSelection
       />
     </List>
