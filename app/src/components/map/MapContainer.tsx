@@ -155,7 +155,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const getStreams = () => {
     return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/wmts/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
       {
         opacity: 0.8,
         tms: true
