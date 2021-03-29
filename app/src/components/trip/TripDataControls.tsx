@@ -323,27 +323,8 @@ export const TripDataControls: React.FC = (props) => {
   return (
     <>
       <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
-        {fetching ? 'Fetching...' : 'Fetch'}
+        {fetching ? 'Fetching...' : 'Get Data!'}
       </Button>
-      <Button
-        onClick={() => {
-          setToggle(TripStatusCode.initial);
-        }}>
-        initial
-      </Button>
-      <Button
-        onClick={() => {
-          setToggle(TripStatusCode.ready);
-        }}>
-        ready
-      </Button>
-      <Button
-        onClick={() => {
-          setToggle(TripStatusCode.error);
-        }}>
-        error
-      </Button>
-      <TripStatus statusCode={toggle} />
     </>
   );
 };
