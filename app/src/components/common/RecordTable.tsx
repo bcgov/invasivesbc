@@ -5,12 +5,8 @@ import {
   Box,
   Checkbox,
   Collapse,
-  FormControlLabel,
-  Grid,
   IconButton,
   makeStyles,
-  Paper,
-  Switch,
   Table,
   TableBody,
   TableCell,
@@ -156,7 +152,7 @@ function EnhancedTableHead(props) {
     rowCount,
     onRequestSort,
     headCells,
-    hasDropdown,
+    pageHasDropdown,
     enableSelection
   } = props;
   const createSortHandler = (property) => (event) => {
@@ -166,20 +162,19 @@ function EnhancedTableHead(props) {
   return (
     <TableHead className={classes.header}>
       <TableRow>
-        {enableSelection ||
-          (hasDropdown && (
-            <TableCell padding="checkbox">
-              {enableSelection && (
-                <Checkbox
-                  indeterminate={numSelected > 0 && numSelected < rowCount}
-                  checked={rowCount > 0 && numSelected === rowCount}
-                  onChange={onSelectAllClick}
-                  inputProps={{ 'aria-label': 'select all desserts' }}
-                />
-              )}
-              {hasDropdown && <IconButton aria-label="expand row" size="small" />}
-            </TableCell>
-          ))}
+        {(enableSelection || pageHasDropdown) && (
+          <TableCell padding="checkbox">
+            {enableSelection && (
+              <Checkbox
+                indeterminate={numSelected > 0 && numSelected < rowCount}
+                checked={rowCount > 0 && numSelected === rowCount}
+                onChange={onSelectAllClick}
+                inputProps={{ 'aria-label': 'select all desserts' }}
+              />
+            )}
+            {pageHasDropdown && <IconButton aria-label="expand row" size="small" />}
+          </TableCell>
+        )}
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -248,8 +243,108 @@ const EnhancedTableToolbar = (props) => {
   );
 };
 
+const RecordTableCell = ({ id, align, padding, className, row }) => {
+  const classes = useStyles();
+
+  const ifApplicable = (value) =>
+    value && String(value).trim().length ? value : <div className={classes.missingValue}>N/A</div>;
+
+  const renderCell = (cells, key) => {
+    const cell = cells[key];
+    switch (typeof cell) {
+      case 'object':
+        return React.createElement(TableCell, {
+          key: key,
+          ...cell
+        });
+      case 'function':
+        return cell(cells);
+      case 'string':
+      default:
+        return ifApplicable(cell);
+    }
+  };
+
+  return (
+    <TableCell component="th" scope="row" align={align} padding={padding} className={className}>
+      {renderCell(row, id)}
+    </TableCell>
+  );
+};
+
+const RecordTableRow = (props) => {
+  const {
+    keyField,
+    headers,
+    row,
+    isExpanded,
+    toggleExpanded,
+    enableSelection,
+    isSelected,
+    toggleSelected,
+    pageHasDropdown,
+    dropdown,
+    hasOverflow
+  } = props;
+  const classes = useStyles();
+
+  const key = row[keyField];
+  if (key === undefined) {
+    console.log(row, keyField);
+    throw new Error('Error: table row has no matching key defined');
+  }
+  const renderedDropdown = !!dropdown && dropdown(row);
+  const labelId = `record-table-checkbox-${key}`;
+
+  return (
+    <React.Fragment key={key}>
+      <TableRow
+        hover
+        role="checkbox"
+        aria-checked={isSelected}
+        tabIndex={-1}
+        selected={isSelected}
+        onClick={toggleExpanded}>
+        {(enableSelection || pageHasDropdown) && (
+          <TableCell padding="checkbox">
+            {enableSelection && (
+              <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
+            )}
+            {pageHasDropdown && (
+              <IconButton aria-label="expand row" size="small">
+                {(!!renderedDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
+              </IconButton>
+            )}
+          </TableCell>
+        )}
+        {headers.map((header) => (
+          <RecordTableCell
+            {...header}
+            key={header.id}
+            row={row}
+            className={`
+              ${classes.cell}
+              ${header.className}
+              ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
+            `}
+          />
+        ))}
+      </TableRow>
+      {!!renderedDropdown && (
+        <TableRow className={classes.tableRow}>
+          <TableCell className={classes.dropdown} colSpan={100}>
+            <Collapse in={isExpanded} timeout="auto">
+              <Box margin={2}>{renderedDropdown}</Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      )}
+    </React.Fragment>
+  );
+};
+
 /*
-  TODO outdated:
+  OUTDATED:
   headers: an array of (string/numeric) values (or objects if you want to get fancy and define other object cell properties)
   rows: an array of arrays of columns, which can each contain (string/numeric) values or objects defining overrides to each cell
   dropdown: if defined, gives a function to build the content of a dropdown section for each row, based on the 'source' and the current column index
@@ -273,6 +368,7 @@ export interface RecordTablePropType {
   enableFiltering?: boolean;
   className?: any;
   dropdown?: (row: any) => any;
+  dropdownLimit?: boolean;
   overflowDropdown?: boolean;
   overflowLimit?: number;
   pagination?: boolean;
@@ -287,6 +383,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     startingOrder = 'asc',
     expandable = true,
     dropdown, // default none
+    dropdownLimit = true,
     overflowDropdown = true, // overflow into a dropdown when a cell is very verbose
     overflowLimit = 50, // char limit
     startExpanded = true,
@@ -295,7 +392,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     enableSelection = false,
     enableFiltering = false,
     pagination = true,
-    className,
+    // className: tableClassName,
     densePadding = false,
     padEmptyRows = false // whitespace added to make the table the same height
     // even on the last page with only e.g. 1 row
@@ -317,7 +414,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
         defaultOrder: 'asc',
         ...header
       };
-    throw 'Table header not defined correctly - must be a string, number or object';
+    throw new Error('Table header not defined correctly - must be a string, number or object');
   });
 
   const [order, setOrder] = useState(startingOrder);
@@ -326,8 +423,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
   const [selected, setSelected] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
-  const [dense, setDense] = useState(densePadding);
-  const [expanded, setExpanded] = useState(startExpanded || !rows.length);
 
   // sort and limit the rows:
   const pageRows = stableSort(rows, getComparator(order, orderBy)).slice(
@@ -343,7 +438,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     (row) => headCells.filter(({ id }) => String(row[id]).length > overflowLimit).length > 0
   );
   const pageHasDropdown =
-    (!!dropdown && renderedDropdowns.filter((dropdown) => dropdown).length > 0) ||
+    (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
     (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0);
 
   const handleRequestSort = (event, property) => {
@@ -362,7 +457,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     setSelected([]);
   };
 
-  const selectRow = (event, key) => {
+  const selectRow = (key) => {
     const selectedIndex = selected.indexOf(key);
     let newSelected = [];
 
@@ -388,58 +483,39 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
-
   const isSelectedRow = (key) => selected.indexOf(key) !== -1;
   const isExpandedRow = (key) => expandedRows.indexOf(key) !== -1;
 
-  const ifApplicable = (value) =>
-    value && String(value).trim().length ? value : <div className={classes.missingValue}>N/A</div>;
-
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-
-  const renderCell = (row, id) => {
-    const cell = row[id];
-    switch (typeof cell) {
-      case 'object':
-        return React.createElement(TableCell, {
-          key: id,
-          ...cell
-        });
-      case 'function':
-        return cell(row);
-      default:
-      case 'string':
-        return ifApplicable(cell);
-    }
-  };
 
   const toggleExpandedRow = (key) => {
     if (isExpandedRow(key)) {
       const expandedRows2 = expandedRows;
       delete expandedRows2[expandedRows.indexOf(key)];
       setExpandedRows(expandedRows2.filter((value) => value));
-    } else setExpandedRows([...expandedRows, key]);
+    } else {
+      if (dropdownLimit) {
+        setExpandedRows([key]);
+      } else setExpandedRows([...expandedRows, key]);
+    }
   };
 
   return (
-    <div className={clsx(classes.paper, className)}>
-      <Accordion defaultExpanded={expanded}>
+    <div className={clsx(classes.paper)}>
+      <Accordion defaultExpanded={startExpanded || !rows.length}>
         <EnhancedTableToolbar
           numSelected={enableSelection && selected.length}
           tableName={tableName}
-          expanded={expanded}
           enableFiltering={enableFiltering}
         />
         <AccordionDetails className={classes.paper}>
+          {!rows.length && <div className={classes.emptyTable}>No data to display</div>}
           {!!rows.length && (
             <TableContainer>
               <Table
                 className={classes.table}
                 aria-labelledby="tableTitle"
-                size={dense ? 'small' : 'medium'}
+                size={densePadding ? 'small' : 'medium'}
                 aria-label="enhanced table">
                 <EnhancedTableHead
                   classes={classes}
@@ -451,79 +527,27 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                   rowCount={rows.length}
                   headCells={headCells}
                   enableSelection={enableSelection}
-                  hasDropdown={pageHasDropdown}
+                  pageHasDropdown={pageHasDropdown}
                 />
                 <TableBody>
-                  {pageRows.map((row, index) => {
-                    const key = row[keyField];
-                    if (key === undefined) {
-                      console.log(row, keyField);
-                      throw 'Error: table row has no matching key defined';
-                    }
-                    const isItemSelected = isSelectedRow(key);
-                    const labelId = `enhanced-table-checkbox-${key}`;
-                    const isOpen = isExpandedRow(key);
-                    const renderedDropdown = renderedDropdowns[index];
-                    const hasOverflow = verboseOverflows[index];
-
-                    return (
-                      <React.Fragment key={key}>
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          selected={isItemSelected}
-                          onClick={() => toggleExpandedRow(key)}>
-                          {enableSelection ||
-                            (pageHasDropdown && (
-                              <TableCell padding="checkbox">
-                                {enableSelection && (
-                                  <Checkbox
-                                    checked={isItemSelected}
-                                    onClick={(event) => selectRow(event, key)}
-                                    inputProps={{ 'aria-labelledby': labelId }}
-                                  />
-                                )}
-                                {pageHasDropdown && (
-                                  <IconButton aria-label="expand row" size="small">
-                                    {!!renderedDropdown ||
-                                      (hasOverflow && (isOpen ? <KeyboardArrowUp /> : <KeyboardArrowDown />))}
-                                  </IconButton>
-                                )}
-                              </TableCell>
-                            ))}
-                          {headCells.map(({ id, numeric, align, padding, className }, i) => (
-                            <TableCell
-                              component="th"
-                              id={labelId}
-                              key={id}
-                              scope="row"
-                              align={align}
-                              padding={padding}
-                              className={`
-                                ${classes.cell}
-                                ${row[id]?.className}
-                                ${hasOverflow && (isOpen ? classes.openRow : classes.closedRow)}
-                              `}>
-                              {renderCell(row, id)}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                        {!!renderedDropdown && (
-                          <TableRow className={classes.tableRow}>
-                            <TableCell className={classes.dropdown} colSpan={100}>
-                              <Collapse in={isOpen} timeout="auto">
-                                <Box margin={2}>{renderedDropdown}</Box>
-                              </Collapse>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
+                  {pageRows.map((row, index) => (
+                    <RecordTableRow
+                      key={row[keyField]}
+                      keyField={keyField}
+                      headers={headCells}
+                      row={row}
+                      dropdown={dropdown}
+                      pageHasDropdown={pageHasDropdown}
+                      hasOverflow={verboseOverflows[index]}
+                      isExpanded={isExpandedRow(row[keyField])}
+                      isSelected={isSelectedRow(row[keyField])}
+                      enableSelection={enableSelection}
+                      toggleExpanded={() => toggleExpandedRow(row[keyField])}
+                      toggleSelected={() => selectRow(row[keyField])}
+                    />
+                  ))}
                   {padEmptyRows && emptyRows > 0 && (
-                    <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                    <TableRow style={{ height: (densePadding ? 33 : 53) * emptyRows }}>
                       <TableCell colSpan={headCells.length} />
                     </TableRow>
                   )}
@@ -542,7 +566,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
               onChangeRowsPerPage={handleChangeRowsPerPage}
             />
           )}
-          {!rows.length && <div className={classes.emptyTable}>No data to display</div>}
         </AccordionDetails>
       </Accordion>
     </div>
