@@ -94,6 +94,10 @@ const useStyles = makeStyles((theme) => ({
   },
   emptyTable: {
     paddingLeft: 30
+  },
+  button: {
+    marginLeft: 10,
+    marginRight: 10
   }
 }));
 
@@ -213,6 +217,28 @@ const EnhancedTableToolbar = (props) => {
   const { selectedRows, tableName, enableFiltering, actions } = props;
   const numSelected = selectedRows?.length || 0;
 
+  const bulkActions : Array<any> = actions.map((action : any) => {
+    const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
+    if (!action.disableWhenInvalid && !isValid)
+      return;
+    return (
+      <Button
+        key={action.key}
+        variant="contained"
+        color="primary"
+        size="small"
+        disabled={action.disableWhenInvalid && !isValid}
+        className={classes.button}
+        startIcon={action.icon}
+        onClick={async (e) => {
+          e.stopPropagation();
+          action.action(selectedRows);
+        }}>
+        {action.label}
+      </Button>
+    );
+  }).filter((button) => button); // remove hidden actions
+
   return (
     <AccordionSummary
       className={classes.toolbar}
@@ -233,22 +259,7 @@ const EnhancedTableToolbar = (props) => {
           </Typography>
         )}
 
-        {numSelected > 0 &&
-          actions.map((action : any) => action.enabled && action.bulkAction && (
-            <Button
-              key={action.key}
-              variant="contained"
-              color="primary"
-              size="small"
-              className={classes.button}
-              startIcon={action.icon}
-              onClick={async (e) => {
-                e.stopPropagation();
-                action.action(selectedRows);
-              }}>
-              {action.label}
-            </Button>
-        ))}
+        {numSelected > 0 && bulkActions}
         {enableFiltering && !numSelected && (
           <Tooltip title="Filter list">
             <IconButton aria-label="filter list">
@@ -302,7 +313,9 @@ const RecordTableRow = (props) => {
     toggleSelected,
     pageHasDropdown,
     dropdown,
-    hasOverflow
+    hasOverflow,
+    actions,
+    actionStyle
   } = props;
   const classes = useStyles();
 
@@ -313,6 +326,28 @@ const RecordTableRow = (props) => {
   }
   const renderedDropdown = !!dropdown && dropdown(row);
   const labelId = `record-table-checkbox-${key}`;
+  const rowActions = actions.map((action : any) => {
+    const isValid = action.rowCondition ? action.rowCondition(row) : true;
+    if (!action.disableWhenInvalid && !isValid)
+      return;
+    return (
+      <Button
+        key={action.key}
+        variant="contained"
+        color="primary"
+        size="small"
+        disabled={action.disableWhenInvalid && !isValid}
+        className={classes.button}
+        startIcon={action.icon}
+        onClick={async (e) => {
+          e.stopPropagation();
+          action.action([row]);
+        }}>
+        {action.label}
+      </Button>
+    )
+  }).filter((button) => button); // remove hidden actions
+  const rowHasDropdown = (!!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0));
 
   return (
     <React.Fragment key={key}>
@@ -330,7 +365,7 @@ const RecordTableRow = (props) => {
             )}
             {pageHasDropdown && (
               <IconButton aria-label="expand row" size="small">
-                {(!!renderedDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
+                {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
               </IconButton>
             )}
           </TableCell>
@@ -348,10 +383,11 @@ const RecordTableRow = (props) => {
           />
         ))}
       </TableRow>
-      {!!renderedDropdown && (
+      {rowHasDropdown && (
         <TableRow className={classes.tableRow}>
           <TableCell className={classes.dropdown} colSpan={100}>
             <Collapse in={isExpanded} timeout="auto">
+              {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
               <Box margin={2}>{renderedDropdown}</Box>
             </Collapse>
           </TableCell>
@@ -391,6 +427,7 @@ export interface RecordTablePropType {
   overflowLimit?: number;
   pagination?: boolean;
   actions?: any;
+  rowActionStyle ?: string;
 }
 
 const RecordTable: React.FC<RecordTablePropType> = (props) => {
@@ -416,11 +453,12 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     pagination = true,
     // className: tableClassName,
     densePadding = false,
-    padEmptyRows = false // whitespace added to make the table the same height
+    padEmptyRows = false, // whitespace added to make the table the same height
     // even on the last page with only e.g. 1 row
+    rowActionStyle = 'dropdown' // || 'column'
   } = props;
   const { headers = rows.length ? Object.keys(rows[0]) : [] } = props;
-  const actions = {
+  const actions = props.actions === false ? {} : {
     ...props.actions,
     edit: {
       // NOTE: this might be a good candidate to be broken out to a parent class
@@ -447,8 +485,11 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       icon: <Edit />,
       bulkAction: true,
       rowAction: true,
-      bulkCondition: (rows) => {}, // TODO
-      rowCondition: () => {},
+      bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype),
+        // TODO limit to only some subtypes too
+        // TODO IAPP POIs not editable
+      rowCondition: undefined,
+      disableWhenInvalid: true,
       ...props.actions?.edit
     },
     delete: {
@@ -459,8 +500,9 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       icon: <Delete />,
       bulkAction: true,
       rowAction: true,
-      bulkCondition: (rows) => {}, // TODO
-      rowCondition: () => {},
+      bulkCondition: undefined, // TODO
+      rowCondition: undefined,
+      disableWhenInvalid: true,
       ...props.actions?.delete
     },
     // NOTE: these could probably be defined somewhere else, or in a super-class
@@ -472,6 +514,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       label: 'Create Metabase Query',
       bulkAction: true,
       rowAction: false,
+      disableWhenInvalid: true,
       ...props.actions?.create_metabase_query
     },
     create_treatment: {
@@ -488,6 +531,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       label: 'Create Treatment',
       bulkAction: true,
       rowAction: false,
+      disableWhenInvalid: true,
       bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype), 
       ...props.actions?.create_treatment
     },
@@ -498,7 +542,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       label: 'Create Monitoring',
       bulkAction: false,
       rowAction: true,
-      rowCondition: (row) => {}, // TODO 
+      disableWhenInvalid: true,
+      rowCondition: undefined, // TODO 
       ...props.actions?.create_monitoring
     }
   };
@@ -533,7 +578,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const selectedRows = selected
     .map((id) => {
       const matches = rows.find((row) => row[keyField] === id);
-      console.log(111, id, matches);
       return matches ? matches : undefined
     })
     .filter((row) => row);
@@ -552,7 +596,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   );
   const pageHasDropdown =
     (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
-    (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0);
+    (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0) ||
+    (rowActions?.length > 0 && rowActionStyle === 'dropdown');
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -666,6 +711,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                         event.stopPropagation();
                         selectRow(row[keyField]);
                       }}
+                      actions={rowActions}
+                      actionStyle={rowActionStyle}
                     />
                   ))}
                   {padEmptyRows && emptyRows > 0 && (
@@ -677,7 +724,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
               </Table>
             </TableContainer>
           )}
-          {!!rows.length && pagination && (
+          {rows.length > 0 && pagination && (
             <TablePagination
               rowsPerPageOptions={rowsPerPageOptions === false ? undefined : rowsPerPageOptions}
               component="div"
