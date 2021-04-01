@@ -35,9 +35,6 @@ const useStyles = makeStyles((theme) => ({
   missingValue: {
     fontStyle: 'italic',
     color: '#777'
-  },
-  iappTable: {
-    marginTop: '15px'
   }
 }));
 
@@ -187,7 +184,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="survey_id"
         startingOrderBy="survey_id"
         startingOrder="desc"
-        className={classes.iappTable}
         actions={false}
         headers={[
           {
@@ -252,7 +248,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="treatment_id"
         startingOrderBy="treatment_id"
         startingOrder="desc"
-        className={classes.iappTable}
         actions={false}
         headers={[
           {
@@ -353,7 +348,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="treatment_id"
         startingOrderBy="treatment_id"
         startingOrder="desc"
-        className={classes.iappTable}
         actions={false}
         headers={[
           {
@@ -508,7 +502,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="treatment_id"
         startingOrderBy="treatment_id"
         startingOrder="desc"
-        className={classes.iappTable}
         actions={false}
         headers={[
           {
@@ -682,7 +675,6 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="biological_id"
         startingOrderBy="biological_id"
         startingOrder="desc"
-        className={classes.iappTable}
         actions={false}
         headers={[
           {

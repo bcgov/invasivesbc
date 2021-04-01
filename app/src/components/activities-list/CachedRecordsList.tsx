@@ -507,13 +507,13 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         rows={
           !treatments?.length
             ? []
-            : treatments.map((activity) => ({
-                ...activity,
-                ...activity?.formData?.activity_data,
-                ...activity?.formData?.activity_subtype_data,
-                id: activity.activity_id,
-                jurisdictions_rendered: activity?.formData?.activity_data?.jurisdictions
-                  ? activity?.formData?.activity_data?.jurisdictions
+            : treatments.map((doc) => ({
+                ...doc,
+                ...doc?.formData?.activity_data,
+                ...doc?.formData?.activity_subtype_data,
+                id: doc.activity_id,
+                jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
+                  ? doc?.formData?.activity_data?.jurisdictions
                       .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
                       .join(', ')
                   : ''
@@ -788,15 +788,6 @@ const CachedRecordsList: React.FC = () => {
     <Container className={classes.activitiesContent}>
       <Box mb={3} display="flex" justifyContent="space-between">
         <Typography variant="h4">Cached Activities</Typography>
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel>Map Activity Type</InputLabel>
-          <Select value={mapActivityType} onChange={handleMapActivityChange} label="Select Map Activity Type">
-            <MenuItem value="All">All</MenuItem>
-            <MenuItem value={ActivityType.Observation}>Observation</MenuItem>
-            <MenuItem value={ActivityType.Treatment}>Treatment</MenuItem>
-            <MenuItem value={ActivityType.Monitoring}>Monitoring</MenuItem>
-          </Select>
-        </FormControl>
       </Box>
       {interactiveGeometry.length > 0 && (
         <Paper>

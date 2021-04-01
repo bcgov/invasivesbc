@@ -43,7 +43,8 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     textAlign: 'left',
     color: theme.palette.text.primary,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    marginTop: '15px'
   },
   table: {
     minWidth: 750,
@@ -515,16 +516,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
           },
           // NOTE: these could probably be defined somewhere else, or in a super-class
           // since this isn't quite generic.  But meh, fine for now:
-          create_metabase_query: {
-            key: 'create_metabase_query',
-            enabled: true,
-            action: (rows) => {},
-            label: 'Create Metabase Query',
-            bulkAction: true,
-            rowAction: false,
-            disableWhenInvalid: true,
-            ...props.actions?.create_metabase_query
-          },
           create_treatment: {
             key: 'create_treatment',
             enabled: false,
