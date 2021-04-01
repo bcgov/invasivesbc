@@ -158,251 +158,6 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-function EnhancedTableHead(props) {
-  const {
-    classes,
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-    headCells,
-    pageHasDropdown,
-    enableSelection
-  } = props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
-
-  return (
-    <TableHead className={classes.header}>
-      <TableRow>
-        {(enableSelection || pageHasDropdown) && (
-          <TableCell padding="checkbox" className={classes.cell}>
-            {enableSelection && (
-              <Checkbox
-                indeterminate={numSelected > 0 && numSelected < rowCount}
-                checked={rowCount > 0 && numSelected === rowCount}
-                onChange={onSelectAllClick}
-                inputProps={{ 'aria-label': 'select all desserts' }}
-              />
-            )}
-            {pageHasDropdown && <IconButton aria-label="expand row" size="small" />}
-          </TableCell>
-        )}
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.align}
-            padding={headCell.padding}
-            sortDirection={orderBy === headCell.id ? order : false}
-            className={`${classes.cell} ${headCell.className}`}>
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : headCell.defaultOrder}
-              onClick={createSortHandler(headCell.id)}>
-              {headCell.title}
-              {orderBy === headCell.id && (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              )}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
-
-const EnhancedTableToolbar = (props) => {
-  const classes = useToolbarStyles();
-  const { selectedRows, tableName, enableFiltering, actions } = props;
-  const numSelected = selectedRows?.length || 0;
-
-  const bulkActions: Array<any> = actions
-    .map((action: any) => {
-      const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
-      if (!action.disableWhenInvalid && !isValid) return;
-      return (
-        <Button
-          key={action.key}
-          variant="contained"
-          color="primary"
-          size="small"
-          disabled={action.disableWhenInvalid && !isValid}
-          className={classes.button}
-          startIcon={action.icon}
-          onClick={async (e) => {
-            e.stopPropagation();
-            action.action(selectedRows);
-          }}>
-          {action.label}
-        </Button>
-      );
-    })
-    .filter((button) => button); // remove hidden actions
-
-  return (
-    <AccordionSummary
-      className={classes.toolbar}
-      expandIcon={<ExpandMore />}
-      aria-controls="panel-map-content"
-      id="panel-map-header">
-      <Toolbar
-        className={clsx(classes.root, {
-          [classes.highlight]: numSelected > 0
-        })}>
-        {numSelected > 0 ? (
-          <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-            {numSelected} selected
-          </Typography>
-        ) : (
-          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-            {tableName}
-          </Typography>
-        )}
-
-        {numSelected > 0 && bulkActions}
-        {enableFiltering && !numSelected && (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="filter list">
-              <FilterList />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Toolbar>
-    </AccordionSummary>
-  );
-};
-
-const RecordTableCell = ({ id, align, padding, className, row }) => {
-  const classes = useStyles();
-
-  const ifApplicable = (value) =>
-    value && String(value).trim().length ? value : <div className={classes.missingValue}>N/A</div>;
-
-  const renderCell = (cells, key) => {
-    const cell = cells[key];
-    switch (typeof cell) {
-      case 'object':
-        return React.createElement(TableCell, {
-          key: key,
-          ...cell
-        });
-      case 'function':
-        return cell(cells);
-      case 'string':
-      default:
-        return ifApplicable(cell);
-    }
-  };
-
-  return (
-    <TableCell component="th" scope="row" align={align} padding={padding} className={className}>
-      {renderCell(row, id)}
-    </TableCell>
-  );
-};
-
-const RecordTableRow = (props) => {
-  const {
-    keyField,
-    headers,
-    row,
-    isExpanded,
-    toggleExpanded,
-    enableSelection,
-    isSelected,
-    toggleSelected,
-    pageHasDropdown,
-    dropdown,
-    hasOverflow,
-    actions,
-    actionStyle
-  } = props;
-  const classes = useStyles();
-
-  const key = row[keyField];
-  if (key === undefined) {
-    console.log(row, keyField);
-    throw new Error('Error: table row has no matching key defined');
-  }
-  const renderedDropdown = !!dropdown && dropdown(row);
-  const labelId = `record-table-checkbox-${key}`;
-  const rowActions = actions
-    .map((action: any) => {
-      const isValid = action.rowCondition ? action.rowCondition(row) : true;
-      if (!action.disableWhenInvalid && !isValid) return;
-      return (
-        <Button
-          key={action.key}
-          variant="contained"
-          color="primary"
-          size="small"
-          disabled={action.disableWhenInvalid && !isValid}
-          className={classes.button}
-          startIcon={action.icon}
-          onClick={async (e) => {
-            e.stopPropagation();
-            action.action([row]);
-          }}>
-          {action.label}
-        </Button>
-      );
-    })
-    .filter((button) => button); // remove hidden actions
-  const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
-
-  return (
-    <React.Fragment key={key}>
-      <TableRow
-        hover
-        role="checkbox"
-        aria-checked={isSelected}
-        tabIndex={-1}
-        selected={isSelected}
-        onClick={toggleExpanded}>
-        {(enableSelection || pageHasDropdown) && (
-          <TableCell padding="checkbox" className={classes.cell}>
-            {enableSelection && (
-              <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
-            )}
-            {pageHasDropdown && (
-              <IconButton aria-label="expand row" size="small">
-                {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
-              </IconButton>
-            )}
-          </TableCell>
-        )}
-        {headers.map((header) => (
-          <RecordTableCell
-            {...header}
-            key={header.id}
-            row={row}
-            className={`
-              ${classes.cell}
-              ${header.className}
-              ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
-            `}
-          />
-        ))}
-      </TableRow>
-      {rowHasDropdown && (
-        <TableRow className={classes.tableRow}>
-          <TableCell className={classes.dropdown} colSpan={100}>
-            <Collapse in={isExpanded} timeout="auto">
-              {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
-              <Box margin={2}>{renderedDropdown}</Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      )}
-    </React.Fragment>
-  );
-};
-
 /*
   OUTDATED:
   headers: an array of (string/numeric) values (or objects if you want to get fancy and define other object cell properties)
@@ -661,7 +416,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     <div className={clsx(classes.paper)}>
       <Accordion defaultExpanded={startExpanded || !rows.length}>
         {(enableSelection || enableFiltering || tableName.length > 0) && (
-          <EnhancedTableToolbar
+          <RecordTableToolbar
             selectedRows={enableSelection ? selectedRows : []}
             tableName={tableName}
             enableFiltering={enableFiltering}
@@ -677,7 +432,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                 aria-labelledby="tableTitle"
                 size={densePadding ? 'small' : 'medium'}
                 aria-label="enhanced table">
-                <EnhancedTableHead
+                <RecordTableHead
                   classes={classes}
                   numSelected={selected.length}
                   order={order}
@@ -737,6 +492,251 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
         </AccordionDetails>
       </Accordion>
     </div>
+  );
+};
+
+function RecordTableHead(props) {
+  const {
+    classes,
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+    headCells,
+    pageHasDropdown,
+    enableSelection
+  } = props;
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property);
+  };
+
+  return (
+    <TableHead className={classes.header}>
+      <TableRow>
+        {(enableSelection || pageHasDropdown) && (
+          <TableCell padding="checkbox" className={classes.cell}>
+            {enableSelection && (
+              <Checkbox
+                indeterminate={numSelected > 0 && numSelected < rowCount}
+                checked={rowCount > 0 && numSelected === rowCount}
+                onChange={onSelectAllClick}
+                inputProps={{ 'aria-label': 'select all desserts' }}
+              />
+            )}
+            {pageHasDropdown && <IconButton aria-label="expand row" size="small" />}
+          </TableCell>
+        )}
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.align}
+            padding={headCell.padding}
+            sortDirection={orderBy === headCell.id ? order : false}
+            className={`${classes.cell} ${headCell.className}`}>
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : headCell.defaultOrder}
+              onClick={createSortHandler(headCell.id)}>
+              {headCell.title}
+              {orderBy === headCell.id && (
+                <span className={classes.visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </span>
+              )}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
+
+const RecordTableToolbar = (props) => {
+  const classes = useToolbarStyles();
+  const { selectedRows, tableName, enableFiltering, actions } = props;
+  const numSelected = selectedRows?.length || 0;
+
+  const bulkActions: Array<any> = actions
+    .map((action: any) => {
+      const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
+      if (!action.disableWhenInvalid && !isValid) return;
+      return (
+        <Button
+          key={action.key}
+          variant="contained"
+          color="primary"
+          size="small"
+          disabled={action.disableWhenInvalid && !isValid}
+          className={classes.button}
+          startIcon={action.icon}
+          onClick={async (e) => {
+            e.stopPropagation();
+            action.action(selectedRows);
+          }}>
+          {action.label}
+        </Button>
+      );
+    })
+    .filter((button) => button); // remove hidden actions
+
+  return (
+    <AccordionSummary
+      className={classes.toolbar}
+      expandIcon={<ExpandMore />}
+      aria-controls="panel-map-content"
+      id="panel-map-header">
+      <Toolbar
+        className={clsx(classes.root, {
+          [classes.highlight]: numSelected > 0
+        })}>
+        {numSelected > 0 ? (
+          <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
+            {numSelected} selected
+          </Typography>
+        ) : (
+          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            {tableName}
+          </Typography>
+        )}
+
+        {numSelected > 0 && bulkActions}
+        {enableFiltering && !numSelected && (
+          <Tooltip title="Filter list">
+            <IconButton aria-label="filter list">
+              <FilterList />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Toolbar>
+    </AccordionSummary>
+  );
+};
+
+const RecordTableCell = ({ id, align, padding, className, row }) => {
+  const classes = useStyles();
+
+  const ifApplicable = (value) =>
+    value && String(value).trim().length ? value : <div className={classes.missingValue}>N/A</div>;
+
+  const renderCell = (cells, key) => {
+    const cell = cells[key];
+    switch (typeof cell) {
+      case 'object':
+        return React.createElement(TableCell, {
+          key: key,
+          ...cell
+        });
+      case 'function':
+        return cell(cells);
+      case 'string':
+      default:
+        return ifApplicable(cell);
+    }
+  };
+
+  return (
+    <TableCell component="th" scope="row" align={align} padding={padding} className={className}>
+      {renderCell(row, id)}
+    </TableCell>
+  );
+};
+
+const RecordTableRow = (props) => {
+  const {
+    keyField,
+    headers,
+    row,
+    isExpanded,
+    toggleExpanded,
+    enableSelection,
+    isSelected,
+    toggleSelected,
+    pageHasDropdown,
+    dropdown,
+    hasOverflow,
+    actions,
+    actionStyle
+  } = props;
+  const classes = useStyles();
+
+  const key = row[keyField];
+  if (key === undefined) {
+    console.log(row, keyField);
+    throw new Error('Error: table row has no matching key defined');
+  }
+  const renderedDropdown = !!dropdown && dropdown(row);
+  const labelId = `record-table-checkbox-${key}`;
+  const rowActions = actions
+    .map((action: any) => {
+      const isValid = action.rowCondition ? action.rowCondition(row) : true;
+      if (!action.disableWhenInvalid && !isValid) return;
+      return (
+        <Button
+          key={action.key}
+          variant="contained"
+          color="primary"
+          size="small"
+          disabled={action.disableWhenInvalid && !isValid}
+          className={classes.button}
+          startIcon={action.icon}
+          onClick={async (e) => {
+            e.stopPropagation();
+            action.action([row]);
+          }}>
+          {action.label}
+        </Button>
+      );
+    })
+    .filter((button) => button); // remove hidden actions
+  const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
+
+  return (
+    <React.Fragment key={key}>
+      <TableRow
+        hover
+        role="checkbox"
+        aria-checked={isSelected}
+        tabIndex={-1}
+        selected={isSelected}
+        onClick={toggleExpanded}>
+        {(enableSelection || pageHasDropdown) && (
+          <TableCell padding="checkbox" className={classes.cell}>
+            {enableSelection && (
+              <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
+            )}
+            {pageHasDropdown && (
+              <IconButton aria-label="expand row" size="small">
+                {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
+              </IconButton>
+            )}
+          </TableCell>
+        )}
+        {headers.map((header) => (
+          <RecordTableCell
+            {...header}
+            key={header.id}
+            row={row}
+            className={`
+              ${classes.cell}
+              ${header.className}
+              ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
+            `}
+          />
+        ))}
+      </TableRow>
+      {rowHasDropdown && (
+        <TableRow className={classes.tableRow}>
+          <TableCell className={classes.dropdown} colSpan={100}>
+            <Collapse in={isExpanded} timeout="auto">
+              {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
+              <Box margin={2}>{renderedDropdown}</Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      )}
+    </React.Fragment>
   );
 };
 
