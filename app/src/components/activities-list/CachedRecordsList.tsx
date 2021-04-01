@@ -159,18 +159,18 @@ const CachedRecordListItem: React.FC<ICachedRecordListItem> = (props) => {
 interface ICachedRecordListComponent {
   doc: any;
   databaseContext: any;
-  selectedObservations?: any;
-  setSelectedObservations?: Function;
+  selected?: any;
+  setSelected?: Function;
   setActiveDoc: Function;
 }
 
 const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { doc, databaseContext, selectedObservations, setSelectedObservations, setActiveDoc } = props;
+  const { doc, databaseContext, selected, setSelected, setActiveDoc } = props;
 
   // Determine which observation records have been selected
-  const isChecked = selectedObservations?.some((obs: any) => obs.id === doc._id);
+  const isChecked = selected?.some((obs: any) => obs.id === doc._id);
 
   const navigateToActivityPage = async (activity: any) => {
     history.push(`/home/references/activity/${activity._id}`);
@@ -184,10 +184,10 @@ const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) 
           <Checkbox
             checked={isChecked}
             onChange={() => {
-              setSelectedObservations(
+              setSelected(
                 isChecked
-                  ? selectedObservations.filter((obs: any) => obs.id !== doc._id)
-                  : [{ id: doc._id, subtype: doc.activitySubtype }, ...selectedObservations]
+                  ? selected.filter((obs: any) => obs.id !== doc._id)
+                  : [{ id: doc._id, subtype: doc.activitySubtype }, ...selected]
               );
             }}
             onClick={(event) => event.stopPropagation()}
@@ -206,8 +206,8 @@ interface ICachedRecordList {
   docs: any;
   databaseContext: any;
   setActiveDoc: Function;
-  selectedObservations: Array<any>;
-  setSelectedObservations: Function;
+  selected: Array<any>;
+  setSelected: Function;
 }
 
 const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
@@ -218,7 +218,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
   const invasivesApi = useInvasivesApi();
   const [lastCreatedMetabaseQuery, setLastCreatedMetabaseQuery] = useState([]);
 
-  const { selectedObservations, setSelectedObservations } = props;
+  const { selected, setSelected } = props;
 
   const observations = docs.filter((doc: any) => doc.activityType === 'Observation');
   const treatments = docs.filter((doc: any) => doc.activityType === 'Treatment');
@@ -231,7 +231,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
     and aquatic observation in a single treatment as those are different areas
   */
   const validateSelectedObservationTypes = () => {
-    return selectedObservations.every((a, _, [b]) => a.subtype === b.subtype);
+    return selected.every((a, _, [b]) => a.subtype === b.subtype);
   };
 
   /*
@@ -239,7 +239,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
     activity flow to enable the creation of a treatment record
   */
   const navigateToCreateActivityPage = () => {
-    const selectedObservationIds = selectedObservations.map((obs: any) => obs.id);
+    const selectedObservationIds = selected.map((obs: any) => obs.id);
 
     history.push({
       pathname: `/home/activity/treatment`,
@@ -248,7 +248,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
     });
   };
 
-  const selectedIds = selectedObservations.map((activity) => '' + activity.id);
+  const selectedIds = selected.map((activity) => '' + activity.id);
 
   const createMetabaseQuery = async () => {
     await setLastCreatedMetabaseQuery(selectedIds);
@@ -287,8 +287,8 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
               variant="contained"
               color="primary"
               className={classes.metabaseAddButton}
-              disabled={!selectedObservations.length || metabaseQuerySubmitted}
-              startIcon={selectedObservations.length && metabaseQuerySubmitted ? <Check /> : undefined}
+              disabled={!selected.length || metabaseQuerySubmitted}
+              startIcon={selected.length && metabaseQuerySubmitted ? <Check /> : undefined}
               onClick={async (e) => {
                 e.stopPropagation();
                 await createMetabaseQuery();
@@ -298,7 +298,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
             <Button
               variant="contained"
               color="primary"
-              disabled={!selectedObservations.length}
+              disabled={!selected.length}
               onClick={() => {
                 if (!validateSelectedObservationTypes()) {
                   notifyError(
@@ -318,8 +318,8 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
       )}
       {observations.map((doc) => (
         <CachedRecordListComponent
-          selectedObservations={selectedObservations}
-          setSelectedObservations={setSelectedObservations}
+          selected={selected}
+          setSelected={setSelected}
           databaseContext={databaseContext}
           key={doc._id}
           doc={doc}
@@ -359,6 +359,9 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         keyField="activity_id"
         startingOrderBy="activity_id"
         startingOrder="desc"
+        enableSelection
+        selected={selected}
+        setSelected={setSelected}
         headers={[
           {
             id: 'activity_id',
@@ -436,6 +439,8 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
                   : ''
               }))
         }
+        /*
+        // WIP code
         actions={{
           create_treatment: {
             key: 'create_treatment',
@@ -455,13 +460,16 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
             bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype)
           }
         }}
-        enableSelection
+        */
       />
       <RecordTable
         tableName="Treatments"
         keyField="activity_id"
         startingOrderBy="activity_id"
         startingOrder="desc"
+        enableSelection
+        selected={selected}
+        setSelected={setSelected}
         headers={[
           {
             id: 'activity_id',
@@ -580,7 +588,6 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
             }
           }
         }}
-        enableSelection
       />
     </List>
   );
@@ -808,8 +815,8 @@ const CachedRecordsList: React.FC = () => {
         docs={docs}
         databaseContext={databaseContext}
         setActiveDoc={setActiveDoc}
-        selectedObservations={selectedActivities}
-        setSelectedObservations={setSelectedActivities}
+        selected={selectedActivities}
+        setSelected={setSelectedActivities}
       />
     </Container>
   );

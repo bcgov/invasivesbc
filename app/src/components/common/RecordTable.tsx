@@ -180,6 +180,8 @@ export interface RecordTablePropType {
   densePadding?: boolean;
   padEmptyRows?: boolean;
   enableSelection?: boolean;
+  selected?: Array<any>;
+  setSelected?: any;
   enableFiltering?: boolean;
   className?: any;
   dropdown?: (row: any) => any;
@@ -326,7 +328,12 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [orderBy, setOrderBy] = useState(startingOrderBy);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
-  const [selected, setSelected] = useState([]);
+  const [selected, locallySetSelected] = useState(props.selected || []);
+  const setSelected = (newSelected) => {
+    if (props.setSelected)
+      props.setSelected(newSelected);
+    return locallySetSelected(newSelected);
+  }
   const [expandedRows, setExpandedRows] = useState([]);
 
   const selectedRows = selected
