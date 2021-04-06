@@ -46,7 +46,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   const getActivityChoicesFromTrip = useCallback(async () => {
     let docs = await databaseContext.database.find({
       selector: {
-        _id: 'trip'
+        _id: props.workingTripID
       }
     });
     if (docs.docs.length > 0) {
@@ -65,7 +65,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   }, [databaseChangesContext, getActivityChoicesFromTrip]);
 
   const saveChoices = async (newActivityChoices) => {
-    await databaseContext.database.upsert('trip', (tripDoc) => {
+    await databaseContext.database.upsert(props.workingTripID, (tripDoc) => {
       return { ...tripDoc, activityChoices: newActivityChoices };
     });
   };
