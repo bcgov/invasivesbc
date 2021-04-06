@@ -184,11 +184,7 @@ const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) 
           <Checkbox
             checked={isChecked}
             onChange={() => {
-              setSelected(
-                isChecked
-                  ? selected.filter((id) => id !== doc._id)
-                  : [doc._id, ...selected]
-              );
+              setSelected(isChecked ? selected.filter((id) => id !== doc._id) : [doc._id, ...selected]);
             }}
             onClick={(event) => event.stopPropagation()}
           />
@@ -222,19 +218,25 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
 
   const observations = docs.filter((doc: any) => doc.activityType === 'Observation');
   const selectedObservations = observations.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedObservations = (newSelected) => setSelected([...newSelected, ...selectedTreatments, ...selectedMonitoring, ...selectedPOIs]);
-  
+  const setSelectedObservations = (newSelected) =>
+    setSelected([...newSelected, ...selectedTreatments, ...selectedMonitoring, ...selectedPOIs]);
+
   const treatments = docs.filter((doc: any) => doc.activityType === 'Treatment');
   const selectedTreatments = treatments.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedTreatments = (newSelected) => setSelected([...selectedObservations, ...newSelected, ...selectedMonitoring, ...selectedPOIs]);
-  
+  const setSelectedTreatments = (newSelected) =>
+    setSelected([...selectedObservations, ...newSelected, ...selectedMonitoring, ...selectedPOIs]);
+
   const monitorings = docs.filter((doc: any) => doc.activityType === 'Monitoring');
   const selectedMonitoring = monitorings.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedMonitoring = (newSelected) => setSelected([...selectedObservations, ...selectedTreatments, ...newSelected, ...selectedPOIs]);
+  const setSelectedMonitoring = (newSelected) =>
+    setSelected([...selectedObservations, ...selectedTreatments, ...newSelected, ...selectedPOIs]);
 
-  const pointsOfInterest = docs.filter((doc: any) => doc.docType === 'reference_point_of_interest' && doc.point_of_interest_id); // TODO figure out poi id filter
+  const pointsOfInterest = docs.filter(
+    (doc: any) => doc.docType === 'reference_point_of_interest' && doc.point_of_interest_id
+  ); // TODO figure out poi id filter
   const selectedPOIs = pointsOfInterest.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedPOIs = (newSelected) => setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
+  const setSelectedPOIs = (newSelected) =>
+    setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
 
   /*
     Function to determine if all selected observation records are
@@ -525,8 +527,8 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
             rowCondition: (row) => row.activityType === 'Treatment',
             action: async (selectedRows) => {
               if (selectedRows.length !== 1)
-              // action is for creating a single monitoring from a given row
-              // NOTE: might want to extend this into a multi-row monitoring action later
+                // action is for creating a single monitoring from a given row
+                // NOTE: might want to extend this into a multi-row monitoring action later
                 return;
               const activity = selectedRows[0];
 
@@ -761,10 +763,7 @@ const CachedRecordsList: React.FC = () => {
       } else {
         geo.color = geoColors[geo.recordType];
         geo.onClickCallback = () => {
-          setSelected([
-            ...selected,
-            geo.recordDocID
-          ]);
+          setSelected([...selected, geo.recordDocID]);
         };
       }
 
