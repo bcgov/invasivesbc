@@ -12,7 +12,11 @@ import {
   Button,
   Box,
   Checkbox,
-  Container
+  Container,
+  FormControl,
+  MenuItem,
+  Select,
+  InputLabel
 } from '@material-ui/core';
 import { Add, Check } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
@@ -27,7 +31,6 @@ import ActivityListDate from './ActivityListDate';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
 import MapContainer from 'components/map/MapContainer';
-import RecordTable from 'components/common/RecordTable';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
@@ -155,18 +158,18 @@ const CachedRecordListItem: React.FC<ICachedRecordListItem> = (props) => {
 interface ICachedRecordListComponent {
   doc: any;
   databaseContext: any;
-  selected?: any;
-  setSelected?: Function;
+  selectedObservations?: any;
+  setSelectedObservations?: Function;
   setActiveDoc: Function;
 }
 
 const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const { doc, databaseContext, selected, setSelected, setActiveDoc } = props;
+  const { doc, databaseContext, selectedObservations, setSelectedObservations, setActiveDoc } = props;
 
   // Determine which observation records have been selected
-  const isChecked = selected?.some((id) => id === doc._id);
+  const isChecked = selectedObservations?.some((obs: any) => obs.id === doc._id);
 
   const navigateToActivityPage = async (activity: any) => {
     history.push(`/home/references/activity/${activity._id}`);
@@ -180,7 +183,11 @@ const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) 
           <Checkbox
             checked={isChecked}
             onChange={() => {
-              setSelected(isChecked ? selected.filter((id) => id !== doc._id) : [doc._id, ...selected]);
+              setSelectedObservations(
+                isChecked
+                  ? selectedObservations.filter((obs: any) => obs.id !== doc._id)
+                  : [{ id: doc._id, subtype: doc.activitySubtype }, ...selectedObservations]
+              );
             }}
             onClick={(event) => event.stopPropagation()}
           />
@@ -198,47 +205,57 @@ interface ICachedRecordList {
   docs: any;
   databaseContext: any;
   setActiveDoc: Function;
-  selected: Array<any>;
-  setSelected: Function;
-  setLastCreatedMetabaseQuery: Function;
+  selectedObservations: Array<any>;
+  setSelectedObservations: Function;
 }
 
 const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
-  const { docs, databaseContext } = props;
+  const { docs, databaseContext, setActiveDoc } = props;
 
   const classes = useStyles();
   const history = useHistory();
   const invasivesApi = useInvasivesApi();
+  const [lastCreatedMetabaseQuery, setLastCreatedMetabaseQuery] = useState([]);
 
-  const { selected, setSelected, setLastCreatedMetabaseQuery } = props;
+  const { selectedObservations, setSelectedObservations } = props;
 
   const observations = docs.filter((doc: any) => doc.activityType === 'Observation');
-  const selectedObservations = observations.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedObservations = (newSelected) =>
-    setSelected([...newSelected, ...selectedTreatments, ...selectedMonitoring, ...selectedPOIs]);
-
   const treatments = docs.filter((doc: any) => doc.activityType === 'Treatment');
-  const selectedTreatments = treatments.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedTreatments = (newSelected) =>
-    setSelected([...selectedObservations, ...newSelected, ...selectedMonitoring, ...selectedPOIs]);
-
   const monitorings = docs.filter((doc: any) => doc.activityType === 'Monitoring');
-  const selectedMonitoring = monitorings.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedMonitoring = (newSelected) =>
-    setSelected([...selectedObservations, ...selectedTreatments, ...newSelected, ...selectedPOIs]);
 
-  const pointsOfInterest = docs.filter(
-    (doc: any) => doc.docType === 'reference_point_of_interest' && doc.point_of_interest_id
-  );
-  const selectedPOIs = pointsOfInterest.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedPOIs = (newSelected) =>
-    setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
+  /*
+    Function to determine if all selected observation records are
+    of the same subtype. For example: Cannot create a treatment if you select a plant
+    and an animal observation, and most probably will not go treat a terrestrial
+    and aquatic observation in a single treatment as those are different areas
+  */
+  const validateSelectedObservationTypes = () => {
+    return selectedObservations.every((a, _, [b]) => a.subtype === b.subtype);
+  };
+
+  /*
+    If all the selected observation records are valid, navigate to the create
+    activity flow to enable the creation of a treatment record
+  */
+  const navigateToCreateActivityPage = () => {
+    const selectedObservationIds = selectedObservations.map((obs: any) => obs.id);
+
+    history.push({
+      pathname: `/home/activity/treatment`,
+      search: '?observations=' + selectedObservationIds.join(','),
+      state: { observations: selectedObservationIds }
+    });
+  };
+
+  const selectedIds = selectedObservations.map((activity) => '' + activity.id);
 
   const createMetabaseQuery = async () => {
-    await setLastCreatedMetabaseQuery(selected);
+    await setLastCreatedMetabaseQuery(selectedIds);
     const queryCreate: ICreateMetabaseQuery = {
-      point_of_interest_ids: selectedPOIs,
-      activity_ids: [...selectedObservations, ...selectedTreatments, ...selectedMonitoring]
+      // name: 'Test Metabase Query',
+      // description: 'Testing testing',
+      // point_of_interest_ids: [],
+      activity_ids: selectedIds
     };
     try {
       let response = await invasivesApi.createMetabaseQuery(queryCreate);
@@ -257,362 +274,85 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
     }
   };
 
+  const metabaseQuerySubmitted = JSON.stringify(lastCreatedMetabaseQuery) == JSON.stringify(selectedIds);
+
   return (
     <List className={classes.activityList}>
-      <RecordTable
-        tableName="Observations"
-        keyField="activity_id"
-        startingOrderBy="activity_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selectedObservations}
-        setSelected={setSelectedObservations}
-        headers={[
-          {
-            id: 'activity_id',
-            title: 'Activity ID'
-          },
-          {
-            id: 'activity_subtype',
-            title: 'Subtype'
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          {
-            id: 'biogeoclimatic_zones',
-            title: 'Biogeoclimatic Zones'
-          },
-          {
-            id: 'elevation',
-            title: 'Elevation',
-            type: 'number'
-          },
-          {
-            id: 'flnro_districts',
-            title: 'FLNRO Districts'
-          },
-          {
-            id: 'ownership',
-            title: 'Ownership'
-          },
-          {
-            id: 'regional_districts',
-            title: 'Regional Districts'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
-          {
-            id: 'jurisdictions_rendered',
-            title: 'Jurisdictions'
-          },
-          {
-            id: 'latitude',
-            title: 'Latitude'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)'
-          },
-          {
-            id: 'access_description',
-            title: 'Access Description'
-          },
-          {
-            id: 'general_comment',
-            title: 'Comment'
-          }
-        ]}
-        rows={
-          !observations?.length
-            ? []
-            : observations.map((doc) => ({
-                ...doc,
-                ...doc?.formData?.activity_data,
-                ...doc?.formData?.activity_subtype_data,
-                activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-                jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
-                  ? doc?.formData?.activity_data?.jurisdictions
-                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-                      .join(', ')
-                  : ''
-              }))
-        }
-        actions={{
-          delete: {
-            enabled: false
-            // TODO maybe make this Delete From Cache
-          },
-          create_treatment: {
-            key: 'create_treatment',
-            enabled: true,
-            action: (selectedRows) => {
-              const ids = selectedRows.map((row: any) => row['activity_id']);
-              history.push({
-                pathname: `/home/activity/treatment`,
-                search: '?observations=' + ids.join(','),
-                state: { observations: ids }
-              });
-            },
-            label: 'Create Treatment',
-            bulkAction: true,
-            rowAction: false,
-            displayInvalid: 'error',
-            invalidError: 'All selected activities must be of the same SubType to create a Treatment',
-            /*
-              Function to determine if all selected observation records are
-              of the same subtype. For example: Cannot create a treatment if you select a plant
-              and an animal observation, and most probably will not go treat a terrestrial
-              and aquatic observation in a single treatment as those are different areas
-            */
-            bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype)
-          }
-        }}
-      />
-      <RecordTable
-        tableName="Treatments"
-        keyField="activity_id"
-        startingOrderBy="activity_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selectedTreatments}
-        setSelected={setSelectedTreatments}
-        onToggleExpandRow={(row, expandedRows, selectedRows) => {
-          console.log(row, expandedRows, selectedRows);
-        }}
-        headers={[
-          {
-            id: 'activity_id',
-            title: 'Activity ID'
-          },
-          {
-            id: 'activity_subtype',
-            title: 'Subtype'
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          {
-            id: 'invasive_plant_code',
-            title: 'Invasive Plant Code'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
-          {
-            id: 'chemical_method_code',
-            title: 'Chemical Method'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
-          },
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          {
-            id: 'elevation',
-            title: 'Elevation',
-            type: 'number'
-          }
-        ]}
-        rows={
-          !treatments?.length
-            ? []
-            : treatments.map((doc) => ({
-                ...doc,
-                ...doc?.formData?.activity_data,
-                ...doc?.formData?.activity_subtype_data,
-                activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-                jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
-                  ? doc?.formData?.activity_data?.jurisdictions
-                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-                      .join(', ')
-                  : ''
-              }))
-        }
-        dropdown={(row) => (
-          <>
-            <RecordTable
-              tableName=""
-              keyField="activity_id"
-              startingOrderBy="activity_id"
-              startingOrder="desc"
-              headers={[
-                {
-                  id: 'jurisdictions_rendered',
-                  title: 'Jurisdictions'
-                },
-                {
-                  id: 'biogeoclimatic_zones',
-                  title: 'Biogeoclimatic Zones'
-                },
-                {
-                  id: 'flnro_districts',
-                  title: 'FLNRO Districts'
-                },
-                {
-                  id: 'ownership',
-                  title: 'Ownership'
-                },
-                {
-                  id: 'regional_districts',
-                  title: 'Regional Districts'
-                },
-                {
-                  id: 'access_description',
-                  title: 'Access Description'
-                },
-                {
-                  id: 'general_comment',
-                  title: 'Comment'
+      {observations.length > 0 && (
+        <Box mb={3} display="flex" justifyContent="space-between">
+          <Typography variant="h5">Observations</Typography>
+          <Box display="flex" justifyContent="space-between">
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.metabaseAddButton}
+              disabled={!selectedObservations.length || metabaseQuerySubmitted}
+              startIcon={selectedObservations.length && metabaseQuerySubmitted ? <Check /> : undefined}
+              onClick={async (e) => {
+                e.stopPropagation();
+                await createMetabaseQuery();
+              }}>
+              Create Metabase Query
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!selectedObservations.length}
+              onClick={() => {
+                if (!validateSelectedObservationTypes()) {
+                  notifyError(
+                    databaseContext,
+                    `You have selected activities of different subtypes.
+                    Please make sure they are all of the same subtype.`
+                  );
+                  return;
                 }
-              ]}
-              rows={[row]}
-              pagination={false}
-            />
-          </>
-        )}
-        actions={{
-          delete: {
-            enabled: false
-            // TODO maybe make this Delete From Cache
-          },
-          create_monitoring: {
-            key: 'create_monitoring',
-            enabled: true,
-            label: 'Create Monitoring',
-            bulkAction: false,
-            rowAction: true,
-            displayInvalid: 'hidden',
-            rowCondition: (row) => row.activityType === 'Treatment',
-            action: async (selectedRows) => {
-              if (selectedRows.length !== 1)
-                // action is for creating a single monitoring from a given row
-                // NOTE: might want to extend this into a multi-row monitoring action later
-                return;
-              const activity = selectedRows[0];
 
-              const addedActivity = await addLinkedActivityToDB(
-                databaseContext,
-                ActivityType.Monitoring,
-                calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
-                activity
-              );
-              await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-                return { ...appStateDoc, activeActivity: addedActivity._id };
-              });
-
-              history.push(`/home/activity`);
-            }
-          }
-        }}
-      />
-      <RecordTable
-        tableName="Points of Interest"
-        keyField="point_of_interest_id"
-        startingOrderBy="point_of_interest_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selectedPOIs}
-        setSelected={setSelectedPOIs}
-        headers={[
-          {
-            id: 'point_of_interest_id',
-            title: 'POI ID',
-            type: 'number'
-          },
-          {
-            id: 'created_date_on_device',
-            title: 'Created Date'
-          },
-          {
-            id: 'jurisdictions_rendered',
-            title: 'Jurisdiction'
-          },
-          {
-            id: 'elevation',
-            title: 'Elevation',
-            type: 'number'
-          },
-          {
-            id: 'slope_code',
-            title: 'Slope'
-          },
-          {
-            id: 'aspect_code',
-            title: 'Aspect'
-          },
-          {
-            id: 'specific_use_code',
-            title: 'Specific Use'
-          },
-          {
-            id: 'soil_texture_code',
-            title: 'Soil Texture'
-          },
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          {
-            id: 'access_description',
-            title: 'Location'
-          },
-          {
-            id: 'general_comment',
-            title: 'Comments'
-          }
-        ]}
-        rows={
-          !pointsOfInterest?.length
-            ? []
-            : pointsOfInterest.map((doc) => ({
-                ...doc,
-                ...doc?.formData?.point_of_interest_data,
-                ...doc?.formData?.point_of_interest_type_data,
-                jurisdictions_rendered: doc?.formData?.surveys?.[0]?.jurisdictions
-                  ? doc?.formData?.surveys?.[0]?.jurisdictions
-                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-                      .join(', ')
-                  : '',
-                latitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6),
-                longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6)
-              }))
-        }
-        actions={{
-          delete: {
-            enabled: false
-            // TODO maybe make this Delete From Cache
-          },
-          edit: {
-            enabled: false
-          }
-        }}
-      />
+                navigateToCreateActivityPage();
+              }}>
+              Create Treatment
+            </Button>
+          </Box>
+        </Box>
+      )}
+      {observations.map((doc) => (
+        <CachedRecordListComponent
+          selectedObservations={selectedObservations}
+          setSelectedObservations={setSelectedObservations}
+          databaseContext={databaseContext}
+          key={doc._id}
+          doc={doc}
+          setActiveDoc={setActiveDoc}
+        />
+      ))}
+      {treatments.length > 0 && (
+        <Box>
+          <br />
+          <Typography variant="h5">Treatments</Typography>
+        </Box>
+      )}
+      {treatments.map((doc) => (
+        <CachedRecordListComponent
+          setActiveDoc={setActiveDoc}
+          databaseContext={databaseContext}
+          key={doc._id}
+          doc={doc}
+        />
+      ))}
+      {monitorings.length > 0 && (
+        <Box>
+          <br />
+          <Typography variant="h5">Monitorings</Typography>
+        </Box>
+      )}
+      {monitorings.map((doc) => (
+        <CachedRecordListComponent
+          setActiveDoc={setActiveDoc}
+          databaseContext={databaseContext}
+          key={doc._id}
+          doc={doc}
+        />
+      ))}
     </List>
   );
 };
@@ -626,8 +366,7 @@ const CachedRecordsList: React.FC = () => {
   const [interactiveGeometry, setInteractiveGeometry] = useState([]);
   const [extent, setExtent] = useState(null);
   const [docs, setDocs] = useState<any[]>([]);
-  const [selected, setSelected] = useState([]);
-  const [lastCreatedMetabaseQuery, setLastCreatedMetabaseQuery] = useState([]);
+  const [selectedActivities, setSelectedActivities] = useState([]);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
@@ -645,7 +384,7 @@ const CachedRecordsList: React.FC = () => {
   */
   const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
-      selector: { deleted_timestamp: undefined }, // docType: DocType.REFERENCE_ACTIVITY,  },
+      selector: { docType: DocType.REFERENCE_ACTIVITY },
       use_index: 'docTypeIndex'
     });
 
@@ -732,16 +471,22 @@ const CachedRecordsList: React.FC = () => {
     let updatedInteractiveGeos = [...interactiveGeometry];
 
     updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
-      const allButThis = selected.filter((id) => geo.recordDocID !== id);
-      if (selected.length > allButThis.length) {
+      const allButThis = selectedActivities.filter((activity) => geo.recordDocID !== activity.id);
+      if (selectedActivities.length > allButThis.length) {
         geo.color = '#9E1A1A';
         geo.onClickCallback = () => {
-          setSelected(allButThis);
+          setSelectedActivities(allButThis);
         };
       } else {
         geo.color = geoColors[geo.recordType];
         geo.onClickCallback = () => {
-          setSelected([...selected, geo.recordDocID]);
+          setSelectedActivities([
+            ...selectedActivities,
+            {
+              id: geo.recordDocID,
+              subtype: geo.recordSubtype
+            }
+          ]);
         };
       }
 
@@ -749,7 +494,7 @@ const CachedRecordsList: React.FC = () => {
     });
 
     setInteractiveGeometry(updatedInteractiveGeos);
-  }, [selected, setSelected]);
+  }, [selectedActivities, setSelectedActivities]);
 
   /*
     Get updated interactive geometries based on the activities/selected map activity type
@@ -793,7 +538,12 @@ const CachedRecordsList: React.FC = () => {
       description: `${doc.activityType}: ${doc._id}`,
       popUpComponent: ActivityPopup,
       onClickCallback: () => {
-        setSelected([doc._id]);
+        setSelectedActivities([
+          {
+            id: doc._id,
+            subtype: doc.activitySubtype
+          }
+        ]);
       }
     };
   };
@@ -805,23 +555,19 @@ const CachedRecordsList: React.FC = () => {
     return '<div>' + name + '</div>';
   };
 
-  const metabaseQuerySubmitted = JSON.stringify(lastCreatedMetabaseQuery) == JSON.stringify(selected);
-
   return (
     <Container className={classes.activitiesContent}>
       <Box mb={3} display="flex" justifyContent="space-between">
         <Typography variant="h4">Cached Activities</Typography>
-        <Box display="flex" justifyContent="space-between">
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.metabaseAddButton}
-            disabled={!selected.length || metabaseQuerySubmitted}
-            startIcon={selected.length && metabaseQuerySubmitted ? <Check /> : undefined}
-            onClick={() => createMetabaseQuery()}>
-            Create Metabase Query
-          </Button>
-        </Box>
+        <FormControl variant="outlined" className={classes.formControl}>
+          <InputLabel>Map Activity Type</InputLabel>
+          <Select value={mapActivityType} onChange={handleMapActivityChange} label="Select Map Activity Type">
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value={ActivityType.Observation}>Observation</MenuItem>
+            <MenuItem value={ActivityType.Treatment}>Treatment</MenuItem>
+            <MenuItem value={ActivityType.Monitoring}>Monitoring</MenuItem>
+          </Select>
+        </FormControl>
       </Box>
       {interactiveGeometry.length > 0 && (
         <Paper>
@@ -842,9 +588,8 @@ const CachedRecordsList: React.FC = () => {
         docs={docs}
         databaseContext={databaseContext}
         setActiveDoc={setActiveDoc}
-        selected={selected}
-        setSelected={setSelected}
-        setLastCreatedMetabaseQuery={setLastCreatedMetabaseQuery}
+        selectedObservations={selectedActivities}
+        setSelectedObservations={setSelectedActivities}
       />
     </Container>
   );
