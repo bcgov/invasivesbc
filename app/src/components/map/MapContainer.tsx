@@ -586,58 +586,61 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       });
     }
     if (props.interactiveGeometryState) {
-      props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-        const style = {
-          color: interactObj.color,
-          weight: 4,
-          opacity: 0.65
-        };
+      if (props.interactiveGeometryState.interactiveGeometry) {
+        props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
+          const style = {
+            color: interactObj.color,
+            weight: 4,
+            opacity: 0.65
+          };
 
-        const markerStyle = {
-          radius: 10,
-          weight: 4,
-          stroke: true
-        };
+          const markerStyle = {
+            radius: 10,
+            weight: 4,
+            stroke: true
+          };
 
-        L.geoJSON(interactObj.geometry, {
-          style,
-          pointToLayer: (feature: any, latLng: any) => {
-            if (feature.properties.radius) {
-              return L.circle(latLng, { radius: feature.properties.radius });
-            } else {
-              return L.circleMarker(latLng, markerStyle);
-            }
-          },
-          onEachFeature: (feature: any, layer: any) => {
-            drawnItems.addLayer(layer);
-            const content = interactObj.popUpComponent(interactObj.description);
-            layer.on('click', () => {
-              // Fires on click of single feature
-
-              // Formulate a table containing all attributes
-              let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
-              Object.keys(feature.properties).forEach((f) => {
-                if (f !== 'uploadedSpatial') {
-                  table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
-                }
-              });
-              table += '</table>';
-
-              const loc = turf.centroid(feature);
-              const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
-
-              if (feature.properties.uploadedSpatial) {
-                L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+          L.geoJSON(interactObj.geometry, {
+            style,
+            pointToLayer: (feature: any, latLng: any) => {
+              if (feature.properties.radius) {
+                return L.circle(latLng, { radius: feature.properties.radius });
               } else {
-                L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
+                return L.circleMarker(latLng, markerStyle);
               }
+            },
+            onEachFeature: (feature: any, layer: any) => {
+              drawnItems.addLayer(layer);
+              const content = interactObj.popUpComponent(interactObj.description);
+              layer.on('click', () => {
+                // Fires on click of single feature
 
-              interactObj.onClickCallback();
-            });
-          }
+                // Formulate a table containing all attributes
+                let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+                Object.keys(feature.properties).forEach((f) => {
+                  if (f !== 'uploadedSpatial') {
+                    table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+                  }
+                });
+                table += '</table>';
+
+                const loc = turf.centroid(feature);
+                const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+                if (feature.properties.uploadedSpatial) {
+                  L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+                } else {
+                  L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
+                }
+
+                interactObj.onClickCallback();
+              });
+            }
+          });
         });
-      });
+      }
     }
+
 
     // Update the drawn featres
     setDrawnItems(drawnItems);

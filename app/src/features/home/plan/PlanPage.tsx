@@ -29,6 +29,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import TripStepStatus, { ITripStepStatus, TripStatusCode } from 'components/trip/TripStepStatus';
 import RecordTable from 'components/common/RecordTable';
 import { DocType } from 'constants/database';
+import { interactiveGeoInputData } from 'components/map/GeoMeta';
 
 interface IPlanPageProps {
   classes?: any;
@@ -95,7 +96,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
-  const [interactiveGeometry, setInteractiveGeometry] = useState<Feature[]>([]);
+  const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
   const [extent, setExtent] = useState(null);
 
   const [workingTripID, setWorkingTripID] = useState(null);
@@ -189,11 +190,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [trips, setTrips] = useState([]);
 
   const addTrip = () => {
-    setTrips([...trips, {trip_id: trips.length, trip_name: 'initial name'}]);
+    setTrips([...trips, {trip_id: trips.length.toString(), trip_name: 'initial name'}]);
+    setWorkingTripID(trips.length.toString())
   };
 
 
-  const SingleTrip: React.FC = (props) => {
+  const SingleTrip: React.FC<any> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
     const [stepState, setStepState] = useState([
       {}, //just here so indexes match up with step number
@@ -269,7 +271,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               doneButtonCallBack={() => {
                 helperStepDoneOrSkip(2);
               }}>
-              <ActivityDataFilter trip_id={workingTripID}/>
+              <ActivityDataFilter trip_id={props.trip_id}/>
             </TripStep>
             <TripStep
               title="Step 3: Choose data from other systems, (IAPP)"
@@ -377,6 +379,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           showDrawControls={true}
           mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
           geometryState={{ geometry, setGeometry }}
+          interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
           extentState={{ extent, setExtent }}
           contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
         />
@@ -416,7 +419,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
            }))
        }
        dropdown={ (row) => {
-         return <SingleTrip/>
+         console.dir(row)
+         return <SingleTrip trip_id={row.trip_id}/>
        }
        }
 
