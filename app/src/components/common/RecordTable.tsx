@@ -200,6 +200,7 @@ export interface RecordTablePropType {
   className?: any;
   dropdown?: (row: any) => any;
   dropdownLimit?: boolean;
+  onToggleExpandRow?: (row: any, expandedRows?: Array<any>, selectedRows?: Array<any>) => any;
   overflowDropdown?: boolean;
   overflowLimit?: number;
   pagination?: any;
