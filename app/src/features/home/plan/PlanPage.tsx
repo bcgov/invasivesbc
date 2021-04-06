@@ -190,7 +190,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [trips, setTrips] = useState([]);
 
   const addTrip = () => {
-    setTrips([...trips, {trip_id: trips.length.toString(), trip_name: 'initial name'}]);
+    setTrips([...trips, {trip_id: trips.length.toString(), trip_name: 'initial name', num_activities: 5, num_POI: 4}]);
     setWorkingTripID(trips.length.toString())
   };
 
@@ -400,6 +400,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
          {
            id: 'trip_name',
            label: 'Trip Name'
+         },
+         {
+           id: 'num_activities',
+           label: '# of Activities Cached'
+         },
+         {
+           id: 'num_poi',
+           label: '# of POI Cached'
          },
          {
            id: 'buttons',
