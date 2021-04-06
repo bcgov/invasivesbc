@@ -143,7 +143,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               {(surveys?.[0]?.jurisdictions?.length > 0 &&
                 ifApplicable(surveys[0].jurisdictions[0].jurisdiction_code) +
                   ' (' +
-                  surveys[0].jurisdictions[0].percentage +
+                  surveys[0].jurisdictions[0].percent_covered +
                   '%)') ||
                 'Not Provided'}
             </Grid>
@@ -151,14 +151,14 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               {surveys?.[0]?.jurisdictions?.length > 1 &&
                 ifApplicable(surveys[0].jurisdictions[1].jurisdiction_code) +
                   ' (' +
-                  surveys[0].jurisdictions[1].percentage +
+                  surveys[0].jurisdictions[1].percent_covered +
                   '%)'}
             </Grid>
             <Grid item xs={3}>
               {surveys?.[0]?.jurisdictions?.length > 2 &&
                 ifApplicable(surveys[0].jurisdictions[2].jurisdiction_code) +
                   ' (' +
-                  surveys[0].jurisdictions[2].percentage +
+                  surveys[0].jurisdictions[2].percent_covered +
                   '%)'}
             </Grid>
 
@@ -188,7 +188,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         headers={[
           {
             id: 'survey_id',
-            title: 'Survey ID'
+            title: 'Survey ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -213,7 +214,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           {
             id: 'reported_area',
             title: 'Area (m\u00B2)',
-            numeric: true
+            type: 'number'
           },
           {
             id: 'density',
@@ -252,7 +253,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID'
+            title: 'Treatment ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -269,7 +271,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           {
             id: 'reported_area',
             title: 'Reported Area (m\u00B2)',
-            numeric: true
+            type: 'number'
           },
           {
             id: 'mechanical_method_code_label', // custom
@@ -305,7 +307,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               headers={[
                 {
                   id: 'monitoring_id',
-                  title: 'Monitoring ID'
+                  title: 'Monitoring ID',
+                  type: 'number'
                 },
                 {
                   id: 'monitoring_date',
@@ -318,7 +321,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'efficacy_percent',
                   title: 'Efficacy',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'project_code_label',
@@ -352,7 +355,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID'
+            title: 'Treatment ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -369,7 +373,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           {
             id: 'reported_area',
             title: 'Reported Area (m\u00B2)',
-            numeric: true
+            type: 'number'
           },
           {
             id: 'chemical_method', // custom
@@ -414,7 +418,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'temperature',
                   title: 'Temperature',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'humidity',
@@ -423,7 +427,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'wind_speed',
                   title: 'Wind Velocity',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'wind_direction',
@@ -436,7 +440,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'herbicide_amount',
                   title: 'Amount Used',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'dilution',
@@ -459,7 +463,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               headers={[
                 {
                   id: 'monitoring_id',
-                  title: 'Monitoring ID'
+                  title: 'Monitoring ID',
+                  type: 'number'
                 },
                 {
                   id: 'monitoring_date',
@@ -472,7 +477,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'efficacy_percent',
                   title: 'Efficacy',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'project_code_label',
@@ -506,7 +511,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID'
+            title: 'Treatment ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -585,7 +591,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               headers={[
                 {
                   id: 'monitoring_id',
-                  title: 'Monitoring ID'
+                  title: 'Monitoring ID',
+                  type: 'number'
                 },
                 {
                   id: 'monitoring_date',
@@ -593,11 +600,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 },
                 {
                   id: 'plant_count',
-                  title: 'Plant Count'
+                  title: 'Plant Count',
+                  type: 'number'
                 },
                 {
                   id: 'agent_count',
-                  title: 'Agent Count'
+                  title: 'Agent Count',
+                  type: 'number'
                 },
                 {
                   id: 'count_duration',
@@ -679,7 +688,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID'
+            title: 'Treatment ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -695,11 +705,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           },
           {
             id: 'plant_count',
-            title: 'Plant Count'
+            title: 'Plant Count',
+            type: 'number'
           },
           {
             id: 'agent_count',
-            title: 'Agent Count'
+            title: 'Agent Count',
+            type: 'number'
           },
           {
             id: 'count_duration',

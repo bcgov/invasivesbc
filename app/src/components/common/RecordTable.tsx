@@ -24,11 +24,15 @@ import { lighten } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { DocType } from 'constants/database';
 import { Edit, Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
-import React, { useState, useContext } from 'react';
+import { notifySuccess, notifyError } from 'utils/NotificationUtils';
+import React, { useState, useContext, useEffect } from 'react';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
+  component: {
+    marginTop: '15px'
+  },
   visuallyHidden: {
     border: 0,
     clip: 'rect(0 0 0 0)',
@@ -43,8 +47,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     textAlign: 'left',
     color: theme.palette.text.primary,
-    flexDirection: 'column',
-    marginTop: '15px'
+    flexDirection: 'column'
   },
   table: {
     minWidth: 750,
@@ -99,7 +102,13 @@ const useStyles = makeStyles((theme) => ({
   button: {
     marginLeft: 10,
     marginRight: 10,
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    minWidth: 'max-content'
+  },
+  numberCell: {
+    align: 'right'
+  },
+  dateCell: {
   }
 }));
 
@@ -128,24 +137,29 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
   button: {
     marginLeft: 10,
-    marginRight: 10
+    marginRight: 10,
+    whiteSpace: 'nowrap',
+    minWidth: 'max-content'
   }
 }));
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
+function descendingComparator(a, b, orderBy, columnType) {
+  const typedA = columnType === 'number' ? +a[orderBy] : a[orderBy];
+  const typedB = columnType === 'number' ? +b[orderBy] : b[orderBy];
+
+  if (typedB < typedA) {
     return -1;
   }
-  if (b[orderBy] > a[orderBy]) {
+  if (typedB > typedA) {
     return 1;
   }
   return 0;
 }
 
-function getComparator(order, orderBy) {
+function getComparator(order, orderBy, columnType) {
   return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+    ? (a, b) => descendingComparator(a, b, orderBy, columnType)
+    : (a, b) => -descendingComparator(a, b, orderBy, columnType);
 }
 
 function stableSort(array, comparator) {
@@ -188,7 +202,7 @@ export interface RecordTablePropType {
   dropdownLimit?: boolean;
   overflowDropdown?: boolean;
   overflowLimit?: number;
-  pagination?: boolean;
+  pagination?: any;
   actions?: any;
   rowActionStyle?: string;
 }
@@ -203,17 +217,18 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     rows,
     keyField = 'id',
     startingOrder = 'asc',
-    expandable = true,
     dropdown, // default none
     dropdownLimit = true,
+    onToggleExpandRow, // callback fired when row is expanded (or contracted, for now)
     overflowDropdown = true, // overflow into a dropdown when a cell is very verbose
     overflowLimit = 50, // char limit
+    expandable = true,
     startExpanded = true,
     startingRowsPerPage = 10,
     rowsPerPageOptions = false, // disable ability to change rows per page by default
     enableSelection = false,
     enableFiltering = false,
-    pagination = true,
+    pagination = 'overflow', // by default, only shows paging options when more total rows than can fit on page 1
     // className: tableClassName,
     densePadding = false,
     padEmptyRows = false, // whitespace added to make the table the same height
@@ -255,7 +270,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
             // TODO limit to only some subtypes too
             // TODO IAPP POIs not editable
             rowCondition: undefined,
-            disableWhenInvalid: true,
+            displayInvalid: 'error',
+            invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
             ...props.actions?.edit
           },
           delete: {
@@ -268,39 +284,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
             rowAction: true,
             bulkCondition: undefined, // TODO
             rowCondition: undefined,
-            disableWhenInvalid: true,
+            displayInvalid: 'disable',
             ...props.actions?.delete
-          },
-          // NOTE: these could probably be defined somewhere else, or in a super-class
-          // since this isn't quite generic.  But meh, fine for now:
-          create_treatment: {
-            key: 'create_treatment',
-            enabled: false,
-            action: (rows) => {
-              const ids = rows.map((row: any) => row[keyField]);
-              history.push({
-                pathname: `/home/activity/treatment`,
-                search: '?observations=' + ids.join(','),
-                state: { observations: ids }
-              });
-            },
-            label: 'Create Treatment',
-            bulkAction: true,
-            rowAction: false,
-            disableWhenInvalid: true,
-            bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype),
-            ...props.actions?.create_treatment
-          },
-          create_monitoring: {
-            key: 'create_monitoring',
-            enabled: false,
-            action: undefined,
-            label: 'Create Monitoring',
-            bulkAction: false,
-            rowAction: true,
-            disableWhenInvalid: true,
-            rowCondition: undefined, // TODO
-            ...props.actions?.create_monitoring
           }
         };
   const { startingOrderBy = headers.length ? headers[0].id : 'id' } = props; // defaults to the first header
@@ -314,7 +299,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       return {
         // defaults:
         id: i,
-        align: header.numeric ? 'right' : 'left',
+        align: header.type === 'number' ? 'right' : 'left',
         padding: 'default',
         defaultOrder: 'asc',
         ...header
@@ -328,13 +313,38 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [orderBy, setOrderBy] = useState(startingOrderBy);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
-  const [selected, locallySetSelected] = useState(props.selected || []);
-  const setSelected = (newSelected) => {
-    if (props.setSelected)
-      props.setSelected(newSelected);
-    return locallySetSelected(newSelected);
-  }
   const [expandedRows, setExpandedRows] = useState([]);
+  const [selected, setSelected] = useState(props.selected || []);
+  
+  const arraysEqual = (a, b) => {
+    if (a === b) return true;
+    if (!a || !b) return true;
+    if (a.length !== b.length) return false;
+
+    // If you don't care about the order of the elements inside
+    // the array, you should sort both arrays here.
+    // Please note that calling sort on an array will modify that array.
+    // you might want to clone your array first.
+
+    for (var i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
+
+  const updateParentSelected = async (newSelected) => await props.setSelected(newSelected);
+
+  // there is probably a cleaner way to do the following in React:
+  useEffect(() => {
+    // pass state to parent on change
+    if (props.setSelected && selected !== undefined && !arraysEqual(props.selected, selected))
+      updateParentSelected(selected);
+  }, [selected, setSelected]);
+  useEffect(() => {
+    // override current state with parent, on change
+    if (props.setSelected && props.selected !== undefined && !arraysEqual(props.selected, selected))
+      setSelected(props.selected);
+  }, [props.selected, props.setSelected]);
 
   const selectedRows = selected
     .map((id) => {
@@ -342,8 +352,10 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       return matches ? matches : undefined;
     })
     .filter((row) => row);
+
   // sort and limit the rows:
-  const pageRows = stableSort(rows, getComparator(order, orderBy)).slice(
+  const orderHeader = headers.find((col) => col.id === orderBy);
+  const pageRows = stableSort(rows, getComparator(order, orderBy, orderHeader?.type)).slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
@@ -359,6 +371,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
     (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0) ||
     (rowActions?.length > 0 && rowActionStyle === 'dropdown');
+  const showPagination = pagination === 'overflow' ? rows.length > rowsPerPage : !!pagination;
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -408,19 +421,21 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   const toggleExpandedRow = (key) => {
+    let newExpandedRows;
     if (isExpandedRow(key)) {
-      const expandedRows2 = expandedRows;
-      delete expandedRows2[expandedRows.indexOf(key)];
-      setExpandedRows(expandedRows2.filter((value) => value));
+      newExpandedRows = expandedRows.filter((rowKey) => rowKey !== key);
     } else {
       if (dropdownLimit) {
-        setExpandedRows([key]);
-      } else setExpandedRows([...expandedRows, key]);
+        newExpandedRows = [key];
+      } else newExpandedRows = [...expandedRows, key];
     }
+    setExpandedRows(newExpandedRows);
+    if (onToggleExpandRow)
+      onToggleExpandRow(rows.find((row) => row[keyField] === key), newExpandedRows, selectedRows);
   };
 
   return (
-    <div className={clsx(classes.paper)}>
+    <div className={classes.component}>
       <Accordion defaultExpanded={startExpanded || !rows.length}>
         {(enableSelection || enableFiltering || tableName.length > 0) && (
           <RecordTableToolbar
@@ -428,6 +443,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
             tableName={tableName}
             enableFiltering={enableFiltering}
             actions={bulkActions}
+            databaseContext={databaseContext}
           />
         )}
         <AccordionDetails className={classes.paper}>
@@ -474,6 +490,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                       }}
                       actions={rowActions}
                       actionStyle={rowActionStyle}
+                      databaseContext={databaseContext}
                     />
                   ))}
                   {padEmptyRows && emptyRows > 0 && (
@@ -485,7 +502,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
               </Table>
             </TableContainer>
           )}
-          {rows.length > 0 && pagination && (
+          {rows.length > 0 && showPagination && (
             <TablePagination
               rowsPerPageOptions={rowsPerPageOptions === false ? undefined : rowsPerPageOptions}
               component="div"
@@ -538,7 +555,6 @@ function RecordTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.align}
             padding={headCell.padding}
             sortDirection={orderBy === headCell.id ? order : false}
             className={`${classes.cell} ${headCell.className}`}>
@@ -562,31 +578,35 @@ function RecordTableHead(props) {
 
 const RecordTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { selectedRows, tableName, enableFiltering, actions } = props;
+  const { selectedRows, tableName, enableFiltering, actions, databaseContext } = props;
   const numSelected = selectedRows?.length || 0;
 
   const bulkActions: Array<any> = actions
     .map((action: any) => {
       const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
-      if (!action.disableWhenInvalid && !isValid) return;
+      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
       return (
         <Button
           key={action.key}
           variant="contained"
           color="primary"
           size="small"
-          disabled={action.disableWhenInvalid && !isValid}
+          disabled={action.displayInvalid === 'disable' && !isValid}
           className={classes.button}
           startIcon={action.icon}
           onClick={async (e) => {
             e.stopPropagation();
-            action.action(selectedRows);
+            if (action.displayInvalid === 'error' && action.bulkCondition && !action.bulkCondition(selectedRows) && action.invalidError)
+              notifyError(databaseContext, action.invalidError);
+            else
+              action.action(selectedRows);
           }}>
           {action.label}
         </Button>
       );
     })
     .filter((button) => button); // remove hidden actions
+
 
   return (
     <AccordionSummary
@@ -664,33 +684,36 @@ const RecordTableRow = (props) => {
     dropdown,
     hasOverflow,
     actions,
-    actionStyle
+    actionStyle,
+    databaseContext
   } = props;
   const classes = useStyles();
 
   const key = row[keyField];
-  if (key === undefined) {
-    console.log(row, keyField);
+  if (key === undefined)
     throw new Error('Error: table row has no matching key defined');
-  }
+
   const renderedDropdown = !!dropdown && dropdown(row);
   const labelId = `record-table-checkbox-${key}`;
   const rowActions = actions
     .map((action: any) => {
       const isValid = action.rowCondition ? action.rowCondition(row) : true;
-      if (!action.disableWhenInvalid && !isValid) return;
+      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
       return (
         <Button
           key={action.key}
           variant="contained"
           color="primary"
           size="small"
-          disabled={action.disableWhenInvalid && !isValid}
+          disabled={action.displayInvalid === 'disable' && !isValid}
           className={classes.button}
           startIcon={action.icon}
           onClick={async (e) => {
             e.stopPropagation();
-            action.action([row]);
+            if (action.displayInvalid === 'error' && action.rowCondition && !action.rowCondition(row) && action.invalidError)
+              notifyError(databaseContext, action.invalidError);
+            else
+              action.action([row]);
           }}>
           {action.label}
         </Button>
@@ -728,6 +751,7 @@ const RecordTableRow = (props) => {
             className={`
               ${classes.cell}
               ${header.className}
+              ${header.type === 'number' && classes.numberCell}
               ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
             `}
           />
