@@ -170,7 +170,7 @@ const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) 
   const { doc, databaseContext, selected, setSelected, setActiveDoc } = props;
 
   // Determine which observation records have been selected
-  const isChecked = selected?.some((obs: any) => obs.id === doc._id);
+  const isChecked = selected?.some((id) => id === doc._id);
 
   const navigateToActivityPage = async (activity: any) => {
     history.push(`/home/references/activity/${activity._id}`);
@@ -186,8 +186,8 @@ const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) 
             onChange={() => {
               setSelected(
                 isChecked
-                  ? selected.filter((obs: any) => obs.id !== doc._id)
-                  : [{ id: doc._id, subtype: doc.activitySubtype }, ...selected]
+                  ? selected.filter((id) => id !== doc._id)
+                  : [doc._id, ...selected]
               );
             }}
             onClick={(event) => event.stopPropagation()}
@@ -208,6 +208,7 @@ interface ICachedRecordList {
   setActiveDoc: Function;
   selected: Array<any>;
   setSelected: Function;
+  setLastCreatedMetabaseQuery: Function;
 }
 
 const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
@@ -216,13 +217,24 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const invasivesApi = useInvasivesApi();
-  const [lastCreatedMetabaseQuery, setLastCreatedMetabaseQuery] = useState([]);
 
-  const { selected, setSelected } = props;
+  const { selected, setSelected, setLastCreatedMetabaseQuery } = props;
 
   const observations = docs.filter((doc: any) => doc.activityType === 'Observation');
+  const selectedObservations = observations.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
+  const setSelectedObservations = (newSelected) => setSelected([...newSelected, ...selectedTreatments, ...selectedMonitoring, ...selectedPOIs]);
+  
   const treatments = docs.filter((doc: any) => doc.activityType === 'Treatment');
+  const selectedTreatments = treatments.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
+  const setSelectedTreatments = (newSelected) => setSelected([...selectedObservations, ...newSelected, ...selectedMonitoring, ...selectedPOIs]);
+  
   const monitorings = docs.filter((doc: any) => doc.activityType === 'Monitoring');
+  const selectedMonitoring = monitorings.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
+  const setSelectedMonitoring = (newSelected) => setSelected([...selectedObservations, ...selectedTreatments, ...newSelected, ...selectedPOIs]);
+
+  const pointsOfInterest = docs.filter((doc: any) => doc.docType === 'reference_point_of_interest' && doc.point_of_interest_id); // TODO figure out poi id filter
+  const selectedPOIs = pointsOfInterest.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
+  const setSelectedPOIs = (newSelected) => setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
 
   /*
     Function to determine if all selected observation records are
@@ -231,7 +243,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
     and aquatic observation in a single treatment as those are different areas
   */
   const validateSelectedObservationTypes = () => {
-    return selected.every((a, _, [b]) => a.subtype === b.subtype);
+    return selected.every((a, _, [b]) => docs.find(a).subtype === docs.find(b).subtype);
   };
 
   /*
@@ -239,24 +251,20 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
     activity flow to enable the creation of a treatment record
   */
   const navigateToCreateActivityPage = () => {
-    const selectedObservationIds = selected.map((obs: any) => obs.id);
-
     history.push({
       pathname: `/home/activity/treatment`,
-      search: '?observations=' + selectedObservationIds.join(','),
-      state: { observations: selectedObservationIds }
+      search: '?observations=' + selected.join(','),
+      state: { observations: selected }
     });
   };
 
-  const selectedIds = selected.map((activity) => '' + activity.id);
-
   const createMetabaseQuery = async () => {
-    await setLastCreatedMetabaseQuery(selectedIds);
+    await setLastCreatedMetabaseQuery(selected);
     const queryCreate: ICreateMetabaseQuery = {
       // name: 'Test Metabase Query',
       // description: 'Testing testing',
       // point_of_interest_ids: [],
-      activity_ids: selectedIds
+      activity_ids: selected
     };
     try {
       let response = await invasivesApi.createMetabaseQuery(queryCreate);
@@ -275,93 +283,16 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
     }
   };
 
-  const metabaseQuerySubmitted = JSON.stringify(lastCreatedMetabaseQuery) == JSON.stringify(selectedIds);
-
   return (
     <List className={classes.activityList}>
-      {observations.length > 0 && (
-        <Box mb={3} display="flex" justifyContent="space-between">
-          <Typography variant="h5">Observations</Typography>
-          <Box display="flex" justifyContent="space-between">
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.metabaseAddButton}
-              disabled={!selected.length || metabaseQuerySubmitted}
-              startIcon={selected.length && metabaseQuerySubmitted ? <Check /> : undefined}
-              onClick={async (e) => {
-                e.stopPropagation();
-                await createMetabaseQuery();
-              }}>
-              Create Metabase Query
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!selected.length}
-              onClick={() => {
-                if (!validateSelectedObservationTypes()) {
-                  notifyError(
-                    databaseContext,
-                    `You have selected activities of different subtypes.
-                    Please make sure they are all of the same subtype.`
-                  );
-                  return;
-                }
-
-                navigateToCreateActivityPage();
-              }}>
-              Create Treatment
-            </Button>
-          </Box>
-        </Box>
-      )}
-      {observations.map((doc) => (
-        <CachedRecordListComponent
-          selected={selected}
-          setSelected={setSelected}
-          databaseContext={databaseContext}
-          key={doc._id}
-          doc={doc}
-          setActiveDoc={setActiveDoc}
-        />
-      ))}
-      {treatments.length > 0 && (
-        <Box>
-          <br />
-          <Typography variant="h5">Treatments</Typography>
-        </Box>
-      )}
-      {treatments.map((doc) => (
-        <CachedRecordListComponent
-          setActiveDoc={setActiveDoc}
-          databaseContext={databaseContext}
-          key={doc._id}
-          doc={doc}
-        />
-      ))}
-      {monitorings.length > 0 && (
-        <Box>
-          <br />
-          <Typography variant="h5">Monitorings</Typography>
-        </Box>
-      )}
-      {monitorings.map((doc) => (
-        <CachedRecordListComponent
-          setActiveDoc={setActiveDoc}
-          databaseContext={databaseContext}
-          key={doc._id}
-          doc={doc}
-        />
-      ))}
       <RecordTable
         tableName="Observations"
         keyField="activity_id"
         startingOrderBy="activity_id"
         startingOrder="desc"
         enableSelection
-        selected={selected}
-        setSelected={setSelected}
+        selected={selectedObservations}
+        setSelected={setSelectedObservations}
         headers={[
           {
             id: 'activity_id',
@@ -381,7 +312,8 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
           },
           {
             id: 'elevation',
-            title: 'Elevation'
+            title: 'Elevation',
+            type: 'number'
           },
           {
             id: 'flnro_districts',
@@ -397,7 +329,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
           },
           {
             id: 'invasive_species_agency_code',
-            title: 'Species (Code)'
+            title: 'Agency'
           },
           {
             id: 'jurisdictions_rendered',
@@ -427,26 +359,28 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         rows={
           !observations?.length
             ? []
-            : observations.map((activity) => ({
-                ...activity,
-                ...activity?.formData?.activity_data,
-                ...activity?.formData?.activity_subtype_data,
-                id: activity.activity_id,
-                jurisdictions_rendered: activity?.formData?.activity_data?.jurisdictions
-                  ? activity?.formData?.activity_data?.jurisdictions
+            : observations.map((doc) => ({
+                ...doc,
+                ...doc?.formData?.activity_data,
+                ...doc?.formData?.activity_subtype_data,
+                activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
+                jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
+                  ? doc?.formData?.activity_data?.jurisdictions
                       .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
                       .join(', ')
                   : ''
               }))
         }
-        /*
-        // WIP code
         actions={{
+          delete: {
+            enabled: false
+            // TODO maybe make this Delete From Cache
+          },
           create_treatment: {
             key: 'create_treatment',
             enabled: true,
-            action: (rows) => {
-              const ids = rows.map((row: any) => row['activity_id']);
+            action: (selectedRows) => {
+              const ids = selectedRows.map((row: any) => row['activity_id']);
               history.push({
                 pathname: `/home/activity/treatment`,
                 search: '?observations=' + ids.join(','),
@@ -456,11 +390,11 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
             label: 'Create Treatment',
             bulkAction: true,
             rowAction: false,
-            disableWhenInvalid: true,
-            bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype)
+            displayInvalid: 'error',
+            invalidError: 'All selected activities must be of the same SubType to create a Treatment',
+            bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype)
           }
         }}
-        */
       />
       <RecordTable
         tableName="Treatments"
@@ -468,8 +402,11 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         startingOrderBy="activity_id"
         startingOrder="desc"
         enableSelection
-        selected={selected}
-        setSelected={setSelected}
+        selected={selectedTreatments}
+        setSelected={setSelectedTreatments}
+        onToggleExpandRow={(row, expandedRows, selectedRows) => {
+          console.log(row, expandedRows, selectedRows);
+        }}
         headers={[
           {
             id: 'activity_id',
@@ -497,19 +434,23 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
           },
           {
             id: 'reported_area',
-            title: 'Area (m\u00B2)'
+            title: 'Area (m\u00B2)',
+            type: 'number'
           },
           {
             id: 'latitude',
-            title: 'Latitude'
+            title: 'Latitude',
+            type: 'number'
           },
           {
             id: 'longitude',
-            title: 'Longitude'
+            title: 'Longitude',
+            type: 'number'
           },
           {
             id: 'elevation',
-            title: 'Elevation'
+            title: 'Elevation',
+            type: 'number'
           }
         ]}
         rows={
@@ -519,7 +460,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
                 ...doc,
                 ...doc?.formData?.activity_data,
                 ...doc?.formData?.activity_subtype_data,
-                id: doc.activity_id,
+                activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
                 jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
                   ? doc?.formData?.activity_data?.jurisdictions
                       .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
@@ -570,22 +511,125 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
           </>
         )}
         actions={{
+          delete: {
+            enabled: false
+            // TODO maybe make this Delete From Cache
+          },
           create_monitoring: {
             key: 'create_monitoring',
             enabled: true,
             label: 'Create Monitoring',
             bulkAction: false,
             rowAction: true,
+            displayInvalid: 'hidden',
             rowCondition: (row) => row.activityType === 'Treatment',
-            action: async (activity) => {
-              /* const addedActivity = await addLinkedActivityToDB(
+            action: async (selectedRows) => {
+              if (selectedRows.length !== 1)
+              // action is for creating a single monitoring from a given row
+              // NOTE: might want to extend this into a multi-row monitoring action later
+                return;
+              const activity = selectedRows[0];
+
+              const addedActivity = await addLinkedActivityToDB(
                 databaseContext,
                 ActivityType.Monitoring,
                 calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
                 activity
               );
-              setActiveActivityAndNavigateToActivityPage(addedActivity); */
+              await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
+                return { ...appStateDoc, activeActivity: addedActivity._id };
+              });
+
+              history.push(`/home/activity`);
             }
+          }
+        }}
+      />
+      <RecordTable
+        tableName="Points of Interest"
+        keyField="point_of_interest_id"
+        startingOrderBy="point_of_interest_id"
+        startingOrder="desc"
+        enableSelection
+        selected={selectedPOIs}
+        setSelected={setSelectedPOIs}
+        headers={[
+          {
+            id: 'point_of_interest_id',
+            title: 'POI ID',
+            type: 'number'
+          },
+          {
+            id: 'created_date_on_device',
+            title: 'Created Date'
+          },
+          {
+            id: 'jurisdictions_rendered',
+            title: 'Jurisdiction'
+          },
+          {
+            id: 'elevation',
+            title: 'Elevation',
+            type: 'number'
+          },
+          {
+            id: 'slope_code',
+            title: 'Slope'
+          },
+          {
+            id: 'aspect_code',
+            title: 'Aspect'
+          },
+          {
+            id: 'specific_use_code',
+            title: 'Specific Use'
+          },
+          {
+            id: 'soil_texture_code',
+            title: 'Soil Texture'
+          },
+          {
+            id: 'latitude',
+            title: 'Latitude',
+            type: 'number'
+          },
+          {
+            id: 'longitude',
+            title: 'Longitude',
+            type: 'number'
+          },
+          {
+            id: 'access_description',
+            title: 'Location'
+          },
+          {
+            id: 'general_comment',
+            title: 'Comments'
+          }
+        ]}
+        rows={
+          !pointsOfInterest?.length
+            ? []
+            : pointsOfInterest.map((doc) => ({
+                ...doc,
+                ...doc?.formData?.point_of_interest_data,
+                ...doc?.formData?.point_of_interest_type_data,
+                jurisdictions_rendered: doc?.formData?.surveys?.[0]?.jurisdictions
+                  ? doc?.formData?.surveys?.[0]?.jurisdictions
+                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
+                      .join(', ')
+                  : '',
+                latitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6),
+                longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6)
+              }))
+        }
+        actions={{
+          delete: {
+            enabled: false
+            // TODO maybe make this Delete From Cache
+          },
+          edit: {
+            enabled: false
           }
         }}
       />
@@ -602,7 +646,8 @@ const CachedRecordsList: React.FC = () => {
   const [interactiveGeometry, setInteractiveGeometry] = useState([]);
   const [extent, setExtent] = useState(null);
   const [docs, setDocs] = useState<any[]>([]);
-  const [selectedActivities, setSelectedActivities] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [lastCreatedMetabaseQuery, setLastCreatedMetabaseQuery] = useState([]);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
@@ -620,7 +665,7 @@ const CachedRecordsList: React.FC = () => {
   */
   const updateActivityList = useCallback(async () => {
     const activityResult = await databaseContext.database.find({
-      selector: { docType: DocType.REFERENCE_ACTIVITY },
+      selector: { deleted_timestamp: undefined }, // docType: DocType.REFERENCE_ACTIVITY,  },
       use_index: 'docTypeIndex'
     });
 
@@ -707,21 +752,18 @@ const CachedRecordsList: React.FC = () => {
     let updatedInteractiveGeos = [...interactiveGeometry];
 
     updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
-      const allButThis = selectedActivities.filter((activity) => geo.recordDocID !== activity.id);
-      if (selectedActivities.length > allButThis.length) {
+      const allButThis = selected.filter((id) => geo.recordDocID !== id);
+      if (selected.length > allButThis.length) {
         geo.color = '#9E1A1A';
         geo.onClickCallback = () => {
-          setSelectedActivities(allButThis);
+          setSelected(allButThis);
         };
       } else {
         geo.color = geoColors[geo.recordType];
         geo.onClickCallback = () => {
-          setSelectedActivities([
-            ...selectedActivities,
-            {
-              id: geo.recordDocID,
-              subtype: geo.recordSubtype
-            }
+          setSelected([
+            ...selected,
+            geo.recordDocID
           ]);
         };
       }
@@ -730,7 +772,7 @@ const CachedRecordsList: React.FC = () => {
     });
 
     setInteractiveGeometry(updatedInteractiveGeos);
-  }, [selectedActivities, setSelectedActivities]);
+  }, [selected, setSelected]);
 
   /*
     Get updated interactive geometries based on the activities/selected map activity type
@@ -774,12 +816,7 @@ const CachedRecordsList: React.FC = () => {
       description: `${doc.activityType}: ${doc._id}`,
       popUpComponent: ActivityPopup,
       onClickCallback: () => {
-        setSelectedActivities([
-          {
-            id: doc._id,
-            subtype: doc.activitySubtype
-          }
-        ]);
+        setSelected([doc._id]);
       }
     };
   };
@@ -791,10 +828,23 @@ const CachedRecordsList: React.FC = () => {
     return '<div>' + name + '</div>';
   };
 
+  const metabaseQuerySubmitted = JSON.stringify(lastCreatedMetabaseQuery) == JSON.stringify(selected);
+
   return (
     <Container className={classes.activitiesContent}>
       <Box mb={3} display="flex" justifyContent="space-between">
         <Typography variant="h4">Cached Activities</Typography>
+        <Box display="flex" justifyContent="space-between">
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.metabaseAddButton}
+            disabled={!selected.length || metabaseQuerySubmitted}
+            startIcon={selected.length && metabaseQuerySubmitted ? <Check /> : undefined}
+            onClick={() => setSelected([])}>
+            Create Metabase Query
+          </Button>
+        </Box>
       </Box>
       {interactiveGeometry.length > 0 && (
         <Paper>
@@ -815,8 +865,9 @@ const CachedRecordsList: React.FC = () => {
         docs={docs}
         databaseContext={databaseContext}
         setActiveDoc={setActiveDoc}
-        selected={selectedActivities}
-        setSelected={setSelectedActivities}
+        selected={selected}
+        setSelected={setSelected}
+        setLastCreatedMetabaseQuery={setLastCreatedMetabaseQuery}
       />
     </Container>
   );
