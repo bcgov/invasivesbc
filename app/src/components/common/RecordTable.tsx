@@ -108,8 +108,7 @@ const useStyles = makeStyles((theme) => ({
   numberCell: {
     align: 'right'
   },
-  dateCell: {
-  }
+  dateCell: {}
 }));
 
 const useToolbarStyles = makeStyles((theme) => ({
@@ -316,7 +315,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
   const [expandedRows, setExpandedRows] = useState([]);
   const [selected, setSelected] = useState(props.selected || []);
-  
+
   const arraysEqual = (a, b) => {
     if (a === b) return true;
     if (!a || !b) return true;
@@ -331,7 +330,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       if (a[i] !== b[i]) return false;
     }
     return true;
-  }
+  };
 
   const updateParentSelected = async (newSelected) => await props.setSelected(newSelected);
 
@@ -432,7 +431,11 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     }
     setExpandedRows(newExpandedRows);
     if (onToggleExpandRow)
-      onToggleExpandRow(rows.find((row) => row[keyField] === key), newExpandedRows, selectedRows);
+      onToggleExpandRow(
+        rows.find((row) => row[keyField] === key),
+        newExpandedRows,
+        selectedRows
+      );
   };
 
   return (
@@ -597,17 +600,20 @@ const RecordTableToolbar = (props) => {
           startIcon={action.icon}
           onClick={async (e) => {
             e.stopPropagation();
-            if (action.displayInvalid === 'error' && action.bulkCondition && !action.bulkCondition(selectedRows) && action.invalidError)
+            if (
+              action.displayInvalid === 'error' &&
+              action.bulkCondition &&
+              !action.bulkCondition(selectedRows) &&
+              action.invalidError
+            )
               notifyError(databaseContext, action.invalidError);
-            else
-              action.action(selectedRows);
+            else action.action(selectedRows);
           }}>
           {action.label}
         </Button>
       );
     })
     .filter((button) => button); // remove hidden actions
-
 
   return (
     <AccordionSummary
@@ -691,8 +697,7 @@ const RecordTableRow = (props) => {
   const classes = useStyles();
 
   const key = row[keyField];
-  if (key === undefined)
-    throw new Error('Error: table row has no matching key defined');
+  if (key === undefined) throw new Error('Error: table row has no matching key defined');
 
   const renderedDropdown = !!dropdown && dropdown(row);
   const labelId = `record-table-checkbox-${key}`;
@@ -711,10 +716,14 @@ const RecordTableRow = (props) => {
           startIcon={action.icon}
           onClick={async (e) => {
             e.stopPropagation();
-            if (action.displayInvalid === 'error' && action.rowCondition && !action.rowCondition(row) && action.invalidError)
+            if (
+              action.displayInvalid === 'error' &&
+              action.rowCondition &&
+              !action.rowCondition(row) &&
+              action.invalidError
+            )
               notifyError(databaseContext, action.invalidError);
-            else
-              action.action([row]);
+            else action.action([row]);
           }}>
           {action.label}
         </Button>
