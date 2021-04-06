@@ -28,6 +28,7 @@ import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import TripStepStatus, { ITripStepStatus, TripStatusCode } from 'components/trip/TripStepStatus';
 import RecordTable from 'components/common/RecordTable';
+import { DocType } from 'constants/database';
 
 interface IPlanPageProps {
   classes?: any;
@@ -94,9 +95,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
+  const [interactiveGeometry, setInteractiveGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
 
-  const [tripLoaded, setTripLoaded] = useState(false);
+  const [workingTripID, setWorkingTripID] = useState(null);
+  const [tripsLoaded, setTripsLoaded] = useState(false);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
@@ -107,29 +110,51 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   };
   */
 
-  const getTrip = async () => {
-    let docs = await databaseContext.database.find({ selector: { _id: 'trip' } });
-
+  const getExtent = async () => {
+    let docs = await databaseContext.database.find({ selector: { _id: 'planPageExtent' });
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
     }
 
-    let tripDoc = docs.docs[0];
+    if (docs[0].extent) {
+      setExtent(docs[0].extent);
+    }
+  }
 
-    if (tripDoc.geometry) {
-      setGeometry(tripDoc.geometry);
+  const getTrips = async () => {
+    let docs = await databaseContext.database.find({ selector: { docType: DocType.TRIP} });
+    if (!docs || !docs.docs || !docs.docs.length) {
+      return;
     }
 
-    if (tripDoc.extent) {
-      setExtent(tripDoc.extent);
+    let geos = []
+    docs.docs.map((doc) => {
+      if(doc.geometry) {
+        geos.push({
+          recordDocID: doc._id,
+          recordDocType: doc.docType,
+          description: 'Uploaded spatial content:\n ' + doc._id + '\n',
+          geometry: doc.geometry,
+          color: 'orange',
+          onClickCallback: () => {
+            console.log('uploaded content clicked');
+          },
+          popUpComponent: null
+      })
+    }
+  })
+
+    if(geos.length > 0)
+    {
+      setInteractiveGeometry(geos)
     }
   };
 
   // initial fetch
   useEffect(() => {
     const initialLoad = async () => {
-      await getTrip();
-      setTripLoaded(true);
+      await getTrips();
+      setTripsLoaded(true);
     };
 
     initialLoad();
@@ -137,25 +162,25 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   // persist geometry changes
   useEffect(() => {
-    if (!tripLoaded) {
+    if (!tripsLoaded) {
       return;
     }
 
-    databaseContext.database.upsert('trip', (tripDoc) => {
+    databaseContext.database.upsert(workingTripID, (tripDoc) => {
       return { ...tripDoc, geometry: geometry };
     });
-  }, [geometry, tripLoaded, databaseContext.database]);
+  }, [geometry, tripsLoaded, databaseContext.database]);
 
   // persist extent changes
   useEffect(() => {
-    if (!tripLoaded) {
+    if (!tripsLoaded) {
       return;
     }
 
-    databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...tripDoc, extent: extent };
+    databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
+      return { ...planPageExtentDoc, extent: extent };
     });
-  }, [extent, tripLoaded, databaseContext.database]);
+  }, [extent, tripsLoaded, databaseContext.database]);
 
   const [trips, setTrips] = useState([]);
 
@@ -163,13 +188,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     setTrips([...trips, {trip_id: trips.length, trip_name: 'initial name'}]);
   };
 
-  const TripListComponent: React.FC = (props) => {
-    return (
-      <Grid container spacing={3} className={classes.tripGrid}>
-        <SingleTrip />
-      </Grid>
-    );
-  };
 
   const SingleTrip: React.FC = (props) => {
     //todo: add trip_id to props and let trip manage db itself
@@ -247,7 +265,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               doneButtonCallBack={() => {
                 helperStepDoneOrSkip(2);
               }}>
-              <ActivityDataFilter />
+              <ActivityDataFilter trip_id={workingTripID}/>
             </TripStep>
             <TripStep
               title="Step 3: Choose data from other systems, (IAPP)"
@@ -262,7 +280,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               doneButtonCallBack={() => {
                 helperStepDoneOrSkip(3);
               }}>
-              <PointOfInterestDataFilter />
+              <PointOfInterestDataFilter trip_id={workingTripID} />
             </TripStep>
             <TripStep
               title="OPTIONAL: Get data from a Metabase Question"
