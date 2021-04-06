@@ -12,11 +12,7 @@ import {
   Button,
   Box,
   Checkbox,
-  Container,
-  FormControl,
-  MenuItem,
-  Select,
-  InputLabel
+  Container
 } from '@material-ui/core';
 import { Add, Check } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
@@ -208,7 +204,7 @@ interface ICachedRecordList {
 }
 
 const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
-  const { docs, databaseContext, setActiveDoc } = props;
+  const { docs, databaseContext } = props;
 
   const classes = useStyles();
   const history = useHistory();
@@ -233,40 +229,16 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
 
   const pointsOfInterest = docs.filter(
     (doc: any) => doc.docType === 'reference_point_of_interest' && doc.point_of_interest_id
-  ); // TODO figure out poi id filter
+  );
   const selectedPOIs = pointsOfInterest.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
   const setSelectedPOIs = (newSelected) =>
     setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
 
-  /*
-    Function to determine if all selected observation records are
-    of the same subtype. For example: Cannot create a treatment if you select a plant
-    and an animal observation, and most probably will not go treat a terrestrial
-    and aquatic observation in a single treatment as those are different areas
-  */
-  const validateSelectedObservationTypes = () => {
-    return selected.every((a, _, [b]) => docs.find(a).subtype === docs.find(b).subtype);
-  };
-
-  /*
-    If all the selected observation records are valid, navigate to the create
-    activity flow to enable the creation of a treatment record
-  */
-  const navigateToCreateActivityPage = () => {
-    history.push({
-      pathname: `/home/activity/treatment`,
-      search: '?observations=' + selected.join(','),
-      state: { observations: selected }
-    });
-  };
-
   const createMetabaseQuery = async () => {
     await setLastCreatedMetabaseQuery(selected);
     const queryCreate: ICreateMetabaseQuery = {
-      // name: 'Test Metabase Query',
-      // description: 'Testing testing',
-      // point_of_interest_ids: [],
-      activity_ids: selected
+      point_of_interest_ids: selectedPOIs,
+      activity_ids: [...selectedObservations, ...selectedTreatments, ...selectedMonitoring]
     };
     try {
       let response = await invasivesApi.createMetabaseQuery(queryCreate);
@@ -394,6 +366,12 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
             rowAction: false,
             displayInvalid: 'error',
             invalidError: 'All selected activities must be of the same SubType to create a Treatment',
+            /*
+              Function to determine if all selected observation records are
+              of the same subtype. For example: Cannot create a treatment if you select a plant
+              and an animal observation, and most probably will not go treat a terrestrial
+              and aquatic observation in a single treatment as those are different areas
+            */
             bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype)
           }
         }}
@@ -840,7 +818,7 @@ const CachedRecordsList: React.FC = () => {
             className={classes.metabaseAddButton}
             disabled={!selected.length || metabaseQuerySubmitted}
             startIcon={selected.length && metabaseQuerySubmitted ? <Check /> : undefined}
-            onClick={() => setSelected([])}>
+            onClick={() => createMetabaseQuery()}>
             Create Metabase Query
           </Button>
         </Box>

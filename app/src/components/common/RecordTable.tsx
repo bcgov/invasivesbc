@@ -24,7 +24,7 @@ import { lighten } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { DocType } from 'constants/database';
 import { Edit, Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
-import { notifySuccess, notifyError } from 'utils/NotificationUtils';
+import { notifyError } from 'utils/NotificationUtils';
 import React, { useState, useContext, useEffect } from 'react';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import clsx from 'clsx';
@@ -332,7 +332,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     return true;
   };
 
-  const updateParentSelected = async (newSelected) => await props.setSelected(newSelected);
+  const updateParentSelected = async (newSelected) => props.setSelected(newSelected);
 
   // there is probably a cleaner way to do the following in React:
   useEffect(() => {
