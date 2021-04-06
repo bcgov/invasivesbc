@@ -111,7 +111,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   */
 
   const getExtent = async () => {
-    let docs = await databaseContext.database.find({ selector: { _id: 'planPageExtent' });
+    let docs = await databaseContext.database.find({ selector: { _id: 'planPageExtent' }});
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
     }
@@ -163,6 +163,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   // persist geometry changes
   useEffect(() => {
     if (!tripsLoaded) {
+      return;
+    }
+
+    if (!workingTripID) {
       return;
     }
 
