@@ -358,10 +358,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const getSaveControl2 = (layerToSave: any) => {
     return L.control.savetiles(layerToSave, {
       zoomlevels: [13, 14, 15, 16, 17],
-      confirm(layer,successCallback) {
+      confirm(layer, successCallback) {
         // TODO: Increment counter global variable
-        console.log('layer',layer);
-        console.log('successCallback',successCallback);
+        console.log('layer', layer);
+        console.log('successCallback', successCallback);
       }
     });
   };
@@ -495,7 +495,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const bcBaseLayerControl = getSaveControl2(bcBaseLayer);
     bcBaseLayerControl._map = mapRef.current;
     layerRef.current.push(bcBaseLayerControl);
-
 
     // console.log('testControl',testControl.getStorageSize);
     const testControl = getSaveControl2(streams);
@@ -831,12 +830,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     /**
      * Second cycle through all layers and store tiles
      */
-    layerRef.current.forEach((control,index) => {
+    layerRef.current.forEach((control, index) => {
       setTimeout(() => {
-        control._saveTiles()
+        control._saveTiles();
         if (index === layerRef.current.length - 1) setOfflineing(false);
-      },1000 * index);
-    })
+      }, 1000 * index);
+    });
   };
 
   // Style the download button
@@ -875,11 +874,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           1. Toggle between spinner and image depending on 'thinking' status
           2. Swap image style based on zoom level
         */}
-        {offlineing ?
-          <Spinner></Spinner>
-        :
-          <img src="/assets/icon/download.svg" style={iconStyle}></img>
-        }
+        {offlineing ? <Spinner></Spinner> : <img src="/assets/icon/download.svg" style={iconStyle}></img>}
       </div>
     </div>
   );
