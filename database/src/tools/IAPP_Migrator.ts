@@ -549,17 +549,17 @@ const main = async () => {
             jurisdictions: [
               {
                 jurisdiction_code: survey.Jur1,
-                percentage: survey.Jur1pct
+                percent_covered: survey.Jur1pct
               },
               {
                 jurisdiction_code: survey.Jur2,
-                percentage: survey.Jur2pct
+                percent_covered: survey.Jur2pct
               },
               {
                 jurisdiction_code: survey.Jur3,
-                percentage: survey.Jur3pct
+                percent_covered: survey.Jur3pct
               }
-            ].filter((jur) => jur.jurisdiction_code && jur.percentage && Number(jur.percentage) > 0)
+            ].filter((jur) => jur.jurisdiction_code && jur.percent_covered && Number(jur.percent_covered) > 0)
           })),
 
           mechanical_treatments: mechanical_treatments.map((t) => ({

@@ -35,9 +35,6 @@ const useStyles = makeStyles((theme) => ({
   missingValue: {
     fontStyle: 'italic',
     color: '#777'
-  },
-  iappTable: {
-    marginTop: '15px'
   }
 }));
 
@@ -143,28 +140,25 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               Jurisdiction
             </Grid>
             <Grid item xs={3}>
-              {(surveys?.length &&
-                surveys[0].jurisdictions?.length &&
+              {(surveys?.[0]?.jurisdictions?.length > 0 &&
                 ifApplicable(surveys[0].jurisdictions[0].jurisdiction_code) +
                   ' (' +
-                  surveys[0].jurisdictions[0].percentage +
+                  surveys[0].jurisdictions[0].percent_covered +
                   '%)') ||
                 'Not Provided'}
             </Grid>
             <Grid item xs={3}>
-              {surveys?.length &&
-                surveys[0].jurisdictions?.length > 1 &&
+              {surveys?.[0]?.jurisdictions?.length > 1 &&
                 ifApplicable(surveys[0].jurisdictions[1].jurisdiction_code) +
                   ' (' +
-                  surveys[0].jurisdictions[1].percentage +
+                  surveys[0].jurisdictions[1].percent_covered +
                   '%)'}
             </Grid>
             <Grid item xs={3}>
-              {surveys?.length &&
-                surveys[0].jurisdictions?.length > 2 &&
+              {surveys?.[0]?.jurisdictions?.length > 2 &&
                 ifApplicable(surveys[0].jurisdictions[2].jurisdiction_code) +
                   ' (' +
-                  surveys[0].jurisdictions[2].percentage +
+                  surveys[0].jurisdictions[2].percent_covered +
                   '%)'}
             </Grid>
 
@@ -190,11 +184,12 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="survey_id"
         startingOrderBy="survey_id"
         startingOrder="desc"
-        className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'survey_id',
-            title: 'Survey ID'
+            title: 'Survey ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -219,7 +214,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           {
             id: 'reported_area',
             title: 'Area (m\u00B2)',
-            numeric: true
+            type: 'number'
           },
           {
             id: 'density',
@@ -254,11 +249,12 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="treatment_id"
         startingOrderBy="treatment_id"
         startingOrder="desc"
-        className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID'
+            title: 'Treatment ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -275,7 +271,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           {
             id: 'reported_area',
             title: 'Reported Area (m\u00B2)',
-            numeric: true
+            type: 'number'
           },
           {
             id: 'mechanical_method_code_label', // custom
@@ -300,17 +296,19 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }))
         }
         dropdown={(row) =>
-          row.monitoring?.length ? undefined : (
+          !row.monitoring?.length ? undefined : (
             <RecordTable
               tableName="Monitoring"
               startExpanded={true}
               startingOrderBy="monitoring_id"
               startingOrder="desc"
               keyField="monitoring_id"
+              actions={false}
               headers={[
                 {
                   id: 'monitoring_id',
-                  title: 'Monitoring ID'
+                  title: 'Monitoring ID',
+                  type: 'number'
                 },
                 {
                   id: 'monitoring_date',
@@ -323,7 +321,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'efficacy_percent',
                   title: 'Efficacy',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'project_code_label',
@@ -353,11 +351,12 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="treatment_id"
         startingOrderBy="treatment_id"
         startingOrder="desc"
-        className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID'
+            title: 'Treatment ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -374,7 +373,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           {
             id: 'reported_area',
             title: 'Reported Area (m\u00B2)',
-            numeric: true
+            type: 'number'
           },
           {
             id: 'chemical_method', // custom
@@ -402,6 +401,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             <RecordTable
               startExpanded={true}
               keyField="treatment_id"
+              actions={false}
               headers={[
                 {
                   id: 'pmp_confirmation_number',
@@ -418,7 +418,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'temperature',
                   title: 'Temperature',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'humidity',
@@ -427,7 +427,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'wind_speed',
                   title: 'Wind Velocity',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'wind_direction',
@@ -440,7 +440,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'herbicide_amount',
                   title: 'Amount Used',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'dilution',
@@ -459,10 +459,12 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               startExpanded={true}
               startingOrderBy="monitoring_date"
               keyField="monitoring_id"
+              actions={false}
               headers={[
                 {
                   id: 'monitoring_id',
-                  title: 'Monitoring ID'
+                  title: 'Monitoring ID',
+                  type: 'number'
                 },
                 {
                   id: 'monitoring_date',
@@ -475,7 +477,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 {
                   id: 'efficacy_percent',
                   title: 'Efficacy',
-                  numeric: true
+                  type: 'number'
                 },
                 {
                   id: 'project_code_label',
@@ -505,11 +507,12 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="treatment_id"
         startingOrderBy="treatment_id"
         startingOrder="desc"
-        className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID'
+            title: 'Treatment ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -577,17 +580,19 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
               }))
         }
         dropdown={(row) =>
-          row.monitoring?.length ? undefined : (
+          !row.monitoring?.length ? undefined : (
             <RecordTable
               tableName="Monitoring"
               startExpanded={true}
               startingOrderBy="monitoring_id"
               startingOrder="desc"
               keyField="monitoring_id"
+              actions={false}
               headers={[
                 {
                   id: 'monitoring_id',
-                  title: 'Monitoring ID'
+                  title: 'Monitoring ID',
+                  type: 'number'
                 },
                 {
                   id: 'monitoring_date',
@@ -595,11 +600,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
                 },
                 {
                   id: 'plant_count',
-                  title: 'Plant Count'
+                  title: 'Plant Count',
+                  type: 'number'
                 },
                 {
                   id: 'agent_count',
-                  title: 'Agent Count'
+                  title: 'Agent Count',
+                  type: 'number'
                 },
                 {
                   id: 'count_duration',
@@ -677,11 +684,12 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
         keyField="biological_id"
         startingOrderBy="biological_id"
         startingOrder="desc"
-        className={classes.iappTable}
+        actions={false}
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID'
+            title: 'Treatment ID',
+            type: 'number'
           },
           {
             id: 'common_name',
@@ -697,11 +705,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
           },
           {
             id: 'plant_count',
-            title: 'Plant Count'
+            title: 'Plant Count',
+            type: 'number'
           },
           {
             id: 'agent_count',
-            title: 'Agent Count'
+            title: 'Agent Count',
+            type: 'number'
           },
           {
             id: 'count_duration',
