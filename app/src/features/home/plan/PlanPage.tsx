@@ -100,6 +100,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [extent, setExtent] = useState(null);
 
   const [workingTripID, setWorkingTripID] = useState(null);
+  const [newTripID, setNewTripID] = useState(null)
+  const [trips, setTrips] = useState([]);
   const [tripsLoaded, setTripsLoaded] = useState(false);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
@@ -116,24 +118,34 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
     }
-
+    if (!docs[0]) {
+      return;
+    }
     if (docs[0].extent) {
       setExtent(docs[0].extent);
     }
   };
 
   const getTrips = async () => {
-    let docs = await databaseContext.database.find({ selector: { docType: DocType.TRIP } });
-    if (!docs || !docs.docs || !docs.docs.length) {
+    if (!databaseContext) {
+      console.log('db not ready');
       return;
     }
-    let trips = []
+    // does not work:
+    let docs = await databaseContext.database.find({
+      selector: { docType: { $eq: DocType.TRIP } },
+      use_index: 'docTypeIndex'
+    });
 
+    if (!docs || !docs.docs || !docs.docs.length) {
+      console.log('found nothing');
+      return;
+    }
+    let trips = [];
     let geos = [];
-    docs.docs.map((doc) => {
-      trips.push(
-        { trip_id: doc._id, trip_name: 'initial name', num_activities: 5, num_POI: 4 })
 
+    docs.docs.map((doc) => {
+      trips.push({ trip_id: doc.trip_id, trip_name: 'initial name', num_activities: 5, num_POI: 4 });
       if (doc.geometry) {
         geos.push({
           recordDocID: doc._id,
@@ -152,31 +164,55 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (geos.length > 0) {
       setInteractiveGeometry(geos);
     }
+    console.log('num trips');
+    console.dir(trips);
+    setTrips(trips);
+  };
 
-    setTrips(trips)
+  const helperGetMaxTripID = async () => {
+    if (!databaseContext) {
+      console.log('db not ready');
+      return;
+    }
+    let docs = await databaseContext.database.find({
+      selector: { trip_id: { $gte: null } },
+      sort: [{'trip_id' : 'desc'}],
+      use_index: 'tripIDIndex',
+      limit: 1
+    });
 
+    if (!docs || !docs.docs || !docs.docs.length) {
+      return 0;
+    } else {
+      console.dir(docs.docs)
+      if(docs.docs[0].trip_id)
+      {
+        return parseInt(docs.docs[0]._id);
+      }
+      else {
+        return 0
+      }
+    }
   };
 
   // initial fetch
   useEffect(() => {
     const initialLoad = async () => {
       await getTrips();
+      await getExtent();
       setTripsLoaded(true);
     };
-
     initialLoad();
-  }, [databaseContext]);
+  }, [databaseContext, newTripID]);
 
   // persist geometry changes
   useEffect(() => {
     if (!tripsLoaded) {
       return;
     }
-
     if (!workingTripID) {
       return;
     }
-
     databaseContext.database.upsert(workingTripID, (tripDoc) => {
       return { ...tripDoc, geometry: geometry };
     });
@@ -187,20 +223,26 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!tripsLoaded) {
       return;
     }
-
     databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
       return { ...planPageExtentDoc, extent: extent };
     });
   }, [extent, tripsLoaded, databaseContext.database]);
 
-  const [trips, setTrips] = useState([]);
-
-  const addTrip = () => {
-    setTrips([
-      ...trips,
-      { trip_id: trips.length.toString(), trip_name: 'initial name', num_activities: 5, num_POI: 4 }
-    ]);
-    setWorkingTripID(trips.length.toString());
+  const addTrip = async () => {
+    let newID = await helperGetMaxTripID();
+    newID += 1;
+    console.log(newID)
+    databaseContext.database.upsert(newID.toString(), (doc) => {
+      return {
+        ...doc,
+        trip_id: newID.toString(),
+        trip_name: 'New Unnamed Trip',
+        num_activities: 0,
+        num_POI: 0,
+        docType: DocType.TRIP
+      };
+    });
+    setNewTripID(newID)
   };
 
   const SingleTrip: React.FC<any> = (props) => {
