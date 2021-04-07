@@ -11,6 +11,7 @@ import 'leaflet.offline';
 import 'leaflet/dist/leaflet.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
+import Spinner from 'components/spinner/Spinner';
 import { interactiveGeoInputData } from './GeoMeta';
 import './MapContainer.css';
 import * as turf from '@turf/turf';
@@ -60,6 +61,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const layerRef = useRef([]);
 
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
+
+  const [offlineing, setOfflineing] = useState(false);
 
   const addContextMenuClickListener = () => {
     mapRef.current.on('contextmenu', (e) => {
@@ -354,7 +357,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const getSaveControl2 = (layerToSave: any) => {
     return L.control.savetiles(layerToSave, {
-      zoomlevels: [13, 14, 15, 16, 17]
+      zoomlevels: [13, 14, 15, 16, 17],
+      confirm(layer, successCallback) {
+        // TODO: Increment counter global variable
+        console.log('layer', layer);
+        console.log('successCallback', successCallback);
+      }
     });
   };
 
@@ -477,10 +485,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       'National Parks': nationalParks
     };
 
+    // This layer is on by default
     mapRef.current.addLayer(esriPlacenames);
 
-    const esriSaveTilesControl = getSaveControl(esriBaseLayer);
+    const esriBaseLayerControl = getSaveControl2(esriBaseLayer);
+    esriBaseLayerControl._map = mapRef.current;
+    layerRef.current.push(esriBaseLayerControl);
 
+    const bcBaseLayerControl = getSaveControl2(bcBaseLayer);
+    bcBaseLayerControl._map = mapRef.current;
+    layerRef.current.push(bcBaseLayerControl);
+
+    // console.log('testControl',testControl.getStorageSize);
     const testControl = getSaveControl2(streams);
     testControl._map = mapRef.current;
     layerRef.current.push(testControl);
@@ -495,7 +511,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('zoomend', () => {
       props.extentState.setExtent(mapRef.current.getBounds());
       setCurrentZoom(mapRef.current.getZoom());
-      addASaveTilesControl(esriSaveTilesControl);
+      // XXX: Turn off old saving controls
+      // addASaveTilesControl(esriSaveTilesControl);
     });
 
     mapRef.current.on('draw:created', (feature) => {
@@ -785,6 +802,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const storeLayers = async () => {
+    setOfflineing(true);
+    /**
+     * First calculate bounds to draw and store extent of offline data
+     */
+
     // Calculate the extent
     const bounds = mapRef.current.getBounds();
     const x1 = bounds.getWest();
@@ -805,10 +827,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       };
     });
 
-    // XXX: This is now working. But getting hit with CORS errors
-    layerRef.current[0]._saveTiles();
+    /**
+     * Second cycle through all layers and store tiles
+     */
+    layerRef.current.forEach((control, index) => {
+      setTimeout(() => {
+        control._saveTiles();
+        if (index === layerRef.current.length - 1) setOfflineing(false);
+      }, 1000 * index);
+    });
   };
 
+  // Style the download button
   const storeLayersStyle = {
     display: 'flex',
     justifyContent: 'center',
@@ -818,21 +848,33 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     color: '#464646',
     width: '2.7rem',
     height: '2.7rem',
-    top: '150px',
+    top: '148px',
     left: '5px',
     zIndex: 1000,
     borderRadius: '4px',
     cursor: 'pointer'
   } as React.CSSProperties;
 
+  // Style the image inside the download button
+  const iconStyle = {
+    transform: 'scale(0.7)',
+    opacity: '0.7'
+  };
+
   return (
     <div id={props.mapId} className={props.classes.map} onDragEnter={dragEnter} onDragOver={dragOver} onDrop={dragDrop}>
+      // The drop zone for uploading files
       <div style={dropSpatial ? dropZoneVisible : dropZoneInvisible} onDragLeave={dragLeave}>
         {' '}
         {dropSpatial}{' '}
       </div>
+      {/* The offload layers button*/}
       <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
-        o
+        {/* TODO:
+          1. Toggle between spinner and image depending on 'thinking' status
+          2. Swap image style based on zoom level
+        */}
+        {offlineing ? <Spinner></Spinner> : <img src="/assets/icon/download.svg" style={iconStyle}></img>}
       </div>
     </div>
   );
