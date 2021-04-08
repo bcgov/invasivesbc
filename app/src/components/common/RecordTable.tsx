@@ -213,7 +213,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const {
-    tableName = "",
+    tableName = '',
     rows,
     keyField = '_id', // defaults to doc _id used by PouchDB
     startingOrder = 'asc',

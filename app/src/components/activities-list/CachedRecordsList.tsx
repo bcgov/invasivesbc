@@ -228,7 +228,8 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
 
   const pointsOfInterest = docs.filter((doc: any) => doc.docType === 'reference_point_of_interest');
   const selectedPOIs = pointsOfInterest.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedPOIs = (newSelected) => setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
+  const setSelectedPOIs = (newSelected) =>
+    setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
 
   return (
     <List className={classes.activityList}>
@@ -613,15 +614,11 @@ const CachedRecordsPage: React.FC = () => {
   const updateRecordList = useCallback(async () => {
     const result = await databaseContext.database.find({
       selector: {
-        $or: [
-          {deleted_timestamp: { $exists: false }},
-          {deleted_timestamp: { $type: 'null' }}
-        ]
+        $or: [{ deleted_timestamp: { $exists: false } }, { deleted_timestamp: { $type: 'null' } }]
       }
     });
-    const activitiesAndPOIs = result?.docs?.filter((doc) =>
-      (doc.point_of_interest_id || doc.activity_id) &&
-      !doc.deleted_timestamp // reduncancy for safety
+    const activitiesAndPOIs = result?.docs?.filter(
+      (doc) => (doc.point_of_interest_id || doc.activity_id) && !doc.deleted_timestamp // reduncancy for safety
     );
 
     storeInteractiveGeoInfo(activitiesAndPOIs);
@@ -759,9 +756,10 @@ const CachedRecordsPage: React.FC = () => {
     Function to generate interactive geometry data object
   */
   const getInteractiveGeoData = (doc: any) => {
-    const description =  doc.docType === "reference_point_of_interest"
-      ? `IAPP Point of Interest: ${doc.point_of_interest_id}`
-      : `${doc.activityType}: ${doc._id}`;
+    const description =
+      doc.docType === 'reference_point_of_interest'
+        ? `IAPP Point of Interest: ${doc.point_of_interest_id}`
+        : `${doc.activityType}: ${doc._id}`;
     return {
       recordDocID: doc._id,
       recordType: doc.activityType || doc.docType,
