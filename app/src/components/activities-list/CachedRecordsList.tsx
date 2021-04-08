@@ -1,29 +1,21 @@
 import {
-  Divider,
-  Grid,
   List,
-  ListItem,
-  ListItemIcon,
   makeStyles,
   Paper,
-  SvgIcon,
   Theme,
   Typography,
   Button,
   Box,
-  Checkbox,
   Container
 } from '@material-ui/core';
-import { Add, Check } from '@material-ui/icons';
-import { ActivitySubtype, ActivityType, ActivityTypeIcon } from 'constants/activities';
+import { Check } from '@material-ui/icons';
+import { ActivitySubtype, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
-import ActivityListItem from './ActivityListItem';
-import ActivityListDate from './ActivityListDate';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
 import MapContainer from 'components/map/MapContainer';
