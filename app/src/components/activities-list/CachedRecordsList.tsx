@@ -95,106 +95,7 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
   return monitoringSubtype;
 };
 
-interface ICachedRecordListItem {
-  activity: any;
-  databaseContext: any;
-  setActiveDoc: Function;
-}
-
-const CachedRecordListItem: React.FC<ICachedRecordListItem> = (props) => {
-  const classes = useStyles();
-  const history = useHistory();
-  const { activity, databaseContext, setActiveDoc } = props;
-
-  const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
-    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-      return { ...appStateDoc, activeActivity: doc._id };
-    });
-
-    history.push(`/home/activity`);
-  };
-
-  return (
-    <Grid
-      className={classes.activityListItem_Grid}
-      container
-      spacing={2}
-      onMouseEnter={() => setActiveDoc(activity)}
-      onMouseLeave={() => setActiveDoc(null)}>
-      <Divider flexItem={true} orientation="vertical" />
-      <ActivityListItem activity={activity} classes={classes} />
-      <ActivityListDate classes={classes} activity={activity} />
-      {activity.activityType === 'Treatment' && (
-        <>
-          <Divider flexItem={true} orientation="vertical" />
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              startIcon={<Add />}
-              onClick={async (e) => {
-                e.stopPropagation();
-                const addedActivity = await addLinkedActivityToDB(
-                  databaseContext,
-                  ActivityType.Monitoring,
-                  calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
-                  activity
-                );
-                setActiveActivityAndNavigateToActivityPage(addedActivity);
-              }}>
-              Create Monitoring
-            </Button>
-          </Grid>
-        </>
-      )}
-    </Grid>
-  );
-};
-
-interface ICachedRecordListComponent {
-  doc: any;
-  databaseContext: any;
-  selected?: any;
-  setSelected?: Function;
-  setActiveDoc: Function;
-}
-
-const CachedRecordListComponent: React.FC<ICachedRecordListComponent> = (props) => {
-  const classes = useStyles();
-  const history = useHistory();
-  const { doc, databaseContext, selected, setSelected, setActiveDoc } = props;
-
-  // Determine which observation records have been selected
-  const isChecked = selected?.some((id) => id === doc._id);
-
-  const navigateToActivityPage = async (activity: any) => {
-    history.push(`/home/references/activity/${activity._id}`);
-  };
-
-  return (
-    <Paper key={doc._id}>
-      <ListItem button className={classes.activitiyListItem} onClick={() => navigateToActivityPage(doc)}>
-        {/* For observations, allow ability to select one or more and start the create treatment flow */}
-        {doc.activityType === 'Observation' && (
-          <Checkbox
-            checked={isChecked}
-            onChange={() => {
-              setSelected(isChecked ? selected.filter((id) => id !== doc._id) : [doc._id, ...selected]);
-            }}
-            onClick={(event) => event.stopPropagation()}
-          />
-        )}
-        <ListItemIcon>
-          <SvgIcon fontSize="large" component={ActivityTypeIcon[doc.activityType]} />
-        </ListItemIcon>
-        <CachedRecordListItem setActiveDoc={setActiveDoc} databaseContext={databaseContext} activity={doc} />
-      </ListItem>
-    </Paper>
-  );
-};
-
-interface ICachedRecordList {
+interface ICachedRecords {
   docs: any;
   databaseContext: any;
   setActiveDoc: Function;
@@ -203,33 +104,45 @@ interface ICachedRecordList {
   setLastCreatedMetabaseQuery: Function;
 }
 
-const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
+const CachedRecords: React.FC<ICachedRecords> = (props) => {
   const { docs, databaseContext } = props;
 
   const classes = useStyles();
   const history = useHistory();
 
-  const { selected, setSelected, setLastCreatedMetabaseQuery } = props;
+  const { selected, setSelected } = props;
 
   const observations = docs.filter((doc: any) => doc.activityType === 'Observation');
   const selectedObservations = observations.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
   const setSelectedObservations = (newSelected) =>
-    setSelected([...newSelected, ...selectedTreatments, ...selectedMonitoring, ...selectedPOIs]);
+    setSelected([...newSelected, ...selectedTreatments, ...selectedMonitorings, ...selectedPOIs]);
 
   const treatments = docs.filter((doc: any) => doc.activityType === 'Treatment');
   const selectedTreatments = treatments.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
   const setSelectedTreatments = (newSelected) =>
-    setSelected([...selectedObservations, ...newSelected, ...selectedMonitoring, ...selectedPOIs]);
+    setSelected([...selectedObservations, ...newSelected, ...selectedMonitorings, ...selectedPOIs]);
 
   const monitorings = docs.filter((doc: any) => doc.activityType === 'Monitoring');
-  const selectedMonitoring = monitorings.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedMonitoring = (newSelected) =>
+  const selectedMonitorings = monitorings.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
+  const setSelectedMonitorings = (newSelected) =>
     setSelected([...selectedObservations, ...selectedTreatments, ...newSelected, ...selectedPOIs]);
 
   const pointsOfInterest = docs.filter((doc: any) => doc.docType === 'reference_point_of_interest');
   const selectedPOIs = pointsOfInterest.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
   const setSelectedPOIs = (newSelected) =>
-    setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
+    setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitorings, ...newSelected]);
+
+  const activityStandardMapping = (doc) => ({
+    ...doc,
+    ...doc?.formData?.activity_data,
+    ...doc?.formData?.activity_subtype_data,
+    activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
+    jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
+      ? doc?.formData?.activity_data?.jurisdictions
+          .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
+          .join(', ')
+      : ''
+  });
 
   return (
     <List className={classes.activityList}>
@@ -303,25 +216,10 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
             title: 'Comment'
           }
         ]}
-        rows={
-          !observations?.length
-            ? []
-            : observations.map((doc) => ({
-                ...doc,
-                ...doc?.formData?.activity_data,
-                ...doc?.formData?.activity_subtype_data,
-                activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-                jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
-                  ? doc?.formData?.activity_data?.jurisdictions
-                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-                      .join(', ')
-                  : ''
-              }))
-        }
+        rows={!observations?.length ? [] : observations.map(activityStandardMapping)}
         actions={{
           delete: {
             enabled: false
-            // TODO maybe make this Delete From Cache
           },
           create_treatment: {
             key: 'create_treatment',
@@ -402,21 +300,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
             type: 'number'
           }
         ]}
-        rows={
-          !treatments?.length
-            ? []
-            : treatments.map((doc) => ({
-                ...doc,
-                ...doc?.formData?.activity_data,
-                ...doc?.formData?.activity_subtype_data,
-                activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-                jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
-                  ? doc?.formData?.activity_data?.jurisdictions
-                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-                      .join(', ')
-                  : ''
-              }))
-        }
+        rows={!treatments?.length ? [] : treatments.map(activityStandardMapping)}
         dropdown={(row) => (
           <>
             <RecordTable
@@ -460,7 +344,6 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         actions={{
           delete: {
             enabled: false
-            // TODO maybe make this Delete From Cache
           },
           create_monitoring: {
             key: 'create_monitoring',
@@ -489,6 +372,62 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
 
               history.push(`/home/activity`);
             }
+          }
+        }}
+      />
+      <RecordTable
+        tableName="Monitoring"
+        startingOrderBy="monitoring_id"
+        startingOrder="desc"
+        enableSelection
+        selected={selectedMonitorings}
+        setSelected={setSelectedMonitorings}
+        headers={[
+          {
+            id: 'activity_id',
+            title: 'Activity ID'
+          },
+          {
+            id: 'activity_subtype',
+            title: 'Subtype'
+          },
+          {
+            id: 'created_timestamp',
+            title: 'Created Date'
+          },
+          {
+            id: 'invasive_plant_code',
+            title: 'Invasive Plant Code'
+          },
+          {
+            id: 'invasive_species_agency_code',
+            title: 'Agency'
+          },
+          {
+            id: 'reported_area',
+            title: 'Area (m\u00B2)',
+            type: 'number'
+          },
+          {
+            id: 'latitude',
+            title: 'Latitude',
+            type: 'number'
+          },
+          {
+            id: 'longitude',
+            title: 'Longitude',
+            type: 'number'
+          },
+          {
+            id: 'elevation',
+            title: 'Elevation',
+            type: 'number'
+          }
+        ]}
+        rows={!monitorings?.length ? [] : monitorings.map(activityStandardMapping)}
+        actions={{
+          delete: {
+            enabled: false
           }
         }}
       />
@@ -572,7 +511,6 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         actions={{
           delete: {
             enabled: false
-            // TODO maybe make this Delete From Cache
           },
           edit: {
             enabled: false
@@ -583,7 +521,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
   );
 };
 
-const CachedRecordsPage: React.FC = () => {
+const CachedRecordsList: React.FC = () => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
   const invasivesApi = useInvasivesApi();
@@ -598,7 +536,6 @@ const CachedRecordsPage: React.FC = () => {
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
-  const [mapActivityType, setMapActivityType] = useState('All');
 
   const geoColors = {
     Observation: '#0BD2F0',
@@ -624,14 +561,6 @@ const CachedRecordsPage: React.FC = () => {
     storeInteractiveGeoInfo(activitiesAndPOIs);
     setDocs([...activitiesAndPOIs]);
   }, [databaseContext.database]);
-
-  /*
-    When the selected map activity type changes, filter the docs by the type
-    and store the associated geometries only
-  */
-  useEffect(() => {
-    storeInteractiveGeoInfo(docs);
-  }, [mapActivityType]);
 
   /*
     Store the interactive geometry info in state
@@ -663,8 +592,8 @@ const CachedRecordsPage: React.FC = () => {
   }, [geometry]);
 
   /*
-    When the active activity changes (on hover), change the color of the activity
-    When the activity is no longer being hovered over, reset the geo color
+    When the active record changes (on hover), change the color of the record
+    When the record is no longer being hovered over, reset the geo color
   */
   useEffect(() => {
     if (!geometry.length) {
@@ -686,7 +615,7 @@ const CachedRecordsPage: React.FC = () => {
     }
 
     updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
-      if (geo.recordDocID === activeDoc.activity_id) {
+      if (geo.recordDocID === activeDoc._id) {
         geo.color = '#9E1A1A';
       }
 
@@ -697,7 +626,7 @@ const CachedRecordsPage: React.FC = () => {
   }, [activeDoc]);
 
   /*
-    When an activity is selected in the list, change the color of the activity in geo
+    When a record is selected in the list, change the color of the record in geo
     Also change all callbacks, since the map will not sense state updates by itself
   */
   useEffect(() => {
@@ -724,32 +653,21 @@ const CachedRecordsPage: React.FC = () => {
   }, [selected, setSelected]);
 
   /*
-    Get updated interactive geometries based on the activities/selected map activity type
+    Get updated interactive geometries based on the activities/selected map record type
   */
   const getUpdatedGeoInfo = (documents: any) => {
     const mapGeos = [];
 
-    documents.forEach((doc: any) => {
-      if (doc.activityType === mapActivityType || mapActivityType === 'All') {
-        mapGeos.push(getInteractiveGeoData(doc));
-      }
-    });
+    documents.forEach((doc: any) => mapGeos.push(getInteractiveGeoData(doc)));
 
     return mapGeos;
   };
 
   /*
-    Filter out activities within a drawn geometry polygon on the map
+    Filter out records within a drawn geometry polygon on the map
   */
   const updateDocList = (docIdsWithinArea: any[]) => {
     setDocs(docs.filter((doc: any) => docIdsWithinArea.some((docId: any) => docId === doc._id)));
-  };
-
-  /*
-    Function to set the chosen map activity type in state
-  */
-  const handleMapActivityChange = (event: any) => {
-    setMapActivityType(event.target.value);
   };
 
   /*
@@ -837,7 +755,7 @@ const CachedRecordsPage: React.FC = () => {
       )}
       {!interactiveGeometry.length && <Typography>No activities available of the selected type.</Typography>}
       <br />
-      <CachedRecordList
+      <CachedRecords
         docs={docs}
         databaseContext={databaseContext}
         setActiveDoc={setActiveDoc}
@@ -849,4 +767,4 @@ const CachedRecordsPage: React.FC = () => {
   );
 };
 
-export default CachedRecordsPage;
+export default CachedRecordsList;
