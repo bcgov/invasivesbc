@@ -194,7 +194,7 @@ export interface RecordTablePropType {
   padEmptyRows?: boolean;
   enableSelection?: boolean;
   selected?: Array<any>;
-  setSelected?: any;
+  setSelected?: (newSelected: Array<any>) => any;
   enableFiltering?: boolean;
   className?: any;
   dropdown?: (row: any) => any;
@@ -213,9 +213,9 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const {
-    tableName,
+    tableName = "",
     rows,
-    keyField = 'id',
+    keyField = '_id', // defaults to doc _id used by PouchDB
     startingOrder = 'asc',
     dropdown, // default none
     dropdownLimit = true,

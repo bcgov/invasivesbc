@@ -208,7 +208,6 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
 
   const classes = useStyles();
   const history = useHistory();
-  const invasivesApi = useInvasivesApi();
 
   const { selected, setSelected, setLastCreatedMetabaseQuery } = props;
 
@@ -227,41 +226,14 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
   const setSelectedMonitoring = (newSelected) =>
     setSelected([...selectedObservations, ...selectedTreatments, ...newSelected, ...selectedPOIs]);
 
-  const pointsOfInterest = docs.filter(
-    (doc: any) => doc.docType === 'reference_point_of_interest' && doc.point_of_interest_id
-  );
+  const pointsOfInterest = docs.filter((doc: any) => doc.docType === 'reference_point_of_interest');
   const selectedPOIs = pointsOfInterest.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
-  const setSelectedPOIs = (newSelected) =>
-    setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
-
-  const createMetabaseQuery = async () => {
-    await setLastCreatedMetabaseQuery(selected);
-    const queryCreate: ICreateMetabaseQuery = {
-      point_of_interest_ids: selectedPOIs,
-      activity_ids: [...selectedObservations, ...selectedTreatments, ...selectedMonitoring]
-    };
-    try {
-      let response = await invasivesApi.createMetabaseQuery(queryCreate);
-      if (response?.activity_query_id && response?.activity_query_name)
-        notifySuccess(
-          databaseContext,
-          `Created a new Metabase Query, with name "${response.activity_query_name}" and ID ${response.activity_query_id}`
-        );
-      else throw response;
-    } catch (error) {
-      notifyError(
-        databaseContext,
-        'Unable to create new Metabase Query.  There may an issue with your connection to the Metabase API: ' + error
-      );
-      await setLastCreatedMetabaseQuery([]);
-    }
-  };
+  const setSelectedPOIs = (newSelected) => setSelected([...selectedObservations, ...selectedTreatments, ...selectedMonitoring, ...newSelected]);
 
   return (
     <List className={classes.activityList}>
       <RecordTable
         tableName="Observations"
-        keyField="activity_id"
         startingOrderBy="activity_id"
         startingOrder="desc"
         enableSelection
@@ -378,15 +350,11 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
       />
       <RecordTable
         tableName="Treatments"
-        keyField="activity_id"
         startingOrderBy="activity_id"
         startingOrder="desc"
         enableSelection
         selected={selectedTreatments}
         setSelected={setSelectedTreatments}
-        onToggleExpandRow={(row, expandedRows, selectedRows) => {
-          console.log(row, expandedRows, selectedRows);
-        }}
         headers={[
           {
             id: 'activity_id',
@@ -451,8 +419,6 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
         dropdown={(row) => (
           <>
             <RecordTable
-              tableName=""
-              keyField="activity_id"
               startingOrderBy="activity_id"
               startingOrder="desc"
               headers={[
@@ -527,7 +493,6 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
       />
       <RecordTable
         tableName="Points of Interest"
-        keyField="point_of_interest_id"
         startingOrderBy="point_of_interest_id"
         startingOrder="desc"
         enableSelection
@@ -617,9 +582,10 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
   );
 };
 
-const CachedRecordsList: React.FC = () => {
+const CachedRecordsPage: React.FC = () => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
+  const invasivesApi = useInvasivesApi();
 
   const [activeDoc, setActiveDoc] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
@@ -636,21 +602,30 @@ const CachedRecordsList: React.FC = () => {
   const geoColors = {
     Observation: '#0BD2F0',
     Treatment: '#F99F04',
-    Monitoring: '#BCA0DC'
+    Monitoring: '#BCA0DC',
+    reference_point_of_interest: '#0BD2F0'
   };
 
   /*
     Fetch activities from database and save them in state
     Also, call a helper function to save map geometries
   */
-  const updateActivityList = useCallback(async () => {
-    const activityResult = await databaseContext.database.find({
-      selector: { deleted_timestamp: undefined }, // docType: DocType.REFERENCE_ACTIVITY,  },
-      use_index: 'docTypeIndex'
+  const updateRecordList = useCallback(async () => {
+    const result = await databaseContext.database.find({
+      selector: {
+        $or: [
+          {deleted_timestamp: { $exists: false }},
+          {deleted_timestamp: { $type: 'null' }}
+        ]
+      }
     });
+    const activitiesAndPOIs = result?.docs?.filter((doc) =>
+      (doc.point_of_interest_id || doc.activity_id) &&
+      !doc.deleted_timestamp // reduncancy for safety
+    );
 
-    storeInteractiveGeoInfo(activityResult.docs);
-    setDocs([...activityResult.docs]);
+    storeInteractiveGeoInfo(activitiesAndPOIs);
+    setDocs([...activitiesAndPOIs]);
   }, [databaseContext.database]);
 
   /*
@@ -686,7 +661,7 @@ const CachedRecordsList: React.FC = () => {
 
       updateDocList(docIdsWithinArea);
     } else {
-      updateActivityList();
+      updateRecordList();
     }
   }, [geometry]);
 
@@ -784,18 +759,44 @@ const CachedRecordsList: React.FC = () => {
     Function to generate interactive geometry data object
   */
   const getInteractiveGeoData = (doc: any) => {
+    const description =  doc.docType === "reference_point_of_interest"
+      ? `IAPP Point of Interest: ${doc.point_of_interest_id}`
+      : `${doc.activityType}: ${doc._id}`;
     return {
       recordDocID: doc._id,
-      recordType: doc.activityType,
+      recordType: doc.activityType || doc.docType,
       recordSubtype: doc.activitySubtype,
       geometry: doc.geometry,
-      color: geoColors[doc.activityType],
-      description: `${doc.activityType}: ${doc._id}`,
+      color: geoColors[doc.activityType || doc.docType],
+      description: description,
       popUpComponent: ActivityPopup,
       onClickCallback: () => {
         setSelected([doc._id]);
       }
     };
+  };
+
+  const createMetabaseQuery = async () => {
+    await setLastCreatedMetabaseQuery(selected);
+    const queryCreate: ICreateMetabaseQuery = {
+      point_of_interest_ids: selected.filter((id) => !isNaN(id)),
+      activity_ids: selected.filter((id) => isNaN(id))
+    };
+    try {
+      let response = await invasivesApi.createMetabaseQuery(queryCreate);
+      if (response?.activity_query_id && response?.activity_query_name)
+        notifySuccess(
+          databaseContext,
+          `Created a new Metabase Query, with name "${response.activity_query_name}" and ID ${response.activity_query_id}`
+        );
+      else throw response;
+    } catch (error) {
+      notifyError(
+        databaseContext,
+        'Unable to create new Metabase Query.  There may an issue with your connection to the Metabase API: ' + error
+      );
+      await setLastCreatedMetabaseQuery([]);
+    }
   };
 
   /*
@@ -850,4 +851,4 @@ const CachedRecordsList: React.FC = () => {
   );
 };
 
-export default CachedRecordsList;
+export default CachedRecordsPage;
