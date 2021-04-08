@@ -1,13 +1,4 @@
-import {
-  List,
-  makeStyles,
-  Paper,
-  Theme,
-  Typography,
-  Button,
-  Box,
-  Container
-} from '@material-ui/core';
+import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
@@ -666,6 +657,12 @@ const CachedRecordsList: React.FC = () => {
     Function to generate interactive geometry data object
   */
   const getInteractiveGeoData = (doc: any) => {
+    /*
+      What is displayed in the popup on click of a geo on the map
+    */
+    const ActivityPopup = (name: string) => {
+      return '<div>' + name + '</div>';
+    };
     const description =
       doc.docType === 'reference_point_of_interest'
         ? `IAPP Point of Interest: ${doc.point_of_interest_id}`
@@ -705,13 +702,6 @@ const CachedRecordsList: React.FC = () => {
       );
       await setLastCreatedMetabaseQuery([]);
     }
-  };
-
-  /*
-    What is displayed in the popup on click of a geo on the map
-  */
-  const ActivityPopup = (name: string) => {
-    return '<div>' + name + '</div>';
   };
 
   const metabaseQuerySubmitted = JSON.stringify(lastCreatedMetabaseQuery) == JSON.stringify(selected);
