@@ -545,7 +545,7 @@ const CachedRecordList: React.FC<ICachedRecordList> = (props) => {
           },
           {
             id: 'access_description',
-            title: 'Location'
+            title: 'Access Description'
           },
           {
             id: 'general_comment',
