@@ -27,7 +27,17 @@ import { Edit, Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterLis
 import { notifyError } from 'utils/NotificationUtils';
 import React, { useState, useContext, useEffect } from 'react';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import clsx from 'clsx';
+
+const snakeToPascal = (string, spaces = false) => string.split("/")
+  .map(snake => snake.split("_")
+    .map(substr => substr.charAt(0)
+      .toUpperCase() +
+      substr.slice(1))
+    .join(spaces ? " " : ""))
+  .join("/");
 
 const useStyles = makeStyles((theme) => ({
   component: {
@@ -183,6 +193,7 @@ export interface RecordTablePropType {
   headers: Array<any>;
   rows: any;
   tableName?: string;
+  tableSchemaType?: any;
   expandable?: boolean;
   startExpanded?: boolean;
   keyField?: string;
@@ -196,6 +207,7 @@ export interface RecordTablePropType {
   selected?: Array<any>;
   setSelected?: (newSelected: Array<any>) => any;
   enableFiltering?: boolean;
+  enableTooltips?: boolean;
   className?: any;
   dropdown?: (row: any) => any;
   dropdownLimit?: boolean;
@@ -211,10 +223,12 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
+  const invasivesApi = useInvasivesApi();
 
   const {
     tableName = '',
     rows,
+    tableSchemaType,
     keyField = '_id', // defaults to doc _id used by PouchDB
     startingOrder = 'asc',
     dropdown, // default none
@@ -228,6 +242,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     rowsPerPageOptions = false, // disable ability to change rows per page by default
     enableSelection = false,
     enableFiltering = false,
+    enableTooltips = true,
     pagination = 'overflow', // by default, only shows paging options when more total rows than can fit on page 1
     // className: tableClassName,
     densePadding = false,
@@ -289,23 +304,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
           }
         };
   const { startingOrderBy = headers.length ? headers[0].id : 'id' } = props; // defaults to the first header
-  const headCells: any = headers.map((header: any, i) => {
-    if (typeof header === 'string' || typeof header === 'number')
-      return {
-        id: i,
-        title: header
-      };
-    if (typeof header === 'object')
-      return {
-        // defaults:
-        id: i,
-        align: header.type === 'number' ? 'right' : 'left',
-        padding: 'default',
-        defaultOrder: 'asc',
-        ...header
-      };
-    throw new Error('Table header not defined correctly - must be a string, number or object');
-  });
+  
   const bulkActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.bulkAction);
   const rowActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.rowAction);
 
@@ -315,6 +314,75 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
   const [expandedRows, setExpandedRows] = useState([]);
   const [selected, setSelected] = useState(props.selected || []);
+  const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
+  const [headCells, setHeadCells] = useState([]);
+
+  useEffect(() => {
+    const getApiSpec = async () => {
+      const apiSpecResponse = await invasivesApi.getCachedApiSpec();
+      const schemaTypeList = typeof tableSchemaType === 'string' ? [tableSchemaType] : tableSchemaType || [];
+
+      setSchemas({
+        schema: schemaTypeList.reduce((prevSchema, schemaType) => ({
+          ...prevSchema,
+          properties: {
+            ...prevSchema.properties,
+            ...apiSpecResponse.components.schemas[schemaType].properties
+          }
+        }), {}),
+        uiSchema: schemaTypeList.reduce((prevSchema, schemaType) => ({
+          ...prevSchema,
+          ...RootUISchemas[schemaType]
+        }), {})
+      });
+    };
+    getApiSpec();
+  }, [tableSchemaType]);
+
+  useEffect(() => {
+    const getHeadCells = (headers) => headers.map((header: any, i) => {
+      let headerOverrides;
+      let id;
+      if (typeof header === 'string' || typeof header === 'number') {
+        id = header || i;
+        headerOverrides = {
+          id: id
+        };
+      }
+      if (typeof header === 'object') {
+        id = header.id || i;
+        headerOverrides = {
+          // defaults:
+          id: id,
+          align: header.type === 'number' ? 'right' : 'left',
+          padding: 'default',
+          defaultOrder: 'asc',
+          ...header
+        };
+      }
+      if (!headerOverrides)
+        throw new Error('Table header not defined correctly - must be a string, number or object');
+      const headerSchema = schemas?.schema?.properties?.[id];
+      const valueMap = {};
+      schemas?.schema?.properties?.[id]?.anyOf?.forEach((value) => {
+        if (value.enum[0] && value.title)
+          valueMap[value.enum[0]] = value.title;
+      });
+
+      return {
+        title: snakeToPascal(id, true),
+        ...headerSchema,
+        valueMap: {
+          ...valueMap,
+          ...headerOverrides.valueMap
+        },
+        tooltip: headerSchema?.['x-tooltip-text'],
+        ...headerOverrides
+      };
+    });
+
+    setHeadCells(getHeadCells(headers));
+  }, [schemas, headers]);
 
   const arraysEqual = (a, b) => {
     if (a === b) return true;
@@ -354,7 +422,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     .filter((row) => row);
 
   // sort and limit the rows:
-  const orderHeader = headers.find((col) => col.id === orderBy);
+  const orderHeader = headCells.find((col) => col.id === orderBy);
   const pageRows = stableSort(rows, getComparator(order, orderBy, orderHeader?.type)).slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
@@ -469,6 +537,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                   rowCount={rows.length}
                   headCells={headCells}
                   enableSelection={enableSelection}
+                  enableTooltips={enableTooltips}
                   pageHasDropdown={pageHasDropdown}
                 />
                 <TableBody>
@@ -534,7 +603,8 @@ function RecordTableHead(props) {
     onRequestSort,
     headCells,
     pageHasDropdown,
-    enableSelection
+    enableSelection,
+    enableTooltips
   } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -566,7 +636,12 @@ function RecordTableHead(props) {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : headCell.defaultOrder}
               onClick={createSortHandler(headCell.id)}>
-              {headCell.title}
+              {enableTooltips && !!headCell.tooltip && (
+                <Tooltip title={headCell.tooltip} arrow>
+                  <div>{headCell.title}</div>
+                </Tooltip>
+              )}
+              {!headCell.tooltip && headCell.title}
               {orderBy === headCell.id && (
                 <span className={classes.visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -648,7 +723,7 @@ const RecordTableToolbar = (props) => {
   );
 };
 
-const RecordTableCell = ({ id, align, padding, className, row }) => {
+const RecordTableCell = ({ id, align, padding, className, row, valueMap }) => {
   const classes = useStyles();
 
   const ifApplicable = (value) =>
@@ -660,13 +735,14 @@ const RecordTableCell = ({ id, align, padding, className, row }) => {
       case 'object':
         return React.createElement(TableCell, {
           key: key,
-          ...cell
+          ...cell,
+          children: valueMap[cell.children] || cell.children
         });
       case 'function':
         return cell(cells);
       case 'string':
       default:
-        return ifApplicable(cell);
+        return ifApplicable(valueMap[cell] || cell);
     }
   };
 
@@ -764,6 +840,7 @@ const RecordTableRow = (props) => {
               ${header.type === 'number' && classes.numberCell}
               ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
             `}
+            valueMap={header.valueMap}
           />
         ))}
       </TableRow>

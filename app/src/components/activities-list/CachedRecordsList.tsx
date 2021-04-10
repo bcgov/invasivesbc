@@ -131,73 +131,60 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
     <List className={classes.activityList}>
       <RecordTable
         tableName="Observations"
+        tableSchemaType={[
+          "Activity",
+          "Observation",
+          "Observation_PlantTerrestrial",
+          "Observation_PlantAquatic",
+          "ObservationPlantTerrestrialData"
+        ]}
         startingOrderBy="activity_id"
         startingOrder="desc"
         enableSelection
         selected={selectedObservations}
         setSelected={setSelectedObservations}
         headers={[
-          {
-            id: 'activity_id',
-            title: 'Activity ID'
-          },
+          'activity_id',
           {
             id: 'activity_subtype',
-            title: 'Subtype'
+            valueMap: {
+              Activity_Observation_PlantTerrestrial: 'Terrestrial Plant',
+              Activity_Observation_PlantAquatic: 'Aquatic Plant'
+            }
           },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          {
-            id: 'biogeoclimatic_zones',
-            title: 'Biogeoclimatic Zones'
-          },
+          'created_timestamp',
+          'biogeoclimatic_zones',
           {
             id: 'elevation',
-            title: 'Elevation',
             type: 'number'
           },
           {
             id: 'flnro_districts',
-            title: 'FLNRO Districts'
+            title: 'FLNRO Districs'
           },
-          {
-            id: 'ownership',
-            title: 'Ownership'
-          },
-          {
-            id: 'regional_districts',
-            title: 'Regional Districts'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
+          'ownership',
+          'regional_districts',
+          'invasive_species_agency_code',
           {
             id: 'jurisdictions_rendered',
             title: 'Jurisdictions'
           },
           {
             id: 'latitude',
-            title: 'Latitude'
+            title: 'Latitude',
+            type: 'number'
           },
           {
             id: 'longitude',
-            title: 'Longitude'
+            title: 'Longitude',
+            type: 'number'
           },
           {
             id: 'reported_area',
             title: 'Area (m\u00B2)'
           },
-          {
-            id: 'access_description',
-            title: 'Access Description'
-          },
-          {
-            id: 'general_comment',
-            title: 'Comment'
-          }
+          'access_description',
+          'general_comment'
         ]}
         rows={!observations?.length ? [] : observations.map(activityStandardMapping)}
         actions={{
@@ -232,40 +219,38 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       />
       <RecordTable
         tableName="Treatments"
+        tableSchemaType={[
+          "Activity",
+          "Treatment",
+          "Treatment_ChemicalPlant",
+          "Treatment_MechanicalPlant",
+          "Treatment_BiologicalPlant"
+        ]}
         startingOrderBy="activity_id"
         startingOrder="desc"
         enableSelection
         selected={selectedTreatments}
         setSelected={setSelectedTreatments}
         headers={[
-          {
-            id: 'activity_id',
-            title: 'Activity ID'
-          },
+          'activity_id',
           {
             id: 'activity_subtype',
-            title: 'Subtype'
+            valueMap: {
+              Activity_Treatment_ChemicalPlant: 'Chemical Plant',
+              Activity_Treatment_MechanicalPlant: 'Mechanical Plant',
+              Activity_Treatment_BiologicalPlant: 'Biological Plant'
+            }
           },
           {
             id: 'created_timestamp',
             title: 'Created Date'
           },
-          {
-            id: 'invasive_plant_code',
-            title: 'Invasive Plant Code'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
-          {
-            id: 'chemical_method_code',
-            title: 'Chemical Method'
-          },
+          'invasive_plant_code',
+          'invasive_species_agency_code',
+          'chemical_method_code',
           {
             id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
+            title: 'Area (m\u00B2)'
           },
           {
             id: 'latitude',
@@ -277,11 +262,7 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
             title: 'Longitude',
             type: 'number'
           },
-          {
-            id: 'elevation',
-            title: 'Elevation',
-            type: 'number'
-          }
+          'elevation'
         ]}
         rows={!treatments?.length ? [] : treatments.map(activityStandardMapping)}
         dropdown={(row) => (
@@ -289,35 +270,27 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
             <RecordTable
               startingOrderBy="activity_id"
               startingOrder="desc"
+              tableSchemaType={[
+                "Activity",
+                "Treatment",
+                "Treatment_ChemicalPlant",
+                "Treatment_MechanicalPlant",
+                "Treatment_BiologicalPlant"
+              ]}
               headers={[
                 {
                   id: 'jurisdictions_rendered',
                   title: 'Jurisdictions'
                 },
-                {
-                  id: 'biogeoclimatic_zones',
-                  title: 'Biogeoclimatic Zones'
-                },
+                'biogeoclimatic_zones',
                 {
                   id: 'flnro_districts',
                   title: 'FLNRO Districts'
                 },
-                {
-                  id: 'ownership',
-                  title: 'Ownership'
-                },
-                {
-                  id: 'regional_districts',
-                  title: 'Regional Districts'
-                },
-                {
-                  id: 'access_description',
-                  title: 'Access Description'
-                },
-                {
-                  id: 'general_comment',
-                  title: 'Comment'
-                }
+                'ownership',
+                'regional_districts',
+                'access_description',
+                'general_comment'
               ]}
               rows={[row]}
               pagination={false}
@@ -360,36 +333,37 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       />
       <RecordTable
         tableName="Monitoring"
+        tableSchemaType={[
+          "Activity",
+          "Monitoring",
+          "Monitoring_ChemicalTerrestrialAquaticPlant",
+          "Monitoring_MechanicalTerrestrialAquaticPlant",
+          "Monitoring_BiologicalTerrestrialPlant"
+        ]}
         startingOrderBy="monitoring_id"
         startingOrder="desc"
         enableSelection
         selected={selectedMonitorings}
         setSelected={setSelectedMonitorings}
         headers={[
-          {
-            id: 'activity_id',
-            title: 'Activity ID'
-          },
+          'activity_id',
           {
             id: 'activity_subtype',
-            title: 'Subtype'
+            valueMap: {
+              Activity_Monitoring_ChemicalPlant: 'Chemical Plant',
+              Activity_Monitoring_MechanicalPlant: 'Mechanical Plant',
+              Activity_Monitoring_BiologicalPlant: 'Biological Plant'
+            }
           },
           {
             id: 'created_timestamp',
             title: 'Created Date'
           },
-          {
-            id: 'invasive_plant_code',
-            title: 'Invasive Plant Code'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
+          'invasive_plant_code',
+          'invasive_species_agency_code',
           {
             id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
+            title: 'Area (m\u00B2)'
           },
           {
             id: 'latitude',
@@ -401,11 +375,7 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
             title: 'Longitude',
             type: 'number'
           },
-          {
-            id: 'elevation',
-            title: 'Elevation',
-            type: 'number'
-          }
+          'elevation'
         ]}
         rows={!monitorings?.length ? [] : monitorings.map(activityStandardMapping)}
         actions={{
@@ -416,6 +386,10 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       />
       <RecordTable
         tableName="Points of Interest"
+        tableSchemaType={[
+          "Point_Of_Interest",
+          "IAPP_Site"
+        ]}
         startingOrderBy="point_of_interest_id"
         startingOrder="desc"
         enableSelection
@@ -435,27 +409,11 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
             id: 'jurisdictions_rendered',
             title: 'Jurisdiction'
           },
-          {
-            id: 'elevation',
-            title: 'Elevation',
-            type: 'number'
-          },
-          {
-            id: 'slope_code',
-            title: 'Slope'
-          },
-          {
-            id: 'aspect_code',
-            title: 'Aspect'
-          },
-          {
-            id: 'specific_use_code',
-            title: 'Specific Use'
-          },
-          {
-            id: 'soil_texture_code',
-            title: 'Soil Texture'
-          },
+          'elevation',
+          'slope_code',
+          'aspect_code',
+          'specific_use_code',
+          'soil_texture_code',
           {
             id: 'latitude',
             title: 'Latitude',
@@ -466,14 +424,8 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
             title: 'Longitude',
             type: 'number'
           },
-          {
-            id: 'access_description',
-            title: 'Access Description'
-          },
-          {
-            id: 'general_comment',
-            title: 'Comments'
-          }
+          'access_description',
+          'general_comment'
         ]}
         rows={
           !pointsOfInterest?.length
