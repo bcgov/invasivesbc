@@ -163,7 +163,7 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
             </Grid>
 
             <Grid item xs={3} sm={2}>
-              Location
+              Access Description
             </Grid>
             <Grid item xs={9} sm={10}>
               {ifApplicable(site.access_description)}
