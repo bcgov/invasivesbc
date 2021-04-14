@@ -727,10 +727,8 @@ const RecordTableToolbar = (props) => {
 };
 
 const RecordTableCell = ({ row, header, className }) => {
-  const classes = useStyles();
-
-  const ifApplicable = (value) =>
-    value && String(value).trim().length ? value : " N/A";
+  const ifApplicable = (jurisdiction.percent_covered) =>
+    val && String(val).trim().length ? val : " N/A";
   const id = header.id;
 
   let overrideProps;
