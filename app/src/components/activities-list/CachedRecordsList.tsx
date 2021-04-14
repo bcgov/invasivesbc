@@ -119,14 +119,17 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
     ...doc?.formData?.activity_data,
     ...doc?.formData?.activity_subtype_data,
     activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-    jurisdiction_code: doc?.formData?.activity_data?.jurisdictions?.reduce((output, jurisdiction) => [
-      ...output,
-      jurisdiction.jurisdiction_code,
-      '(',
-      jurisdiction.percent_covered + '%',
-      ')'
-    ], []),
-    created_timestamp: doc?.created_timestamp?.substring(0,10),
+    jurisdiction_code: doc?.formData?.activity_data?.jurisdictions?.reduce(
+      (output, jurisdiction) => [
+        ...output,
+        jurisdiction.jurisdiction_code,
+        '(',
+        jurisdiction.percent_covered + '%',
+        ')'
+      ],
+      []
+    ),
+    created_timestamp: doc?.created_timestamp?.substring(0, 10),
     latitude: parseFloat(doc?.formData?.activity_data?.latitude).toFixed(6),
     longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6)
   });
@@ -136,12 +139,12 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       <RecordTable
         tableName="Observations"
         tableSchemaType={[
-          "Activity",
-          "Observation",
-          "Observation_PlantTerrestrial",
-          "Observation_PlantAquatic",
-          "ObservationPlantTerrestrialData",
-          "Jurisdictions"
+          'Activity',
+          'Observation',
+          'Observation_PlantTerrestrial',
+          'Observation_PlantAquatic',
+          'ObservationPlantTerrestrialData',
+          'Jurisdictions'
         ]}
         startingOrderBy="activity_id"
         startingOrder="desc"
@@ -226,11 +229,11 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       <RecordTable
         tableName="Treatments"
         tableSchemaType={[
-          "Activity",
-          "Treatment",
-          "Treatment_ChemicalPlant",
-          "Treatment_MechanicalPlant",
-          "Treatment_BiologicalPlant"
+          'Activity',
+          'Treatment',
+          'Treatment_ChemicalPlant',
+          'Treatment_MechanicalPlant',
+          'Treatment_BiologicalPlant'
         ]}
         startingOrderBy="activity_id"
         startingOrder="desc"
@@ -277,12 +280,12 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
               startingOrderBy="activity_id"
               startingOrder="desc"
               tableSchemaType={[
-                "Activity",
-                "Treatment",
-                "Treatment_ChemicalPlant",
-                "Treatment_MechanicalPlant",
-                "Treatment_BiologicalPlant",
-                "Jurisdictions"
+                'Activity',
+                'Treatment',
+                'Treatment_ChemicalPlant',
+                'Treatment_MechanicalPlant',
+                'Treatment_BiologicalPlant',
+                'Jurisdictions'
               ]}
               headers={[
                 'jurisdiction_code',
@@ -338,11 +341,11 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       <RecordTable
         tableName="Monitoring"
         tableSchemaType={[
-          "Activity",
-          "Monitoring",
-          "Monitoring_ChemicalTerrestrialAquaticPlant",
-          "Monitoring_MechanicalTerrestrialAquaticPlant",
-          "Monitoring_BiologicalTerrestrialPlant"
+          'Activity',
+          'Monitoring',
+          'Monitoring_ChemicalTerrestrialAquaticPlant',
+          'Monitoring_MechanicalTerrestrialAquaticPlant',
+          'Monitoring_BiologicalTerrestrialPlant'
         ]}
         startingOrderBy="monitoring_id"
         startingOrder="desc"
@@ -390,11 +393,7 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       />
       <RecordTable
         tableName="Points of Interest"
-        tableSchemaType={[
-          "Point_Of_Interest",
-          "IAPP_Site",
-          "Jurisdictions"
-        ]}
+        tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdictions']}
         startingOrderBy="site_id"
         startingOrder="desc"
         enableSelection
@@ -434,13 +433,16 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
                 ...doc,
                 ...doc?.formData?.point_of_interest_data,
                 ...doc?.formData?.point_of_interest_type_data,
-                jurisdiction_code: doc?.formData?.surveys?.[0]?.jurisdictions?.reduce((output, jurisdiction) => [
-                  ...output,
-                  jurisdiction.jurisdiction_code,
-                  '(',
-                  (jurisdiction.percent_covered ? jurisdiction.percent_covered : 100 )  + '%',
-                  ')'
-                ], []),
+                jurisdiction_code: doc?.formData?.surveys?.[0]?.jurisdictions?.reduce(
+                  (output, jurisdiction) => [
+                    ...output,
+                    jurisdiction.jurisdiction_code,
+                    '(',
+                    (jurisdiction.percent_covered ? jurisdiction.percent_covered : 100) + '%',
+                    ')'
+                  ],
+                  []
+                ),
                 latitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6),
                 longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6)
               }))
