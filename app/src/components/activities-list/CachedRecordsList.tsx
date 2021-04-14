@@ -81,7 +81,6 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
 interface ICachedRecords {
   docs: any;
   databaseContext: any;
-  setActiveDoc: Function;
   selected: Array<any>;
   setSelected: Function;
   setLastCreatedMetabaseQuery: Function;
@@ -460,7 +459,6 @@ const CachedRecordsList: React.FC = () => {
   const databaseContext = useContext(DatabaseContext);
   const invasivesApi = useInvasivesApi();
 
-  const [activeDoc, setActiveDoc] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [interactiveGeometry, setInteractiveGeometry] = useState([]);
   const [extent, setExtent] = useState(null);
@@ -658,7 +656,6 @@ const CachedRecordsList: React.FC = () => {
       <CachedRecords
         docs={docs}
         databaseContext={databaseContext}
-        setActiveDoc={setActiveDoc}
         selected={selected}
         setSelected={setSelected}
         setLastCreatedMetabaseQuery={setLastCreatedMetabaseQuery}
