@@ -340,7 +340,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   }, [tableSchemaType]);
 
   useEffect(() => {
-    const getHeadCells = (headers) => headers.map((header: any, i) => {
+    const getHeadCells = (headersProp) => headersProp.map((header: any, i) => {
       let headerOverrides;
       let id;
       if (typeof header === 'string' || typeof header === 'number') {
@@ -733,10 +733,14 @@ const RecordTableCell = ({ id, align, padding, className, row, valueMap }) => {
     const cell = cells[key];
     switch (typeof cell) {
       case 'object':
+        if (cell === null) // this might be worth throwing an error
+          return ifApplicable(null);
+        if (Array.isArray(cell))
+          return ifApplicable(cell.map((value) => valueMap[value] || value).join(' '));
         return React.createElement(TableCell, {
           key: key,
           ...cell,
-          children: valueMap[cell.children] || cell.children
+          children: valueMap[cell?.children] || cell?.children
         });
       case 'function':
         return cell(cells);

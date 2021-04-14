@@ -120,11 +120,14 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
     ...doc?.formData?.activity_data,
     ...doc?.formData?.activity_subtype_data,
     activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-    jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
-      ? doc?.formData?.activity_data?.jurisdictions
-          .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-          .join(', ')
-      : ''
+    jurisdictions: doc?.formData?.activity_data?.jurisdictions?.reduce((output, jurisdiction) => [
+      ...output,
+      jurisdiction.jurisdiction_code,
+      jurisdiction.percent_covered + '%'
+    ], []),
+    created_timestamp: doc?.created_timestamp?.substring(0,10),
+    latitude: parseFloat(doc?.formData?.activity_data?.latitude).toFixed(6),
+    longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6)
   });
 
   return (
@@ -149,10 +152,14 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
             id: 'activity_subtype',
             valueMap: {
               Activity_Observation_PlantTerrestrial: 'Terrestrial Plant',
+              Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
               Activity_Observation_PlantAquatic: 'Aquatic Plant'
             }
           },
-          'created_timestamp',
+          {
+            id: 'created_timestamp',
+            title: 'Created Date'
+          },
           'biogeoclimatic_zones',
           {
             id: 'elevation',
@@ -166,7 +173,7 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
           'regional_districts',
           'invasive_species_agency_code',
           {
-            id: 'jurisdictions_rendered',
+            id: 'jurisdictions',
             title: 'Jurisdictions'
           },
           {
@@ -278,10 +285,7 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
                 "Treatment_BiologicalPlant"
               ]}
               headers={[
-                {
-                  id: 'jurisdictions_rendered',
-                  title: 'Jurisdictions'
-                },
+                'jurisdictions',
                 'biogeoclimatic_zones',
                 {
                   id: 'flnro_districts',
@@ -390,29 +394,24 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
           "Point_Of_Interest",
           "IAPP_Site"
         ]}
-        startingOrderBy="point_of_interest_id"
+        startingOrderBy="site_id"
         startingOrder="desc"
         enableSelection
         selected={selectedPOIs}
         setSelected={setSelectedPOIs}
         headers={[
           {
-            id: 'point_of_interest_id',
-            title: 'POI ID',
+            id: 'site_id',
             type: 'number'
           },
           {
             id: 'created_date_on_device',
             title: 'Created Date'
           },
-          {
-            id: 'jurisdictions_rendered',
-            title: 'Jurisdiction'
-          },
+          'jurisdictions',
           'elevation',
           'slope_code',
           'aspect_code',
-          'specific_use_code',
           'soil_texture_code',
           {
             id: 'latitude',
@@ -434,7 +433,7 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
                 ...doc,
                 ...doc?.formData?.point_of_interest_data,
                 ...doc?.formData?.point_of_interest_type_data,
-                jurisdictions_rendered: doc?.formData?.surveys?.[0]?.jurisdictions
+                jurisdictions: doc?.formData?.surveys?.[0]?.jurisdictions
                   ? doc?.formData?.surveys?.[0]?.jurisdictions
                       .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
                       .join(', ')
@@ -476,7 +475,8 @@ const CachedRecordsList: React.FC = () => {
     Observation: '#0BD2F0',
     Treatment: '#F99F04',
     Monitoring: '#BCA0DC',
-    reference_point_of_interest: '#0BD2F0'
+    reference_point_of_interest: '#0BD2F0',
+    selected_record: '#9E1A1A'
   };
 
   /*
@@ -527,40 +527,6 @@ const CachedRecordsList: React.FC = () => {
   }, [geometry]);
 
   /*
-    When the active record changes (on hover), change the color of the record
-    When the record is no longer being hovered over, reset the geo color
-  */
-  useEffect(() => {
-    if (!geometry.length) {
-      return;
-    }
-
-    let updatedInteractiveGeos = [...interactiveGeometry];
-
-    if (!activeDoc) {
-      updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
-        geo.color = geoColors[geo.recordType];
-
-        return geo;
-      });
-
-      setInteractiveGeometry(updatedInteractiveGeos);
-
-      return;
-    }
-
-    updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
-      if (geo.recordDocID === activeDoc._id) {
-        geo.color = '#9E1A1A';
-      }
-
-      return geo;
-    });
-
-    setInteractiveGeometry(updatedInteractiveGeos);
-  }, [activeDoc]);
-
-  /*
     When a record is selected in the list, change the color of the record in geo
     Also change all callbacks, since the map will not sense state updates by itself
   */
@@ -570,7 +536,7 @@ const CachedRecordsList: React.FC = () => {
     updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
       const allButThis = selected.filter((id) => geo.recordDocID !== id);
       if (selected.length > allButThis.length) {
-        geo.color = '#9E1A1A';
+        geo.color = geoColors.selected_record;
         geo.onClickCallback = () => {
           setSelected(allButThis);
         };
