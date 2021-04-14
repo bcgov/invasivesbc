@@ -119,10 +119,12 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
     ...doc?.formData?.activity_data,
     ...doc?.formData?.activity_subtype_data,
     activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-    jurisdictions: doc?.formData?.activity_data?.jurisdictions?.reduce((output, jurisdiction) => [
+    jurisdiction_code: doc?.formData?.activity_data?.jurisdictions?.reduce((output, jurisdiction) => [
       ...output,
       jurisdiction.jurisdiction_code,
-      jurisdiction.percent_covered + '%'
+      '(',
+      jurisdiction.percent_covered + '%',
+      ')'
     ], []),
     created_timestamp: doc?.created_timestamp?.substring(0,10),
     latitude: parseFloat(doc?.formData?.activity_data?.latitude).toFixed(6),
@@ -138,7 +140,8 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
           "Observation",
           "Observation_PlantTerrestrial",
           "Observation_PlantAquatic",
-          "ObservationPlantTerrestrialData"
+          "ObservationPlantTerrestrialData",
+          "Jurisdictions"
         ]}
         startingOrderBy="activity_id"
         startingOrder="desc"
@@ -171,10 +174,7 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
           'ownership',
           'regional_districts',
           'invasive_species_agency_code',
-          {
-            id: 'jurisdictions',
-            title: 'Jurisdictions'
-          },
+          'jurisdiction_code',
           {
             id: 'latitude',
             title: 'Latitude',
@@ -281,10 +281,11 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
                 "Treatment",
                 "Treatment_ChemicalPlant",
                 "Treatment_MechanicalPlant",
-                "Treatment_BiologicalPlant"
+                "Treatment_BiologicalPlant",
+                "Jurisdictions"
               ]}
               headers={[
-                'jurisdictions',
+                'jurisdiction_code',
                 'biogeoclimatic_zones',
                 {
                   id: 'flnro_districts',
@@ -391,7 +392,8 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
         tableName="Points of Interest"
         tableSchemaType={[
           "Point_Of_Interest",
-          "IAPP_Site"
+          "IAPP_Site",
+          "Jurisdictions"
         ]}
         startingOrderBy="site_id"
         startingOrder="desc"
@@ -407,7 +409,7 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
             id: 'created_date_on_device',
             title: 'Created Date'
           },
-          'jurisdictions',
+          'jurisdiction_code',
           'elevation',
           'slope_code',
           'aspect_code',
@@ -432,11 +434,13 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
                 ...doc,
                 ...doc?.formData?.point_of_interest_data,
                 ...doc?.formData?.point_of_interest_type_data,
-                jurisdictions: doc?.formData?.surveys?.[0]?.jurisdictions
-                  ? doc?.formData?.surveys?.[0]?.jurisdictions
-                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-                      .join(', ')
-                  : '',
+                jurisdiction_code: doc?.formData?.surveys?.[0]?.jurisdictions?.reduce((output, jurisdiction) => [
+                  ...output,
+                  jurisdiction.jurisdiction_code,
+                  '(',
+                  (jurisdiction.percent_covered ? jurisdiction.percent_covered : 100 )  + '%',
+                  ')'
+                ], []),
                 latitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6),
                 longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6)
               }))

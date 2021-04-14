@@ -152,33 +152,36 @@ const useToolbarStyles = makeStyles((theme) => ({
   }
 }));
 
-function descendingComparator(a, b, orderBy, columnType) {
-  const typedA = columnType === 'number' ? +a[orderBy] : a[orderBy];
-  const typedB = columnType === 'number' ? +b[orderBy] : b[orderBy];
-
-  if (typedB < typedA) {
-    return -1;
+const getValue = (row, header) => {
+  const cell = row[header.id];
+  const valueMap = header.valueMap;
+  const numeric = header.type === 'number';
+  switch (typeof cell) {
+    case 'object':
+      if (cell === null) // this might be worth throwing an error
+        return null;
+      if (Array.isArray(cell))
+        return cell.map((value) => valueMap[value] || value).join(' ');
+      return valueMap[cell?.children] || cell?.children;
+    case 'function':
+      const result = cell(row);
+      return valueMap[result] || result;
+    case 'string':
+    default:
+      return numeric ? +valueMap[cell] || +cell : valueMap[cell] || cell;
   }
-  if (typedB > typedA) {
-    return 1;
-  }
-  return 0;
-}
+};
 
-function getComparator(order, orderBy, columnType) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy, columnType)
-    : (a, b) => -descendingComparator(a, b, orderBy, columnType);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
+function stableSort(rows, header, ascending) {
+  if (!header) return rows;
+  const valueIndexPairs = rows.map((row, index) => [getValue(row, header), index, row]);
+  valueIndexPairs.sort((a, b) => {
+    if (a[0] > b[0]) return ascending ? 1 : -1;
+    if (b[0] > a[0]) return ascending ? -1 : 1;
+    // else sort by index
     return a[1] - b[1];
   });
-  return stabilizedThis.map((el) => el[0]);
+  return valueIndexPairs.map((row) => row[2]);
 }
 
 /*
@@ -423,7 +426,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
 
   // sort and limit the rows:
   const orderHeader = headCells.find((col) => col.id === orderBy);
-  const pageRows = stableSort(rows, getComparator(order, orderBy, orderHeader?.type)).slice(
+  const pageRows = stableSort(rows, orderHeader, order === 'asc').slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
@@ -723,36 +726,27 @@ const RecordTableToolbar = (props) => {
   );
 };
 
-const RecordTableCell = ({ id, align, padding, className, row, valueMap }) => {
+const RecordTableCell = ({ row, header, className }) => {
   const classes = useStyles();
 
   const ifApplicable = (value) =>
-    value && String(value).trim().length ? value : <div className={classes.missingValue}>N/A</div>;
+    value && String(value).trim().length ? value : " N/A";
+  const id = header.id;
 
-  const renderCell = (cells, key) => {
-    const cell = cells[key];
-    switch (typeof cell) {
-      case 'object':
-        if (cell === null) // this might be worth throwing an error
-          return ifApplicable(null);
-        if (Array.isArray(cell))
-          return ifApplicable(cell.map((value) => valueMap[value] || value).join(' '));
-        return React.createElement(TableCell, {
-          key: key,
-          ...cell,
-          children: valueMap[cell?.children] || cell?.children
-        });
-      case 'function':
-        return cell(cells);
-      case 'string':
-      default:
-        return ifApplicable(valueMap[cell] || cell);
-    }
-  };
+  let overrideProps;
+  if (typeof row[id] === 'object' && !Array.isArray(row[id]))
+    overrideProps = row[id];
+  const value = getValue(row, header);
 
   return (
-    <TableCell component="th" scope="row" align={align} padding={padding} className={className}>
-      {renderCell(row, id)}
+    <TableCell
+      component="th"
+      scope="row"
+      align={header.align}
+      padding={header.padding}
+      className={className}
+      {...overrideProps}>
+      {ifApplicable(value)}
     </TableCell>
   );
 };
@@ -835,7 +829,7 @@ const RecordTableRow = (props) => {
         )}
         {headers.map((header) => (
           <RecordTableCell
-            {...header}
+            header={header}
             key={header.id}
             row={row}
             className={`
@@ -844,7 +838,6 @@ const RecordTableRow = (props) => {
               ${header.type === 'number' && classes.numberCell}
               ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
             `}
-            valueMap={header.valueMap}
           />
         ))}
       </TableRow>
