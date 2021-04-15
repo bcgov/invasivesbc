@@ -13,11 +13,9 @@ export interface ITripNamer {
 }
 
 export const TripNamer: React.FC<ITripNamer> = (props) => {
-
   const databaseContext = useContext(DatabaseContext);
-  const [name, setName] = useState(null)
-  const [docs, setDocs] = useState(null)
-
+  const [name, setName] = useState(null);
+  const [docs, setDocs] = useState(null);
 
   const getNameFromTrip = useCallback(async () => {
     let docs = await databaseContext.database.find({
@@ -27,10 +25,9 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
     });
     if (docs.docs.length > 0) {
       let tripDoc = docs.docs[0];
-      setDocs(tripDoc)
-      if(tripDoc.name != name)
-      {
-        setName(tripDoc.name)
+      setDocs(tripDoc);
+      if (tripDoc.name != name) {
+        setName(tripDoc.name);
       }
     }
   }, [databaseContext.database]);
@@ -39,23 +36,30 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
     await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
       return { ...tripDoc, name: newName };
     });
-
   };
 
   // initial fetch
-  useEffect(()=>{
+  useEffect(() => {
     getNameFromTrip();
-  },[name])
-
+  }, [name]);
 
   useStyles();
 
-    return (
-      <>
-        {docs && name? <Input defaultValue={name} onBlur={(event)=>{saveInput(event.target.value)}} color="primary"/>
-        : 'LOADING' }
-      </>
-    );
-  }
+  return (
+    <>
+      {docs && name ? (
+        <Input
+          defaultValue={name}
+          onBlur={(event) => {
+            saveInput(event.target.value);
+          }}
+          color="primary"
+        />
+      ) : (
+        'LOADING'
+      )}
+    </>
+  );
+};
 
 export default TripNamer;

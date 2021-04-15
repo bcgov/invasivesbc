@@ -102,7 +102,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [extent, setExtent] = useState(null);
 
   const [workingTripID, setWorkingTripID] = useState(null);
-  const [newTripID, setNewTripID] = useState(null)
+  const [newTripID, setNewTripID] = useState(null);
   const [trips, setTrips] = useState([]);
   const [tripsLoaded, setTripsLoaded] = useState(false);
 
@@ -174,7 +174,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
     let docs = await databaseContext.database.find({
       selector: { trip_id: { $gte: null } },
-      sort: [{'trip_id' : 'desc'}],
+      sort: [{ trip_id: 'desc' }],
       use_index: 'tripIDIndex',
       limit: 1
     });
@@ -182,12 +182,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!docs || !docs.docs || !docs.docs.length) {
       return 0;
     } else {
-      if(docs.docs[0].trip_id)
-      {
+      if (docs.docs[0].trip_id) {
         return parseInt(docs.docs[0]._id);
-      }
-      else {
-        return 0
+      } else {
+        return 0;
       }
     }
   };
@@ -238,7 +236,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         docType: DocType.TRIP
       };
     });
-    setNewTripID(newID)
+    setNewTripID(newID);
   };
 
   const SingleTrip: React.FC<any> = (props) => {
@@ -298,10 +296,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             helperStepDoneOrSkip(1);
           }}>
           <Paper className={classes.paper}>
-            <Typography variant="body1">
-              There will be an input field here that lets you name your trip.
-            </Typography>
-            <TripNamer trip_ID={props.trip_ID}/>
+            <Typography variant="body1">There will be an input field here that lets you name your trip.</Typography>
+            <TripNamer trip_ID={props.trip_ID} />
           </Paper>
         </TripStep>
         <TripStep
