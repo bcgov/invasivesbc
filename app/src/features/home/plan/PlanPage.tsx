@@ -32,6 +32,7 @@ import { DocType } from 'constants/database';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import TripNamer from 'components/trip/TripNamer';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
+import { useCallback } from 'react';
 
 interface IPlanPageProps {
   classes?: any;
@@ -198,8 +199,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       setTripsLoaded(true);
     };
     initialLoad();
-  //}, [databaseContext, databaseChangesContext, newTripID]);
-  //}, [databaseContext,  newTripID]);
+    //}, [databaseContext, databaseChangesContext, newTripID]);
+    //}, [databaseContext,  newTripID]);
   }, [newTripID]);
 
   // persist geometry changes
@@ -210,8 +211,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!workingTripID) {
       return;
     }
-    if(!geometry)
-    {
+    if (!geometry) {
       databaseContext.database.upsert(workingTripID, (tripDoc) => {
         return { ...tripDoc, geometry: geometry };
       });
@@ -220,13 +220,13 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   // persist extent changes
   useEffect(() => {
-    if (!tripsLoaded) {
+    if (!tripsLoaded || !extent) {
       return;
     }
     databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
       return { ...planPageExtentDoc, extent: extent };
     });
-  }, [extent, tripsLoaded, databaseContext.database]);
+  }, [extent, tripsLoaded]);
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
@@ -238,7 +238,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         trip_name: 'New Unnamed Trip',
         num_activities: 0,
         num_POI: 0,
-        docType: DocType.TRIP
+        docType: DocType.TRIP,
+        stepState: [
+          {}, //just here so indexes match up with step number
+          { status: TripStatusCode.initial, expanded: true },
+          { status: TripStatusCode.initial, expanded: false },
+          { status: TripStatusCode.initial, expanded: false },
+          { status: TripStatusCode.initial, expanded: false },
+          { status: TripStatusCode.initial, expanded: false },
+          { status: TripStatusCode.initial, expanded: false }
+        ]
       };
     });
     setNewTripID(newID);
@@ -246,15 +255,45 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const SingleTrip: React.FC<any> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
-    const [stepState, setStepState] = useState([
-      {}, //just here so indexes match up with step number
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false }
-    ]);
+    const databaseContext = useContext(DatabaseContext);
+    const [stepState, setStepState] = useState(null);
+
+    const getStateFromTrip = useCallback(async () => {
+      if(!databaseContext.database)
+      {
+        return;
+      }
+      let docs = await databaseContext.database.find({
+        selector: {
+          _id: props.trip_ID
+        }
+      });
+      if (docs.docs.length > 0) {
+        console.dir(docs)
+        let tripDoc = docs.docs[0];
+        if(!tripDoc.stepState)
+        {
+          console.log('!tripDoc.steptate')
+          return;
+        }
+        console.log('setting initial state on rerender')
+        console.dir(tripDoc.stepState)
+        setStepState(tripDoc.stepState);
+      }
+    }, [databaseContext.database]);
+
+    const saveState = async (newName) => {
+      await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
+        return { ...tripDoc, stepState: stepState };
+      });
+    };
+
+    // initial fetch
+    useEffect(() => {
+      console.log('happens on rerender:')
+      getStateFromTrip();
+      console.dir(stepState)
+    }, [databaseContext]);
 
     const helperCheckForGeo = () => {
       if (geometry) {
@@ -265,12 +304,19 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     };
 
     const helperCloseOtherAccordions = (expanded, stepNumber) => {
+      console.log('expanded: ' + expanded)
+      console.log('stepnumber : ' + stepNumber)
+      console.log('going to close accordion')
+      console.log('original state:')
+      console.dir(stepState)
       let newState: any = [...stepState];
       for (let i = 1; i < stepState.length; i++) {
         let expanded2 = i == stepNumber && expanded ? true : false;
         newState[i] = { ...newState[i], expanded: expanded2 };
       }
-      setStepState([...newState]);
+      console.log('saving accordion state:  ')
+      console.dir(newState)
+      saveState([...newState])
     };
 
     //generic helper to mark step as done if there isn't a special purpose check
@@ -282,11 +328,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           newState[i] = { ...newState[i], status: TripStatusCode.ready };
         }
       }
-      setStepState([...newState]);
+      saveState([...newState]);
     };
 
     return (
-      <Grid item md={12}>
+     <> {stepState? <Grid item md={12}>
         <TripStep
           title="Step 1: Name your trip"
           helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
@@ -300,7 +346,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           doneButtonCallBack={() => {
             helperStepDoneOrSkip(1);
           }}>
-            <TripNamer trip_ID={props.trip_ID} />
+          <TripNamer trip_ID={props.trip_ID} />
         </TripStep>
         <TripStep
           title="Step 2: Add a spatial boundary for your trip."
@@ -383,7 +429,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           <TripDataControls />
           <ManageDatabaseComponent />
         </TripStep>
-      </Grid>
+      </Grid> : 'Loading'}</>
     );
   };
 
