@@ -198,7 +198,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       setTripsLoaded(true);
     };
     initialLoad();
-  }, [databaseContext, databaseChangesContext, newTripID]);
+  //}, [databaseContext, databaseChangesContext, newTripID]);
+  //}, [databaseContext,  newTripID]);
+  }, [newTripID]);
 
   // persist geometry changes
   useEffect(() => {
@@ -208,9 +210,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!workingTripID) {
       return;
     }
-    databaseContext.database.upsert(workingTripID, (tripDoc) => {
-      return { ...tripDoc, geometry: geometry };
-    });
+    if(!geometry)
+    {
+      databaseContext.database.upsert(workingTripID, (tripDoc) => {
+        return { ...tripDoc, geometry: geometry };
+      });
+    }
   }, [geometry, tripsLoaded, databaseContext.database]);
 
   // persist extent changes
@@ -273,7 +278,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       let newState: any = [...stepState];
       for (let i = 1; i < stepState.length; i++) {
         newState[i] = { ...newState[i], expanded: false };
-        if (i == stepNumber && i != 1) {
+        if (i == stepNumber && i != 2) {
           newState[i] = { ...newState[i], status: TripStatusCode.ready };
         }
       }
@@ -288,17 +293,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           additionalText="other"
           expanded={stepState[1].expanded}
           tripStepDetailsClassName={classes.activityRecordList}
-          stepStatus={stepState[3].status}
+          stepStatus={stepState[1].status}
           stepAccordionOnChange={(event, expanded) => {
             helperCloseOtherAccordions(expanded, 1);
           }}
           doneButtonCallBack={() => {
             helperStepDoneOrSkip(1);
           }}>
-          <Paper className={classes.paper}>
-            <Typography variant="body1">There will be an input field here that lets you name your trip.</Typography>
             <TripNamer trip_ID={props.trip_ID} />
-          </Paper>
         </TripStep>
         <TripStep
           title="Step 2: Add a spatial boundary for your trip."
@@ -333,7 +335,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           doneButtonCallBack={() => {
             helperStepDoneOrSkip(3);
           }}>
-          <ActivityDataFilter trip_id={props.trip_id} />
+          <ActivityDataFilter trip_ID={props.trip_ID} />
         </TripStep>
         <TripStep
           title="Step 4: Choose data from other systems, (IAPP)"
@@ -348,7 +350,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           doneButtonCallBack={() => {
             helperStepDoneOrSkip(4);
           }}>
-          <PointOfInterestDataFilter trip_id={workingTripID} />
+          <PointOfInterestDataFilter trip_ID={props.trip_ID} />
         </TripStep>
         <TripStep
           title="OPTIONAL: Get data from a Metabase Question"
