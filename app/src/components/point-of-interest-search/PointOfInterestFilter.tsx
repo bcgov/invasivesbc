@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
 
   const getPointOfInterestChoicesFromTrip = async () => {
@@ -64,7 +63,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
       getPointOfInterestChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext]);
+  }, []);
 
   const saveChoices = async (newPointOfInterestChoices) => {
     await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
