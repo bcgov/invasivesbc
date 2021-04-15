@@ -129,13 +129,13 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark
+      },
   title: {
     flex: '1 1 100%',
     fontSize: theme.typography.pxToRem(18),
@@ -258,56 +258,55 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     props.actions === false
       ? {}
       : {
-          ...props.actions,
-          edit: {
-            // NOTE: this might be a good candidate to be broken out to a parent class
-            // since it breaks generality of this multi-purpose table
-            key: 'edit',
-            enabled: enableSelection,
-            action: async (rows) => {
-              const selectedIds = rows.map((row) => row[keyField]);
-              if (selectedIds.length === 1) {
-                // TODO switch by activity type, I guess...
-                await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-                  return { ...appStateDoc, activeActivity: selectedIds[0] };
-                });
-                history.push({ pathname: `/home/activity` });
-              } else {
-                history.push({
-                  pathname: `/home/search/bulkedit`,
-                  search: '?activities=' + selectedIds.join(','),
-                  state: { activityIdsToEdit: selectedIds }
-                });
-              }
-            },
-            label: 'Edit',
-            icon: <Edit />,
-            bulkAction: true,
-            rowAction: true,
-            bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype),
-            // TODO limit to only some subtypes too
-            // TODO IAPP POIs not editable
-            rowCondition: undefined,
-            displayInvalid: 'error',
-            invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
-            ...props.actions?.edit
+        ...props.actions,
+        edit: {
+          // NOTE: this might be a good candidate to be broken out to a parent class
+          // since it breaks generality of this multi-purpose table
+          key: 'edit',
+          enabled: enableSelection,
+          action: async (rows) => {
+            const selectedIds = rows.map((row) => row[keyField]);
+            if (selectedIds.length === 1) {
+              // TODO switch by activity type, I guess...
+              await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
+                return { ...appStateDoc, activeActivity: selectedIds[0] };
+              });
+              history.push({ pathname: `/home/activity` });
+            } else {
+              history.push({
+                pathname: `/home/search/bulkedit`,
+                search: '?activities=' + selectedIds.join(','),
+                state: { activityIdsToEdit: selectedIds }
+              });
+            }
           },
-          delete: {
-            key: 'delete',
-            enabled: enableSelection,
-            action: (rows) => {},
-            label: 'Delete',
-            icon: <Delete />,
-            bulkAction: true,
-            rowAction: true,
-            bulkCondition: undefined, // TODO
-            rowCondition: undefined,
-            displayInvalid: 'disable',
-            ...props.actions?.delete
+          label: 'Edit',
+          icon: <Edit />,
+          bulkAction: true,
+          rowAction: true,
+          bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype),
+          // TODO limit to only some subtypes too
+          // TODO IAPP POIs not editable
+          rowCondition: undefined,
+          displayInvalid: 'error',
+          invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
+          ...props.actions ?.edit
+          },
+        delete: {
+          key: 'delete',
+          enabled: enableSelection,
+          action: (rows) => { },
+          label: 'Delete',
+          icon: <Delete />,
+          bulkAction: true,
+          rowAction: true,
+          bulkCondition: undefined, // TODO
+          rowCondition: undefined,
+          displayInvalid: 'disable',
+          ...props.actions ?.delete
           }
         };
   const { startingOrderBy = headers.length ? headers[0].id : 'id' } = props; // defaults to the first header
-  
   const bulkActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.bulkAction);
   const rowActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.rowAction);
 
@@ -441,7 +440,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const pageHasDropdown =
     (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
     (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0) ||
-    (rowActions?.length > 0 && rowActionStyle === 'dropdown');
+    (rowActions ?.length > 0 && rowActionStyle === 'dropdown');
   const showPagination = pagination === 'overflow' ? rows.length > rowsPerPage : !!pagination;
 
   const handleRequestSort = (event, property) => {
@@ -661,7 +660,7 @@ function RecordTableHead(props) {
 const RecordTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { selectedRows, tableName, enableFiltering, actions, databaseContext } = props;
-  const numSelected = selectedRows?.length || 0;
+  const numSelected = selectedRows ?.length || 0;
 
   const bulkActions: Array<any> = actions
     .map((action: any) => {
@@ -708,10 +707,10 @@ const RecordTableToolbar = (props) => {
             {numSelected} selected
           </Typography>
         ) : (
-          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-            {tableName}
-          </Typography>
-        )}
+            <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+              {tableName}
+            </Typography>
+          )}
 
         {numSelected > 0 && bulkActions}
         {enableFiltering && !numSelected && (
@@ -802,7 +801,7 @@ const RecordTableRow = (props) => {
       );
     })
     .filter((button) => button); // remove hidden actions
-  const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
+  const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions ?.length > 0);
 
   return (
     <React.Fragment key={key}>
@@ -836,6 +835,7 @@ const RecordTableRow = (props) => {
               ${header.type === 'number' && classes.numberCell}
               ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
             `}
+            valueMap={header.valueMap}
           />
         ))}
       </TableRow>
@@ -843,7 +843,7 @@ const RecordTableRow = (props) => {
         <TableRow className={classes.tableRow}>
           <TableCell className={classes.dropdown} colSpan={100}>
             <Collapse in={isExpanded} timeout="auto">
-              {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
+              {actionStyle === 'dropdown' && rowActions ?.length > 0 && rowActions}
               <Box margin={2}>{renderedDropdown}</Box>
             </Collapse>
           </TableCell>
