@@ -40,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const ActivityDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
   const [activityChoices, setActivityChoices] = useState([]);
 
   const getActivityChoicesFromTrip = useCallback(async () => {
@@ -55,14 +54,14 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
         setActivityChoices([...tripDoc.activityChoices]);
       }
     }
-  }, [databaseContext.database]);
+  }, []);
 
   useEffect(() => {
     const updateComponent = () => {
       getActivityChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext, getActivityChoicesFromTrip]);
+  }, [getActivityChoicesFromTrip]);
 
   const saveChoices = async (newActivityChoices) => {
     await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
