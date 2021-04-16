@@ -734,7 +734,7 @@ const RecordTableToolbar = (props) => {
   );
 };
 
-const RecordTableCell = ({ row, header, className }) => {
+const RecordTableCell = ({ row, header, className, valueMap }) => {
   const ifApplicable = (val) => (val && String(val).trim().length ? val : ' N/A');
   const id = header.id;
 
