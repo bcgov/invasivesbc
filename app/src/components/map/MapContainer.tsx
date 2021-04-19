@@ -359,18 +359,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return L.control.savetiles(layerToSave, {
       zoomlevels: [13, 14, 15, 16, 17],
       confirm(layer, successCallback) {
+        successCallback(true);
         // TODO: Increment counter global variable
         console.log('increment a counter here');
       }
     });
   };
 
-  const addASaveTilesControl = (layerSaveControl: any) => {
-    layerSaveControl.remove(mapRef.current);
-    if (mapRef.current.getZoom() > 13) {
-      layerSaveControl.addTo(mapRef.current);
-    }
-  };
+  // const addASaveTilesControl = (layerSaveControl: any) => {
+  //   layerSaveControl.remove(mapRef.current);
+  //   if (mapRef.current.getZoom() > 13) {
+  //     layerSaveControl.addTo(mapRef.current);
+  //   }
+  // };
 
   const setGeometryMapBounds = () => {
     if (
@@ -487,7 +488,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     // This layer is on by default
     mapRef.current.addLayer(esriPlacenames);
 
-    const esriSaveTilesControl = getSaveControl(nRDistricts);
+    /*
+      TODO: Loop through _basemaps array and add 
+      to the _layerRef.current_ object
+     */
 
     const esriBaseLayerControl = getSaveControl2(esriBaseLayer);
     esriBaseLayerControl._map = mapRef.current;
@@ -497,7 +501,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     bcBaseLayerControl._map = mapRef.current;
     layerRef.current.push(bcBaseLayerControl);
 
-    // console.log('testControl',testControl.getStorageSize);
+    /*
+      TODO: Loop through _overlays_ array and add 
+      to the _layerRef.current_ object
+     */
+
     const testControl = getSaveControl2(nRDistricts);
     testControl._map = mapRef.current;
     layerRef.current.push(testControl);
@@ -512,8 +520,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('zoomend', () => {
       props.extentState.setExtent(mapRef.current.getBounds());
       setCurrentZoom(mapRef.current.getZoom());
-      // XXX: Turn off old saving controls
-      addASaveTilesControl(esriSaveTilesControl);
+      // TODO: Adapt this for our new button
+      // addASaveTilesControl(esriSaveTilesControl);
     });
 
     mapRef.current.on('draw:created', (feature) => {
@@ -834,7 +842,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
      */
     layerRef.current.forEach((control, index) => {
       setTimeout(() => {
-        console.log(control._saveTiles);
+        console.log(control);
         control._saveTiles();
         if (index === layerRef.current.length - 1) setOfflineing(false);
       }, 1000 * index);
