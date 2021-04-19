@@ -30,6 +30,8 @@ import TripStepStatus, { ITripStepStatus, TripStatusCode } from 'components/trip
 import RecordTable from 'components/common/RecordTable';
 import { DocType } from 'constants/database';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
+import TripNamer from 'components/trip/TripNamer';
+import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 
 interface IPlanPageProps {
   classes?: any;
@@ -100,12 +102,13 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [extent, setExtent] = useState(null);
 
   const [workingTripID, setWorkingTripID] = useState(null);
-  const [newTripID, setNewTripID] = useState(null)
+  const [newTripID, setNewTripID] = useState(null);
   const [trips, setTrips] = useState([]);
   const [tripsLoaded, setTripsLoaded] = useState(false);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
+  const databaseChangesContext = useContext(DatabaseChangesContext);
 
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
   const handleContextMenuClose = () => {
@@ -128,8 +131,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const getTrips = async () => {
     if (!databaseContext) {
-      console.log('db not ready');
-      return;
     }
     // does not work:
     let docs = await databaseContext.database.find({
@@ -138,14 +139,13 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     });
 
     if (!docs || !docs.docs || !docs.docs.length) {
-      console.log('found nothing');
       return;
     }
     let trips = [];
     let geos = [];
 
     docs.docs.map((doc) => {
-      trips.push({ trip_id: doc.trip_id, trip_name: 'initial name', num_activities: 5, num_POI: 4 });
+      trips.push({ trip_id: doc.trip_id, trip_name: doc.name, num_activities: 5, num_POI: 4 });
       if (doc.geometry) {
         geos.push({
           recordDocID: doc._id,
@@ -164,8 +164,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (geos.length > 0) {
       setInteractiveGeometry(geos);
     }
-    console.log('num trips');
-    console.dir(trips);
     setTrips(trips);
   };
 
@@ -176,7 +174,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
     let docs = await databaseContext.database.find({
       selector: { trip_id: { $gte: null } },
-      sort: [{'trip_id' : 'desc'}],
+      sort: [{ trip_id: 'desc' }],
       use_index: 'tripIDIndex',
       limit: 1
     });
@@ -184,13 +182,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!docs || !docs.docs || !docs.docs.length) {
       return 0;
     } else {
-      console.dir(docs.docs)
-      if(docs.docs[0].trip_id)
-      {
+      if (docs.docs[0].trip_id) {
         return parseInt(docs.docs[0]._id);
-      }
-      else {
-        return 0
+      } else {
+        return 0;
       }
     }
   };
@@ -203,7 +198,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       setTripsLoaded(true);
     };
     initialLoad();
-  }, [databaseContext, newTripID]);
+  }, [databaseContext, databaseChangesContext, newTripID]);
 
   // persist geometry changes
   useEffect(() => {
@@ -231,7 +226,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
     newID += 1;
-    console.log(newID)
     databaseContext.database.upsert(newID.toString(), (doc) => {
       return {
         ...doc,
@@ -242,13 +236,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         docType: DocType.TRIP
       };
     });
-    setNewTripID(newID)
+    setNewTripID(newID);
   };
 
   const SingleTrip: React.FC<any> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
     const [stepState, setStepState] = useState([
       {}, //just here so indexes match up with step number
+      { status: TripStatusCode.initial, expanded: false },
       { status: TripStatusCode.initial, expanded: false },
       { status: TripStatusCode.initial, expanded: false },
       { status: TripStatusCode.initial, expanded: false },
@@ -265,7 +260,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     };
 
     const helperCloseOtherAccordions = (expanded, stepNumber) => {
-      console.dir(expanded);
       let newState: any = [...stepState];
       for (let i = 1; i < stepState.length; i++) {
         let expanded2 = i == stepNumber && expanded ? true : false;
@@ -289,17 +283,35 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     return (
       <Grid item md={12}>
         <TripStep
-          title="Step 1: Add a spatial boundary for your trip."
+          title="Step 1: Name your trip"
           helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
           additionalText="other"
           expanded={stepState[1].expanded}
           tripStepDetailsClassName={classes.activityRecordList}
-          stepStatus={helperCheckForGeo()}
+          stepStatus={stepState[3].status}
           stepAccordionOnChange={(event, expanded) => {
             helperCloseOtherAccordions(expanded, 1);
           }}
           doneButtonCallBack={() => {
             helperStepDoneOrSkip(1);
+          }}>
+          <Paper className={classes.paper}>
+            <Typography variant="body1">There will be an input field here that lets you name your trip.</Typography>
+            <TripNamer trip_ID={props.trip_ID} />
+          </Paper>
+        </TripStep>
+        <TripStep
+          title="Step 2: Add a spatial boundary for your trip."
+          helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
+          additionalText="other"
+          expanded={stepState[2].expanded}
+          tripStepDetailsClassName={classes.activityRecordList}
+          stepStatus={helperCheckForGeo()}
+          stepAccordionOnChange={(event, expanded) => {
+            helperCloseOtherAccordions(expanded, 2);
+          }}
+          doneButtonCallBack={() => {
+            helperStepDoneOrSkip(2);
           }}>
           <Paper className={classes.paper}>
             <Typography variant="body1">
@@ -309,26 +321,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           </Paper>
         </TripStep>
         <TripStep
-          title="Step 2: Choose past field activity data."
+          title="Step 3: Choose past field activity data."
           helpText="This is where you can cache past activities (observations etc.) to the app.  If you want to search for records in a particular area, draw a polygon on the map."
           additionalText="other"
-          expanded={stepState[2].expanded}
-          tripStepDetailsClassName={classes.activityRecordList}
-          stepStatus={stepState[2].status}
-          stepAccordionOnChange={(event, expanded) => {
-            helperCloseOtherAccordions(expanded, 2);
-          }}
-          doneButtonCallBack={() => {
-            helperStepDoneOrSkip(2);
-          }}>
-          <ActivityDataFilter trip_id={props.trip_id} />
-        </TripStep>
-        <TripStep
-          title="Step 3: Choose data from other systems, (IAPP)"
-          helpText="This is where you can cache IAPP sites, and later other points of interest.  If you want to search for records in a particular area, draw a polygon on the map."
-          additionalText="other"
           expanded={stepState[3].expanded}
-          tripStepDetailsClassName={classes.pointOfInterestList}
+          tripStepDetailsClassName={classes.activityRecordList}
           stepStatus={stepState[3].status}
           stepAccordionOnChange={(event, expanded) => {
             helperCloseOtherAccordions(expanded, 3);
@@ -336,11 +333,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           doneButtonCallBack={() => {
             helperStepDoneOrSkip(3);
           }}>
-          <PointOfInterestDataFilter trip_id={workingTripID} />
+          <ActivityDataFilter trip_id={props.trip_id} />
         </TripStep>
         <TripStep
-          title="OPTIONAL: Get data from a Metabase Question"
-          helpText="If you have a Metabase question that contains field activity ID's, you can load those records here."
+          title="Step 4: Choose data from other systems, (IAPP)"
+          helpText="This is where you can cache IAPP sites, and later other points of interest.  If you want to search for records in a particular area, draw a polygon on the map."
           additionalText="other"
           expanded={stepState[4].expanded}
           tripStepDetailsClassName={classes.pointOfInterestList}
@@ -351,11 +348,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           doneButtonCallBack={() => {
             helperStepDoneOrSkip(4);
           }}>
-          <MetabaseSearch />
+          <PointOfInterestDataFilter trip_id={workingTripID} />
         </TripStep>
         <TripStep
-          title="Last Step: Cache, Refresh, or Delete data for Trip "
-          helpText="Cache the data and map data for the region you have selected, or refresh it, or delete."
+          title="OPTIONAL: Get data from a Metabase Question"
+          helpText="If you have a Metabase question that contains field activity ID's, you can load those records here."
           additionalText="other"
           expanded={stepState[5].expanded}
           tripStepDetailsClassName={classes.pointOfInterestList}
@@ -365,6 +362,21 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           }}
           doneButtonCallBack={() => {
             helperStepDoneOrSkip(5);
+          }}>
+          <MetabaseSearch />
+        </TripStep>
+        <TripStep
+          title="Last Step: Cache, Refresh, or Delete data for Trip "
+          helpText="Cache the data and map data for the region you have selected, or refresh it, or delete."
+          additionalText="other"
+          expanded={stepState[6].expanded}
+          tripStepDetailsClassName={classes.pointOfInterestList}
+          stepStatus={stepState[6].status}
+          stepAccordionOnChange={(event, expanded) => {
+            helperCloseOtherAccordions(expanded, 6);
+          }}
+          doneButtonCallBack={() => {
+            helperStepDoneOrSkip(6);
           }}>
           <TripDataControls />
           <ManageDatabaseComponent />
@@ -482,8 +494,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               }))
         }
         dropdown={(row) => {
-          console.dir(row);
-          return <SingleTrip trip_id={row.trip_id} />;
+          return <SingleTrip trip_ID={row.trip_id} />;
         }}
 
         // expandable: defaults true
