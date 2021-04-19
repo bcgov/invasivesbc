@@ -105,7 +105,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const getNRDistricts = () => {
     return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png`,
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:3857@png/{z}/{x}/{y}.png`,
       {
         opacity: 0.8,
         tms: true
@@ -360,8 +360,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       zoomlevels: [13, 14, 15, 16, 17],
       confirm(layer, successCallback) {
         // TODO: Increment counter global variable
-        console.log('layer', layer);
-        console.log('successCallback', successCallback);
+        console.log('increment a counter here');
       }
     });
   };
@@ -488,6 +487,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     // This layer is on by default
     mapRef.current.addLayer(esriPlacenames);
 
+    const esriSaveTilesControl = getSaveControl(nRDistricts);
+
     const esriBaseLayerControl = getSaveControl2(esriBaseLayer);
     esriBaseLayerControl._map = mapRef.current;
     layerRef.current.push(esriBaseLayerControl);
@@ -497,7 +498,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     layerRef.current.push(bcBaseLayerControl);
 
     // console.log('testControl',testControl.getStorageSize);
-    const testControl = getSaveControl2(streams);
+    const testControl = getSaveControl2(nRDistricts);
     testControl._map = mapRef.current;
     layerRef.current.push(testControl);
 
@@ -512,7 +513,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       props.extentState.setExtent(mapRef.current.getBounds());
       setCurrentZoom(mapRef.current.getZoom());
       // XXX: Turn off old saving controls
-      // addASaveTilesControl(esriSaveTilesControl);
+      addASaveTilesControl(esriSaveTilesControl);
     });
 
     mapRef.current.on('draw:created', (feature) => {
@@ -820,6 +821,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     poly.properties.offlineExtent = true;
     poly.properties.running = true;
 
+    // Save our extent to the database
     await databaseContext.database.upsert('offline_extent', (spatial) => {
       return {
         docType: DocType.OFFLINE_EXTENT,
@@ -832,6 +834,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
      */
     layerRef.current.forEach((control, index) => {
       setTimeout(() => {
+        console.log(control._saveTiles);
         control._saveTiles();
         if (index === layerRef.current.length - 1) setOfflineing(false);
       }, 1000 * index);
