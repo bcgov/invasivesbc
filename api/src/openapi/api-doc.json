@@ -177,6 +177,48 @@
           }
         }
       },
+      "Activity_FREP_FormA": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/FREP"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/FREP_FormA"
+          }
+        }
+      },
+      "Activity_FREP_FormB": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/FREP"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/FREP_FormB"
+          }
+        }
+      },
+      "Activity_FREP_FormC": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/FREP"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/FREP_FormC"
+          }
+        }
+      },
       "Activity_AnimalActivity_AnimalTerrestrial": {
         "type": "object",
         "properties": {
@@ -597,6 +639,34 @@
           }
         }
       },
+      "FREP": {
+        "title": "Observation Information",
+        "type": "object",
+        "required": ["observation_type_code", "observation_persons"],
+        "properties": {
+          "observation_type_code": {
+            "type": "string",
+            "title": "Type",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "observation_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "default": "CU",
+            "x-tooltip-text": "Choose type of observation from dropdown"
+          },
+          "observation_persons": {
+            "type": "array",
+            "title": "Observation Person(s)",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
+            "x-tooltip-text": "Name of person(s) doing the observation"
+          }
+        }
+      },
       "Observation_PlantTerrestrial": {
         "title": "Terrestrial Plant Information",
         "type": "object",
@@ -622,6 +692,390 @@
         }
       },
       "Observation_PlantAquatic": {
+        "title": "Aquatic Plant Information",
+        "type": "object",
+        "required": [
+          "waterbody_data",
+          "invasive_plants"
+        ],
+        "properties": {
+          "waterbody_data": {
+            "type": "object",
+            "title": "Waterbody Data",
+            "allOf": [
+              { "$ref": "#/components/schemas/WaterbodyData" },
+              {
+                "properties": {
+                  "water_level_management": {
+                    "type": "string",
+                    "title": "Water Level Management",
+                    "enum": [
+                      "None",
+                      "Weir",
+                      "Pump Station",
+                      "Dam",
+                      "Other"
+                    ],
+                    "x-tooltip-text": "Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field"
+                  },
+                  "substrate_type": {
+                    "type": "string",
+                    "title": "Substrate Type",
+                    "enum": [
+                      "Silt/Organic",
+                      "Clay",
+                      "Sand",
+                      "Gravel",
+                      "Cobble",
+                      "Rip-rap"
+                    ],
+                    "x-tooltip-text": "Select the most prevalent substrate composition"
+                  },
+                  "tidal_influence": {
+                    "type": "string",
+                    "title": "Tidal Influence",
+                    "enum": [
+                      "Yes",
+                      "No",
+                      "Unknown"
+                    ],
+                    "x-tooltip-text": "Indicate if the water level at the observation point is influenced by tides"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "title": "Comment",
+                    "maxLength": 300,
+                    "x-tooltip-text": "Add a comment"
+                  }
+                }
+              }
+            ]
+          },
+          "project_data": {
+            "type": "object",
+            "title": "Project Data",
+            "properties": {
+              "surveyors": {
+                "type": "string",
+                "title": "Surveyors",
+                "x-tooltip-text": "Supply surveyor names"
+              },
+              "survey_type": {
+                "type": "string",
+                "title": "Survey Type",
+                "enum": [
+                  "Presence Survey",
+                  "Extent Survey"
+                ],
+                "x-tooltip-text": "Presence survey used to determine general presence of invasive species in waterbody. Extent survey used to delineate each point and polygon of a target species prior to treatment"
+              }
+            }
+          },
+          "terrain_characteristics": {
+            "type": "object",
+            "title": "Terrain Characteristics",
+            "properties": {
+              "adjacent_land_use": {
+                "type": "string",
+                "title": "Adjacent Land Use",
+                "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
+              },
+              "inflow_permanent": {
+                "type": "string",
+                "title": "Inflow (Permanent)",
+                "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
+              },
+              "inflow_other": {
+                "type": "string",
+                "title": "Inflow (Other)",
+                "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
+              },
+              "outflow": {
+                "type": "string",
+                "title": "Outflow",
+                "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
+              },
+              "shoreline_types": {
+                "type": "array",
+                "title": "Shoreline Types",
+                "items": {
+                  "$ref": "#/components/schemas/ShorelineTypes"
+                },
+                "x-tooltip-text": "Specify shoreline types with their respective percentages"
+              }
+            }
+          },
+          "water_quality": {
+            "type": "object",
+            "title": "Water Quality",
+            "$ref": "#/components/schemas/WaterQuality"
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Aquatic Plants",
+            "items": {
+              "$ref": "#/components/schemas/AquaticPlants"
+            }
+          }
+        }
+      },
+      "FREP_FormA": {
+        "title": "Aquatic Plant Information",
+        "type": "object",
+        "required": [
+          "waterbody_data",
+          "invasive_plants"
+        ],
+        "properties": {
+          "waterbody_data": {
+            "type": "object",
+            "title": "Waterbody Data",
+            "allOf": [
+              { "$ref": "#/components/schemas/WaterbodyData" },
+              {
+                "properties": {
+                  "water_level_management": {
+                    "type": "string",
+                    "title": "Water Level Management",
+                    "enum": [
+                      "None",
+                      "Weir",
+                      "Pump Station",
+                      "Dam",
+                      "Other"
+                    ],
+                    "x-tooltip-text": "Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field"
+                  },
+                  "substrate_type": {
+                    "type": "string",
+                    "title": "Substrate Type",
+                    "enum": [
+                      "Silt/Organic",
+                      "Clay",
+                      "Sand",
+                      "Gravel",
+                      "Cobble",
+                      "Rip-rap"
+                    ],
+                    "x-tooltip-text": "Select the most prevalent substrate composition"
+                  },
+                  "tidal_influence": {
+                    "type": "string",
+                    "title": "Tidal Influence",
+                    "enum": [
+                      "Yes",
+                      "No",
+                      "Unknown"
+                    ],
+                    "x-tooltip-text": "Indicate if the water level at the observation point is influenced by tides"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "title": "Comment",
+                    "maxLength": 300,
+                    "x-tooltip-text": "Add a comment"
+                  }
+                }
+              }
+            ]
+          },
+          "project_data": {
+            "type": "object",
+            "title": "Project Data",
+            "properties": {
+              "surveyors": {
+                "type": "string",
+                "title": "Surveyors",
+                "x-tooltip-text": "Supply surveyor names"
+              },
+              "survey_type": {
+                "type": "string",
+                "title": "Survey Type",
+                "enum": [
+                  "Presence Survey",
+                  "Extent Survey"
+                ],
+                "x-tooltip-text": "Presence survey used to determine general presence of invasive species in waterbody. Extent survey used to delineate each point and polygon of a target species prior to treatment"
+              }
+            }
+          },
+          "terrain_characteristics": {
+            "type": "object",
+            "title": "Terrain Characteristics",
+            "properties": {
+              "adjacent_land_use": {
+                "type": "string",
+                "title": "Adjacent Land Use",
+                "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
+              },
+              "inflow_permanent": {
+                "type": "string",
+                "title": "Inflow (Permanent)",
+                "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
+              },
+              "inflow_other": {
+                "type": "string",
+                "title": "Inflow (Other)",
+                "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
+              },
+              "outflow": {
+                "type": "string",
+                "title": "Outflow",
+                "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
+              },
+              "shoreline_types": {
+                "type": "array",
+                "title": "Shoreline Types",
+                "items": {
+                  "$ref": "#/components/schemas/ShorelineTypes"
+                },
+                "x-tooltip-text": "Specify shoreline types with their respective percentages"
+              }
+            }
+          },
+          "water_quality": {
+            "type": "object",
+            "title": "Water Quality",
+            "$ref": "#/components/schemas/WaterQuality"
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Aquatic Plants",
+            "items": {
+              "$ref": "#/components/schemas/AquaticPlants"
+            }
+          }
+        }
+      },
+      "FREP_FormB": {
+        "title": "Aquatic Plant Information",
+        "type": "object",
+        "required": [
+          "waterbody_data",
+          "invasive_plants"
+        ],
+        "properties": {
+          "waterbody_data": {
+            "type": "object",
+            "title": "Waterbody Data",
+            "allOf": [
+              { "$ref": "#/components/schemas/WaterbodyData" },
+              {
+                "properties": {
+                  "water_level_management": {
+                    "type": "string",
+                    "title": "Water Level Management",
+                    "enum": [
+                      "None",
+                      "Weir",
+                      "Pump Station",
+                      "Dam",
+                      "Other"
+                    ],
+                    "x-tooltip-text": "Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field"
+                  },
+                  "substrate_type": {
+                    "type": "string",
+                    "title": "Substrate Type",
+                    "enum": [
+                      "Silt/Organic",
+                      "Clay",
+                      "Sand",
+                      "Gravel",
+                      "Cobble",
+                      "Rip-rap"
+                    ],
+                    "x-tooltip-text": "Select the most prevalent substrate composition"
+                  },
+                  "tidal_influence": {
+                    "type": "string",
+                    "title": "Tidal Influence",
+                    "enum": [
+                      "Yes",
+                      "No",
+                      "Unknown"
+                    ],
+                    "x-tooltip-text": "Indicate if the water level at the observation point is influenced by tides"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "title": "Comment",
+                    "maxLength": 300,
+                    "x-tooltip-text": "Add a comment"
+                  }
+                }
+              }
+            ]
+          },
+          "project_data": {
+            "type": "object",
+            "title": "Project Data",
+            "properties": {
+              "surveyors": {
+                "type": "string",
+                "title": "Surveyors",
+                "x-tooltip-text": "Supply surveyor names"
+              },
+              "survey_type": {
+                "type": "string",
+                "title": "Survey Type",
+                "enum": [
+                  "Presence Survey",
+                  "Extent Survey"
+                ],
+                "x-tooltip-text": "Presence survey used to determine general presence of invasive species in waterbody. Extent survey used to delineate each point and polygon of a target species prior to treatment"
+              }
+            }
+          },
+          "terrain_characteristics": {
+            "type": "object",
+            "title": "Terrain Characteristics",
+            "properties": {
+              "adjacent_land_use": {
+                "type": "string",
+                "title": "Adjacent Land Use",
+                "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
+              },
+              "inflow_permanent": {
+                "type": "string",
+                "title": "Inflow (Permanent)",
+                "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
+              },
+              "inflow_other": {
+                "type": "string",
+                "title": "Inflow (Other)",
+                "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
+              },
+              "outflow": {
+                "type": "string",
+                "title": "Outflow",
+                "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
+              },
+              "shoreline_types": {
+                "type": "array",
+                "title": "Shoreline Types",
+                "items": {
+                  "$ref": "#/components/schemas/ShorelineTypes"
+                },
+                "x-tooltip-text": "Specify shoreline types with their respective percentages"
+              }
+            }
+          },
+          "water_quality": {
+            "type": "object",
+            "title": "Water Quality",
+            "$ref": "#/components/schemas/WaterQuality"
+          },
+          "invasive_plants": {
+            "type": "array",
+            "title": "Aquatic Plants",
+            "items": {
+              "$ref": "#/components/schemas/AquaticPlants"
+            }
+          }
+        }
+      },
+      "FREP_FormC": {
         "title": "Aquatic Plant Information",
         "type": "object",
         "required": [

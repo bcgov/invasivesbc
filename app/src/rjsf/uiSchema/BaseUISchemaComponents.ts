@@ -792,6 +792,17 @@ const Observation = {
   }
 };
 
+const FREP = {
+  observation_type_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  observation_persons: {
+    items: {
+      ...Persons
+    }
+  }
+};
+
 const Observation_PlantTerrestrial_Data = {
   soil_texture_code: {
     'ui:widget': 'single-select-autocomplete'
@@ -822,6 +833,65 @@ const Observation_PlantTerrestrial = {
     }
   }
 };
+
+const FREP_FormA_Data = {
+  soil_texture_code: {
+    'ui:widget': 'single-select-autocomplete'
+  }
+};
+
+const FREP_FormB_Data = {
+  soil_texture_code: {
+    'ui:widget': 'single-select-autocomplete'
+  }
+};
+
+const FREP_FormC_Data = {
+  soil_texture_code: {
+    'ui:widget': 'single-select-autocomplete'
+  }
+};
+
+const FREP_FormA = {
+  frep_form_a_data: {
+    ...FourColumnStyle,
+    ...FREP_FormA_Data
+  },
+  invasive_plants: {
+    items: {
+      ...FourColumnStyle,
+      ...TerrestrialPlants
+    }
+  }
+};
+
+const FREP_FormB = {
+  frep_form_b_data: {
+    ...FourColumnStyle,
+    ...FREP_FormB_Data
+  },
+  invasive_plants: {
+    items: {
+      ...FourColumnStyle,
+      ...TerrestrialPlants
+    }
+  }
+};
+
+const FREP_FormC = {
+  frep_form_c_data: {
+    ...FourColumnStyle,
+    ...FREP_FormC_Data
+  },
+  invasive_plants: {
+    items: {
+      ...FourColumnStyle,
+      ...TerrestrialPlants
+    }
+  }
+};
+
+
 
 const Observation_PlantAquatic = {
   waterbody_data: {
@@ -1146,6 +1216,10 @@ const BaseUISchemaComponents = {
   Observation,
   Observation_PlantTerrestrial,
   Observation_PlantAquatic,
+  FREP,
+  FREP_FormA,
+  FREP_FormB,
+  FREP_FormC,
   Transect_FireMonitoring,
   Transect_Vegetation,
   Transect_BiocontrolEfficacy,

@@ -55,6 +55,7 @@ interface IActivityPageProps {
 
 //why does this page think I need a map context menu ?
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
+  console.log("PROPS: ", props)
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
@@ -279,6 +280,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     Function to pull activity results from the DB given an activityId if present
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
+    console.log("ACTIVITY ID 3: ", activityId)
     const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
     if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
