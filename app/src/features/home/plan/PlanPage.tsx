@@ -33,6 +33,7 @@ import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import TripNamer from 'components/trip/TripNamer';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { useCallback } from 'react';
+import Spinner from 'components/spinner/Spinner';
 
 interface IPlanPageProps {
   classes?: any;
@@ -109,7 +110,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
 
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
   const handleContextMenuClose = () => {
@@ -154,9 +154,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           description: 'Uploaded spatial content:\n ' + doc._id + '\n',
           geometry: doc.geometry,
           color: 'orange',
-          onClickCallback: () => {
-            console.log('uploaded content clicked');
-          },
+          onClickCallback: () => {},
           popUpComponent: null
         });
       }
@@ -170,7 +168,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const helperGetMaxTripID = async () => {
     if (!databaseContext) {
-      console.log('db not ready');
       return;
     }
     let docs = await databaseContext.database.find({
@@ -199,8 +196,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       setTripsLoaded(true);
     };
     initialLoad();
-    //}, [databaseContext, databaseChangesContext, newTripID]);
-    //}, [databaseContext,  newTripID]);
   }, [newTripID]);
 
   // persist geometry changes
@@ -211,7 +206,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!workingTripID) {
       return;
     }
-    if (!geometry) {
+    if (geometry) {
       databaseContext.database.upsert(workingTripID, (tripDoc) => {
         return { ...tripDoc, geometry: geometry, persistenceStep: 'update geo' };
       });
@@ -256,7 +251,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const SingleTrip: React.FC<any> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
     const databaseContext = useContext(DatabaseContext);
+    const databaseChangesContext = useContext(DatabaseChangesContext);
     const [stepState, setStepState] = useState(null);
+    const [memoHash, setMemoHash] = useState(null);
+
+    useEffect(() => {
+      setMemoHash(JSON.stringify(stepState));
+      console.log('updating memo hash');
+    }, [stepState]);
 
     const getStateFromTrip = useCallback(async () => {
       if (!databaseContext.database) {
@@ -268,19 +270,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         }
       });
       if (docs.docs.length > 0) {
-        console.dir(docs);
         let tripDoc = docs.docs[0];
         if (!tripDoc.stepState) {
-          console.log('!tripDoc.steptate');
           return;
         }
-        console.log('setting initial state on rerender');
-        console.dir(tripDoc.stepState);
         setStepState(tripDoc.stepState);
       }
     }, [databaseContext.database]);
 
     const saveState = async (newState) => {
+      setStepState(newState);
       await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
         return { ...tripDoc, stepState: newState, persistenceStep: 'updating state' };
       });
@@ -288,9 +287,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
     // initial fetch
     useEffect(() => {
-      console.log('happens on rerender:');
       getStateFromTrip();
-      console.dir(stepState);
+      console.log('hook to get state');
     }, [databaseContext]);
 
     const helperCheckForGeo = () => {
@@ -302,18 +300,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     };
 
     const helperCloseOtherAccordions = (expanded, stepNumber) => {
-      console.log('expanded: ' + expanded);
-      console.log('stepnumber : ' + stepNumber);
-      console.log('going to close accordion');
-      console.log('original state:');
-      console.dir(stepState);
       let newState: any = [...stepState];
       for (let i = 1; i < stepState.length; i++) {
         let expanded2 = i == stepNumber && expanded ? true : false;
         newState[i] = { ...newState[i], expanded: expanded2 };
       }
-      console.log('saving accordion state:  ');
-      console.dir(newState);
+      console.log('accordion helper');
       saveState([...newState]);
     };
 
@@ -433,11 +425,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               </TripStep>
             </Grid>
           ) : (
-            'Loading'
+            <Spinner />
           )}
         </>
       );
-    }, [stepState]);
+    }, [memoHash]);
     return memo;
   };
 
@@ -460,7 +452,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           expandIcon={<ExpandMore fontSize="large" />}
           aria-controls="panel-geo-record-picker-content"
           id="panel-geo-record-picker-header">
-          <Grid alignContent="flex-start" justify="space-between" xs={12} container>
+          <Grid alignContent="flex-start" justify="space-between" container>
             <Grid xs={2} className={classes.tripAccordionGridItem} item>
               <Tooltip color="primary" title={props.helpText} arrow>
                 <HelpIcon fontSize="large" />
@@ -489,26 +481,30 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   };
   const mapMemo = useMemo(() => {
     return (
-        <Paper className={classes.paper}>
-          <MapContainer
-            {...props}
-            classes={classes}
-            showDrawControls={true}
-            mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
-            geometryState={{ geometry, setGeometry }}
-            interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-            extentState={{ extent, setExtent }}
-            contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-          />
-        </Paper>
-    )}, [geometry, interactiveGeometry, tripsLoaded]);
+      <Paper className={classes.paper}>
+        <MapContainer
+          {...props}
+          classes={classes}
+          showDrawControls={true}
+          mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
+          geometryState={{ geometry, setGeometry }}
+          interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+          extentState={{ extent, setExtent }}
+          contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+        />
+      </Paper>
+    );
+  }, [geometry, interactiveGeometry, tripsLoaded]);
 
-    return (
-      <Container className={props.classes.container}>
-        {mapMemo}
-        <Button onClick={addTrip} color="primary" variant="contained">
-          Add Trip
-        </Button>
+  return (
+    <Container className={props.classes.container}>
+      {mapMemo}
+      <Button onClick={addTrip} color="primary" variant="contained">
+        Add Trip
+      </Button>
+      {!tripsLoaded ? (
+        <Spinner />
+      ) : (
         <RecordTable
           className={classes.tripList}
           tableName={'My Trips'}
@@ -563,9 +559,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           // startingRowsPerPage: default 10;
           // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
         />
-        {/*   <TripListComponent />*/}
-      </Container>
-    );
+      )}
+      {/*   <TripListComponent />*/}
+    </Container>
+  );
 };
 
 export default PlanPage;

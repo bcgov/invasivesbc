@@ -69,6 +69,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
     await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
       return { ...tripDoc, pointOfInterestChoices: newPointOfInterestChoices };
     });
+    setPointOfInterestChoices([...newPointOfInterestChoices])
   };
 
   const addPointOfInterestChoice = (newPointOfInterest: IPointOfInterestChoices) => {

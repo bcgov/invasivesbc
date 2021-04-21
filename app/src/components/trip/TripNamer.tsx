@@ -1,4 +1,5 @@
 import { Input, makeStyles } from '@material-ui/core';
+import Spinner from 'components/spinner/Spinner';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
@@ -56,7 +57,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
           color="primary"
         />
       ) : (
-        'LOADING'
+        <Spinner/>
       )}
     </>
   );
