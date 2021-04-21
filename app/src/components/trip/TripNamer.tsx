@@ -34,7 +34,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
 
   const saveInput = async (newName) => {
     await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-      return { ...tripDoc, name: newName };
+      return { ...tripDoc, name: newName, persistenceStep: "naming trip" };
     });
   };
 
