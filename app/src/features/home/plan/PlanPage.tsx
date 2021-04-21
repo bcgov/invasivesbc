@@ -420,7 +420,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 doneButtonCallBack={() => {
                   helperStepDoneOrSkip(6);
                 }}>
-                <TripDataControls />
+                <TripDataControls trip_ID={props.trip_ID} />
                 <ManageDatabaseComponent />
               </TripStep>
             </Grid>
