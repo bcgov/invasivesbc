@@ -35,7 +35,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
 
   const saveInput = async (newName) => {
     await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-      return { ...tripDoc, name: newName, persistenceStep: "naming trip" };
+      return { ...tripDoc, name: newName, persistenceStep: 'naming trip' };
     });
   };
 
@@ -48,7 +48,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
 
   return (
     <>
-      {docs && name ? (
+      {docs ? (
         <Input
           defaultValue={name}
           onBlur={(event) => {
@@ -57,7 +57,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
           color="primary"
         />
       ) : (
-        <Spinner/>
+        <Spinner />
       )}
     </>
   );
