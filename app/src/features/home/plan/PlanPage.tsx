@@ -22,7 +22,7 @@ import PointOfInterestDataFilter from 'components/point-of-interest-search/Point
 import TripDataControls from 'components/trip/TripDataControls';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -32,6 +32,8 @@ import { DocType } from 'constants/database';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import TripNamer from 'components/trip/TripNamer';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
+import { useCallback } from 'react';
+import Spinner from 'components/spinner/Spinner';
 
 interface IPlanPageProps {
   classes?: any;
@@ -108,7 +110,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
 
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
   const handleContextMenuClose = () => {
@@ -153,9 +154,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           description: 'Uploaded spatial content:\n ' + doc._id + '\n',
           geometry: doc.geometry,
           color: 'orange',
-          onClickCallback: () => {
-            console.log('uploaded content clicked');
-          },
+          onClickCallback: () => {},
           popUpComponent: null
         });
       }
@@ -169,7 +168,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const helperGetMaxTripID = async () => {
     if (!databaseContext) {
-      console.log('db not ready');
       return;
     }
     let docs = await databaseContext.database.find({
@@ -198,7 +196,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       setTripsLoaded(true);
     };
     initialLoad();
-  }, [databaseContext, databaseChangesContext, newTripID]);
+  }, [newTripID]);
 
   // persist geometry changes
   useEffect(() => {
@@ -208,20 +206,22 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!workingTripID) {
       return;
     }
-    databaseContext.database.upsert(workingTripID, (tripDoc) => {
-      return { ...tripDoc, geometry: geometry };
-    });
+    if (geometry) {
+      databaseContext.database.upsert(workingTripID, (tripDoc) => {
+        return { ...tripDoc, geometry: geometry, persistenceStep: 'update geo' };
+      });
+    }
   }, [geometry, tripsLoaded, databaseContext.database]);
 
   // persist extent changes
   useEffect(() => {
-    if (!tripsLoaded) {
+    if (!tripsLoaded || !extent) {
       return;
     }
     databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
       return { ...planPageExtentDoc, extent: extent };
     });
-  }, [extent, tripsLoaded, databaseContext.database]);
+  }, [extent, tripsLoaded]);
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
@@ -233,7 +233,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         trip_name: 'New Unnamed Trip',
         num_activities: 0,
         num_POI: 0,
-        docType: DocType.TRIP
+        docType: DocType.TRIP,
+        stepState: [
+          {}, //just here so indexes match up with step number
+          { status: TripStatusCode.initial, expanded: true },
+          { status: TripStatusCode.initial, expanded: false },
+          { status: TripStatusCode.initial, expanded: false },
+          { status: TripStatusCode.initial, expanded: false },
+          { status: TripStatusCode.initial, expanded: false },
+          { status: TripStatusCode.initial, expanded: false }
+        ]
       };
     });
     setNewTripID(newID);
@@ -241,15 +250,46 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const SingleTrip: React.FC<any> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
-    const [stepState, setStepState] = useState([
-      {}, //just here so indexes match up with step number
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false },
-      { status: TripStatusCode.initial, expanded: false }
-    ]);
+    const databaseContext = useContext(DatabaseContext);
+    const databaseChangesContext = useContext(DatabaseChangesContext);
+    const [stepState, setStepState] = useState(null);
+    const [memoHash, setMemoHash] = useState(null);
+
+    useEffect(() => {
+      setMemoHash(JSON.stringify(stepState));
+      console.log('updating memo hash');
+    }, [stepState]);
+
+    const getStateFromTrip = useCallback(async () => {
+      if (!databaseContext.database) {
+        return;
+      }
+      let docs = await databaseContext.database.find({
+        selector: {
+          _id: props.trip_ID
+        }
+      });
+      if (docs.docs.length > 0) {
+        let tripDoc = docs.docs[0];
+        if (!tripDoc.stepState) {
+          return;
+        }
+        setStepState(tripDoc.stepState);
+      }
+    }, [databaseContext.database]);
+
+    const saveState = async (newState) => {
+      setStepState(newState);
+      await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
+        return { ...tripDoc, stepState: newState, persistenceStep: 'updating state' };
+      });
+    };
+
+    // initial fetch
+    useEffect(() => {
+      getStateFromTrip();
+      console.log('hook to get state');
+    }, [databaseContext]);
 
     const helperCheckForGeo = () => {
       if (geometry) {
@@ -265,7 +305,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         let expanded2 = i == stepNumber && expanded ? true : false;
         newState[i] = { ...newState[i], expanded: expanded2 };
       }
-      setStepState([...newState]);
+      console.log('accordion helper');
+      saveState([...newState]);
     };
 
     //generic helper to mark step as done if there isn't a special purpose check
@@ -273,116 +314,123 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       let newState: any = [...stepState];
       for (let i = 1; i < stepState.length; i++) {
         newState[i] = { ...newState[i], expanded: false };
-        if (i == stepNumber && i != 1) {
+        if (i == stepNumber && i != 2) {
           newState[i] = { ...newState[i], status: TripStatusCode.ready };
         }
       }
-      setStepState([...newState]);
+      saveState([...newState]);
     };
 
-    return (
-      <Grid item md={12}>
-        <TripStep
-          title="Step 1: Name your trip"
-          helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
-          additionalText="other"
-          expanded={stepState[1].expanded}
-          tripStepDetailsClassName={classes.activityRecordList}
-          stepStatus={stepState[3].status}
-          stepAccordionOnChange={(event, expanded) => {
-            helperCloseOtherAccordions(expanded, 1);
-          }}
-          doneButtonCallBack={() => {
-            helperStepDoneOrSkip(1);
-          }}>
-          <Paper className={classes.paper}>
-            <Typography variant="body1">There will be an input field here that lets you name your trip.</Typography>
-            <TripNamer trip_ID={props.trip_ID} />
-          </Paper>
-        </TripStep>
-        <TripStep
-          title="Step 2: Add a spatial boundary for your trip."
-          helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
-          additionalText="other"
-          expanded={stepState[2].expanded}
-          tripStepDetailsClassName={classes.activityRecordList}
-          stepStatus={helperCheckForGeo()}
-          stepAccordionOnChange={(event, expanded) => {
-            helperCloseOtherAccordions(expanded, 2);
-          }}
-          doneButtonCallBack={() => {
-            helperStepDoneOrSkip(2);
-          }}>
-          <Paper className={classes.paper}>
-            <Typography variant="body1">
-              Draw a polygon or square on the map, or upload a KML containing 1 shape.
-            </Typography>
-            <KMLUpload />
-          </Paper>
-        </TripStep>
-        <TripStep
-          title="Step 3: Choose past field activity data."
-          helpText="This is where you can cache past activities (observations etc.) to the app.  If you want to search for records in a particular area, draw a polygon on the map."
-          additionalText="other"
-          expanded={stepState[3].expanded}
-          tripStepDetailsClassName={classes.activityRecordList}
-          stepStatus={stepState[3].status}
-          stepAccordionOnChange={(event, expanded) => {
-            helperCloseOtherAccordions(expanded, 3);
-          }}
-          doneButtonCallBack={() => {
-            helperStepDoneOrSkip(3);
-          }}>
-          <ActivityDataFilter trip_id={props.trip_id} />
-        </TripStep>
-        <TripStep
-          title="Step 4: Choose data from other systems, (IAPP)"
-          helpText="This is where you can cache IAPP sites, and later other points of interest.  If you want to search for records in a particular area, draw a polygon on the map."
-          additionalText="other"
-          expanded={stepState[4].expanded}
-          tripStepDetailsClassName={classes.pointOfInterestList}
-          stepStatus={stepState[4].status}
-          stepAccordionOnChange={(event, expanded) => {
-            helperCloseOtherAccordions(expanded, 4);
-          }}
-          doneButtonCallBack={() => {
-            helperStepDoneOrSkip(4);
-          }}>
-          <PointOfInterestDataFilter trip_id={workingTripID} />
-        </TripStep>
-        <TripStep
-          title="OPTIONAL: Get data from a Metabase Question"
-          helpText="If you have a Metabase question that contains field activity ID's, you can load those records here."
-          additionalText="other"
-          expanded={stepState[5].expanded}
-          tripStepDetailsClassName={classes.pointOfInterestList}
-          stepStatus={stepState[5].status}
-          stepAccordionOnChange={(event, expanded) => {
-            helperCloseOtherAccordions(expanded, 5);
-          }}
-          doneButtonCallBack={() => {
-            helperStepDoneOrSkip(5);
-          }}>
-          <MetabaseSearch />
-        </TripStep>
-        <TripStep
-          title="Last Step: Cache, Refresh, or Delete data for Trip "
-          helpText="Cache the data and map data for the region you have selected, or refresh it, or delete."
-          additionalText="other"
-          expanded={stepState[6].expanded}
-          tripStepDetailsClassName={classes.pointOfInterestList}
-          stepStatus={stepState[6].status}
-          stepAccordionOnChange={(event, expanded) => {
-            helperCloseOtherAccordions(expanded, 6);
-          }}
-          doneButtonCallBack={() => {
-            helperStepDoneOrSkip(6);
-          }}>
-          <TripDataControls />
-          <ManageDatabaseComponent />
-        </TripStep>
-      </Grid>
-    );
+    const memo = useMemo(() => {
+      return (
+        <>
+          {' '}
+          {stepState ? (
+            <Grid item md={12}>
+              <TripStep
+                title="Step 1: Name your trip"
+                helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
+                additionalText="other"
+                expanded={stepState[1].expanded}
+                tripStepDetailsClassName={classes.activityRecordList}
+                stepStatus={stepState[1].status}
+                stepAccordionOnChange={(event, expanded) => {
+                  helperCloseOtherAccordions(expanded, 1);
+                }}
+                doneButtonCallBack={() => {
+                  helperStepDoneOrSkip(1);
+                }}>
+                <TripNamer trip_ID={props.trip_ID} />
+              </TripStep>
+              <TripStep
+                title="Step 2: Add a spatial boundary for your trip."
+                helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
+                additionalText="other"
+                expanded={stepState[2].expanded}
+                tripStepDetailsClassName={classes.activityRecordList}
+                stepStatus={helperCheckForGeo()}
+                stepAccordionOnChange={(event, expanded) => {
+                  helperCloseOtherAccordions(expanded, 2);
+                }}
+                doneButtonCallBack={() => {
+                  helperStepDoneOrSkip(2);
+                }}>
+                <Paper className={classes.paper}>
+                  <Typography variant="body1">
+                    Draw a polygon or square on the map, or upload a KML containing 1 shape.
+                  </Typography>
+                  <KMLUpload />
+                </Paper>
+              </TripStep>
+              <TripStep
+                title="Step 3: Choose past field activity data."
+                helpText="This is where you can cache past activities (observations etc.) to the app.  If you want to search for records in a particular area, draw a polygon on the map."
+                additionalText="other"
+                expanded={stepState[3].expanded}
+                tripStepDetailsClassName={classes.activityRecordList}
+                stepStatus={stepState[3].status}
+                stepAccordionOnChange={(event, expanded) => {
+                  helperCloseOtherAccordions(expanded, 3);
+                }}
+                doneButtonCallBack={() => {
+                  helperStepDoneOrSkip(3);
+                }}>
+                <ActivityDataFilter trip_ID={props.trip_ID} />
+              </TripStep>
+              <TripStep
+                title="Step 4: Choose data from other systems, (IAPP)"
+                helpText="This is where you can cache IAPP sites, and later other points of interest.  If you want to search for records in a particular area, draw a polygon on the map."
+                additionalText="other"
+                expanded={stepState[4].expanded}
+                tripStepDetailsClassName={classes.pointOfInterestList}
+                stepStatus={stepState[4].status}
+                stepAccordionOnChange={(event, expanded) => {
+                  helperCloseOtherAccordions(expanded, 4);
+                }}
+                doneButtonCallBack={() => {
+                  helperStepDoneOrSkip(4);
+                }}>
+                <PointOfInterestDataFilter trip_ID={props.trip_ID} />
+              </TripStep>
+              <TripStep
+                title="OPTIONAL: Get data from a Metabase Question"
+                helpText="If you have a Metabase question that contains field activity ID's, you can load those records here."
+                additionalText="other"
+                expanded={stepState[5].expanded}
+                tripStepDetailsClassName={classes.pointOfInterestList}
+                stepStatus={stepState[5].status}
+                stepAccordionOnChange={(event, expanded) => {
+                  helperCloseOtherAccordions(expanded, 5);
+                }}
+                doneButtonCallBack={() => {
+                  helperStepDoneOrSkip(5);
+                }}>
+                <MetabaseSearch />
+              </TripStep>
+              <TripStep
+                title="Last Step: Cache, Refresh, or Delete data for Trip "
+                helpText="Cache the data and map data for the region you have selected, or refresh it, or delete."
+                additionalText="other"
+                expanded={stepState[6].expanded}
+                tripStepDetailsClassName={classes.pointOfInterestList}
+                stepStatus={stepState[6].status}
+                stepAccordionOnChange={(event, expanded) => {
+                  helperCloseOtherAccordions(expanded, 6);
+                }}
+                doneButtonCallBack={() => {
+                  helperStepDoneOrSkip(6);
+                }}>
+                <TripDataControls trip_ID={props.trip_ID} />
+                <ManageDatabaseComponent />
+              </TripStep>
+            </Grid>
+          ) : (
+            <Spinner />
+          )}
+        </>
+      );
+    }, [memoHash]);
+    return memo;
   };
 
   interface ITripStep {
@@ -404,7 +452,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           expandIcon={<ExpandMore fontSize="large" />}
           aria-controls="panel-geo-record-picker-content"
           id="panel-geo-record-picker-header">
-          <Grid alignContent="flex-start" justify="space-between" xs={12} container>
+          <Grid alignContent="flex-start" justify="space-between" container>
             <Grid xs={2} className={classes.tripAccordionGridItem} item>
               <Tooltip color="primary" title={props.helpText} arrow>
                 <HelpIcon fontSize="large" />
@@ -431,9 +479,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       </Accordion>
     );
   };
-
-  return (
-    <Container className={props.classes.container}>
+  const mapMemo = useMemo(() => {
+    return (
       <Paper className={classes.paper}>
         <MapContainer
           {...props}
@@ -446,63 +493,73 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
         />
       </Paper>
+    );
+  }, [geometry, interactiveGeometry, tripsLoaded]);
+
+  return (
+    <Container className={props.classes.container}>
+      {mapMemo}
       <Button onClick={addTrip} color="primary" variant="contained">
         Add Trip
       </Button>
-      <RecordTable
-        className={classes.tripList}
-        tableName={'My Trips'}
-        keyField="trip_id" // defaults to just use 'id'
-        //       startingOrder="survey_date" // defaults to first table column
-        headers={[
-          // each id is the key it will look for in each data row object
-          {
-            id: 'trip_id',
-            title: 'Trip ID'
-          },
-          {
-            id: 'trip_name',
-            title: 'Trip Name'
-          },
-          {
-            id: 'num_activities',
-            title: '# of Activities Cached'
-          },
-          {
-            id: 'num_poi',
-            title: '# of POI Cached'
-          },
-          {
-            id: 'buttons'
-            // no title, for a blank header col
+      {!tripsLoaded ? (
+        <Spinner />
+      ) : (
+        <RecordTable
+          className={classes.tripList}
+          tableName={'My Trips'}
+          keyField="trip_id" // defaults to just use 'id'
+          //       startingOrder="survey_date" // defaults to first table column
+          headers={[
+            // each id is the key it will look for in each data row object
+            {
+              id: 'trip_id',
+              title: 'Trip ID'
+            },
+            {
+              id: 'trip_name',
+              title: 'Trip Name'
+            },
+            {
+              id: 'num_activities',
+              title: '# of Activities Cached'
+            },
+            {
+              id: 'num_poi',
+              title: '# of POI Cached'
+            },
+            {
+              id: 'buttons'
+              // no title, for a blank header col
+            }
+          ]}
+          rows={
+            // array of data objects to render
+            !trips?.length
+              ? []
+              : trips.map((row) => ({
+                  ...row,
+                  // custom map data before it goes to table:
+                  buttons: (
+                    row // can render a custom cell like this, to e.g. render custom buttons.  Will build these controls into the table too though
+                  ) => (
+                    <IconButton>
+                      <DeleteForever />
+                    </IconButton>
+                  )
+                }))
           }
-        ]}
-        rows={
-          // array of data objects to render
-          !trips?.length
-            ? []
-            : trips.map((row) => ({
-                ...row,
-                // custom map data before it goes to table:
-                buttons: (
-                  row // can render a custom cell like this, to e.g. render custom buttons.  Will build these controls into the table too though
-                ) => (
-                  <IconButton>
-                    <DeleteForever />
-                  </IconButton>
-                )
-              }))
-        }
-        dropdown={(row) => {
-          return <SingleTrip trip_ID={row.trip_id} />;
-        }}
+          dropdown={(row) => {
+            return <SingleTrip trip_ID={row.trip_id} />;
+          }}
 
-        // expandable: defaults true
-        // startExpanded: default true
-        // startingOrder: default asc
-        // startingRowsPerPage: default 10;
-        // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
-      />
+          // expandable: defaults true
+          // startExpanded: default true
+          // startingOrder: default asc
+          // startingRowsPerPage: default 10;
+          // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
+        />
+      )}
       {/*   <TripListComponent />*/}
     </Container>
   );
