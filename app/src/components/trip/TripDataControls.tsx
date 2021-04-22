@@ -136,11 +136,11 @@ export const TripDataControls: React.FC<any> = (props) => {
 
         upserts = {
           ...upserts,
-          [row.activity_id]: (existingDoc: {}) => ({
+          [row.activity_id]: (existingDoc: any) => ({
             ...existingDoc,
             _id: row.activity_id,
             docType: DocType.REFERENCE_ACTIVITY,
-            tripID: props.trip_ID,
+            trip_IDs: [...existingDoc.trip_IDs, props.trip_ID],
             ...row,
             formData: row.activity_payload.form_data,
             activityType: row.activity_type,
@@ -186,11 +186,11 @@ export const TripDataControls: React.FC<any> = (props) => {
 
         upserts = {
           ...upserts,
-          ['POI' + row.point_of_interest_id]: (existingDoc: {}) => ({
+          ['POI' + row.point_of_interest_id]: (existingDoc: any) => ({
             ...existingDoc,
             _id: 'POI' + row.point_of_interest_id,
             docType: DocType.REFERENCE_POINT_OF_INTEREST,
-            tripID: props.trip_ID,
+            trip_IDs: [...existingDoc.trip_IDs, props.trip_ID],
             ...row,
             formData: row.point_of_interest_payload.form_data,
             pointOfInterestType: row.point_of_interest_type,
@@ -307,6 +307,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   const deleteTripAndFetch = async () => {
     //wipe activities associated to that trip here:
     const deleteOldTrip = () => {};
+    //todo:
     deleteOldTrip();
 
     //fetch what is selected here:
