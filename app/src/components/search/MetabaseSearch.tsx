@@ -70,15 +70,19 @@ export const MetabaseSearch: React.FC<any> = (props) => {
         (!tripDoc.metabaseQueryOptionsLastChecked ||
           moment().diff(tripDoc.metabaseQueryOptionsLastChecked, 'minutes') >= 1)
       ) {
-        let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
-        await databaseContext.database.upsert('trip', (doc) => {
-          return {
-            ...doc,
-            metabaseQueryOptionsLastChecked: moment().valueOf(),
-            metabaseQueryOptions: options
-          };
-        });
-        setMetabaseOptions(options);
+        try {
+          let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
+          await databaseContext.database.upsert('trip', (doc) => {
+            return {
+              ...doc,
+              metabaseQueryOptionsLastChecked: moment().valueOf(),
+              metabaseQueryOptions: options
+            };
+          });
+          setMetabaseOptions(options);
+        } catch (error) {
+          if (tripDoc.metabaseQueryOptions) setMetabaseOptions(tripDoc.metabaseQueryOptions);
+        }
       } else {
         if (tripDoc.metabaseQueryOptions) setMetabaseOptions(tripDoc.metabaseQueryOptions);
       }

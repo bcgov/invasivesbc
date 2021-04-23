@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const TripDataControls: React.FC = (props) => {
+export const TripDataControls: React.FC<any> = (props) => {
   useStyles();
 
   const invasivesApi = useInvasivesApi();
@@ -91,7 +91,8 @@ export const TripDataControls: React.FC = (props) => {
   const getTrip = useCallback(async () => {
     let docs = await databaseContext.database.find({
       selector: {
-        _id: 'trip'
+        _id: props.trip_ID,
+        docType: DocType.TRIP
       }
     });
 
@@ -139,7 +140,7 @@ export const TripDataControls: React.FC = (props) => {
             ...existingDoc,
             _id: row.activity_id,
             docType: DocType.REFERENCE_ACTIVITY,
-            tripID: 'trip',
+            tripID: props.trip_ID,
             ...row,
             formData: row.activity_payload.form_data,
             activityType: row.activity_type,
@@ -189,7 +190,7 @@ export const TripDataControls: React.FC = (props) => {
             ...existingDoc,
             _id: 'POI' + row.point_of_interest_id,
             docType: DocType.REFERENCE_POINT_OF_INTEREST,
-            tripID: 'trip',
+            tripID: props.trip_ID,
             ...row,
             formData: row.point_of_interest_payload.form_data,
             pointOfInterestType: row.point_of_interest_type,
@@ -231,7 +232,7 @@ export const TripDataControls: React.FC = (props) => {
 
       let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
 
-      await databaseContext.database.upsert('trip', (tripDoc) => ({
+      await databaseContext.database.upsert(props.trip_ID, (tripDoc) => ({
         ...tripDoc,
         metabaseQueryNames: {
           ...trip.metabaseQueryNames,
@@ -255,7 +256,7 @@ export const TripDataControls: React.FC = (props) => {
               ...existingDoc,
               _id: row.activity_id,
               docType: DocType.REFERENCE_ACTIVITY,
-              tripID: 'trip',
+              tripID: props.trip_ID,
               ...row,
               formData: row.activity_payload.form_data,
               activityType: row.activity_type,
@@ -274,7 +275,7 @@ export const TripDataControls: React.FC = (props) => {
               ...existingDoc,
               _id: 'POI' + row.point_of_interest_id,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              tripID: 'trip',
+              tripID: props.trip_ID,
               ...row,
               formData: row.point_of_interest_payload.form_data,
               pointOfInterestType: row.point_of_interest_type,

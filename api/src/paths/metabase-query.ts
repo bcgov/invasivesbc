@@ -225,10 +225,10 @@ function createMetabaseQuery(): RequestHandler {
 
       const todaysDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
       const METABASE_DATABASE_ID = 2;
-      const ACTIVITIES_METABASE_SOURCE_TABLE_ID = 11;
+      const ACTIVITIES_METABASE_SOURCE_TABLE_ID = 11; // find via GET api/table
       const ACTIVITIES_METABASE_QUERY_FIELD_ID = 42;
       const ACTIVITIES_METABASE_DELETED_DATE_FIELD_ID = 49;
-      const POI_METABASE_SOURCE_TABLE_ID = 21;
+      const POI_METABASE_SOURCE_TABLE_ID = 21; // find via GET api/table
       const POI_METABASE_QUERY_FIELD_ID = 215;
 
       const request: AxiosRequestConfig = {
