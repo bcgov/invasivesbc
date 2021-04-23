@@ -228,7 +228,7 @@ export const useInvasivesApi = () => {
   const getCachedApiSpec = async (): Promise<any> => {
     try {
       const data = await getApiSpec();
-
+      console.log("DATA: ", data)
       await databaseContext.database.upsert('ApiSpec', () => {
         return data;
       });

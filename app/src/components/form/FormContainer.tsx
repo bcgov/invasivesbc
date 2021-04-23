@@ -51,7 +51,9 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   useEffect(() => {
     const getApiSpec = async () => {
       const response = await invasivesApi.getCachedApiSpec();
-
+      console.log('RESPONSE: ', response);
+      console.log('ACTIVITY SUBTYPE: ', props.activity.activitySubtype);
+      console.log({ ...response.components.schemas[props.activity.activitySubtype], components: response.components });
       setSchemas({
         schema: { ...response.components.schemas[props.activity.activitySubtype], components: response.components },
         uiSchema: RootUISchemas[props.activity.activitySubtype]

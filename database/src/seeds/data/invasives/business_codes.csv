@@ -1233,3 +1233,469 @@ frame_size_code,NA,Unknown or indeterminant,1
 frame_size_code,L,1.0 sq metre,2
 frame_size_code,M,0.75 sq metre,3
 frame_size_code,S,0.1 sq metre,4
+district_code,DCC,Cariboo-Chilcotin Natural Resource District,1
+district_code,DCK,Chilliwack Natural Resource District,2
+district_code,DCR,Campbell River Natural Resource District,3
+district_code,DCS,Cascades Natural Resource District,4
+district_code,DFN,Fort Nelson Natural Resource District,5
+district_code,DKA,Thompson Rivers Natural Resource District,6
+district_code,DKM,Coast Mountains Natural Resource District,7
+district_code,DMH,100 Mile House Natural Resource District,8
+district_code,DMK,Mackenzie Natural Resource District,9
+district_code,DND,Nadina Natural Resource District,10
+district_code,DNI,North Island - Central Coast Natural Resource District,11
+district_code,DOS,Okanagan Shuswap Natural Resource District,12
+district_code,DPC,Peace Natural Resource District,13
+district_code,DPG,Prince George Natural Resource District,14
+district_code,DQC,Haida Gwaii Natural Resource District,15
+district_code,DQU,Quesnel Natural Resource District,16
+district_code,DRM,Rocky Mountain Natural Resource District,17
+district_code,DSC,Sunshine Coast Natural Resource District,18
+district_code,DSE,Selkirk Natural Resource District,19
+district_code,DSI,South Island Natural Resource District,20
+district_code,DSQ,Sea to Sky Natural Resource District,21
+district_code,DSS,Skeena Stikine Natural Resource District,22
+district_code,DVA,Stuart Nechako Natural Resource District,23
+override_code,Y,Yes,1
+override_code,N,No,2
+invasive_code,Y,Yes,1
+invasive_code,N,No,2
+invasive_code,Don't Know,Don't Know,3
+evaluator_opionion_code,Poorly,Poorly,1
+evaluator_opionion_code,Moderately,Moderately,2
+evaluator_opionion_code,Well,Well,3
+evaluator_opionion_code,Very Well,Very Well,4
+evaluator_opionion_code,Don't Know,Don't Know,5
+Ecological_anchors_vet_trees_code,6-10,6-10 trees/ha,2
+Ecological_anchors_vet_trees_code,11-20,11-20 trees/ha,3
+Ecological_anchors_vet_trees_code,>20,>20 trees/ha,4
+Ecological_anchors_karst_code,Y,Yes,1
+Ecological_anchors_karst_code,N,No,2
+Ecological_anchors_largest_trees_code,Y,Yes,1
+Ecological_anchors_largest_trees_code,N,No ,2
+Ecological_anchors_CWD_code,Y,Yes,1
+Ecological_anchors_CWD_code,N,No,2
+Ecological_anchors_active_trails_code,Y,Yes,1
+Ecological_anchors_active_trails_code,N,No ,2
+Ecological_anchors_active feeding_code,Y,Yes,1
+Ecological_anchors_active feeding_code,N,No,2
+Ecological_anchors_uncommon_trees_code,Y,Yes,1
+Ecological_anchors_uncommon_trees_code,N,No,2
+stratum_id_code,RES,reserve,1
+stratum_ID,NAR,net area to be reforested,2
+stratum_number_code,1,added to stratum_ID to differentiate different strata within the same ID code (e.g. NAR1 NAR2 etc…),1
+stratum_number_code,2,,2
+stratum_number_code,3,,3
+stratum_number_code,4,,4
+stratum_number_code,5,,5
+stratum_number_code,6,,6
+stratum_number_code,7,,7
+stratum_number_code,8,,8
+stratum_number_code,9,,9
+stratum_number_code,10,,10
+stratum_number_code,11,,11
+stratum_number_code,12,,12
+stratum_number_code,13,,13
+stratum_number_code,14,,14
+stratum_number_code,15,,15
+stratum_number_code,16,,16
+stratum_number_code,17,,17
+stratum_number_code,18,,18
+stratum_number_code,19,,19
+stratum_number_code,20,,20
+stratum_type_code,PR,Patch riparian,1
+stratum_type_code,PW,patch wildlife,2
+stratum_type_code,PO,Patch other,3
+stratum_type_code,PU,Patch temporary ,4
+stratum_type_code,DR,Patch unidentified,5
+stratum_type_code,DW,Dispersed wildlife,6
+stratum_type_code,DO,Dispersed other,7
+stratum_type_code,DT,Dispersed temporary,8
+stratum_type_code,CC,clearcut,9
+BEC_zone_code,BAFA,Boreal Altai Fescue Alpine,1
+BEC_zone_code,BG,Bunchgrass,2
+BEC_zone_code,BWBS,Boreal White and Black Spruce ,3
+BEC_zone_code,CDF,Coastal Douglas Fir,4
+BEC_zone_code,CMA,Coastal Mountain-heather Alpine,5
+BEC_zone_code,CWH,Coastal Western Hemlock,6
+BEC_zone_code,ESSF,Engelmann Spruce Sub-alpine fir,7
+BEC_zone_code,ICH,Interior Cedar Hemlock,8
+BEC_zone_code,IDF,Interior Douglas Fir,9
+BEC_zone_code,IMA,Interior Mountain-heather Alpine,10
+BEC_zone_code,MH,Mountain Hemlock,11
+BEC_zone_code,MS,Montane Spruce,12
+BEC_zone_code,PP,Ponderosa Pine,13
+BEC_zone_code,SBS,Sub-Breal Spruce,14
+BEC_zone_code,SBPS,Sub-Boreal Pine Spruce,15
+BEC_zone_code,SWB,Spruce Willow Birch,16
+BEC_subzone_code,dc,Dry Cold ,1
+BEC_subzone_code,dcp,Dry Cold parkland,2
+BEC_subzone_code,dcw,Dry Cold woodland,3
+BEC_subzone_code,dh,Dry Hot,4
+BEC_subzone_code,dk,Dry Cool,5
+BEC_subzone_code,dkp,Dry Cool parkland,6
+BEC_subzone_code,dku,Dry Cool woodland and parkland,7
+BEC_subzone_code,dkw,Dry Cool woodland,8
+BEC_subzone_code,dks,Dry Cool Scrub,9
+BEC_subzone_code,dm,Dry Mild (Interior)/ Dry Maritime (Coast),10
+BEC_subzone_code,dmp,Dry Mild parkland,11
+BEC_subzone_code,dmw,Dry Mild woodland,12
+BEC_subzone_code,ds,Dry Submaritime,13
+BEC_subzone_code,dv,Dry Very Cold,14
+BEC_subzone_code,dvp,Dry Very Cold parkland,15
+BEC_subzone_code,dvw,Dry Very Cold woodland,16
+BEC_subzone_code,mc,Moist Cold,17
+BEC_subzone_code,mcp,Moist Cold parkland,18
+BEC_subzone_code,mh,Moist Hot,19
+BEC_subzone_code,mk,Moist Cool,20
+BEC_subzone_code,mkp,Moist Cool parkland,21
+BEC_subzone_code,mks,Moist Cool Scrub,22
+BEC_subzone_code,mm,Moist Maritime (CWH) /Moist Mild (ICH/ESSF),23
+BEC_subzone_code,mmp,Moist Maritime (CWH) /Moist Mild (ICH/ESSF)parkland,24
+BEC_subzone_code,mmw,Moist Maritime(CWH) /Moist Mild (ICH/ESSF) woodland,25
+BEC_subzone_code,ms,Moist Submaritime,26
+BEC_subzone_code,mv,Moist Very Cold,27
+BEC_subzone_code,mvp,Moist Very Cold parkland,28
+BEC_subzone_code,mw,Moist Warm,29
+BEC_subzone_code,mwp,Moist Warm parkland,30
+BEC_subzone_code,mww,Moist Warm woodland,31
+BEC_subzone_code,vc,Very Wet Cold,32
+BEC_subzone_code,vcp,Very Wet Cold parkland,33
+BEC_subzone_code,vh,Very Wet hypermaritime,34
+BEC_subzone_code,vk,Very Wet Cool,35
+BEC_subzone_code,vks,Very Cool Scrub,36
+BEC_subzone_code,vm,Very Wet maritime,37
+BEC_subzone_code,vv,Very Wet Very Cold,38
+BEC_subzone_code,wc,Wet Cold,39
+BEC_subzone_code,wcp,Wet Cold parkland,40
+BEC_subzone_code,wcw,Wet Cold woodland,41
+BEC_subzone_code,wh,Wet Hypermaritime,42
+BEC_subzone_code,whp,Wet Hypermaritime parkland,43
+BEC_subzone_code,wk,Wet Cool,44
+BEC_subzone_code,wkp,Wet Cool parkland,45
+BEC_subzone_code,wkw,Wet Cool woodland,46
+BEC_subzone_code,wm,Wet Mild (interior)/Wet Maritime (Coast),47
+BEC_subzone_code,wmp,Wet Mild parkland,48
+BEC_subzone_code,wmu,Wet Mild parkland and woodland,49
+BEC_subzone_code,wmw,Wet Mild woodland,50
+BEC_subzone_code,ww,Wet Warm,51
+BEC_subzone_code,wv,Wet Very Cold,52
+BEC_subzone_code,wvp,Wet Very Cold parkland,53
+BEC_subzone_code,un,Undifferentiated,54
+BEC_subzone_code,unp,Undifferentiated and parkland,55
+BEC_subzone_code,uns,Undifferentiated Scrub,56
+BEC_subzone_code,xc,Very Dry Cold,57
+BEC_subzone_code,xh,Very Dry Hot,58
+BEC_subzone_code,xk,Very Dry Cool,59
+BEC_subzone_code,xm,Very Dry Mild (Interior)/Very Dry Maritime (Coast),60
+BEC_subzone_code,xv,Very Dry Very Cold ,61
+BEC_subzone_code,xw,Very Dry Warm,62
+BEC_variant_code,1,,1
+BEC_variant_code,2,,2
+BEC_variant_code,3,,3
+BEC_variant_code,4,,4
+BEC_variant_code,5,,5
+BEC_variant_code,6,,6
+BEC_phase_code,a,Grassland (IDF/PP) /Redcedar (MS)/Moist Phase (IDF)/Douglas-fir Phase (SBS),1
+BEC_phase_code,b,Steep South Phase ,2
+BEC_phase_code,c,Cold Air Phase,3
+BEC_phase_code,d,Dry Phase,4
+BEC_phase_code,n,Northern Phase,5
+BEC_phase_code,w,Warm Phase ,6
+site_series_code,01,mesic,1
+site_series_code,02,xeric-subxeric,2
+site_series_code,03,subxeric,3
+site_series_code,04,submesic,4
+site_series_code,05,submesic-subhygric,5
+site_series_code,06,mesic-subhygric,6
+site_series_code,07,subhygric,7
+site_series_code,08,subhydric,8
+site_series_code,09,,9
+stratum_consistent_code,Yes,Yes,1
+stratum_consistent_code,No,No,2
+stratum_consistent_code,Not Mapped,Not mapped,3
+patch_location_code,Internal,Internal to block,1
+patch_location_code,Edge,Edge of block,2
+patch_location_code,External,External/not touching block,3
+patch_location_code,N/A,Not applicable,4
+pct_trees_windthrown_code,0,0%,1
+pct_trees_windthrown_code,1,1-10%,2
+pct_trees_windthrown_code,2,11-20%,3
+pct_trees_windthrown_code,3,21-30%,4
+pct_trees_windthrown_code,4,31-40%,5
+pct_trees_windthrown_code,5,41-50%,6
+pct_trees_windthrown_code,6,51-60%,7
+pct_trees_windthrown_code,7,61-70%,8
+pct_trees_windthrown_code,8,71-80%,9
+pct_trees_windthrown_code,9,81-90%,10
+pct_trees_windthrown_code,10,91-100%,11
+distribution_of_windthrow_code,Edge,Edge of patch,1
+distribution_of_windthrow_code,Internal,internal to patch,2
+distribution_of_windthrow_code,N/A,No windthrow ,3
+windthrow_treatment_code,feathering,feathering,1
+windthrow_treatment_code,topping,topping,2
+windthrow_treatment_code,both,both,3
+windthrow_treatment_code,none,none,4
+windthrow_treatment_code,Other,Other,5
+reserve_constraint_wetsite_code,0,0%,1
+reserve_constraint_wetsite_code,1,1-10%,2
+reserve_constraint_wetsite_code,2,11-20%,3
+reserve_constraint_wetsite_code,3,21-30%,4
+reserve_constraint_wetsite_code,4,31-40%,5
+reserve_constraint_wetsite_code,5,41-50%,6
+reserve_constraint_wetsite_code,6,51-60%,7
+reserve_constraint_wetsite_code,7,61-70%,8
+reserve_constraint_wetsite_code,8,71-80%,9
+reserve_constraint_wetsite_code,9,81-90%,10
+reserve_constraint_wetsite_code,10,91-100%,11
+reserve_constraints_RMZ_code,0,0%,1
+reserve_constraints_RMZ_code,1,1-10%,2
+reserve_constraints_RMZ_code,2,11-20%,3
+reserve_constraints_RMZ_code,3,21-30%,4
+reserve_constraints_RMZ_code,4,31-40%,5
+reserve_constraints_RMZ_code,5,41-50%,6
+reserve_constraints_RMZ_code,6,51-60%,7
+reserve_constraints_RMZ_code,7,61-70%,8
+reserve_constraints_RMZ_code,8,71-80%,9
+reserve_constraints_RMZ_code,9,81-90%,10
+reserve_constraints_RMZ_code,10,91-100%,11
+reserve_constraints_RRZ_code,0,0%,1
+reserve_constraints_RRZ_code,1,1-10%,2
+reserve_constraints_RRZ_code,2,11-20%,3
+reserve_constraints_RRZ_code,3,21-30%,4
+reserve_constraints_RRZ_code,4,31-40%,5
+reserve_constraints_RRZ_code,5,41-50%,6
+reserve_constraints_RRZ_code,6,51-60%,7
+reserve_constraints_RRZ_code,7,61-70%,8
+reserve_constraints_RRZ_code,8,71-80%,9
+reserve_constraints_RRZ_code,9,81-90%,10
+reserve_constraints_RRZ_code,10,91-100%,11
+reserve_constraints_rock_code,0,0%,1
+reserve_constraints_rock_code,1,1-10%,2
+reserve_constraints_rock_code,2,11-20%,3
+reserve_constraints_rock_code,3,21-30%,4
+reserve_constraints_rock_code,4,31-40%,5
+reserve_constraints_rock_code,5,41-50%,6
+reserve_constraints_rock_code,6,51-60%,7
+reserve_constraints_rock_code,7,61-70%,8
+reserve_constraints_rock_code,8,71-80%,9
+reserve_constraints_rock_code,9,81-90%,10
+reserve_constraints_rock_code,10,91-100%,11
+reserve_constraints_ncbr_code,0,0%,1
+reserve_constraints_ncbr_code,1,1-10%,2
+reserve_constraints_ncbr_code,2,11-20%,3
+reserve_constraints_ncbr_code,3,21-30%,4
+reserve_constraints_ncbr_code,4,31-40%,5
+reserve_constraints_ncbr_code,5,41-50%,6
+reserve_constraints_ncbr_code,6,51-60%,7
+reserve_constraints_ncbr_code,7,61-70%,8
+reserve_constraints_ncbr_code,8,71-80%,9
+reserve_constraints_ncbr_code,9,81-90%,10
+reserve_constraints_ncbr_code,10,91-100%,11
+reserve_constraints_non_merch_code,0,0%,1
+reserve_constraints_non_merch_code,1,1-10%,2
+reserve_constraints_non_merch_code,2,11-20%,3
+reserve_constraints_non_merch_code,3,21-30%,4
+reserve_constraints_non_merch_code,4,31-40%,5
+reserve_constraints_non_merch_code,5,41-50%,6
+reserve_constraints_non_merch_code,6,51-60%,7
+reserve_constraints_non_merch_code,7,61-70%,8
+reserve_constraints_non_merch_code,8,71-80%,9
+reserve_constraints_non_merch_code,9,81-90%,10
+reserve_constraints_non_merch_code,10,91-100%,11
+reserve_constraints_sensitive_code,0,0%,1
+reserve_constraints_sensitive_code,1,1-10%,2
+reserve_constraints_sensitive_code,2,11-20%,3
+reserve_constraints_sensitive_code,3,21-30%,4
+reserve_constraints_sensitive_code,4,31-40%,5
+reserve_constraints_sensitive_code,5,41-50%,6
+reserve_constraints_sensitive_code,6,51-60%,7
+reserve_constraints_sensitive_code,7,61-70%,8
+reserve_constraints_sensitive_code,8,71-80%,9
+reserve_constraints_sensitive_code,9,81-90%,10
+reserve_constraints_sensitive_code,10,91-100%,11
+reserve_constraints_wildlife_designation_code,0,0%,1
+reserve_constraints_wildlife_designation_code,1,1-10%,2
+reserve_constraints_wildlife_designation_code,2,11-20%,3
+reserve_constraints_wildlife_designation_code,3,21-30%,4
+reserve_constraints_wildlife_designation_code,4,31-40%,5
+reserve_constraints_wildlife_designation_code,5,41-50%,6
+reserve_constraints_wildlife_designation_code,6,51-60%,7
+reserve_constraints_wildlife_designation_code,7,61-70%,8
+reserve_constraints_wildlife_designation_code,8,71-80%,9
+reserve_constraints_wildlife_designation_code,9,81-90%,10
+reserve_constraints_wildlife_designation_code,10,91-100%,11
+reserve_constraints_OGMA_code,0,0%,1
+reserve_constraints_OGMA_code,1,1-10%,2
+reserve_constraints_OGMA_code,2,11-20%,3
+reserve_constraints_OGMA_code,3,21-30%,4
+reserve_constraints_OGMA_code,4,31-40%,5
+reserve_constraints_OGMA_code,5,41-50%,6
+reserve_constraints_OGMA_code,6,51-60%,7
+reserve_constraints_OGMA_code,7,61-70%,8
+reserve_constraints_OGMA_code,8,71-80%,9
+reserve_constraints_OGMA_code,9,81-90%,10
+reserve_constraints_OGMA_code,10,91-100%,11
+reserve_constraints_visual_code,0,0%,1
+reserve_constraints_visual_code,1,1-10%,2
+reserve_constraints_visual_code,2,11-20%,3
+reserve_constraints_visual_code,3,21-30%,4
+reserve_constraints_visual_code,4,31-40%,5
+reserve_constraints_visual_code,5,41-50%,6
+reserve_constraints_visual_code,6,51-60%,7
+reserve_constraints_visual_code,7,61-70%,8
+reserve_constraints_visual_code,8,71-80%,9
+reserve_constraints_visual_code,9,81-90%,10
+reserve_constraints_visual_code,10,91-100%,11
+reserve_constraints_cultural_code,0,0%,1
+reserve_constraints_cultural_code,1,1-10%,2
+reserve_constraints_cultural_code,2,11-20%,3
+reserve_constraints_cultural_code,3,21-30%,4
+reserve_constraints_cultural_code,4,31-40%,5
+reserve_constraints_cultural_code,5,41-50%,6
+reserve_constraints_cultural_code,6,51-60%,7
+reserve_constraints_cultural_code,7,61-70%,8
+reserve_constraints_cultural_code,8,71-80%,9
+reserve_constraints_cultural_code,9,81-90%,10
+reserve_constraints_cultural_code,10,91-100%,11
+reserve_constraints_recreation_code,0,0%,1
+reserve_constraints_recreation_code,1,1-10%,2
+reserve_constraints_recreation_code,2,11-20%,3
+reserve_constraints_recreation_code,3,21-30%,4
+reserve_constraints_recreation_code,4,31-40%,5
+reserve_constraints_recreation_code,5,41-50%,6
+reserve_constraints_recreation_code,6,51-60%,7
+reserve_constraints_recreation_code,7,61-70%,8
+reserve_constraints_recreation_code,8,71-80%,9
+reserve_constraints_recreation_code,9,81-90%,10
+reserve_constraints_recreation_code,10,91-100%,11
+Ecological_anchors_vet _trees_code,1-5,1-5 trees/ha,1
+Ecological_anchors_vet _trees_code,6-10,6-10 trees/ha,2
+Ecological_anchors_vet _trees_code,11-20,11-20 trees/ha,3
+Ecological_anchors_vet _trees_code,>20,>20 trees/ha,4
+Ecological_anchors_karst_code,Y,Yes,1
+Ecological_anchors_karst_code,N,No ,2
+Ecological_anchors_largest_trees_code,Y,Yes,1
+Ecological_anchors_largest_trees_code,N,No ,2
+Ecological_anchors_CWD_code,Y,Yes,1
+Ecological_anchors_CWD_code,N,No ,2
+Ecological_anchors_active_trails_code,Y,Yes,1
+Ecological_anchors_active_trails_code,N,No ,2
+Ecological_anchors_active feeding_code,Y,Yes,1
+Ecological_anchors_active feeding_code,N,No ,2
+Ecological_anchors_uncommon_trees_code,Y,Yes,1
+Ecological_anchors_uncommon_trees_code,N,No ,2
+utm_zone_code,7,UTM Zone 7,1
+utm_zone_code,8,UTM Zone 8,2
+utm_zone_code,9,UTM Zone 9,3
+utm_zone_code,10,UTM Zone 10,4
+utm_zone_code,11,UTM Zone 11,5
+trees_exist_code,Y,Yes,1
+trees_exist_code,N,No,2
+basal_area_factor_code,2,,1
+basal_area_factor_code,3,,2
+basal_area_factor_code,4,,3
+basal_area_factor_code,5,,4
+basal_area_factor_code,6,,5
+basal_area_factor_code,6.25,,6
+basal_area_factor_code,7,,7
+basal_area_factor_code,8,,8
+basal_area_factor_code,9,,9
+basal_area_factor_code,10,,10
+basal_area_factor_code,11,,11
+basal_area_factor_code,12,,12
+basal_area_factor_code,13,,13
+basal_area_factor_code,14,,14
+basal_area_factor_code,15,,15
+basal_area_factor_code,16,,16
+basal_area_factor_code,18,,17
+basal_area_factor_code,20,,18
+basal_area_factor_code,20.25,,19
+basal_area_factor_code,25,,20
+basal_area_factor_code,30.25,,21
+basal_area_factor_code,32,,22
+basal_area_factor_code,64,,23
+tree_species_code,Cw,western red cedar/Thuja plicata,1
+tree_species_code,Y,Cypress/Chamaecyparis,2
+tree_species_code,Yc,yellow-cedar/Chamaecyparis nootkatensis,3
+tree_species_code,Fd,Douglas-fir,4
+tree_species_code,Fdc,coastal Douglas-fir,5
+tree_species_code,Fdi,Interior Douglas-fir,6
+tree_species_code,Ba,amabilis fir,7
+tree_species_code,Bg,grand fir,8
+tree_species_code,Bl,subalpine fir,9
+tree_species_code,Hm,mountain hemlock,10
+tree_species_code,Hw,western hemlock,11
+tree_species_code,Hxm,mountain and western hemlock hybrid ,12
+tree_species_code,Jr,Rocky Mtn. juniper,13
+tree_species_code,La,alpine larch,14
+tree_species_code,Lt,tamarack,15
+tree_species_code,Lw,western larch,16
+tree_species_code,Pj,jack pine,17
+tree_species_code,Pf,limber pine,18
+tree_species_code,Pl,lodgepole pine,19
+tree_species_code,Pli,lodgepole pine,20
+tree_species_code,Pxj,lodgepole and jack pine hybrid,21
+tree_species_code,Py,ponderosa pine,22
+tree_species_code,Plc,shore pine,23
+tree_species_code,Pw,western white pine,24
+tree_species_code,Pa,whitebark pine,25
+tree_species_code,Sb,black spruce,26
+tree_species_code,Se,Engelmann spruce,27
+tree_species_code,Ss,sitka spruce,28
+tree_species_code,Sw,white spruce,29
+tree_species_code,Sx,spruce hybrid,30
+tree_species_code,Sxw,Engelmann and white spruce hybrid,31
+tree_species_code,Sxl,sitka and white spruce hybrid,32
+tree_species_code,Sxs,sitka nd unknown hybrid,33
+tree_species_code,Tw,western yew,34
+tree_species_code,D,alder,35
+tree_species_code,Dr,red alder,36
+tree_species_code,U,Apple,37
+tree_species_code,Up,paciic crab apple,38
+tree_species_code,Ra,arbutus,39
+tree_species_code,Ac,poplar,40
+tree_species_code,Acb,balsam poplar,41
+tree_species_code,Act,black cottonwood,42
+tree_species_code,Ax,hybrid poplars,43
+tree_species_code,At,trembling aspen,44
+tree_species_code,Ea,alaska paper birch,45
+tree_species_code,Exp,alaska and paper birch birch hybrid,46
+tree_species_code,Ep,paper birch,47
+tree_species_code,ew,water birch,48
+tree_species_code,Kc,cascara,49
+tree_species_code,Vb,bitter cherry,50
+tree_species_code,Vv,choke cherry,51
+tree_species_code,Vp,pin cherry,52
+tree_species_code,Gp,pacific dogwood,53
+tree_species_code,M,maple,54
+tree_species_code,Mb,bigleaf maple,55
+tree_species_code,Mv,vine maple,56
+tree_species_code,Qg,garry oak,57
+tree_species_code,W,Willow,58
+tree_species_code,Wb,Bebb's willow,59
+tree_species_code,Wp,Pacific Willow,60
+tree_species_code,Wa,peachleaf willow,61
+tree_species_code,Wd,pussy willow,62
+tree_species_code,Ws,Scouler's willow,63
+tree_species_code,Wt,sitka willow,64
+tree_species_code,X,Unkown,65
+tree_species_code,Xc,Unknown conifer,66
+tree_species_code,Xh,Unknown hardwood,67
+tree_species_code,Z,Other tree; not on list,68
+tree_species_code,Zc,Other conifer,69
+tree_species_code,Zh,Other hardwood,70
+wildlife_tree_class_code,1,Live,1
+wildlife_tree_class_code,2,Live,2
+wildlife_tree_class_code,3,Dead_hard_snag,3
+wildlife_tree_class_code,4,Dead_hard_snag,4
+wildlife_tree_class_code,5,Dead_hard_snag,5
+wildlife_tree_class_code,6,Dead_soft_snag,6
+wildlife_tree_class_code,7,Dead_soft_snag,7
+wildlife_tree_class_code,8,Dead_soft_snag,8
+cwd_in_transect_code,Y,Yes,1
+cwd_in_transect_code,N,No,2
+decay_class_code,1,Hard; firm; elevated; hard branches,1
+decay_class_code,2,Hard; loose bark; sagging; soft branches,2
+decay_class_code,3,Soft; advanced decay; sagging to settled on ground; branches stubs/absent,3
+decay_class_code,4,Soft; extensive decay; fully settled on ground; no branches,4

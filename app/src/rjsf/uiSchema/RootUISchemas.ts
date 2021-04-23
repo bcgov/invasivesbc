@@ -42,6 +42,48 @@ const Activity_Observation_PlantAquatic = {
   }
 };
 
+const Activity_FREP_FormA = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_type_data: {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.FREP
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.FREP_FormA
+  }
+};
+
+const Activity_FREP_FormB = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_type_data: {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.FREP
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.FREP_FormB
+  }
+};
+
+const Activity_FREP_FormC = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_type_data: {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.FREP
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.FREP_FormC
+  }
+};
+
 const Activity_AnimalActivity_AnimalTerrestrial = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
@@ -219,6 +261,9 @@ const RootUISchemas = {
   Activity_Observation_PlantTerrestrial,
   Activity_Observation_PlantTerrestrial_BulkEdit,
   Activity_Observation_PlantAquatic,
+  Activity_FREP_FormA,
+  Activity_FREP_FormB,
+  Activity_FREP_FormC,
   Activity_AnimalActivity_AnimalTerrestrial,
   Activity_AnimalActivity_AnimalAquatic,
   Activity_Transect_FireMonitoring,

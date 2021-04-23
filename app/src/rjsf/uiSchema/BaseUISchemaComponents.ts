@@ -792,6 +792,17 @@ const Observation = {
   }
 };
 
+const FREP = {
+  observation_type_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  observation_persons: {
+    items: {
+      ...Persons
+    }
+  }
+};
+
 const Observation_PlantTerrestrial_Data = {
   soil_texture_code: {
     'ui:widget': 'single-select-autocomplete'
@@ -820,6 +831,65 @@ const Observation_PlantTerrestrial = {
       ...FourColumnStyle,
       ...TerrestrialPlants
     }
+  }
+};
+
+const FREP_FormA_Data = {
+  soil_texture_code: {
+    'ui:widget': 'single-select-autocomplete'
+  }
+};
+
+const FREP_FormB_Data = {
+  soil_texture_code: {
+    'ui:widget': 'single-select-autocomplete'
+  }
+};
+
+const FREP_FormC_Data = {
+  opening_number: {},
+  opening_id: {},
+  license_number: {},
+  cp_number: {},
+  block: {},
+  license: {},
+  district_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  location_description: {},
+  nar: {},
+  gross_area: {},
+  override_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  innovative_practices: {},
+  invasive_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  evaluator_opinion_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  rationale: {}
+};
+
+const FREP_FormA = {
+  frep_form_a_data: {
+    ...FourColumnStyle,
+    ...FREP_FormA_Data
+  }
+};
+
+const FREP_FormB = {
+  frep_form_b_data: {
+    ...FourColumnStyle,
+    ...FREP_FormB_Data
+  }
+};
+
+const FREP_FormC = {
+  frep_form_c_data: {
+    ...FourColumnStyle,
+    ...FREP_FormC_Data
   }
 };
 
@@ -1146,6 +1216,10 @@ const BaseUISchemaComponents = {
   Observation,
   Observation_PlantTerrestrial,
   Observation_PlantAquatic,
+  FREP,
+  FREP_FormA,
+  FREP_FormB,
+  FREP_FormC,
   Transect_FireMonitoring,
   Transect_Vegetation,
   Transect_BiocontrolEfficacy,
