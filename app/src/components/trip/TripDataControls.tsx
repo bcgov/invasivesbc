@@ -1,4 +1,5 @@
 import { Button, makeStyles } from '@material-ui/core';
+import Spinner from 'components/spinner/Spinner';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -320,12 +321,11 @@ export const TripDataControls: React.FC<any> = (props) => {
       });
   };
 
-  const [toggle, setToggle] = useState(TripStatusCode.initial);
 
   return (
     <>
       <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
-        {fetching ? 'Fetching...' : 'Get Data!'}
+        {fetching ? <Spinner/>: "Cache Trip For Offline"}
       </Button>
     </>
   );
