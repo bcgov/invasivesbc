@@ -500,6 +500,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (confirmDeleteTrip(trip_ID, tripName)) {
       deleteTripRecords(databaseContext, trip_ID);
     }
+    databaseContext.database.get(trip_ID.toString()).then((doc)=> {
+      return databaseContext.database.remove(doc)
+    })
+    setNewTripID(0)
   };
 
   return (
