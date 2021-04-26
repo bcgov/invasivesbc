@@ -172,12 +172,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       return;
     }
     let docs = await databaseContext.database.find({
-      selector: { docType: DocType.TRIP, trip_id: { $gte: null } },
-      sort: [{ docType: 'asc', trip_id: 'desc' }],
-      use_index: 'docTypeIndex',
+      selector: { trip_id: { $gte: null }, docType: DocType.TRIP },
+      sort: [{ trip_id: 'desc' }],
+      use_index: 'tripDocTypeIndex',
       limit: 1
     });
-    console.log('didnt get here');
 
     if (!docs || !docs.docs || !docs.docs.length) {
       return 0;
