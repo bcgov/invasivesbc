@@ -1,4 +1,5 @@
 import { Input, makeStyles } from '@material-ui/core';
+import Spinner from 'components/spinner/Spinner';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
@@ -34,7 +35,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
 
   const saveInput = async (newName) => {
     await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-      return { ...tripDoc, name: newName };
+      return { ...tripDoc, name: newName, persistenceStep: 'naming trip' };
     });
   };
 
@@ -47,7 +48,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
 
   return (
     <>
-      {docs && name ? (
+      {docs ? (
         <Input
           defaultValue={name}
           onBlur={(event) => {
@@ -56,7 +57,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
           color="primary"
         />
       ) : (
-        'LOADING'
+        <Spinner />
       )}
     </>
   );
