@@ -11,7 +11,6 @@ import {
 } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import TripStatus, { TripStatusCode } from './TripStepStatus';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -45,22 +44,21 @@ export const TripDataControls: React.FC<any> = (props) => {
     const newUpserts = { ...upserts };
 
     // go through all docs, flagging those already existing:
-    allDocs
+    const modifiedDocs = allDocs
       .filter((doc) => {
         const id = doc.doc?._id;
-        newUpserts[id] = undefined; // remove found docs
+        newUpserts[id] = undefined; // remove found docs*/ // does this not block updates?
         return upserts[id];
       })
-      .map((doc) => upserts[doc.id](doc));
+      .map((doc) => {
+        return upserts[doc.id](doc.doc);
+      });
 
     const newDocs = Object.keys(newUpserts)
       .filter((id) => newUpserts[id] !== undefined)
       .map((id) => upserts[id]());
 
-    const resultDocs = [
-      // ...modifiedDocs,
-      ...newDocs
-    ];
+    const resultDocs = [...modifiedDocs, ...newDocs];
     resultDocs.sort((a, b) => {
       if (a.id < b.id) return -1;
       if (a.id > b.id) return 1;
@@ -141,7 +139,7 @@ export const TripDataControls: React.FC<any> = (props) => {
             ...existingDoc,
             _id: row.activity_id,
             docType: DocType.REFERENCE_ACTIVITY,
-            trip_IDs: (existingDoc && existingDoc.tripIDs)? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
+            trip_IDs: existingDoc?.tripIDs ? [...existingDoc.tripIDs, props.trip_ID] : [props.trip_ID],
             ...row,
             formData: row.activity_payload.form_data,
             activityType: row.activity_type,
@@ -191,7 +189,7 @@ export const TripDataControls: React.FC<any> = (props) => {
             ...existingDoc,
             _id: 'POI' + row.point_of_interest_id,
             docType: DocType.REFERENCE_POINT_OF_INTEREST,
-            trip_IDs: (existingDoc && existingDoc.tripIDs)? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
+            trip_IDs: existingDoc?.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
             ...row,
             formData: row.point_of_interest_payload.form_data,
             pointOfInterestType: row.point_of_interest_type,
@@ -253,11 +251,11 @@ export const TripDataControls: React.FC<any> = (props) => {
         if (row.activity_id) {
           upserts = {
             ...upserts,
-            [row.activity_id]: (existingDoc: {}) => ({
+            [row.activity_id]: (existingDoc: any) => ({
               ...existingDoc,
               _id: row.activity_id,
               docType: DocType.REFERENCE_ACTIVITY,
-              tripID: props.trip_ID,
+              trip_IDs: existingDoc && existingDoc.tripIDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
               ...row,
               formData: row.activity_payload.form_data,
               activityType: row.activity_type,
@@ -272,11 +270,11 @@ export const TripDataControls: React.FC<any> = (props) => {
         if (row.point_of_interest_id) {
           upserts = {
             ...upserts,
-            ['POI' + row.point_of_interest_id]: (existingDoc: {}) => ({
+            ['POI' + row.point_of_interest_id]: (existingDoc: any) => ({
               ...existingDoc,
               _id: 'POI' + row.point_of_interest_id,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              tripID: props.trip_ID,
+              trip_IDs: existingDoc && existingDoc.tripIDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
               ...row,
               formData: row.point_of_interest_payload.form_data,
               pointOfInterestType: row.point_of_interest_type,
@@ -317,16 +315,14 @@ export const TripDataControls: React.FC<any> = (props) => {
       .finally(() => setFetching(false))
       .catch((error) => {
         setFetching(false);
-        console.dir(error)
         notifyError(databaseContext, 'Error when fetching from network: ' + error);
       });
   };
 
-
   return (
     <>
       <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
-        {fetching ? <Spinner/>: "Cache Trip For Offline"}
+        {fetching ? <Spinner /> : 'Cache Trip For Offline'}
       </Button>
     </>
   );
