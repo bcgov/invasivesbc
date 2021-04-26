@@ -12,7 +12,7 @@ import {
   Tooltip,
   Typography
 } from '@material-ui/core';
-import { DeleteForever, ExpandMore } from '@material-ui/icons';
+import { DeleteForever, ExpandMore, Rowing } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
 import MetabaseSearch from 'components/search/MetabaseSearch';
 import ManageDatabaseComponent from 'components/database/ManageDatabaseComponent';
@@ -34,6 +34,7 @@ import TripNamer from 'components/trip/TripNamer';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { useCallback } from 'react';
 import Spinner from 'components/spinner/Spinner';
+import { confirmDeleteTrip, deleteTripRecords } from './PlanPageHelpers';
 
 interface IPlanPageProps {
   classes?: any;
@@ -171,11 +172,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       return;
     }
     let docs = await databaseContext.database.find({
-      selector: { trip_id: { $gte: null } },
-      sort: [{ trip_id: 'desc' }],
-      use_index: 'tripIDIndex',
+      selector: { docType: DocType.TRIP, trip_id: { $gte: null } },
+      sort: [{ docType: 'asc', trip_id: 'desc' }],
+      use_index: 'docTypeIndex',
       limit: 1
     });
+    console.log('didnt get here');
 
     if (!docs || !docs.docs || !docs.docs.length) {
       return 0;
@@ -251,7 +253,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const SingleTrip: React.FC<any> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
     const databaseContext = useContext(DatabaseContext);
-    const databaseChangesContext = useContext(DatabaseChangesContext);
     const [stepState, setStepState] = useState(null);
     const [memoHash, setMemoHash] = useState(null);
 
@@ -496,6 +497,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     );
   }, [geometry, interactiveGeometry, tripsLoaded]);
 
+  const trashTrip = (trip_ID, tripName) => {
+    if (confirmDeleteTrip(trip_ID, tripName)) {
+      deleteTripRecords(databaseContext, trip_ID);
+    }
+  };
+
   return (
     <Container className={props.classes.container}>
       {mapMemo}
@@ -544,7 +551,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                     row // can render a custom cell like this, to e.g. render custom buttons.  Will build these controls into the table too though
                   ) => (
                     <IconButton>
-                      <DeleteForever />
+                      <DeleteForever
+                        onClick={() => {
+                          trashTrip(row.trip_id, row.trip_name);
+                        }}
+                      />
                     </IconButton>
                   )
                 }))
