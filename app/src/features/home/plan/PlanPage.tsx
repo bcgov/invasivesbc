@@ -421,7 +421,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                   helperStepDoneOrSkip(6);
                 }}>
                 <TripDataControls trip_ID={props.trip_ID} />
-                <ManageDatabaseComponent />
               </TripStep>
             </Grid>
           ) : (
