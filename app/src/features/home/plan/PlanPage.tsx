@@ -119,7 +119,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   */
 
   const getExtent = async () => {
-    let docs = await databaseContext.database.find({ selector: { _id: 'planPageExtent' } });
+    let docs = await databaseContext.database.find(
+      {
+         selector: { docType: DocType.PLAN_PAGE_EXTENT },
+        use_index: 'docTypeIndex' });
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
     }
@@ -220,7 +223,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       return;
     }
     databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
-      return { ...planPageExtentDoc, extent: extent };
+      return { ...planPageExtentDoc, docType: DocType.PLAN_PAGE_EXTENT, extent: extent };
     });
   }, [extent, tripsLoaded]);
 
