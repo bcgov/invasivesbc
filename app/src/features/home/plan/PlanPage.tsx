@@ -259,12 +259,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
     const databaseContext = useContext(DatabaseContext);
     const [stepState, setStepState] = useState(null);
-    const [memoHash, setMemoHash] = useState(null);
-
-    useEffect(() => {
-      setMemoHash(JSON.stringify(stepState));
-      console.log('updating memo hash');
-    }, [stepState]);
 
     const getStateFromTrip = useCallback(async () => {
       if (!databaseContext.database) {
@@ -327,7 +321,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       saveState([...newState]);
     };
 
-    const memo = useMemo(() => {
+    return useMemo(() => {
       return (
         <>
         { stepState?
@@ -434,8 +428,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           )}
         </>
       );
-    }, [memoHash]);
-    return memo;
+    }, [JSON.stringify(stepState)]);
   };
 
   interface ITripStep {
