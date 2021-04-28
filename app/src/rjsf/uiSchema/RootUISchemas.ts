@@ -52,6 +52,7 @@ const Activity_FREP_FormA = {
     ...BaseUISchemaComponents.FREP
   },
   activity_subtype_data: {
+    ...BaseUISchemaComponents.FourColumnStyle,
     ...BaseUISchemaComponents.FREP_FormA
   }
 };
@@ -66,6 +67,7 @@ const Activity_FREP_FormB = {
     ...BaseUISchemaComponents.FREP
   },
   activity_subtype_data: {
+    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.FREP_FormB
   }
 };
@@ -76,7 +78,6 @@ const Activity_FREP_FormC = {
     ...UISchemaComponents.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.TwoColumnStyle,
     ...BaseUISchemaComponents.FREP
   },
   activity_subtype_data: {

@@ -618,10 +618,9 @@
         }
       },
       "FREP": {
-        "title": "FREP",   
+        "title": "",
         "type": "object",
-        "properties": {
-        }
+        "properties": {}
       },
       "Observation_PlantTerrestrial": {
         "title": "Terrestrial Plant Information",
@@ -750,196 +749,701 @@
         }
       },
       "FREP_FormA": {
-        "title": "Form C",
-        "type": "object"
+        "type": "object",
+        "properties": {
+          
+        }
       },
       "FREP_FormB": {
-        "title": "Aquatic Plant Information",
         "type": "object",
-        "required": ["waterbody_data", "invasive_plants"],
         "properties": {
-          "waterbody_data": {
+          "stratum_summary": {
             "type": "object",
-            "title": "Waterbody Data",
-            "allOf": [
-              { "$ref": "#/components/schemas/WaterbodyData" },
-              {
-                "properties": {
-                  "water_level_management": {
-                    "type": "string",
-                    "title": "Water Level Management",
-                    "enum": ["None", "Weir", "Pump Station", "Dam", "Other"],
-                    "x-tooltip-text": "Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field"
-                  },
-                  "substrate_type": {
-                    "type": "string",
-                    "title": "Substrate Type",
-                    "enum": ["Silt/Organic", "Clay", "Sand", "Gravel", "Cobble", "Rip-rap"],
-                    "x-tooltip-text": "Select the most prevalent substrate composition"
-                  },
-                  "tidal_influence": {
-                    "type": "string",
-                    "title": "Tidal Influence",
-                    "enum": ["Yes", "No", "Unknown"],
-                    "x-tooltip-text": "Indicate if the water level at the observation point is influenced by tides"
-                  },
-                  "comment": {
-                    "type": "string",
-                    "title": "Comment",
-                    "maxLength": 300,
-                    "x-tooltip-text": "Add a comment"
-                  }
-                }
+            "title": "Stratum Summary",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Date"
+              },
+              "opening_id": {
+                "type": "string",
+                "title": "Opening ID"
+              },
+              "assessed_by": {
+                "type": "string",
+                "title": "Assessed By"
+              },
+              "stratum_id": {
+                "type": "string",
+                "title": "Stratum ID",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "stratum_id_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Stratum ID"
+              },
+              "stratum_number": {
+                "type": "string",
+                "title": "Stratum Number",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "stratum_number_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Stratum numer"
+              },
+              "stratum_type": {
+                "type": "string",
+                "title": "Stratum Type",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "stratum_type_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Stratum Type"
+              },
+              "num_plots_stratum": {
+                "type": "number",
+                "title": "# of Plots per Stratum"
+              },
+              "mapped_stratum_size": {
+                "type": "number",
+                "title": "Other"
+              },
+              "bec_zone": {
+                "type": "string",
+                "title": "BEC Zone",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "BEC_zone_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "BEC Zone"
+              },
+              "subzone": {
+                "type": "string",
+                "title": "Subzone",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "BEC_subzone_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "BEC Subzone"
+              },
+              "variant": {
+                "type": "string",
+                "title": "Variant",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "BEC_variant_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "BEC Variant"
+              },
+              "site_series": {
+                "type": "string",
+                "title": "Site Series",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "site_series_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Site Series"
+              },
+              "stratum_location_consistent": {
+                "type": "string",
+                "title": "Stratum location and size consistent with map?",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "stratum_consistent_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Stratum location and size consistent with map"
               }
+            },
+            "required": [
+              "date",
+              "opening_id",
+              "assessed_by",
+              "stratum_id",
+              "stratum_number",
+              "stratum_type",
+              "num_plots_stratum",
+              "mapped_stratum_size",
+              "bec_zone",
+              "subzone",
+              "variant",
+              "site_series",
+              "stratum_location_consistent"
+            ],
+            "dependencies": {
+              "stratum_location_consistent": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "stratum_location_consistent": {
+                        "enum": ["No"]
+                      },
+                      "estimated_size": {
+                        "type": "number",
+                        "title": "Estimated Size if Not Consistent with Map"
+                      }
+                    },
+                    "required": ["estimated_size"]
+                  }
+                ]
+              }
+            }
+          },
+          "dispersed_summary": {
+            "type": "object",
+            "title": "Patch/Dispersed Summary",
+            "properties": {
+              "estimated_age_of_oldest_trees": {
+                "type": "number",
+                "title": "Estimated Age of Oldest Trees in Reserve (other than vets)"
+              },
+              "patch_location": {
+                "type": "string",
+                "title": "Patch Location",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "patch_location_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "patch location"
+              },
+              "percent_trees_windthrown": {
+                "type": "string",
+                "title": "% of Total Trees in Reserve Windthrown",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "pct_trees_windthrown_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Percent of trees windthrown"
+              },
+              "windthrow_distribution": {
+                "type": "string",
+                "title": "Distribution of Windthrow",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "distribution_of_windthrow_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Windthrow distribution"
+              },
+              "windthrow_treatment": {
+                "type": "string",
+                "title": "Windthrow Treatment",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "windthrow_treatment_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Windthrow treatment"
+              }
+            },
+            "required": [
+              "estimated_age_of_oldest_trees",
+              "patch_location",
+              "percent_trees_windthrown",
+              "windthrow_distribution",
+              "windthrow_treatment"
             ]
           },
-          "project_data": {
+          "reserve_constraints": {
             "type": "object",
-            "title": "Project Data",
+            "title": "Reserve Constraints",
+            "required": ["reserve_constraints_none"],
             "properties": {
-              "surveyors": {
+              "reserve_constraints_none": {
                 "type": "string",
-                "title": "Surveyors",
-                "x-tooltip-text": "Supply surveyor names"
-              },
-              "survey_type": {
-                "type": "string",
-                "title": "Survey Type",
-                "enum": ["Presence Survey", "Extent Survey"],
-                "x-tooltip-text": "Presence survey used to determine general presence of invasive species in waterbody. Extent survey used to delineate each point and polygon of a target species prior to treatment"
-              }
-            }
-          },
-          "terrain_characteristics": {
-            "type": "object",
-            "title": "Terrain Characteristics",
-            "properties": {
-              "adjacent_land_use": {
-                "type": "string",
-                "title": "Adjacent Land Use",
-                "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
-              },
-              "inflow_permanent": {
-                "type": "string",
-                "title": "Inflow (Permanent)",
-                "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
-              },
-              "inflow_other": {
-                "type": "string",
-                "title": "Inflow (Other)",
-                "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
-              },
-              "outflow": {
-                "type": "string",
-                "title": "Outflow",
-                "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
-              },
-              "shoreline_types": {
-                "type": "array",
-                "title": "Shoreline Types",
-                "items": {
-                  "$ref": "#/components/schemas/ShorelineTypes"
+                "title": "Were there any reserve constraints for this stratum?",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "reserve_constraints_none_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
                 },
-                "x-tooltip-text": "Specify shoreline types with their respective percentages"
+                "x-tooltip-text": "Yes/No"
+              }
+            },
+            "dependencies": {
+              "reserve_constraints_none": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "reserve_constraints_none": {
+                        "enum": ["Yes"]
+                      },
+                      "wetsite": {
+                        "type": "string",
+                        "title": "Wetsite",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_wetsite_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Wetsite"
+                      },
+                      "rmz": {
+                        "type": "string",
+                        "title": "RMZ",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_RMZ_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "RMZ"
+                      },
+                      "rrz": {
+                        "type": "string",
+                        "title": "RRZ",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_RRZ_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "RRZ"
+                      },
+                      "rock_outcrop": {
+                        "type": "string",
+                        "title": "Rock Outcrop",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_rock_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Rock Outcrop"
+                      },
+                      "noncommercial_brush": {
+                        "type": "string",
+                        "title": "Non-Commercial Brush",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_ncbr_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Non-Commercial Brush"
+                      },
+                      "low_mercantile_timber": {
+                        "type": "string",
+                        "title": "Non (or Low) Mercantile Timber",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_non_merch_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Low Mercantile Timber"
+                      },
+                      "sensitive_terrain": {
+                        "type": "string",
+                        "title": "Sensitive Terrain or Soil",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_sensitive_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Sensitive terrain"
+                      },
+                      "uwr_wha_whf": {
+                        "type": "string",
+                        "title": "UWR/WHA/WHF",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_wildlife_designation_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Wildlife designation"
+                      },
+                      "ogma": {
+                        "type": "string",
+                        "title": "OGMA",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_OGMA_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "OGMA"
+                      },
+                      "visuals": {
+                        "type": "string",
+                        "title": "Visuals",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_visual_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Visuals"
+                      },
+                      "cultural_heritage_feature": {
+                        "type": "string",
+                        "title": "Cultural Heritage Feature",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_cultural_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Cultural Heritage Feature"
+                      },
+                      "recreation_feature": {
+                        "type": "string",
+                        "title": "Recration Feature",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "reserve_constraints_recreation_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Recreation Feature"
+                      },
+                      "reserve_constraints_other": {
+                        "type": "string",
+                        "title": "Other"
+                      },
+                      "reserve_constraints_comments": {
+                        "type": "string",
+                        "title": "Comments"
+                      }
+                    },
+                    "required": [
+                      "recreation_feature",
+                      "cultural_heritage_feature",
+                      "visuals",
+                      "ogma",
+                      "uwr_wha_whf",
+                      "sensitive_terrain",
+                      "low_mercantile_timber",
+                      "noncommercial_brush",
+                      "rock_outcrop",
+                      "rrz",
+                      "rmz",
+                      "wetsite"
+                    ]
+                  }
+                ]
               }
             }
           },
-          "water_quality": {
+          "ecological_anchors": {
             "type": "object",
-            "title": "Water Quality",
-            "$ref": "#/components/schemas/WaterQuality"
-          },
-          "invasive_plants": {
-            "type": "array",
-            "title": "Aquatic Plants",
-            "items": {
-              "$ref": "#/components/schemas/AquaticPlants"
+            "title": "Ecological Anchors",
+            "required": ["ecological_anchors_none"],
+            "properties": {
+              "ecological_anchors_none": {
+                "type": "string",
+                "title": "Are there any ecological anchors for this stratum?",
+                "default": "No",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "ecological_anchors_none_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Yes/No"
+              }
+            },
+            "dependencies": {
+              "ecological_anchors_none": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "ecological_anchors_none": {
+                        "enum": ["Yes"]
+                      },
+                      "bear_den": {
+                        "type": "number",
+                        "title": "Bear Den"
+                      },
+                      "hibernaculum": {
+                        "type": "number",
+                        "title": "Hibernaculum"
+                      },
+                      "vet_trees": {
+                        "type": "string",
+                        "title": "Vet Trees/Ha",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "ecological_anchors_vet_trees_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "District"
+                      },
+                      "mineral_lick": {
+                        "type": "number",
+                        "title": "Mineral Lick"
+                      },
+                      "large_stick_nest": {
+                        "type": "number",
+                        "title": "Large Stick Nest"
+                      },
+                      "cavity_nest": {
+                        "type": "number",
+                        "title": "Cavity Nest"
+                      },
+                      "large_hollow_tree": {
+                        "type": "number",
+                        "title": "Large Hollow Tree"
+                      },
+                      "large_witches_broom": {
+                        "type": "number",
+                        "title": "Large Witches Broom"
+                      },
+                      "karst_feature": {
+                        "type": "string",
+                        "title": "Karst Feature",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "ecological_anchors_karst_features_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Karst Feature"
+                      },
+                      "large_tree_for_site": {
+                        "type": "string",
+                        "title": "Large Tree for Site (Not Vets)",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "ecological_anchors_largest_trees_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Large trees"
+                      },
+                      "cwd_heavy_concentration": {
+                        "type": "string",
+                        "title": "CWD Heavy Natural Concentration",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "ecological_anchors_CWD_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "CWD Concentration"
+                      },
+                      "active_wildlife_trails": {
+                        "type": "string",
+                        "title": "Active Wildlife trails",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "ecological_anchors_active_trails_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Active Trails"
+                      },
+                      "active_wlt_cwd_feeding": {
+                        "type": "string",
+                        "title": "Actilve WLT/CWD feeding",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "ecological_anchors_active_feeding_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Active Feeding"
+                      },
+                      "uncommon_tree_species": {
+                        "type": "string",
+                        "title": "Uncommon Tree Species",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "ecological_anchors_uncommon_trees_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "District"
+                      },
+                      "ecological_anchors_other": {
+                        "type": "string",
+                        "title": "Other"
+                      },
+                      "ecological_anchors_comments": {
+                        "type": "string",
+                        "title": "Comments"
+                      }
+                    },
+                    "required": [
+                      "bear_den",
+                      "hibernaculum",
+                      "vet_trees",
+                      "mineral_lick",
+                      "large_stick_nest",
+                      "cavity_nest",
+                      "large_hollow_tree",
+                      "active_wlt_cwd_feeding",
+                      "large_witches_broom",
+                      "karst_feature",
+                      "large_tree_for_site",
+                      "cwd_heavy_concentration",
+                      "active_wildlife_trails",
+                      "uncommon_tree_species"
+                    ]
+                  }
+                ]
+              }
             }
+          },
+          "form_a": {
+            "type": "array",
+            "title": "Form A",
+            "items": {
+              "$ref": "#/components/schemas/FREP_FormA"
+            },
+            "x-tooltip-text": "Form A"
           }
         }
       },
       "FREP_FormC": {
         "title": "Form C",
         "type": "object",
-        "required": ["innovative_practices", "invasive_plants", "evaluator_opinion"],
         "properties": {
           "opening_identification": {
             "type": "object",
             "title": "Opening Identification",
-            "allOf": [
-              {
-                "properties": {
-                  "opening_number": {
-                    "type": "string",
-                    "title": "Opening #",
-                    "x-tooltip-text": "The opening number"
-                  },
-                  "opening_id": {
-                    "type": "string",
-                    "title": "Opening ID",
-                    "x-tooltip-text": "The opening ID"
-                  },
-                  "license_number": {
-                    "type": "string",
-                    "title": "License #",
-                    "x-tooltip-text": "The license number"
-                  },
-                  "cp_number": {
-                    "type": "string",
-                    "title": "CP#",
-                    "x-tooltip-text": "CP Number"
-                  },
-                  "block": {
-                    "type": "string",
-                    "title": "Block",
-                    "x-tooltip-text": "Block"
-                  },
-                  "licensee": {
-                    "type": "string",
-                    "title": "Licensee",
-                    "x-tooltip-text": "Licensee"
-                  },
-                  "district_code": {
-                    "type": "string",
-                    "title": "District",
-                    "x-enum-code": {
-                      "x-enum-code-category-name": "invasives",
-                      "x-enum-code-header-name": "district_code",
-                      "x-enum-code-name": "code_name",
-                      "x-enum-code-text": "code_description",
-                      "x-enum-code-sort-order": "code_sort_order"
-                    },
-                    "x-tooltip-text": "District"
-                  },
-                  "location_description": {
-                    "type": "string",
-                    "title": "Location description",
-                    "x-tooltip-text": "Location description"
-                  },
-                  "nar": {
-                    "type": "number",
-                    "title": "NAR (ha)",
-                    "x-tooltip-text": "NAR (ha)"
-                  },
-                  "gross_area": {
-                    "type": "number",
-                    "title": "Gross area (ha)",
-                    "x-tooltip-text": "Block"
-                  },
-                  "override_code": {
-                    "type": "string",
-                    "title": "Override",
-                    "x-enum-code": {
-                      "x-enum-code-category-name": "invasives",
-                      "x-enum-code-header-name": "override_code",
-                      "x-enum-code-name": "code_name",
-                      "x-enum-code-text": "code_description",
-                      "x-enum-code-sort-order": "code_sort_order"
-                    },
-                    "x-tooltip-text": "Override"
-                  }
-                }
+            "properties": {
+              "opening_number": {
+                "type": "string",
+                "title": "Opening #",
+                "x-tooltip-text": "The opening number"
+              },
+              "opening_id": {
+                "type": "string",
+                "title": "Opening ID",
+                "x-tooltip-text": "The opening ID"
+              },
+              "license_number": {
+                "type": "string",
+                "title": "License #",
+                "x-tooltip-text": "The license number"
+              },
+              "cp_number": {
+                "type": "string",
+                "title": "CP#",
+                "x-tooltip-text": "CP Number"
+              },
+              "block": {
+                "type": "string",
+                "title": "Block",
+                "x-tooltip-text": "Block"
+              },
+              "licensee": {
+                "type": "string",
+                "title": "Licensee",
+                "x-tooltip-text": "Licensee"
+              },
+              "district_code": {
+                "type": "string",
+                "title": "District",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "district_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "District"
+              },
+              "location_description": {
+                "type": "string",
+                "title": "Location description",
+                "x-tooltip-text": "Location description"
+              },
+              "nar": {
+                "type": "number",
+                "title": "NAR (ha)",
+                "x-tooltip-text": "NAR (ha)"
+              },
+              "gross_area": {
+                "type": "number",
+                "title": "Gross area (ha)",
+                "x-tooltip-text": "Block"
+              },
+              "override_code": {
+                "type": "string",
+                "title": "Override",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "override_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Override"
               }
+            },
+            "required": [
+              "opening_number",
+              "opening_id",
+              "license_number",
+              "cp_number",
+              "block",
+              "licensee",
+              "district_code",
+              "nar",
+              "gross_area",
+              "override_code"
             ]
           },
           "innovative_practices": {
@@ -951,7 +1455,8 @@
                 "title": "Were any innovative and/or unique forest practices used on the block?",
                 "x-tooltip-text": "Innovative practices"
               }
-            }
+            },
+            "required": ["innovative_practices"]
           },
           "invasive_plants": {
             "type": "object",
@@ -969,7 +1474,8 @@
                 },
                 "x-tooltip-text": "Explain"
               }
-            }
+            },
+            "required": ["invasive_code"]
           },
           "evaluator_opinion": {
             "type": "object",
@@ -992,7 +1498,16 @@
                 "title": "Rationale",
                 "x-tooltip-text": "Explain"
               }
-            }
+            },
+            "required": ["evaluator_opinion_code"]
+          },
+          "form_b": {
+            "type": "array",
+            "title": "Form B",
+            "items": {
+              "$ref": "#/components/schemas/FREP_FormB"
+            },
+            "x-tooltip-text": "Form B"
           }
         }
       },

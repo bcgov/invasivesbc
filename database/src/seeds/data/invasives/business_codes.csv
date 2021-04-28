@@ -1266,24 +1266,9 @@ evaluator_opionion_code,Moderately,Moderately,2
 evaluator_opionion_code,Well,Well,3
 evaluator_opionion_code,Very Well,Very Well,4
 evaluator_opionion_code,Don't Know,Don't Know,5
-Ecological_anchors_vet_trees_code,6-10,6-10 trees/ha,2
-Ecological_anchors_vet_trees_code,11-20,11-20 trees/ha,3
-Ecological_anchors_vet_trees_code,>20,>20 trees/ha,4
-Ecological_anchors_karst_code,Y,Yes,1
-Ecological_anchors_karst_code,N,No,2
-Ecological_anchors_largest_trees_code,Y,Yes,1
-Ecological_anchors_largest_trees_code,N,No ,2
-Ecological_anchors_CWD_code,Y,Yes,1
-Ecological_anchors_CWD_code,N,No,2
-Ecological_anchors_active_trails_code,Y,Yes,1
-Ecological_anchors_active_trails_code,N,No ,2
-Ecological_anchors_active feeding_code,Y,Yes,1
-Ecological_anchors_active feeding_code,N,No,2
-Ecological_anchors_uncommon_trees_code,Y,Yes,1
-Ecological_anchors_uncommon_trees_code,N,No,2
-stratum_id_code,RES,reserve,1
-stratum_ID,NAR,net area to be reforested,2
-stratum_number_code,1,added to stratum_ID to differentiate different strata within the same ID code (e.g. NAR1 NAR2 etc…),1
+stratum_id_code,RES,Reserve,1
+stratum_id_code,NAR,Net area to be reforested,2
+stratum_number_code,1,,1
 stratum_number_code,2,,2
 stratum_number_code,3,,3
 stratum_number_code,4,,4
@@ -1304,14 +1289,14 @@ stratum_number_code,18,,18
 stratum_number_code,19,,19
 stratum_number_code,20,,20
 stratum_type_code,PR,Patch riparian,1
-stratum_type_code,PW,patch wildlife,2
+stratum_type_code,PW,Patch wildlife,2
 stratum_type_code,PO,Patch other,3
 stratum_type_code,PU,Patch temporary ,4
 stratum_type_code,DR,Patch unidentified,5
 stratum_type_code,DW,Dispersed wildlife,6
 stratum_type_code,DO,Dispersed other,7
 stratum_type_code,DT,Dispersed temporary,8
-stratum_type_code,CC,clearcut,9
+stratum_type_code,CC,Clearcut,9
 BEC_zone_code,BAFA,Boreal Altai Fescue Alpine,1
 BEC_zone_code,BG,Bunchgrass,2
 BEC_zone_code,BWBS,Boreal White and Black Spruce ,3
@@ -1402,15 +1387,14 @@ BEC_phase_code,c,Cold Air Phase,3
 BEC_phase_code,d,Dry Phase,4
 BEC_phase_code,n,Northern Phase,5
 BEC_phase_code,w,Warm Phase ,6
-site_series_code,01,mesic,1
-site_series_code,02,xeric-subxeric,2
-site_series_code,03,subxeric,3
-site_series_code,04,submesic,4
-site_series_code,05,submesic-subhygric,5
-site_series_code,06,mesic-subhygric,6
-site_series_code,07,subhygric,7
-site_series_code,08,subhydric,8
-site_series_code,09,,9
+site_series_code,01,Mesic,1
+site_series_code,02,Xeric-Subxeric,2
+site_series_code,03,Subxeric,3
+site_series_code,04,Submesic,4
+site_series_code,05,Submesic-Subhygric,5
+site_series_code,06,Mesic-Subhygric,6
+site_series_code,07,Subhygric,7
+site_series_code,08,Subhydric,8
 stratum_consistent_code,Yes,Yes,1
 stratum_consistent_code,No,No,2
 stratum_consistent_code,Not Mapped,Not mapped,3
@@ -1430,24 +1414,26 @@ pct_trees_windthrown_code,8,71-80%,9
 pct_trees_windthrown_code,9,81-90%,10
 pct_trees_windthrown_code,10,91-100%,11
 distribution_of_windthrow_code,Edge,Edge of patch,1
-distribution_of_windthrow_code,Internal,internal to patch,2
+distribution_of_windthrow_code,Internal,Internal to patch,2
 distribution_of_windthrow_code,N/A,No windthrow ,3
-windthrow_treatment_code,feathering,feathering,1
-windthrow_treatment_code,topping,topping,2
-windthrow_treatment_code,both,both,3
-windthrow_treatment_code,none,none,4
+windthrow_treatment_code,feathering,Feathering,1
+windthrow_treatment_code,topping,Topping,2
+windthrow_treatment_code,both,Both,3
+windthrow_treatment_code,none,None,4
 windthrow_treatment_code,Other,Other,5
-reserve_constraint_wetsite_code,0,0%,1
-reserve_constraint_wetsite_code,1,1-10%,2
-reserve_constraint_wetsite_code,2,11-20%,3
-reserve_constraint_wetsite_code,3,21-30%,4
-reserve_constraint_wetsite_code,4,31-40%,5
-reserve_constraint_wetsite_code,5,41-50%,6
-reserve_constraint_wetsite_code,6,51-60%,7
-reserve_constraint_wetsite_code,7,61-70%,8
-reserve_constraint_wetsite_code,8,71-80%,9
-reserve_constraint_wetsite_code,9,81-90%,10
-reserve_constraint_wetsite_code,10,91-100%,11
+reserve_constraints_none_code,Yes,Yes,1
+reserve_constraints_none_code,No,No,2
+reserve_constraints_wetsite_code,0,0%,1
+reserve_constraints_wetsite_code,1,1-10%,2
+reserve_constraints_wetsite_code,2,11-20%,3
+reserve_constraints_wetsite_code,3,21-30%,4
+reserve_constraints_wetsite_code,4,31-40%,5
+reserve_constraints_wetsite_code,5,41-50%,6
+reserve_constraints_wetsite_code,6,51-60%,7
+reserve_constraints_wetsite_code,7,61-70%,8
+reserve_constraints_wetsite_code,8,71-80%,9
+reserve_constraints_wetsite_code,9,81-90%,10
+reserve_constraints_wetsite_code,10,91-100%,11
 reserve_constraints_RMZ_code,0,0%,1
 reserve_constraints_RMZ_code,1,1-10%,2
 reserve_constraints_RMZ_code,2,11-20%,3
@@ -1569,22 +1555,24 @@ reserve_constraints_recreation_code,7,61-70%,8
 reserve_constraints_recreation_code,8,71-80%,9
 reserve_constraints_recreation_code,9,81-90%,10
 reserve_constraints_recreation_code,10,91-100%,11
-Ecological_anchors_vet _trees_code,1-5,1-5 trees/ha,1
-Ecological_anchors_vet _trees_code,6-10,6-10 trees/ha,2
-Ecological_anchors_vet _trees_code,11-20,11-20 trees/ha,3
-Ecological_anchors_vet _trees_code,>20,>20 trees/ha,4
-Ecological_anchors_karst_code,Y,Yes,1
-Ecological_anchors_karst_code,N,No ,2
-Ecological_anchors_largest_trees_code,Y,Yes,1
-Ecological_anchors_largest_trees_code,N,No ,2
-Ecological_anchors_CWD_code,Y,Yes,1
-Ecological_anchors_CWD_code,N,No ,2
-Ecological_anchors_active_trails_code,Y,Yes,1
-Ecological_anchors_active_trails_code,N,No ,2
-Ecological_anchors_active feeding_code,Y,Yes,1
-Ecological_anchors_active feeding_code,N,No ,2
-Ecological_anchors_uncommon_trees_code,Y,Yes,1
-Ecological_anchors_uncommon_trees_code,N,No ,2
+ecological_anchors_none_code,Yes,Yes,1
+ecological_anchors_none_code,No,No,2
+ecological_anchors_vet_trees_code,1-5,1-5 trees/ha,1
+ecological_anchors_vet_trees_code,6-10,6-10 trees/ha,2
+ecological_anchors_vet_trees_code,11-20,11-20 trees/ha,3
+ecological_anchors_vet_trees_code,>20,>20 trees/ha,4
+ecological_anchors_karst_features_code,Y,Yes,1
+ecological_anchors_karst_features_code,N,No ,2
+ecological_anchors_largest_trees_code,Y,Yes,1
+ecological_anchors_largest_trees_code,N,No ,2
+ecological_anchors_CWD_code,Y,Yes,1
+ecological_anchors_CWD_code,N,No ,2
+ecological_anchors_active_trails_code,Y,Yes,1
+ecological_anchors_active_trails_code,N,No ,2
+ecological_anchors_active_feeding_code,Y,Yes,1
+ecological_anchors_active_feeding_code,N,No ,2
+ecological_anchors_uncommon_trees_code,Y,Yes,1
+ecological_anchors_uncommon_trees_code,N,No ,2
 utm_zone_code,7,UTM Zone 7,1
 utm_zone_code,8,UTM Zone 8,2
 utm_zone_code,9,UTM Zone 9,3
