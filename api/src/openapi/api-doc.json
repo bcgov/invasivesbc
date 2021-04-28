@@ -748,10 +748,301 @@
           }
         }
       },
+      "FREP_Log": {
+        "type": "object",
+        "properties": {
+          "log_num": {
+            "type": "number",
+            "title": "Log #"
+          },
+          "species": {
+            "type": "string",
+            "title": "Species",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "tree_species_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Tree Species"
+          },
+          "decay_class": {
+            "type": "string",
+            "title": "Decay Class",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "decay_class_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Decay Class"
+          },
+          "diameter": {
+            "type": "number",
+            "title": "Diameter (cm)"
+          },
+          "length": {
+            "type": "number",
+            "title": "Length (m)"
+          }
+        },
+        "required": ["log_num", "species", "decay_class", "diameter", "length"]
+      },
+      "FREP_Stand_Table": {
+        "type": "object",
+        "properties": {
+          "tree_num": {
+            "type": "number",
+            "title": "Tree #"
+          },
+          "species": {
+            "type": "string",
+            "title": "Species",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "tree_species_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Tree Species"
+          },
+          "wt_class": {
+            "type": "string",
+            "title": "Wildlife Tree Class",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "wildlife_tree_class_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Wildlife Tree Class"
+          },
+          "dbh": {
+            "type": "number",
+            "title": "DBH (cm)"
+          },
+          "ht": {
+            "type": "number",
+            "title": "Ht (m)"
+          }
+        },
+        "required": ["tree_num", "wt_class", "species", "dbh", "ht"]
+      },
       "FREP_FormA": {
         "type": "object",
         "properties": {
-          
+          "plot_identification": {
+            "type": "object",
+            "title": "Plot Identification",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Date"
+              },
+              "opening_id": {
+                "type": "string",
+                "title": "Opening ID"
+              },
+              "assessed_by": {
+                "type": "string",
+                "title": "Assessed By"
+              },
+              "plot_number": {
+                "type": "number",
+                "title": "Plot #"
+              },
+              "stratum_id": {
+                "type": "string",
+                "title": "Stratum ID",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "stratum_id_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Stratum ID"
+              },
+              "stratum_number": {
+                "type": "string",
+                "title": "Stratum Number",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "stratum_number_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Stratum numer"
+              },
+              "stratum_type": {
+                "type": "string",
+                "title": "Stratum Type",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "stratum_type_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Stratum Type"
+              },
+              "utm_zone": {
+                "type": "string",
+                "title": "UTM Zone",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "utm_zone_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "UTM Zone"
+              },
+              "easting": {
+                "type": "number",
+                "title": "Easting"
+              },
+              "northing": {
+                "type": "number",
+                "title": "Northing"
+              }
+            },
+            "required": [
+              "opening_id",
+              "assessed_by",
+              "plot_number",
+              "stratum_id",
+              "stratum_number",
+              "stratum_type",
+              "utm_zone",
+              "easting",
+              "northing"
+            ]
+          },
+          "plot_identification_trees": {
+            "type": "object",
+            "title": "Plot Identification (Trees)",
+            "required": ["trees_exist"],
+            "properties": {
+              "trees_exist": {
+                "type": "string",
+                "title": "Trees Exist?",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "trees_exist_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Trees exist"
+              }
+            },
+            "dependencies": {
+              "trees_exist": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "trees_exist": {
+                        "enum": ["Yes"]
+                      },
+                      "baf": {
+                        "type": "string",
+                        "title": "BAF",
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "basal_area_factor_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Basal Area Factor"
+                      },
+                      "fixed_area": {
+                        "type": "number",
+                        "title": "Fixed Area Radius (m)"
+                      },
+                      "full_count_area": {
+                        "type": "number",
+                        "title": "Full Count Area (ha)"
+                      }
+                    },
+                    "required": ["full_count_area", "fixed_area", "baf"]
+                  }
+                ]
+              }
+            }
+          },
+          "stand_table": {
+            "type": "array",
+            "title": "Stand Table",
+            "items": {
+              "$ref": "#/components/schemas/FREP_Stand_Table"
+            },
+            "x-tooltip-text": "Stand Table"
+          },
+          "comments": {
+            "type": "string",
+            "title": "Comments (tree)"
+          },
+          "plot_information": {
+            "type": "object",
+            "title": "Plot Information (CWD)",
+            "required": ["cwd_in_transect"],
+            "properties": {
+              "cwd_in_transect": {
+                "type": "string",
+                "title": "CWT In Transect?",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "cwd_in_transect_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "CWD In Transect?"
+              }
+            },
+            "dependencies": {
+              "cwd_in_transect": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "cwd_in_transect": {
+                        "enum": ["Yes"]
+                      },
+                      "first_leg": {
+                        "type": "number",
+                        "title": "1st Leg"
+                      },
+                      "second_leg": {
+                        "type": "number",
+                        "title": "2nd Leg"
+                      },
+                      "log": {
+                        "type": "array",
+                        "title": "Logs",
+                        "items": {
+                          "$ref": "#/components/schemas/FREP_Log"
+                        },
+                        "x-tooltip-text": "Logs"
+                      },
+                      "comments": {
+                        "type": "string",
+                        "title": "Comments (Logs)"
+                      }
+                    },
+                    "required": ["first_leg", "second_leg"]
+                  }
+                ]
+              }
+            }
+          }
         }
       },
       "FREP_FormB": {

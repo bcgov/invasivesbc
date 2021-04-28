@@ -1578,8 +1578,8 @@ utm_zone_code,8,UTM Zone 8,2
 utm_zone_code,9,UTM Zone 9,3
 utm_zone_code,10,UTM Zone 10,4
 utm_zone_code,11,UTM Zone 11,5
-trees_exist_code,Y,Yes,1
-trees_exist_code,N,No,2
+trees_exist_code,Yes,Yes,1
+trees_exist_code,No,No,2
 basal_area_factor_code,2,,1
 basal_area_factor_code,3,,2
 basal_area_factor_code,4,,3
@@ -1603,70 +1603,70 @@ basal_area_factor_code,25,,20
 basal_area_factor_code,30.25,,21
 basal_area_factor_code,32,,22
 basal_area_factor_code,64,,23
-tree_species_code,Cw,western red cedar/Thuja plicata,1
+tree_species_code,Cw,Western Red Cedar/Thuja Plicata,1
 tree_species_code,Y,Cypress/Chamaecyparis,2
-tree_species_code,Yc,yellow-cedar/Chamaecyparis nootkatensis,3
-tree_species_code,Fd,Douglas-fir,4
-tree_species_code,Fdc,coastal Douglas-fir,5
-tree_species_code,Fdi,Interior Douglas-fir,6
-tree_species_code,Ba,amabilis fir,7
-tree_species_code,Bg,grand fir,8
-tree_species_code,Bl,subalpine fir,9
-tree_species_code,Hm,mountain hemlock,10
-tree_species_code,Hw,western hemlock,11
-tree_species_code,Hxm,mountain and western hemlock hybrid ,12
-tree_species_code,Jr,Rocky Mtn. juniper,13
-tree_species_code,La,alpine larch,14
-tree_species_code,Lt,tamarack,15
-tree_species_code,Lw,western larch,16
-tree_species_code,Pj,jack pine,17
-tree_species_code,Pf,limber pine,18
-tree_species_code,Pl,lodgepole pine,19
-tree_species_code,Pli,lodgepole pine,20
-tree_species_code,Pxj,lodgepole and jack pine hybrid,21
-tree_species_code,Py,ponderosa pine,22
-tree_species_code,Plc,shore pine,23
-tree_species_code,Pw,western white pine,24
-tree_species_code,Pa,whitebark pine,25
-tree_species_code,Sb,black spruce,26
-tree_species_code,Se,Engelmann spruce,27
-tree_species_code,Ss,sitka spruce,28
-tree_species_code,Sw,white spruce,29
-tree_species_code,Sx,spruce hybrid,30
-tree_species_code,Sxw,Engelmann and white spruce hybrid,31
-tree_species_code,Sxl,sitka and white spruce hybrid,32
-tree_species_code,Sxs,sitka nd unknown hybrid,33
-tree_species_code,Tw,western yew,34
-tree_species_code,D,alder,35
-tree_species_code,Dr,red alder,36
+tree_species_code,Yc,Yellow-Cedar/Chamaecyparis Nootkatensis,3
+tree_species_code,Fd,Douglas-Fir,4
+tree_species_code,Fdc,Coastal Douglas-Fir,5
+tree_species_code,Fdi,Interior Douglas-Fir,6
+tree_species_code,Ba,Amabilis Gir,7
+tree_species_code,Bg,Grand Fir,8
+tree_species_code,Bl,Subalpine Gir,9
+tree_species_code,Hm,Mountain Hemlock,10
+tree_species_code,Hw,Western Hemlock,11
+tree_species_code,Hxm,Mountain and Western Hemlock Hybrid ,12
+tree_species_code,Jr,Rocky Mtn. Juniper,13
+tree_species_code,La,Alpine Larch,14
+tree_species_code,Lt,Tamarack,15
+tree_species_code,Lw,Western Larch,16
+tree_species_code,Pj,Jack Pine,17
+tree_species_code,Pf,Limber Pine,18
+tree_species_code,Pl,Lodgepole Pine,19
+tree_species_code,Pli,Lodgepole Pine,20
+tree_species_code,Pxj,Lodgepole and Jack Pine Hybrid,21
+tree_species_code,Py,Ponderosa Pine,22
+tree_species_code,Plc,Shore Pine,23
+tree_species_code,Pw,Western White Pine,24
+tree_species_code,Pa,Whitebark Pine,25
+tree_species_code,Sb,Black Spruce,26
+tree_species_code,Se,Engelmann Spruce,27
+tree_species_code,Ss,Sitka Spruce,28
+tree_species_code,Sw,white Spruce,29
+tree_species_code,Sx,Spruce Hybrid,30
+tree_species_code,Sxw,Engelmann and white Spruce Hybrid,31
+tree_species_code,Sxl,Sitka and White Spruce Hybrid,32
+tree_species_code,Sxs,Sitka and Unknown Hybrid,33
+tree_species_code,Tw,Western Yew,34
+tree_species_code,D,Alder,35
+tree_species_code,Dr,Red Alder,36
 tree_species_code,U,Apple,37
-tree_species_code,Up,paciic crab apple,38
-tree_species_code,Ra,arbutus,39
-tree_species_code,Ac,poplar,40
-tree_species_code,Acb,balsam poplar,41
-tree_species_code,Act,black cottonwood,42
-tree_species_code,Ax,hybrid poplars,43
-tree_species_code,At,trembling aspen,44
-tree_species_code,Ea,alaska paper birch,45
-tree_species_code,Exp,alaska and paper birch birch hybrid,46
-tree_species_code,Ep,paper birch,47
-tree_species_code,ew,water birch,48
-tree_species_code,Kc,cascara,49
-tree_species_code,Vb,bitter cherry,50
-tree_species_code,Vv,choke cherry,51
-tree_species_code,Vp,pin cherry,52
-tree_species_code,Gp,pacific dogwood,53
-tree_species_code,M,maple,54
-tree_species_code,Mb,bigleaf maple,55
-tree_species_code,Mv,vine maple,56
-tree_species_code,Qg,garry oak,57
+tree_species_code,Up,Pacific Crab Apple,38
+tree_species_code,Ra,Arbutus,39
+tree_species_code,Ac,Poplar,40
+tree_species_code,Acb,Balsam Poplar,41
+tree_species_code,Act,Black Cottonwood,42
+tree_species_code,Ax,Hybrid Poplars,43
+tree_species_code,At,Trembling Aspen,44
+tree_species_code,Ea,Alaska Paper Birch,45
+tree_species_code,Exp,Alaska and Paper Birch Birch Hybrid,46
+tree_species_code,Ep,Paper Birch,47
+tree_species_code,ew,Water Birch,48
+tree_species_code,Kc,Cascara,49
+tree_species_code,Vb,Bitter Cherry,50
+tree_species_code,Vv,Choke Cherry,51
+tree_species_code,Vp,Pin Cherry,52
+tree_species_code,Gp,Pacific Dogwood,53
+tree_species_code,M,Maple,54
+tree_species_code,Mb,Bigleaf Maple,55
+tree_species_code,Mv,Vine Maple,56
+tree_species_code,Qg,Garry Oak,57
 tree_species_code,W,Willow,58
-tree_species_code,Wb,Bebb's willow,59
+tree_species_code,Wb,Bebb's Willow,59
 tree_species_code,Wp,Pacific Willow,60
-tree_species_code,Wa,peachleaf willow,61
-tree_species_code,Wd,pussy willow,62
-tree_species_code,Ws,Scouler's willow,63
-tree_species_code,Wt,sitka willow,64
+tree_species_code,Wa,Peachleaf Willow,61
+tree_species_code,Wd,Pussy Willow,62
+tree_species_code,Ws,Scouler's Willow,63
+tree_species_code,Wt,Sitka Willow,64
 tree_species_code,X,Unkown,65
 tree_species_code,Xc,Unknown conifer,66
 tree_species_code,Xh,Unknown hardwood,67
@@ -1674,15 +1674,10 @@ tree_species_code,Z,Other tree; not on list,68
 tree_species_code,Zc,Other conifer,69
 tree_species_code,Zh,Other hardwood,70
 wildlife_tree_class_code,1,Live,1
-wildlife_tree_class_code,2,Live,2
-wildlife_tree_class_code,3,Dead_hard_snag,3
-wildlife_tree_class_code,4,Dead_hard_snag,4
-wildlife_tree_class_code,5,Dead_hard_snag,5
-wildlife_tree_class_code,6,Dead_soft_snag,6
-wildlife_tree_class_code,7,Dead_soft_snag,7
-wildlife_tree_class_code,8,Dead_soft_snag,8
-cwd_in_transect_code,Y,Yes,1
-cwd_in_transect_code,N,No,2
+wildlife_tree_class_code,5,Dead hard snag,2
+wildlife_tree_class_code,6,Dead soft snag,3
+cwd_in_transect_code,Yes,Yes,1
+cwd_in_transect_code,No,No,2
 decay_class_code,1,Hard; firm; elevated; hard branches,1
 decay_class_code,2,Hard; loose bark; sagging; soft branches,2
 decay_class_code,3,Soft; advanced decay; sagging to settled on ground; branches stubs/absent,3

@@ -21,7 +21,7 @@ export async function up(knex: Knex): Promise<void> {
       table.increments('code_header_id').primary();
       table.integer('code_category_id').references('code_category_id').inTable(`${DB_SCHEMA}.code_category`);
       table.string('code_header_name', 100).notNullable();
-      table.string('code_header_title', 40);
+      table.string('code_header_title', 60);
       table.string('code_header_description', 4096);
       table.timestamp('valid_from').defaultTo(knex.fn.now()).notNullable();
       table.timestamp('valid_to');
