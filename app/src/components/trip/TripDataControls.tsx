@@ -1,4 +1,5 @@
 import { Button, makeStyles } from '@material-ui/core';
+import Spinner from 'components/spinner/Spinner';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -10,7 +11,6 @@ import {
 } from 'interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import TripStatus, { TripStatusCode } from './TripStepStatus';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const TripDataControls: React.FC = (props) => {
+export const TripDataControls: React.FC<any> = (props) => {
   useStyles();
 
   const invasivesApi = useInvasivesApi();
@@ -44,22 +44,21 @@ export const TripDataControls: React.FC = (props) => {
     const newUpserts = { ...upserts };
 
     // go through all docs, flagging those already existing:
-    allDocs
+    const modifiedDocs = allDocs
       .filter((doc) => {
         const id = doc.doc?._id;
-        newUpserts[id] = undefined; // remove found docs
+        newUpserts[id] = undefined; // remove found docs*/ // does this not block updates?
         return upserts[id];
       })
-      .map((doc) => upserts[doc.id](doc));
+      .map((doc) => {
+        return upserts[doc.id](doc.doc);
+      });
 
     const newDocs = Object.keys(newUpserts)
       .filter((id) => newUpserts[id] !== undefined)
       .map((id) => upserts[id]());
 
-    const resultDocs = [
-      // ...modifiedDocs,
-      ...newDocs
-    ];
+    const resultDocs = [...modifiedDocs, ...newDocs];
     resultDocs.sort((a, b) => {
       if (a.id < b.id) return -1;
       if (a.id > b.id) return 1;
@@ -91,7 +90,8 @@ export const TripDataControls: React.FC = (props) => {
   const getTrip = useCallback(async () => {
     let docs = await databaseContext.database.find({
       selector: {
-        _id: 'trip'
+        _id: props.trip_ID,
+        docType: DocType.TRIP
       }
     });
 
@@ -135,11 +135,11 @@ export const TripDataControls: React.FC = (props) => {
 
         upserts = {
           ...upserts,
-          [row.activity_id]: (existingDoc: {}) => ({
+          [row.activity_id]: (existingDoc: any) => ({
             ...existingDoc,
             _id: row.activity_id,
             docType: DocType.REFERENCE_ACTIVITY,
-            tripID: 'trip',
+            trip_IDs: existingDoc?.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
             ...row,
             formData: row.activity_payload.form_data,
             activityType: row.activity_type,
@@ -185,11 +185,11 @@ export const TripDataControls: React.FC = (props) => {
 
         upserts = {
           ...upserts,
-          ['POI' + row.point_of_interest_id]: (existingDoc: {}) => ({
+          ['POI' + row.point_of_interest_id]: (existingDoc: any) => ({
             ...existingDoc,
             _id: 'POI' + row.point_of_interest_id,
             docType: DocType.REFERENCE_POINT_OF_INTEREST,
-            tripID: 'trip',
+            trip_IDs: existingDoc?.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
             ...row,
             formData: row.point_of_interest_payload.form_data,
             pointOfInterestType: row.point_of_interest_type,
@@ -231,7 +231,7 @@ export const TripDataControls: React.FC = (props) => {
 
       let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
 
-      await databaseContext.database.upsert('trip', (tripDoc) => ({
+      await databaseContext.database.upsert(props.trip_ID, (tripDoc) => ({
         ...tripDoc,
         metabaseQueryNames: {
           ...trip.metabaseQueryNames,
@@ -251,11 +251,11 @@ export const TripDataControls: React.FC = (props) => {
         if (row.activity_id) {
           upserts = {
             ...upserts,
-            [row.activity_id]: (existingDoc: {}) => ({
+            [row.activity_id]: (existingDoc: any) => ({
               ...existingDoc,
               _id: row.activity_id,
               docType: DocType.REFERENCE_ACTIVITY,
-              tripID: 'trip',
+              trip_IDs: existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
               ...row,
               formData: row.activity_payload.form_data,
               activityType: row.activity_type,
@@ -270,11 +270,11 @@ export const TripDataControls: React.FC = (props) => {
         if (row.point_of_interest_id) {
           upserts = {
             ...upserts,
-            ['POI' + row.point_of_interest_id]: (existingDoc: {}) => ({
+            ['POI' + row.point_of_interest_id]: (existingDoc: any) => ({
               ...existingDoc,
               _id: 'POI' + row.point_of_interest_id,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              tripID: 'trip',
+              trip_IDs: existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
               ...row,
               formData: row.point_of_interest_payload.form_data,
               pointOfInterestType: row.point_of_interest_type,
@@ -306,6 +306,7 @@ export const TripDataControls: React.FC = (props) => {
   const deleteTripAndFetch = async () => {
     //wipe activities associated to that trip here:
     const deleteOldTrip = () => {};
+    //todo:
     deleteOldTrip();
 
     //fetch what is selected here:
@@ -318,12 +319,10 @@ export const TripDataControls: React.FC = (props) => {
       });
   };
 
-  const [toggle, setToggle] = useState(TripStatusCode.initial);
-
   return (
     <>
       <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
-        {fetching ? 'Fetching...' : 'Get Data!'}
+        {fetching ? <Spinner /> : 'Cache Trip For Offline'}
       </Button>
     </>
   );

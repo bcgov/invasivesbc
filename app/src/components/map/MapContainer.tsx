@@ -488,11 +488,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     // This layer is on by default
     mapRef.current.addLayer(esriPlacenames);
 
-    /*
-      TODO: Loop through _basemaps array and add 
-      to the _layerRef.current_ object
-     */
-
     const esriBaseLayerControl = getSaveControl2(esriBaseLayer);
     esriBaseLayerControl._map = mapRef.current;
     layerRef.current.push(esriBaseLayerControl);
@@ -500,15 +495,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const bcBaseLayerControl = getSaveControl2(bcBaseLayer);
     bcBaseLayerControl._map = mapRef.current;
     layerRef.current.push(bcBaseLayerControl);
-
-    /*
-      TODO: Loop through _overlays_ array and add 
-      to the _layerRef.current_ object
-     */
-
-    const testControl = getSaveControl2(nRDistricts);
-    testControl._map = mapRef.current;
-    layerRef.current.push(testControl);
 
     addLayerControls(basemaps, overlays);
     setMapBounds(mapRef.current.getBounds());
@@ -520,7 +506,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('zoomend', () => {
       props.extentState.setExtent(mapRef.current.getBounds());
       setCurrentZoom(mapRef.current.getZoom());
-      // TODO: Adapt this for our new button
       // addASaveTilesControl(esriSaveTilesControl);
     });
 
@@ -612,58 +597,61 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       });
     }
     if (props.interactiveGeometryState) {
-      props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-        const style = {
-          color: interactObj.color,
-          weight: 4,
-          opacity: 0.65
-        };
+      if (props.interactiveGeometryState.interactiveGeometry) {
+        props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
+          const style = {
+            color: interactObj.color,
+            weight: 4,
+            opacity: 0.65
+          };
 
-        const markerStyle = {
-          radius: 10,
-          weight: 4,
-          stroke: true
-        };
+          const markerStyle = {
+            radius: 10,
+            weight: 4,
+            stroke: true
+          };
 
-        L.geoJSON(interactObj.geometry, {
-          style,
-          pointToLayer: (feature: any, latLng: any) => {
-            if (feature.properties.radius) {
-              return L.circle(latLng, { radius: feature.properties.radius });
-            } else {
-              return L.circleMarker(latLng, markerStyle);
-            }
-          },
-          onEachFeature: (feature: any, layer: any) => {
-            drawnItems.addLayer(layer);
-            const content = interactObj.popUpComponent(interactObj.description);
-            layer.on('click', () => {
-              // Fires on click of single feature
-
-              // Formulate a table containing all attributes
-              let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
-              Object.keys(feature.properties).forEach((f) => {
-                if (f !== 'uploadedSpatial') {
-                  table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
-                }
-              });
-              table += '</table>';
-
-              const loc = turf.centroid(feature);
-              const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
-
-              if (feature.properties.uploadedSpatial) {
-                L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+          L.geoJSON(interactObj.geometry, {
+            style,
+            pointToLayer: (feature: any, latLng: any) => {
+              if (feature.properties.radius) {
+                return L.circle(latLng, { radius: feature.properties.radius });
               } else {
-                L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
+                return L.circleMarker(latLng, markerStyle);
               }
+            },
+            onEachFeature: (feature: any, layer: any) => {
+              drawnItems.addLayer(layer);
+              const content = interactObj.popUpComponent(interactObj.description);
+              layer.on('click', () => {
+                // Fires on click of single feature
 
-              interactObj.onClickCallback();
-            });
-          }
+                // Formulate a table containing all attributes
+                let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+                Object.keys(feature.properties).forEach((f) => {
+                  if (f !== 'uploadedSpatial') {
+                    table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+                  }
+                });
+                table += '</table>';
+
+                const loc = turf.centroid(feature);
+                const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+                if (feature.properties.uploadedSpatial) {
+                  L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+                } else {
+                  L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
+                }
+
+                interactObj.onClickCallback();
+              });
+            }
+          });
         });
-      });
+      }
     }
+
 
     // Update the drawn featres
     setDrawnItems(drawnItems);
@@ -842,7 +830,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
      */
     layerRef.current.forEach((control, index) => {
       setTimeout(() => {
-        console.log(control);
         control._saveTiles();
         if (index === layerRef.current.length - 1) setOfflineing(false);
       }, 1000 * index);
