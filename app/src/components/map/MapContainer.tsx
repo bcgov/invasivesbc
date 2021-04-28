@@ -2,6 +2,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature } from 'geojson';
 import * as L from 'leaflet';
+import axios from 'axios';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.locatecontrol';
@@ -811,6 +812,25 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const x2 = bounds.getEast();
     const y2 = bounds.getNorth();
     const extent = [x1, y1, x2, y2] as turf.BBox;
+    const layers = [
+      {
+        name: 'Wells',
+        schema: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW'
+      }
+    ];
+
+    layers.forEach(async (layer,index) => {
+      const url = `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:${layer.schema}&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`
+      const response = await axios(url);
+      console.log('url',url);
+      console.log('index',index);
+      console.log('resp',response.data);
+      // If it's the last record
+      if (index == layers.length - 1) {
+        setOfflineing(false);
+      }
+    });
+    return;
     const poly = turf.bboxPolygon(extent);
 
     // Add a special flag to distinguish from other features
@@ -818,6 +838,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     poly.properties.running = true;
 
     // Save our extent to the database
+    // XXX: Currently this over writes the previous element.
     await databaseContext.database.upsert('offline_extent', (spatial) => {
       return {
         docType: DocType.OFFLINE_EXTENT,
