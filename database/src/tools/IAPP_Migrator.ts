@@ -512,7 +512,7 @@ const main = async () => {
             original_bec_id: siteRecord.BEC_ID,
             map_sheet: siteRecord.MapSheet,
             soil_texture_code: siteRecord.SoilTexture || 'X',
-            specific_use_code: siteRecord.SpecificUse || 'X',
+            specific_use_code: siteRecord.SpecificUse || 'X', // note: these dont map to our code table correctly - something is wrong
             slope_code: mapSlope(siteRecord.Slope),
             slope: siteRecord.Slope,
             aspect_code: mapAspect(siteRecord.Aspect),
