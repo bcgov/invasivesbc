@@ -143,22 +143,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       use_index: 'docTypeIndex'
     });
 
-    if(docs)
-    {
-      if(docs.docs?.length == 0)
-      {// to prevent endless loading spinner on 0 trips
-        console.log('got here')
-        setTripsLoaded(true)
-      }
+    if(docs?.docs?.length === 0) {
+      // to prevent endless loading spinner on 0 trips
+      console.log('got here')
+      setTripsLoaded(true)
     }
 
-    if (!docs || !docs.docs || !docs.docs.length) {
-      return;
-    }
     let trips = [];
     let geos = [];
 
-    docs.docs.map((doc) => {
+    docs?.docs?.map((doc) => {
       trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
       if (doc.geometry) {
         geos.push({
@@ -523,9 +517,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Button onClick={addTrip} color="primary" variant="contained">
         Add Trip
       </Button>
-      {!tripsLoaded ? (
-      <> spinner <Spinner /></>
-      ) : (
+      {!tripsLoaded && <> spinner <Spinner /></>}
+      {tripsLoaded &&
         <RecordTable
           className={classes.tripList}
           tableName={'My Trips'}
@@ -584,7 +577,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           // startingRowsPerPage: default 10;
           // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
         />
-      )}
+      }
     </Container>
   );
 };
