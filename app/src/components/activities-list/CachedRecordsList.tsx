@@ -9,7 +9,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
-import MapContainer from 'components/map/MapContainer';
+import MapContainer, { getZIndex } from 'components/map/MapContainer';
 import RecordTable from 'components/common/RecordTable';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
@@ -537,8 +537,8 @@ const CachedRecordsList: React.FC = (props) => {
       };
       const description =
         doc.docType === 'reference_point_of_interest'
-          ? `IAPP Point of Interest: ${doc.point_of_interest_id}`
-          : `${doc.activityType}: ${doc._id}`;
+          ? `IAPP Point of Interest: ${doc.point_of_interest_id}}`
+          : `${doc.activityType}: ${doc._id}}`;
       mapGeos.push({
         _id: doc._id,
         recordDocID: doc._id,
@@ -548,6 +548,7 @@ const CachedRecordsList: React.FC = (props) => {
         color: geoColors[doc.activityType || doc.docType],
         description: description,
         popUpComponent: ActivityPopup,
+        zIndex: getZIndex(doc),
         onClickCallback: () => {
           toggleRow(doc);
         }
