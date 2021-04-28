@@ -65,7 +65,8 @@ export const DatabaseContextProvider: React.FC = (props) => {
     db.createIndex({ index: { ddoc: 'activitiesIndex', fields: ['docType', 'activityType'] } });
     db.createIndex({ index: { ddoc: 'formStatusIndex', fields: ['docType', 'formStatus', 'sync.ready'] } });
     db.createIndex({ index: { ddoc: 'docTypeIndex', fields: ['docType', 'trip_id'] } });
-    db.createIndex({ index: { ddoc: 'tripIDIndex', fields: ['trip_id'] } });
+    db.createIndex({ index: { ddoc: 'tripDocTypeIndex', fields: ['trip_id', 'docType'] } });
+    db.createIndex({ index: { ddoc: 'tripIDIndex', fields: ['docType', 'trip_IDs'] } });
 
     /**
      * Destroy and re-create the database.
