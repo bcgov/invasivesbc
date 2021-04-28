@@ -336,6 +336,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     const memo = useMemo(() => {
       return (
         <>
+        { stepState?
+        (
             <Grid item md={12}>
               <TripStep
                 title="Step 1: Name your trip"
@@ -434,7 +436,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               </TripStep>
             </Grid>
           ) : (
-            <Spinner />
+          <>test<Spinner /></>
           )}
         </>
       );
