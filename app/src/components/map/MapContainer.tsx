@@ -822,10 +822,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     layers.forEach(async (layer,index) => {
       const url = `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:${layer.schema}&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`
       const response = await axios(url);
-      console.log('url',url);
-      console.log('index',index);
-      console.log('resp',response.data);
+      // console.log('url',url);
+      // console.log('index',index);
+      // console.log('resp',response.data);
       // If it's the last record
+
+      await databaseContext.database.upsert('offline_data', (spatial) => {
+        return {
+          docType: DocType.OFFLINE_DATA,
+          geometry: (spatial.geometry?.features?.length > 0) ?
+            [...spatial.geometry.features, ...response.data.features] :
+            response.data.features
+        };
+      });
+
       if (index == layers.length - 1) {
         setOfflineing(false);
       }
