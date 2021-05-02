@@ -243,7 +243,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
         zIndex = zIndex - (highestLat - lowestLat) * 1000000;
       }
 
-      console.log('docType',row.docType);
       switch (row.docType) {
         case DocType.OFFLINE_DATA:
           console.log('offline data',row);
