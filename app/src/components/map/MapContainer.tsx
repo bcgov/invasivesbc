@@ -626,6 +626,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     }
 
+    /**
+     * ## contextPopup
+     * Configure the click and popup behaviour of
+     * downloaded context data.
+     * General behaviour of listing all attributes
+     * in the popup that do not contain null values.
+     * @param feature {object} GeoJSON feature
+     * @param layer {object} Leaflet layer object
+     * @param interactObj  {object} PouchDB data object
+     */
     const contextPopup = (feature,layer,interactObj) => {
       const content = interactObj.popUpComponent(interactObj.description);
       layer.on('click', () => {
