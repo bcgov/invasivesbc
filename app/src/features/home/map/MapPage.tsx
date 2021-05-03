@@ -251,8 +251,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
             description: offlineSpatialPopup,
             geometry: row.geometry,
             color: 'blue',
-            onClickCallback: () => {
-              console.log('uploaded content clicked');
+            onEachFeature: function (stuff) {
+            },
+            onClickCallback: function (stuff) {
             },
             popUpComponent: PointOfInterestPopUp 
           });

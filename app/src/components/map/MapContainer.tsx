@@ -597,9 +597,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         });
       });
     }
+    const defaultPopup = (interactObj) => {
+
+    }
+
+    const contextPopup = (interactObj) => {
+
+    }
+
     if (props.interactiveGeometryState) {
       if (props.interactiveGeometryState.interactiveGeometry) {
+
         props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
+          // don't touch the uploaded context data.
           const style = {
             color: interactObj.color,
             weight: 4,
