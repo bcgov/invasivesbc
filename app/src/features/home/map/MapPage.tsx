@@ -60,11 +60,6 @@ const PointOfInterestPopUp = (name: string) => {
   return '<div>' + name + '</div>';
 };
 
-const UploadedSpatialPopUp = (content: any) => {
-  console.log(content);
-  return 'yo';
-};
-
 interface popOutComponentProps {
   classes?: any;
   selectedGeo?: any;
@@ -243,9 +238,24 @@ const MapPage: React.FC<IMapProps> = (props) => {
         zIndex = zIndex - (highestLat - lowestLat) * 1000000;
       }
 
+      const offlineSpatialPopup = `
+      testing
+      `;
+
+
       switch (row.docType) {
         case DocType.OFFLINE_DATA:
-          console.log('offline data',row);
+          interactiveGeos.push({
+            recordDocID: row._id,
+            recordDocType: row.docType,
+            description: offlineSpatialPopup,
+            geometry: row.geometry,
+            color: 'blue',
+            onClickCallback: () => {
+              console.log('uploaded content clicked');
+            },
+            popUpComponent: PointOfInterestPopUp 
+          });
           break;
         case DocType.OFFLINE_EXTENT:
           // TODO push this into the interactiveGeos array
