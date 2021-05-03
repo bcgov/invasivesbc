@@ -2,6 +2,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature } from 'geojson';
 import * as L from 'leaflet';
+import axios from 'axios';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.locatecontrol';
@@ -105,7 +106,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const getNRDistricts = () => {
     return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png`,
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:3857@png/{z}/{x}/{y}.png`,
       {
         opacity: 0.8,
         tms: true
@@ -359,19 +360,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return L.control.savetiles(layerToSave, {
       zoomlevels: [13, 14, 15, 16, 17],
       confirm(layer, successCallback) {
+        successCallback(true);
         // TODO: Increment counter global variable
-        console.log('layer', layer);
-        console.log('successCallback', successCallback);
+        console.log('increment a counter here');
       }
     });
   };
 
-  const addASaveTilesControl = (layerSaveControl: any) => {
-    layerSaveControl.remove(mapRef.current);
-    if (mapRef.current.getZoom() > 13) {
-      layerSaveControl.addTo(mapRef.current);
-    }
-  };
+  // const addASaveTilesControl = (layerSaveControl: any) => {
+  //   layerSaveControl.remove(mapRef.current);
+  //   if (mapRef.current.getZoom() > 13) {
+  //     layerSaveControl.addTo(mapRef.current);
+  //   }
+  // };
 
   const setGeometryMapBounds = () => {
     if (
@@ -496,11 +497,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     bcBaseLayerControl._map = mapRef.current;
     layerRef.current.push(bcBaseLayerControl);
 
-    // console.log('testControl',testControl.getStorageSize);
-    const testControl = getSaveControl2(streams);
-    testControl._map = mapRef.current;
-    layerRef.current.push(testControl);
-
     addLayerControls(basemaps, overlays);
     setMapBounds(mapRef.current.getBounds());
 
@@ -511,7 +507,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('zoomend', () => {
       props.extentState.setExtent(mapRef.current.getBounds());
       setCurrentZoom(mapRef.current.getZoom());
-      // XXX: Turn off old saving controls
       // addASaveTilesControl(esriSaveTilesControl);
     });
 
@@ -602,62 +597,95 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         });
       });
     }
-    if (props.interactiveGeometryState) {
-      if (props.interactiveGeometryState.interactiveGeometry) {
-        props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-          const style = {
-            color: interactObj.color,
-            weight: 4,
-            opacity: 0.65
-          };
 
-          const markerStyle = {
-            radius: 10,
-            weight: 4,
-            stroke: true
-          };
+    const defaultPopup = (feature, layer, interactObj) => {
+      const content = interactObj.popUpComponent(interactObj.description);
+      layer.on('click', () => {
+        // Fires on click of single feature
 
-          L.geoJSON(interactObj.geometry, {
-            style,
-            pointToLayer: (feature: any, latLng: any) => {
-              if (feature.properties.radius) {
-                return L.circle(latLng, { radius: feature.properties.radius });
-              } else {
-                return L.circleMarker(latLng, markerStyle);
-              }
-            },
-            onEachFeature: (feature: any, layer: any) => {
-              drawnItems.addLayer(layer);
-              const content = interactObj.popUpComponent(interactObj.description);
-              layer.on('click', () => {
-                // Fires on click of single feature
-
-                // Formulate a table containing all attributes
-                let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
-                Object.keys(feature.properties).forEach((f) => {
-                  if (f !== 'uploadedSpatial') {
-                    table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
-                  }
-                });
-                table += '</table>';
-
-                const loc = turf.centroid(feature);
-                const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
-
-                if (feature.properties.uploadedSpatial) {
-                  L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
-                } else {
-                  L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
-                }
-
-                interactObj.onClickCallback();
-              });
-            }
-          });
+        // Formulate a table containing all attributes
+        let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+        Object.keys(feature.properties).forEach((f) => {
+          if (f !== 'uploadedSpatial') {
+            table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+          }
         });
-      }
-    }
+        table += '</table>';
 
+        const loc = turf.centroid(feature);
+        const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+        if (feature.properties.uploadedSpatial) {
+          L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+        } else {
+          L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
+        }
+
+        interactObj.onClickCallback();
+      });
+    };
+
+    /**
+     * ## contextPopup
+     * Configure the click and popup behaviour of
+     * downloaded context data.
+     * General behaviour of listing all attributes
+     * in the popup that do not contain null values.
+     * @param feature {object} GeoJSON feature
+     * @param layer {object} Leaflet layer object
+     * @param interactObj  {object} PouchDB data object
+     */
+    const contextPopup = (feature, layer, interactObj) => {
+      const content = interactObj.popUpComponent(interactObj.description);
+      layer.on('click', () => {
+        // Formulate a table containing all attributes
+        let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+        Object.keys(feature.properties).forEach((f) => {
+          if (feature.properties[f]) {
+            table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+          }
+        });
+        table += '</table>';
+
+        const loc = turf.centroid(feature);
+        const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+        L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+      });
+    };
+
+    props?.interactiveGeometryState?.interactiveGeometry?.forEach((interactObj) => {
+      const style = {
+        color: interactObj.color,
+        weight: 4,
+        opacity: 0.65
+      };
+
+      const markerStyle = {
+        radius: 10,
+        weight: 4,
+        stroke: true
+      };
+
+      L.geoJSON(interactObj.geometry, {
+        style,
+        pointToLayer: (feature: any, latLng: any) => {
+          if (feature.properties.radius) {
+            return L.circle(latLng, { radius: feature.properties.radius });
+          } else {
+            return L.circleMarker(latLng, markerStyle);
+          }
+        },
+        onEachFeature: (feature: any, layer: any) => {
+          drawnItems.addLayer(layer);
+          if (interactObj.recordDocID === 'offline_data') {
+            contextPopup(feature, layer, interactObj);
+          } else {
+            defaultPopup(feature, layer, interactObj);
+          }
+        }
+      });
+    });
 
     // Update the drawn featres
     setDrawnItems(drawnItems);
@@ -817,12 +845,44 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const x2 = bounds.getEast();
     const y2 = bounds.getNorth();
     const extent = [x1, y1, x2, y2] as turf.BBox;
+    const layers = [
+      {
+        name: 'Wells',
+        schema: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW'
+      }
+    ];
+
+    layers.forEach(async (layer, index) => {
+      const url = `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:${layer.schema}&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`;
+      const response = await axios(url);
+      // console.log('url',url);
+      // console.log('index',index);
+      // console.log('resp',response.data);
+      // If it's the last record
+
+      await databaseContext.database.upsert('offline_data', (spatial) => {
+        return {
+          docType: DocType.OFFLINE_DATA,
+          geometry:
+            spatial.geometry?.features?.length > 0
+              ? [...spatial.geometry.features, ...response.data.features]
+              : response.data.features
+        };
+      });
+
+      if (index == layers.length - 1) {
+        setOfflineing(false);
+      }
+    });
+    return;
     const poly = turf.bboxPolygon(extent);
 
     // Add a special flag to distinguish from other features
     poly.properties.offlineExtent = true;
     poly.properties.running = true;
 
+    // Save our extent to the database
+    // XXX: Currently this over writes the previous element.
     await databaseContext.database.upsert('offline_extent', (spatial) => {
       return {
         docType: DocType.OFFLINE_EXTENT,
