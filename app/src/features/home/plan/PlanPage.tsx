@@ -119,7 +119,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   */
 
   const getExtent = async () => {
-    let docs = await databaseContext.database.find({ selector: { _id: 'planPageExtent' } });
+    let docs = await databaseContext.database.find(
+      {
+         selector: { docType: DocType.PLAN_PAGE_EXTENT },
+        use_index: 'docTypeIndex' });
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
     }
@@ -140,14 +143,17 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       use_index: 'docTypeIndex'
     });
 
-    if (!docs || !docs.docs || !docs.docs.length) {
-      return;
+    if(docs?.docs?.length === 0) {
+      // to prevent endless loading spinner on 0 trips
+      console.log('got here')
+      setTripsLoaded(true)
     }
+
     let trips = [];
     let geos = [];
 
-    docs.docs.map((doc) => {
-      trips.push({ trip_id: doc.trip_id, trip_name: doc.name, num_activities: 5, num_POI: 4 });
+    docs?.docs?.map((doc) => {
+      trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
       if (doc.geometry) {
         geos.push({
           recordDocID: doc._id,
@@ -172,8 +178,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       return;
     }
     let docs = await databaseContext.database.find({
-      selector: { trip_id: { $gte: null }, docType: DocType.TRIP },
-      sort: [{ trip_id: 'desc' }],
+      selector: { trip_ID: { $gte: null }, docType: DocType.TRIP },
+      sort: [{ trip_ID: 'desc' }],
       use_index: 'tripDocTypeIndex',
       limit: 1
     });
@@ -181,7 +187,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!docs || !docs.docs || !docs.docs.length) {
       return 0;
     } else {
-      if (docs.docs[0].trip_id) {
+      if (docs.docs[0].trip_ID) {
         return parseInt(docs.docs[0]._id);
       } else {
         return 0;
@@ -220,7 +226,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       return;
     }
     databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
-      return { ...planPageExtentDoc, extent: extent };
+      return { ...planPageExtentDoc, docType: DocType.PLAN_PAGE_EXTENT, extent: extent };
     });
   }, [extent, tripsLoaded]);
 
@@ -230,7 +236,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     databaseContext.database.upsert(newID.toString(), (doc) => {
       return {
         ...doc,
-        trip_id: newID.toString(),
+        trip_ID: newID.toString(),
         trip_name: 'New Unnamed Trip',
         num_activities: 0,
         num_POI: 0,
@@ -253,22 +259,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
     const databaseContext = useContext(DatabaseContext);
     const [stepState, setStepState] = useState(null);
-    const [memoHash, setMemoHash] = useState(null);
-
-    useEffect(() => {
-      setMemoHash(JSON.stringify(stepState));
-      console.log('updating memo hash');
-    }, [stepState]);
 
     const getStateFromTrip = useCallback(async () => {
       if (!databaseContext.database) {
         return;
       }
       let docs = await databaseContext.database.find({
-        selector: {
-          _id: props.trip_ID
-        }
+         selector: { docType: DocType.TRIP, trip_ID: props.trip_ID},
+        use_index: 'docTypeIndex'
       });
+
       if (docs.docs.length > 0) {
         let tripDoc = docs.docs[0];
         if (!tripDoc.stepState) {
@@ -281,7 +281,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     const saveState = async (newState) => {
       setStepState(newState);
       await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-        return { ...tripDoc, stepState: newState, persistenceStep: 'updating state' };
+        return { ...tripDoc, docType: DocType.TRIP, stepState: newState, persistenceStep: 'updating state' };
       });
     };
 
@@ -321,19 +321,19 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       saveState([...newState]);
     };
 
-    const memo = useMemo(() => {
+    return useMemo(() => {
       return (
         <>
-          {' '}
-          {stepState ? (
+        { stepState?
+        (
             <Grid item md={12}>
               <TripStep
                 title="Step 1: Name your trip"
                 helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
                 additionalText="other"
-                expanded={stepState[1].expanded}
+                expanded={stepState[1]?.expanded}
                 tripStepDetailsClassName={classes.activityRecordList}
-                stepStatus={stepState[1].status}
+                stepStatus={stepState[1]?.status}
                 stepAccordionOnChange={(event, expanded) => {
                   helperCloseOtherAccordions(expanded, 1);
                 }}
@@ -421,16 +421,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                   helperStepDoneOrSkip(6);
                 }}>
                 <TripDataControls trip_ID={props.trip_ID} />
-                <ManageDatabaseComponent />
               </TripStep>
             </Grid>
           ) : (
-            <Spinner />
+          <>test<Spinner /></>
           )}
         </>
       );
-    }, [memoHash]);
-    return memo;
+    }, [JSON.stringify(stepState)]);
   };
 
   interface ITripStep {
@@ -496,14 +494,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     );
   }, [geometry, interactiveGeometry, tripsLoaded]);
 
-  const trashTrip = (trip_ID, tripName) => {
+  const trashTrip = async (trip_ID, tripName) => {
     if (confirmDeleteTrip(trip_ID, tripName)) {
-      deleteTripRecords(databaseContext, trip_ID);
+      await deleteTripRecords(databaseContext, trip_ID);
     }
-    databaseContext.database.get(trip_ID.toString()).then((doc)=> {
+    await databaseContext.database.get(trip_ID.toString()).then((doc)=> {
       return databaseContext.database.remove(doc)
     })
-    setNewTripID(0)
+    setNewTripID(Math.random())
   };
 
   return (
@@ -512,18 +510,17 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Button onClick={addTrip} color="primary" variant="contained">
         Add Trip
       </Button>
-      {!tripsLoaded ? (
-        <Spinner />
-      ) : (
+      {!tripsLoaded && <> spinner <Spinner /></>}
+      {tripsLoaded &&
         <RecordTable
           className={classes.tripList}
           tableName={'My Trips'}
-          keyField="trip_id" // defaults to just use 'id'
+          keyField="trip_ID" // defaults to just use 'id'
           //       startingOrder="survey_date" // defaults to first table column
           headers={[
             // each id is the key it will look for in each data row object
             {
-              id: 'trip_id',
+              id: 'trip_ID',
               title: 'Trip ID'
             },
             {
@@ -556,7 +553,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                     <IconButton>
                       <DeleteForever
                         onClick={() => {
-                          trashTrip(row.trip_id, row.trip_name);
+                          trashTrip(row.trip_ID, row.trip_name);
                         }}
                       />
                     </IconButton>
@@ -564,7 +561,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 }))
           }
           dropdown={(row) => {
-            return <SingleTrip trip_ID={row.trip_id} />;
+            return <SingleTrip trip_ID={row.trip_ID} />;
           }}
 
           // expandable: defaults true
@@ -573,8 +570,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           // startingRowsPerPage: default 10;
           // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
         />
-      )}
-      {/*   <TripListComponent />*/}
+      }
     </Container>
   );
 };

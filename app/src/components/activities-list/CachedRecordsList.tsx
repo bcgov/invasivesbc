@@ -81,7 +81,6 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
 interface ICachedRecords {
   docs: any;
   databaseContext: any;
-  setActiveDoc: Function;
   selected: Array<any>;
   setSelected: Function;
   setLastCreatedMetabaseQuery: Function;
@@ -120,11 +119,19 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
     ...doc?.formData?.activity_data,
     ...doc?.formData?.activity_subtype_data,
     activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-    jurisdictions_rendered: doc?.formData?.activity_data?.jurisdictions
-      ? doc?.formData?.activity_data?.jurisdictions
-          .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-          .join(', ')
-      : ''
+    jurisdiction_code: doc?.formData?.activity_data?.jurisdictions?.reduce(
+      (output, jurisdiction) => [
+        ...output,
+        jurisdiction.jurisdiction_code,
+        '(',
+        jurisdiction.percent_covered + '%',
+        ')'
+      ],
+      []
+    ),
+    created_timestamp: doc?.created_timestamp?.substring(0, 10),
+    latitude: parseFloat(doc?.formData?.activity_data?.latitude).toFixed(6),
+    longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6)
   });
 
   return (
@@ -132,11 +139,12 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       <RecordTable
         tableName="Observations"
         tableSchemaType={[
-          "Activity",
-          "Observation",
-          "Observation_PlantTerrestrial",
-          "Observation_PlantAquatic",
-          "ObservationPlantTerrestrialData"
+          'Activity',
+          'Observation',
+          'Observation_PlantTerrestrial',
+          'Observation_PlantAquatic',
+          'ObservationPlantTerrestrialData',
+          'Jurisdictions'
         ]}
         startingOrderBy="activity_id"
         startingOrder="desc"
@@ -149,10 +157,14 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
             id: 'activity_subtype',
             valueMap: {
               Activity_Observation_PlantTerrestrial: 'Terrestrial Plant',
+              Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
               Activity_Observation_PlantAquatic: 'Aquatic Plant'
             }
           },
-          'created_timestamp',
+          {
+            id: 'created_timestamp',
+            title: 'Created Date'
+          },
           'biogeoclimatic_zones',
           {
             id: 'elevation',
@@ -165,10 +177,7 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
           'ownership',
           'regional_districts',
           'invasive_species_agency_code',
-          {
-            id: 'jurisdictions_rendered',
-            title: 'Jurisdictions'
-          },
+          'jurisdiction_code',
           {
             id: 'latitude',
             title: 'Latitude',
@@ -220,11 +229,11 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       <RecordTable
         tableName="Treatments"
         tableSchemaType={[
-          "Activity",
-          "Treatment",
-          "Treatment_ChemicalPlant",
-          "Treatment_MechanicalPlant",
-          "Treatment_BiologicalPlant"
+          'Activity',
+          'Treatment',
+          'Treatment_ChemicalPlant',
+          'Treatment_MechanicalPlant',
+          'Treatment_BiologicalPlant'
         ]}
         startingOrderBy="activity_id"
         startingOrder="desc"
@@ -271,17 +280,15 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
               startingOrderBy="activity_id"
               startingOrder="desc"
               tableSchemaType={[
-                "Activity",
-                "Treatment",
-                "Treatment_ChemicalPlant",
-                "Treatment_MechanicalPlant",
-                "Treatment_BiologicalPlant"
+                'Activity',
+                'Treatment',
+                'Treatment_ChemicalPlant',
+                'Treatment_MechanicalPlant',
+                'Treatment_BiologicalPlant',
+                'Jurisdictions'
               ]}
               headers={[
-                {
-                  id: 'jurisdictions_rendered',
-                  title: 'Jurisdictions'
-                },
+                'jurisdiction_code',
                 'biogeoclimatic_zones',
                 {
                   id: 'flnro_districts',
@@ -334,11 +341,11 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       <RecordTable
         tableName="Monitoring"
         tableSchemaType={[
-          "Activity",
-          "Monitoring",
-          "Monitoring_ChemicalTerrestrialAquaticPlant",
-          "Monitoring_MechanicalTerrestrialAquaticPlant",
-          "Monitoring_BiologicalTerrestrialPlant"
+          'Activity',
+          'Monitoring',
+          'Monitoring_ChemicalTerrestrialAquaticPlant',
+          'Monitoring_MechanicalTerrestrialAquaticPlant',
+          'Monitoring_BiologicalTerrestrialPlant'
         ]}
         startingOrderBy="monitoring_id"
         startingOrder="desc"
@@ -386,33 +393,25 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
       />
       <RecordTable
         tableName="Points of Interest"
-        tableSchemaType={[
-          "Point_Of_Interest",
-          "IAPP_Site"
-        ]}
-        startingOrderBy="point_of_interest_id"
+        tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdictions']}
+        startingOrderBy="site_id"
         startingOrder="desc"
         enableSelection
         selected={selectedPOIs}
         setSelected={setSelectedPOIs}
         headers={[
           {
-            id: 'point_of_interest_id',
-            title: 'POI ID',
+            id: 'site_id',
             type: 'number'
           },
           {
             id: 'created_date_on_device',
             title: 'Created Date'
           },
-          {
-            id: 'jurisdictions_rendered',
-            title: 'Jurisdiction'
-          },
+          'jurisdiction_code',
           'elevation',
           'slope_code',
           'aspect_code',
-          'specific_use_code',
           'soil_texture_code',
           {
             id: 'latitude',
@@ -434,11 +433,16 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
                 ...doc,
                 ...doc?.formData?.point_of_interest_data,
                 ...doc?.formData?.point_of_interest_type_data,
-                jurisdictions_rendered: doc?.formData?.surveys?.[0]?.jurisdictions
-                  ? doc?.formData?.surveys?.[0]?.jurisdictions
-                      .map((jur) => jur.jurisdiction_code + ' (' + jur.percent_covered + '%)')
-                      .join(', ')
-                  : '',
+                jurisdiction_code: doc?.formData?.surveys?.[0]?.jurisdictions?.reduce(
+                  (output, jurisdiction) => [
+                    ...output,
+                    jurisdiction.jurisdiction_code,
+                    '(',
+                    (jurisdiction.percent_covered ? jurisdiction.percent_covered : 100) + '%',
+                    ')'
+                  ],
+                  []
+                ),
                 latitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6),
                 longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6)
               }))
@@ -461,7 +465,6 @@ const CachedRecordsList: React.FC = () => {
   const databaseContext = useContext(DatabaseContext);
   const invasivesApi = useInvasivesApi();
 
-  const [activeDoc, setActiveDoc] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [interactiveGeometry, setInteractiveGeometry] = useState([]);
   const [extent, setExtent] = useState(null);
@@ -476,7 +479,8 @@ const CachedRecordsList: React.FC = () => {
     Observation: '#0BD2F0',
     Treatment: '#F99F04',
     Monitoring: '#BCA0DC',
-    reference_point_of_interest: '#0BD2F0'
+    reference_point_of_interest: '#0BD2F0',
+    selected_record: '#9E1A1A'
   };
 
   /*
@@ -527,40 +531,6 @@ const CachedRecordsList: React.FC = () => {
   }, [geometry]);
 
   /*
-    When the active record changes (on hover), change the color of the record
-    When the record is no longer being hovered over, reset the geo color
-  */
-  useEffect(() => {
-    if (!geometry.length) {
-      return;
-    }
-
-    let updatedInteractiveGeos = [...interactiveGeometry];
-
-    if (!activeDoc) {
-      updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
-        geo.color = geoColors[geo.recordType];
-
-        return geo;
-      });
-
-      setInteractiveGeometry(updatedInteractiveGeos);
-
-      return;
-    }
-
-    updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
-      if (geo.recordDocID === activeDoc._id) {
-        geo.color = '#9E1A1A';
-      }
-
-      return geo;
-    });
-
-    setInteractiveGeometry(updatedInteractiveGeos);
-  }, [activeDoc]);
-
-  /*
     When a record is selected in the list, change the color of the record in geo
     Also change all callbacks, since the map will not sense state updates by itself
   */
@@ -570,7 +540,7 @@ const CachedRecordsList: React.FC = () => {
     updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
       const allButThis = selected.filter((id) => geo.recordDocID !== id);
       if (selected.length > allButThis.length) {
-        geo.color = '#9E1A1A';
+        geo.color = geoColors.selected_record;
         geo.onClickCallback = () => {
           setSelected(allButThis);
         };
@@ -692,7 +662,6 @@ const CachedRecordsList: React.FC = () => {
       <CachedRecords
         docs={docs}
         databaseContext={databaseContext}
-        setActiveDoc={setActiveDoc}
         selected={selected}
         setSelected={setSelected}
         setLastCreatedMetabaseQuery={setLastCreatedMetabaseQuery}

@@ -42,16 +42,17 @@ export const deleteTripRecords = async (databaseContext, trip_ID) => {
       })
         if(isDocToDelete)
         {
-          docsToDelete.push(doc)
+          docsToDelete.push({...doc,_deleted : true})
         }
         else
         {
           docsToUpdate.push(doc)
         }
       })
-    docsToDelete.map((doc)=>{
-      databaseContext.database.remove(doc)
-    })
+
+      //bulk delete
+      databaseContext.database.bulkDocs(docsToDelete)
+
 
     //wipe trip id off overlapping records
     docsToUpdate.map((doc) => {
