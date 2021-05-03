@@ -627,7 +627,22 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     const contextPopup = (feature,layer,interactObj) => {
+      const content = interactObj.popUpComponent(interactObj.description);
+      layer.on('click', () => {
+        // Formulate a table containing all attributes
+        let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+        Object.keys(feature.properties).forEach((f) => {
+          if (feature.properties[f]) {
+            table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+          }
+        });
+        table += '</table>';
 
+        const loc = turf.centroid(feature);
+        const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+        L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+      });
     }
 
     props?.interactiveGeometryState?.interactiveGeometry?.forEach((interactObj) => {
