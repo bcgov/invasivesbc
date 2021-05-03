@@ -598,7 +598,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       });
     }
 
-    const defaultPopup = (feature,layer,interactObj) => {
+    const defaultPopup = (feature, layer, interactObj) => {
       const content = interactObj.popUpComponent(interactObj.description);
       layer.on('click', () => {
         // Fires on click of single feature
@@ -623,8 +623,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
         interactObj.onClickCallback();
       });
-
-    }
+    };
 
     /**
      * ## contextPopup
@@ -636,7 +635,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
      * @param layer {object} Leaflet layer object
      * @param interactObj  {object} PouchDB data object
      */
-    const contextPopup = (feature,layer,interactObj) => {
+    const contextPopup = (feature, layer, interactObj) => {
       const content = interactObj.popUpComponent(interactObj.description);
       layer.on('click', () => {
         // Formulate a table containing all attributes
@@ -653,7 +652,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
         L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
       });
-    }
+    };
 
     props?.interactiveGeometryState?.interactiveGeometry?.forEach((interactObj) => {
       const style = {
@@ -680,14 +679,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         onEachFeature: (feature: any, layer: any) => {
           drawnItems.addLayer(layer);
           if (interactObj.recordDocID === 'offline_data') {
-            contextPopup(feature,layer,interactObj);
+            contextPopup(feature, layer, interactObj);
           } else {
-            defaultPopup(feature,layer,interactObj);
+            defaultPopup(feature, layer, interactObj);
           }
         }
       });
     });
-
 
     // Update the drawn featres
     setDrawnItems(drawnItems);
@@ -854,8 +852,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     ];
 
-    layers.forEach(async (layer,index) => {
-      const url = `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:${layer.schema}&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`
+    layers.forEach(async (layer, index) => {
+      const url = `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:${layer.schema}&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`;
       const response = await axios(url);
       // console.log('url',url);
       // console.log('index',index);
@@ -865,9 +863,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       await databaseContext.database.upsert('offline_data', (spatial) => {
         return {
           docType: DocType.OFFLINE_DATA,
-          geometry: (spatial.geometry?.features?.length > 0) ?
-            [...spatial.geometry.features, ...response.data.features] :
-            response.data.features
+          geometry:
+            spatial.geometry?.features?.length > 0
+              ? [...spatial.geometry.features, ...response.data.features]
+              : response.data.features
         };
       });
 

@@ -242,7 +242,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
       testing
       `;
 
-
       switch (row.docType) {
         case DocType.OFFLINE_DATA:
           interactiveGeos.push({
@@ -251,7 +250,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             description: offlineSpatialPopup,
             geometry: row.geometry,
             color: 'blue',
-            popUpComponent: PointOfInterestPopUp 
+            popUpComponent: PointOfInterestPopUp
           });
           break;
         case DocType.OFFLINE_EXTENT:
