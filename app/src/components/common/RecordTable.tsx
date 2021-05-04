@@ -424,7 +424,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   }, [JSON.stringify(props.selected)]);
 
   useEffect(() => {
-    console.log('effect', selected);
     if (props.setSelected)
       props.setSelected(selected);
   }, [JSON.stringify(selected)]);
