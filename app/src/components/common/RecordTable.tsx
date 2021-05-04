@@ -43,20 +43,20 @@ const snakeToPascal = (string, spaces = false) =>
     .join('/');
 
 const arraysEqual = (a, b) => {
-    if (a === b) return true;
-    if (!a || !b) return true;
-    if (a.length !== b.length) return false;
+  if (a === b) return true;
+  if (!a || !b) return true;
+  if (a.length !== b.length) return false;
 
-    // If you don't care about the order of the elements inside
-    // the array, you should sort both arrays here.
-    // Please note that calling sort on an array will modify that array.
-    // you might want to clone your array first.
+  // If you don't care about the order of the elements inside
+  // the array, you should sort both arrays here.
+  // Please note that calling sort on an array will modify that array.
+  // you might want to clone your array first.
 
-    for (var i = 0; i < a.length; ++i) {
-      if (a[i] !== b[i]) return false;
-    }
-    return true;
-  };
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+};
 
 const useStyles = makeStyles((theme) => ({
   component: {
@@ -277,53 +277,48 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const [schemasLoaded, setSchemasLoaded] = useState(false);
   const headers = useMemo(() => {
-      let headers;
-      if (props.headers)
-        headers = props.headers;
-      else
-        headers = rows.length ? Object.keys(rows[0]) : [];
-      return headers.map((header: any, i) => {
-        let headerOverrides;
-        let id;
-        if (typeof header === 'string' || typeof header === 'number') {
-          id = header || i;
-          headerOverrides = {
-            id: id
-          };
-        }
-        if (typeof header === 'object') {
-          id = header.id || i;
-          headerOverrides = {
-            // defaults:
-            id: id,
-            align: header.type === 'number' ? 'right' : 'left',
-            padding: 'default',
-            defaultOrder: 'asc',
-            ...header
-          };
-        }
-        if (!headerOverrides)
-          throw new Error('Table header not defined correctly - must be a string, number or object');
-        const headerSchema = schemas?.schema?.properties?.[id];
-        const valueMap = {};
-        schemas?.schema?.properties?.[id]?.anyOf?.forEach((value) => {
-          if (value.enum[0] && value.title) valueMap[value.enum[0]] = value.title;
-        });
-
-        return {
-          title: snakeToPascal(id, true),
-          ...headerSchema,
-          valueMap: {
-            ...valueMap,
-            ...headerOverrides.valueMap
-          },
-          tooltip: headerSchema?.['x-tooltip-text'],
-          ...headerOverrides
+    let headers;
+    if (props.headers) headers = props.headers;
+    else headers = rows.length ? Object.keys(rows[0]) : [];
+    return headers.map((header: any, i) => {
+      let headerOverrides;
+      let id;
+      if (typeof header === 'string' || typeof header === 'number') {
+        id = header || i;
+        headerOverrides = {
+          id: id
         };
+      }
+      if (typeof header === 'object') {
+        id = header.id || i;
+        headerOverrides = {
+          // defaults:
+          id: id,
+          align: header.type === 'number' ? 'right' : 'left',
+          padding: 'default',
+          defaultOrder: 'asc',
+          ...header
+        };
+      }
+      if (!headerOverrides) throw new Error('Table header not defined correctly - must be a string, number or object');
+      const headerSchema = schemas?.schema?.properties?.[id];
+      const valueMap = {};
+      schemas?.schema?.properties?.[id]?.anyOf?.forEach((value) => {
+        if (value.enum[0] && value.title) valueMap[value.enum[0]] = value.title;
       });
-    },
-    [rows, props.headers?.length, schemasLoaded]
-  );
+
+      return {
+        title: snakeToPascal(id, true),
+        ...headerSchema,
+        valueMap: {
+          ...valueMap,
+          ...headerOverrides.valueMap
+        },
+        tooltip: headerSchema?.['x-tooltip-text'],
+        ...headerOverrides
+      };
+    });
+  }, [rows, props.headers?.length, schemasLoaded]);
   const actions =
     props.actions === false
       ? {}
@@ -386,35 +381,38 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
   const [expandedRows, setExpandedRows] = useState([]);
   const [selected, setSelected] = useState(props.selected || []);
-  
-  const getApiSpec = useCallback(async (tableSchemaType) => {
-    const apiSpecResponse = await invasivesApi.getCachedApiSpec();
-    const schemaTypeList = typeof tableSchemaType === 'string' ? [tableSchemaType] : tableSchemaType || [];
 
-    await setSchemas({
-      schema: schemaTypeList.reduce(
-        (prevSchema, schemaType) => ({
-          ...prevSchema,
-          properties: {
-            ...prevSchema.properties,
-            ...apiSpecResponse.components.schemas[schemaType].properties
-          }
-        }),
-        {}
-      ),
-      uiSchema: schemaTypeList.reduce(
-        (prevSchema, schemaType) => ({
-          ...prevSchema,
-          ...RootUISchemas[schemaType]
-        }),
-        {}
-      )
-    });
-    setSchemasLoaded(true);
-  }, [tableSchemaType]);
+  const getApiSpec = useCallback(
+    async (tableSchemaType) => {
+      const apiSpecResponse = await invasivesApi.getCachedApiSpec();
+      const schemaTypeList = typeof tableSchemaType === 'string' ? [tableSchemaType] : tableSchemaType || [];
+
+      await setSchemas({
+        schema: schemaTypeList.reduce(
+          (prevSchema, schemaType) => ({
+            ...prevSchema,
+            properties: {
+              ...prevSchema.properties,
+              ...apiSpecResponse.components.schemas[schemaType].properties
+            }
+          }),
+          {}
+        ),
+        uiSchema: schemaTypeList.reduce(
+          (prevSchema, schemaType) => ({
+            ...prevSchema,
+            ...RootUISchemas[schemaType]
+          }),
+          {}
+        )
+      });
+      setSchemasLoaded(true);
+    },
+    [tableSchemaType]
+  );
 
   useEffect(() => {
-    getApiSpec(tableSchemaType)
+    getApiSpec(tableSchemaType);
   }, [tableSchemaType]);
 
   useEffect(() => {
@@ -424,17 +422,17 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   }, [JSON.stringify(props.selected)]);
 
   useEffect(() => {
-    if (props.setSelected)
-      props.setSelected(selected);
+    if (props.setSelected) props.setSelected(selected);
   }, [JSON.stringify(selected)]);
 
-  const selectedRows = useMemo(() =>
-    selected
-    .map((id) => {
-      const matches = rows.find((row) => row[keyField] === id);
-      return matches ? matches : undefined;
-    })
-    .filter((row) => row),
+  const selectedRows = useMemo(
+    () =>
+      selected
+        .map((id) => {
+          const matches = rows.find((row) => row[keyField] === id);
+          return matches ? matches : undefined;
+        })
+        .filter((row) => row),
     [JSON.stringify(selected), rows]
   );
 
@@ -442,43 +440,50 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const orderHeader = useMemo(() => headers.find((col) => col.id === orderBy), [headers, orderBy]);
   const pageRows = useMemo(() => {
     // Note: this is O(nlog(n)) so important that we cache this with useMemo
-    return stableSort(rows, orderHeader, order === 'asc').slice(
-      page * rowsPerPage,
-      page * rowsPerPage + rowsPerPage
-    )},
-    [rows, orderHeader, order, page, rowsPerPage]
-  );
+    return stableSort(rows, orderHeader, order === 'asc').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  }, [rows, orderHeader, order, page, rowsPerPage]);
   // determine if any rows on the current page have a dropdown:
   // render all dropdowns
-  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [pageRows, dropdown]);
+  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
+    pageRows,
+    dropdown
+  ]);
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
-  const verboseOverflows = useMemo(() => pageRows.map(
-    (row) => headers.filter(({ id }) => String(row[id]).length > overflowLimit).length > 0
-  ), [pageRows, headers, overflowLimit]);
-  const pageHasDropdown = useMemo(() =>
-    (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
-    (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0) ||
-    (rowActions?.length > 0 && rowActionStyle === 'dropdown'),
+  const verboseOverflows = useMemo(
+    () => pageRows.map((row) => headers.filter(({ id }) => String(row[id]).length > overflowLimit).length > 0),
+    [pageRows, headers, overflowLimit]
+  );
+  const pageHasDropdown = useMemo(
+    () =>
+      (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
+      (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0) ||
+      (rowActions?.length > 0 && rowActionStyle === 'dropdown'),
     [dropdown, renderedDropdowns, overflowDropdown, verboseOverflows, rowActions?.length, rowActionStyle]
   );
   const showPagination = pagination === 'overflow' ? rows.length > rowsPerPage : !!pagination;
 
-  const handleRequestSort = useCallback((event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-    setPage(0);
-  }, [orderBy, order]);
+  const handleRequestSort = useCallback(
+    (event, property) => {
+      const isAsc = orderBy === property && order === 'asc';
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(property);
+      setPage(0);
+    },
+    [orderBy, order]
+  );
 
-  const handleSelectAllClick = useCallback((event) => {
-    if (event.target.checked) {
-      const newSelecteds = rows.map((row) => row[keyField]);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  }, [rows]);
+  const handleSelectAllClick = useCallback(
+    (event) => {
+      if (event.target.checked) {
+        const newSelecteds = rows.map((row) => row[keyField]);
+        setSelected(newSelecteds);
+        return;
+      }
+      setSelected([]);
+    },
+    [rows]
+  );
 
   const selectRow = useCallback((selected, key) => {
     const start = Date.now();
@@ -511,7 +516,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-  const toggleExpandedRow = useCallback((key) => {
+  const toggleExpandedRow = useCallback(
+    (key) => {
       let newExpandedRows;
       if (isExpandedRow(expandedRows, key)) {
         newExpandedRows = expandedRows.filter((rowKey) => rowKey !== key);
@@ -532,97 +538,112 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     [expandedRows?.length, JSON.stringify(expandedRows), dropdownLimit, selectedRows, rows]
   );
 
-  const TableHead = useMemo(() =>
-    <RecordTableHead
-      classes={classes}
-      numSelected={selected.length}
-      order={order}
-      orderBy={orderBy}
-      onSelectAllClick={handleSelectAllClick}
-      onRequestSort={handleRequestSort}
-      rowCount={rows.length}
-      headers={headers}
-      enableSelection={enableSelection}
-      enableTooltips={enableTooltips}
-      pageHasDropdown={pageHasDropdown}
-    />,
-    [selected?.length, order, orderBy, handleSelectAllClick, handleRequestSort, rows.length, headers, enableSelection, enableTooltips, pageHasDropdown]
+  const TableHead = useMemo(
+    () => (
+      <RecordTableHead
+        classes={classes}
+        numSelected={selected.length}
+        order={order}
+        orderBy={orderBy}
+        onSelectAllClick={handleSelectAllClick}
+        onRequestSort={handleRequestSort}
+        rowCount={rows.length}
+        headers={headers}
+        enableSelection={enableSelection}
+        enableTooltips={enableTooltips}
+        pageHasDropdown={pageHasDropdown}
+      />
+    ),
+    [
+      selected?.length,
+      order,
+      orderBy,
+      handleSelectAllClick,
+      handleRequestSort,
+      rows.length,
+      headers,
+      enableSelection,
+      enableTooltips,
+      pageHasDropdown
+    ]
   );
 
   const loading = !schemasLoaded && tableSchemaType?.length > 0;
 
-  return useMemo(() =>
-    <div className={classes.component}>
-      <Accordion defaultExpanded={startExpanded || !rows.length}>
-        {(enableSelection || enableFiltering || tableName.length > 0) && (
-          <RecordTableToolbar
-            selectedRows={enableSelection ? selectedRows : []}
-            tableName={tableName}
-            enableFiltering={enableFiltering}
-            actions={bulkActions}
-            databaseContext={databaseContext}
-          />
-        )}
-        <AccordionDetails className={classes.paper}>
-          {loading && <div className={classes.emptyTable}>Loading</div>}
-          {!loading && !rows.length && <div className={classes.emptyTable}>No data to display</div>}
-          {!loading && !!rows.length && (
-            <TableContainer>
-              <Table
-                className={classes.table}
-                aria-labelledby="tableTitle"
-                size={densePadding ? 'small' : 'medium'}
-                aria-label="enhanced table">
-                {TableHead}
-                <TableBody>
-                  {pageRows.map((row, index) => (
-                    <RecordTableRow
-                      key={row[keyField]}
-                      keyField={keyField}
-                      headers={headers}
-                      row={row}
-                      dropdown={dropdown}
-                      pageHasDropdown={pageHasDropdown}
-                      hasOverflow={verboseOverflows[index]}
-                      isExpanded={isExpandedRow(expandedRows, row[keyField])}
-                      isSelected={isSelectedRow(selected, row[keyField])}
-                      enableSelection={enableSelection}
-                      toggleExpanded={(event) => {
-                        event.stopPropagation();
-                        toggleExpandedRow(row[keyField]);
-                      }}
-                      toggleSelected={(event) => {
-                        event.stopPropagation();
-                        selectRow(selected, row[keyField]);
-                      }}
-                      actions={rowActions}
-                      actionStyle={rowActionStyle}
-                      databaseContext={databaseContext}
-                    />
-                  ))}
-                  {padEmptyRows && emptyRows > 0 && (
-                    <TableRow style={{ height: (densePadding ? 33 : 53) * emptyRows }}>
-                      <TableCell colSpan={headers.length} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-          {!loading && !!rows.length && showPagination && (
-            <TablePagination
-              rowsPerPageOptions={rowsPerPageOptions === false ? undefined : rowsPerPageOptions}
-              component="div"
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
+  return useMemo(
+    () => (
+      <div className={classes.component}>
+        <Accordion defaultExpanded={startExpanded || !rows.length}>
+          {(enableSelection || enableFiltering || tableName.length > 0) && (
+            <RecordTableToolbar
+              selectedRows={enableSelection ? selectedRows : []}
+              tableName={tableName}
+              enableFiltering={enableFiltering}
+              actions={bulkActions}
+              databaseContext={databaseContext}
             />
           )}
-        </AccordionDetails>
-      </Accordion>
-    </div>,
+          <AccordionDetails className={classes.paper}>
+            {loading && <div className={classes.emptyTable}>Loading</div>}
+            {!loading && !rows.length && <div className={classes.emptyTable}>No data to display</div>}
+            {!loading && !!rows.length && (
+              <TableContainer>
+                <Table
+                  className={classes.table}
+                  aria-labelledby="tableTitle"
+                  size={densePadding ? 'small' : 'medium'}
+                  aria-label="enhanced table">
+                  {TableHead}
+                  <TableBody>
+                    {pageRows.map((row, index) => (
+                      <RecordTableRow
+                        key={row[keyField]}
+                        keyField={keyField}
+                        headers={headers}
+                        row={row}
+                        dropdown={dropdown}
+                        pageHasDropdown={pageHasDropdown}
+                        hasOverflow={verboseOverflows[index]}
+                        isExpanded={isExpandedRow(expandedRows, row[keyField])}
+                        isSelected={isSelectedRow(selected, row[keyField])}
+                        enableSelection={enableSelection}
+                        toggleExpanded={(event) => {
+                          event.stopPropagation();
+                          toggleExpandedRow(row[keyField]);
+                        }}
+                        toggleSelected={(event) => {
+                          event.stopPropagation();
+                          selectRow(selected, row[keyField]);
+                        }}
+                        actions={rowActions}
+                        actionStyle={rowActionStyle}
+                        databaseContext={databaseContext}
+                      />
+                    ))}
+                    {padEmptyRows && emptyRows > 0 && (
+                      <TableRow style={{ height: (densePadding ? 33 : 53) * emptyRows }}>
+                        <TableCell colSpan={headers.length} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+            {!loading && !!rows.length && showPagination && (
+              <TablePagination
+                rowsPerPageOptions={rowsPerPageOptions === false ? undefined : rowsPerPageOptions}
+                component="div"
+                count={rows.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+              />
+            )}
+          </AccordionDetails>
+        </Accordion>
+      </div>
+    ),
     [rows, schemasLoaded, page, rowsPerPage, JSON.stringify(selected), JSON.stringify(expandedRows), order, orderBy]
   );
 };
@@ -834,52 +855,54 @@ const RecordTableRow = (props) => {
     .filter((button) => button); // remove hidden actions
   const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
 
-  return <React.Fragment key={key}>
-    <TableRow
-      hover
-      role="checkbox"
-      aria-checked={isSelected}
-      tabIndex={-1}
-      selected={isSelected}
-      onClick={toggleExpanded}>
-      {(enableSelection || pageHasDropdown) && (
-        <TableCell padding="checkbox" className={classes.cell}>
-          {enableSelection && (
-            <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
-          )}
-          {pageHasDropdown && (
-            <IconButton aria-label="expand row" size="small">
-              {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
-            </IconButton>
-          )}
-        </TableCell>
-      )}
-      {headers.map((header) => (
-        <RecordTableCell
-          header={header}
-          key={header.id}
-          row={row}
-          className={`
+  return (
+    <React.Fragment key={key}>
+      <TableRow
+        hover
+        role="checkbox"
+        aria-checked={isSelected}
+        tabIndex={-1}
+        selected={isSelected}
+        onClick={toggleExpanded}>
+        {(enableSelection || pageHasDropdown) && (
+          <TableCell padding="checkbox" className={classes.cell}>
+            {enableSelection && (
+              <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
+            )}
+            {pageHasDropdown && (
+              <IconButton aria-label="expand row" size="small">
+                {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
+              </IconButton>
+            )}
+          </TableCell>
+        )}
+        {headers.map((header) => (
+          <RecordTableCell
+            header={header}
+            key={header.id}
+            row={row}
+            className={`
             ${classes.cell}
             ${header.className}
             ${header.type === 'number' && classes.numberCell}
             ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
           `}
-          valueMap={header.valueMap}
-        />
-      ))}
-    </TableRow>
-    {rowHasDropdown && (
-      <TableRow className={classes.tableRow}>
-        <TableCell className={classes.dropdown} colSpan={100}>
-          <Collapse in={isExpanded} timeout="auto">
-            {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
-            <Box margin={2}>{renderedDropdown}</Box>
-          </Collapse>
-        </TableCell>
+            valueMap={header.valueMap}
+          />
+        ))}
       </TableRow>
-    )}
-  </React.Fragment>
+      {rowHasDropdown && (
+        <TableRow className={classes.tableRow}>
+          <TableCell className={classes.dropdown} colSpan={100}>
+            <Collapse in={isExpanded} timeout="auto">
+              {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
+              <Box margin={2}>{renderedDropdown}</Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      )}
+    </React.Fragment>
+  );
 };
 
 export default RecordTable;

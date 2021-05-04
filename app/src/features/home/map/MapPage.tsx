@@ -227,7 +227,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
       const zIndex = getZIndex(row);
       if (row.geometry[0].geometry.type !== 'Polygon')
         coordinatesString = `(${Number(coords[1]).toFixed(2)}, ${Number(coords[0]).toFixed(2)})`;
-      
+
       switch (row.docType) {
         case DocType.OFFLINE_EXTENT:
           // TODO push this into the interactiveGeos array

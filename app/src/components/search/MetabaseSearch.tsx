@@ -80,7 +80,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
             };
           });
           setMetabaseOptions(options);
-        } catch(error) {
+        } catch (error) {
           if (tripDoc.metabaseQueryOptions) setMetabaseOptions(tripDoc.metabaseQueryOptions);
         }
       } else {

@@ -590,7 +590,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const updateMapOnGeometryChange = () => {
     // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
-    const newGeoKeys = {...geoKeys};
+    const newGeoKeys = { ...geoKeys };
 
     if (props.geometryState) {
       // For each geometry, add a new layer to the drawn features
@@ -629,7 +629,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           newGeoKeys[key] = {
             ...newGeoKeys[key],
             updated: false
-          }
+          };
           return;
         }
 
@@ -646,7 +646,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           stroke: true
         };
 
-        const geo = L.geoJSON(interactObj.geometry, {  // Note: the result of this isn't actually used, it seems?
+        const geo = L.geoJSON(interactObj.geometry, {
+          // Note: the result of this isn't actually used, it seems?
           style,
           pointToLayer: (feature: any, latLng: any) => {
             if (feature.properties.radius) {
@@ -691,11 +692,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     // Drawing step:
-    Object.keys(newGeoKeys).forEach((key: any) => { 
+    Object.keys(newGeoKeys).forEach((key: any) => {
       if (newGeoKeys[key].updated === true) {
         // draw layers to map
         Object.values(newGeoKeys[key].geo._layers).forEach((layer) => {
-          drawnItems.addLayer(layer)
+          drawnItems.addLayer(layer);
         });
       } else if (newGeoKeys[key].updated === false) {
         return;
