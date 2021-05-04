@@ -100,6 +100,14 @@ const activityStandardMapping = (doc) => ({
 
 const getSelectedKeys = (rows, selected) => rows.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id) || [];
 
+const geoColors = {
+  Observation: '#0BD2F0',
+  Treatment: '#F99F04',
+  Monitoring: '#BCA0DC',
+  reference_point_of_interest: '#0BD2F0',
+  selected_record: '#9E1A1A'
+};
+
 interface ICachedRecordsTable {
   rows: Array<any>;
   selected: Array<any>;
@@ -113,7 +121,6 @@ export const ObservationsTable: React.FC<ICachedRecordsTable> = (props) => {
 
   const { selected, setSelected, rows } = props;
   return useMemo(() => {
-    console.log('render observations');
     return <RecordTable
         tableName="Observations"
         tableSchemaType={[
@@ -216,7 +223,6 @@ export const TreatmentsTable: React.FC<ICachedRecordsTable> = (props) => {
 
   const { selected, setSelected, rows, databaseContext } = props;
   return useMemo(() => {
-    console.log('render treatments');
     return <RecordTable
         tableName="Treatments"
         tableSchemaType={[
@@ -339,7 +345,6 @@ export const MonitoringTable: React.FC<ICachedRecordsTable> = (props) => {
 
   const { selected, setSelected, rows } = props;
   return useMemo(() => {
-    console.log('render Monitoring');
     return <RecordTable
         tableName="Monitoring"
         tableSchemaType={[
@@ -404,7 +409,6 @@ export const PointsOfInterestTable: React.FC<ICachedRecordsTable> = (props) => {
 
   const { selected, setSelected, rows } = props;
   return useMemo(() => {
-    console.log('render POIs');
     return <RecordTable
         tableName="Points of Interest"
         tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdictions']}
@@ -465,32 +469,29 @@ const CachedRecordsList: React.FC = (props) => {
   const [extent, setExtent] = useState(null);
   const [stateDocs, setDocs] = useState<any[]>([]);
   const docs = useMemo(() => stateDocs, [stateDocs?.length]);
-  const [docKeys, setDocKeys] = useState({});
   const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [lastCreatedMetabaseQuery, setLastCreatedMetabaseQuery] = useState([]);
+  const [metabaseQuerySubmitted, setMetabaseQuerySubmitted] = useState(false);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
-  const geoColors = {
-    Observation: '#0BD2F0',
-    Treatment: '#F99F04',
-    Monitoring: '#BCA0DC',
-    reference_point_of_interest: '#0BD2F0',
-    selected_record: '#9E1A1A'
-  };
-
-  const toggleRow = useCallback((doc) => {
+  /* Select or unselect a single doc */ 
+  const toggleDocSelected = useCallback((doc) => {
     const toggleSelectedFunction = (key) => (prevSelected) => {
-      const allSelectedButKey = prevSelected.filter((id) => id !== key);
-      const unselect = allSelectedButKey.length !== prevSelected.length;
-      setInteractiveGeometry((prevGeos) => prevGeos.map((geo) => {
-        if (geo._id === doc._id)
-          geo.color = unselect ? geoColors[geo.recordType] : geoColors.selected_record;
-        return geo;
-      }));
-      return unselect ? allSelectedButKey : [...prevSelected, key];
+      const wasPrevSelected = prevSelected.indexOf(key) !== -1;
+      const newSelected = wasPrevSelected
+        ? prevSelected.filter((id) => id !== key)
+        : [...prevSelected, key];
+      console.log(wasPrevSelected, prevSelected.filter((id) => id !== key), newSelected);
+      setInteractiveGeometry((prevGeos) => {
+        return prevGeos.map((geo) => {
+          if (geo._id === key)
+            geo.color = wasPrevSelected ? geoColors[geo.recordType] : geoColors.selected_record;
+          return geo;
+        });
+      });
+      return newSelected;
     };
 
     switch(doc.docType) {
@@ -514,19 +515,12 @@ const CachedRecordsList: React.FC = (props) => {
     Also, call a helper function to save map geometries
   */
   const updateRecordList = useCallback(async () => {
-    console.log('fetching');
     setLoading(true);
-    const result = await databaseContext.database.find({
-      selector: {
-        $or: [{ deleted_timestamp: { $exists: false } }, { deleted_timestamp: { $type: 'null' } }]
-      }
-    });
-    const newDocs = result?.docs?.filter(
+    const result = await databaseContext.database.allDocs({ include_docs: true });
+    const newDocs = result?.rows?.map((doc) => doc.doc).filter(
       (doc) => (doc.point_of_interest_id || doc.activity_id) && !doc.deleted_timestamp // reduncancy for safety
     );
     setDocs([...newDocs]);
-    setDocKeys(newDocs.reduce((prev, record) => ({ ...prev, [record._id]: record }), {}));
-
     const mapGeos = [];
     newDocs.forEach((doc: any) => {
       /*
@@ -537,7 +531,7 @@ const CachedRecordsList: React.FC = (props) => {
       };
       const description =
         doc.docType === 'reference_point_of_interest'
-          ? `IAPP Point of Interest: ${doc.point_of_interest_id}}`
+          ? `IAPP Point of Interest: ${doc.point_of_interest_id}`
           : `${doc.activityType}: ${doc._id}}`;
       mapGeos.push({
         _id: doc._id,
@@ -550,14 +544,13 @@ const CachedRecordsList: React.FC = (props) => {
         popUpComponent: ActivityPopup,
         zIndex: getZIndex(doc),
         onClickCallback: () => {
-          toggleRow(doc);
+          toggleDocSelected(doc);
         }
       });
     });
     setInteractiveGeometry([...mapGeos]);
     setLoading(false);
-    console.log("done fetch", mapGeos);
-  }, [toggleRow]);
+  }, [toggleDocSelected]);
 
   /*
     On geometry change (user drawn), find out which activities are
@@ -574,36 +567,10 @@ const CachedRecordsList: React.FC = (props) => {
       // Filter out records within a drawn geometry polygon on the map
       const newDocs = docs.filter((doc: any) => docIdsWithinArea.some((docId: any) => docId === doc._id));
       setDocs(newDocs);
-      setDocKeys(newDocs.reduce((prev, record) => ({ ...prev, [record._id]: record }), {}));
     } else {
       updateRecordList();
     }
   }, [geometry?.length]);
-
-  const createMetabaseQuery = async (event, selectedKeys) => {
-    await setLastCreatedMetabaseQuery(selectedKeys);
-    const queryCreate: ICreateMetabaseQuery = {
-      point_of_interest_ids: selectedKeys.filter((id) => !isNaN(id)),
-      activity_ids: selectedKeys.filter((id) => isNaN(id))
-    };
-    try {
-      let response = await invasivesApi.createMetabaseQuery(queryCreate);
-      if (response?.activity_query_id && response?.activity_query_name)
-        notifySuccess(
-          databaseContext,
-          `Created a new Metabase Query, with name "${response.activity_query_name}" and ID ${response.activity_query_id}`
-        );
-      else throw response;
-    } catch (error) {
-      notifyError(
-        databaseContext,
-        'Unable to create new Metabase Query.  There may an issue with your connection to the Metabase API: ' + error
-      );
-      await setLastCreatedMetabaseQuery([]);
-    }
-  }
-
-  const metabaseQuerySubmitted = JSON.stringify(lastCreatedMetabaseQuery) == JSON.stringify(selected); // TODO FIX
 
   const observations = useMemo(() => docs
     .filter((doc: any) => doc.activityType === 'Observation')
@@ -627,7 +594,6 @@ const CachedRecordsList: React.FC = (props) => {
   const [ selectedMonitorings, setSelectedMonitorings ] = useState([]);
 
   const pointsOfInterest = useMemo(() => {
-    console.log("fetch pois");
     return docs
       .filter((doc: any) => doc.docType === 'reference_point_of_interest')
       .map((doc) => ({
@@ -652,51 +618,47 @@ const CachedRecordsList: React.FC = (props) => {
   );
   const [ selectedPOIs, setSelectedPOIs ] = useState([]);
 
+  const createMetabaseQuery = async (event, selectedActivities, selectedPOIs) => {
+    await setMetabaseQuerySubmitted(true);
+    const queryCreate: ICreateMetabaseQuery = {
+      activity_ids: selectedActivities,
+      point_of_interest_ids: selectedPOIs
+    };
+    try {
+      let response = await invasivesApi.createMetabaseQuery(queryCreate);
+      if (response?.activity_query_id && response?.activity_query_name)
+        notifySuccess(
+          databaseContext,
+          `Created a new Metabase Query, with name "${response.activity_query_name}" and ID ${response.activity_query_id}`
+        );
+      else throw response;
+    } catch (error) {
+      notifyError(
+        databaseContext,
+        'Unable to create new Metabase Query.  There may an issue with your connection to the Metabase API: ' + error
+      );
+      await setMetabaseQuerySubmitted(false);
+    }
+  }
 
-  /*
-    When a record is selected in the list, change the color of the record in geo
-    Also change all callbacks, since the map will not sense state updates by itself
-  */
-  /*
   useEffect(() => {
-    let updatedInteractiveGeos = [...interactiveGeometry];
-    updatedInteractiveGeos = updatedInteractiveGeos.map((geo: any) => {
-      let selected = [];
-      switch(geo.docType) {  // TODO generalize
-        case 'Observation':
-          selected = selectedObservations;
-          break;
-        case 'Treatment':
-          selected = selectedTreatments;
-          break;
-        case 'Monitoring':
-          selected = selectedMonitorings;
-          break;
-        case 'reference_point_of_interest':
-          selected = selectedPOIs;
-          break;
-      }
-      if (selected.find((id) => geo.recordDocID === id)) {
-        geo.color = geoColors.selected_record;
-        geo.onClickCallback = () => {
-          toggleRow(geo)
-          // setSelected(prevSelected => prevSelected.filter((id) => geo.recordDocID !== id));
-        };
-      } else {
-        geo.color = geoColors[geo.recordType];
-        geo.onClickCallback = () => {
-          toggleRow(geo)
-          // setSelected(prevSelected => [...prevSelected, geo.recordDocID]);
-        };
-      }
-      return geo;
-    });
-    console.log(updatedInteractiveGeos);
-    //setInteractiveGeometry(updatedInteractiveGeos);
-  }, [interactiveGeometry, selectedObservations?.length, selectedTreatments?.length, selectedMonitorings?.length, selectedPOIs?.length, toggleRow, interactiveGeometry?.length]);
-  */
+    setMetabaseQuerySubmitted(false);
+  }, [selectedObservations.length, selectedTreatments.length, setSelectedMonitorings.length, selectedPOIs.length]);
 
-  console.log(interactiveGeometry);
+  const totalSelected = selectedObservations.length + selectedTreatments.length + selectedMonitorings.length + selectedPOIs.length;
+
+  const setSelectedGeneralized = (setSelectedFunction) => (newSelected) => {
+    setSelectedFunction((prevSelected) => {
+      setInteractiveGeometry((prevGeos) => prevGeos.map((geo) => {
+        if (prevSelected.indexOf(geo._id) !== newSelected.indexOf(geo._id)) {
+          const isSelected = newSelected.indexOf(geo._id) !== -1;
+          geo.color = isSelected ? geoColors.selected_record : geoColors[geo.recordType];
+        }
+        return geo;
+      }));
+      return newSelected;
+    });
+  };
 
   return (
     <Container className={classes.activitiesContent}>
@@ -707,9 +669,13 @@ const CachedRecordsList: React.FC = (props) => {
             variant="contained"
             color="primary"
             className={classes.metabaseAddButton}
-            disabled={!selected.length || metabaseQuerySubmitted}
-            startIcon={selected.length && metabaseQuerySubmitted ? <Check /> : undefined}
-            onClick={(event) => createMetabaseQuery(event, selected)}>
+            disabled={!totalSelected || metabaseQuerySubmitted}
+            startIcon={totalSelected && metabaseQuerySubmitted ? <Check /> : undefined}
+            onClick={(event) => createMetabaseQuery(
+              event,
+              [...selectedObservations, ...selectedTreatments, ...selectedMonitorings],
+              selectedPOIs
+            )}>
             Create Metabase Query
           </Button>
         </Box>}
@@ -735,33 +701,22 @@ const CachedRecordsList: React.FC = (props) => {
           <ObservationsTable
             rows={observations}
             selected={selectedObservations}
-            setSelected={setSelectedObservations}
+            setSelected={setSelectedGeneralized(setSelectedObservations)}
           />
           <TreatmentsTable
             rows={treatments}
             selected={selectedTreatments}
-            setSelected={setSelectedTreatments}
+            setSelected={setSelectedGeneralized(setSelectedTreatments)}
           />
           <MonitoringTable
             rows={monitorings}
             selected={selectedMonitorings}
-            setSelected={setSelectedMonitorings}
+            setSelected={setSelectedGeneralized(setSelectedMonitorings)}
           />
           <PointsOfInterestTable
             rows={pointsOfInterest}
             selected={selectedPOIs}
-            setSelected={(newSelected) => {
-              setSelectedPOIs((prevSelected) => {
-                setInteractiveGeometry((prevGeos) => prevGeos.map((geo) => {
-                  if (prevSelected.indexOf(geo._id) !== -1) {
-                    const unselect = newSelected.indexOf(geo._id) !== -1;
-                    geo.color = unselect ? geoColors[geo.recordType] : geoColors.selected_record;
-                  }
-                  return geo;
-                }));
-                return newSelected;
-              });
-            }}
+            setSelected={setSelectedGeneralized(setSelectedPOIs)}
             databaseContext={databaseContext}
           />
         </List>

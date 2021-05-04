@@ -272,13 +272,11 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   } = props;
   // Cached props to prevent constant rebuilds:
   const rows = useMemo(() => props.rows, [props.rows?.length]);
-  console.log(rows);
   const dropdown = useCallback((row) => !!props.dropdown && props.dropdown(row), [!!props.dropdown]);
   const tableSchemaType = useMemo(() => props.tableSchemaType, [props.tableSchemaType?.length]);
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const [schemasLoaded, setSchemasLoaded] = useState(false);
   const headers = useMemo(() => {
-      console.log(schemas);
       let headers;
       if (props.headers)
         headers = props.headers;
@@ -413,28 +411,23 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       )
     });
     setSchemasLoaded(true);
-    console.log(tableSchemaType, tableName);
   }, [tableSchemaType]);
 
   useEffect(() => {
     getApiSpec(tableSchemaType)
   }, [tableSchemaType]);
 
-  const updateParentSelected = async (newSelected) => props.setSelected(newSelected);
+  useEffect(() => {
+    setSelected(props.selected || []);
+    // if (props.setSelected)
+    //  props.setSelected(props.selected);
+  }, [JSON.stringify(props.selected)]);
 
-  // there is probably a cleaner way to do the following in React:
   useEffect(() => {
-    console.log(1111);
-    // pass state to parent on local change
-    if (props.setSelected && selected !== undefined && !arraysEqual(props.selected, selected))
-      updateParentSelected(selected);
-  }, [selected?.length, !!setSelected]);
-  useEffect(() => {
-    console.log(2222);
-    // override current state with parent, on parent change
-    if (props.setSelected && props.selected !== undefined && !arraysEqual(props.selected, selected))
-      setSelected(props.selected);
-  }, [props.selected?.length, !!props.setSelected]);
+    console.log('effect', selected);
+    if (props.setSelected)
+      props.setSelected(selected);
+  }, [JSON.stringify(selected)]);
 
   const selectedRows = useMemo(() =>
     selected
@@ -443,7 +436,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       return matches ? matches : undefined;
     })
     .filter((row) => row),
-    [selected && selected.length, rows]
+    [JSON.stringify(selected), rows]
   );
 
   // sort and limit the rows:
@@ -520,7 +513,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   const toggleExpandedRow = useCallback((key) => {
-      const start = Date.now();
       let newExpandedRows;
       if (isExpandedRow(expandedRows, key)) {
         newExpandedRows = expandedRows.filter((rowKey) => rowKey !== key);
@@ -632,7 +624,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
         </AccordionDetails>
       </Accordion>
     </div>,
-    [rows, schemasLoaded, page, rowsPerPage, selected?.length, JSON.stringify(expandedRows), order, orderBy]
+    [rows, schemasLoaded, page, rowsPerPage, JSON.stringify(selected), JSON.stringify(expandedRows), order, orderBy]
   );
 };
 
@@ -807,94 +799,88 @@ const RecordTableRow = (props) => {
   } = props;
   const classes = useStyles();
 
-  return useMemo(() => {
-      const key = row[keyField];
-      if (key === undefined) throw new Error('Error: table row has no matching key defined');
+  const key = row[keyField];
+  if (key === undefined) throw new Error('Error: table row has no matching key defined');
 
-      const renderedDropdown = !!dropdown && dropdown(row);
-      const labelId = `record-table-checkbox-${key}`;
-      const rowActions = actions
-        .map((action: any) => {
-          const isValid = action.rowCondition ? action.rowCondition(row) : true;
-          if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
-          return (
-            <Button
-              key={action.key}
-              variant="contained"
-              color="primary"
-              size="small"
-              disabled={action.displayInvalid === 'disable' && !isValid}
-              className={classes.button}
-              startIcon={action.icon}
-              onClick={async (e) => {
-                e.stopPropagation();
-                if (
-                  action.displayInvalid === 'error' &&
-                  action.rowCondition &&
-                  !action.rowCondition(row) &&
-                  action.invalidError
-                )
-                  notifyError(databaseContext, action.invalidError);
-                else action.action([row]);
-              }}>
-              {action.label}
-            </Button>
-          );
-        })
-        .filter((button) => button); // remove hidden actions
-      const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
+  const renderedDropdown = !!dropdown && dropdown(row);
+  const labelId = `record-table-checkbox-${key}`;
+  const rowActions = actions
+    .map((action: any) => {
+      const isValid = action.rowCondition ? action.rowCondition(row) : true;
+      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
+      return (
+        <Button
+          key={action.key}
+          variant="contained"
+          color="primary"
+          size="small"
+          disabled={action.displayInvalid === 'disable' && !isValid}
+          className={classes.button}
+          startIcon={action.icon}
+          onClick={async (e) => {
+            e.stopPropagation();
+            if (
+              action.displayInvalid === 'error' &&
+              action.rowCondition &&
+              !action.rowCondition(row) &&
+              action.invalidError
+            )
+              notifyError(databaseContext, action.invalidError);
+            else action.action([row]);
+          }}>
+          {action.label}
+        </Button>
+      );
+    })
+    .filter((button) => button); // remove hidden actions
+  const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
 
-      console.log("row rendered");
-
-      return <React.Fragment key={key}>
-        <TableRow
-          hover
-          role="checkbox"
-          aria-checked={isSelected}
-          tabIndex={-1}
-          selected={isSelected}
-          onClick={toggleExpanded}>
-          {(enableSelection || pageHasDropdown) && (
-            <TableCell padding="checkbox" className={classes.cell}>
-              {enableSelection && (
-                <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
-              )}
-              {pageHasDropdown && (
-                <IconButton aria-label="expand row" size="small">
-                  {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
-                </IconButton>
-              )}
-            </TableCell>
+  return <React.Fragment key={key}>
+    <TableRow
+      hover
+      role="checkbox"
+      aria-checked={isSelected}
+      tabIndex={-1}
+      selected={isSelected}
+      onClick={toggleExpanded}>
+      {(enableSelection || pageHasDropdown) && (
+        <TableCell padding="checkbox" className={classes.cell}>
+          {enableSelection && (
+            <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
           )}
-          {headers.map((header) => (
-            <RecordTableCell
-              header={header}
-              key={header.id}
-              row={row}
-              className={`
-                ${classes.cell}
-                ${header.className}
-                ${header.type === 'number' && classes.numberCell}
-                ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
-              `}
-              valueMap={header.valueMap}
-            />
-          ))}
-        </TableRow>
-        {rowHasDropdown && (
-          <TableRow className={classes.tableRow}>
-            <TableCell className={classes.dropdown} colSpan={100}>
-              <Collapse in={isExpanded} timeout="auto">
-                {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
-                <Box margin={2}>{renderedDropdown}</Box>
-              </Collapse>
-            </TableCell>
-          </TableRow>
-        )}
-      </React.Fragment>
-    },
-    [isExpanded, isSelected, JSON.stringify(headers)]
-  );
+          {pageHasDropdown && (
+            <IconButton aria-label="expand row" size="small">
+              {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
+            </IconButton>
+          )}
+        </TableCell>
+      )}
+      {headers.map((header) => (
+        <RecordTableCell
+          header={header}
+          key={header.id}
+          row={row}
+          className={`
+            ${classes.cell}
+            ${header.className}
+            ${header.type === 'number' && classes.numberCell}
+            ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
+          `}
+          valueMap={header.valueMap}
+        />
+      ))}
+    </TableRow>
+    {rowHasDropdown && (
+      <TableRow className={classes.tableRow}>
+        <TableCell className={classes.dropdown} colSpan={100}>
+          <Collapse in={isExpanded} timeout="auto">
+            {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
+            <Box margin={2}>{renderedDropdown}</Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    )}
+  </React.Fragment>
 };
 
 export default RecordTable;
