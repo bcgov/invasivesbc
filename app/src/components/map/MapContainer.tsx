@@ -646,8 +646,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           stroke: true
         };
 
-        let layers = [];
-        L.geoJSON(interactObj.geometry, {  // Note: the result of this isn't actually used, it seems?
+        const geo = L.geoJSON(interactObj.geometry, {  // Note: the result of this isn't actually used, it seems?
           style,
           pointToLayer: (feature: any, latLng: any) => {
             if (feature.properties.radius) {
@@ -681,13 +680,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
               interactObj.onClickCallback();
             });
-            layers = [...layers, layer];
           }
         });
         newGeoKeys[key] = {
           hash: JSON.stringify(interactObj),
-          // geo: geo,  // Note: might want to store geo itself
-          layers: layers,
+          geo: geo,
           updated: true
         };
       });
@@ -697,14 +694,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     Object.keys(newGeoKeys).forEach((key: any) => { 
       if (newGeoKeys[key].updated === true) {
         // draw layers to map
-        newGeoKeys[key].layers?.forEach((layer) => {
+        Object.values(newGeoKeys[key].geo._layers).forEach((layer) => {
           drawnItems.addLayer(layer)
         });
       } else if (newGeoKeys[key].updated === false) {
         return;
       } else {
         // remove old keys (delete step)
-        newGeoKeys[key].layers?.forEach((layer) => {
+        Object.values(newGeoKeys[key].geo._layers).forEach((layer) => {
           drawnItems.removeLayer(layer);
         });
         delete newGeoKeys[key];

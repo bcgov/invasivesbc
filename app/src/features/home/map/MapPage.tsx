@@ -219,7 +219,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
         return;
       }
 
-      geos.push(row.geometry[0]);
+      // geos.push(row.geometry[0]); // deprecated(?): points only need to be interactive geos now
 
       let coordinatesString = 'Polygon';
 
@@ -364,11 +364,10 @@ const MapPage: React.FC<IMapProps> = (props) => {
     });
 
     setGeometry(geos);
-    console.log(interactiveGeos);
     setInteractiveGeometry(interactiveGeos);
 
     //setIsReadyToLoadMap(true)
-  }, [databaseContext.database, extent]);
+  }, [extent]);
 
   useEffect(() => {
     const updateComponent = () => {
