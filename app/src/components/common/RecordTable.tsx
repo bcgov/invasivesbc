@@ -277,10 +277,10 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const [schemasLoaded, setSchemasLoaded] = useState(false);
   const headers = useMemo(() => {
-    let headers;
-    if (props.headers) headers = props.headers;
-    else headers = rows.length ? Object.keys(rows[0]) : [];
-    return headers.map((header: any, i) => {
+    let headers2;
+    if (props.headers) headers2 = props.headers;
+    else headers2 = rows.length ? Object.keys(rows[0]) : [];
+    return headers2.map((header: any, i) => {
       let headerOverrides;
       let id;
       if (typeof header === 'string' || typeof header === 'number') {
@@ -383,9 +383,9 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const [selected, setSelected] = useState(props.selected || []);
 
   const getApiSpec = useCallback(
-    async (tableSchemaType) => {
+    async (tableSchemaInput) => {
       const apiSpecResponse = await invasivesApi.getCachedApiSpec();
-      const schemaTypeList = typeof tableSchemaType === 'string' ? [tableSchemaType] : tableSchemaType || [];
+      const schemaTypeList = typeof tableSchemaInput === 'string' ? [tableSchemaInput] : tableSchemaInput || [];
 
       await setSchemas({
         schema: schemaTypeList.reduce(
@@ -417,8 +417,6 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
 
   useEffect(() => {
     setSelected(props.selected || []);
-    // if (props.setSelected)
-    //  props.setSelected(props.selected);
   }, [JSON.stringify(props.selected)]);
 
   useEffect(() => {
@@ -485,19 +483,18 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     [rows]
   );
 
-  const selectRow = useCallback((selected, key) => {
-    const start = Date.now();
-    const selectedIndex = selected.indexOf(key);
+  const selectRow = useCallback((prevSelected, key) => {
+    const selectedIndex = prevSelected.indexOf(key);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, key);
+      newSelected = newSelected.concat(prevSelected, key);
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
+      newSelected = newSelected.concat(prevSelected.slice(1));
+    } else if (selectedIndex === prevSelected.length - 1) {
+      newSelected = newSelected.concat(prevSelected.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+      newSelected = newSelected.concat(prevSelected.slice(0, selectedIndex), prevSelected.slice(selectedIndex + 1));
     }
     setSelected(newSelected);
   }, []);
@@ -511,15 +508,12 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     setPage(0);
   };
 
-  const isSelectedRow = (selected, key) => selected.indexOf(key) !== -1;
-  const isExpandedRow = (expandedRows, key) => expandedRows.indexOf(key) !== -1;
-
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   const toggleExpandedRow = useCallback(
     (key) => {
       let newExpandedRows;
-      if (isExpandedRow(expandedRows, key)) {
+      if (expandedRows.indexOf(key) !== -1) {
         newExpandedRows = expandedRows.filter((rowKey) => rowKey !== key);
       } else {
         if (dropdownLimit) {
@@ -538,7 +532,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     [expandedRows?.length, JSON.stringify(expandedRows), dropdownLimit, selectedRows, rows]
   );
 
-  const TableHead = useMemo(
+  const CachedTableHead = useMemo(
     () => (
       <RecordTableHead
         classes={classes}
@@ -593,7 +587,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                   aria-labelledby="tableTitle"
                   size={densePadding ? 'small' : 'medium'}
                   aria-label="enhanced table">
-                  {TableHead}
+                  {CachedTableHead}
                   <TableBody>
                     {pageRows.map((row, index) => (
                       <RecordTableRow
@@ -604,8 +598,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                         dropdown={dropdown}
                         pageHasDropdown={pageHasDropdown}
                         hasOverflow={verboseOverflows[index]}
-                        isExpanded={isExpandedRow(expandedRows, row[keyField])}
-                        isSelected={isSelectedRow(selected, row[keyField])}
+                        isExpanded={expandedRows.indexOf(row[keyField]) !== -1}
+                        isSelected={selected.indexOf(row[keyField]) !== -1}
                         enableSelection={enableSelection}
                         toggleExpanded={(event) => {
                           event.stopPropagation();

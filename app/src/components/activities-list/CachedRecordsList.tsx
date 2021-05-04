@@ -111,7 +111,6 @@ interface ICachedRecordsTable {
 }
 
 export const ObservationsTable: React.FC<ICachedRecordsTable> = (props) => {
-  const classes = useStyles();
   const history = useHistory();
 
   const { selected, setSelected, rows } = props;
@@ -213,7 +212,6 @@ export const ObservationsTable: React.FC<ICachedRecordsTable> = (props) => {
 };
 
 export const TreatmentsTable: React.FC<ICachedRecordsTable> = (props) => {
-  const classes = useStyles();
   const history = useHistory();
 
   const { selected, setSelected, rows, databaseContext } = props;
@@ -335,9 +333,6 @@ export const TreatmentsTable: React.FC<ICachedRecordsTable> = (props) => {
 };
 
 export const MonitoringTable: React.FC<ICachedRecordsTable> = (props) => {
-  const classes = useStyles();
-  const history = useHistory();
-
   const { selected, setSelected, rows } = props;
   return useMemo(() => {
     return (
@@ -399,9 +394,6 @@ export const MonitoringTable: React.FC<ICachedRecordsTable> = (props) => {
 };
 
 export const PointsOfInterestTable: React.FC<ICachedRecordsTable> = (props) => {
-  const classes = useStyles();
-  const history = useHistory();
-
   const { selected, setSelected, rows } = props;
   return useMemo(() => {
     return (
@@ -464,7 +456,6 @@ const CachedRecordsList: React.FC = (props) => {
   const [extent, setExtent] = useState(null);
   const [stateDocs, setDocs] = useState<any[]>([]);
   const docs = useMemo(() => stateDocs, [stateDocs?.length]);
-  const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(true);
   const [metabaseQuerySubmitted, setMetabaseQuerySubmitted] = useState(false);
 
@@ -606,11 +597,11 @@ const CachedRecordsList: React.FC = (props) => {
   }, [docs]);
   const [selectedPOIs, setSelectedPOIs] = useState([]);
 
-  const createMetabaseQuery = async (event, selectedActivities, selectedPOIs) => {
+  const createMetabaseQuery = async (event, selectedActivities, selectedPoints) => {
     await setMetabaseQuerySubmitted(true);
     const queryCreate: ICreateMetabaseQuery = {
       activity_ids: selectedActivities,
-      point_of_interest_ids: selectedPOIs
+      point_of_interest_ids: selectedPoints
     };
     try {
       let response = await invasivesApi.createMetabaseQuery(queryCreate);

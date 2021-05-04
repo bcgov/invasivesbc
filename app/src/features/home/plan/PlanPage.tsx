@@ -100,7 +100,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const [extent, setExtent] = useState(null);
 
   const [workingTripID, setWorkingTripID] = useState(null);
-  const [newTripID, setNewTripID] = useState(null)
+  const [newTripID, setNewTripID] = useState(null);
   const [trips, setTrips] = useState([]);
   const [tripsLoaded, setTripsLoaded] = useState(false);
 
@@ -176,7 +176,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
     let docs = await databaseContext.database.find({
       selector: { trip_id: { $gte: null } },
-      sort: [{'trip_id' : 'desc'}],
+      sort: [{ trip_id: 'desc' }],
       use_index: 'tripIDIndex',
       limit: 1
     });
@@ -184,13 +184,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!docs || !docs.docs || !docs.docs.length) {
       return 0;
     } else {
-      console.dir(docs.docs)
-      if(docs.docs[0].trip_id)
-      {
+      console.dir(docs.docs);
+      if (docs.docs[0].trip_id) {
         return parseInt(docs.docs[0]._id);
-      }
-      else {
-        return 0
+      } else {
+        return 0;
       }
     }
   };
