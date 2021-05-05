@@ -42,7 +42,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
 
   const getPointOfInterestChoicesFromTrip = async () => {
-    console.log('trip id for point filter: ' + props.trip_ID)
+    console.log('trip id for point filter: ' + props.trip_ID);
     let docs = await databaseContext.database.find({
       selector: {
         _id: props.trip_ID
@@ -56,7 +56,6 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
     }
   };
 
-
   //change this to only look for changes that are relevant
   useEffect(() => {
     const updateComponent = () => {
@@ -69,7 +68,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
     await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
       return { ...tripDoc, pointOfInterestChoices: newPointOfInterestChoices };
     });
-    setPointOfInterestChoices([...newPointOfInterestChoices])
+    setPointOfInterestChoices([...newPointOfInterestChoices]);
   };
 
   const addPointOfInterestChoice = (newPointOfInterest: IPointOfInterestChoices) => {
@@ -117,7 +116,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                         </Select>
                       </div>
                     </Grid>
-                 {/*   <Grid item xs={4}>
+                    {/*   <Grid item xs={4}>
                       <InputLabel>Photos</InputLabel>
                       <Switch
                         color="primary"
@@ -130,7 +129,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                         }}
                       />
                       </Grid>*/}
-                  {/*  <Grid item xs={4}>
+                    {/*  <Grid item xs={4}>
                       <InputLabel>Forms</InputLabel>
                       <Switch
                         color="primary"

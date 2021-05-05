@@ -476,8 +476,7 @@ const CachedRecordsList: React.FC = (props) => {
       return newSelected;
     };
 
-    if (doc.docType === 'reference_point_of_interest')
-      setSelectedPOIs(toggleSelectedFunction(doc._id));
+    if (doc.docType === 'reference_point_of_interest') setSelectedPOIs(toggleSelectedFunction(doc._id));
     switch (doc.activityType) {
       case 'Observation':
         setSelectedObservations(toggleSelectedFunction(doc._id));

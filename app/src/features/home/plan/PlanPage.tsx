@@ -119,10 +119,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   */
 
   const getExtent = async () => {
-    let docs = await databaseContext.database.find(
-      {
-         selector: { docType: DocType.PLAN_PAGE_EXTENT },
-        use_index: 'docTypeIndex' });
+    let docs = await databaseContext.database.find({
+      selector: { docType: DocType.PLAN_PAGE_EXTENT },
+      use_index: 'docTypeIndex'
+    });
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
     }
@@ -143,10 +143,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       use_index: 'docTypeIndex'
     });
 
-    if(docs?.docs?.length === 0) {
+    if (docs?.docs?.length === 0) {
       // to prevent endless loading spinner on 0 trips
-      console.log('got here')
-      setTripsLoaded(true)
+      console.log('got here');
+      setTripsLoaded(true);
     }
 
     let trips = [];
@@ -266,7 +266,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         return;
       }
       let docs = await databaseContext.database.find({
-         selector: { docType: DocType.TRIP, trip_ID: props.trip_ID},
+        selector: { docType: DocType.TRIP, trip_ID: props.trip_ID },
         use_index: 'docTypeIndex'
       });
 
@@ -325,8 +325,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     return useMemo(() => {
       return (
         <>
-        { stepState?
-        (
+          {stepState ? (
             <Grid item md={12}>
               <TripStep
                 title="Step 1: Name your trip"
@@ -425,7 +424,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               </TripStep>
             </Grid>
           ) : (
-          <>test<Spinner /></>
+            <>
+              test
+              <Spinner />
+            </>
           )}
         </>
       );
@@ -499,10 +501,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (confirmDeleteTrip(trip_ID, tripName)) {
       await deleteTripRecords(databaseContext, trip_ID);
     }
-    await databaseContext.database.get(trip_ID.toString()).then((doc)=> {
-      return databaseContext.database.remove(doc)
-    })
-    setNewTripID(Math.random())
+    await databaseContext.database.get(trip_ID.toString()).then((doc) => {
+      return databaseContext.database.remove(doc);
+    });
+    setNewTripID(Math.random());
   };
 
   return (
@@ -511,8 +513,13 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Button onClick={addTrip} color="primary" variant="contained">
         Add Trip
       </Button>
-      {!tripsLoaded && <> spinner <Spinner /></>}
-      {tripsLoaded &&
+      {!tripsLoaded && (
+        <>
+          {' '}
+          spinner <Spinner />
+        </>
+      )}
+      {tripsLoaded && (
         <RecordTable
           className={classes.tripList}
           tableName={'My Trips'}
@@ -571,7 +578,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           // startingRowsPerPage: default 10;
           // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
         />
-      }
+      )}
     </Container>
   );
 };

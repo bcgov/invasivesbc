@@ -114,21 +114,19 @@ export const useInvasivesApi = () => {
   const getMetabaseQueryResults = async (metabaseQueriesSearchCriteria: IMetabaseQuerySearchCriteria): Promise<any> => {
     let activities, points_of_interest;
     try {
-    const { data }  = await api.get(`/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`);
-    if (data?.activity_ids?.length)
-      activities = await getActivities({
-        activity_ids: data.activity_ids,
-        search_feature: metabaseQueriesSearchCriteria.search_feature
-      });
-    if (data?.point_of_interest_ids?.length)
-      points_of_interest = await getPointsOfInterest({
-        point_of_interest_ids: data.point_of_interest_ids,
-        search_feature: metabaseQueriesSearchCriteria.search_feature
-      });
-
-    }
-    catch {
-      console.log('Metabase API call failed.')
+      const { data } = await api.get(`/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`);
+      if (data?.activity_ids?.length)
+        activities = await getActivities({
+          activity_ids: data.activity_ids,
+          search_feature: metabaseQueriesSearchCriteria.search_feature
+        });
+      if (data?.point_of_interest_ids?.length)
+        points_of_interest = await getPointsOfInterest({
+          point_of_interest_ids: data.point_of_interest_ids,
+          search_feature: metabaseQueriesSearchCriteria.search_feature
+        });
+    } catch {
+      console.log('Metabase API call failed.');
     }
 
     return {
