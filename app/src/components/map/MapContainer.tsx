@@ -2,6 +2,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature } from 'geojson';
 import * as L from 'leaflet';
+import axios from 'axios';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet.locatecontrol';
@@ -124,7 +125,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const getNRDistricts = () => {
     return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png`,
+      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:3857@png/{z}/{x}/{y}.png`,
       {
         opacity: 0.8,
         tms: true
@@ -378,19 +379,19 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return L.control.savetiles(layerToSave, {
       zoomlevels: [13, 14, 15, 16, 17],
       confirm(layer, successCallback) {
+        successCallback(true);
         // TODO: Increment counter global variable
-        console.log('layer', layer);
-        console.log('successCallback', successCallback);
+        console.log('increment a counter here');
       }
     });
   };
 
-  const addASaveTilesControl = (layerSaveControl: any) => {
-    layerSaveControl.remove(mapRef.current);
-    if (mapRef.current.getZoom() > 13) {
-      layerSaveControl.addTo(mapRef.current);
-    }
-  };
+  // const addASaveTilesControl = (layerSaveControl: any) => {
+  //   layerSaveControl.remove(mapRef.current);
+  //   if (mapRef.current.getZoom() > 13) {
+  //     layerSaveControl.addTo(mapRef.current);
+  //   }
+  // };
 
   const setGeometryMapBounds = () => {
     if (
@@ -515,11 +516,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     bcBaseLayerControl._map = mapRef.current;
     layerRef.current.push(bcBaseLayerControl);
 
-    // console.log('testControl',testControl.getStorageSize);
-    const testControl = getSaveControl2(streams);
-    testControl._map = mapRef.current;
-    layerRef.current.push(testControl);
-
     addLayerControls(basemaps, overlays);
     setMapBounds(mapRef.current.getBounds());
 
@@ -530,7 +526,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapRef.current.on('zoomend', () => {
       props.extentState.setExtent(mapRef.current.getBounds());
       setCurrentZoom(mapRef.current.getZoom());
-      // XXX: Turn off old saving controls
       // addASaveTilesControl(esriSaveTilesControl);
     });
 
@@ -873,12 +868,44 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const x2 = bounds.getEast();
     const y2 = bounds.getNorth();
     const extent = [x1, y1, x2, y2] as turf.BBox;
+    const layers = [
+      {
+        name: 'Wells',
+        schema: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW'
+      }
+    ];
+
+    layers.forEach(async (layer, index) => {
+      const url = `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:${layer.schema}&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`;
+      const response = await axios(url);
+      // console.log('url',url);
+      // console.log('index',index);
+      // console.log('resp',response.data);
+      // If it's the last record
+
+      await databaseContext.database.upsert('offline_data', (spatial) => {
+        return {
+          docType: DocType.OFFLINE_DATA,
+          geometry:
+            spatial.geometry?.features?.length > 0
+              ? [...spatial.geometry.features, ...response.data.features]
+              : response.data.features
+        };
+      });
+
+      if (index == layers.length - 1) {
+        setOfflineing(false);
+      }
+    });
+    return;
     const poly = turf.bboxPolygon(extent);
 
     // Add a special flag to distinguish from other features
     poly.properties.offlineExtent = true;
     poly.properties.running = true;
 
+    // Save our extent to the database
+    // XXX: Currently this over writes the previous element.
     await databaseContext.database.upsert('offline_extent', (spatial) => {
       return {
         docType: DocType.OFFLINE_EXTENT,

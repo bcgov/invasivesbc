@@ -403,7 +403,7 @@ const ActivitiesList: React.FC = () => {
             color="primary"
             startIcon={<Sync className={clsx(syncing && 'rotating')} />}
             onClick={() => syncActivities()}>
-            Sync Activities
+            Submit Records
           </Button>
         </Box>
         <Box>

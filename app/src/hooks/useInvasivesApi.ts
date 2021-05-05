@@ -112,8 +112,9 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getMetabaseQueryResults = async (metabaseQueriesSearchCriteria: IMetabaseQuerySearchCriteria): Promise<any> => {
-    const { data } = await api.get(`/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`);
     let activities, points_of_interest;
+    try {
+    const { data }  = await api.get(`/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`);
     if (data?.activity_ids?.length)
       activities = await getActivities({
         activity_ids: data.activity_ids,
@@ -124,6 +125,11 @@ export const useInvasivesApi = () => {
         point_of_interest_ids: data.point_of_interest_ids,
         search_feature: metabaseQueriesSearchCriteria.search_feature
       });
+
+    }
+    catch {
+      console.log('Metabase API call failed.')
+    }
 
     return {
       // TODO Note: api code smell that activities and points-of-interest dont have same response format

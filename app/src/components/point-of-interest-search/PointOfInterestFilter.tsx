@@ -12,7 +12,7 @@ import {
   Select,
   Switch
 } from '@material-ui/core';
-import { Add, DeleteForever } from '@material-ui/icons';
+import { Add, ContactlessOutlined, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -39,13 +39,13 @@ const useStyles = makeStyles((theme) => ({
 
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
 
   const getPointOfInterestChoicesFromTrip = async () => {
+    console.log('trip id for point filter: ' + props.trip_ID)
     let docs = await databaseContext.database.find({
       selector: {
-        _id: 'trip'
+        _id: props.trip_ID
       }
     });
     if (docs.docs.length > 0) {
@@ -55,17 +55,21 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
       }
     }
   };
+
+
+  //change this to only look for changes that are relevant
   useEffect(() => {
     const updateComponent = () => {
       getPointOfInterestChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext]);
+  }, []);
 
   const saveChoices = async (newPointOfInterestChoices) => {
-    await databaseContext.database.upsert('trip', (tripDoc) => {
+    await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
       return { ...tripDoc, pointOfInterestChoices: newPointOfInterestChoices };
     });
+    setPointOfInterestChoices([...newPointOfInterestChoices])
   };
 
   const addPointOfInterestChoice = (newPointOfInterest: IPointOfInterestChoices) => {
@@ -110,11 +114,10 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           }}>
                           <MenuItem value={''}>All</MenuItem>
                           <MenuItem value={'IAPP Site'}>IAPP Site</MenuItem>
-                          <MenuItem value={'Well'}>Well</MenuItem>
                         </Select>
                       </div>
                     </Grid>
-                    <Grid item xs={4}>
+                 {/*   <Grid item xs={4}>
                       <InputLabel>Photos</InputLabel>
                       <Switch
                         color="primary"
@@ -126,8 +129,8 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           );
                         }}
                       />
-                    </Grid>
-                    <Grid item xs={4}>
+                      </Grid>*/}
+                  {/*  <Grid item xs={4}>
                       <InputLabel>Forms</InputLabel>
                       <Switch
                         color="primary"
@@ -139,7 +142,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           );
                         }}
                       />
-                    </Grid>
+                      </Grid> */}
                     <Grid item xs={6}>
                       <KeyboardDatePicker
                         autoOk
@@ -196,8 +199,8 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
             onClick={() => {
               addPointOfInterestChoice({
                 pointOfInterestType: '',
-                includePhotos: false,
-                includeForms: false,
+                includePhotos: true,
+                includeForms: true,
                 startDate: null,
                 endDate: null
               });

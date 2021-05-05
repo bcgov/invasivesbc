@@ -40,13 +40,12 @@ const useStyles = makeStyles((theme) => ({
 
 export const ActivityDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
   const [activityChoices, setActivityChoices] = useState([]);
 
   const getActivityChoicesFromTrip = useCallback(async () => {
     let docs = await databaseContext.database.find({
       selector: {
-        _id: props.trip_id
+        _id: props.trip_ID
       }
     });
     if (docs.docs.length > 0) {
@@ -55,19 +54,21 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
         setActivityChoices([...tripDoc.activityChoices]);
       }
     }
-  }, [databaseContext.database]);
+  }, []);
 
   useEffect(() => {
     const updateComponent = () => {
       getActivityChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext, getActivityChoicesFromTrip]);
+  }, [getActivityChoicesFromTrip]);
 
   const saveChoices = async (newActivityChoices) => {
-    await databaseContext.database.upsert(props.trip_id, (tripDoc) => {
+    console.log('updating trip ' + props.trip_ID + ' activity filters')
+    await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
       return { ...tripDoc, activityChoices: newActivityChoices };
     });
+    setActivityChoices([...newActivityChoices])
   };
 
   const addActivityChoice = (newActivity: IActivityChoices) => {
@@ -87,6 +88,8 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   };
 
   const classes = useStyles();
+  const [memoHash, setMemoHash] = useState();
+
 
   return (
     <>
@@ -107,7 +110,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                           onChange={(e) => {
                             updateActivityChoice({ ...activityChoice, activityType: e.target.value }, index);
                           }}>
-                          <MenuItem value={''}>All</MenuItem>
+                          <MenuItem value={'All'}>All</MenuItem>
                           <MenuItem value={'Observation'}>Observation</MenuItem>
                           <MenuItem value={'Treatment'}>Treatment</MenuItem>
                           <MenuItem value={'Monitoring'}>Monitoring</MenuItem>

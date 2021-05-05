@@ -60,11 +60,6 @@ const PointOfInterestPopUp = (name: string) => {
   return '<div>' + name + '</div>';
 };
 
-const UploadedSpatialPopUp = (content: any) => {
-  console.log(content);
-  return 'yo';
-};
-
 interface popOutComponentProps {
   classes?: any;
   selectedGeo?: any;
@@ -176,7 +171,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
             DocType.REFERENCE_POINT_OF_INTEREST,
             DocType.POINT_OF_INTEREST,
             DocType.SPATIAL_UPLOADS,
-            DocType.OFFLINE_EXTENT
+            DocType.OFFLINE_EXTENT,
+            DocType.OFFLINE_DATA
           ]
         }
         /*
@@ -229,6 +225,16 @@ const MapPage: React.FC<IMapProps> = (props) => {
         coordinatesString = `(${Number(coords[1]).toFixed(2)}, ${Number(coords[0]).toFixed(2)})`;
 
       switch (row.docType) {
+        case DocType.OFFLINE_DATA:
+          interactiveGeos.push({
+            recordDocID: row._id,
+            recordDocType: row.docType,
+            description: offlineSpatialPopup,
+            geometry: row.geometry,
+            color: 'blue',
+            popUpComponent: PointOfInterestPopUp
+          });
+          break;
         case DocType.OFFLINE_EXTENT:
           // TODO push this into the interactiveGeos array
           // Then in the layer addition logic... handle behaviour
