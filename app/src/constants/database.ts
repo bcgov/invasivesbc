@@ -8,9 +8,6 @@ export enum DocType {
   NOTIFICATION = 'notification',
   SPATIAL_UPLOADS = 'spatial_uploads',
   OFFLINE_EXTENT = 'offline_extent',
-<<<<<<< HEAD
-  OFFLINE_DATA = 'offline_data'
-=======
+  OFFLINE_DATA = 'offline_data',
   PLAN_PAGE_EXTENT = 'plan_page_extent'
->>>>>>> dev
 }

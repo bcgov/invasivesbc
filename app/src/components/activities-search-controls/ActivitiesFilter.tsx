@@ -64,11 +64,11 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   }, [getActivityChoicesFromTrip]);
 
   const saveChoices = async (newActivityChoices) => {
-    console.log('updating trip ' + props.trip_ID + ' activity filters')
+    console.log('updating trip ' + props.trip_ID + ' activity filters');
     await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
       return { ...tripDoc, activityChoices: newActivityChoices };
     });
-    setActivityChoices([...newActivityChoices])
+    setActivityChoices([...newActivityChoices]);
   };
 
   const addActivityChoice = (newActivity: IActivityChoices) => {
@@ -89,7 +89,6 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
 
   const classes = useStyles();
   const [memoHash, setMemoHash] = useState();
-
 
   return (
     <>
