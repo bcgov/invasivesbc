@@ -229,7 +229,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
           interactiveGeos.push({
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: offlineSpatialPopup,
+            description: 'Offline Data',
             geometry: row.geometry,
             color: 'blue',
             popUpComponent: PointOfInterestPopUp
