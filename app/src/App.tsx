@@ -52,14 +52,16 @@ const App: React.FC<IAppProps> = (props) => {
             <DatabaseContextProvider>
               <DatabaseContext.Consumer>
                 {(databaseContext: IDatabaseContext) => {
-                  if (!databaseContext.database) {
+                  if (databaseContext.database || databaseContext.sqlite) {
                     // database not ready, delay loading app
-                    return <CircularProgress />;
-                  }
-                  return (
+                    return (
                     <DatabaseChangesContextProvider>
                       <AppRouter {...appRouterProps} />
                     </DatabaseChangesContextProvider>
+                    )
+                  }
+                  return (
+                    <CircularProgress />
                   );
                 }}
               </DatabaseContext.Consumer>

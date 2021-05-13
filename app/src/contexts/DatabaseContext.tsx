@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import PouchDB from 'pouchdb-core';
 import PouchDBFind from 'pouchdb-find';
 import PouchDBUpsert from 'pouchdb-upsert';
@@ -76,7 +77,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
    * Create the database.
    */
   const setupDatabase = useCallback(async () => {
-    if (true) {
+    if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
 
       let sqlite = {
         echo: echo,
@@ -126,9 +127,9 @@ export const DatabaseContextProvider: React.FC = (props) => {
         await database.destroy();
         await setupDatabase();
       };
+    setDatabaseContext({ database: db, resetDatabase: () => resetDatabase(db) });
     }
 
-    //setDatabaseContext({ database: db, resetDatabase: () => resetDatabase(db) });
   }, [databaseContext.database]);
 
   /**
