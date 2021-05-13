@@ -292,7 +292,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
       }
     }
-
+    console.log('done caching)')
     notifySuccess(
       databaseContext,
       'Cached ' +

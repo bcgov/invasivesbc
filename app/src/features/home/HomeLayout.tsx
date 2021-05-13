@@ -44,7 +44,8 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
       setNotification(notifications.docs[0]);
       setIsOpen(true);
     }
-  }, [databaseContext.database]);
+  //}, [databaseContext.database]);
+  }, []);
 
   useEffect(() => {
     const updateComponent = () => {
@@ -52,7 +53,8 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
     };
 
     updateComponent();
-  }, [databaseChangesContext, addNotificationsToPage]);
+  //}, [databaseChangesContext, addNotificationsToPage]);
+  }, []);
 
   const acknowledgeNotification = (docId: string) => {
     databaseContext.database.upsert(docId, (doc) => {

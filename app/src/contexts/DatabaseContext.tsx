@@ -3,14 +3,28 @@ import PouchDBFind from 'pouchdb-find';
 import PouchDBUpsert from 'pouchdb-upsert';
 import React, { useEffect, useState, useCallback } from 'react';
 
+import { useSQLite } from 'react-sqlite-hook/dist';
+
 const DB_SCHEMA = process.env.REACT_APP_DB_SCHEMA || 'invasivesbc';
 
 export type IDatabaseContext = {
-  database: PouchDB.Database<any>;
-  resetDatabase: () => void;
+  // sqlite stuff:
+  sqlite?: any;
+
+  //pouch stuff:
+  database?: PouchDB.Database<any>;
+  resetDatabase?: () => void;
 };
 
-export const DatabaseContext = React.createContext<IDatabaseContext>({ database: null, resetDatabase: () => {} });
+const createDB = () => {
+  if (false) {
+    return React.createContext<IDatabaseContext>({ database: null, resetDatabase: () => {} });
+  } else {
+    let sqlite: any;
+    return React.createContext<IDatabaseContext>({ sqlite: sqlite });
+  }
+};
+export const DatabaseContext = createDB();
 
 /**
  * Provides access to the database and to related functions to manipulate the database instance.
@@ -18,7 +32,7 @@ export const DatabaseContext = React.createContext<IDatabaseContext>({ database:
  * @param {*} props
  */
 export const DatabaseContextProvider: React.FC = (props) => {
-  const [databaseContext, setDatabaseContext] = useState<IDatabaseContext>({ database: null, resetDatabase: () => {} });
+  const [databaseContext, setDatabaseContext] = useState<IDatabaseContext>({ sqlite: null, database: null, resetDatabase: () => {} });
 
   /**
    * Create the database using mobile plugins/settings.
@@ -30,7 +44,8 @@ export const DatabaseContextProvider: React.FC = (props) => {
       adapter: 'cordova-sqlite',
       // See https://www.npmjs.com/package/cordova-sqlite-storage for details on the below options
       iosDatabaseLocation: 'default',
-      androidDatabaseProvider: 'system'
+      androidDatabaseProvider: 'system',
+      auto_compaction: true
     } as any);
   };
 
@@ -42,45 +57,78 @@ export const DatabaseContextProvider: React.FC = (props) => {
 
     return new PouchDB(DB_SCHEMA, { adapter: 'idb' });
   };
+      const {
+        echo,
+        getPlatform,
+        createConnection,
+        closeConnection,
+        retrieveConnection,
+        retrieveAllConnections,
+        closeAllConnections,
+        addUpgradeStatement,
+        importFromJson,
+        isJsonValid,
+        copyFromAssets,
+        isAvailable
+      } = useSQLite();
 
   /**
    * Create the database.
    */
   const setupDatabase = useCallback(async () => {
-    let db = databaseContext.database;
+    if (true) {
 
-    if (db) {
-      return;
-    }
-
-    PouchDB.plugin(PouchDBFind); // adds find query support
-    PouchDB.plugin(PouchDBUpsert); // adds upsert query support
-
-    if (window['cordova']) {
-      db = createMobileDatabase();
+      let sqlite = {
+        echo: echo,
+        getPlatform: getPlatform,
+        createConnection: createConnection,
+        closeConnection: closeConnection,
+        retrieveConnection: retrieveConnection,
+        retrieveAllConnections: retrieveAllConnections,
+        closeAllConnections: closeAllConnections,
+        addUpgradeStatement: addUpgradeStatement,
+        importFromJson: importFromJson,
+        isJsonValid: isJsonValid,
+        copyFromAssets: copyFromAssets,
+        isAvailable: isAvailable
+      };
+      setDatabaseContext({ sqlite: sqlite });
     } else {
-      db = createDatabase();
-    }
-    db.createIndex({ index: { ddoc: 'notificationsIndex', fields: ['docType', 'acknowledged'] } });
-    db.createIndex({ index: { ddoc: 'activitiesIndex', fields: ['docType', 'activityType'] } });
-    db.createIndex({ index: { ddoc: 'formStatusIndex', fields: ['docType', 'formStatus', 'sync.ready'] } });
-    db.createIndex({ index: { ddoc: 'docTypeIndex', fields: ['docType', 'trip_ID'] } });
-    db.createIndex({ index: { ddoc: 'tripDocTypeIndex', fields: ['trip_ID', 'docType'] } });
-    db.createIndex({ index: { ddoc: 'tripIDIndex', fields: ['docType', 'trip_IDs'] } });
+      let db = databaseContext.database;
 
-    /**
-     * Destroy and re-create the database.
-     */
-    const resetDatabase = async (database) => {
-      if (!database) {
+      if (db) {
         return;
       }
 
-      await database.destroy();
-      await setupDatabase();
-    };
+      PouchDB.plugin(PouchDBFind); // adds find query support
+      PouchDB.plugin(PouchDBUpsert); // adds upsert query support
 
-    setDatabaseContext({ database: db, resetDatabase: () => resetDatabase(db) });
+      if (window['cordova']) {
+        db = createMobileDatabase();
+      } else {
+        db = createDatabase();
+      }
+      db.createIndex({ index: { ddoc: 'notificationsIndex', fields: ['docType', 'acknowledged'] } });
+      db.createIndex({ index: { ddoc: 'activitiesIndex', fields: ['docType', 'activityType'] } });
+      db.createIndex({ index: { ddoc: 'formStatusIndex', fields: ['docType', 'formStatus', 'sync.ready'] } });
+      db.createIndex({ index: { ddoc: 'docTypeIndex', fields: ['docType', 'trip_ID'] } });
+      db.createIndex({ index: { ddoc: 'tripDocTypeIndex', fields: ['trip_ID', 'docType'] } });
+      db.createIndex({ index: { ddoc: 'tripIDIndex', fields: ['docType', 'trip_IDs'] } });
+
+      /**
+       * Destroy and re-create the database.
+       */
+      const resetDatabase = async (database) => {
+        if (!database) {
+          return;
+        }
+
+        await database.destroy();
+        await setupDatabase();
+      };
+    }
+
+    //setDatabaseContext({ database: db, resetDatabase: () => resetDatabase(db) });
   }, [databaseContext.database]);
 
   /**
