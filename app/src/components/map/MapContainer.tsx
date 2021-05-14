@@ -961,17 +961,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const layers = [
       {
         name: 'Wells',
-        schema: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW'
+        schema: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+        url: `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`
       }
     ];
 
     layers.forEach(async (layer, index) => {
-      const url = `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:${layer.schema}&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`;
-      const response = await axios(url);
-      // console.log('url',url);
-      // console.log('index',index);
-      // console.log('resp',response.data);
-      // If it's the last record
+      const response = await axios(layer.url);
 
       await databaseContext.database.upsert('offline_data', (spatial) => {
         return {
@@ -983,10 +979,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         };
       });
 
+      // If it's the last record
       if (index == layers.length - 1) {
         setOfflineing(false);
       }
     });
+
     return;
     const poly = turf.bboxPolygon(extent);
 
