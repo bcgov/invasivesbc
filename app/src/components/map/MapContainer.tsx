@@ -436,7 +436,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [currentZoom]);
 
   const initMap = () => {
-    mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([55, -128], 10);
+    mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([54, -124], 6);
 
     setCurrentZoom(mapRef.current.getZoom());
     addContextMenuClickListener();
