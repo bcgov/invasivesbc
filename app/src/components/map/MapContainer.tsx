@@ -616,7 +616,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         });
       });
     }
-<<<<<<< HEAD
 
     const defaultPopup = (feature, layer, interactObj) => {
       const content = interactObj.popUpComponent(interactObj.description);
@@ -706,7 +705,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         }
       });
     });
-=======
+
     if (props.interactiveGeometryState?.interactiveGeometry) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
         const key = interactObj.recordDocID || interactObj._id;
@@ -800,7 +799,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     // update stored geos, mapped by key
     setGeoKeys(newGeoKeys);
->>>>>>> dev
 
     // Update the drawn featres
     setDrawnItems(drawnItems);
