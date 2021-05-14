@@ -172,8 +172,7 @@ export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     const linkedActivityInvasivePlants = linkedActivity?.formData?.activity_subtype_data?.invasive_plants;
     const { invasive_plant_code } = formData?.activity_subtype_data;
-    if (!linkedActivityInvasivePlants || !invasive_plant_code)
-      return errors;
+    if (!linkedActivityInvasivePlants || !invasive_plant_code) return errors;
 
     errors.activity_subtype_data['invasive_plant_code'].__errors = [];
     if (!linkedActivityInvasivePlants.some((lip: any) => lip.invasive_plant_code === invasive_plant_code)) {

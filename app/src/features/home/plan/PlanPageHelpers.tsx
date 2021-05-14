@@ -29,50 +29,51 @@ export const deleteTripRecords = async (databaseContext, trip_ID) => {
     });
     console.log(docs.docs);
 
-    let docsToDelete = []
-    let docsToUpdate = []
+    let docsToDelete = [];
+    let docsToUpdate = [];
 
     // sort into docs that have other trips and those we can delete
     docs.docs.map((doc) => {
       let isDocToDelete = true;
       doc.trip_IDs.map((id) => {
-        if(id !== trip_ID.toString()){
+        if (id !== trip_ID.toString()) {
           isDocToDelete = false;
         }
-      })
-        if(isDocToDelete)
-        {
-          docsToDelete.push({...doc,_deleted : true})
-        }
-        else
-        {
-          docsToUpdate.push(doc)
-        }
-      })
+      });
+      if (isDocToDelete) {
+        docsToDelete.push({ ...doc, _deleted: true });
+      } else {
+        docsToUpdate.push(doc);
+      }
+    });
 
-      //bulk delete
-      databaseContext.database.bulkDocs(docsToDelete)
-
+    //bulk delete
+    databaseContext.database.bulkDocs(docsToDelete);
 
     //wipe trip id off overlapping records
     docsToUpdate.map((doc) => {
       let newTripIDs = [];
-      doc.trip_IDs.map((id)=>{
-        if(id !== trip_ID.toString())
-        {
-          newTripIDs.push(id.toString())
+      doc.trip_IDs.map((id) => {
+        if (id !== trip_ID.toString()) {
+          newTripIDs.push(id.toString());
         }
-      })
-      databaseContext.database.upsert(doc._id, (existingDoc)=>{
+      });
+      databaseContext.database.upsert(doc._id, (existingDoc) => {
         return {
           ...existingDoc,
           trip_IDs: [...newTripIDs]
-        }
-      })
-    })
+        };
+      });
+    });
 
-
-    notifySuccess(databaseContext, 'Wiped ' + docsToDelete.length + ' records from trip.  ' + docsToUpdate.length + ' were not removed because they belong to another trip');
+    notifySuccess(
+      databaseContext,
+      'Wiped ' +
+        docsToDelete.length +
+        ' records from trip.  ' +
+        docsToUpdate.length +
+        ' were not removed because they belong to another trip'
+    );
     // sort into records to update and those to delete
     // update records
     // delete records

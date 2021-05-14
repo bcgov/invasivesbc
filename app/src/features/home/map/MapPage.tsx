@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import moment from 'moment';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
-import MapContainer from 'components/map/MapContainer';
+import MapContainer, { getZIndex } from 'components/map/MapContainer';
 import { IAPPSite } from 'components/points-of-interest/IAPP/IAPP-Site';
 import { ActivitiesPOI } from 'components/points-of-interest/ActivitiesPOI/ActivitiesPOI';
 import { DocType } from 'constants/database';
@@ -215,11 +215,12 @@ const MapPage: React.FC<IMapProps> = (props) => {
         return;
       }
 
-      geos.push(row.geometry[0]);
+      // geos.push(row.geometry[0]); // deprecated(?): points only need to be interactive geos now
 
       let coordinatesString = 'Polygon';
 
       const coords = row.geometry[0]?.geometry.coordinates;
+      // const zIndex = getZIndex(row);
       if (row.geometry[0].geometry.type !== 'Polygon')
         coordinatesString = `(${Number(coords[1]).toFixed(2)}, ${Number(coords[0]).toFixed(2)})`;
 
@@ -391,7 +392,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setInteractiveGeometry(interactiveGeos);
 
     //setIsReadyToLoadMap(true)
-  }, [databaseContext.database, extent]);
+  }, [extent]);
 
   useEffect(() => {
     const updateComponent = () => {

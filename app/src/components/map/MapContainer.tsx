@@ -21,6 +21,24 @@ import { DocType } from 'constants/database';
 
 export type MapControl = (map: any, ...args: any) => void;
 
+export const getZIndex = (doc) => {
+  const coords = doc.geometry[0]?.geometry.coordinates;
+  let zIndex = 100000;
+  if (doc.geometry[0].geometry.type === 'Polygon' && coords?.[0]) {
+    let highestLat = coords[0].reduce((max, point) => {
+      if (point[1] > max) return point[1];
+      return max;
+    }, 0);
+    let lowestLat = coords[0].reduce((min, point) => {
+      if (point[1] < min) return point[1];
+      return min;
+    }, zIndex);
+
+    zIndex = zIndex / (highestLat - lowestLat);
+  }
+  return zIndex;
+};
+
 export interface IMapContainerProps {
   classes?: any;
   mapId: string;
@@ -62,6 +80,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const layerRef = useRef([]);
 
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
+  const [geoKeys, setGeoKeys] = useState({});
 
   const [offlineing, setOfflineing] = useState(false);
 
@@ -565,8 +584,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const updateMapOnGeometryChange = () => {
-    // Clear the drawn features
-    setDrawnItems(drawnItems.clearLayers());
+    // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
+    const newGeoKeys = { ...geoKeys };
 
     if (props.geometryState) {
       // For each geometry, add a new layer to the drawn features
@@ -597,6 +616,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         });
       });
     }
+<<<<<<< HEAD
 
     const defaultPopup = (feature, layer, interactObj) => {
       const content = interactObj.popUpComponent(interactObj.description);
@@ -686,6 +706,101 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         }
       });
     });
+=======
+    if (props.interactiveGeometryState?.interactiveGeometry) {
+      props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
+        const key = interactObj.recordDocID || interactObj._id;
+        if (newGeoKeys[key] && newGeoKeys[key].hash === JSON.stringify(interactObj) && newGeoKeys[key] !== true) {
+          // old unchanged geo, no need to redraw
+          newGeoKeys[key] = {
+            ...newGeoKeys[key],
+            updated: false
+          };
+          return;
+        }
+
+        // else prepare new Geo for drawing:
+        const style = {
+          color: interactObj.color,
+          weight: 4,
+          opacity: 0.65
+        };
+
+        const markerStyle = {
+          radius: 10,
+          weight: 4,
+          stroke: true
+        };
+
+        const geo = L.geoJSON(interactObj.geometry, {
+          // Note: the result of this isn't actually used, it seems?
+          style,
+          pointToLayer: (feature: any, latLng: any) => {
+            if (feature.properties.radius) {
+              return L.circle(latLng, { radius: feature.properties.radius });
+            } else {
+              return L.circleMarker(latLng, markerStyle);
+            }
+          },
+          onEachFeature: (feature: any, layer: any) => {
+            const content = interactObj.popUpComponent(interactObj.description);
+            layer.on('click', () => {
+              // Fires on click of single feature
+
+              // Formulate a table containing all attributes
+              let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+              Object.keys(feature.properties).forEach((f) => {
+                if (f !== 'uploadedSpatial') {
+                  table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+                }
+              });
+              table += '</table>';
+
+              const loc = turf.centroid(feature);
+              const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+              if (feature.properties.uploadedSpatial) {
+                L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+              } else {
+                L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
+              }
+
+              interactObj.onClickCallback();
+            });
+          }
+        });
+        newGeoKeys[key] = {
+          hash: JSON.stringify(interactObj),
+          geo: geo,
+          updated: true
+        };
+      });
+    }
+
+    // Drawing step:
+    Object.keys(newGeoKeys).forEach((key: any) => {
+      if (newGeoKeys[key].updated === true) {
+        // draw layers to map
+        Object.values(newGeoKeys[key].geo._layers).forEach((layer) => {
+          drawnItems.addLayer(layer);
+        });
+      } else if (newGeoKeys[key].updated === false) {
+        return;
+      } else {
+        // remove old keys (delete step)
+        Object.values(newGeoKeys[key].geo._layers).forEach((layer) => {
+          drawnItems.removeLayer(layer);
+        });
+        delete newGeoKeys[key];
+        return;
+      }
+      // reset updated status for next refresh:
+      delete newGeoKeys[key].updated;
+    });
+
+    // update stored geos, mapped by key
+    setGeoKeys(newGeoKeys);
+>>>>>>> dev
 
     // Update the drawn featres
     setDrawnItems(drawnItems);
