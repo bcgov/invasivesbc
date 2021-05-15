@@ -20,7 +20,7 @@ import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import MapContainer from 'components/map/MapContainer';
 import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 import TripDataControls from 'components/trip/TripDataControls';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
@@ -35,6 +35,7 @@ import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { useCallback } from 'react';
 import Spinner from 'components/spinner/Spinner';
 import { confirmDeleteTrip, deleteTripRecords } from './PlanPageHelpers';
+import { Capacitor } from '@capacitor/core';
 
 interface IPlanPageProps {
   classes?: any;
@@ -119,10 +120,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   */
 
   const getExtent = async () => {
-    let docs = await databaseContext.database.find(
-      {
-         selector: { docType: DocType.PLAN_PAGE_EXTENT },
-        use_index: 'docTypeIndex' });
+    let docs = await databaseContext.database.find({
+      selector: { docType: DocType.PLAN_PAGE_EXTENT },
+      use_index: 'docTypeIndex'
+    });
     if (!docs || !docs.docs || !docs.docs.length) {
       return;
     }
@@ -137,35 +138,65 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const getTrips = async () => {
     if (!databaseContext) {
     }
-    // does not work:
-    let docs = await databaseContext.database.find({
-      selector: { docType: { $eq: DocType.TRIP } },
-      use_index: 'docTypeIndex'
-    });
-
-    if(docs?.docs?.length === 0) {
-      // to prevent endless loading spinner on 0 trips
-      console.log('got here')
-      setTripsLoaded(true)
-    }
 
     let trips = [];
     let geos = [];
 
-    docs?.docs?.map((doc) => {
-      trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
-      if (doc.geometry) {
-        geos.push({
-          recordDocID: doc._id,
-          recordDocType: doc.docType,
-          description: 'Uploaded spatial content:\n ' + doc._id + '\n',
-          geometry: doc.geometry,
-          color: 'orange',
-          onClickCallback: () => {},
-          popUpComponent: null
-        });
+
+    if(Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android')
+    {
+      const banana = {name: "banana", otherstuff: "asdf"}
+
+      let results: any;
+      //Query (read only) for all by doc type:
+      alert('query by doc type')
+      results = await query({type: QueryType.DOC_TYPE, docType: DocType.TRIP},databaseContext )
+      alert(JSON.stringify(results))
+
+      //Query (read only) for one by doc type:
+      alert('query by doc type and id')
+      results = await query({type: QueryType.DOC_TYPE_AND_ID, ID: "1", docType: DocType.TRIP},databaseContext )
+      alert(JSON.stringify(results))
+
+      //Upsert always takes an array, basically if there is an ID included it is
+      //an upsert, otherwise it is an insert:
+
+      // Insert:
+      alert('insert by doc type')
+      results = await upsert([{type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: banana}], databaseContext)
+
+      // Upsert:
+    //  alert('upsert by doc type and id')
+     // results = await upsert([{type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: banana}], databaseContext)
+    }
+
+    if (Capacitor.getPlatform() == 'web') {
+      let docs = await databaseContext.database.find({
+        selector: { docType: { $eq: DocType.TRIP } },
+        use_index: 'docTypeIndex'
+      });
+
+      if (docs?.docs?.length === 0) {
+        // to prevent endless loading spinner on 0 trips
+        console.log('got here');
+        setTripsLoaded(true);
       }
-    });
+
+      docs?.docs?.map((doc) => {
+        trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
+        if (doc.geometry) {
+          geos.push({
+            recordDocID: doc._id,
+            recordDocType: doc.docType,
+            description: 'Uploaded spatial content:\n ' + doc._id + '\n',
+            geometry: doc.geometry,
+            color: 'orange',
+            onClickCallback: () => {},
+            popUpComponent: null
+          });
+        }
+      });
+    }
 
     if (geos.length > 0) {
       setInteractiveGeometry(geos);
@@ -265,7 +296,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         return;
       }
       let docs = await databaseContext.database.find({
-         selector: { docType: DocType.TRIP, trip_ID: props.trip_ID},
+        selector: { docType: DocType.TRIP, trip_ID: props.trip_ID },
         use_index: 'docTypeIndex'
       });
 
@@ -321,11 +352,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       saveState([...newState]);
     };
 
+    /*
+    const trySQLITE = () =>{
+      var myDB = window.sqlitePlugin.openDatabase({name: "mySQLite.db", location: 'default'});
+    }
+    */
+
     return useMemo(() => {
       return (
         <>
-        { stepState?
-        (
+          {stepState ? (
             <Grid item md={12}>
               <TripStep
                 title="Step 1: Name your trip"
@@ -424,7 +460,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               </TripStep>
             </Grid>
           ) : (
-          <>test<Spinner /></>
+            <>
+              test
+              <Spinner />
+            </>
           )}
         </>
       );
@@ -498,10 +537,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (confirmDeleteTrip(trip_ID, tripName)) {
       await deleteTripRecords(databaseContext, trip_ID);
     }
-    await databaseContext.database.get(trip_ID.toString()).then((doc)=> {
-      return databaseContext.database.remove(doc)
-    })
-    setNewTripID(Math.random())
+    console.log('done deleting trip contents and about to fetch trip record to delete it');
+    await databaseContext.database.get(trip_ID.toString()).then((doc) => {
+      return databaseContext.database.remove(doc);
+    });
+    console.log('done deleting trip record');
+    setNewTripID(Math.random());
   };
 
   return (
@@ -510,8 +551,13 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Button onClick={addTrip} color="primary" variant="contained">
         Add Trip
       </Button>
-      {!tripsLoaded && <> spinner <Spinner /></>}
-      {tripsLoaded &&
+      {!tripsLoaded && (
+        <>
+          {' '}
+          spinner <Spinner />
+        </>
+      )}
+      {tripsLoaded && (
         <RecordTable
           className={classes.tripList}
           tableName={'My Trips'}
@@ -570,7 +616,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           // startingRowsPerPage: default 10;
           // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
         />
-      }
+      )}
     </Container>
   );
 };
