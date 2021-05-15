@@ -193,40 +193,40 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
 
     //get by id.   also need to know doctype: in sqlite we doctypes will get their own table
     if (queryConfig.type == QueryType.DOC_TYPE_AND_ID) {
-      ret = await db.execute('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID);
+      ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID);
       if (!ret.result) {
         alert(JSON.stringify(ret));
         db.close();
         return false;
       } else {
         db.close();
-        return ret.result;
+        return ret.values;
       }
     }
 
     //get by doctype.  in sqlite we doctypes will get their own table
     if (queryConfig.type == QueryType.DOC_TYPE && queryConfig.docType) {
-      ret = await db.execute('select * from ' + queryConfig.docType);
+      ret = await db.query('select * from ' + queryConfig.docType);
       if (!ret.result) {
         alert(JSON.stringify(ret));
         db.close();
         return false;
       } else {
         db.close();
-        return ret.result;
+        return ret.values;
       }
     }
 
     // raw sql query
     if (queryConfig.type == QueryType.RAW_SQL && queryConfig.sql) {
-      ret = await db.execute(queryConfig.sql);
+      ret = await db.query(queryConfig.sql);
       if (!ret.result) {
         alert(JSON.stringify(ret));
         db.close();
         return false;
       } else {
         db.close();
-        return ret.result;
+        return ret.values;
       }
     }
 
