@@ -963,6 +963,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         name: 'Wells',
         schema: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
         url: `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`
+      },{
+        name: 'Jurisdictions',
+        schema: 'invasives:jurisdiction',
+        url: `${geoserver}/geoserver/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=invasives:jurisdiction&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`
       }
     ];
 
