@@ -764,7 +764,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
               }
 
-              interactObj.onClickCallback();
+              interactObj?.onClickCallback();
             });
           }
         });
