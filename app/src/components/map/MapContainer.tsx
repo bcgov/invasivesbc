@@ -958,6 +958,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const x2 = bounds.getEast();
     const y2 = bounds.getNorth();
     const extent = [x1, y1, x2, y2] as turf.BBox;
+    // The WFS layer list to offline
     const layers = [
       {
         name: 'Wells',
@@ -971,6 +972,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     ];
 
+    /**
+     * Cycle through the layer list then:
+     * 1. Request data
+     * 2. Store data in the database
+     * 2. Draw data on map
+     */
     layers.forEach(async (layer, index) => {
       const response = await axios(layer.url);
 
@@ -991,6 +998,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     return;
+    /**
+     * Everything below here will get replaced with
+     * a draw box feature.
+     */
     const poly = turf.bboxPolygon(extent);
 
     // Add a special flag to distinguish from other features
