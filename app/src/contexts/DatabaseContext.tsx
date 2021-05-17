@@ -195,7 +195,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
     if (queryConfig.type == QueryType.DOC_TYPE_AND_ID) {
       ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID);
       if (!ret.result) {
-        alert(JSON.stringify(ret));
+       // alert(JSON.stringify(ret));
         db.close();
         return false;
       } else {
@@ -208,7 +208,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
     if (queryConfig.type == QueryType.DOC_TYPE && queryConfig.docType) {
       ret = await db.query('select * from ' + queryConfig.docType);
       if (!ret.result) {
-        alert(JSON.stringify(ret));
+      //  alert(JSON.stringify(ret));
         db.close();
         return false;
       } else {
@@ -220,8 +220,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
     // raw sql query
     if (queryConfig.type == QueryType.RAW_SQL && queryConfig.sql) {
       ret = await db.query(queryConfig.sql);
-      if (!ret.result) {
-        alert(JSON.stringify(ret));
+      if (!ret.values) {
         db.close();
         return false;
       } else {
@@ -271,7 +270,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
       if (upsertConfig.type == UpsertType.DOC_TYPE_AND_ID) {
         ret = await db.execute('update ' + upsertConfig.docType + " set json = ('" + escape(JSON.stringify(upsertConfig.json)) + "') where id = " + upsertConfig.ID + ';');
         if (!ret.result) {
-          alert(JSON.stringify(ret));
+         // alert(JSON.stringify(ret));
           db.close();
           return false;
         } else {
@@ -285,7 +284,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
         ret = await db.execute('insert into ' + upsertConfig.docType + " (json) values ('" + escape(JSON.stringify(upsertConfig.json)) + "' );");
        // ret = await db.execute('insert into ' + upsertConfig.docType + ' (json) values ("banana");');
         if (!ret.result) {
-          alert(JSON.stringify(ret));
+         // alert(JSON.stringify(ret));
           db.close();
           return false;
         } else {
@@ -298,7 +297,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
       if (upsertConfig.type == UpsertType.RAW_SQL && upsertConfig.sql) {
         ret = await db.execute(upsertConfig.sql);
         if (!ret.result) {
-          alert(JSON.stringify(ret));
+        //  alert(JSON.stringify(ret));
           db.close();
           return false;
         } else {
@@ -342,7 +341,7 @@ export const createSqliteTables = async (adb: any) => {
   //get by id.   also need to know doctype: in sqlite we doctypes will get their own table
   ret = await db.execute(setupSQL);
   if (!ret.result) {
-    alert(JSON.stringify(ret));
+    //alert(JSON.stringify(ret));
     db.close();
     return false;
   } else {
