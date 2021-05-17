@@ -141,18 +141,18 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
     let trips = [];
     let geos = [];
-
+    let docs: any//pouch db response
+    let results: any;  //sqlite db response
 
     if(Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android')
     {
       const banana = {name: "banana", otherstuff: "asdf"}
 
-      let results: any;
       //Query (read only) for all by doc type:
       alert('query by doc type')
       results = await query({type: QueryType.DOC_TYPE, docType: DocType.TRIP},databaseContext )
       alert(JSON.stringify(results))
-
+/*
       //Query (read only) for one by doc type:
       alert('query by doc type and id')
       results = await query({type: QueryType.DOC_TYPE_AND_ID, ID: "1", docType: DocType.TRIP},databaseContext )
@@ -168,20 +168,18 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       // Upsert:
     //  alert('upsert by doc type and id')
      // results = await upsert([{type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: banana}], databaseContext)
+     */
     }
-
-    if (Capacitor.getPlatform() == 'web') {
-      let docs = await databaseContext.database.find({
+    else {
+      docs = await databaseContext.database.find({
         selector: { docType: { $eq: DocType.TRIP } },
         use_index: 'docTypeIndex'
       });
+    }
 
-      if (docs?.docs?.length === 0) {
-        // to prevent endless loading spinner on 0 trips
-        console.log('got here');
+    // stop loading spinner on trip db load
+      if((Capacitor.getPlatform() == 'web') && (docs?.docs?.length === 0)) {
         setTripsLoaded(true);
-      }
-
       docs?.docs?.map((doc) => {
         trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
         if (doc.geometry) {
@@ -196,7 +194,26 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           });
         }
       });
-    }
+      }
+      if((Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') && results)
+      {
+        setTripsLoaded(true);
+        results.values.map((doc) => {
+        trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
+        if (doc.geometry) {
+          geos.push({
+            recordDocID: doc._id,
+            recordDocType: doc.docType,
+            description: 'Uploaded spatial content:\n ' + doc._id + '\n',
+            geometry: doc.geometry,
+            color: 'orange',
+            onClickCallback: () => {},
+            popUpComponent: null
+          });
+        }
+      });
+      }
+
 
     if (geos.length > 0) {
       setInteractiveGeometry(geos);

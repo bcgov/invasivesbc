@@ -251,6 +251,7 @@ export interface IUpsert {
   json?: Object;
 }
 export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
+  let executeSet = []
   for (const upsertConfig of upsertConfigs) {
     if (Capacitor.getPlatform() != 'web') {
       const adb = databaseContext.sqlite;
@@ -266,6 +267,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
       }
 
       //get by id.  true upserts
+      //TODO - check if id exists and insert - check if sqlite helps with this
       if (upsertConfig.type == UpsertType.DOC_TYPE_AND_ID) {
         ret = await db.execute('update ' + upsertConfig.docType + " set json = ('" + escape(JSON.stringify(upsertConfig.json)) + "') where id = " + upsertConfig.ID + ';');
         if (!ret.result) {
