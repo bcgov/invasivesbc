@@ -146,27 +146,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     let results: any; //sqlite db response
 
     if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
-      const banana = { name: 'banana', otherstuff: 'asdf' };
-
-      //Query (read only) for all by doc type:
       results = await query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
-      /*
-      //Query (read only) for one by doc type:
-      alert('query by doc type and id')
-      results = await query({type: QueryType.DOC_TYPE_AND_ID, ID: "1", docType: DocType.TRIP},databaseContext )
-      alert(JSON.stringify(results))
-
-      //Upsert always takes an array, basically if there is an ID included it is
-      //an upsert, otherwise it is an insert:
-
-      // Insert:
-      alert('insert by doc type')
-      results = await upsert([{type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: banana}], databaseContext)
-
-      // Upsert:
-    //  alert('upsert by doc type and id')
-     // results = await upsert([{type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: banana}], databaseContext)
-     */
     } else {
       docs = await databaseContext.database.find({
         selector: { docType: { $eq: DocType.TRIP } },
@@ -194,7 +174,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
     if ((Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') && results) {
       setTripsLoaded(true);
-      results.values.map((doc) => {
+      results.values.map((adoc) => {
+        let doc = JSON.parse((adoc))
         trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
         if (doc.geometry) {
           geos.push({
@@ -346,21 +327,30 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       else //android and ios
       {
         const results = await query( {type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID}, databaseContext);
-        setStepState(JSON.parse(results[0].json).stepState);
+        setStepState(JSON.parse((results[0].json)).stepState);
       }
     }, [databaseContext.database]);
 
     const saveState = async (newState) => {
       setStepState(newState);
-      await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-        return { ...tripDoc, docType: DocType.TRIP, stepState: newState, persistenceStep: 'updating state' };
-      });
+      if(Capacitor.getPlatform() == 'web')
+      {
+        await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
+          return { ...tripDoc, docType: DocType.TRIP, stepState: newState, persistenceStep: 'updating state' };
+       });
+      }
+      else
+      {
+//        await upsert(
+ //         [{ type: UpsertType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP, json: {newTripObj }],
+  //        databaseContext
+   //     );
+      }
     };
 
     // initial fetch
     useEffect(() => {
       getStateFromTrip();
-      console.log('hook to get state');
     }, [databaseContext]);
 
     const helperCheckForGeo = () => {

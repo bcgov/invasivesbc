@@ -20,7 +20,7 @@ export type IDatabaseContext = {
 };
 
 const createDB = () => {
-  if (false) {
+  if (Capacitor.getPlatform() == 'web') {
     return React.createContext<IDatabaseContext>({ database: null, resetDatabase: () => {} });
   } else {
     let sqlite: any;
@@ -191,49 +191,42 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
       return false;
     }
 
-    //get by id.   also need to know doctype: in sqlite we doctypes will get their own table
-    if (queryConfig.type == QueryType.DOC_TYPE_AND_ID) {
-      ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID);
-      if (!ret.result) {
-       // alert(JSON.stringify(ret));
-        db.close();
-        return false;
-      } else {
-        db.close();
-        return ret.values;
+    switch(queryConfig.type)
+    {
+      case QueryType.DOC_TYPE_AND_ID:
+        ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';');
+        if (!ret.result) {
+          db.close();
+          return false;
+        } else {
+          db.close();
+          return ret.values;
+        }
+      case QueryType.DOC_TYPE:
+        ret = await db.query('select * from ' + queryConfig.docType);
+        if (!ret.values) {
+          db.close();
+          return false;
+        } else {
+          db.close();
+          return ret.values;
+        }
+      case QueryType.RAW_SQL:
+        ret = await db.query(queryConfig.sql);
+        if (!ret.values) {
+          db.close();
+          return false;
+        } else {
+          db.close();
+          return ret.values;
+        }
+      default:
+        alert(
+          'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
+            JSON.stringify(queryConfig)
+        );
       }
     }
-
-    //get by doctype.  in sqlite we doctypes will get their own table
-    if (queryConfig.type == QueryType.DOC_TYPE && queryConfig.docType) {
-      ret = await db.query('select * from ' + queryConfig.docType);
-      if (!ret.result) {
-      //  alert(JSON.stringify(ret));
-        db.close();
-        return false;
-      } else {
-        db.close();
-        return ret.values;
-      }
-    }
-
-    // raw sql query
-    if (queryConfig.type == QueryType.RAW_SQL && queryConfig.sql) {
-      ret = await db.query(queryConfig.sql);
-      if (!ret.values) {
-        db.close();
-        return false;
-      } else {
-        db.close();
-        return ret.values;
-      }
-    }
-
-    alert(
-      'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
-        JSON.stringify(queryConfig)
-    );
-  }
 };
 
 /* db query wrapper interface to hide db implementation */
@@ -250,7 +243,7 @@ export interface IUpsert {
   json?: Object;
 }
 export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
-  let executeSet = []
+  let executeSet = [];
   for (const upsertConfig of upsertConfigs) {
     if (Capacitor.getPlatform() != 'web') {
       const adb = databaseContext.sqlite;
@@ -258,58 +251,54 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
       // initialize the connection
       const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
 
-      let ret: any; //= await deleteDatabase(db);
-
+      let ret: any;
       ret = await db.open();
       if (!ret.result) {
         return false;
       }
 
-      //get by id.  true upserts
-      //TODO - check if id exists and insert - check if sqlite helps with this
-      if (upsertConfig.type == UpsertType.DOC_TYPE_AND_ID) {
-        ret = await db.execute('update ' + upsertConfig.docType + " set json = ('" + escape(JSON.stringify(upsertConfig.json)) + "') where id = " + upsertConfig.ID + ';');
-        if (!ret.result) {
-         // alert(JSON.stringify(ret));
-          db.close();
-          return false;
-        } else {
-          db.close();
-          return ret.result;
-        }
+      switch (upsertConfig.type) {
+        // full override update/upsert - json is replaced with new json
+        case UpsertType.DOC_TYPE_AND_ID:
+          ret = await db.execute(
+            `insert into ` + upsertConfig.docType + ` (id,json) values (,` + upsertConfig.ID,
+            +`,'` + JSON.stringify(upsertConfig.json) + `') on conflict(id) do update set json=excluded.json;`
+          );
+          if (!ret.result) {
+            db.close();
+            return false;
+          } else {
+            db.close();
+            return ret.result;
+          }
+        // no ID present therefore these are inserts
+        case UpsertType.DOC_TYPE:
+          ret = await db.execute(
+            `insert into ` + upsertConfig.docType + ` (json) values ('` + JSON.stringify(upsertConfig.json) + `');`
+          );
+          if (!ret.result) {
+            db.close();
+            return false;
+          } else {
+            db.close();
+            return ret.result;
+          }
+        // raw sql.
+        case UpsertType.RAW_SQL:
+          ret = await db.execute(upsertConfig.sql);
+          if (!ret.result) {
+            db.close();
+            return false;
+          } else {
+            db.close();
+            return ret.result;
+          }
+        default:
+          alert(
+            'Your sqlite query needs a UpsertType and corresponding parameters.  What you provided:  ' +
+              JSON.stringify(upsertConfig)
+          );
       }
-
-      // no ID present therefore these are inserts
-      if (upsertConfig.type == UpsertType.DOC_TYPE && upsertConfig.docType) {
-        ret = await db.execute('insert into ' + upsertConfig.docType + " (json) values ('" + escape(JSON.stringify(upsertConfig.json)) + "' );");
-       // ret = await db.execute('insert into ' + upsertConfig.docType + ' (json) values ("banana");');
-        if (!ret.result) {
-         // alert(JSON.stringify(ret));
-          db.close();
-          return false;
-        } else {
-          db.close();
-          return ret.result;
-        }
-      }
-
-      // raw sql.
-      if (upsertConfig.type == UpsertType.RAW_SQL && upsertConfig.sql) {
-        ret = await db.execute(upsertConfig.sql);
-        if (!ret.result) {
-        //  alert(JSON.stringify(ret));
-          db.close();
-          return false;
-        } else {
-          db.close();
-          return ret.result;
-        }
-      }
-
-      alert(
-        'Your sqlite query needs a UpsertType and corresponding parameters.  What you provided:  ' +
-          JSON.stringify(upsertConfig)
-      );
     }
   }
 };
@@ -317,10 +306,9 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
 export const createSqliteTables = async (adb: any) => {
   // initialize the connection
   const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
+  let ret: any;
 
-  // check if the databases exist
-  // and delete it for multiple successive tests
-  let ret: any; //= await deleteDatabase(db);
+  //TODO:  keep connection open
 
   // open db testNew
   ret = await db.open();
@@ -338,10 +326,9 @@ export const createSqliteTables = async (adb: any) => {
         json TEXT
       );\n`;
   }
-  //get by id.   also need to know doctype: in sqlite we doctypes will get their own table
+  //in sqlite doctypes will get their own table
   ret = await db.execute(setupSQL);
   if (!ret.result) {
-    //alert(JSON.stringify(ret));
     db.close();
     return false;
   } else {
