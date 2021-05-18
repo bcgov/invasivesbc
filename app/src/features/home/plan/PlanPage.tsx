@@ -146,6 +146,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     let results: any; //sqlite db response
 
     if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
+
       results = await query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
     } else {
       docs = await databaseContext.database.find({
@@ -174,8 +175,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
     if ((Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') && results) {
       setTripsLoaded(true);
-      results.values.map((adoc) => {
-        let doc = JSON.parse((adoc))
+      results.map((adoc) => {
+        let doc = JSON.parse(adoc.json);
         trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
         if (doc.geometry) {
           geos.push({
@@ -291,7 +292,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         };
       });
     } else {
-      //android & iOS?
+      //android & iOS
       const results = await upsert(
         [{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }],
         databaseContext
@@ -323,28 +324,37 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           }
           setStepState(tripDoc.stepState);
         }
-      }
-      else //android and ios
-      {
-        const results = await query( {type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID}, databaseContext);
-        setStepState(JSON.parse((results[0].json)).stepState);
+      } //android and ios
+      else {
+        const results = await query(
+          { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
+          databaseContext
+        );
+        console.log('about to look at stepstate')
+        console.log(JSON.stringify(results))
+        setStepState(JSON.parse(results[0].json).stepState);
       }
     }, [databaseContext.database]);
 
     const saveState = async (newState) => {
       setStepState(newState);
-      if(Capacitor.getPlatform() == 'web')
-      {
+      if (Capacitor.getPlatform() == 'web') {
         await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
           return { ...tripDoc, docType: DocType.TRIP, stepState: newState, persistenceStep: 'updating state' };
-       });
-      }
-      else
-      {
-//        await upsert(
- //         [{ type: UpsertType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP, json: {newTripObj }],
-  //        databaseContext
-   //     );
+        });
+      } else {
+        // only overwrite newstate property of db record:
+        await upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID_JSON_PATCH,
+              ID: props.trip_ID,
+              docType: DocType.TRIP,
+              json: { stepState: newState }
+            }
+          ],
+          databaseContext
+        );
       }
     };
 
@@ -381,12 +391,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       }
       saveState([...newState]);
     };
-
-    /*
-    const trySQLITE = () =>{
-      var myDB = window.sqlitePlugin.openDatabase({name: "mySQLite.db", location: 'default'});
-    }
-    */
 
     return useMemo(() => {
       return (

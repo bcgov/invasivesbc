@@ -195,7 +195,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
     {
       case QueryType.DOC_TYPE_AND_ID:
         ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';');
-        if (!ret.result) {
+        if (!ret.values) {
           db.close();
           return false;
         } else {
@@ -232,6 +232,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
 /* db query wrapper interface to hide db implementation */
 export enum UpsertType {
   DOC_TYPE_AND_ID = 'docType and ID',
+  DOC_TYPE_AND_ID_JSON_PATCH = 'docType and ID - JSON PATCH',
   DOC_TYPE = 'docType',
   RAW_SQL = 'raw sql'
 }
@@ -263,6 +264,18 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
           ret = await db.execute(
             `insert into ` + upsertConfig.docType + ` (id,json) values (,` + upsertConfig.ID,
             +`,'` + JSON.stringify(upsertConfig.json) + `') on conflict(id) do update set json=excluded.json;`
+          );
+          if (!ret.result) {
+            db.close();
+            return false;
+          } else {
+            db.close();
+            return ret.result;
+          }
+        case UpsertType.DOC_TYPE_AND_ID_JSON_PATCH:
+          ret = await db.execute(
+            `insert into ` + upsertConfig.docType + ` (id,json) values (,` + upsertConfig.ID,
+            +`,'` + JSON.stringify(upsertConfig.json) + `') on conflict(id) do update set json_patch(json,excluded.json);`
           );
           if (!ret.result) {
             db.close();
