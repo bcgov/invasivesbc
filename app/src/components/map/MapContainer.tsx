@@ -436,7 +436,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [currentZoom]);
 
   const initMap = () => {
-    mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([55, -128], 10);
+    mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([54, -124], 6);
 
     setCurrentZoom(mapRef.current.getZoom());
     addContextMenuClickListener();
@@ -616,6 +616,96 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         });
       });
     }
+
+    const defaultPopup = (feature, layer, interactObj) => {
+      const content = interactObj.popUpComponent(interactObj.description);
+      layer.on('click', () => {
+        // Fires on click of single feature
+
+        // Formulate a table containing all attributes
+        let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+        Object.keys(feature.properties).forEach((f) => {
+          if (f !== 'uploadedSpatial') {
+            table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+          }
+        });
+        table += '</table>';
+
+        const loc = turf.centroid(feature);
+        const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+        if (feature.properties.uploadedSpatial) {
+          L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+        } else {
+          L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
+        }
+
+        interactObj.onClickCallback();
+      });
+    };
+
+    /**
+     * ## contextPopup
+     * Configure the click and popup behaviour of
+     * downloaded context data.
+     * General behaviour of listing all attributes
+     * in the popup that do not contain null values.
+     * @param feature {object} GeoJSON feature
+     * @param layer {object} Leaflet layer object
+     * @param interactObj  {object} PouchDB data object
+     */
+    const contextPopup = (feature, layer, interactObj) => {
+      const content = interactObj.popUpComponent(interactObj.description);
+      layer.on('click', () => {
+        // Formulate a table containing all attributes
+        let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+        Object.keys(feature.properties).forEach((f) => {
+          if (feature.properties[f]) {
+            table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+          }
+        });
+        table += '</table>';
+
+        const loc = turf.centroid(feature);
+        const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
+
+        L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
+      });
+    };
+
+    props?.interactiveGeometryState?.interactiveGeometry?.forEach((interactObj) => {
+      const style = {
+        color: interactObj.color,
+        weight: 4,
+        opacity: 0.65
+      };
+
+      const markerStyle = {
+        radius: 10,
+        weight: 4,
+        stroke: true
+      };
+
+      L.geoJSON(interactObj.geometry, {
+        style,
+        pointToLayer: (feature: any, latLng: any) => {
+          if (feature.properties.radius) {
+            return L.circle(latLng, { radius: feature.properties.radius });
+          } else {
+            return L.circleMarker(latLng, markerStyle);
+          }
+        },
+        onEachFeature: (feature: any, layer: any) => {
+          drawnItems.addLayer(layer);
+          if (interactObj.recordDocID === 'offline_data') {
+            contextPopup(feature, layer, interactObj);
+          } else {
+            defaultPopup(feature, layer, interactObj);
+          }
+        }
+      });
+    });
+
     if (props.interactiveGeometryState?.interactiveGeometry) {
       props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
         const key = interactObj.recordDocID || interactObj._id;
@@ -674,7 +764,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
               }
 
-              interactObj.onClickCallback();
+              interactObj?.onClickCallback();
             });
           }
         });
@@ -868,20 +958,28 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const x2 = bounds.getEast();
     const y2 = bounds.getNorth();
     const extent = [x1, y1, x2, y2] as turf.BBox;
+    // The WFS layer list to offline
     const layers = [
       {
         name: 'Wells',
-        schema: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW'
+        schema: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+        url: `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`
+      },
+      {
+        name: 'Jurisdictions',
+        schema: 'invasives:jurisdiction',
+        url: `${geoserver}/geoserver/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=invasives:jurisdiction&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`
       }
     ];
 
+    /**
+     * Cycle through the layer list then:
+     * 1. Request data
+     * 2. Store data in the database
+     * 2. Draw data on map
+     */
     layers.forEach(async (layer, index) => {
-      const url = `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:${layer.schema}&outputFormat=json&srsName=epsg:4326&bbox=${extent},epsg:4326`;
-      const response = await axios(url);
-      // console.log('url',url);
-      // console.log('index',index);
-      // console.log('resp',response.data);
-      // If it's the last record
+      const response = await axios(layer.url);
 
       await databaseContext.database.upsert('offline_data', (spatial) => {
         return {
@@ -893,11 +991,17 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         };
       });
 
+      // If it's the last record
       if (index == layers.length - 1) {
         setOfflineing(false);
       }
     });
+
     return;
+    /**
+     * Everything below here will get replaced with
+     * a draw box feature.
+     */
     const poly = turf.bboxPolygon(extent);
 
     // Add a special flag to distinguish from other features
