@@ -67,6 +67,7 @@ function getActivity(): RequestHandler {
     defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
 
     const activityId = req.params.activityId;
+    console.log("ID 1: ", activityId)
 
     const connection = await getDBConnection();
 

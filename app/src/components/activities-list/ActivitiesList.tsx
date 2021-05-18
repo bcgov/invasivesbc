@@ -222,6 +222,8 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
     await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+      console.log("ID 5: ", doc._id)
+      console.log("State: ", appStateDoc)
       return { ...appStateDoc, activeActivity: doc._id };
     });
 
@@ -232,6 +234,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
         state: { observation: doc._id }
       });
     } else {
+      console.log("HIT!")
       history.push('/home/activity');
     }
   };
@@ -335,6 +338,7 @@ const ActivitiesList: React.FC = () => {
     // sync each activity one-by-one
     for (const activity of activityResult.docs) {
       try {
+        console.log("ACTIVITY ID 2: ", activity)
         await invasivesApi.createActivity({
           activity_id: activity.activityId,
           created_timestamp: activity.dateCreated,
@@ -395,6 +399,8 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Plant">Plant</MenuItem>
               <MenuItem value="Animal">Animal</MenuItem>
               <MenuItem value="Special">Enhanced Collection</MenuItem>
+              <MenuItem value="FREP">FREP</MenuItem>
+              <MenuItem value="Range">Range</MenuItem>
             </Select>
           </FormControl>
           <Button
@@ -412,6 +418,8 @@ const ActivitiesList: React.FC = () => {
               <Box>
                 {workflowFunction === 'Plant' && <Typography variant="h5">Observations</Typography>}
                 {workflowFunction === 'Animal' && <Typography variant="h5">Activities</Typography>}
+                {workflowFunction === 'FREP' && <Typography variant="h5">Forms</Typography>}
+                {workflowFunction === 'Range' && <Typography variant="h5">Forms</Typography>}
               </Box>
               <Box className={classes.newActivityButtonsRow}>
                 {workflowFunction === 'Plant' && (
@@ -483,41 +491,62 @@ const ActivitiesList: React.FC = () => {
                     </Button>
                   </>
                 )}
+              </Box>
 
-                <ActivityList
-                  workflowFunction={workflowFunction}
-                  isDisabled={isDisabled}
-                  activityType={ActivityType.AnimalActivity}
-                />
-              </Box>
-            </Box>
-          )}
-          {workflowFunction !== 'Special' && workflowFunction !== 'Animal' && (
-            <Box>
-              <Box>
-                <Typography variant="h5">Treatments</Typography>
-              </Box>
               <Box className={classes.newActivityButtonsRow}>
+                {workflowFunction === 'FREP' && (
+                  <>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivityToDB(databaseContext, ActivityType.FREP, ActivitySubtype.FREP_FormC)
+                      }>
+                      Form C
+                    </Button>
+                  </>
+                )}
                 <ActivityList
                   workflowFunction={workflowFunction}
                   isDisabled={isDisabled}
-                  activityType={ActivityType.Treatment}
+                  activityType={ActivityType.FREP}
                 />
               </Box>
             </Box>
           )}
-          {workflowFunction !== 'Special' && workflowFunction !== 'Animal' && (
-            <Box>
+          {workflowFunction !== 'Special' &&
+            workflowFunction !== 'Animal' &&
+            workflowFunction !== 'FREP' &&
+            workflowFunction !== 'Range' && (
               <Box>
-                <Typography variant="h5">Efficacy Monitorings</Typography>
+                <Box>
+                  <Typography variant="h5">Treatments</Typography>
+                </Box>
+                <Box className={classes.newActivityButtonsRow}>
+                  <ActivityList
+                    workflowFunction={workflowFunction}
+                    isDisabled={isDisabled}
+                    activityType={ActivityType.Treatment}
+                  />
+                </Box>
               </Box>
-              <ActivityList
-                workflowFunction={workflowFunction}
-                isDisabled={isDisabled}
-                activityType={ActivityType.Monitoring}
-              />
-            </Box>
-          )}
+            )}
+          {workflowFunction !== 'Special' &&
+            workflowFunction !== 'Animal' &&
+            workflowFunction !== 'FREP' &&
+            workflowFunction !== 'Range' && (
+              <Box>
+                <Box>
+                  <Typography variant="h5">Efficacy Monitorings</Typography>
+                </Box>
+                <ActivityList
+                  workflowFunction={workflowFunction}
+                  isDisabled={isDisabled}
+                  activityType={ActivityType.Monitoring}
+                />
+              </Box>
+            )}
           {workflowFunction === 'Special' && (
             <>
               <Box>

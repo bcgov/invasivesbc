@@ -22,6 +22,7 @@ export function generateActivityPayload(
   activitySubtype: ActivitySubtype
 ): IActivity {
   const id = uuidv4();
+  console.log("Activity ID 4: ", id)
 
   return {
     _id: id,
@@ -59,6 +60,7 @@ export async function addNewActivityToDB(
   const doc: IActivity = generateActivityPayload(formData, null, activityType, activitySubtype);
 
   await databaseContext.database.put(doc);
+  await console.log(await databaseContext.database.get(doc._id))
 
   return doc;
 }

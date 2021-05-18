@@ -6,7 +6,9 @@ export enum ActivityType {
   Dispersal = 'Dispersal',
   Transect = 'Transect',
   Treatment = 'Treatment',
-  Monitoring = 'Monitoring'
+  Monitoring = 'Monitoring',
+  FREP = 'FREP',
+  Range = 'Range'
 }
 
 export enum ActivitySubtype {
@@ -32,7 +34,12 @@ export enum ActivitySubtype {
 
   Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
   Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-  Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant'
+  Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
+
+  FREP_FormA = 'Activity_FREP_FormA',
+  FREP_FormB = 'Activity_FREP_FormB',
+  FREP_FormC = 'Activity_FREP_FormC'
+
 }
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
@@ -41,7 +48,8 @@ export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
   [ActivityType.Transect]: Assignment,
   [ActivityType.Treatment]: Build,
   [ActivityType.Monitoring]: Visibility,
-  [ActivityType.Dispersal]: Visibility
+  [ActivityType.Dispersal]: Visibility,
+  [ActivityType.FREP]: Visibility,
 };
 
 export enum ActivityStatus {
