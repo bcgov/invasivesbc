@@ -1,8 +1,9 @@
+import { Capacitor } from '@capacitor/core';
 import { Button, makeStyles } from '@material-ui/core';
 import Spinner from 'components/spinner/Spinner';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import {
   IActivitySearchCriteria,
@@ -88,16 +89,25 @@ export const TripDataControls: React.FC<any> = (props) => {
   };
 
   const getTrip = useCallback(async () => {
-    let docs = await databaseContext.database.find({
-      selector: {
-        _id: props.trip_ID,
-        docType: DocType.TRIP
-      }
-    });
+    //legacy pouch:
+    if (Capacitor.getPlatform() == 'web') {
+      let docs = await databaseContext.database.find({
+        selector: {
+          _id: props.trip_ID,
+          docType: DocType.TRIP
+        }
+      });
 
-    if (!docs || !docs.docs || !docs.docs.length) return;
+      if (!docs || !docs.docs || !docs.docs.length) return;
 
-    setTrip(docs.docs[0]);
+      setTrip(docs.docs[0]);
+    }
+    //sqlite mobile
+    else
+    {
+      let queryResults = await query({type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP},databaseContext)
+      setTrip(JSON.parse(queryResults[0].json))
+    }
   }, [databaseContext.database]);
 
   useEffect(() => {
@@ -118,6 +128,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     for (const setOfChoices of trip.activityChoices) {
       const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
 
+      // a comment would be great here
       const activitySearchCriteria: IActivitySearchCriteria = {
         ...((setOfChoices.activityType && { activity_type: [setOfChoices.activityType] }) || []),
         ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
@@ -132,6 +143,9 @@ export const TripDataControls: React.FC<any> = (props) => {
       for (const row of response.rows) {
         let photos = [];
         if (setOfChoices.includePhotos) photos = await getPhotos(row);
+
+        if(Capacitor.getPlatform() == 'web') {
+
 
         upserts = {
           ...upserts,
@@ -148,9 +162,39 @@ export const TripDataControls: React.FC<any> = (props) => {
             photos: photos
           })
         };
-      }
+        }
+        else
+        {
+          let jsonObj = {
+              id: row.activity_id,
+              docType: DocType.REFERENCE_ACTIVITY,
+              ...row,
+              formData: row.activity_payload.form_data,
+              activityType: row.activity_type,
+              activitySubtype: row.activity_subtype,
+              geometry: row.activity_payload.geometry,
+              photos: photos
+            }
+
+          upserts.push({
+              docType: DocType.REFERENCE_ACTIVITY,
+              ID: row.activity_id,
+              type: UpsertType.DOC_TYPE_AND_ID,
+              json: jsonObj
+            })
+        };
+        }
       try {
-        numberActivitiesFetched += await bulkUpsert(upserts);
+        if(Capacitor.getPlatform() == 'web')
+        {
+          numberActivitiesFetched += await bulkUpsert(upserts);
+        }
+        else
+        {
+          const db_response = await upsert(upserts, databaseContext)
+          alert('done! ' + JSON.stringify(db_response))
+          numberActivitiesFetched += db_response.changes.changes
+        }
       } catch (error) {
         notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
       }
@@ -255,7 +299,8 @@ export const TripDataControls: React.FC<any> = (props) => {
               ...existingDoc,
               _id: row.activity_id,
               docType: DocType.REFERENCE_ACTIVITY,
-              trip_IDs: existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
+              trip_IDs:
+                existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
               ...row,
               formData: row.activity_payload.form_data,
               activityType: row.activity_type,
@@ -274,7 +319,8 @@ export const TripDataControls: React.FC<any> = (props) => {
               ...existingDoc,
               _id: 'POI' + row.point_of_interest_id,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              trip_IDs: existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
+              trip_IDs:
+                existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
               ...row,
               formData: row.point_of_interest_payload.form_data,
               pointOfInterestType: row.point_of_interest_type,
@@ -292,7 +338,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
       }
     }
-    console.log('done caching)')
+    console.log('done caching)');
     notifySuccess(
       databaseContext,
       'Cached ' +
