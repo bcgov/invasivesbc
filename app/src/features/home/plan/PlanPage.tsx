@@ -223,8 +223,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     } else {
       const sql = 'select max(id) as id from trip;';
       const results = await query({ type: QueryType.RAW_SQL, sql }, databaseContext);
-      alert('got here!!');
-      alert(results[0].id);
       return results.length > 0 ? results[0].id : 0;
     }
   };
@@ -330,8 +328,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
           databaseContext
         );
-        console.log('about to look at stepstate')
-        console.log(JSON.stringify(results))
         setStepState(JSON.parse(results[0].json).stepState);
       }
     }, [databaseContext.database]);
@@ -347,7 +343,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         await upsert(
           [
             {
-              type: UpsertType.DOC_TYPE_AND_ID_JSON_PATCH,
+              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
               ID: props.trip_ID,
               docType: DocType.TRIP,
               json: { stepState: newState }

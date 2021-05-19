@@ -191,8 +191,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
       return false;
     }
 
-    switch(queryConfig.type)
-    {
+    switch (queryConfig.type) {
       case QueryType.DOC_TYPE_AND_ID:
         ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';');
         if (!ret.values) {
@@ -220,19 +219,21 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
           db.close();
           return ret.values;
         }
+        break;
       default:
         alert(
           'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
             JSON.stringify(queryConfig)
         );
-      }
     }
+  }
 };
 
 /* db query wrapper interface to hide db implementation */
 export enum UpsertType {
   DOC_TYPE_AND_ID = 'docType and ID',
-  DOC_TYPE_AND_ID_JSON_PATCH = 'docType and ID - JSON PATCH',
+  DOC_TYPE_AND_ID_FAST_JSON_PATCH = 'docType and ID - FAST JSON PATCH', // uses sqlitejson1 extension when I get it working
+  DOC_TYPE_AND_ID_SLOW_JSON_PATCH = 'docType and ID - SLOW JSON PATCH', // workaround, all of these need to have same doctype
   DOC_TYPE = 'docType',
   RAW_SQL = 'raw sql'
 }
@@ -244,7 +245,12 @@ export interface IUpsert {
   json?: Object;
 }
 export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
-  let executeSet = [];
+  let batchUpdate = '';
+
+  // workaround until we get json1 extension working:
+  const patchUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH)
+  processSlowUpserts(patchUpserts, databaseContext)
+
   for (const upsertConfig of upsertConfigs) {
     if (Capacitor.getPlatform() != 'web') {
       const adb = databaseContext.sqlite;
@@ -254,67 +260,101 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
 
       let ret: any;
       ret = await db.open();
-      if (!ret.result) {
-        return false;
-      }
+      ret = db.execute(`select load_extension('json1');`) // not yet working
 
       switch (upsertConfig.type) {
         // full override update/upsert - json is replaced with new json
         case UpsertType.DOC_TYPE_AND_ID:
-          ret = await db.execute(
-            `insert into ` + upsertConfig.docType + ` (id,json) values (,` + upsertConfig.ID,
-            +`,'` + JSON.stringify(upsertConfig.json) + `') on conflict(id) do update set json=excluded.json;`
-          );
-          if (!ret.result) {
-            db.close();
-            return false;
-          } else {
-            db.close();
-            return ret.result;
-          }
-        case UpsertType.DOC_TYPE_AND_ID_JSON_PATCH:
-          ret = await db.execute(
-            `insert into ` + upsertConfig.docType + ` (id,json) values (,` + upsertConfig.ID,
-            +`,'` + JSON.stringify(upsertConfig.json) + `') on conflict(id) do update set json_patch(json,excluded.json);`
-          );
-          if (!ret.result) {
-            db.close();
-            return false;
-          } else {
-            db.close();
-            return ret.result;
-          }
+          //the linter formatted this not me
+          batchUpdate +=
+            `insert into ` +
+            upsertConfig.docType +
+            ` (id,json) values (` +
+            upsertConfig.ID +
+            `,'` +
+            JSON.stringify(upsertConfig.json) +
+            `') on conflict(id) do update set json=excluded.json;`;
+            break;
+        // json patch upsert:
+        case UpsertType.DOC_TYPE_AND_ID_FAST_JSON_PATCH:
+          batchUpdate +=
+            `insert into ` +
+            upsertConfig.docType +
+            ` (id,json) values (` +
+            upsertConfig.ID +
+            `,'` +
+            JSON.stringify(upsertConfig.json) +
+            `') on conflict(id) do update set json_patch(json,excluded.json);`;
+            break;
         // no ID present therefore these are inserts
         case UpsertType.DOC_TYPE:
-          ret = await db.execute(
-            `insert into ` + upsertConfig.docType + ` (json) values ('` + JSON.stringify(upsertConfig.json) + `');`
-          );
-          if (!ret.result) {
-            db.close();
-            return false;
-          } else {
-            db.close();
-            return ret.result;
-          }
+          batchUpdate +=
+            `insert into ` + upsertConfig.docType + ` (json) values ('` + JSON.stringify(upsertConfig.json) + `');`;
+            break;
         // raw sql.
         case UpsertType.RAW_SQL:
-          ret = await db.execute(upsertConfig.sql);
-          if (!ret.result) {
-            db.close();
-            return false;
-          } else {
-            db.close();
-            return ret.result;
-          }
+          batchUpdate += upsertConfig.sql;
+            break;
         default:
           alert(
             'Your sqlite query needs a UpsertType and corresponding parameters.  What you provided:  ' +
               JSON.stringify(upsertConfig)
           );
       }
+      ret = await db.execute(batchUpdate);
+      if (!ret.result) {
+        db.close();
+        return false;
+      } else {
+        db.close();
+        return ret.result;
+      }
     }
   }
 };
+
+//limit to all being the same type for now:
+const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
+  if(upsertConfigs.length > 0)
+  {
+    // get a list of the IDs and snag a doctype from one of them (THEY WILL ALL BE TREATED AS SAME TYPE)
+    let slowPatchOldIDS = [];
+    let slowPatchDocType;
+
+    for (const upsertConfig of upsertConfigs.filter((e) => {return e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH}))
+    {
+      slowPatchOldIDS.push(upsertConfig.ID)
+      slowPatchDocType = upsertConfig.docType
+    }
+
+    //open db
+    const adb = databaseContext.sqlite;
+    const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
+    let ret: any;
+    ret = await db.open();
+
+    //build the query to get old records
+    const idsJSON = JSON.stringify(slowPatchOldIDS)
+    const idsString = idsJSON.substring(1,idsJSON.length - 1)
+    ret = await db.query('select * from ' + slowPatchDocType + ' where id in (' + idsString + ');')
+    const slowPatchOld = ret.values;
+
+    //patch them in memory
+    let batchUpdate = '';
+    for(const upsertConfig of upsertConfigs)
+    {
+      const old = JSON.parse(slowPatchOld.filter(e => {return e.id = upsertConfig.ID})[0].json)
+      const patched = `'` + JSON.stringify({...old,...upsertConfig.json}) + `'`
+      batchUpdate += 'insert into ' + upsertConfig.docType + ' (id, json) values (' + upsertConfig.ID + ',' +
+      patched + ') on conflict (id) do update set json=excluded.json;'
+    }
+
+    //finally update them all:
+    ret = db.execute(batchUpdate)
+    db.close();
+  }
+}
+
 
 export const createSqliteTables = async (adb: any) => {
   // initialize the connection
