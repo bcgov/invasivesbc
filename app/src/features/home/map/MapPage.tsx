@@ -220,35 +220,16 @@ const MapPage: React.FC<IMapProps> = (props) => {
       let coordinatesString = 'Polygon';
 
       const coords = row.geometry[0]?.geometry.coordinates;
-      // const zIndex = getZIndex(row);
+      const zIndex = getZIndex(row);
       if (row.geometry[0].geometry.type !== 'Polygon')
         coordinatesString = `(${Number(coords[1]).toFixed(2)}, ${Number(coords[0]).toFixed(2)})`;
-
-      let height = 0;
-      let zIndex = 9999999999;
-      if (row.geometry[0].geometry.type === 'Polygon' && coords[0]) {
-        let highestLat = coords[0].reduce((max, point) => {
-          if (point[1] > max) return point[1];
-          return max;
-        }, 0);
-        let lowestLat = coords[0].reduce((min, point) => {
-          if (point[1] < min) return point[1];
-          return min;
-        }, zIndex);
-
-        zIndex = zIndex - (highestLat - lowestLat) * 1000000;
-      }
-
-      const offlineSpatialPopup = `
-      testing
-      `;
 
       switch (row.docType) {
         case DocType.OFFLINE_DATA:
           interactiveGeos.push({
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: offlineSpatialPopup,
+            description: 'Offline Data',
             geometry: row.geometry,
             color: 'blue',
             popUpComponent: PointOfInterestPopUp
