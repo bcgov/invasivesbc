@@ -248,19 +248,19 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
   let batchUpdate = '';
 
   // workaround until we get json1 extension working:
-  const patchUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH);
-  processSlowUpserts(patchUpserts, databaseContext);
+  const patchSlowUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH);
+  processSlowUpserts(patchSlowUpserts, databaseContext);
+
+  const adb = databaseContext.sqlite;
+  const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
+
+  let ret: any;
+  ret = await db.open();
 
   for (const upsertConfig of upsertConfigs) {
     if (Capacitor.getPlatform() != 'web') {
-      const adb = databaseContext.sqlite;
-
       // initialize the connection
-      const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
-
-      let ret: any;
-      ret = await db.open();
-     // ret = db.execute(`select load_extension('json1');`); // not yet working
+      // ret = db.execute(`select load_extension('json1');`); // not yet working
 
       switch (upsertConfig.type) {
         // full override update/upsert - json is replaced with new json
@@ -272,7 +272,8 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
             ` (id,json) values ('` +
             upsertConfig.ID +
             `','` +
-            JSON.stringify(upsertConfig.json) +
+            JSON.stringify(upsertConfig.json).replace(`'`,`''`) +
+            //JSON.stringify(upsertConfig.json) +
             `') on conflict(id) do update set json=excluded.json;`;
           break;
         // json patch upsert:
@@ -285,13 +286,14 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
             ` (id,json) values ('` +
             upsertConfig.ID +
             `','` +
-            JSON.stringify(upsertConfig.json) +
+            JSON.stringify(upsertConfig.json).replace(`'`,`''`) +
+            //JSON.stringify(upsertConfig.json) +
             `') on conflict(id) do update set json_patch(json,excluded.json);`;
           break;
         // no ID present therefore these are inserts
         case UpsertType.DOC_TYPE:
           batchUpdate +=
-            `insert into ` + upsertConfig.docType + ` (json) values ('` + JSON.stringify(upsertConfig.json) + `');`;
+            `insert into ` + upsertConfig.docType + ` (json) values ('` + JSON.stringify(upsertConfig.json).replace(`'`,`''`) + `');`;
           break;
         // raw sql.
         case UpsertType.RAW_SQL:
@@ -303,17 +305,15 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
               JSON.stringify(upsertConfig)
           );
       }
-      console.log('batchUpdate')
-      console.log(JSON.stringify(batchUpdate))
-      ret = await db.execute(batchUpdate);
-      if (!ret.result) {
-        db.close();
-        return false;
-      } else {
-        db.close();
-        return ret.result;
-      }
     }
+  }
+  ret = await db.execute(batchUpdate);
+  if (!ret.changes) {
+    db.close();
+    return false;
+  } else {
+    db.close();
+    return ret.changes.changes;
   }
 };
 
@@ -339,9 +339,7 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
 
     //build the query to get old records
     const idsJSON = JSON.stringify(slowPatchOldIDS);
-    console.log('ids' + idsJSON)
     const idsString = idsJSON.substring(1, idsJSON.length - 1);
-    console.log('sql friendly list' + idsString)
     ret = await db.query('select * from ' + slowPatchDocType + ' where id in (' + idsString + ');');
     const slowPatchOld = ret.values;
 
@@ -353,7 +351,7 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
           return (e.id = upsertConfig.ID);
         })[0].json
       );
-      const patched = `'` + JSON.stringify({ ...old, ...upsertConfig.json }) + `'`;
+      const patched = `'` + JSON.stringify({ ...old, ...upsertConfig.json }).replace(`'`,`''`) + `'`;
       batchUpdate +=
         'insert into ' +
         upsertConfig.docType +

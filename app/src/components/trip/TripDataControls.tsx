@@ -191,9 +191,8 @@ export const TripDataControls: React.FC<any> = (props) => {
         }
         else
         {
-          const db_response = await upsert(upserts, databaseContext)
-          alert('done! ' + JSON.stringify(db_response))
-          numberActivitiesFetched += db_response.changes.changes
+          numberActivitiesFetched += await upsert(upserts, databaseContext)
+          alert('Cached ' + numberActivitiesFetched + ' activities.')
         }
       } catch (error) {
         notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
@@ -338,7 +337,6 @@ export const TripDataControls: React.FC<any> = (props) => {
         notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
       }
     }
-    console.log('done caching)');
     notifySuccess(
       databaseContext,
       'Cached ' +

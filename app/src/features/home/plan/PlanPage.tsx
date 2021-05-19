@@ -146,7 +146,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     let results: any; //sqlite db response
 
     if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
-
       results = await query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
     } else {
       docs = await databaseContext.database.find({
@@ -175,9 +174,22 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
     if ((Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') && results) {
       setTripsLoaded(true);
+      console.log('results length' + results.length)
+
       results.map((adoc) => {
+        try
+        {
+
         let doc = JSON.parse(adoc.json);
         trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
+
+        }
+        catch(e)
+        {
+          console.log(e)
+          console.log(adoc)
+        }
+        /*
         if (doc.geometry) {
           geos.push({
             recordDocID: doc._id,
@@ -189,6 +201,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             popUpComponent: null
           });
         }
+        */
       });
     }
 
@@ -263,6 +276,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   }, [extent, tripsLoaded]);
 
   const addTrip = async () => {
+    alert('tripslength' + trips.length)
     let newID = await helperGetMaxTripID();
     newID += 1;
     const newTripObj = {
@@ -619,6 +633,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             !trips?.length
               ? []
               : trips.map((row) => ({
+
                   ...row,
                   // custom map data before it goes to table:
                   buttons: (
