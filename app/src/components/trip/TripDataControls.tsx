@@ -158,7 +158,10 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
     }
 
-    notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities of total ' + totalNumberActivitiesAvailable + '.');
+    notifySuccess(
+      databaseContext,
+      'Cached ' + numberActivitiesFetched + ' activities of total ' + totalNumberActivitiesAvailable + '.'
+    );
   };
 
   const fetchPointsOfInterest = async () => {
@@ -209,7 +212,10 @@ export const TripDataControls: React.FC<any> = (props) => {
         notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
       }
     }
-    notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest of total ' + totalNumberActivitiesAvailable + '.');
+    notifySuccess(
+      databaseContext,
+      'Cached ' + numberPointsOfInterestFetched + ' points of interest of total ' + totalNumberActivitiesAvailable + '.'
+    );
   };
 
   const fetchMetabaseQueries = async () => {

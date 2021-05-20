@@ -134,7 +134,7 @@ export const useInvasivesApi = () => {
       activities: activities?.rows?.length ? activities.rows : [],
       points_of_interest: points_of_interest?.length ? points_of_interest.rows : [],
       activities_count: activities?.count,
-      points_of_interest_count: points_of_interest?.count,
+      points_of_interest_count: points_of_interest?.count
     };
   };
 
