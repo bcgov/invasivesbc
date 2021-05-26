@@ -193,7 +193,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
 
     switch (queryConfig.type) {
       case QueryType.DOC_TYPE_AND_ID:
-        ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';');
+        ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
         if (!ret.values) {
           db.close();
           return false;
@@ -272,9 +272,9 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
             ` (id,json) values ('` +
             upsertConfig.ID +
             `','` +
-            JSON.stringify(upsertConfig.json).replace(`'`,`''`) +
+            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
             //JSON.stringify(upsertConfig.json) +
-            `') on conflict(id) do update set json=excluded.json;`;
+            `') on conflict(id) do update set json=excluded.json;\n`;
           break;
         // json patch upsert:
         case UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH:
@@ -286,14 +286,14 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
             ` (id,json) values ('` +
             upsertConfig.ID +
             `','` +
-            JSON.stringify(upsertConfig.json).replace(`'`,`''`) +
+            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
             //JSON.stringify(upsertConfig.json) +
-            `') on conflict(id) do update set json_patch(json,excluded.json);`;
+            `') on conflict(id) do update set json_patch(json,excluded.json);\n`;
           break;
         // no ID present therefore these are inserts
         case UpsertType.DOC_TYPE:
           batchUpdate +=
-            `insert into ` + upsertConfig.docType + ` (json) values ('` + JSON.stringify(upsertConfig.json).replace(`'`,`''`) + `');`;
+            `insert into ` + upsertConfig.docType + ` (json) values ('` + JSON.stringify(upsertConfig.json).split(`'`).join(`''`) + `')\n;`;
           break;
         // raw sql.
         case UpsertType.RAW_SQL:
@@ -307,13 +307,22 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
       }
     }
   }
-  ret = await db.execute(batchUpdate);
-  if (!ret.changes) {
-    db.close();
+  console.log('batch update ')
+//  console.log(batchUpdate)
+  if(batchUpdate != '')
+  {
+    ret = await db.execute(batchUpdate);
+    if (!ret.changes) {
+      db.close();
+      return false;
+    } else {
+      db.close();
+      return ret.changes.changes;
+    }
+  }
+  else
+  {
     return false;
-  } else {
-    db.close();
-    return ret.changes.changes;
   }
 };
 
@@ -345,13 +354,15 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
 
     //patch them in memory
     let batchUpdate = '';
+    console.log('*** building sql ***')
+
     for (const upsertConfig of upsertConfigs) {
       const old = JSON.parse(
         slowPatchOld.filter((e) => {
           return (e.id = upsertConfig.ID);
         })[0].json
       );
-      const patched = `'` + JSON.stringify({ ...old, ...upsertConfig.json }).replace(`'`,`''`) + `'`;
+      const patched = `'` + JSON.stringify({ ...old, ...upsertConfig.json }).split(`'`).join(`''`) + `'`;
       batchUpdate +=
         'insert into ' +
         upsertConfig.docType +
@@ -363,7 +374,12 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
     }
 
     //finally update them all:
-    ret = db.execute(batchUpdate);
+    console.log('*** executing sql ***')
+    if(batchUpdate != '')
+    {
+      ret = db.execute(batchUpdate);
+    }
+    console.log('*** done sql ***')
     db.close();
   }
 };
@@ -385,6 +401,15 @@ export const createSqliteTables = async (adb: any) => {
   for (const value of enumKeys(DocType)) {
     switch (value) {
       case 'REFERENCE_ACTIVITY':
+        setupSQL +=
+          'create table if not exists ' +
+          DocType[value] +
+          ` (
+            id TEXT PRIMARY KEY,
+            json TEXT
+          );\n`;
+        break;
+      case 'REFERENCE_POINT_OF_INTEREST':
         setupSQL +=
           'create table if not exists ' +
           DocType[value] +
