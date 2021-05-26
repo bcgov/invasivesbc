@@ -227,7 +227,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
     if (doc.activityType === 'Observation') {
       history.push({
-        pathname: `/home/activity/observation`,
+        pathname: `/home/activity`,
         search: '?observation=' + doc._id,
         state: { observation: doc._id }
       });
@@ -498,6 +498,50 @@ const ActivitiesList: React.FC = () => {
                 <Typography variant="h5">Treatments</Typography>
               </Box>
               <Box className={classes.newActivityButtonsRow}>
+                {workflowFunction === 'Plant' && (
+                  <>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivityToDB(
+                          databaseContext,
+                          ActivityType.Treatment,
+                          ActivitySubtype.Treatment_MechanicalPlant
+                        )
+                      }>
+                      Mechanical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivityToDB(
+                          databaseContext,
+                          ActivityType.Treatment,
+                          ActivitySubtype.Treatment_ChemicalPlant
+                        )
+                      }>
+                      Chemical
+                    </Button>
+                    <Button
+                      disabled={isDisabled}
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() =>
+                        addNewActivityToDB(
+                          databaseContext,
+                          ActivityType.Treatment,
+                          ActivitySubtype.Treatment_BiologicalPlant
+                        )
+                      }>
+                      Biological
+                    </Button>
+                  </>
+                )}
+
                 <ActivityList
                   workflowFunction={workflowFunction}
                   isDisabled={isDisabled}
@@ -511,6 +555,50 @@ const ActivitiesList: React.FC = () => {
               <Box>
                 <Typography variant="h5">Efficacy Monitorings</Typography>
               </Box>
+              {workflowFunction === 'Plant' && (
+                <>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() =>
+                      addNewActivityToDB(
+                        databaseContext,
+                        ActivityType.Monitoring,
+                        ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant
+                      )
+                    }>
+                    Mechanical
+                  </Button>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() =>
+                      addNewActivityToDB(
+                        databaseContext,
+                        ActivityType.Monitoring,
+                        ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant
+                      )
+                    }>
+                    Mechanical
+                  </Button>
+                  <Button
+                    disabled={isDisabled}
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() =>
+                      addNewActivityToDB(
+                        databaseContext,
+                        ActivityType.Monitoring,
+                        ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
+                      )
+                    }>
+                    Biological
+                  </Button>
+                </>
+              )}
+
               <ActivityList
                 workflowFunction={workflowFunction}
                 isDisabled={isDisabled}
