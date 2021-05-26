@@ -530,6 +530,7 @@ const main = async () => {
             // invasive_plant_code: 'NA', // TODO map common/species/genus to plant code
             common_name: survey.CommonName,
             species: survey.Species,
+            invasive_plant_code: survey.Species,
             genus: survey.Genus,
             invasive_plant_density_code: densityMap[survey.Density],
             density: survey.Density,
