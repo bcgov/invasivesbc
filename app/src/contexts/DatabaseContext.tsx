@@ -1,5 +1,6 @@
 import { JsonColumn } from '@capacitor-community/sqlite';
 import { Capacitor } from '@capacitor/core';
+import { GeoJSONObject } from '@turf/turf';
 import { DocType } from 'constants/database';
 import PouchDB from 'pouchdb-core';
 import PouchDBFind from 'pouchdb-find';
@@ -243,28 +244,49 @@ export interface IUpsert {
   docType?: DocType;
   sql?: string;
   json?: Object;
+  geo?: GeoJSONObject //todo - give geo it's own column so we can fetch many geos locally fast
 }
+
+// v1: assumes all upsertconfigs are the same, will allow for multiple in v2
 export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
   let batchUpdate = '';
-
-  // workaround until we get json1 extension working:
-  const patchSlowUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH);
-  processSlowUpserts(patchSlowUpserts, databaseContext);
-
   const adb = databaseContext.sqlite;
   const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
+
+  let totalRecordsChanged = 0;
 
   let ret: any;
   ret = await db.open();
 
-  for (const upsertConfig of upsertConfigs) {
+  // workaround until we get json1 extension working:
+  //TODO: change to return a count and share db like the other ones:
+  const patchSlowUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH);
+  processSlowUpserts(patchSlowUpserts, databaseContext);
+
+  const docTypeAndIDUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID);
+  if (docTypeAndIDUpserts.length > 1) {
+    batchUpdate = buildSQLStringDOC_TYPE_AND_ID(docTypeAndIDUpserts);
+    ret = await handleExecute(batchUpdate, db);
+    if (ret != false) {
+      totalRecordsChanged += ret;
+    }
+    else
+    {
+      console.log('problem executing DOC_TYPE_AND_ID upserts:')
+      console.log('db failed upsert @' + totalRecordsChanged + ' records')
+    }
+  }
+
+  batchUpdate = '';
+  const everythingElse = await upsertConfigs.filter((e) => e.type != UpsertType.DOC_TYPE_AND_ID);
+  for (const upsertConfig of everythingElse) {
     if (Capacitor.getPlatform() != 'web') {
       // initialize the connection
       // ret = db.execute(`select load_extension('json1');`); // not yet working
 
       switch (upsertConfig.type) {
         // full override update/upsert - json is replaced with new json
-        case UpsertType.DOC_TYPE_AND_ID:
+        /*   case UpsertType.DOC_TYPE_AND_ID:
           //the linter formatted this not me
           batchUpdate +=
             `insert into ` +
@@ -276,6 +298,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
             //JSON.stringify(upsertConfig.json) +
             `') on conflict(id) do update set json=excluded.json;\n`;
           break;
+          */
         // json patch upsert:
         case UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH:
           break;
@@ -293,7 +316,11 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
         // no ID present therefore these are inserts
         case UpsertType.DOC_TYPE:
           batchUpdate +=
-            `insert into ` + upsertConfig.docType + ` (json) values ('` + JSON.stringify(upsertConfig.json).split(`'`).join(`''`) + `')\n;`;
+            `insert into ` +
+            upsertConfig.docType +
+            ` (json) values ('` +
+            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+            `')\n;`;
           break;
         // raw sql.
         case UpsertType.RAW_SQL:
@@ -307,10 +334,24 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
       }
     }
   }
-  console.log('batch update ')
-//  console.log(batchUpdate)
-  if(batchUpdate != '')
+  ret = await handleExecute(batchUpdate, db);
+  if (ret !== false) {
+    totalRecordsChanged += ret;
+  }
+  else
   {
+    console.log('problem executing other upserts:')
+    console.log('db failed upsert @' + totalRecordsChanged + ' records')
+  }
+
+
+  return totalRecordsChanged;
+};
+
+const handleExecute = async (input: string, db: any) => {
+  let ret: any;
+  let batchUpdate = input;
+  if (batchUpdate !== '') {
     ret = await db.execute(batchUpdate);
     if (!ret.changes) {
       db.close();
@@ -319,11 +360,26 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
       db.close();
       return ret.changes.changes;
     }
+  } else {
+    return 0;
   }
-  else
-  {
-    return false;
+};
+//limit to all being the same type for now:
+const buildSQLStringDOC_TYPE_AND_ID = (upsertConfigs: Array<IUpsert>) => {
+  let batchUpdate = '';
+  if (upsertConfigs.length > 0) {
+    batchUpdate += `insert into ` + upsertConfigs[0].docType + ` (id,json) values `;
+    let rowCounter = 0;
+    for (const upsertConfig of upsertConfigs) {
+      batchUpdate += `('` + upsertConfig.ID + `','` + JSON.stringify(upsertConfig.json).split(`'`).join(`''`) + `')`;
+      if (rowCounter != upsertConfigs.length - 1) {
+        batchUpdate += ',';
+      }
+      rowCounter += 1;
+    }
+    batchUpdate += ` on conflict(id) do update set json=excluded.json;\n`;
   }
+  return batchUpdate;
 };
 
 //limit to all being the same type for now:
@@ -354,7 +410,7 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
 
     //patch them in memory
     let batchUpdate = '';
-    console.log('*** building sql ***')
+    console.log('*** building sql ***');
 
     for (const upsertConfig of upsertConfigs) {
       const old = JSON.parse(
@@ -362,7 +418,12 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
           return (e.id = upsertConfig.ID);
         })[0].json
       );
-      const patched = `'` + JSON.stringify({ ...old, ...upsertConfig.json }).split(`'`).join(`''`) + `'`;
+      const patched =
+        `'` +
+        JSON.stringify({ ...old, ...upsertConfig.json })
+          .split(`'`)
+          .join(`''`) +
+        `'`;
       batchUpdate +=
         'insert into ' +
         upsertConfig.docType +
@@ -374,12 +435,11 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
     }
 
     //finally update them all:
-    console.log('*** executing sql ***')
-    if(batchUpdate != '')
-    {
+    console.log('*** executing sql ***');
+    if (batchUpdate != '') {
       ret = db.execute(batchUpdate);
     }
-    console.log('*** done sql ***')
+    console.log('*** done sql ***');
     db.close();
   }
 };

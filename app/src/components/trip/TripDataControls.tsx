@@ -289,16 +289,16 @@ export const TripDataControls: React.FC<any> = (props) => {
             console.log('*** passing to db ops ***');
             numberPointsOfInterestFetched += await upsert(upserts, databaseContext);
             console.log('*** done db ops ***');
-            alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
           }
         } catch (error) {
           console.log('error saving points of interest');
           console.log(error);
           notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
         }
-            pointOfInterestSearchCriteria.page += 1
+        pointOfInterestSearchCriteria.page += 1;
       }
     }
+    alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
     notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
   };
 
