@@ -2,7 +2,7 @@ import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } fr
 import { Check } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext, query, QueryType } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -488,16 +488,58 @@ const CachedRecordsList: React.FC = () => {
     Also, call a helper function to save map geometries
   */
   const updateRecordList = useCallback(async () => {
+    /*
     const result = await databaseContext.database.find({
       selector: {
         $or: [{ deleted_timestamp: { $exists: false } }, { deleted_timestamp: { $type: 'null' } }]
       }
     });
+    */
+    //query for data by doc type
+    let activitiesAndPOIs;
+    let activities;
+    let pointsOfInterest;
+    try {
+      let reference_activity_query_results = await query(
+        { type: QueryType.DOC_TYPE, docType: DocType.REFERENCE_ACTIVITY, limit: 1000 },
+        databaseContext
+      );
+      let reference_POI_query_results = await query(
+        { type: QueryType.DOC_TYPE, docType: DocType.REFERENCE_POINT_OF_INTEREST, limit: 1000 },
+        databaseContext
+      );
+      //put back into objects
+      activities = reference_activity_query_results.map((r) => {
+        return JSON.parse(r.json.split(`''`).join(`'`).replace('"id"', '"_id"'));
+      });
+      pointsOfInterest = reference_POI_query_results.map((r) => {
+        return JSON.parse(r.json.split(`''`).join(`'`).replace('"id"', '"_id"'));
+      });
+      console.log('count of poi' + pointsOfInterest.length)
+    } catch (e) {
+      console.log(e);
+      console.log('crash! bang pow woops')
+    }
+    //consolidate for recorddtable
+    activitiesAndPOIs = [...activities, ...pointsOfInterest];
+
+    //do i need this?
+ /*   activitiesAndPOIs = activitiesAndPOIs.filter(
+      (doc) => (doc.point_of_interest_id || doc.activity_id) && !doc.deleted_timestamp // reduncancy for safety
+    );
+    */
+    console.log('total length' + activitiesAndPOIs.length)
+    /*
     const activitiesAndPOIs = result?.docs?.filter(
       (doc) => (doc.point_of_interest_id || doc.activity_id) && !doc.deleted_timestamp // reduncancy for safety
     );
+    */
+   console.log('here is one of em')
+   console.log(JSON.stringify(activitiesAndPOIs[0]))
 
-    storeInteractiveGeoInfo(activitiesAndPOIs);
+    //todo fix map
+   storeInteractiveGeoInfo(activitiesAndPOIs);
+   console.log('before set docs')
     setDocs([...activitiesAndPOIs]);
   }, [databaseContext.database]);
 

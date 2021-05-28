@@ -170,6 +170,8 @@ export const DatabaseContextProvider: React.FC = (props) => {
 export enum QueryType {
   DOC_TYPE_AND_ID = 'docType and ID',
   DOC_TYPE = 'docType',
+  DOC_TYPE_AND_TRIP_ID = 'docType and trip_ID', //todo
+  DOC_TYPE_AND_BOUNDING_POLY = 'docType and bounding poly',
   RAW_SQL = 'raw sql'
 }
 export interface IQuery {
@@ -177,6 +179,9 @@ export interface IQuery {
   ID?: string;
   docType?: DocType;
   sql?: string;
+  boundingPoly?: GeoJSONObject;
+  geosOnly?: boolean;
+  limit?: number
 }
 export const query = async (queryConfig: IQuery, databaseContext: any) => {
   if (Capacitor.getPlatform() != 'web') {
@@ -203,7 +208,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
           return ret.values;
         }
       case QueryType.DOC_TYPE:
-        ret = await db.query('select * from ' + queryConfig.docType);
+        ret = await db.query('select * from ' + queryConfig.docType + ((queryConfig.limit > 0)? (' limit ' + queryConfig.limit + ';') : ';'));
         if (!ret.values) {
           db.close();
           return false;
@@ -221,6 +226,8 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
           return ret.values;
         }
         break;
+      case QueryType.DOC_TYPE_AND_BOUNDING_POLY:
+        return await getByDocTypeAndBoudingPoly(queryConfig, db)
       default:
         alert(
           'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
@@ -229,6 +236,11 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
     }
   }
 };
+
+const getByDocTypeAndBoudingPoly = async (queryConfig: IQuery, db: any) =>
+{
+  return false;
+}
 
 /* db query wrapper interface to hide db implementation */
 export enum UpsertType {
@@ -245,6 +257,7 @@ export interface IUpsert {
   sql?: string;
   json?: Object;
   geo?: GeoJSONObject //todo - give geo it's own column so we can fetch many geos locally fast
+  trip_ID?: number; //todo - give a trip number for handling cache management
 }
 
 // v1: assumes all upsertconfigs are the same, will allow for multiple in v2
