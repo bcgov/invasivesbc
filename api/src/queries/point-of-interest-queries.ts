@@ -146,7 +146,20 @@ export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBo
  * @returns {SQLStatement} sql query object
  */
 export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
-  const sqlStatement: SQLStatement = SQL`SELECT * FROM point_of_interest_incoming_data WHERE 1 = 1`;
+  const sqlStatement: SQLStatement = SQL`SELECT`;
+
+  if (searchCriteria.column_names && searchCriteria.column_names.length) {
+    // do not include the `SQL` template string prefix, as column names can not be parameterized
+    sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
+  } else {
+    // if no column_names specified, select all
+    sqlStatement.append(SQL` *`);
+  }
+
+  // include the total count of results that would be returned if the limit and offset constraints weren't applied
+  sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
+
+  sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1`);
 
   if (searchCriteria.pointOfInterest_type) {
     sqlStatement.append(SQL` AND point_of_interest_type = ${searchCriteria.pointOfInterest_type}`);

@@ -178,8 +178,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       return;
     }
     let docs = await databaseContext.database.find({
-      selector: { trip_id: { $gte: null } },
-      sort: [{ trip_id: 'desc' }],
+      selector: { trip_ID: { $gte: null } },
+      sort: [{ trip_ID: 'desc' }],
       use_index: 'tripIDIndex',
       limit: 1
     });
@@ -188,7 +188,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       return 0;
     } else {
       console.dir(docs.docs);
-      if (docs.docs[0].trip_id) {
+      if (docs.docs[0].trip_ID) {
         return parseInt(docs.docs[0]._id);
       } else {
         return 0;
@@ -257,7 +257,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   };
 
   const SingleTrip: React.FC<any> = (props) => {
-    //todo: add trip_id to props and let trip manage db itself
+    //todo: add trip_ID to props and let trip manage db itself
     const databaseContext = useContext(DatabaseContext);
     const [stepState, setStepState] = useState(null);
 
