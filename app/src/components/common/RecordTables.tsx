@@ -3,19 +3,19 @@ import { Check } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useContext, useEffect, useState, useCallback, useMemo, InputHTMLAttributes } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
 import MapContainer, { getZIndex } from 'components/map/MapContainer';
-import RecordTable from 'components/common/RecordTable';
+import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
 
-const activityStandardMapping = (doc) => ({
+export const activityStandardMapping = (doc) => ({
   ...doc,
   ...doc?.formData?.activity_data,
   ...doc?.formData?.activity_subtype_data,
@@ -29,7 +29,7 @@ const activityStandardMapping = (doc) => ({
   longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6)
 });
 
-const poiStandardMapping = (doc) => ({
+export const poiStandardMapping = (doc) => ({
   ...doc,
   ...doc?.formData?.point_of_interest_data,
   ...doc?.formData?.point_of_interest_type_data,
@@ -110,17 +110,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface IRecordsTable {
-  rows: Array<any>;
-  selected?: Array<any>;
-  setSelected?: any;
-  databaseContext?: any;
-}
-
-export const ObservationsTable: React.FC<IRecordsTable> = (props) => {
+export const ObservationsTable: React.FC<IRecordTable> = (props) => {
   const history = useHistory();
-  const { selected, setSelected } = props;
-  const rows = props.rows.map(activityStandardMapping);
+  const { selected, setSelected, actions } = props;
   return useMemo(() => {
     return (
       <RecordTable
@@ -183,10 +175,23 @@ export const ObservationsTable: React.FC<IRecordsTable> = (props) => {
           'access_description',
           'general_comment'
         ]}
-        rows={props.rows.map(activityStandardMapping)}
+        rows={({page, rowsPerPage, orderBy}) => {
+          // fetch a page worth of db data, offset = page*rowsPerPage
+          // limit = 1000 (or whatever we want memory limit to be)
+          let rows = props.rows.map(activityStandardMapping);
+          const databasePageSize = 1000;
+          const startingPos = Math.max(0, page * rowsPerPage);
+          return rows.slice(
+            startingPos,
+            Math.min(startingPos + databasePageSize, rows.length)
+          );
+        }}
+        totalRows={props.rows.length}
         actions={{
+          ...actions,
           delete: {
-            enabled: false
+            enabled: false,
+            ...actions?.delete
           },
           create_treatment: {
             key: 'create_treatment',
@@ -210,18 +215,20 @@ export const ObservationsTable: React.FC<IRecordsTable> = (props) => {
               and an animal observation, and most probably will not go treat a terrestrial
               and aquatic observation in a single treatment as those are different areas
             */
-            bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype)
+            bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
+            ...props.actions?.create_treatment
           }
         }}
       />
     );
-  }, [rows?.length, selected?.length]);
+  }, [props.rows?.length, selected?.length, JSON.stringify(actions)]);
 };
 
-export const TreatmentsTable: React.FC<IRecordsTable> = (props) => {
+export const TreatmentsTable: React.FC<IRecordTable> = (props) => {
   const history = useHistory();
+  const databaseContext = useContext(DatabaseContext);
 
-  const { selected, setSelected, databaseContext } = props;
+  const { selected, setSelected } = props;
   const rows = props.rows.map(activityStandardMapping);
   return useMemo(() => {
     return (
@@ -340,7 +347,7 @@ export const TreatmentsTable: React.FC<IRecordsTable> = (props) => {
   }, [rows?.length, selected?.length]);
 };
 
-export const MonitoringTable: React.FC<IRecordsTable> = (props) => {
+export const MonitoringTable: React.FC<IRecordTable> = (props) => {
   const { selected, setSelected } = props;
   const rows = props.rows.map(activityStandardMapping);
   return useMemo(() => {
@@ -402,9 +409,9 @@ export const MonitoringTable: React.FC<IRecordsTable> = (props) => {
   }, [rows?.length, selected?.length]);
 };
 
-export const PointsOfInterestTable: React.FC<IRecordsTable> = (props) => {
+export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
   const { selected, setSelected } = props;
-  const rows = props.rows.map(poiStandardMapping);
+  const invasivesApi = useInvasivesApi();
   return useMemo(() => {
     return (
       <RecordTable
@@ -442,7 +449,7 @@ export const PointsOfInterestTable: React.FC<IRecordsTable> = (props) => {
           'access_description',
           'general_comment'
         ]}
-        rows={rows}
+        rows={props.rows}
         actions={{
           delete: {
             enabled: false
@@ -453,10 +460,10 @@ export const PointsOfInterestTable: React.FC<IRecordsTable> = (props) => {
         }}
       />
     );
-  }, [rows?.length, selected?.length]);
+  }, [selected?.length]);
 };
 
-export const IAPPSurveyTable: React.FC<IRecordsTable> = (props) => {
+export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
   const { selected, setSelected, rows } = props;
   return useMemo(() => {
     return (
@@ -528,7 +535,7 @@ export const IAPPSurveyTable: React.FC<IRecordsTable> = (props) => {
   }, [rows?.length, selected?.length]);
 };
 
-export const IAPPMonitoringTable: React.FC<IRecordsTable> = (props) => {
+export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) => {
   const { rows } = props;
   return useMemo(() => {
     return (
@@ -581,7 +588,7 @@ export const IAPPMonitoringTable: React.FC<IRecordsTable> = (props) => {
   }, [rows?.length]);
 };
 
-export const IAPPMechanicalTreatmentsTable: React.FC<IRecordsTable> = (props) => {
+export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
   const { rows } = props;
   return useMemo(() => {
     return (
@@ -648,7 +655,7 @@ export const IAPPMechanicalTreatmentsTable: React.FC<IRecordsTable> = (props) =>
   }, [rows?.length]);
 };
 
-export const IAPPChemicalTreatmentsTable: React.FC<IRecordsTable> = (props) => {
+export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
   const { rows } = props;
   return useMemo(() => {
     return (
@@ -770,7 +777,7 @@ export const IAPPChemicalTreatmentsTable: React.FC<IRecordsTable> = (props) => {
   }, [rows?.length]);
 };
 
-export const IAPPBiologicalTreatmentsTable: React.FC<IRecordsTable> = (props) => {
+export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
   const { rows } = props;
   return useMemo(() => {
     return (
@@ -863,7 +870,7 @@ export const IAPPBiologicalTreatmentsTable: React.FC<IRecordsTable> = (props) =>
   }, [rows?.length]);
 };
 
-export const IAPPBiologicalDispersalsTable: React.FC<IRecordsTable> = (props) => {
+export const IAPPBiologicalDispersalsTable: React.FC<IRecordTable> = (props) => {
   const { rows } = props;
   return useMemo(() => {
     return (
@@ -961,7 +968,7 @@ export const IAPPBiologicalDispersalsTable: React.FC<IRecordsTable> = (props) =>
   }, [rows?.length]);
 };
 
-export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordsTable> = (props) => {
+export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (props) => {
   const { rows } = props;
   return useMemo(() => {
     return (

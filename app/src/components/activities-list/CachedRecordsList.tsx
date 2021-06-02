@@ -14,7 +14,7 @@ import RecordTable from 'components/common/RecordTable';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
-import { ObservationsTable, TreatmentsTable, MonitoringTable, PointsOfInterestTable } from 'components/common/RecordTables';
+import { poiStandardMapping, activityStandardMapping, ObservationsTable, TreatmentsTable, MonitoringTable, PointsOfInterestTable } from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -193,6 +193,22 @@ const CachedRecordsList: React.FC = (props) => {
     return docs
       .filter((doc: any) => doc.docType === 'reference_point_of_interest');
   }, [docs]);
+  const fetchPointsOfInterest = async ({page, rowsPerPage, orderBy}) => {
+    // Fetches fresh from the API (web).  TODO fetch from SQLite
+    let dbPageSize = 500;
+    if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage) // if page is right near the db page limit
+      dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
+    console.log(page, rowsPerPage, orderBy, dbPageSize);
+    const result = await invasivesApi.getPointsOfInterest({
+      page: Math.floor(page * rowsPerPage / dbPageSize),
+      limit: dbPageSize
+    });
+    console.log(result);
+    return {
+      rows: result.rows.map(poiStandardMapping),
+      count: result.count
+    };
+  }
   const [selectedPOIs, setSelectedPOIs] = useState([]);
 
   const createMetabaseQuery = async (event, selectedActivities, selectedPoints) => {
@@ -302,10 +318,9 @@ const CachedRecordsList: React.FC = (props) => {
             setSelected={setSelectedGeneralized(setSelectedMonitorings)}
           />
           <PointsOfInterestTable
-            rows={pointsOfInterest}
+            rows={fetchPointsOfInterest}
             selected={selectedPOIs}
             setSelected={setSelectedGeneralized(setSelectedPOIs)}
-            databaseContext={databaseContext}
           />
         </List>
       )}

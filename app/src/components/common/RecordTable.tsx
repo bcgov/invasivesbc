@@ -211,9 +211,10 @@ function stableSort(rows, header, ascending) {
   pagination: object defining pagination settings, or just boolean true to use defaults.  No pagination if undefined/false
   startsOpen: boolean to set the dropdown of each row to open by default or not (default closed)
 */
-export interface RecordTablePropType {
-  headers: Array<any>;
+export interface IRecordTable {
   rows: any;
+  totalRows?: number;
+  headers?: Array<any>;
   tableName?: string;
   tableSchemaType?: any;
   expandable?: boolean;
@@ -241,7 +242,7 @@ export interface RecordTablePropType {
   rowActionStyle?: string;
 }
 
-const RecordTable: React.FC<RecordTablePropType> = (props) => {
+const RecordTable: React.FC<IRecordTable> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
@@ -270,8 +271,45 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     // even on the last page with only e.g. 1 row
     rowActionStyle = 'dropdown' // || 'column'
   } = props;
-  // Cached props to prevent constant rebuilds:
-  const rows = useMemo(() => props.rows, [props.rows?.length]);
+
+  const { startingOrderBy = props.headers.length ? props.headers[0].id : 'id' } = props; // defaults to the first header
+  const [order, setOrder] = useState(startingOrder);
+  const [orderBy, setOrderBy] = useState(startingOrderBy);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
+  
+  // Handle selective loading of only a portion of the total rows:
+  const [rows, setRows] = useState(Array.isArray(props.rows) ? props.rows : []);
+  const [totalRows, setTotalRows] = useState(props.totalRows ? props.totalRows : rows.length);
+  const [loadedRowsOffset, setLoadedRowsOffset] = useState(0);
+  const firstLoadedPage = Math.round(loadedRowsOffset / rowsPerPage);
+  const loadBuffer = 2;
+
+  useEffect(() => {
+      const fetchRows = async () => {
+        if (props.rows instanceof Function && (
+          page * rowsPerPage <= loadedRowsOffset
+          || (page + 1) * rowsPerPage > loadedRowsOffset + rows.length
+        )) {
+          const result = await props.rows({
+            page: Math.max(0, page - loadBuffer),
+            rowsPerPage: rowsPerPage,
+            sortKeys: [orderBy]
+          });
+          console.log(333, result);
+          // await setRows(result.rows);
+          await setTotalRows(result.count);
+          // offset from a couple pages back to avoid 
+          await setLoadedRowsOffset(Math.max(0, (page - loadBuffer) * rowsPerPage));
+        }
+      };
+
+      console.log(tableName, props.rows instanceof Function, page * rowsPerPage <= loadedRowsOffset, (page + 1) * rowsPerPage > loadedRowsOffset + rows.length);
+      fetchRows();
+    },
+    [page, rowsPerPage, orderBy, loadedRowsOffset, rows.length]
+  );
+  
   const dropdown = useCallback((row) => !!props.dropdown && props.dropdown(row), [!!props.dropdown]);
   const tableSchemaType = useMemo(() => props.tableSchemaType, [props.tableSchemaType?.length]);
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
@@ -329,8 +367,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
             // since it breaks generality of this multi-purpose table
             key: 'edit',
             enabled: enableSelection,
-            action: async (rows) => {
-              const selectedIds = rows.map((row) => row[keyField]);
+            action: async (selectedRows) => {
+              const selectedIds = selectedRows.map((row) => row[keyField]);
               if (selectedIds.length === 1) {
                 // TODO switch by activity type, I guess...
                 await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
@@ -349,7 +387,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
             icon: <Edit />,
             bulkAction: true,
             rowAction: true,
-            bulkCondition: (rows) => rows.every((a, _, [b]) => a.subtype === b.subtype),
+            bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
             // TODO limit to only some subtypes too
             // TODO IAPP POIs not editable
             rowCondition: undefined,
@@ -360,7 +398,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
           delete: {
             key: 'delete',
             enabled: enableSelection,
-            action: (rows) => {},
+            action: (selectedRows) => {},
             label: 'Delete',
             icon: <Delete />,
             bulkAction: true,
@@ -371,14 +409,9 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
             ...props.actions?.delete
           }
         };
-  const { startingOrderBy = headers.length ? headers[0].id : 'id' } = props; // defaults to the first header
   const bulkActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.bulkAction);
   const rowActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.rowAction);
 
-  const [order, setOrder] = useState(startingOrder);
-  const [orderBy, setOrderBy] = useState(startingOrderBy);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
   const [expandedRows, setExpandedRows] = useState([]);
   const [selected, setSelected] = useState(props.selected || []);
 
@@ -438,10 +471,9 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const orderHeader = useMemo(() => headers.find((col) => col.id === orderBy), [headers, orderBy]);
   const pageRows = useMemo(() => {
     // Note: this is O(nlog(n)) so important that we cache this with useMemo
-    return stableSort(rows, orderHeader, order === 'asc').slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    return stableSort(rows, orderHeader, order === 'asc').slice(page * rowsPerPage - loadedRowsOffset, page * rowsPerPage + rowsPerPage - loadedRowsOffset);
   }, [rows, orderHeader, order, page, rowsPerPage]);
-  // determine if any rows on the current page have a dropdown:
-  // render all dropdowns
+  // render all dropdowns on page
   const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
     pageRows,
     dropdown
@@ -452,6 +484,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     () => pageRows.map((row) => headers.filter(({ id }) => String(row[id]).length > overflowLimit).length > 0),
     [pageRows, headers, overflowLimit]
   );
+  // determine if any rows on the current page have a dropdown:
   const pageHasDropdown = useMemo(
     () =>
       (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
@@ -459,7 +492,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       (rowActions?.length > 0 && rowActionStyle === 'dropdown'),
     [dropdown, renderedDropdowns, overflowDropdown, verboseOverflows, rowActions?.length, rowActionStyle]
   );
-  const showPagination = pagination === 'overflow' ? rows.length > rowsPerPage : !!pagination;
+  const showPagination = pagination === 'overflow' ? totalRows > rowsPerPage : !!pagination;
 
   const handleRequestSort = useCallback(
     (event, property) => {
@@ -474,6 +507,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   const handleSelectAllClick = useCallback(
     (event) => {
       if (event.target.checked) {
+        // TODO do multiple queries to page through entire table and select them all?
         const newSelecteds = rows.map((row) => row[keyField]);
         setSelected(newSelecteds);
         return;
@@ -508,7 +542,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
     setPage(0);
   };
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, totalRows - page * rowsPerPage);
 
   const toggleExpandedRow = useCallback(
     (key) => {
@@ -524,12 +558,12 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       setExpandedRows(newExpandedRows);
       if (onToggleExpandRow)
         onToggleExpandRow(
-          rows.find((row) => row[keyField] === key),
+          pageRows.find((row) => row[keyField] === key),
           newExpandedRows,
           selectedRows
         );
     },
-    [expandedRows?.length, JSON.stringify(expandedRows), dropdownLimit, selectedRows, rows]
+    [expandedRows?.length, JSON.stringify(expandedRows), dropdownLimit, selectedRows, pageRows]
   );
 
   const CachedTableHead = useMemo(
@@ -541,7 +575,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
         orderBy={orderBy}
         onSelectAllClick={handleSelectAllClick}
         onRequestSort={handleRequestSort}
-        rowCount={rows.length}
+        totalRows={totalRows}
         headers={headers}
         enableSelection={enableSelection}
         enableTooltips={enableTooltips}
@@ -554,7 +588,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
       orderBy,
       handleSelectAllClick,
       handleRequestSort,
-      rows.length,
+      totalRows,
       headers,
       enableSelection,
       enableTooltips,
@@ -567,7 +601,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   return useMemo(
     () => (
       <div className={classes.component}>
-        <Accordion defaultExpanded={startExpanded || !rows.length}>
+        <Accordion defaultExpanded={startExpanded || !totalRows}>
           {(enableSelection || enableFiltering || tableName.length > 0) && (
             <RecordTableToolbar
               selectedRows={enableSelection ? selectedRows : []}
@@ -579,8 +613,8 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
           )}
           <AccordionDetails className={classes.paper}>
             {loading && <div className={classes.emptyTable}>Loading</div>}
-            {!loading && !rows.length && <div className={classes.emptyTable}>No data to display</div>}
-            {!loading && !!rows.length && (
+            {!loading && !totalRows && <div className={classes.emptyTable}>No data to display</div>}
+            {!loading && !!totalRows && (
               <TableContainer>
                 <Table
                   className={classes.table}
@@ -623,11 +657,11 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
                 </Table>
               </TableContainer>
             )}
-            {!loading && !!rows.length && showPagination && (
+            {!loading && !!totalRows && showPagination && (
               <TablePagination
                 rowsPerPageOptions={rowsPerPageOptions === false ? undefined : rowsPerPageOptions}
                 component="div"
-                count={rows.length}
+                count={totalRows}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onChangePage={handleChangePage}
@@ -638,7 +672,7 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
         </Accordion>
       </div>
     ),
-    [rows, schemasLoaded, page, rowsPerPage, JSON.stringify(selected), JSON.stringify(expandedRows), order, orderBy]
+    [pageRows, schemasLoaded, page, rowsPerPage, JSON.stringify(selected), JSON.stringify(expandedRows), order, orderBy]
   );
 };
 
@@ -649,7 +683,7 @@ function RecordTableHead(props) {
     order,
     orderBy,
     numSelected,
-    rowCount,
+    totalRows,
     onRequestSort,
     headers,
     pageHasDropdown,
@@ -667,8 +701,8 @@ function RecordTableHead(props) {
           <TableCell padding="checkbox" className={classes.cell}>
             {enableSelection && (
               <Checkbox
-                indeterminate={numSelected > 0 && numSelected < rowCount}
-                checked={rowCount > 0 && numSelected === rowCount}
+                indeterminate={numSelected > 0 && numSelected < totalRows}
+                checked={totalRows > 0 && numSelected === totalRows}
                 onChange={onSelectAllClick}
                 inputProps={{ 'aria-label': 'select all desserts' }}
               />
@@ -774,7 +808,7 @@ const RecordTableToolbar = (props) => {
 };
 
 const RecordTableCell = ({ row, header, className, valueMap }) => {
-  const ifApplicable = (val) => (val && String(val).trim().length ? val : ' N/A');
+  const ifApplicable = (val) => (val !== undefined && String(val).trim().length ? val : ' N/A');
   const id = header.id;
 
   let overrideProps;
