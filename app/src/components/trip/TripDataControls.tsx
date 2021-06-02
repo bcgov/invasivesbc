@@ -114,6 +114,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     }
 
     let numberActivitiesFetched = 0;
+    let totalNumberActivitiesAvailable = 0;
 
     for (const setOfChoices of trip.activityChoices) {
       const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
@@ -151,12 +152,16 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
       try {
         numberActivitiesFetched += await bulkUpsert(upserts);
+        totalNumberActivitiesAvailable += response.count;
       } catch (error) {
         notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
       }
     }
 
-    notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
+    notifySuccess(
+      databaseContext,
+      'Cached ' + numberActivitiesFetched + ' activities of total ' + totalNumberActivitiesAvailable + '.'
+    );
   };
 
   const fetchPointsOfInterest = async () => {
@@ -165,6 +170,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     }
 
     let numberPointsOfInterestFetched = 0;
+    let totalNumberActivitiesAvailable = 0;
 
     for (const setOfChoices of trip.pointOfInterestChoices) {
       const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
@@ -179,7 +185,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       let response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
 
       let upserts = {};
-      for (const row of response) {
+      for (const row of response?.rows) {
         let photos = [];
         if (setOfChoices.includePhotos) photos = await getPhotos(row);
 
@@ -201,20 +207,26 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
       try {
         numberPointsOfInterestFetched += await bulkUpsert(upserts);
+        totalNumberActivitiesAvailable += response.count;
       } catch (error) {
         notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
       }
     }
-    notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
+    notifySuccess(
+      databaseContext,
+      'Cached ' + numberPointsOfInterestFetched + ' points of interest of total ' + totalNumberActivitiesAvailable + '.'
+    );
   };
 
   const fetchMetabaseQueries = async () => {
-    if (!trip || !trip.metabaseChoices || !trip.metabaseChoices.length) {
+    if (!trip?.metabaseChoices?.length) {
       return;
     }
 
     let countActivities = 0;
     let countPois = 0;
+    let totalAvailableActivities = 0;
+    let totalAvailablePois = 0;
 
     for (const setOfChoices of trip.metabaseChoices) {
       const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
@@ -242,6 +254,8 @@ export const TripDataControls: React.FC<any> = (props) => {
       let responseRows = [];
       if (response?.activities?.length) responseRows = response.activities;
       if (response?.points_of_interest?.length) responseRows = [responseRows, ...response.points_of_interest];
+      totalAvailableActivities += response.activities_count;
+      totalAvailablePois += response.points_of_interest_count;
 
       let upserts = {};
       for (const row of responseRows) {
@@ -298,9 +312,9 @@ export const TripDataControls: React.FC<any> = (props) => {
     notifySuccess(
       databaseContext,
       'Cached ' +
-        (countActivities ? countActivities + ' activities' : '') +
+        (countActivities ? countActivities + ' activities (of ' + totalAvailableActivities + ')' : '') +
         (countActivities && countPois ? ' and ' : '') +
-        (countPois ? countPois + ' points of interest' : '') +
+        (countPois ? countPois + ' points of interest (of ' + totalAvailablePois + ')' : '') +
         (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
     );
   };

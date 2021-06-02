@@ -132,7 +132,9 @@ export const useInvasivesApi = () => {
     return {
       // TODO Note: api code smell that activities and points-of-interest dont have same response format
       activities: activities?.rows?.length ? activities.rows : [],
-      points_of_interest: points_of_interest?.length ? points_of_interest : []
+      points_of_interest: points_of_interest?.length ? points_of_interest.rows : [],
+      activities_count: activities?.count,
+      points_of_interest_count: points_of_interest?.count
     };
   };
 

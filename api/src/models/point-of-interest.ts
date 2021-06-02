@@ -81,6 +81,8 @@ export class PointOfInterestSearchCriteria {
 
   search_feature: GeoJSON.Feature;
 
+  column_names: string[];
+
   /**
    * Creates an instance of PointOfInterestSearchCriteria.
    *
@@ -99,6 +101,8 @@ export class PointOfInterestSearchCriteria {
     this.date_range_end = (obj && obj.date_range_end) || null;
 
     this.search_feature = (obj && obj.search_feature) || null;
+
+    this.column_names = (obj && obj.column_names) || [];
   }
 
   setPage(page: number): number {

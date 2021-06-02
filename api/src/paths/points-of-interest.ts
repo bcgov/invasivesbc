@@ -80,8 +80,19 @@ POST.apiDoc = {
             items: {
               type: 'object',
               properties: {
-                // Don't specify exact response, as it will vary, and is not currently enforced anyways
-                // Eventually this could be updated to be a oneOf list, similar to the Post request below.
+                rows: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      // Don't specify exact object properties, as it will vary, and is not currently enforced anyways
+                      // Eventually this could be updated to be a oneOf list, similar to the Post request below.
+                    }
+                  }
+                },
+                count: {
+                  type: 'number'
+                }
               }
             }
           }
@@ -136,9 +147,13 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = (response && response.rows) || null;
+      // parse the rows from the response
+      const rows = { rows: (response && response.rows) || [] };
 
-      return res.status(200).json(result);
+      // parse the count from the response
+      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
+
+      return res.status(200).json({ ...rows, ...count });
     } catch (error) {
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
       throw error;

@@ -224,7 +224,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       const rows = { rows: (response && response.rows) || [] };
 
       // parse the count from the response
-      const count = { count: rows.rows.length && rows.rows[0]['total_rows_count'] } || {};
+      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
 
       // build the return object
       const result = { ...rows, ...count };
