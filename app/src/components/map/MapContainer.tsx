@@ -17,6 +17,7 @@ import './MapContainer.css';
 import * as turf from '@turf/turf';
 import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
+import { onlineConsumer } from './WFSConsumer';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -29,7 +30,7 @@ export interface IMapContainerProps {
     interactiveGeometry: any[];
     setInteractiveGeometry: (interactiveGeometry: interactiveGeoInputData[]) => void;
   };
-  extentState: { extent: any; setExtent: (extent: any) => void };
+  extentState?: { extent: any; setExtent: (extent: any) => void };
   contextMenuState: {
     state: MapContextMenuData;
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;
@@ -69,6 +70,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       props.contextMenuState.setContextMenuState({ isOpen: true, lat: e.latlng.lat, lng: e.latlng.lng });
     });
   };
+
 
   const getESRIBaseLayer = () => {
     return L.tileLayer.offline(
@@ -416,7 +418,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [currentZoom]);
 
   const initMap = () => {
-    mapRef.current = L.map(props.mapId, { zoomControl: false }).setView([55, -128], 10);
+    mapRef.current = L.map(props.mapId, { zoomControl: true }).setView([55, -128], 10);
 
     setCurrentZoom(mapRef.current.getZoom());
     addContextMenuClickListener();
@@ -505,11 +507,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(mapRef.current.getBounds());
 
     mapRef.current.on('dragend', () => {
-      props.extentState.setExtent(mapRef.current.getBounds());
+     // props.extentState.setExtent(mapRef.current.getBounds());
     });
 
     mapRef.current.on('zoomend', () => {
-      props.extentState.setExtent(mapRef.current.getBounds());
+    //  props.extentState.setExtent(mapRef.current.getBounds());
       setCurrentZoom(mapRef.current.getZoom());
       // XXX: Turn off old saving controls
       // addASaveTilesControl(esriSaveTilesControl);
@@ -590,7 +592,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         L.geoJSON(collection, {
           style,
           pointToLayer: (feature: any, latLng: any) => {
-            if (feature.properties.radius) {
+            if (feature.properties?.radius) {
               return L.circle(latLng, { radius: feature.properties.radius });
             } else {
               return L.circleMarker(latLng, markerStyle);
@@ -691,6 +693,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     updateMapOnGeometryChange();
   }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
 
+  /*
   useEffect(() => {
     if (!mapRef.current) {
       return;
@@ -700,8 +703,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       return;
     }
 
-    setMapBounds(props.extentState.extent);
+
+//    setMapBounds(props.extentState.extent);
   }, [props.extentState.extent]);
+  */
 
   const [dropSpatial, setDropSpatial] = useState(null);
 

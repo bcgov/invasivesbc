@@ -12,6 +12,8 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
+import { onlineConsumer } from 'components/map/WFSConsumer';
+import distinctColors from 'distinct-colors';
 
 const GEO_UPDATE_MIN_INTERVAL = 60000; // 60s
 
@@ -127,8 +129,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
   // don't load the map until interactive geos ready
   useEffect(() => {
     const didInteractiveGeosLoad = interactiveGeometry ? true : false;
+    console.log('setting it to' + didInteractiveGeosLoad);
     setIsReadyToLoadMap(didInteractiveGeosLoad);
-  }, [databaseChangesContext, interactiveGeometry]);
+  }, [interactiveGeometry]);
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
@@ -160,6 +163,48 @@ const MapPage: React.FC<IMapProps> = (props) => {
   }, [databaseContext.database]);
 
   const getEverythingWithAGeo = useCallback(async () => {
+    //geos from databc:
+    const theRest = [
+      'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+      'WHSE_BASEMAPPING.FWA_WETLANDS_POLY',
+      'WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
+    ];
+    const backGroundlayersList = ['WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY'];
+
+    console.log('palette');
+    var palette = distinctColors({ count: backGroundlayersList.length + theRest.length });
+    console.log(JSON.stringify(palette));
+
+    let colourIndex = 0;
+
+    let dataBCInteractiveGeos = [];
+    backGroundlayersList.forEach(async (l) => {
+      const geos = await onlineConsumer([], l);
+      geos.forEach((f) => {
+        dataBCInteractiveGeos.push({
+          //mapContext: MapContext.MAIN_MAP,
+          recordDocID: f.id,
+          recordDocType: DocType.REFERENCE_POINT_OF_INTEREST,
+          description: 'databc data!',
+
+          // basic display:
+          geometry: { ...f.geometry, properties: f.properties },
+          color: '#99E472',
+          zIndex: 9999999999,
+
+          // interactive
+          onClickCallback: () => {
+            //setInteractiveGeometry([interactiveGeos])
+            console.log('clicked geo');
+            handleGeoClick(f);
+          }, //try to get this one working first
+          popUpComponent: PointOfInterestPopUp
+        });
+      });
+    });
+
+    console.log('data bc geos loaded:' + dataBCInteractiveGeos.length);
+
     const now = moment().valueOf();
     if (geoUpdateTimestamp !== null && now < geoUpdateTimestamp + GEO_UPDATE_MIN_INTERVAL) {
       return;
@@ -167,6 +212,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
     setGeoUpdateTimestamp(now);
 
+    /*
     let docs = await databaseContext.database.find({
       selector: {
         docType: {
@@ -200,7 +246,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
               }
             }
             : {}
-        ]*/
       },
       use_index: 'docTypeIndex',
       // limit to only necessary fields:
@@ -287,9 +332,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
           showMarkerAtZoom?: number;
           showMarker: boolean;
 
-          */
-          /*
-          showPopUp: boolean;})*/
+          showPopUp: boolean;})
           break;
         case DocType.REFERENCE_ACTIVITY:
           interactiveGeos.push({
@@ -338,9 +381,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
           showMarkerAtZoom?: number;
           showMarker: boolean;
 
-          */
-          /*
-          showPopUp: boolean;})*/
+          showPopUp: boolean;})
           break;
         case DocType.REFERENCE_POINT_OF_INTEREST:
           interactiveGeos.push({
@@ -368,19 +409,30 @@ const MapPage: React.FC<IMapProps> = (props) => {
           showMarkerAtZoom?: number;
           showMarker: boolean;
 
-          */
-          /*
-          showPopUp: boolean;})*/
+          showPopUp: boolean;})
           break;
         default:
           break;
       }
     });
+    */
 
-    setGeometry(geos);
-    setInteractiveGeometry(interactiveGeos);
+    //setGeometry(geos);
+    /*
+    setGeometry([{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.6, 10.1]
+      },
+      "properties": {
+        "name": "Dinagat Islands"
+      }
+    }]);
+    */
+    setInteractiveGeometry([...dataBCInteractiveGeos]);
 
-    //setIsReadyToLoadMap(true)
+    // setIsReadyToLoadMap(true)
   }, [databaseContext.database, extent]);
 
   useEffect(() => {
@@ -422,7 +474,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
                 mapId={'mainMap'}
                 geometryState={{ geometry, setGeometry }}
                 interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-                extentState={{ extent, setExtent }}
+                //  extentState={{ extent, setExtent }}
                 contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
               />
             ) : (

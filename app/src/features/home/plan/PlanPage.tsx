@@ -36,6 +36,7 @@ import { useCallback } from 'react';
 import Spinner from 'components/spinner/Spinner';
 import { confirmDeleteTrip, deleteTripRecords } from './PlanPageHelpers';
 import { Capacitor } from '@capacitor/core';
+import { createNamespaceExportDeclaration } from 'typescript';
 
 interface IPlanPageProps {
   classes?: any;

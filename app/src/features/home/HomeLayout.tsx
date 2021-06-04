@@ -68,7 +68,7 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
     <Box width="inherit" height="100%" display="flex" flex="1" flexDirection="column">
       <TabsContainer isMobileNoNetwork={props.children.props.isMobileNoNetwork} />
       <Collapse timeout={50} in={isOpen}>
-        <Alert
+      { /* <Alert
           // severity can't be null so this is a workaround
           severity={notification == null ? 'success' : notification.notificationType}
           action={
@@ -86,7 +86,7 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
             </IconButton>
           }>
           <strong>{notification == null ? null : notification.text}</strong>
-        </Alert>
+        </Alert> */}
       </Collapse>
       <Box mb="43px" height="inherit" width="inherit" overflow="auto">
         {props.children}

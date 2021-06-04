@@ -3,6 +3,11 @@
   "appName": "InvasivesBC-Ionic",
   "bundledWebRuntime": false,
   "npmClient": "npm",
+  "server": {
+    "allowNavigation": [
+      "openmaps.gov.bc.ca"
+    ]
+  },
   "webDir": "build",
   "plugins": {
     "SplashScreen": {

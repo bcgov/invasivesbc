@@ -94,21 +94,25 @@ const CachedRecords: React.FC<ICachedRecords> = (props) => {
 
   const { selected, setSelected } = props;
 
+  console.log('observ')
   const observations = docs.filter((doc: any) => doc.activityType === 'Observation');
   const selectedObservations = observations.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
   const setSelectedObservations = (newSelected) =>
     setSelected([...newSelected, ...selectedTreatments, ...selectedMonitorings, ...selectedPOIs]);
 
+  console.log('treat')
   const treatments = docs.filter((doc: any) => doc.activityType === 'Treatment');
   const selectedTreatments = treatments.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
   const setSelectedTreatments = (newSelected) =>
     setSelected([...selectedObservations, ...newSelected, ...selectedMonitorings, ...selectedPOIs]);
 
+  console.log('monitor')
   const monitorings = docs.filter((doc: any) => doc.activityType === 'Monitoring');
   const selectedMonitorings = monitorings.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
   const setSelectedMonitorings = (newSelected) =>
     setSelected([...selectedObservations, ...selectedTreatments, ...newSelected, ...selectedPOIs]);
 
+  console.log('point')
   const pointsOfInterest = docs.filter((doc: any) => doc.docType === 'reference_point_of_interest');
   const selectedPOIs = pointsOfInterest.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id);
   const setSelectedPOIs = (newSelected) =>

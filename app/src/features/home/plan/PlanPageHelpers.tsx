@@ -73,8 +73,9 @@ export const deleteTripRecords = async (databaseContext, trip_ID) => {
       })
     })
 
+    console.log('im done deleting!')
 
-    notifySuccess(databaseContext, 'Wiped ' + docsToDelete.length + ' records from trip.  ' + docsToUpdate.length + ' were not removed because they belong to another trip');
+//    notifySuccess(databaseContext, 'Wiped ' + docsToDelete.length + ' records from trip.  ' + docsToUpdate.length + ' were not removed because they belong to another trip');
     // sort into records to update and those to delete
     // update records
     // delete records
