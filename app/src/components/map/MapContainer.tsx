@@ -979,6 +979,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
      * 2. Draw data on map
      */
     layers.forEach(async (layer, index) => {
+      console.log(layer.url);
       const response = await axios(layer.url);
 
       await databaseContext.database.upsert('offline_data', (spatial) => {
