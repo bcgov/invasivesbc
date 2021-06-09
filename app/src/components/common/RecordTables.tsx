@@ -5,7 +5,6 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 
@@ -497,6 +496,8 @@ export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
         keyField="survey_id"
         startingOrderBy="survey_id"
         startingOrder="desc"
+        selected={selected}
+        setSelected={setSelected}
         tableSchemaType={['IAPP_Survey']}
         actions={false}
         headers={[
