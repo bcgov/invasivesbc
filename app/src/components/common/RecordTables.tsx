@@ -1,7 +1,7 @@
 import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
-import { DocType } from 'constants/database';
+import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback, useMemo, InputHTMLAttributes } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -44,7 +44,34 @@ export const poiStandardMapping = (doc) => ({
     []
   ),
   latitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6),
-  longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6)
+  longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6),
+});
+
+
+export const poiStandardDBMapping = (doc) => ({
+  ...doc,
+  ...doc.point_of_interest_payload?.form_data?.point_of_interest_data,
+  ...doc.point_of_interest_payload?.form_data?.point_of_interest_type_data,
+  jurisdiction_code: doc.point_of_interest_payload?.form_data?.surveys?.[0]?.jurisdictions?.reduce(
+    (output, jurisdiction) => [
+      ...output,
+      jurisdiction.jurisdiction_code,
+      '(',
+      (jurisdiction.percent_covered ? jurisdiction.percent_covered : 100) + '%',
+      ')'
+    ],
+    []
+  ),
+  latitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6),
+  longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6),
+  // pulling these from plan my trip:
+  _id: 'POI' + doc.point_of_interest_id,
+  docType: DocType.REFERENCE_POINT_OF_INTEREST,
+  //trip_IDs: doc?.trip_IDs ? [...doc.trip_IDs, props.trip_ID] : [props.trip_ID],
+  formData: doc.point_of_interest_payload.form_data,
+  pointOfInterestType: doc.point_of_interest_type,
+  pointOfInterestSubtype: doc.point_of_interest_subtype,
+  geometry: [...doc.point_of_interest_payload.geometry],
 });
 
 /**
@@ -113,6 +140,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const ObservationsTable: React.FC<IRecordTable> = (props) => {
   const history = useHistory();
   const { selected, setSelected, actions } = props;
+  const rows = props.rows.map(activityStandardMapping);
   return useMemo(() => {
     return (
       <RecordTable
@@ -123,7 +151,7 @@ export const ObservationsTable: React.FC<IRecordTable> = (props) => {
           'Observation_PlantTerrestrial',
           'Observation_PlantAquatic',
           'ObservationPlantTerrestrialData',
-          'Jurisdictions'
+          'Jurisdiction'
         ]}
         startingOrderBy="activity_id"
         startingOrder="desc"
@@ -175,18 +203,7 @@ export const ObservationsTable: React.FC<IRecordTable> = (props) => {
           'access_description',
           'general_comment'
         ]}
-        rows={({page, rowsPerPage, orderBy}) => {
-          // fetch a page worth of db data, offset = page*rowsPerPage
-          // limit = 1000 (or whatever we want memory limit to be)
-          let rows = props.rows.map(activityStandardMapping);
-          const databasePageSize = 1000;
-          const startingPos = Math.max(0, page * rowsPerPage);
-          return rows.slice(
-            startingPos,
-            Math.min(startingPos + databasePageSize, rows.length)
-          );
-        }}
-        totalRows={props.rows.length}
+        rows={rows}
         actions={{
           ...actions,
           delete: {
@@ -221,7 +238,7 @@ export const ObservationsTable: React.FC<IRecordTable> = (props) => {
         }}
       />
     );
-  }, [props.rows?.length, selected?.length, JSON.stringify(actions)]);
+  }, [rows?.length, selected?.length, JSON.stringify(actions)]);
 };
 
 export const TreatmentsTable: React.FC<IRecordTable> = (props) => {
@@ -291,7 +308,7 @@ export const TreatmentsTable: React.FC<IRecordTable> = (props) => {
               'Treatment_ChemicalPlant',
               'Treatment_MechanicalPlant',
               'Treatment_BiologicalPlant',
-              'Jurisdictions'
+              'Jurisdiction'
             ]}
             headers={[
               'jurisdiction_code',
@@ -416,7 +433,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
     return (
       <RecordTable
         tableName="Points of Interest"
-        tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdictions']}
+        tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdiction']}
         startingOrderBy="site_id"
         startingOrder="desc"
         enableSelection
@@ -432,7 +449,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
             title: 'Created Date'
           },
           'jurisdiction_code',
-          'elevation',
+          'site_elevation',
           'slope_code',
           'aspect_code',
           'soil_texture_code',
@@ -449,7 +466,21 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           'access_description',
           'general_comment'
         ]}
-        rows={props.rows}
+        rows={async ({page, rowsPerPage, order}) => {
+          // Fetches fresh from the API (web).  TODO fetch from SQLite
+          let dbPageSize = DEFAULT_PAGE_SIZE;
+          if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage) // if page is right near the db page limit
+            dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
+          const result = await invasivesApi.getPointsOfInterest({
+            page: Math.floor(page * rowsPerPage / dbPageSize),
+            limit: dbPageSize,
+            order: order
+          });
+          return {
+            rows: result.rows.map(poiStandardDBMapping),
+            count: result.count
+          };
+        }}
         actions={{
           delete: {
             enabled: false
@@ -477,48 +508,25 @@ export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
         headers={[
           {
             id: 'survey_id',
-            title: 'Survey ID',
             type: 'number'
           },
+          'invasive_plant_code',
+          'common_name',
+          'genus',
+          'survey_date',
+          'invasive_species_agency_code',
+          'reported_area',
           {
-            id: 'common_name',
-            title: 'Common Name'
-          },
-          {
-            id: 'species',
-            title: 'Species'
-          },
-          {
-            id: 'genus',
-            title: 'Genus'
-          },
-          {
-            id: 'survey_date',
-            title: 'Survey Date'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
-          },
-          {
-            id: 'density',
+            id: 'invasive_plant_density_code',
             align: 'center',
             title: 'Density'
           },
           {
-            id: 'distribution',
+            id: 'invasive_plant_distribution_code',
             align: 'center',
             title: 'Distribution'
           },
-          {
-            id: 'general_comment',
-            title: 'Comments'
-          }
+          'general_comment'
         ]}
         rows={
           !rows?.length
@@ -550,37 +558,23 @@ export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) => {
         headers={[
           {
             id: 'monitoring_id',
-            title: 'Monitoring ID',
             type: 'number'
           },
-          {
-            id: 'monitoring_date',
-            title: 'Monitoring Date'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
-          {
-            id: 'efficacy_percent',
-            title: 'Efficacy',
-            type: 'number'
-          },
+          'monitoring_date',
+          'invasive_species_agency_code',
+          'efficacy_code',
           {
             id: 'project_code_label',
             title: 'Project Code'
           },
-          {
-            id: 'general_comment',
-            title: 'Comments'
-          }
+          'general_comment'
         ]}
         rows={
           !rows.length
             ? []
             : rows.map((monitor, j) => ({
               ...monitor,
-              project_code_title: monitor.project_code[0].description
+              project_code_label: monitor.project_code[0].description
             }))
         }
       />
@@ -603,46 +597,28 @@ export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID',
             type: 'number'
           },
           {
             id: 'common_name',
-            title: 'Species (Common)'
+            title: 'Species (Common Name)'
           },
-          {
-            id: 'treatment_date',
-            title: 'Treatment Date'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
-          {
-            id: 'reported_area',
-            title: 'Reported Area (m\u00B2)',
-            type: 'number'
-          },
-          {
-            id: 'mechanical_method_code_label', // custom
-            title: 'Mech Method'
-          },
+          'treatment_date',
+          'invasive_species_agency_code',
+          'reported_area',
+          'mechanical_method_code',
           {
             id: 'project_code_label',
             title: 'Project Code'
           },
-          {
-            id: 'general_comment',
-            title: 'Comments'
-          }
+          'general_comment'
         ]}
         rows={
           !rows.length
             ? []
             : rows.map((row) => ({
                 ...row,
-                mechanical_method_code_title: '(' + row.mechanical_method_code + ') ' + row.mechanical_method,
-                project_code_title: row.project_code[0].description
+                project_code_label: row.project_code[0].description
               }))
         }
         dropdown={(row) =>
@@ -670,45 +646,28 @@ export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID',
             type: 'number'
           },
           {
             id: 'common_name',
-            title: 'Species (Common)'
+            title: 'Species (Common Name)'
           },
-          {
-            id: 'treatment_date',
-            title: 'Treatment Date'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
-          {
-            id: 'reported_area',
-            title: 'Reported Area (m\u00B2)',
-            type: 'number'
-          },
-          {
-            id: 'chemical_method', // custom
-            title: 'Method'
-          },
+          'treatment_date',
+          'invasive_species_agency_code',
+          'reported_area',
+          'chemical_method_code',
           {
             id: 'project_code_label',
             title: 'Project Code'
           },
-          {
-            id: 'general_comment',
-            title: 'Comments'
-          }
+          'general_comment'
         ]}
         rows={
           !rows.length
             ? []
             : rows.map((row) => ({
                 ...row,
-                project_code_title: row.project_code[0].description
+                project_code_label: row.project_code[0].description
               }))
         }
         dropdown={(row) => (
@@ -717,54 +676,38 @@ export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) => {
               startExpanded={true}
               keyField="treatment_id"
               actions={false}
+              tableSchemaType={['IAPP_Treatment', 'IAPP_Chemical_Treatment', 'Herbicide']}
               headers={[
-                {
-                  id: 'pmp_confirmation_number',
-                  title: 'PMP Confirmation #'
-                },
-                {
-                  id: 'herbicide_description',
-                  title: 'Herbicide'
-                },
-                {
-                  id: 'pmra_reg_number',
-                  title: 'PMRA Reg #'
-                },
-                {
-                  id: 'temperature',
-                  title: 'Temperature',
-                  type: 'number'
-                },
-                {
-                  id: 'humidity',
-                  title: 'Humidity'
-                },
-                {
-                  id: 'wind_speed',
-                  title: 'Wind Velocity',
-                  type: 'number'
-                },
-                {
-                  id: 'wind_direction',
-                  title: 'Wind Direction'
-                },
-                {
-                  id: 'application_rate',
-                  title: 'Application Rate'
-                },
-                {
-                  id: 'herbicide_amount',
-                  title: 'Amount Used',
-                  type: 'number'
-                },
-                {
-                  id: 'dilution',
-                  title: 'Dilution Rate'
-                },
+                'liquid_herbicide_code',
+                'herbicide_description',
+                'application_rate',
+                'herbicide_amount',
+                'dilution',
+                'mix_delivery_rate',
                 {
                   id: 'mix_delivery_rate',
                   title: 'Mix Delivery Rate'
                 }
+              ]}
+              rows={[row]} // singleton expanded table
+              enableFiltering={false}
+            />
+            <RecordTable
+              startExpanded={true}
+              keyField="treatment_id"
+              actions={false}
+              tableSchemaType={['IAPP_Treatment', 'IAPP_Chemical_Treatment', 'Herbicide']}
+              headers={[
+                'pmp_confirmation_number',
+                'pmra_reg_number',
+                'pup_number',
+                'service_license_number',
+                'treatment_time',
+                'temperature',
+                'humidity',
+                'wind_speed',
+                'wind_direction',
+                'wind_direction_code'
               ]}
               rows={[row]} // singleton expanded table
               enableFiltering={false}

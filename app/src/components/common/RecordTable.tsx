@@ -22,7 +22,7 @@ import {
 } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import { DocType } from 'constants/database';
+import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
 import { Edit, Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
 import { notifyError } from 'utils/NotificationUtils';
 import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
@@ -212,7 +212,7 @@ function stableSort(rows, header, ascending) {
   startsOpen: boolean to set the dropdown of each row to open by default or not (default closed)
 */
 export interface IRecordTable {
-  rows: any;
+  rows?: any;
   totalRows?: number;
   headers?: Array<any>;
   tableName?: string;
@@ -272,6 +272,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     rowActionStyle = 'dropdown' // || 'column'
   } = props;
 
+  const [rowsLoaded, setRowsLoaded] = useState(false);
   const { startingOrderBy = props.headers.length ? props.headers[0].id : 'id' } = props; // defaults to the first header
   const [order, setOrder] = useState(startingOrder);
   const [orderBy, setOrderBy] = useState(startingOrderBy);
@@ -287,27 +288,42 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
 
   useEffect(() => {
       const fetchRows = async () => {
-        if (props.rows instanceof Function && (
-          page * rowsPerPage <= loadedRowsOffset
-          || (page + 1) * rowsPerPage > loadedRowsOffset + rows.length
-        )) {
+        if (props.rows instanceof Function) {
+          if (
+            rows.slice( // dont set loading indicator yet if you still have data visible
+              page * rowsPerPage - loadedRowsOffset,
+              (page + 1) * rowsPerPage - loadedRowsOffset
+            ).length < rowsPerPage
+          )
+            await setRowsLoaded(false);
           const result = await props.rows({
             page: Math.max(0, page - loadBuffer),
             rowsPerPage: rowsPerPage,
-            sortKeys: [orderBy]
+            order: [orderBy + " " + order]
           });
-          console.log(333, result);
-          // await setRows(result.rows);
-          await setTotalRows(result.count);
-          // offset from a couple pages back to avoid 
-          await setLoadedRowsOffset(Math.max(0, (page - loadBuffer) * rowsPerPage));
+          if (result?.rows?.length) {
+            await setRows(result.rows);
+            if (!totalRows)
+              await setTotalRows(result.count);
+            // offset from a couple pages back to avoid 
+            await setLoadedRowsOffset(Math.max(0, (page - loadBuffer) * rowsPerPage));
+          }
+          await setRowsLoaded(true);
         }
+        await setRowsLoaded(true);
       };
 
-      console.log(tableName, props.rows instanceof Function, page * rowsPerPage <= loadedRowsOffset, (page + 1) * rowsPerPage > loadedRowsOffset + rows.length);
       fetchRows();
     },
-    [page, rowsPerPage, orderBy, loadedRowsOffset, rows.length]
+    [
+      (Math.max(0, page - loadBuffer) * rowsPerPage <= loadedRowsOffset) && page, // look two pages behind
+      (Math.min(totalRows, page + 1 + loadBuffer) * rowsPerPage > loadedRowsOffset + rows.length) && page, // look two pages ahead
+      rowsPerPage,
+      orderBy,
+      order,
+      loadedRowsOffset,
+      rows.length
+    ]
   );
   
   const dropdown = useCallback((row) => !!props.dropdown && props.dropdown(row), [!!props.dropdown]);
@@ -426,7 +442,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
             ...prevSchema,
             properties: {
               ...prevSchema.properties,
-              ...apiSpecResponse.components.schemas[schemaType].properties
+              ...apiSpecResponse.components?.schemas[schemaType]?.properties
             }
           }),
           {}
@@ -472,7 +488,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const pageRows = useMemo(() => {
     // Note: this is O(nlog(n)) so important that we cache this with useMemo
     return stableSort(rows, orderHeader, order === 'asc').slice(page * rowsPerPage - loadedRowsOffset, page * rowsPerPage + rowsPerPage - loadedRowsOffset);
-  }, [rows, orderHeader, order, page, rowsPerPage]);
+  }, [rows.length, orderHeader, order, page, rowsPerPage]);
   // render all dropdowns on page
   const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
     pageRows,
@@ -505,10 +521,17 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   );
 
   const handleSelectAllClick = useCallback(
-    (event) => {
+    async (event) => {
       if (event.target.checked) {
         // TODO do multiple queries to page through entire table and select them all?
-        const newSelecteds = rows.map((row) => row[keyField]);
+        let newSelecteds;
+        if (Array.isArray(props.rows))
+          newSelecteds = rows.map((row) => row[keyField]);
+        else {
+          if (totalRows >= DEFAULT_PAGE_SIZE) return; // Sanity check, this should be disabled anyway
+          const allRecords = await props.rows({ page: 0, rowsPerPage: 0 }); // will need to filter this when implemented
+          newSelecteds = allRecords.rows.map((row) => row.point_of_interest_id ? 'POI' + row.point_of_interest_id : row.activity_id);
+        }
         setSelected(newSelecteds);
         return;
       }
@@ -596,7 +619,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     ]
   );
 
-  const loading = !schemasLoaded && tableSchemaType?.length > 0;
+  const loading = (!schemasLoaded && tableSchemaType?.length > 0) || (!rowsLoaded);
 
   return useMemo(
     () => (
@@ -672,7 +695,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
         </Accordion>
       </div>
     ),
-    [pageRows, schemasLoaded, page, rowsPerPage, JSON.stringify(selected), JSON.stringify(expandedRows), order, orderBy]
+    [loading, pageRows?.[0]?._id, schemasLoaded, page, rowsPerPage, JSON.stringify(selected), JSON.stringify(expandedRows), order, orderBy]
   );
 };
 
@@ -699,7 +722,8 @@ function RecordTableHead(props) {
       <TableRow>
         {(enableSelection || pageHasDropdown) && (
           <TableCell padding="checkbox" className={classes.cell}>
-            {enableSelection && (
+            {enableSelection && totalRows < DEFAULT_PAGE_SIZE && (
+              // disable Select-All for huge row counts (for now)
               <Checkbox
                 indeterminate={numSelected > 0 && numSelected < totalRows}
                 checked={totalRows > 0 && numSelected === totalRows}
@@ -714,6 +738,7 @@ function RecordTableHead(props) {
           <TableCell
             key={headCell.id}
             padding={headCell.padding}
+            align={headCell.align}
             sortDirection={orderBy === headCell.id ? order : false}
             className={`${classes.cell} ${headCell.className}`}>
             <TableSortLabel

@@ -183,6 +183,13 @@ export interface IPointOfInterestSearchCriteria {
    * @memberof IPointOfInterestSearchCriteria
    */
   search_feature?: Feature;
+  /**
+   * Point of Interest requested return order.
+   *
+   * @type {string[]}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  order?: string[];
 }
 
 /**
