@@ -735,72 +735,33 @@ export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
         headers={[
           {
             id: 'treatment_id',
-            title: 'Treatment ID',
             type: 'number'
           },
           {
             id: 'common_name',
-            title: 'Species (Common)'
+            title: 'Species (Common Name)'
           },
-          {
-            id: 'treatment_date',
-            title: 'Treatment Date'
-          },
-          {
-            id: 'collection_date',
-            title: 'Collection Date'
-          },
-          {
-            id: 'bioagent_source',
-            title: 'Bioagent Source'
-          },
-          {
-            id: 'invasive_species_agency_code',
-            title: 'Agency'
-          },
-          {
-            id: 'stage_larva_ind',
-            title: 'Larvae?'
-          },
-          {
-            id: 'stage_egg_ind',
-            title: 'Eggs?'
-          },
-          {
-            id: 'stage_pupa_ind',
-            title: 'Pupae?'
-          },
-          {
-            id: 'stage_other_ind',
-            title: 'Other?'
-          },
-          {
-            id: 'release_quantity',
-            title: 'Release Quantity'
-          },
-          {
-            id: 'area_classification_code',
-            title: 'Area Classification Code'
-          },
-          {
-            id: 'biological_agent_code',
-            title: 'Biological Agent Code'
-          },
+          'treatment_date',
+          'collection_date',
+          'invasive_species_agency_code',
+          'classified_area_code',
+          'biological_agent_code',
+          'bioagent_source',
+          'biological_agent_stage_code',
+          'agent_source',
+          'release_quantity',
           {
             id: 'project_code_label',
             title: 'Project Code'
           },
-          {
-            id: 'general_comment',
-            title: 'Comments'
-          }
+          'general_comment'
         ]}
         rows={
           !rows.length
             ? []
             : rows.map((row) => ({
                 ...row,
-                project_code_title: row.project_code[0].description
+                project_code_label: row.project_code[0].description
               }))
         }
         dropdown={(row) =>
@@ -827,83 +788,38 @@ export const IAPPBiologicalDispersalsTable: React.FC<IRecordTable> = (props) => 
         actions={false}
         headers={[
           {
-            id: 'treatment_id',
-            title: 'Treatment ID',
+            id: 'monitoring_id',
             type: 'number'
           },
           {
             id: 'common_name',
             title: 'Species (Common)'
           },
-          {
-            id: 'monitoring_date',
-            title: 'Inspection Date'
-          },
+          'monitoring_date',
           {
             id: 'project_code_label',
             title: 'Project Code'
           },
-          {
-            id: 'plant_count',
-            title: 'Plant Count',
-            type: 'number'
-          },
-          {
-            id: 'agent_count',
-            title: 'Agent Count',
-            type: 'number'
-          },
-          {
-            id: 'count_duration',
-            title: 'Count Duration'
-          },
-          {
-            id: 'biological_agent_code',
-            title: 'Agent Code'
-          },
-          {
-            id: 'foliar_feeding_damage_ind',
-            title: 'Foliar Feeding Damage?'
-          },
-          {
-            id: 'root_feeding_damage_ind',
-            title: 'Root Feeding Damage?'
-          },
-          {
-            id: 'seed_feeding_damage_ind',
-            title: 'Seed Feeding Damage?'
-          },
-          {
-            id: 'oviposition_marks_ind',
-            title: 'Oviposition Marks?'
-          },
-          {
-            id: 'eggs_present_ind',
-            title: 'Eggs?'
-          },
-          {
-            id: 'pupae_present_ind',
-            title: 'Pupae?'
-          },
-          {
-            id: 'adults_present_ind',
-            title: 'Adults?'
-          },
-          {
-            id: 'tunnels_present_ind',
-            title: 'Tunnels?'
-          },
-          {
-            id: 'general_comment',
-            title: 'Comments'
-          }
+          'plant_count',
+          'agent_count',
+          'count_duration',
+          'biological_agent_code',
+          'foliar_feeding_damage_ind',
+          'root_feeding_damage_ind',
+          'seed_feeding_damage_ind',
+          'oviposition_marks_ind',
+          'eggs_present_ind',
+          'pupae_present_ind',
+          'adults_present_ind',
+          'tunnels_present_ind',
+          'general_comment'
         ]}
         rows={
           !rows.length
             ? []
             : rows.map((row) => ({
                 ...row,
-                project_code_title: row.project_code[0].description
+                project_code_label: row.project_code[0].description
               }))
         }
       />
@@ -921,91 +837,40 @@ export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (
         startingOrderBy="monitoring_id"
         startingOrder="desc"
         keyField="monitoring_id"
-        tableSchemaType={['IAPP_Monitoring']}
+        tableSchemaType={['IAPP_Monitoring', 'Monitoring_BiologicalTerrestrialPlant', 'IAPP_Biological_Monitoring']}
         actions={false}
         headers={[
           {
             id: 'monitoring_id',
-            title: 'Monitoring ID',
             type: 'number'
           },
-          {
-            id: 'monitoring_date',
-            title: 'Monitoring Date'
-          },
-          {
-            id: 'plant_count',
-            title: 'Plant Count',
-            type: 'number'
-          },
-          {
-            id: 'agent_count',
-            title: 'Agent Count',
-            type: 'number'
-          },
-          {
-            id: 'count_duration',
-            title: 'Count Duration'
-          },
-          {
-            id: 'agent_destroyed_ind',
-            title: 'Agent Destroyed?'
-          },
-          {
-            id: 'legacy_presence_ind',
-            title: 'Legacy Presence?'
-          },
-          {
-            id: 'foliar_feeding_damage_ind',
-            title: 'Foliar Feeding Damage?'
-          },
-          {
-            id: 'root_feeding_damage_ind',
-            title: 'Root Feeding Damage?'
-          },
-          {
-            id: 'seed_feeding_damage_ind',
-            title: 'Seed Feeding Damage?'
-          },
-          {
-            id: 'oviposition_marks_ind',
-            title: 'Oviposition Marks?'
-          },
-          {
-            id: 'eggs_present_ind',
-            title: 'Eggs Present?'
-          },
-          {
-            id: 'larvae_present_ind',
-            title: 'Larvae Present?'
-          },
-          {
-            id: 'pupae_present_ind',
-            title: 'Pupae Present?'
-          },
-          {
-            id: 'adults_present_ind',
-            title: 'Adults Present?'
-          },
-          {
-            id: 'tunnels_present_ind',
-            title: 'Tunnels Present?'
-          },
+          'monitoring_date',
+          'plant_count',
+          'agent_count',
+          'count_duration',
+          'agent_destroyed_ind',
+          'legacy_presence_ind',
+          'foliar_feeding_damage_ind',
+          'root_feeding_damage_ind',
+          'seed_feeding_damage_ind',
+          'oviposition_marks_ind',
+          'eggs_present_ind',
+          'larvae_present_ind',
+          'pupae_present_ind',
+          'adults_present_ind',
+          'tunnels_present_ind',
           {
             id: 'project_code_label',
             title: 'Project Code'
           },
-          {
-            id: 'general_comment',
-            title: 'Comments'
-          }
+          'general_comment'
         ]}
         rows={
           !rows.length
             ? []
             : rows.map((monitor, j) => ({
                 ...monitor,
-                project_code_title: monitor.project_code[0].description
+                project_code_label: monitor.project_code[0].description
               }))
         }
       />

@@ -47,6 +47,14 @@ const getCommonValue = (array, fallback = undefined) => (new Set(array).size ===
 
 const hectaresToM2 = (hectares) => Math.round(Number(hectares) * 10000) | 0;
 
+const mapYN = (value) => {
+  switch(value) {
+    case 'Y': return 'Yes';
+    case 'N': return 'No';
+    default: return 'Unknown';
+  }
+};
+
 const mapSlope = (slope) => {
   if (slope === '') return 'NA';
   slope = Number(slope);
@@ -88,6 +96,30 @@ const mapEfficacyCode = (percent) => {
   if (percent < 90) return 2;
   if (percent <= 100) return 1;
   return;
+};
+
+const mapBioAgentStageCode = (t) => {
+  let count = 0;
+  let ret = 'NA';
+  if (t.STAGE_LARVA_IND) {
+    count += 1;
+    ret = 'LA';
+  }
+  if (t.STAGE_PUPA_IND) {
+    count += 1;
+    ret = 'PU';
+  }
+  if (t.STAGE_EGG_IND) {
+    count += 1;
+    ret = 'EG';
+  }
+  if (t.STAGE_OTHER_IND) {
+    count += 1;
+    ret = 'OT';
+  }
+  if (count > 1)
+    return 'AL';
+  return ret;
 };
 
 // LOOKUP TABLES:
@@ -517,7 +549,7 @@ const main = async () => {
             slope: siteRecord.Slope,
             aspect_code: mapAspect(siteRecord.Aspect),
             aspect: siteRecord.Aspect,
-            elevation: siteRecord.Elevation,
+            site_elevation: siteRecord.Elevation,
             species: surveySpecies
           },
 
@@ -528,17 +560,17 @@ const main = async () => {
             map_code: survey.MapCode,
             invasive_species_agency_code: survey.SurveyAgency,
             // invasive_plant_code: 'NA', // TODO map common/species/genus to plant code
-            common_name: survey.CommonName,
-            species: survey.Species,
             invasive_plant_code: survey.Species,
-            genus: survey.Genus,
+            common_name: survey.CommonName, // redundant? ^
+            species: survey.Species, // redundant ^
+            genus: survey.Genus, // redundant? ^
             invasive_plant_density_code: densityMap[survey.Density],
-            density: survey.Density,
+            density: survey.Density, // redundant ^
             invasive_plant_distribution_code: distributionMap[survey.Distribution],
-            distribution: survey.Distribution,
+            distribution: survey.Distribution,  // redundant ^
             // proposed_treatment_code
             observation_type_code: observationTypes[survey.SurveyType],
-            observation_type: survey.SurveyType,
+            observation_type: survey.SurveyType,  // redundant ^
             general_comment: survey.Comment,
             project_code: [
               {
@@ -618,25 +650,26 @@ const main = async () => {
             general_comment: t.Comment,
 
             // Chem-Specific properties:
-            chemical_method: t.ChemicalMethodFull,
             chemical_method_code: chemMethodCodes[t.ChemicalMethodFull],
+            chemical_method: t.ChemicalMethodFull,
             treatment_time: t.TreatmentTime,
             service_licence_number: t.Service_Licence_Number,
             pmp_confirmation_number: t.Pmp_Confirmation_Number,
             pmra_reg_number: t.Pmra_Reg_Number,
             pup_number: t.Pup_Number,
-            herbicide_code: t.Herbicide_Code,
+            liquid_herbicide_code: t.Herbicide_Code,
             herbicide_description: t.Description,
+            dilution: t.Dilution_Rate,
+            mix_delivery_rate: t.Delivery_Rate,
+            tank_mix_id: t.Tank_Mix_Id,
+            application_rate: t.Application_Rate,
+            herbicide_amount: t.Amount_Used,
             temperature: t.Temperature,
             humidity: t.Humidity, // note: not mapped to increments of 10
             wind_speed: t.Wind_Velocity,
             // wind_direction_code
             wind_direction: t.Wind_Direction,
-            application_rate: t.Application_Rate,
-            herbicide_amount: t.Amount_Used,
-            dilution: t.Dilution_Rate,
-            mix_delivery_rate: t.Delivery_Rate,
-            tank_mix_id: t.Tank_Mix_Id,
+            wind_direction_code: mapAspect[t.Wind_Direction],
             monitoring: t.monitoring.map((m) => ({
               monitoring_id: m.monitoring_id,
               monitoring_date: formatDateToISO(m.inspection_date),
@@ -669,15 +702,18 @@ const main = async () => {
             general_comment: t.COMMENTS,
 
             // Bio-Specific properties:
-            area_classification_code: t.AREA_CLASSIFICATION_CODE,
+            classified_area_code: t.AREA_CLASSIFICATION_CODE,
             collection_date: formatDateToISO(t.COLLECTION_DATE),
             biological_agent_code: t.BIOLOGICAL_AGENT_CODE,
-            bioagent_source: t.BIOAGENT_SOURCE,
+            agent_source: t.BIOAGENT_SOURCE,
             release_quantity: t.RELEASE_QUANTITY,
             stage_larva_ind: t.STAGE_LARVA_IND,
             stage_egg_ind: t.STAGE_EGG_IND,
             stage_pupa_ind: t.STAGE_PUPA_IND,
             stage_other_ind: t.STAGE_OTHER_IND,
+            biological_agent_stage_code: mapBioAgentStageCode(t),
+            // bioagent_maturity_status_code
+            
             utm_zone: t.UTM_ZONE,
             utm_easting: t.UTM_EASTING,
             utm_northing: t.UTM_NORTHING,
@@ -698,17 +734,18 @@ const main = async () => {
               plant_count: m.PLANT_COUNT,
               agent_count: m.AGENT_COUNT,
               count_duration: m.COUNT_DURATION,
-              agent_destroyed_ind: m.AGENT_DESTROYED_IND,
-              legacy_presence_ind: m.LEGACY_PRESENCE_IND,
-              foliar_feeding_damage_ind: m.FOLIAR_FEEDING_DAMAGE_IND,
-              root_feeding_damage_ind: m.ROOT_FEEDING_DAMAGE_IND,
-              seed_feeding_damage_ind: m.SEED_FEEDING_DAMAGE_IND,
-              oviposition_marks_ind: m.OVIPOSITION_MARKS_IND,
-              eggs_present_ind: m.EGGS_PRESENT_IND,
-              larvae_present_ind: m.LARVAE_PRESENT_IND,
-              pupae_present_ind: m.PUPAE_PRESENT_IND,
-              adults_present_ind: m.ADULTS_PRESENT_IND,
-              tunnels_present_ind: m.TUNNELS_PRESENT_IND,
+              agent_destroyed_ind: mapYN(m.AGENT_DESTROYED_IND),
+              legacy_presence_ind: mapYN(m.LEGACY_PRESENCE_IND),
+              foliar_feeding_damage_ind: mapYN(m.FOLIAR_FEEDING_DAMAGE_IND),
+              root_feeding_damage_ind: mapYN(m.ROOT_FEEDING_DAMAGE_IND),
+              seed_feeding_damage_ind: mapYN(m.SEED_FEEDING_DAMAGE_IND),
+              oviposition_marks_ind: mapYN(m.OVIPOSITION_MARKS_IND),
+              eggs_present_ind: mapYN(m.EGGS_PRESENT_IND),
+              larvae_present_ind: mapYN(m.LARVAE_PRESENT_IND),
+              pupae_present_ind: mapYN(m.PUPAE_PRESENT_IND),
+              adults_present_ind: mapYN(m.ADULTS_PRESENT_IND),
+              tunnels_present_ind: mapYN(m.TUNNELS_PRESENT_IND),
+
               utm_zone: m.UTM_ZONE,
               utm_easting: m.UTM_EASTING,
               utm_northing: m.UTM_NORTHING
@@ -716,7 +753,7 @@ const main = async () => {
           })),
 
           biological_dispersals: biological_dispersals.map((d) => ({
-            biological_dispersal_id: d.biological_dispersal_id,
+            monitoring_id: d.biological_dispersal_id,
             monitoring_date: formatDateToISO(d.inspection_date),
             // no efficacy_code applicable
             map_code: d.map_symbol,
@@ -730,24 +767,26 @@ const main = async () => {
             general_comment: d.comments,
 
             // Dispersal-Specific Properties
-            invasive_plant_id: d.invasive_plant_id,
+            biological_dispersal_id: d.biological_dispersal_id,
+            invasive_plant_code: d.invasive_plant_id,
             biological_agent_code: d.biological_agent_code,
             // invasive_plant_code: 'NA', // TODO map common_name to plant code
-            utm_zone: d.utm_zone,
-            utm_easting: d.utm_easting,
-            utm_northing: d.utm_northing,
+            plant_count: d.plant_count,
             agent_count: d.agent_count,
             count_duration: d.count_duration,
-            plant_count: d.plant_count,
-            foliar_feeding_damage_ind: d.foliar_feeding_damage_ind,
-            root_feeding_damage_ind: d.root_feeding_damage_ind,
-            seed_feeding_damage_ind: d.seed_feeding_damage_ind,
-            oviposition_marks_ind: d.oviposition_marks_ind,
-            eggs_present_ind: d.eggs_present_ind,
-            larvae_present_ind: d.larvae_present_ind,
-            pupae_present_ind: d.pupae_present_ind,
-            adults_present_ind: d.adults_present_ind,
-            tunnels_present_ind: d.tunnels_present_ind
+            foliar_feeding_damage_ind: mapYN(d.foliar_feeding_damage_ind),
+            root_feeding_damage_ind: mapYN(d.root_feeding_damage_ind),
+            seed_feeding_damage_ind: mapYN(d.seed_feeding_damage_ind),
+            oviposition_marks_ind: mapYN(d.oviposition_marks_ind),
+            eggs_present_ind: mapYN(d.eggs_present_ind),
+            larvae_present_ind: mapYN(d.larvae_present_ind),
+            pupae_present_ind: mapYN(d.pupae_present_ind),
+            adults_present_ind: mapYN(d.adults_present_ind),
+            tunnels_present_ind: mapYN(d.tunnels_present_ind),
+
+            utm_zone: d.utm_zone,
+            utm_easting: d.utm_easting,
+            utm_northing: d.utm_northing
           }))
         }
       };
