@@ -278,7 +278,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [orderBy, setOrderBy] = useState(startingOrderBy);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
-  
+
   // Handle selective loading of only a portion of the total rows:
   const [rows, setRows] = useState(Array.isArray(props.rows) ? props.rows : []);
   const [totalRows, setTotalRows] = useState(props.totalRows ? props.totalRows : rows.length);
@@ -286,45 +286,43 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const loadBuffer = 2;
 
   useEffect(() => {
-      const fetchRows = async () => {
-        if (props.rows instanceof Function) {
-          if (
-            rows.slice( // dont set loading indicator yet if you still have data visible
-              page * rowsPerPage - loadedRowsOffset,
-              (page + 1) * rowsPerPage - loadedRowsOffset
-            ).length < rowsPerPage
-          )
-            await setRowsLoaded(false);
-          const result = await props.rows({
-            page: Math.max(0, page - loadBuffer),
-            rowsPerPage: rowsPerPage,
-            order: [orderBy + " " + order]
-          });
-          if (result?.rows?.length) {
-            await setRows(result.rows);
-            if (!totalRows)
-              await setTotalRows(result.count);
-            // offset from a couple pages back to avoid 
-            await setLoadedRowsOffset(Math.max(0, (page - loadBuffer) * rowsPerPage));
-          }
-          await setRowsLoaded(true);
+    const fetchRows = async () => {
+      if (props.rows instanceof Function) {
+        if (
+          rows.slice(
+            // dont set loading indicator yet if you still have data visible
+            page * rowsPerPage - loadedRowsOffset,
+            (page + 1) * rowsPerPage - loadedRowsOffset
+          ).length < rowsPerPage
+        )
+          await setRowsLoaded(false);
+        const result = await props.rows({
+          page: Math.max(0, page - loadBuffer),
+          rowsPerPage: rowsPerPage,
+          order: [orderBy + ' ' + order]
+        });
+        if (result?.rows?.length) {
+          await setRows(result.rows);
+          if (!totalRows) await setTotalRows(result.count);
+          // offset from a couple pages back to avoid
+          await setLoadedRowsOffset(Math.max(0, (page - loadBuffer) * rowsPerPage));
         }
         await setRowsLoaded(true);
-      };
+      }
+      await setRowsLoaded(true);
+    };
 
-      fetchRows();
-    },
-    [
-      (Math.max(0, page - loadBuffer) * rowsPerPage <= loadedRowsOffset) && page, // look two pages behind
-      (Math.min(totalRows, page + 1 + loadBuffer) * rowsPerPage > loadedRowsOffset + rows.length) && page, // look two pages ahead
-      rowsPerPage,
-      orderBy,
-      order,
-      loadedRowsOffset,
-      rows.length
-    ]
-  );
-  
+    fetchRows();
+  }, [
+    Math.max(0, page - loadBuffer) * rowsPerPage <= loadedRowsOffset && page, // look two pages behind
+    Math.min(totalRows, page + 1 + loadBuffer) * rowsPerPage > loadedRowsOffset + rows.length && page, // look two pages ahead
+    rowsPerPage,
+    orderBy,
+    order,
+    loadedRowsOffset,
+    rows.length
+  ]);
+
   const dropdown = useCallback((row) => !!props.dropdown && props.dropdown(row), [!!props.dropdown]);
   const tableSchemaType = useMemo(() => props.tableSchemaType, [props.tableSchemaType?.length]);
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
@@ -486,7 +484,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const orderHeader = useMemo(() => headers.find((col) => col.id === orderBy), [headers, orderBy]);
   const pageRows = useMemo(() => {
     // Note: this is O(nlog(n)) so important that we cache this with useMemo
-    return stableSort(rows, orderHeader, order === 'asc').slice(page * rowsPerPage - loadedRowsOffset, page * rowsPerPage + rowsPerPage - loadedRowsOffset);
+    return stableSort(rows, orderHeader, order === 'asc').slice(
+      page * rowsPerPage - loadedRowsOffset,
+      page * rowsPerPage + rowsPerPage - loadedRowsOffset
+    );
   }, [rows.length, orderHeader, order, page, rowsPerPage]);
   // render all dropdowns on page
   const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
@@ -523,12 +524,13 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     async (event) => {
       if (event.target.checked) {
         let newSelecteds;
-        if (Array.isArray(props.rows))
-          newSelecteds = rows.map((row) => row[keyField]);
+        if (Array.isArray(props.rows)) newSelecteds = rows.map((row) => row[keyField]);
         else {
           if (totalRows >= DEFAULT_PAGE_SIZE) return; // Sanity check, this should be disabled anyway
           const allRecords = await props.rows({ page: 0, rowsPerPage: 0 }); // will need to filter this when implemented
-          newSelecteds = allRecords.rows.map((row) => row.point_of_interest_id ? 'POI' + row.point_of_interest_id : row.activity_id);
+          newSelecteds = allRecords.rows.map((row) =>
+            row.point_of_interest_id ? 'POI' + row.point_of_interest_id : row.activity_id
+          );
         }
         setSelected(newSelecteds);
         return;
@@ -617,7 +619,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     ]
   );
 
-  const loading = (!schemasLoaded && tableSchemaType?.length > 0) || (!rowsLoaded);
+  const loading = (!schemasLoaded && tableSchemaType?.length > 0) || !rowsLoaded;
 
   return useMemo(
     () => (
@@ -693,7 +695,17 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
         </Accordion>
       </div>
     ),
-    [loading, pageRows?.[0]?._id, schemasLoaded, page, rowsPerPage, JSON.stringify(selected), JSON.stringify(expandedRows), order, orderBy]
+    [
+      loading,
+      pageRows?.[0]?._id,
+      schemasLoaded,
+      page,
+      rowsPerPage,
+      JSON.stringify(selected),
+      JSON.stringify(expandedRows),
+      order,
+      orderBy
+    ]
   );
 };
 

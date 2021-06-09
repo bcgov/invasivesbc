@@ -48,10 +48,13 @@ const getCommonValue = (array, fallback = undefined) => (new Set(array).size ===
 const hectaresToM2 = (hectares) => Math.round(Number(hectares) * 10000) | 0;
 
 const mapYN = (value) => {
-  switch(value) {
-    case 'Y': return 'Yes';
-    case 'N': return 'No';
-    default: return 'Unknown';
+  switch (value) {
+    case 'Y':
+      return 'Yes';
+    case 'N':
+      return 'No';
+    default:
+      return 'Unknown';
   }
 };
 
@@ -117,8 +120,7 @@ const mapBioAgentStageCode = (t) => {
     count += 1;
     ret = 'OT';
   }
-  if (count > 1)
-    return 'AL';
+  if (count > 1) return 'AL';
   return ret;
 };
 
@@ -567,10 +569,10 @@ const main = async () => {
             invasive_plant_density_code: densityMap[survey.Density],
             density: survey.Density, // redundant ^
             invasive_plant_distribution_code: distributionMap[survey.Distribution],
-            distribution: survey.Distribution,  // redundant ^
+            distribution: survey.Distribution, // redundant ^
             // proposed_treatment_code
             observation_type_code: observationTypes[survey.SurveyType],
-            observation_type: survey.SurveyType,  // redundant ^
+            observation_type: survey.SurveyType, // redundant ^
             general_comment: survey.Comment,
             project_code: [
               {
@@ -713,7 +715,7 @@ const main = async () => {
             stage_other_ind: t.STAGE_OTHER_IND,
             biological_agent_stage_code: mapBioAgentStageCode(t),
             // bioagent_maturity_status_code
-            
+
             utm_zone: t.UTM_ZONE,
             utm_easting: t.UTM_EASTING,
             utm_northing: t.UTM_NORTHING,

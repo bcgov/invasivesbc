@@ -9,7 +9,12 @@ import MapContainer, { getZIndex } from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
-import { ObservationsTable, TreatmentsTable, MonitoringTable, PointsOfInterestTable } from 'components/common/RecordTables';
+import {
+  ObservationsTable,
+  TreatmentsTable,
+  MonitoringTable,
+  PointsOfInterestTable
+} from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -166,22 +171,13 @@ const CachedRecordsList: React.FC = (props) => {
     }
   }, [geometry?.length]);
 
-  const observations = useMemo(
-    () => docs.filter((doc: any) => doc.activityType === 'Observation'),
-    [docs]
-  );
+  const observations = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Observation'), [docs]);
   const [selectedObservations, setSelectedObservations] = useState([]);
 
-  const treatments = useMemo(
-    () => docs.filter((doc: any) => doc.activityType === 'Treatment'),
-    [docs]
-  );
+  const treatments = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Treatment'), [docs]);
   const [selectedTreatments, setSelectedTreatments] = useState([]);
 
-  const monitorings = useMemo(
-    () => docs.filter((doc: any) => doc.activityType === 'Monitoring'),
-    [docs]
-  );
+  const monitorings = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Monitoring'), [docs]);
   const [selectedMonitorings, setSelectedMonitorings] = useState([]);
 
   /* Legacy from PlanMyTrip:
@@ -298,10 +294,7 @@ const CachedRecordsList: React.FC = (props) => {
             selected={selectedMonitorings}
             setSelected={setSelectedGeneralized(setSelectedMonitorings)}
           />
-          <PointsOfInterestTable
-            selected={selectedPOIs}
-            setSelected={setSelectedGeneralized(setSelectedPOIs)}
-          />
+          <PointsOfInterestTable selected={selectedPOIs} setSelected={setSelectedGeneralized(setSelectedPOIs)} />
         </List>
       )}
     </Container>

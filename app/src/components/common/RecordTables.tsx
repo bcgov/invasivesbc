@@ -38,9 +38,8 @@ export const poiStandardMapping = (doc) => ({
     []
   ),
   latitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6),
-  longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6),
+  longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6)
 });
-
 
 export const poiStandardDBMapping = (doc) => ({
   ...doc,
@@ -65,7 +64,7 @@ export const poiStandardDBMapping = (doc) => ({
   formData: doc.point_of_interest_payload.form_data,
   pointOfInterestType: doc.point_of_interest_type,
   pointOfInterestSubtype: doc.point_of_interest_subtype,
-  geometry: [...doc.point_of_interest_payload.geometry],
+  geometry: [...doc.point_of_interest_payload.geometry]
 });
 
 /**
@@ -460,13 +459,14 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           'access_description',
           'general_comment'
         ]}
-        rows={async ({page, rowsPerPage, order}) => {
+        rows={async ({ page, rowsPerPage, order }) => {
           // Fetches fresh from the API (web).  TODO fetch from SQLite
           let dbPageSize = DEFAULT_PAGE_SIZE;
-          if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage) // if page is right near the db page limit
+          if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
+            // if page is right near the db page limit
             dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
           const result = await invasivesApi.getPointsOfInterest({
-            page: Math.floor(page * rowsPerPage / dbPageSize),
+            page: Math.floor((page * rowsPerPage) / dbPageSize),
             limit: dbPageSize,
             order: order
           });
@@ -567,9 +567,9 @@ export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) => {
           !rows.length
             ? []
             : rows.map((monitor, j) => ({
-              ...monitor,
-              project_code_label: monitor.project_code[0].description
-            }))
+                ...monitor,
+                project_code_label: monitor.project_code[0].description
+              }))
         }
       />
     );
@@ -615,11 +615,7 @@ export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
                 project_code_label: row.project_code[0].description
               }))
         }
-        dropdown={(row) =>
-          !row.monitoring?.length ? undefined : (
-            <IAPPMonitoringTable rows={row.monitoring} />
-          )
-        }
+        dropdown={(row) => (!row.monitoring?.length ? undefined : <IAPPMonitoringTable rows={row.monitoring} />)}
       />
     );
   }, [rows?.length]);
@@ -759,9 +755,7 @@ export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) => 
               }))
         }
         dropdown={(row) =>
-          !row.monitoring?.length ? undefined : (
-            <IAPPBiologicalTreatmentsMonitoringTable rows={row.monitoring}/>
-          )
+          !row.monitoring?.length ? undefined : <IAPPBiologicalTreatmentsMonitoringTable rows={row.monitoring} />
         }
       />
     );
