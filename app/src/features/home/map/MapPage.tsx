@@ -12,8 +12,11 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
-import { onlineConsumer } from 'components/map/WFSConsumer';
+import { getDataFromDataBC } from 'components/map/WFSConsumer';
 import distinctColors from 'distinct-colors';
+import { GeoJSONObject } from '@turf/turf';
+import { metroVanExample } from 'components/map/MetroVanExample';
+import { VanIslandRoughExample } from 'components/map/VanIslandRoughExample';
 
 const GEO_UPDATE_MIN_INTERVAL = 60000; // 60s
 
@@ -172,264 +175,91 @@ const MapPage: React.FC<IMapProps> = (props) => {
     const backGroundlayersList = ['WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY'];
 
     console.log('palette');
-    var palette = distinctColors({ count: backGroundlayersList.length + theRest.length });
+    var palette = distinctColors({ count: backGroundlayersList.length + theRest.length, hueMin: 150 });
     console.log(JSON.stringify(palette));
 
     let colourIndex = 0;
 
     let dataBCInteractiveGeos = [];
-    backGroundlayersList.forEach(async (l) => {
-      const geos = await onlineConsumer([], l);
-      geos.forEach((f) => {
-        dataBCInteractiveGeos.push({
-          //mapContext: MapContext.MAIN_MAP,
-          recordDocID: f.id,
-          recordDocType: DocType.REFERENCE_POINT_OF_INTEREST,
-          description: 'databc data!',
+    try {
+      const backGroundListPromises =  backGroundlayersList.map(async (l) => {
+        try {
+          const geos = await getDataFromDataBC(l, VanIslandRoughExample.features[0]);
+          console.log('geos for this interactive geo: ' + geos.length);
+          await geos.map((f) => {
+            dataBCInteractiveGeos.push({
+              //mapContext: MapContext.MAIN_MAP,
+              recordDocID: f.id,
+              recordDocType: DocType.REFERENCE_POINT_OF_INTEREST,
+              description: 'databc data!' + JSON.stringify(f.properties),
 
-          // basic display:
-          geometry: { ...f.geometry, properties: f.properties },
-          color: '#99E472',
-          zIndex: 9999999999,
+              // basic display:
+              geometry: { ...f.geometry, properties: f.properties },
+              color: palette.sort()[colourIndex].hex(),
+              opacity: 0.4,
+              zIndex: 9999999999,
 
-          // interactive
-          onClickCallback: () => {
-            //setInteractiveGeometry([interactiveGeos])
-            console.log('clicked geo');
-            handleGeoClick(f);
-          }, //try to get this one working first
-          popUpComponent: PointOfInterestPopUp
-        });
+              // interactive
+              onClickCallback: () => {
+                //setInteractiveGeometry([interactiveGeos])
+                console.log('clicked geo');
+                handleGeoClick(f);
+              }, //try to get this one working first
+              popUpComponent: PointOfInterestPopUp
+            });
+          });
+        } catch (e) {
+          console.log('oh no', JSON.stringify(e));
+        }
+        colourIndex += 1;
       });
-    });
+      const theRestPromises = theRest.sort().map(async (l) => {
+        try {
+          const geos = await getDataFromDataBC(l, VanIslandRoughExample.features[0]);
+          console.log('geos for this interactive geo: ' + geos.length);
+          console.log('this is a geo: ' + JSON.stringify(geos[0]));
+          await geos.map((f) => {
+            dataBCInteractiveGeos.push({
+              //mapContext: MapContext.MAIN_MAP,
+              recordDocID: f.id,
+              recordDocType: DocType.REFERENCE_POINT_OF_INTEREST,
+              description: 'databc data!' + JSON.stringify(f.properties),
+
+              // basic display:
+              geometry: { ...f.geometry, properties: f.properties },
+              color: palette.sort()[colourIndex].hex(),
+              zIndex: 9999999999,
+
+              // interactive
+              onClickCallback: () => {
+                //setInteractiveGeometry([interactiveGeos])
+                console.log('clicked geo');
+                handleGeoClick(f);
+              }, //try to get this one working first
+              popUpComponent: PointOfInterestPopUp
+            });
+          });
+        } catch (e) {
+          console.log('oh no', JSON.stringify(e));
+        }
+        colourIndex += 1;
+      });
+      await Promise.all([...theRestPromises, ...backGroundListPromises])
+    } catch (e) {
+      console.log('error looping over layers and doing anything at all', JSON.stringify(e));
+    }
 
     console.log('data bc geos loaded:' + dataBCInteractiveGeos.length);
 
     const now = moment().valueOf();
     if (geoUpdateTimestamp !== null && now < geoUpdateTimestamp + GEO_UPDATE_MIN_INTERVAL) {
+      console.log('short circuit');
       return;
     }
 
     setGeoUpdateTimestamp(now);
 
-    /*
-    let docs = await databaseContext.database.find({
-      selector: {
-        docType: {
-          $in: [
-            DocType.REFERENCE_ACTIVITY,
-            DocType.ACTIVITY,
-            DocType.REFERENCE_POINT_OF_INTEREST,
-            DocType.POINT_OF_INTEREST,
-            DocType.SPATIAL_UPLOADS,
-            DocType.OFFLINE_EXTENT
-          ]
-        }
-        /*
-        // Only needed if memory size from too many points on the map becomes an issue.
-        // currently the main problem is just update frequency
-        // so this isn't needed with a long interval timer.
-        // Leaving this here just in case it's needed:
-        $or: [
-          {
-            $exists: 'lat'
-          },
-          extent
-            ? {
-              lat: {
-                $gte: extent._southWest.lat,
-                $lte: extent._northEast.lat
-              },
-              lon: {
-                $gte: extent._southWest.lng,
-                $lte: extent._northEast.lng
-              }
-            }
-            : {}
-      },
-      use_index: 'docTypeIndex',
-      // limit to only necessary fields:
-      fields: ['_id', 'docType', 'geometry', 'lat', 'lon']
-    });
-
-    if (!docs || !docs.docs || !docs.docs.length) {
-      return;
-    }
-
-    let geos = [];
-    let interactiveGeos = [];
-
-    docs.docs.forEach((row) => {
-      if (!row.geometry || !row.geometry.length) {
-        return;
-      }
-
-      geos.push(row.geometry[0]);
-
-      let coordinatesString = 'Polygon';
-
-      const coords = row.geometry[0]?.geometry.coordinates;
-      if (row.geometry[0].geometry.type !== 'Polygon')
-        coordinatesString = `(${Number(coords[1]).toFixed(2)}, ${Number(coords[0]).toFixed(2)})`;
-
-      let height = 0;
-      let zIndex = 9999999999;
-      if (row.geometry[0].geometry.type === 'Polygon' && coords[0]) {
-        let highestLat = coords[0].reduce((max, point) => {
-          if (point[1] > max) return point[1];
-          return max;
-        }, 0);
-        let lowestLat = coords[0].reduce((min, point) => {
-          if (point[1] < min) return point[1];
-          return min;
-        }, zIndex);
-
-        zIndex = zIndex - (highestLat - lowestLat) * 1000000;
-      }
-
-      switch (row.docType) {
-        case DocType.OFFLINE_EXTENT:
-          // TODO push this into the interactiveGeos array
-          // Then in the layer addition logic... handle behaviour
-          // If still downloading display differently
-          break;
-        case DocType.SPATIAL_UPLOADS:
-          interactiveGeos.push({
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Uploaded spatial content:\n ' + row._id + '\n' + coordinatesString,
-            geometry: row.geometry,
-            color: 'orange',
-            onClickCallback: () => {
-              console.log('uploaded content clicked');
-            },
-            popUpComponent: PointOfInterestPopUp
-          });
-          break;
-        case DocType.POINT_OF_INTEREST:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'New Point of Interest:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry,
-            color: '#99E472',
-            zIndex: zIndex,
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('clicked geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          showPopUp: boolean;})
-          break;
-        case DocType.REFERENCE_ACTIVITY:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Past Activity:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#F3C911',
-            zIndex: zIndex,
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          break;
-        case DocType.ACTIVITY:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Activity:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#E044A7',
-            zIndex: zIndex,
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          showPopUp: boolean;})
-          break;
-        case DocType.REFERENCE_POINT_OF_INTEREST:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Point of Interest:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#FF5733',
-            zIndex: zIndex,
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          showPopUp: boolean;})
-          break;
-        default:
-          break;
-      }
-    });
-    */
-
-    //setGeometry(geos);
-    /*
-    setGeometry([{
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [125.6, 10.1]
-      },
-      "properties": {
-        "name": "Dinagat Islands"
-      }
-    }]);
-    */
+    console.log('total interactive geos in mapPage:' + dataBCInteractiveGeos.length);
     setInteractiveGeometry([...dataBCInteractiveGeos]);
 
     // setIsReadyToLoadMap(true)

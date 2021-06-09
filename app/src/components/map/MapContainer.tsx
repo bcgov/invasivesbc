@@ -17,7 +17,6 @@ import './MapContainer.css';
 import * as turf from '@turf/turf';
 import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
-import { onlineConsumer } from './WFSConsumer';
 
 export type MapControl = (map: any, ...args: any) => void;
 
@@ -610,7 +609,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           const style = {
             color: interactObj.color,
             weight: 4,
-            opacity: 0.65
+            opacity: interactObj.opacity? interactObj.opacity : 0.65
           };
 
           const markerStyle = {

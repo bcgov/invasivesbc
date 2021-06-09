@@ -19,6 +19,7 @@ export interface interactiveGeoInputData {
   // basic display:
   geometry: Feature;
   colour: Color;
+  opacity?: number;
   zIndex: number;
 
   // interactive
