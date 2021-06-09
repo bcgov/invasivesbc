@@ -1,20 +1,15 @@
 import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
-import { ActivitySubtype, ActivityType } from 'constants/activities';
-import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import { addLinkedActivityToDB } from 'utils/addActivity';
 import MapContainer, { getZIndex } from 'components/map/MapContainer';
-import RecordTable from 'components/common/RecordTable';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
-import { poiStandardDBMapping, activityStandardMapping, ObservationsTable, TreatmentsTable, MonitoringTable, PointsOfInterestTable } from 'components/common/RecordTables';
+import { ObservationsTable, TreatmentsTable, MonitoringTable, PointsOfInterestTable } from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -189,10 +184,12 @@ const CachedRecordsList: React.FC = (props) => {
   );
   const [selectedMonitorings, setSelectedMonitorings] = useState([]);
 
+  /* Legacy from PlanMyTrip:
   const pointsOfInterest = useMemo(() => {
     return docs
       .filter((doc: any) => doc.docType === 'reference_point_of_interest');
   }, [docs]);
+  */
   const [selectedPOIs, setSelectedPOIs] = useState([]);
 
   const createMetabaseQuery = async (event, selectedActivities, selectedPoints) => {

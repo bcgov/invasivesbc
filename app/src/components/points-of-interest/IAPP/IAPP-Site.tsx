@@ -20,15 +20,12 @@ import {
 } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore, DeleteForever } from '@material-ui/icons';
 import React from 'react';
-import RecordTable from '../../common/RecordTable';
 import {
   IAPPSurveyTable,
-  IAPPMonitoringTable,
   IAPPMechanicalTreatmentsTable,
   IAPPChemicalTreatmentsTable,
   IAPPBiologicalTreatmentsTable,
-  IAPPBiologicalDispersalsTable,
-  IAPPBiologicalTreatmentsMonitoringTable
+  IAPPBiologicalDispersalsTable
 } from '../../common/RecordTables';
 
 const useStyles = makeStyles((theme) => ({

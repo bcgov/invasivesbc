@@ -1,19 +1,13 @@
-import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } from '@material-ui/core';
-import { Check } from '@material-ui/icons';
+import { makeStyles, Theme } from '@material-ui/core';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
 import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import React, { useContext, useEffect, useState, useCallback, useMemo, InputHTMLAttributes } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
-import { notifySuccess, notifyError } from 'utils/NotificationUtils';
+import { notifyError } from 'utils/NotificationUtils';
 import { addLinkedActivityToDB } from 'utils/addActivity';
-import MapContainer, { getZIndex } from 'components/map/MapContainer';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
-import { Feature } from 'geojson';
-import { MapContextMenuData } from 'features/home/map/MapContextMenu';
-import booleanIntersects from '@turf/boolean-intersects';
 
 export const activityStandardMapping = (doc) => ({
   ...doc,

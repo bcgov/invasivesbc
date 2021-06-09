@@ -283,7 +283,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [rows, setRows] = useState(Array.isArray(props.rows) ? props.rows : []);
   const [totalRows, setTotalRows] = useState(props.totalRows ? props.totalRows : rows.length);
   const [loadedRowsOffset, setLoadedRowsOffset] = useState(0);
-  const firstLoadedPage = Math.round(loadedRowsOffset / rowsPerPage);
   const loadBuffer = 2;
 
   useEffect(() => {
@@ -383,8 +382,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
             // since it breaks generality of this multi-purpose table
             key: 'edit',
             enabled: enableSelection,
-            action: async (selectedRows) => {
-              const selectedIds = selectedRows.map((row) => row[keyField]);
+            action: async (allSelectedRows) => {
+              const selectedIds = allSelectedRows.map((row) => row[keyField]);
               if (selectedIds.length === 1) {
                 // TODO switch by activity type, I guess...
                 await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
@@ -403,7 +402,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
             icon: <Edit />,
             bulkAction: true,
             rowAction: true,
-            bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
+            bulkCondition: (allSelectedRows) => allSelectedRows.every((a, _, [b]) => a.subtype === b.subtype),
             // TODO limit to only some subtypes too
             // TODO IAPP POIs not editable
             rowCondition: undefined,
@@ -414,7 +413,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
           delete: {
             key: 'delete',
             enabled: enableSelection,
-            action: (selectedRows) => {},
+            action: (allSelectedRows) => {},
             label: 'Delete',
             icon: <Delete />,
             bulkAction: true,
@@ -523,7 +522,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const handleSelectAllClick = useCallback(
     async (event) => {
       if (event.target.checked) {
-        // TODO do multiple queries to page through entire table and select them all?
         let newSelecteds;
         if (Array.isArray(props.rows))
           newSelecteds = rows.map((row) => row[keyField]);
