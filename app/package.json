@@ -50,6 +50,7 @@
     "dotenv": "^8.6.0",
     "express": "^4.17.1",
     "fibers": "^5.0.0",
+    "geojson-vt": "^3.2.1",
     "ionicons": "^5.5.1",
     "js-yaml": "~3.14.0",
     "keycloak-js": "^9.0.2",
