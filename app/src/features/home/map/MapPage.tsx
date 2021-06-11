@@ -115,6 +115,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
+  const [geoCollectionToVector, setGeoCollectionToVector] = useState<any[]>(null);
   const [selectedInteractiveGeometry, setSelectedInteractiveGeometry] = useState<interactiveGeoInputData>(null);
 
   const [isReadyToLoadMap, setIsReadyToLoadMap] = useState(false);
@@ -166,6 +167,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
   }, [databaseContext.database]);
 
   const getEverythingWithAGeo = useCallback(async () => {
+
+     let fancyVectorGeoConfigs = []
+
     //geos from databc:
     const theRest = [
       'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
@@ -185,7 +189,14 @@ const MapPage: React.FC<IMapProps> = (props) => {
       const backGroundListPromises =  backGroundlayersList.map(async (l) => {
         try {
           const geos = await getDataFromDataBC(l, VanIslandRoughExample.features[0]);
+          const collection =   {
+            "type": "FeatureCollection",
+            "features": geos
+        }
+          let color =  palette.sort()[colourIndex].hex()
+          fancyVectorGeoConfigs.push({colour: color, geojson: collection})
           console.log('geos for this interactive geo: ' + geos.length);
+            /*
           await geos.map((f) => {
             dataBCInteractiveGeos.push({
               //mapContext: MapContext.MAIN_MAP,
@@ -208,6 +219,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
               popUpComponent: PointOfInterestPopUp
             });
           });
+            */
         } catch (e) {
           console.log('oh no', JSON.stringify(e));
         }
@@ -216,8 +228,13 @@ const MapPage: React.FC<IMapProps> = (props) => {
       const theRestPromises = theRest.sort().map(async (l) => {
         try {
           const geos = await getDataFromDataBC(l, VanIslandRoughExample.features[0]);
-          console.log('geos for this interactive geo: ' + geos.length);
-          console.log('this is a geo: ' + JSON.stringify(geos[0]));
+          const collection =   {
+            "type": "FeatureCollection",
+            "features": geos
+        }
+          let color =  palette.sort()[colourIndex].hex()
+          fancyVectorGeoConfigs.push({colour: color, geojson: collection})
+            /*
           await geos.map((f) => {
             dataBCInteractiveGeos.push({
               //mapContext: MapContext.MAIN_MAP,
@@ -239,6 +256,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
               popUpComponent: PointOfInterestPopUp
             });
           });
+            */
         } catch (e) {
           console.log('oh no', JSON.stringify(e));
         }
@@ -261,6 +279,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
     console.log('total interactive geos in mapPage:' + dataBCInteractiveGeos.length);
     setInteractiveGeometry([...dataBCInteractiveGeos]);
+    setGeoCollectionToVector(fancyVectorGeoConfigs)
 
     // setIsReadyToLoadMap(true)
   }, [databaseContext.database, extent]);
@@ -302,6 +321,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
                 classes={classes}
                 showDrawControls={false}
                 mapId={'mainMap'}
+                geoCollectionToVector={geoCollectionToVector}
                 geometryState={{ geometry, setGeometry }}
                 interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
                 //  extentState={{ extent, setExtent }}
