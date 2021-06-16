@@ -284,6 +284,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [totalRows, setTotalRows] = useState(props.totalRows ? props.totalRows : rows.length);
   const [loadedRowsOffset, setLoadedRowsOffset] = useState(0);
   const loadBuffer = 2;
+  console.log('are there rows:' + rows.length)
+  console.log(JSON.stringify(rows))
 
   useEffect(() => {
     const fetchRows = async () => {
