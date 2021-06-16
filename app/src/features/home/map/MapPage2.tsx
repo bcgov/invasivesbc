@@ -12,6 +12,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
+import MapContainer2 from 'components/map/MapContainer2';
 
 const GEO_UPDATE_MIN_INTERVAL = 60000; // 60s
 
@@ -408,7 +409,7 @@ const MapPage2: React.FC<IMapProps> = (props) => {
         <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
           <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
             {isReadyToLoadMap ? (
-              <MapContainer
+              <MapContainer2
                 classes={classes}
                 showDrawControls={false}
                 mapId={'mainMap'}
