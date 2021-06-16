@@ -284,6 +284,17 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [totalRows, setTotalRows] = useState(props.totalRows ? props.totalRows : rows.length);
   const [loadedRowsOffset, setLoadedRowsOffset] = useState(0);
   const loadBuffer = 2;
+  console.log('RecordTable: props.rows.length' + props.rows?.length)
+  console.log('Recordtable rows.length:' + rows?.length)
+  console.log('RecordTable totalRows:' + totalRows)
+
+  useEffect(() => {
+    setRows(Array.isArray(props.rows) ? props.rows : []);
+    setTotalRows(props.totalRows ? props.totalRows : props.rows.length);
+  },
+  [props.totalRows, Array.isArray(props.rows) && props.rows?.length]
+);
+
 
   useEffect(() => {
     const fetchRows = async () => {
@@ -698,6 +709,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     [
       loading,
       pageRows?.[0]?._id,
+      totalRows,
       schemasLoaded,
       page,
       rowsPerPage,
@@ -706,6 +718,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
       order,
       orderBy
     ]
+
   );
 };
 

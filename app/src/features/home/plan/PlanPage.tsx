@@ -15,26 +15,24 @@ import {
 import { DeleteForever, ExpandMore, Rowing } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
 import MetabaseSearch from 'components/search/MetabaseSearch';
-import ManageDatabaseComponent from 'components/database/ManageDatabaseComponent';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import MapContainer from 'components/map/MapContainer';
 import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 import TripDataControls from 'components/trip/TripDataControls';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import HelpIcon from '@material-ui/icons/Help';
-import SettingsIcon from '@material-ui/icons/Settings';
 import TripStepStatus, { ITripStepStatus, TripStatusCode } from 'components/trip/TripStepStatus';
 import RecordTable from 'components/common/RecordTable';
 import { DocType } from 'constants/database';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
 import TripNamer from 'components/trip/TripNamer';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { useCallback } from 'react';
 import Spinner from 'components/spinner/Spinner';
 import { confirmDeleteTrip, deleteTripRecords } from './PlanPageHelpers';
+import { Capacitor } from '@capacitor/core';
 
 interface IPlanPageProps {
   classes?: any;
@@ -106,8 +104,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const [workingTripID, setWorkingTripID] = useState(null);
   const [newTripID, setNewTripID] = useState(null);
-  const [trips, setTrips] = useState([]);
-  const [tripsLoaded, setTripsLoaded] = useState(false);
+  const [trips, setTrips] = useState(null);
+  const [tripsLoaded, setTripsLoaded] = useState(null);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
@@ -137,62 +135,110 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const getTrips = async () => {
     if (!databaseContext) {
     }
-    // does not work:
-    let docs = await databaseContext.database.find({
-      selector: { docType: { $eq: DocType.TRIP } },
-      use_index: 'docTypeIndex'
-    });
-
-    if (docs?.docs?.length === 0) {
-      // to prevent endless loading spinner on 0 trips
-      console.log('got here');
-      setTripsLoaded(true);
-    }
 
     let trips = [];
     let geos = [];
+    //todo:  try to wrap this all in db context so we don't need to reference both dbs here
+    let docs: any; //pouch db response
+    let results: any; //sqlite db response
 
-    docs?.docs?.map((doc) => {
-      trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
-      if (doc.geometry) {
-        geos.push({
-          recordDocID: doc._id,
-          recordDocType: doc.docType,
-          description: 'Uploaded spatial content:\n ' + doc._id + '\n',
-          geometry: doc.geometry,
-          color: 'orange',
-          onClickCallback: () => {},
-          popUpComponent: null
-        });
-      }
-    });
+    if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
+      results = await query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
+    } else {
+      docs = await databaseContext.database.find({
+        selector: { docType: { $eq: DocType.TRIP } },
+        use_index: 'docTypeIndex'
+      });
+    }
+
+    // stop loading spinner on trip db load
+    if (Capacitor.getPlatform() == 'web' && docs?.docs?.length === 0) {
+      setTripsLoaded(true);
+      docs?.docs?.map((doc) => {
+        trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
+        if (doc.geometry) {
+          geos.push({
+            recordDocID: doc._id,
+            recordDocType: doc.docType,
+            description: 'Uploaded spatial content:\n ' + doc._id + '\n',
+            geometry: doc.geometry,
+            color: 'orange',
+            onClickCallback: () => {},
+            popUpComponent: null
+          });
+        }
+      });
+    }
+    if ((Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') && results) {
+      console.log('results length' + results.length)
+
+      results.map((adoc) => {
+        try
+        {
+          let doc = JSON.parse(adoc.json);
+          trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
+        }
+        catch(e)
+        {
+          console.log('error pushign to trips')
+          console.log(e)
+          console.log(adoc)
+        }
+        /*
+        if (doc.geometry) {
+          geos.push({
+            recordDocID: doc._id,
+            recordDocType: doc.docType,
+            description: 'Uploaded spatial content:\n ' + doc._id + '\n',
+            geometry: doc.geometry,
+            color: 'orange',
+            onClickCallback: () => {},
+            popUpComponent: null
+          });
+        }
+        */
+      });
+    }
 
     if (geos.length > 0) {
       setInteractiveGeometry(geos);
     }
-    setTrips(trips);
+    setTrips([...trips]);
+    console.log('set trips to ' + trips.length)
   };
+
+  useEffect(()=> {
+    if(trips != null){
+      setTripsLoaded(true)
+    }
+  },[trips])
 
   const helperGetMaxTripID = async () => {
     if (!databaseContext) {
       return;
     }
-    let docs = await databaseContext.database.find({
-      selector: { trip_ID: { $gte: null } },
-      sort: [{ trip_ID: 'desc' }],
-      use_index: 'tripIDIndex',
-      limit: 1
-    });
+    // pouch :
+    if (Capacitor.getPlatform() == 'web') {
+      let docs = await databaseContext.database.find({
+        selector: { trip_ID: { $gte: null }, docType: DocType.TRIP },
+        sort: [{ trip_ID: 'desc' }],
+        use_index: 'tripDocTypeIndex',
+        limit: 1
+      });
 
-    if (!docs || !docs.docs || !docs.docs.length) {
-      return 0;
-    } else {
-      console.dir(docs.docs);
-      if (docs.docs[0].trip_ID) {
-        return parseInt(docs.docs[0]._id);
-      } else {
+      if (!docs || !docs.docs || !docs.docs.length) {
         return 0;
+      } else {
+        if (docs.docs[0].trip_ID) {
+          return parseInt(docs.docs[0]._id);
+        } else {
+          return 0;
+        }
       }
+    } else {
+      const sql = 'select max(id) as id from trip;';
+      const results = await query({ type: QueryType.RAW_SQL, sql }, databaseContext);
+      return results.length > 0 ? results[0].id : 0;
     }
   };
 
@@ -200,11 +246,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   useEffect(() => {
     const initialLoad = async () => {
       await getTrips();
-      await getExtent();
-      setTripsLoaded(true);
+      //await getExtent();
     };
     initialLoad();
-  }, [newTripID]);
+  }, [newTripID,tripsLoaded]);
 
   // persist geometry changes
   useEffect(() => {
@@ -233,63 +278,99 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
-    newID += 1;
-    databaseContext.database.upsert(newID.toString(), (doc) => {
-      return {
-        ...doc,
-        trip_ID: newID.toString(),
-        trip_name: 'New Unnamed Trip',
-        num_activities: 0,
-        num_POI: 0,
-        docType: DocType.TRIP,
-        stepState: [
-          {}, //just here so indexes match up with step number
-          { status: TripStatusCode.initial, expanded: true },
-          { status: TripStatusCode.initial, expanded: false },
-          { status: TripStatusCode.initial, expanded: false },
-          { status: TripStatusCode.initial, expanded: false },
-          { status: TripStatusCode.initial, expanded: false },
-          { status: TripStatusCode.initial, expanded: false }
-        ]
-      };
-    });
+    newID = (newID != 'NULL')? newID + 1: 1;
+    const newTripObj = {
+      trip_ID: newID,
+      trip_name: 'New Unnamed Trip',
+      num_activities: 0,
+      num_POI: 0,
+      docType: DocType.TRIP,
+      stepState: [
+        {}, //just here so indexes match up with step number
+        { status: TripStatusCode.initial, expanded: true },
+        { status: TripStatusCode.initial, expanded: false },
+        { status: TripStatusCode.initial, expanded: false },
+        { status: TripStatusCode.initial, expanded: false },
+        { status: TripStatusCode.initial, expanded: false },
+        { status: TripStatusCode.initial, expanded: false }
+      ]
+    };
+
+    if (Capacitor.getPlatform() == 'web') {
+      databaseContext.database.upsert(newID.toString(), (doc) => {
+        return {
+          ...doc,
+          ...newTripObj
+        };
+      });
+    } else {
+      //android & iOS
+      const results = await upsert(
+        [{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }],
+        databaseContext
+      );
+    }
+
     setNewTripID(newID);
   };
 
   const SingleTrip: React.FC<any> = (props) => {
-    //todo: add trip_ID to props and let trip manage db itself
+    //todo: add trip_id to props and let trip manage db itself
     const databaseContext = useContext(DatabaseContext);
     const [stepState, setStepState] = useState(null);
 
     const getStateFromTrip = useCallback(async () => {
-      if (!databaseContext.database) {
-        return;
-      }
-      let docs = await databaseContext.database.find({
-        selector: { docType: DocType.TRIP, trip_ID: props.trip_ID },
-        use_index: 'docTypeIndex'
-      });
-
-      if (docs.docs.length > 0) {
-        let tripDoc = docs.docs[0];
-        if (!tripDoc.stepState) {
+      if (Capacitor.getPlatform() == 'web') {
+        if (!databaseContext.database) {
           return;
         }
-        setStepState(tripDoc.stepState);
+        let docs = await databaseContext.database.find({
+          selector: { docType: DocType.TRIP, trip_ID: props.trip_ID },
+          use_index: 'docTypeIndex'
+        });
+
+        if (docs.docs.length > 0) {
+          let tripDoc = docs.docs[0];
+          if (!tripDoc.stepState) {
+            return;
+          }
+          setStepState(tripDoc.stepState);
+        }
+      } //android and ios
+      else {
+        const results = await query(
+          { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
+          databaseContext
+        );
+        setStepState(JSON.parse(results[0].json).stepState);
       }
     }, [databaseContext.database]);
 
     const saveState = async (newState) => {
       setStepState(newState);
-      await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-        return { ...tripDoc, docType: DocType.TRIP, stepState: newState, persistenceStep: 'updating state' };
-      });
+      if (Capacitor.getPlatform() == 'web') {
+        await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
+          return { ...tripDoc, docType: DocType.TRIP, stepState: newState, persistenceStep: 'updating state' };
+        });
+      } else {
+        // only overwrite newstate property of db record:
+        await upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+              ID: props.trip_ID,
+              docType: DocType.TRIP,
+              json: { stepState: newState }
+            }
+          ],
+          databaseContext
+        );
+      }
     };
 
     // initial fetch
     useEffect(() => {
       getStateFromTrip();
-      console.log('hook to get state');
     }, [databaseContext]);
 
     const helperCheckForGeo = () => {
@@ -306,7 +387,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         let expanded2 = i == stepNumber && expanded ? true : false;
         newState[i] = { ...newState[i], expanded: expanded2 };
       }
-      console.log('accordion helper');
       saveState([...newState]);
     };
 
@@ -552,7 +632,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             // array of data objects to render
             !trips?.length
               ? []
-              : trips.map((row) => ({
+              : trips.map((row) => ( {
                   ...row,
                   // custom map data before it goes to table:
                   buttons: (
