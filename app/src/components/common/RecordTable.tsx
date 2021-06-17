@@ -442,10 +442,10 @@ const RecordTable: React.FC<RecordTablePropType> = (props) => {
   }, [rows, orderHeader, order, page, rowsPerPage]);
   // determine if any rows on the current page have a dropdown:
   // render all dropdowns
-  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
-    pageRows,
-    dropdown
-  ]);
+  const renderedDropdowns = useMemo(
+    () => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)),
+    [pageRows, dropdown]
+  );
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
   const verboseOverflows = useMemo(
