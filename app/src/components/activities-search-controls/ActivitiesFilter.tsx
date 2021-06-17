@@ -81,16 +81,25 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   const saveChoices = async (newActivityChoices) => {
     console.log('updating trip ' + props.trip_ID + ' activity filters');
     //legacy pouch
-    if(Capacitor.getPlatform() == 'web') {
+    if (Capacitor.getPlatform() == 'web') {
       await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
         return { ...tripDoc, activityChoices: newActivityChoices };
       });
     }
     //sqlite
-    else
-    {
-        const tripID: string = props.trip_ID
-        let result = await upsert([{type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH, ID: tripID, docType: DocType.TRIP, json: {activityChoices: newActivityChoices}}], databaseContext)
+    else {
+      const tripID: string = props.trip_ID;
+      let result = await upsert(
+        [
+          {
+            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+            ID: tripID,
+            docType: DocType.TRIP,
+            json: { activityChoices: newActivityChoices }
+          }
+        ],
+        databaseContext
+      );
     }
     setActivityChoices([...newActivityChoices]);
   };

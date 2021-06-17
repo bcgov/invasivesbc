@@ -65,7 +65,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
       );
       const choices = JSON.parse(queryResults[0].json).pointOfInterestChoices;
       if (choices) {
-          setPointOfInterestChoices([...choices]);
+        setPointOfInterestChoices([...choices]);
       }
     }
   };
@@ -100,8 +100,8 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
         databaseContext
       );
     }
-    console.log('point of interest json')
-    console.log(JSON.stringify(newPointOfInterestChoices))
+    console.log('point of interest json');
+    console.log(JSON.stringify(newPointOfInterestChoices));
     setPointOfInterestChoices([...newPointOfInterestChoices]);
   };
 

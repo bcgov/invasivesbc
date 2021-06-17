@@ -181,7 +181,7 @@ export interface IQuery {
   sql?: string;
   boundingPoly?: GeoJSONObject;
   geosOnly?: boolean;
-  limit?: number
+  limit?: number;
 }
 export const query = async (queryConfig: IQuery, databaseContext: any) => {
   if (Capacitor.getPlatform() != 'web') {
@@ -208,7 +208,9 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
           return ret.values;
         }
       case QueryType.DOC_TYPE:
-        ret = await db.query('select * from ' + queryConfig.docType + ((queryConfig.limit > 0)? (' limit ' + queryConfig.limit + ';') : ';'));
+        ret = await db.query(
+          'select * from ' + queryConfig.docType + (queryConfig.limit > 0 ? ' limit ' + queryConfig.limit + ';' : ';')
+        );
         if (!ret.values) {
           db.close();
           return false;
@@ -227,7 +229,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
         }
         break;
       case QueryType.DOC_TYPE_AND_BOUNDING_POLY:
-        return await getByDocTypeAndBoudingPoly(queryConfig, db)
+        return await getByDocTypeAndBoudingPoly(queryConfig, db);
       default:
         alert(
           'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
@@ -237,10 +239,9 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
   }
 };
 
-const getByDocTypeAndBoudingPoly = async (queryConfig: IQuery, db: any) =>
-{
+const getByDocTypeAndBoudingPoly = async (queryConfig: IQuery, db: any) => {
   return false;
-}
+};
 
 /* db query wrapper interface to hide db implementation */
 export enum UpsertType {
@@ -256,7 +257,7 @@ export interface IUpsert {
   docType?: DocType;
   sql?: string;
   json?: Object;
-  geo?: GeoJSONObject //todo - give geo it's own column so we can fetch many geos locally fast
+  geo?: GeoJSONObject; //todo - give geo it's own column so we can fetch many geos locally fast
   trip_ID?: number; //todo - give a trip number for handling cache management
 }
 
@@ -282,11 +283,9 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
     ret = await handleExecute(batchUpdate, db);
     if (ret != false) {
       totalRecordsChanged += ret;
-    }
-    else
-    {
-      console.log('problem executing DOC_TYPE_AND_ID upserts:')
-      console.log('db failed upsert @' + totalRecordsChanged + ' records')
+    } else {
+      console.log('problem executing DOC_TYPE_AND_ID upserts:');
+      console.log('db failed upsert @' + totalRecordsChanged + ' records');
     }
   }
 
@@ -350,13 +349,10 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
   ret = await handleExecute(batchUpdate, db);
   if (ret !== false) {
     totalRecordsChanged += ret;
+  } else {
+    console.log('problem executing other upserts:');
+    console.log('db failed upsert @' + totalRecordsChanged + ' records');
   }
-  else
-  {
-    console.log('problem executing other upserts:')
-    console.log('db failed upsert @' + totalRecordsChanged + ' records')
-  }
-
 
   return totalRecordsChanged;
 };
