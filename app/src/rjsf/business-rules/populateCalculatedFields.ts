@@ -211,14 +211,8 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
           If biocontrol dispersal, need to calculate sum of all phen levels for total %
         */
         if (isBiocontrolDispersal) {
-          const {
-            phen_level_se,
-            phen_level_ro,
-            phen_level_bo,
-            phen_level_fl,
-            phen_level_sf,
-            phen_level_sc
-          } = transectPointToUpdate;
+          const { phen_level_se, phen_level_ro, phen_level_bo, phen_level_fl, phen_level_sf, phen_level_sc } =
+            transectPointToUpdate;
 
           if (phen_level_se && phen_level_ro && phen_level_bo && phen_level_fl && phen_level_sf && phen_level_sc) {
             transectPointToUpdate.phen_total_percentage =

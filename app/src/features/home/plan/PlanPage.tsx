@@ -170,19 +170,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       });
     }
     if ((Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') && results) {
-      console.log('results length' + results.length)
+      console.log('results length' + results.length);
 
       results.map((adoc) => {
-        try
-        {
+        try {
           let doc = JSON.parse(adoc.json);
           trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
-        }
-        catch(e)
-        {
-          console.log('error pushign to trips')
-          console.log(e)
-          console.log(adoc)
+        } catch (e) {
+          console.log('error pushign to trips');
+          console.log(e);
+          console.log(adoc);
         }
         /*
         if (doc.geometry) {
@@ -204,14 +201,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       setInteractiveGeometry(geos);
     }
     setTrips([...trips]);
-    console.log('set trips to ' + trips.length)
+    console.log('set trips to ' + trips.length);
   };
 
-  useEffect(()=> {
-    if(trips != null){
-      setTripsLoaded(true)
+  useEffect(() => {
+    if (trips != null) {
+      setTripsLoaded(true);
     }
-  },[trips])
+  }, [trips]);
 
   const helperGetMaxTripID = async () => {
     if (!databaseContext) {
@@ -249,7 +246,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       //await getExtent();
     };
     initialLoad();
-  }, [newTripID,tripsLoaded]);
+  }, [newTripID, tripsLoaded]);
 
   // persist geometry changes
   useEffect(() => {
@@ -278,7 +275,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
-    newID = (newID != 'NULL')? newID + 1: 1;
+    newID = newID != 'NULL' ? newID + 1 : 1;
     const newTripObj = {
       trip_ID: newID,
       trip_name: 'New Unnamed Trip',
@@ -632,7 +629,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             // array of data objects to render
             !trips?.length
               ? []
-              : trips.map((row) => ( {
+              : trips.map((row) => ({
                   ...row,
                   // custom map data before it goes to table:
                   buttons: (

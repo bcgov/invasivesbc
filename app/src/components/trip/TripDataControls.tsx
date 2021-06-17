@@ -198,11 +198,11 @@ export const TripDataControls: React.FC<any> = (props) => {
   };
 
   const fetchPointsOfInterest = async () => {
-    console.log('input valid')
+    console.log('input valid');
     if (!trip || !trip.pointOfInterestChoices || !trip.pointOfInterestChoices.length) {
       return;
     }
-    console.log('made it past input valid')
+    console.log('made it past input valid');
 
     let numberPointsOfInterestFetched = 0;
 

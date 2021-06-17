@@ -5,7 +5,7 @@ const { OpenShiftClientX } = require('pipeline-cli');
  * Run OC commands to clean all build and deployment artifacts (pods, imagestreams, builds/deployment configs, etc).
  *
  * Note: This will purge all artifacts for the given environment (with matching selectors). This should generally only
- * be used to clean up any temporary builds and deployments (from PR-based deployments) and not permanent builds or 
+ * be used to clean up any temporary builds and deployments (from PR-based deployments) and not permanent builds or
  * deployments (like those for dev, test and prod).
  *
  * @param {*} settings
