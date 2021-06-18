@@ -202,6 +202,10 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
     `);
   }
 
+  if (searchCriteria.order?.length) {
+    sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
+  }
+
   if (searchCriteria.limit) {
     sqlStatement.append(SQL` LIMIT ${searchCriteria.limit}`);
   }

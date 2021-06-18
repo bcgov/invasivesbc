@@ -73,7 +73,8 @@ const phases = {
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     host:
-      (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-7068ad-dev.apps.silver.devops.gov.bc.ca`,
+      (isStaticDeployment && (staticUrls.dev || defaultHost)) ||
+      `${name}-${changeId}-7068ad-dev.apps.silver.devops.gov.bc.ca`,
     apiHost:
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHostAPI)) ||
       `${apiName}-${changeId}-7068ad-dev.apps.silver.devops.gov.bc.ca`,

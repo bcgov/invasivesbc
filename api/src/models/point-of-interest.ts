@@ -83,6 +83,8 @@ export class PointOfInterestSearchCriteria {
 
   column_names: string[];
 
+  order: string[]; // ["columnname1 ASC", "columnname2 DESC"]
+
   /**
    * Creates an instance of PointOfInterestSearchCriteria.
    *
@@ -103,6 +105,8 @@ export class PointOfInterestSearchCriteria {
     this.search_feature = (obj && obj.search_feature) || null;
 
     this.column_names = (obj && obj.column_names) || [];
+
+    this.order = (obj && obj.order) || [];
   }
 
   setPage(page: number): number {

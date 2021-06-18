@@ -11,3 +11,7 @@ export enum DocType {
   OFFLINE_DATA = 'offline_data',
   PLAN_PAGE_EXTENT = 'plan_page_extent'
 }
+
+// max and default db page row limit
+export const MAX_PAGE_SIZE = 1000;
+export const DEFAULT_PAGE_SIZE = 1000;

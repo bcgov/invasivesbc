@@ -64,6 +64,13 @@ POST.apiDoc = {
             },
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
+            },
+            order: {
+              type: 'array',
+              description: 'A list of columns to order by. (for DESC, use "columname DESC")',
+              items: {
+                type: 'string'
+              }
             }
           }
         }

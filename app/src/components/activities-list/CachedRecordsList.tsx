@@ -1,19 +1,20 @@
 import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
-import { ActivitySubtype, ActivityType } from 'constants/activities';
-import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import { addLinkedActivityToDB } from 'utils/addActivity';
 import MapContainer, { getZIndex } from 'components/map/MapContainer';
-import RecordTable from 'components/common/RecordTable';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
+import {
+  ObservationsTable,
+  TreatmentsTable,
+  MonitoringTable,
+  PointsOfInterestTable
+} from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -54,396 +55,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-/**
- *
- * @param {ActivitySubtype} treatmentSubtype The treatment subtype for which to get the associated monitoring subtype
- */
-const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: ActivitySubtype): ActivitySubtype => {
-  /*
-    Note: There is no explicit subtype for biological dispersal plant monitoring
-    If this needs to be present, it needs to be created and defined in API spec
-  */
-  let monitoringSubtype: ActivitySubtype;
-
-  if (treatmentSubtype.includes('ChemicalPlant')) {
-    monitoringSubtype = ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant;
-  } else if (treatmentSubtype.includes('MechanicalPlant')) {
-    monitoringSubtype = ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant;
-  } else if (treatmentSubtype.includes('BiologicalPlant')) {
-    monitoringSubtype = ActivitySubtype.Monitoring_BiologicalTerrestrialPlant;
-  } else {
-    monitoringSubtype = ActivitySubtype[`Monitoring_${treatmentSubtype.split('_')[2]}`];
-  }
-
-  return monitoringSubtype;
-};
-
-const activityStandardMapping = (doc) => ({
-  ...doc,
-  ...doc?.formData?.activity_data,
-  ...doc?.formData?.activity_subtype_data,
-  activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-  jurisdiction_code: doc?.formData?.activity_data?.jurisdictions?.reduce(
-    (output, jurisdiction) => [...output, jurisdiction.jurisdiction_code, '(', jurisdiction.percent_covered + '%', ')'],
-    []
-  ),
-  created_timestamp: doc?.created_timestamp?.substring(0, 10),
-  latitude: parseFloat(doc?.formData?.activity_data?.latitude).toFixed(6),
-  longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6)
-});
-
-const getSelectedKeys = (rows, selected) =>
-  rows.filter((doc: any) => selected.includes(doc._id)).map((doc) => doc._id) || [];
-
 const geoColors = {
   Observation: '#0BD2F0',
   Treatment: '#F99F04',
   Monitoring: '#BCA0DC',
   reference_point_of_interest: '#0BD2F0',
   selected_record: '#9E1A1A'
-};
-
-interface ICachedRecordsTable {
-  rows: Array<any>;
-  selected: Array<any>;
-  setSelected: any;
-  databaseContext?: any;
-}
-
-export const ObservationsTable: React.FC<ICachedRecordsTable> = (props) => {
-  const history = useHistory();
-
-  const { selected, setSelected, rows } = props;
-  return useMemo(() => {
-    return (
-      <RecordTable
-        tableName="Observations"
-        tableSchemaType={[
-          'Activity',
-          'Observation',
-          'Observation_PlantTerrestrial',
-          'Observation_PlantAquatic',
-          'ObservationPlantTerrestrialData',
-          'Jurisdictions'
-        ]}
-        startingOrderBy="activity_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selected}
-        setSelected={setSelected}
-        headers={[
-          'activity_id',
-          {
-            id: 'activity_subtype',
-            valueMap: {
-              Activity_Observation_PlantTerrestrial: 'Terrestrial Plant',
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
-              Activity_Observation_PlantAquatic: 'Aquatic Plant'
-            }
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          'biogeoclimatic_zones',
-          {
-            id: 'elevation',
-            type: 'number'
-          },
-          {
-            id: 'flnro_districts',
-            title: 'FLNRO Districs'
-          },
-          'ownership',
-          'regional_districts',
-          'invasive_species_agency_code',
-          'jurisdiction_code',
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
-          },
-          'access_description',
-          'general_comment'
-        ]}
-        rows={rows}
-        actions={{
-          delete: {
-            enabled: false
-          },
-          create_treatment: {
-            key: 'create_treatment',
-            enabled: true,
-            action: (selectedRows) => {
-              const ids = selectedRows.map((row: any) => row['activity_id']);
-              history.push({
-                pathname: `/home/activity/treatment`,
-                search: '?observations=' + ids.join(','),
-                state: { observations: ids }
-              });
-            },
-            label: 'Create Treatment',
-            bulkAction: true,
-            rowAction: false,
-            displayInvalid: 'error',
-            invalidError: 'All selected activities must be of the same SubType to create a Treatment',
-            /*
-              Function to determine if all selected observation records are
-              of the same subtype. For example: Cannot create a treatment if you select a plant
-              and an animal observation, and most probably will not go treat a terrestrial
-              and aquatic observation in a single treatment as those are different areas
-            */
-            bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype)
-          }
-        }}
-      />
-    );
-  }, [rows?.length, selected?.length]);
-};
-
-export const TreatmentsTable: React.FC<ICachedRecordsTable> = (props) => {
-  const history = useHistory();
-
-  const { selected, setSelected, rows, databaseContext } = props;
-  return useMemo(() => {
-    return (
-      <RecordTable
-        tableName="Treatments"
-        tableSchemaType={[
-          'Activity',
-          'Treatment',
-          'Treatment_ChemicalPlant',
-          'Treatment_MechanicalPlant',
-          'Treatment_BiologicalPlant'
-        ]}
-        startingOrderBy="activity_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selected}
-        setSelected={setSelected}
-        headers={[
-          'activity_id',
-          {
-            id: 'activity_subtype',
-            valueMap: {
-              Activity_Treatment_ChemicalPlant: 'Chemical Plant',
-              Activity_Treatment_MechanicalPlant: 'Mechanical Plant',
-              Activity_Treatment_BiologicalPlant: 'Biological Plant'
-            }
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          'invasive_plant_code',
-          'invasive_species_agency_code',
-          'chemical_method_code',
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)'
-          },
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          'elevation'
-        ]}
-        rows={rows}
-        dropdown={(row) => (
-          <RecordTable
-            key={row._id}
-            startingOrderBy="activity_id"
-            startingOrder="desc"
-            tableSchemaType={[
-              'Activity',
-              'Treatment',
-              'Treatment_ChemicalPlant',
-              'Treatment_MechanicalPlant',
-              'Treatment_BiologicalPlant',
-              'Jurisdictions'
-            ]}
-            headers={[
-              'jurisdiction_code',
-              'biogeoclimatic_zones',
-              {
-                id: 'flnro_districts',
-                title: 'FLNRO Districts'
-              },
-              'ownership',
-              'regional_districts',
-              'access_description',
-              'general_comment'
-            ]}
-            rows={[row]}
-            pagination={false}
-          />
-        )}
-        actions={{
-          delete: {
-            enabled: false
-          },
-          create_monitoring: {
-            key: 'create_monitoring',
-            enabled: true,
-            label: 'Create Monitoring',
-            bulkAction: false,
-            rowAction: true,
-            displayInvalid: 'hidden',
-            rowCondition: (row) => row.activityType === 'Treatment',
-            action: async (selectedRows) => {
-              if (selectedRows.length !== 1)
-                // action is for creating a single monitoring from a given row
-                // NOTE: might want to extend this into a multi-row monitoring action later
-                return;
-              const activity = selectedRows[0];
-
-              const addedActivity = await addLinkedActivityToDB(
-                databaseContext,
-                ActivityType.Monitoring,
-                calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
-                activity
-              );
-              await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-                return { ...appStateDoc, activeActivity: addedActivity._id };
-              });
-
-              history.push(`/home/activity`);
-            }
-          }
-        }}
-      />
-    );
-  }, [rows?.length, selected?.length]);
-};
-
-export const MonitoringTable: React.FC<ICachedRecordsTable> = (props) => {
-  const { selected, setSelected, rows } = props;
-  return useMemo(() => {
-    return (
-      <RecordTable
-        tableName="Monitoring"
-        tableSchemaType={[
-          'Activity',
-          'Monitoring',
-          'Monitoring_ChemicalTerrestrialAquaticPlant',
-          'Monitoring_MechanicalTerrestrialAquaticPlant',
-          'Monitoring_BiologicalTerrestrialPlant'
-        ]}
-        startingOrderBy="monitoring_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selected}
-        setSelected={setSelected}
-        headers={[
-          'activity_id',
-          {
-            id: 'activity_subtype',
-            valueMap: {
-              Activity_Monitoring_ChemicalPlant: 'Chemical Plant',
-              Activity_Monitoring_MechanicalPlant: 'Mechanical Plant',
-              Activity_Monitoring_BiologicalPlant: 'Biological Plant'
-            }
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          'invasive_plant_code',
-          'invasive_species_agency_code',
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)'
-          },
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          'elevation'
-        ]}
-        rows={rows}
-        actions={{
-          delete: {
-            enabled: false
-          }
-        }}
-      />
-    );
-  }, [rows?.length, selected?.length]);
-};
-
-export const PointsOfInterestTable: React.FC<ICachedRecordsTable> = (props) => {
-  const { selected, setSelected, rows } = props;
-  return useMemo(() => {
-    return (
-      <RecordTable
-        tableName="Points of Interest"
-        tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdictions']}
-        startingOrderBy="site_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selected}
-        setSelected={setSelected}
-        headers={[
-          {
-            id: 'site_id',
-            type: 'number'
-          },
-          {
-            id: 'created_date_on_device',
-            title: 'Created Date'
-          },
-          'jurisdiction_code',
-          'elevation',
-          'slope_code',
-          'aspect_code',
-          'soil_texture_code',
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          'access_description',
-          'general_comment'
-        ]}
-        rows={rows}
-        actions={{
-          delete: {
-            enabled: false
-          },
-          edit: {
-            enabled: false
-          }
-        }}
-      />
-    );
-  }, [rows?.length, selected?.length]);
 };
 
 const CachedRecordsList: React.FC = (props) => {
@@ -554,45 +171,21 @@ const CachedRecordsList: React.FC = (props) => {
     }
   }, [geometry?.length]);
 
-  const observations = useMemo(
-    () => docs.filter((doc: any) => doc.activityType === 'Observation').map(activityStandardMapping),
-    [docs]
-  );
+  const observations = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Observation'), [docs]);
   const [selectedObservations, setSelectedObservations] = useState([]);
 
-  const treatments = useMemo(
-    () => docs.filter((doc: any) => doc.activityType === 'Treatment').map(activityStandardMapping),
-    [docs]
-  );
+  const treatments = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Treatment'), [docs]);
   const [selectedTreatments, setSelectedTreatments] = useState([]);
 
-  const monitorings = useMemo(
-    () => docs.filter((doc: any) => doc.activityType === 'Monitoring').map(activityStandardMapping),
-    [docs]
-  );
+  const monitorings = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Monitoring'), [docs]);
   const [selectedMonitorings, setSelectedMonitorings] = useState([]);
 
+  /* Legacy from PlanMyTrip:
   const pointsOfInterest = useMemo(() => {
     return docs
-      .filter((doc: any) => doc.docType === 'reference_point_of_interest')
-      .map((doc) => ({
-        ...doc,
-        ...doc?.formData?.point_of_interest_data,
-        ...doc?.formData?.point_of_interest_type_data,
-        jurisdiction_code: doc?.formData?.surveys?.[0]?.jurisdictions?.reduce(
-          (output, jurisdiction) => [
-            ...output,
-            jurisdiction.jurisdiction_code,
-            '(',
-            (jurisdiction.percent_covered ? jurisdiction.percent_covered : 100) + '%',
-            ')'
-          ],
-          []
-        ),
-        latitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[1]).toFixed(6),
-        longitude: parseFloat(doc?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates[0]).toFixed(6)
-      }));
+      .filter((doc: any) => doc.docType === 'reference_point_of_interest');
   }, [docs]);
+  */
   const [selectedPOIs, setSelectedPOIs] = useState([]);
 
   const createMetabaseQuery = async (event, selectedActivities, selectedPoints) => {
@@ -701,12 +294,7 @@ const CachedRecordsList: React.FC = (props) => {
             selected={selectedMonitorings}
             setSelected={setSelectedGeneralized(setSelectedMonitorings)}
           />
-          <PointsOfInterestTable
-            rows={pointsOfInterest}
-            selected={selectedPOIs}
-            setSelected={setSelectedGeneralized(setSelectedPOIs)}
-            databaseContext={databaseContext}
-          />
+          <PointsOfInterestTable selected={selectedPOIs} setSelected={setSelectedGeneralized(setSelectedPOIs)} />
         </List>
       )}
     </Container>

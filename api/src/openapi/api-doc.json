@@ -423,7 +423,7 @@
             "type": "array",
             "title": "Jurisdictions",
             "items": {
-              "$ref": "#/components/schemas/Jurisdictions"
+              "$ref": "#/components/schemas/Jurisdiction"
             },
             "x-tooltip-text": "Specify one or more jurisdictions for this activity"
           },
@@ -457,7 +457,7 @@
             "type": "array",
             "title": "Jurisdictions",
             "items": {
-              "$ref": "#/components/schemas/Jurisdictions"
+              "$ref": "#/components/schemas/Jurisdiction"
             },
             "x-tooltip-text": "Specify one or more jurisdictions for this activity"
           }
@@ -2362,7 +2362,7 @@
           }
         }
       },
-      "Jurisdictions": {
+      "Jurisdiction": {
         "type": "object",
         "required": ["jurisdiction_code", "percent_covered"],
         "properties": {
@@ -4958,7 +4958,7 @@
           "specific_use_code",
           "soil_texture_code",
           "slope_code",
-          "elevation"
+          "site_elevation"
         ],
         "properties": {
           "site_id": {
@@ -5021,7 +5021,7 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
-          "elevation": {
+          "site_elevation": {
             "type": "string",
             "title": "Elevation",
             "maxLength": 30
@@ -5092,7 +5092,14 @@
           },
           "genus": {
             "type": "string",
-            "title": "Genus"
+            "title": "Genus",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
           },
           "invasive_plant_density_code": {
             "type": "string",
@@ -5230,18 +5237,6 @@
             "type": "string",
             "title": "Comment",
             "maxLength": 300
-          },
-          "monitoring": {
-            "type": "array",
-            "title": "Monitoring",
-            "items": {
-              "type": "object",
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/IAPP_Monitoring"
-                }
-              ]
-            }
           }
         }
       },
@@ -5320,6 +5315,18 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
+          },
+          "monitoring": {
+            "type": "array",
+            "title": "Monitoring",
+            "items": {
+              "type": "object",
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IAPP_Mechanical_Monitoring"
+                }
+              ]
+            }
           }
         }
       },
@@ -5343,6 +5350,26 @@
               "x-enum-code-sort-order": "code_sort_order"
             }
           },
+          "service_license_number": {
+            "type": "string",
+            "title": "Service License #"
+          },
+          "pmp_confirmation_number": {
+            "type": "string",
+            "title": "PMP Confirmation #"
+          },
+          "pmra_reg_number": {
+            "type": "string",
+            "title": "PMRA Reg #"
+          },
+          "pup_number": {
+            "type": "string",
+            "title": "PUP #"
+          },
+          "treatment_time": {
+            "type": "string",
+            "title": "Treatment Time"
+          },
           "liquid_herbicide_code": {
             "type": "string",
             "title": "Liquid Herbicide",
@@ -5352,6 +5379,78 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "herbicide_description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "application_rate": {
+            "type": "number",
+            "title": "Application Rate (L/ha)",
+            "format": "float",
+            "minimum": 0,
+            "x-tooltip-text": "Recommended label rate for herbicide (L/ha) used for this treatment"
+          },
+          "herbicide_amount": {
+            "type": "number",
+            "title": "Amount of Mix Used (L)",
+            "format": "float",
+            "minimum": 0,
+            "x-tooltip-text": "Volume in litres (ie 5.1 L) of herbicide and water mix"
+          },
+          "mix_delivery_rate": {
+            "type": "number",
+            "title": "Delivery Rate of Mix (L/ha)",
+            "format": "float",
+            "minimum": 0,
+            "x-tooltip-text": "Calibrated delivery rate of the device used to apply herbicide in L/ha"
+          },
+          "dilution": {
+            "type": "number",
+            "title": "Dilution %",
+            "minimum": 0,
+            "x-tooltip-text": "Percent (%) of product in the mix"
+          },
+          "temperature": {
+            "type": "number",
+            "title": "Temperature (C)",
+            "x-tooltip-text": "Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)"
+          },
+          "wind_speed": {
+            "type": "number",
+            "title": "Wind Speed (km/h)",
+            "minimum": 0,
+            "maximum": 50,
+            "default": 0,
+            "x-tooltip-text": "Wind speed in km/hr at time of treatment"
+          },
+          "wind_direction": {
+            "type": "string",
+            "title": "Wind Direction"
+          },
+          "wind_direction_code": {
+            "type": "string",
+            "title": "Wind Direction",
+            "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+            "x-tooltip-text": "Cardinal wind direction at time of treatment"
+          },
+          "humidity": {
+            "type": "number",
+            "title": "Humidity",
+            "enum": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+            "x-tooltip-text": "Relative humidity expressed as a percentage"
+          },
+          "monitoring": {
+            "type": "array",
+            "title": "Monitoring",
+            "items": {
+              "type": "object",
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IAPP_Chemical_Monitoring"
+                }
+              ]
             }
           }
         }
@@ -5375,12 +5474,176 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
+          },
+          "collection_date": {
+            "type": "string",
+            "title": "Collection Date"
+          },
+          "bioagent_source": {
+            "type": "string",
+            "title": "Bioagent Source"
+          },
+          "treatment_issues_code": {
+            "type": "string",
+            "title": "Treatment Issue",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "treatment_issues_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "default": "NA",
+            "x-tooltip-text": "Environmental condition that may effect survival of biocontrol"
+          },
+          "classified_area_code": {
+            "type": "string",
+            "title": "Classified Area",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "classified_area_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Classification of type of biological treatment - ie research, primary"
+          },
+          "release_quantity": {
+            "type": "number",
+            "title": "Release Quantity",
+            "minimum": 1,
+            "maximum": 100000,
+            "default": 1,
+            "x-tooltip-text": "Number of agents released (exact or approximate)"
+          },
+          "mortality": {
+            "type": "number",
+            "title": "Mortality",
+            "x-tooltip-text": "Number of agents dead at time of release"
+          },
+          "agent_source": {
+            "type": "string",
+            "title": "Agent Source",
+            "maxLength": 50,
+            "x-tooltip-text": "Agent source location and organization (50 characters)"
+          },
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Biological Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Genus species code of the agent (ie ALTICAR [Altica carduorum])"
+          },
+          "biological_agent_stage_code": {
+            "type": "string",
+            "title": "Biological Agent Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Life stage of biocontrol agent"
+          },
+          "bioagent_maturity_status_code": {
+            "type": "string",
+            "title": "Biological Agent Status",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "bioagent_maturity_status_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Primary, secondary or tertiary agent"
+          },
+          "monitoring": {
+            "type": "array",
+            "title": "Monitoring",
+            "items": {
+              "type": "object",
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IAPP_Biological_Monitoring"
+                }
+              ]
+            }
           }
         }
       },
+      "IAPP_Mechanical_Monitoring": {
+        "title": "IAPP Mechanical Treatment Monitoring",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IAPP_Monitoring"
+          }
+        ]
+      },
+      "IAPP_Chemical_Monitoring": {
+        "title": "IAPP Chemical Treatment Monitoring",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IAPP_Monitoring"
+          }
+        ]
+      },
+      "IAPP_Biological_Monitoring": {
+        "title": "IAPP Biological Treatment Monitoring",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IAPP_Monitoring"
+          },
+          {
+            "$ref": "#/components/schemas/Monitoring_BiologicalTerrestrialPlant"
+          }
+        ]
+      },
       "IAPP_Biological_Dispersal": {
         "title": "Biological Dispersal Information",
-        "type": "object"
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IAPP_Monitoring"
+          },
+          {
+            "$ref": "#/components/schemas/Monitoring_BiologicalTerrestrialPlant"
+          }
+        ],
+        "properties": {
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Biological Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Genus species code of the agent (ie ALTICAR [Altica carduorum])"
+          },
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Target invasive plant species being treated at this location"
+          }
+        }
       }
     }
   }
