@@ -8,13 +8,8 @@ const useDataAccess = () => {
   const api = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
 
-  const getPointsOfInterest = async (
-    pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
-    onlineQuery: boolean,
-    limit?: number,
-    offset?: number
-  ): Promise<any> => {
-    if (onlineQuery) {
+  const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
+    if (pointsOfInterestSearchCriteria.online) {
       api.getPointsOfInterest(pointsOfInterestSearchCriteria);
     } else {
       query({ type: QueryType.DOC_TYPE, docType: DocType.REFERENCE_POINT_OF_INTEREST, limit: 1000 }, databaseContext);

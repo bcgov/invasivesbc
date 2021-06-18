@@ -190,6 +190,13 @@ export interface IPointOfInterestSearchCriteria {
    * @memberof IPointOfInterestSearchCriteria
    */
   order?: string[];
+  /**
+   * Point of Interest - should query be local or server
+   *
+   * @type {boolean}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  online?: boolean;
 }
 
 /**
