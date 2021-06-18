@@ -520,11 +520,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setMapBounds(mapRef.current.getBounds());
 
     mapRef.current.on('dragend', () => {
-      props.extentState.setExtent(mapRef.current.getBounds());
+      // props.extentState.setExtent(mapRef.current.getBounds());
     });
 
     mapRef.current.on('zoomend', () => {
-      props.extentState.setExtent(mapRef.current.getBounds());
+      // props.extentState.setExtent(mapRef.current.getBounds());
       setCurrentZoom(mapRef.current.getZoom());
       // addASaveTilesControl(esriSaveTilesControl);
     });
