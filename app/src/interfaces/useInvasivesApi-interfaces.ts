@@ -135,6 +135,7 @@ export interface IPointOfInterestSearchCriteria {
    */
   page?: number;
   /**
+  /**
    * The number of results to return.
    *@
    * @type {number}
