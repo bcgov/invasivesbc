@@ -15,6 +15,7 @@ import {
   MonitoringTable,
   PointsOfInterestTable
 } from 'components/common/RecordTables';
+import { useDataAccess } from 'hooks/useDataAccess';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -66,7 +67,9 @@ const geoColors = {
 const CachedRecordsList: React.FC = (props) => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
+  // data access WIP
   const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [interactiveGeometry, setInteractiveGeometry] = useState([]);
@@ -114,6 +117,10 @@ const CachedRecordsList: React.FC = (props) => {
   const updateRecordList = useCallback(async () => {
     setLoading(true);
     const result = await databaseContext.database.allDocs({ include_docs: true });
+    let pois = await getPointsOfInterest();
+    console.log(pois);
+    setPointsOfInterest(pois);
+
     const newDocs = result?.rows
       ?.map((doc) => doc.doc)
       .filter(
@@ -171,6 +178,7 @@ const CachedRecordsList: React.FC = (props) => {
     }
   }, [geometry?.length]);
 
+  //const observations = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Observation'), [docs]);
   const observations = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Observation'), [docs]);
   const [selectedObservations, setSelectedObservations] = useState([]);
 
@@ -180,12 +188,11 @@ const CachedRecordsList: React.FC = (props) => {
   const monitorings = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Monitoring'), [docs]);
   const [selectedMonitorings, setSelectedMonitorings] = useState([]);
 
-  /* Legacy from PlanMyTrip:
-  const pointsOfInterest = useMemo(() => {
-    return docs
-      .filter((doc: any) => doc.docType === 'reference_point_of_interest');
-  }, [docs]);
-  */
+  const getPointsOfInterest = async () => {
+    return await dataAccess.getPointsOfInterest({ page: 1, limit: 1000, online: true });
+  };
+
+  const [pointsOfInterest, setPointsOfInterest] = useState([]);
   const [selectedPOIs, setSelectedPOIs] = useState([]);
 
   const createMetabaseQuery = async (event, selectedActivities, selectedPoints) => {
@@ -294,7 +301,11 @@ const CachedRecordsList: React.FC = (props) => {
             selected={selectedMonitorings}
             setSelected={setSelectedGeneralized(setSelectedMonitorings)}
           />
-          <PointsOfInterestTable selected={selectedPOIs} setSelected={setSelectedGeneralized(setSelectedPOIs)} />
+          <PointsOfInterestTable
+            rows={pointsOfInterest}
+            selected={selectedPOIs}
+            setSelected={setSelectedGeneralized(setSelectedPOIs)}
+          />
         </List>
       )}
     </Container>

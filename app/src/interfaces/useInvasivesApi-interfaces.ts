@@ -135,6 +135,7 @@ export interface IPointOfInterestSearchCriteria {
    */
   page?: number;
   /**
+  /**
    * The number of results to return.
    *@
    * @type {number}
@@ -190,6 +191,13 @@ export interface IPointOfInterestSearchCriteria {
    * @memberof IPointOfInterestSearchCriteria
    */
   order?: string[];
+  /**
+   * Point of Interest - should query be local or server
+   *
+   * @type {boolean}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  online?: boolean;
 }
 
 /**
