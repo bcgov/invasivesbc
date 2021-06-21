@@ -182,6 +182,7 @@ export interface IQuery {
   boundingPoly?: GeoJSONObject;
   geosOnly?: boolean;
   limit?: number;
+  offset?: number;
 }
 export const query = async (queryConfig: IQuery, databaseContext: any) => {
   if (Capacitor.getPlatform() != 'web') {

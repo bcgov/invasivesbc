@@ -118,7 +118,7 @@ const CachedRecordsList: React.FC = (props) => {
     setLoading(true);
     const result = await databaseContext.database.allDocs({ include_docs: true });
     let pois = await getPointsOfInterest();
-    console.log(pois);
+    console.log(Object.getOwnPropertyNames(pois));
     setPointsOfInterest(pois);
 
     const newDocs = result?.rows
