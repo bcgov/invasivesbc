@@ -2,13 +2,8 @@ import { DocType } from 'constants/database';
 import { notifyError, notifySuccess } from 'utils/NotificationUtils';
 
 export const confirmDeleteTrip = (trip_ID, tripName) => {
-<<<<<<< HEAD
-  if (confirm('You sure you want to do this?')) {
-    // eslint-disable-line no-restricted-globals
-=======
   // prettier-ignore
   if (confirm('You sure you want to do this?')) { // eslint-disable-line no-restricted-globals
->>>>>>> dev
     return true;
   }
   return false;
