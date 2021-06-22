@@ -148,9 +148,9 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     const log = () => console.log('yo');
     const map = useMap();
 
-    if (drawRef.current) return;
+    if (drawRef.current) return null;
 
-    drawRef.current = new L.Control.Draw();
+    drawRef.current = new (L.Control as any).Draw();
 
     map.addControl(drawRef.current);
 
