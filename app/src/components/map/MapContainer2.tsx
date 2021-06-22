@@ -4,6 +4,8 @@ import { Feature } from 'geojson';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
+import 'leaflet-draw';
+import 'leaflet-draw/dist/leaflet.draw.css';
 import {
   MapContainer,
   TileLayer,
@@ -86,6 +88,7 @@ export interface IMapContainerProps {
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
+
   const Offline = () => {
     const map = useMap();
     const offlineLayer = (L.tileLayer as any).offline(
@@ -136,12 +139,16 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     );
   }
 
-  const EditTools: React.FC<IMapContainerProps> = (props) => {
+
+  const EditTools = () => {
+    console.log('EditTools');
     const log = () => console.log('yo');
+    const map = useMap();
+    const control = new L.Control.Draw();
+    map.addControl(control);
 
     return (
-      <FeatureGroup>
-      </FeatureGroup>
+      <div></div>
     );
   };
 
@@ -154,6 +161,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     >
       {/* Here is the offline component */}
       <Offline/>
+
+      {/* Here are the editing tools */}
+      <FeatureGroup>
+        <EditTools/>
+      </FeatureGroup>
 
 
       <LayersControl position='topright'>
