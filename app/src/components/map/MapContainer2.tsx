@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import './MapContainer2.css';
 import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
 import {
   MapContainer,
