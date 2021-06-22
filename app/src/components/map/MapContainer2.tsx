@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import { useLeafletContext } from '@react-leaflet/core';
 import {
   MapContainer,
   TileLayer,
@@ -144,8 +145,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
   const EditTools = () => {
 
-    console.log('EditTools');
-    const log = () => console.log('yo');
+    // This should get the 'FeatureGroup' connected to the tools
+    const context = useLeafletContext();
+    console.log(context);
+
+    // Grab the map object
     const map = useMap();
 
     if (drawRef.current) return null;
