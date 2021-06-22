@@ -10,7 +10,7 @@ import {
   LayersControl,
   Marker,
   useMap,
-  Circle
+  FeatureGroup
 } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from 'leaflet/dist/images/marker-icon.png';
@@ -136,6 +136,16 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     );
   }
 
+  const EditTools: React.FC<IMapContainerProps> = (props) => {
+    const log = () => console.log('yo');
+
+    return (
+      <FeatureGroup>
+      </FeatureGroup>
+    );
+  };
+
+
   return ( <MapContainer
       center={[55,-128]}
       zoom={5}
@@ -144,6 +154,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     >
       {/* Here is the offline component */}
       <Offline/>
+
 
       <LayersControl position='topright'>
         <LayersControl.BaseLayer checked name="Regular Layer">
