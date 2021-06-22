@@ -9,7 +9,8 @@ import {
   TileLayer,
   LayersControl,
   Marker,
-  useMap
+  useMap,
+  Circle
 } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from 'leaflet/dist/images/marker-icon.png';
