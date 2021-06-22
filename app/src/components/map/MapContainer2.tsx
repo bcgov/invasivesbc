@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import { useLeafletContext } from '@react-leaflet/core';
+import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
 import {
   MapContainer,
   TileLayer,
@@ -146,22 +146,46 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const EditTools = () => {
 
     // This should get the 'FeatureGroup' connected to the tools
-    const context = useLeafletContext();
-    console.log(context);
+    const context = useLeafletContext() as LeafletContextInterface;
 
     // Grab the map object
     const map = useMap();
 
+    // Put new feature into the FeatureGroup
+    const onDrawCreate = (e: any) => {
+      context.layerContainer.addLayer(e.layer);
+    };
+
+    // When the dom is rendered listen for added features
+    useEffect(() => {
+      map.on('draw:created',onDrawCreate)
+    },[])
+
+    // Get out if the tools are already defined.
     if (drawRef.current) return null;
 
-    drawRef.current = new (L.Control as any).Draw();
+    /**
+     * This is where all the editing tool options are defined.
+     * See: https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html
+     */
+    const options = {
+      edit: {
+        featureGroup: context.layerContainer,
+        edit: true
+      }
+    }
 
+    // Create drawing tool control 
+    drawRef.current = new (L.Control as any).Draw(options);
+
+    // Add drawing tools to the map
     map.addControl(drawRef.current);
 
     return (
       <div></div>
     );
   };
+
 
   return ( <MapContainer
       center={[55,-128]}
