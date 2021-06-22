@@ -89,6 +89,7 @@ export interface IMapContainerProps {
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
+
   const Offline = () => {
     const map = useMap();
     const offlineLayer = (L.tileLayer as any).offline(
@@ -139,19 +140,24 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     );
   }
 
+  const drawRef = useRef();
 
   const EditTools = () => {
+
     console.log('EditTools');
     const log = () => console.log('yo');
     const map = useMap();
-    const control = new L.Control.Draw();
-    map.addControl(control);
+
+    if (drawRef.current) return;
+
+    drawRef.current = new L.Control.Draw();
+
+    map.addControl(drawRef.current);
 
     return (
       <div></div>
     );
   };
-
 
   return ( <MapContainer
       center={[55,-128]}
