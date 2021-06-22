@@ -130,7 +130,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           1. Toggle between spinner and image depending on 'offlineing' status
           2. Swap image style based on zoom level
         */}
-        {offlineing ? <Spinner></Spinner> : <img src="/download.svg" style={iconStyle}></img>}
+        {offlineing ? <Spinner></Spinner> : <img src="/assets/icon/download.svg" style={iconStyle}></img>}
       </div>
     );
   }
@@ -145,11 +145,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       <Offline/>
 
       <LayersControl position='topright'>
-        {/* <LayersControl.BaseLayer checked name="Regular Layer">
+        <LayersControl.BaseLayer checked name="Regular Layer">
           <TileLayer
             url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
           />
-        </LayersControl.BaseLayer> */}
+        </LayersControl.BaseLayer>
         <LayersControl.Overlay checked name="Activities">
           {/*<MarkerClusterGroup chunkedLoading>
             (data as any).rows.map((row:any,index:any) => {
