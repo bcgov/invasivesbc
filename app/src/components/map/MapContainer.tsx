@@ -18,13 +18,7 @@ import * as turf from '@turf/turf';
 import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
 import geojsonvt from 'geojson-vt';
-declare global {
-  interface String {
-    center(): string;
-    iscolorHex(): boolean;
-    colorRgb: () => number[];
-  }
-}
+import { fancyGridLayer } from './GeoToVector';
 
 const vanIsland = {
   type: 'FeatureCollection',
@@ -50,122 +44,6 @@ const vanIsland = {
   ]
 };
 
-L.GridLayer.GeoJSON = L.GridLayer.extend({
-  options: {
-    async: false
-  },
-
-  initialize: function (geojson, options) {
-    L.setOptions(this, options);
-    L.GridLayer.prototype.initialize.call(this, options);
-    this.tileIndex = geojsonvt(geojson, this.options);
-  },
-
-  createTile: function (coords) {
-    // create a <canvas> element for drawing
-    var tile = L.DomUtil.create('canvas', 'leaflet-tile');
-    // setup tile width and height according to the options
-    var size = this.getTileSize();
-    tile.width = size.x;
-    tile.height = size.y;
-    // get a canvas context and draw something on it using coords.x, coords.y and coords.z
-    var ctx = tile.getContext('2d');
-    // return the tile so it can be rendered on screen
-    var tileInfo = this.tileIndex.getTile(coords.z, coords.x, coords.y);
-    var features = tileInfo ? tileInfo.features : [];
-    for (var i = 0; i < features.length; i++) {
-      var feature = features[i];
-      this.drawFeature(ctx, feature);
-    }
-    return tile;
-  },
-
-  drawFeature: function (ctx, feature) {
-    var typeChanged = type !== feature.type,
-      type = feature.type;
-    ctx.beginPath();
-    if (this.options.style) this.setStyle(ctx, this.options.style);
-    if (type === 2 || type === 3) {
-      for (var j = 0; j < feature.geometry.length; j++) {
-        var ring = feature.geometry[j];
-        for (var k = 0; k < ring.length; k++) {
-          var p = ring[k];
-          if (k) ctx.lineTo(p[0] / 16.0, p[1] / 16.0);
-          else ctx.moveTo(p[0] / 16.0, p[1] / 16.0);
-        }
-      }
-    } else if (type === 1) {
-      for (var j = 0; j < feature.geometry.length; j++) {
-        var p = feature.geometry[j];
-        ctx.arc(p[0] / 16.0, p[1] / 16.0, 2, 0, Math.PI * 2, true);
-      }
-    }
-    if (type === 3) ctx.fill(this.options.style.fillRule || 'evenodd');
-
-    ctx.stroke();
-  },
-
-  setStyle: function (ctx, style) {
-    var stroke = style.stroke || true;
-    if (stroke) {
-      ctx.lineWidth = style.weight || 5;
-      var color = this.setOpacity(style.color, style.opacity);
-      ctx.strokeStyle = color;
-    } else {
-      ctx.lineWidth = 0;
-      ctx.strokeStyle = {};
-    }
-    var fill = style.fill || true;
-    if (fill) {
-      ctx.fillStyle = style.fillColor || '#03f';
-      var color = this.setOpacity(style.fillColor, style.fillOpacity);
-      ctx.fillStyle = color;
-    } else {
-      ctx.fillStyle = {};
-    }
-  },
-
-  setOpacity: function (color, opacity) {
-    if (opacity) {
-      var color = color || '#03f';
-      if (color.iscolorHex()) {
-        var colorRgb = color.colorRgb();
-        return 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + opacity + ')';
-      } else {
-        return color;
-      }
-    } else {
-      return color;
-    }
-  }
-});
-
-L.gridLayer.geoJson = function (geojson, options) {
-  return new L.GridLayer.GeoJSON(geojson, options);
-};
-
-String.prototype.iscolorHex = function () {
-  var sColor = this.toLowerCase();
-  var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
-  return reg.test(sColor);
-};
-
-String.prototype.colorRgb = function (): number[] {
-  var sColor = this.toLowerCase();
-  if (sColor.length === 4) {
-    var sColorNew = '#';
-    for (var i = 1; i < 4; i += 1) {
-      sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1));
-    }
-    sColor = sColorNew;
-  }
-  //处理六位的颜色值
-  var sColorChange = [];
-  for (var i = 1; i < 7; i += 2) {
-    sColorChange.push(parseInt('0x' + sColor.slice(i, i + 2)));
-  }
-  return sColorChange as number[];
-};
 export type MapControl = (map: any, ...args: any) => void;
 
 export interface IMapContainerProps {
@@ -216,7 +94,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const getESRIBaseLayer = () => {
-    return L.tileLayer.offline(
+    return L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 24,
@@ -227,237 +105,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
-  const getESRIPlacenames = () => {
-    return L.tileLayer.offline(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-      {
-        maxZoom: 24,
-        maxNativeZoom: 17
-      }
-    );
-  };
-
-  const getBCGovBaseLayer = () => {
-    return L.tileLayer.offline(
-      'https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
-      {
-        maxZoom: 24,
-        useCache: true,
-        cacheMaxAge: 6.048e8 // 1 week
-      }
-    );
-  };
-
-  const getNRDistricts = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-
-  const getMOTIDistricts = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-
-  const getMOTIRegions = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.TADM_MOT_REGIONAL_BNDRY_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-
-  const getBEC = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-
-  const getWells = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-
-  const getStreams = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-
-  const getWetlands = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_BASEMAPPING.FWA_WETLANDS_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-
-  const getOwnership = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.4,
-        tms: true
-      }
-    );
-  };
-
-  const getRFI = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-
-  const getRegionalDistricts = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.4,
-        tms: true
-      }
-    );
-  };
-
-  const getJurisdiction = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:jurisdiction@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.4,
-        tms: true
-      }
-    );
-  };
-
-  const getMunicipalites = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.4,
-        tms: true
-      }
-    );
-  };
-
-  const getRISO = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:regional_invasive_species_organization_areas@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.6,
-        tms: true
-      }
-    );
-  };
-
-  const getAggregate = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:aggregate_tenures@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-  const getIPMA = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:invasive_plant_management_areas@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.6,
-        tms: true
-      }
-    );
-  };
-
-  const getOGMA = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.8,
-        tms: true
-      }
-    );
-  };
-  const getWHA = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.6,
-        tms: true
-      }
-    );
-  };
-
-  const getFSW = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_FISH_SENSITIVE_WS_POLY@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.6,
-        tms: true
-      }
-    );
-  };
-
-  const getIR = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.6,
-        tms: true
-      }
-    );
-  };
-
-  const getUWR = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.6,
-        tms: true
-      }
-    );
-  };
-
-  const getNationalParks = () => {
-    return L.tileLayer.offline(
-      `${geoserver}/geoserver/gwc/service/tms/1.0.0/invasives:WHSE_ADMIN_BOUNDARIES.CLAB_NATIONAL_PARKS@EPSG:900913@png/{z}/{x}/{y}.png`,
-      {
-        opacity: 0.6,
-        tms: true
-      }
-    );
-  };
-
   const addDrawControls = () => {
-    const drawControlOptions = new L.Control.Draw({
+    const drawControlOptions = new (L.Control as any).Draw({
       position: 'topright',
       draw: {
         marker: false,
@@ -479,11 +128,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       iconElementTag: 'div'
     };
 
-    mapRef.current.addControl(L.control.locate(locateControlOptions));
+    mapRef.current.addControl((L.control as any).locate(locateControlOptions));
   };
 
   const getSaveControl = (layerToSave: any) => {
-    return L.control.savetiles(layerToSave, {
+    return (L.control as any).savetiles(layerToSave, {
       zoomlevels: [13, 14, 15, 16, 17],
       confirm(layer, succescallback) {
         if (window.confirm(`Save ${layer._tilesforSave.length} tiles`)) {
@@ -501,7 +150,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   const getSaveControl2 = (layerToSave: any) => {
-    return L.control.savetiles(layerToSave, {
+    return (L.control as any).savetiles(layerToSave, {
       zoomlevels: [13, 14, 15, 16, 17],
       confirm(layer, successCallback) {
         // TODO: Increment counter global variable
@@ -572,81 +221,23 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     const esriBaseLayer = getESRIBaseLayer();
-    const esriPlacenames = getESRIPlacenames();
-    const bcBaseLayer = getBCGovBaseLayer();
-
     // Set initial base map
     esriBaseLayer.addTo(mapRef.current);
 
     const basemaps = {
       'Esri Imagery': esriBaseLayer,
-      'BC Government': bcBaseLayer
     };
 
-    const nRDistricts = getNRDistricts();
-    const motiDistricts = getMOTIDistricts();
-    const motiRegions = getMOTIRegions();
-    const bec = getBEC();
-    const wells = getWells();
-    const streams = getStreams();
-    const wetlands = getWetlands();
-    const riso = getRISO();
-    const ipma = getIPMA();
-    const uwr = getUWR();
-    const nationalParks = getNationalParks();
-    const aggregate = getAggregate();
-    const ownership = getOwnership();
-    const municipalities = getMunicipalites();
-    const regionalDistricts = getRegionalDistricts();
-    const jurisdictions = getJurisdiction();
-    const rfi = getRFI();
-    const ogma = getOGMA();
-    const wha = getWHA();
-    const fsw = getFSW();
-    const ir = getIR();
-
-    const overlays = {
-      Placenames: esriPlacenames,
-      Wells: wells,
-      'Gravel Pits': aggregate,
-      Streams: streams,
-      Wetlands: wetlands,
-      Ownership: ownership,
-      'Invasive Plant Management Areas': ipma,
-      'Regional Invasive Species Organization Areas': riso,
-      'Natural Resource Districts': nRDistricts,
-      Municipalites: municipalities,
-      'Regional Districts': regionalDistricts,
-      'Road Features Inventory': rfi,
-      Biogeoclimatic: bec,
-      'MOTI Regions': motiRegions,
-      'MOTI Districts': motiDistricts,
-      Jurisdictions: jurisdictions,
-      'Old Growth Management Areas': ogma,
-      'Wildlife Habitat Areas': wha,
-      'First Nations Reserves': ir,
-      'Fisheries Sensitive Watersheds': fsw,
-      'Ungulate Winter Range': uwr,
-      'National Parks': nationalParks
-    };
 
     // This layer is on by default
-    mapRef.current.addLayer(esriPlacenames);
 
     const esriBaseLayerControl = getSaveControl2(esriBaseLayer);
     esriBaseLayerControl._map = mapRef.current;
     layerRef.current.push(esriBaseLayerControl);
 
-    const bcBaseLayerControl = getSaveControl2(bcBaseLayer);
-    bcBaseLayerControl._map = mapRef.current;
-    layerRef.current.push(bcBaseLayerControl);
 
     // console.log('testControl',testControl.getStorageSize);
-    const testControl = getSaveControl2(streams);
-    testControl._map = mapRef.current;
-    layerRef.current.push(testControl);
 
-    addLayerControls(basemaps, overlays);
     setMapBounds(mapRef.current.getBounds());
 
     mapRef.current.on('dragend', () => {
@@ -674,7 +265,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         weight: 5
       }
     };
-    var canvasLayer = L.gridLayer.geoJson(c.geojson, options).addTo(mapRef.current);
+    (L.gridLayer as any).geoJson = fancyGridLayer;
+    //var canvasLayer = (L.gridLayer as any).geoJson(c.geojson, options).addTo(mapRef.current);
+    var canvasLayer = new (L.gridLayer as any).geoJson(c.geojson, options).addTo(mapRef.current);
     })
 
 
@@ -707,11 +300,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     mapRef.current.on('draw:editstop', async () => {
       // The current feature isn't passed to this function, so grab it from the acetate layer
-      let aGeo = drawnItems?.toGeoJSON()?.features[0];
+      let aGeo = (drawnItems?.toGeoJSON() as any)?.features[0];
 
       // If this is a circle feature... Grab the radius and store in the GeoJSON
-      if (drawnItems.getLayers()[0]._mRadius) {
-        const radius = drawnItems.getLayers()[0]?.getRadius();
+      if ((drawnItems.getLayers()[0] as any)._mRadius) {
+        const radius = (drawnItems.getLayers()[0] as any)?.getRadius();
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius } };
       }
 
@@ -724,7 +317,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
 
     mapRef.current.on('draw:deleted', () => {
-      const aGeo = drawnItems?.toGeoJSON()?.features[0];
+      const aGeo = (drawnItems?.toGeoJSON() as any)?.features[0];
 
       props.geometryState.setGeometry(
         props.geometryState.geometry?.filter((geo) => JSON.stringify(geo) === JSON.stringify(aGeo))
@@ -807,11 +400,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 const loc = turf.centroid(feature);
                 const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
 
+                /*
                 if (feature.properties.uploadedSpatial) {
                   L.popup().setLatLng(center).setContent(table).openOn(mapRef.current);
                 } else {
                   L.popup().setLatLng(center).setContent(content).openOn(mapRef.current);
                 }
+                */
 
                 interactObj.onClickCallback();
               });
