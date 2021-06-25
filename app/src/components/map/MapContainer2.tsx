@@ -11,6 +11,7 @@ import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core'
 import { GeoJSON, MapContainer, TileLayer, LayersControl, Marker, useMap, FeatureGroup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from 'leaflet/dist/images/marker-icon.png';
+import IAPPSiteMarker from './Icons/pinned.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { interactiveGeoInputData } from './GeoMeta';
 import Spinner from 'components/spinner/Spinner';
@@ -187,6 +188,16 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     return <div></div>;
   };
 
+  var IAPPSite = L.icon({
+    iconUrl: './components/map/Icons/pinned.png',
+    //shadowUrl: 'leaf-shadow.png',
+    iconSize: [38, 95], // size of the icon
+    //shadowSize: [50, 64], // size of the shadow
+    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+    //shadowAnchor: [4, 62], // the same for the shadow
+    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+  });
+
   return (
     <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={false}>
       {/* Here is the offline component */}
@@ -202,19 +213,19 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
         <LayersControl.Overlay checked name="Activities">
-          {/*<MarkerClusterGroup chunkedLoading>
-            (data as any).rows.map((row:any,index:any) => {
-                const geom = row.point_of_interest_payload
-                  .geometry[0].geometry.coordinates;
-                return (<Marker
+          <MarkerClusterGroup chunkedLoading>
+            {(props.interactiveGeometryState?.interactiveGeometry as any)?.features?.map((geo: any, index: any) => {
+              return (
+                <Marker
                   key={index}
-                  position={[geom[1],geom[0]]}
-                  icon={myIcon}
-                ></Marker>);
-              }
-            )
-          </MarkerClusterGroup>*/}
-          <GeoJSON data={props.interactiveGeometryState.interactiveGeometry} style={interactiveGeometryStyle} />
+                  position={[geo.geometry.coordinates[1], geo.geometry.coordinates[0]]}
+                  icon={IAPPSite}></Marker>
+              );
+            })}
+          </MarkerClusterGroup>
+
+          {/* this line below works - its what you need for geosjon*/}
+          {/* <GeoJSON data={props.interactiveGeometryState.interactiveGeometry} style={interactiveGeometryStyle} />*/}
         </LayersControl.Overlay>
       </LayersControl>
     </MapContainer>

@@ -169,7 +169,7 @@ const MapPage2: React.FC<IMapProps> = (props) => {
 
     // this is temporary
     console.log('use data poi fetch:');
-    let data = await da.getPointsOfInterest({ page: 1, limit: 100, online: true });
+    let data = await da.getPointsOfInterest({ page: 1, limit: 10000, online: true });
     let poiGeoJSON = {
       type: 'FeatureCollection',
       features: data.rows.map((row) => {
