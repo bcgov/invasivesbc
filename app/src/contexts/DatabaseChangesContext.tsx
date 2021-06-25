@@ -46,8 +46,10 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
   );
 
   const setupDatabaseChanges = useCallback(async () => {
+    /*
     if (!changesListener || changesListener['isCancelled']) {
-      const listener = databaseContext.database
+
+      const listener = databaseContext?.database?
         .changes({ live: true, since: 'now' })
         .on('change', (change) => addChange(change))
         .on('complete', (final) => () => addChange(final))
@@ -55,6 +57,7 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
 
       setChangesListener(listener);
     }
+    */
   }, [changesListener, databaseContext.database, addChange]);
 
   const cleanupDatabaseChanges = useCallback(() => {

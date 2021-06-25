@@ -141,19 +141,21 @@ const MapPage2: React.FC<IMapProps> = (props) => {
   };
 
   const getActivityData = useCallback(async () => {
-    const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
+    // const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
+    let appStateResults; // = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
     if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
       return;
     }
 
-    const activityResults = await databaseContext.database.find({
+    /*const activityResults = await databaseContext.database.find({
       selector: { _id: appStateResults.docs[0].activeActivity }
-    });
+    });*/
+    const activityResults = null;
 
-    if (activityResults && activityResults.docs[0]) {
-      setFormActivityData(activityResults.docs[0]);
-      setPhotos(activityResults.docs[0].photos || []);
+    if (activityResults && activityResults?.docs[0]) {
+      setFormActivityData(activityResults?.docs[0]);
+      setPhotos(activityResults?.docs[0].photos || []);
     }
   }, [databaseContext.database]);
 

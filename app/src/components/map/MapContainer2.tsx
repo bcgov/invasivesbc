@@ -199,7 +199,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   });
 
   return (
-    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={false}>
+    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={true}>
       {/* Here is the offline component */}
       <Offline />
 

@@ -233,12 +233,15 @@ export const useInvasivesApi = () => {
    */
   const getCachedApiSpec = async (): Promise<any> => {
     try {
-      const data = await getApiSpec();
+      //const data = await getApiSpec();
+      let data;
+      /* TODO fix this so the forms work
 
       await databaseContext.database.upsert('ApiSpec', () => {
         return data;
       });
 
+      */
       return data;
     } catch (error) {
       const data = await databaseContext.database.get('ApiSpec');
