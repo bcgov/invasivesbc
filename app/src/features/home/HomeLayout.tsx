@@ -23,6 +23,39 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
 
   const addNotificationsToPage = null;
 
+    /*  let notifications = await databaseContext.database.find({
+      selector: {
+        docType: DocType.NOTIFICATION,
+        acknowledged: false
+      },
+      fields: ['dateCreated', '_id', 'notificationType', 'text', 'docType', 'acknowledged'],
+      use_index: 'notificationsIndex'
+    });
+
+    notifications.docs = notifications.docs.filter((note) => note._id && note.notificationType && note.text);
+    notifications.docs.sort((a, b) => {
+      if (a.dateCreated < b.dateCreated) return 1;
+      if (a.dateCreated > b.dateCreated) return -1;
+      return 0;
+    });
+
+    setNotificationCount(notifications.docs.length);
+
+    if (notifications.docs.length > 0) {
+      setNotification(notifications.docs[0]);
+      setIsOpen(true);
+    }
+    */
+
+
+  useEffect(() => {
+    const updateComponent = () => {
+      //  addNotificationsToPage();
+    };
+
+    updateComponent();
+  }, [addNotificationsToPage]);
+
   const acknowledgeNotification = (docId: string) => {
     databaseContext.database.upsert(docId, (doc) => {
       return { ...doc, acknowledged: true };
