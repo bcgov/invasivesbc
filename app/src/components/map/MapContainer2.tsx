@@ -189,7 +189,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   };
 
   var IAPPSite = L.icon({
-    iconUrl: './components/map/Icons/pinned.png',
+    iconUrl: IAPPSiteMarker,
     //shadowUrl: 'leaf-shadow.png',
     iconSize: [38, 95], // size of the icon
     //shadowSize: [50, 64], // size of the shadow
