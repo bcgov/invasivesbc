@@ -19,6 +19,16 @@ import Spinner from 'components/spinner/Spinner';
 import localforage from 'localforage';
 import 'leaflet.offline';
 
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
+
 export type MapControl = (map: any, ...args: any) => void;
 
 // Style the image inside the download button
@@ -78,6 +88,14 @@ export interface IMapContainerProps {
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;
   };
 }
+
+const interactiveGeometryStyle = () => {
+  return {
+    color: '#ff7800',
+    weight: 5,
+    opacity: 0.65
+  };
+};
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
@@ -196,7 +214,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
               }
             )
           </MarkerClusterGroup>*/}
-          <GeoJSON data={props.interactiveGeometryState.interactiveGeometry} />
+          <GeoJSON data={props.interactiveGeometryState.interactiveGeometry} style={interactiveGeometryStyle} />
         </LayersControl.Overlay>
       </LayersControl>
     </MapContainer>
