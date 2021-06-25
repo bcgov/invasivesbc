@@ -1,6 +1,6 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
-import { Feature } from 'geojson';
+import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
@@ -8,14 +8,7 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer2.css';
 import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
-import {
-  MapContainer,
-  TileLayer,
-  LayersControl,
-  Marker,
-  useMap,
-  FeatureGroup
-} from 'react-leaflet';
+import { GeoJSON, MapContainer, TileLayer, LayersControl, Marker, useMap, FeatureGroup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -34,7 +27,6 @@ const iconStyle = {
   opacity: '0.7'
 };
 
-
 const storeLayersStyle = {
   display: 'flex',
   justifyContent: 'center',
@@ -52,7 +44,6 @@ const storeLayersStyle = {
   borderRadius: '4px',
   cursor: 'pointer'
 } as React.CSSProperties;
-
 
 export const getZIndex = (doc) => {
   const coords = doc.geometry[0]?.geometry.coordinates;
@@ -78,8 +69,8 @@ export interface IMapContainerProps {
   showDrawControls: boolean;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
   interactiveGeometryState?: {
-    interactiveGeometry: any[];
-    setInteractiveGeometry: (interactiveGeometry: interactiveGeoInputData[]) => void;
+    interactiveGeometry: GeoJsonObject;
+    setInteractiveGeometry: (interactiveGeometry: GeoJsonObject) => void;
   };
   extentState: { extent: any; setExtent: (extent: any) => void };
   contextMenuState: {
@@ -90,7 +81,6 @@ export interface IMapContainerProps {
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-
 
   const Offline = () => {
     const map = useMap();
@@ -105,17 +95,17 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         // maxZoom: 19,
         crossOrigin: true
       }
-    )
+    );
     offlineLayer.addTo(map);
 
     let [offlineing, setOfflineing] = useState(false);
 
     const saveBasemapControl = (L.control as any).savetiles(offlineLayer, {
-      zoomlevels: [13,14,15,16,17],
+      zoomlevels: [13, 14, 15, 16, 17],
       confirm(_: any, successCallback: any) {
         successCallback(true);
       }
-    })
+    });
 
     saveBasemapControl._map = map;
 
@@ -124,15 +114,10 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       await saveBasemapControl._saveTiles();
       // XXX: This is firing to quickly
       setOfflineing(false);
-    }
+    };
 
     return (
-      <div
-        id="offline-layers-button"
-        title="Offline layers"
-        onClick={storeLayers}
-        style={storeLayersStyle}
-      >
+      <div id="offline-layers-button" title="Offline layers" onClick={storeLayers} style={storeLayersStyle}>
         {/* TODO:
           1. Toggle between spinner and image depending on 'offlineing' status
           2. Swap image style based on zoom level
@@ -140,12 +125,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         {offlineing ? <Spinner></Spinner> : <img src="/assets/icon/download.svg" style={iconStyle}></img>}
       </div>
     );
-  }
+  };
 
   const drawRef = useRef();
 
   const EditTools = () => {
-
     // This should get the 'FeatureGroup' connected to the tools
     const context = useLeafletContext() as LeafletContextInterface;
 
@@ -159,8 +143,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
     // When the dom is rendered listen for added features
     useEffect(() => {
-      map.on('draw:created',onDrawCreate)
-    },[])
+      map.on('draw:created', onDrawCreate);
+    }, []);
 
     // Get out if the tools are already defined.
     if (drawRef.current) return null;
@@ -174,40 +158,30 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         featureGroup: context.layerContainer,
         edit: true
       }
-    }
+    };
 
-    // Create drawing tool control 
+    // Create drawing tool control
     drawRef.current = new (L.Control as any).Draw(options);
 
     // Add drawing tools to the map
     map.addControl(drawRef.current);
 
-    return (
-      <div></div>
-    );
+    return <div></div>;
   };
 
-
-  return ( <MapContainer
-      center={[55,-128]}
-      zoom={5}
-      style={{height: '100%'}}
-      zoomControl={false}
-    >
+  return (
+    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={false}>
       {/* Here is the offline component */}
-      <Offline/>
+      <Offline />
 
       {/* Here are the editing tools */}
       <FeatureGroup>
-        <EditTools/>
+        <EditTools />
       </FeatureGroup>
 
-
-      <LayersControl position='topright'>
+      <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="Regular Layer">
-          <TileLayer
-            url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-          />
+          <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
         <LayersControl.Overlay checked name="Activities">
           {/*<MarkerClusterGroup chunkedLoading>
@@ -222,10 +196,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
               }
             )
           </MarkerClusterGroup>*/}
+          <GeoJSON data={props.interactiveGeometryState.interactiveGeometry} />
         </LayersControl.Overlay>
       </LayersControl>
     </MapContainer>
   );
-}
+};
 
 export default MapContainer2;

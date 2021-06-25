@@ -1,6 +1,6 @@
-import { MapContextMenuData } from "features/home/map/MapContextMenu";
-import { Feature } from "geojson";
-import { interactiveGeoInputData } from "./GeoMeta";
+import { MapContextMenuData } from 'features/home/map/MapContextMenu';
+import { Feature } from 'geojson';
+import { interactiveGeoInputData } from './GeoMeta';
 
 export const getZIndex = (doc) => {
   const coords = doc.geometry[0]?.geometry.coordinates;
@@ -54,6 +54,6 @@ switch (true) {
 }
 
 const MapContainer: any = (props) => {
-  return 'banana'
-}
+  return 'banana';
+};
 export default MapContainer;
