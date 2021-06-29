@@ -16,6 +16,7 @@ const Treatment_ChemicalPlant = {
   activity_id: {
     'ui:readonly': true
   },
+  treatment_organization: {},
   applicator1_name: {},
   applicator1_license: {},
   applicator2_name: {},
