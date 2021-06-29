@@ -8,5 +8,6 @@ if [ ! -f "$NVM_DIR/nvm.sh" ]; then
 fi
 source "$NVM_DIR/nvm.sh" &>/dev/null
 METHOD=script nvm install --no-progress &>/dev/null
-nvm use &>/dev/null
+nvm install 12.3.1
+nvm use 12.3.1
 exec npm "$@"
