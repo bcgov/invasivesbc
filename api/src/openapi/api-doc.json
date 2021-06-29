@@ -1614,6 +1614,7 @@
         "title": "Chemical Treatment Information",
         "type": "object",
         "required": [
+          "treatment_organization",
           "applicator1_name",
           "applicator1_license",
           "pesticide_employer_code",
@@ -1633,6 +1634,11 @@
             "title": "Observation Id",
             "x-tooltip-text": "Identifier of linked observation record"
           },
+          "treatment_organization": {
+            "type": "string",
+            "title": "Treatment Organization",
+            "x-tooltip-text": "Name of the Treatment Organization"
+          },
           "applicator1_name": {
             "type": "string",
             "title": "Primary Applicator",
@@ -1650,7 +1656,7 @@
           },
           "applicator2_license": {
             "type": "string",
-            "title": "Secondary Applicator License",
+            "title": "Service License Number",
             "x-tooltip-text": "Valid pesticide applicator certificate number"
           },
           "pesticide_employer_code": {

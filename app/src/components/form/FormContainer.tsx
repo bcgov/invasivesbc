@@ -94,7 +94,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           formData={props.activity?.formData || null}
           schema={schemas.schema}
           uiSchema={schemas.uiSchema}
-          liveValidate={false}
+          liveValidate={true}
           showErrorList={true}
           validate={props.customValidation}
           transformErrors={props.customErrorTransformer}
