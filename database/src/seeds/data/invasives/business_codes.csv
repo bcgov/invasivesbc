@@ -1,10 +1,11 @@
 code_header_name,code_name,code_description,code_sort_order
-pest_management_plan,102-0670-16-21,102-0670-16-21 [South Coastal Mainland of BC],1
-pest_management_plan,FLNR PMP 402-0680-20/25,FLNR PMP 402-0680-20/25 [Central and Northern BC],2
-pest_management_plan,FLNR-PMP 402-0677-19/24,FLNR-PMP 402-0677-19/24 [South Coastal Region of BC],3
-pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24 [Southern Interior of BC],4
-pest_management_plan,KMC Facilities 879-0002-16/21,KMC Facilities 879-0002-16/21 [Kinder Morgan Canada Facilities],5
-pest_management_plan,KMC ROW 879-0001-16/21,KMC ROW 879-0001-16/21 [Kinder Morgan Canada ROW],6
+pest_management_plan,n/a,n/a,1
+pest_management_plan,102-0670-16-21,102-0670-16-21 [South Coastal Mainland of BC],2
+pest_management_plan,FLNR PMP 402-0680-20/25,FLNR PMP 402-0680-20/25 [Central and Northern BC],3
+pest_management_plan,FLNR-PMP 402-0677-19/24,FLNR-PMP 402-0677-19/24 [South Coastal Region of BC],4
+pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24 [Southern Interior of BC],5
+pest_management_plan,KMC Facilities 879-0002-16/21,KMC Facilities 879-0002-16/21 [Kinder Morgan Canada Facilities],6
+pest_management_plan,KMC ROW 879-0001-16/21,KMC ROW 879-0001-16/21 [Kinder Morgan Canada ROW],7
 plant_life_stage_code,U,unknown,1
 plant_life_stage_code,SG,Small germinating plants,2
 plant_life_stage_code,RO,Rosettes,3
