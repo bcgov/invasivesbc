@@ -29,6 +29,31 @@ proj4.defs(
   'EPSG:3005',
   '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
 );
+proj4.defs('UTM', '+proj=utm +zone=32 +datum=WGS84');
+
+export const latLongToUTM = (featureCollection: Object[]) => {
+  // first get UTM zone
+  // jamie to get calculation
+  const UTMZone = 1;
+
+  //then add to proj4defs
+  try {
+    proj4.defs('UTMZone' + UTMZone, '+proj=utm +zone=' + UTMZone + ' +datum=WGS84');
+  } catch (e) {
+    console.log('already have UTM zone in proj defs');
+  }
+  try {
+    const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
+    console.log('converted objects');
+    return reprojected;
+  } catch (e) {
+    console.log('error converting back to geog from albers:');
+    console.log(JSON.stringify(e));
+    console.log(e);
+  }
+  //something bad happened
+  return null;
+};
 
 const wktConvert = (input: any) => {
   return stringify(input);
