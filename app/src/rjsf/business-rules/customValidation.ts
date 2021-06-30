@@ -117,15 +117,19 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
     if (activitySubtype !== 'Activity_Treatment_ChemicalPlant') {
       return errors;
     }
-
     // validate temperature
+
     errors.activity_subtype_data['temperature'].__errors = [];
     const { temperature } = formData.activity_subtype_data;
 
-    if (temperature < 10 || temperature > 30) {
+    if (temperature < 15 || temperature > 30) {
       errors.activity_subtype_data['temperature'].addError('Temperature should ideally be between 15 and 22 degrees');
     }
-
+    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('temperature')) {
+      errors.activity_subtype_data['temperature'].__errors.pop(); 
+      return errors;
+    }
+    // console.log(formData);
     return errors;
   };
 }
