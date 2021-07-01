@@ -122,11 +122,11 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
     errors.activity_subtype_data['temperature'].__errors = [];
     const { temperature } = formData.activity_subtype_data;
 
-    if (temperature < 15 || temperature > 30) {
+    if (temperature < 15 || temperature > 22) {
       errors.activity_subtype_data['temperature'].addError('Temperature should ideally be between 15 and 22 degrees');
     }
     if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('temperature')) {
-      errors.activity_subtype_data['temperature'].__errors.pop(); 
+      errors.activity_subtype_data['temperature'].__errors.pop();
       return errors;
     }
     // console.log(formData);
