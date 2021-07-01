@@ -117,15 +117,20 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
     if (activitySubtype !== 'Activity_Treatment_ChemicalPlant') {
       return errors;
     }
-
     // validate temperature
+
     errors.activity_subtype_data['temperature'].__errors = [];
     const { temperature } = formData.activity_subtype_data;
 
-    if (temperature < 10 || temperature > 30) {
+    //if themperature is out of normal range, display an error
+    if (temperature < 15 || temperature > 22) {
       errors.activity_subtype_data['temperature'].addError('Temperature should ideally be between 15 and 22 degrees');
     }
-
+    //if user clicked proceed in the warning dialog, remove the erro
+    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('temperature')) {
+      errors.activity_subtype_data['temperature'].__errors.pop();
+      return errors;
+    }
     return errors;
   };
 }
@@ -156,6 +161,16 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
       errors.activity_subtype_data['wind_direction_code'].addError(
         'Cannot specify a wind direction when wind speed is 0'
       );
+    }
+
+    //if wind is more than 50km/h, display an error
+    if (wind_speed > 50) {
+      errors.activity_subtype_data['wind_speed'].addError('Wind should ideally be less or equal to 50km/h');
+    }
+    //if user clicked proceed in the warning dialog, remove the error
+    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('wind_speed')) {
+      errors.activity_subtype_data['wind_speed'].__errors.pop();
+      return errors;
     }
 
     return errors;
@@ -225,6 +240,11 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
             HerbicideApplicationRates[herbicide.liquid_herbicide_code]
           } L/ha for this herbicide`
         );
+      }
+      //if user clicked proceed in the warning dialog, remove the error
+      if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('application_rate')) {
+        errors.activity_subtype_data['herbicide'][0]['application_rate'].__errors.pop();
+        return errors;
       }
     });
 

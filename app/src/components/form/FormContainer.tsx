@@ -11,6 +11,7 @@ import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import MultiSelectAutoComplete from 'rjsf/widgets/MultiSelectAutoComplete';
 import SingleSelectAutoComplete from 'rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from 'themes/rjsfTheme';
+import CustomLiveValidationForm from './CustomLiveValidationForm';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 
 export interface IFormContainerProps extends IFormControlsComponentProps {
@@ -23,6 +24,12 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   copyFormData?: Function;
   setParentFormRef?: Function;
   hideCheckFormForErrors?: boolean;
+  /**
+   * A function executed everytime the form field blures.
+   *
+   * Note: This will fire frequently, so consider wrapping it in a debounce function (see utils.ts > debounced).
+   */
+  onFormBlur?: (data: Object, formRef: any) => any;
   /**
    * A function executed everytime the form changes.
    *
@@ -81,7 +88,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       </Box>
 
       <ThemeProvider theme={rjsfTheme}>
-        <Form
+        <CustomLiveValidationForm
           ObjectFieldTemplate={ObjectFieldTemplate}
           FieldTemplate={FieldTemplate}
           ArrayFieldTemplate={ArrayFieldTemplate}
@@ -95,6 +102,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           schema={schemas.schema}
           uiSchema={schemas.uiSchema}
           liveValidate={true}
+          onFormBlur={props.onFormBlur}
           showErrorList={true}
           validate={props.customValidation}
           transformErrors={props.customErrorTransformer}
@@ -134,18 +142,17 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           }}
           // `ref` does exist, but currently is missing from the `index.d.ts` types file.
           // @ts-ignore: No overload matches this call ts(2769)
-          ref={(form) => {
+          customRef={(form) => {
             if (!form) {
               return;
             }
-
             if (props.setParentFormRef) {
               props.setParentFormRef(form);
             }
             setFormRef(form);
           }}>
           <React.Fragment />
-        </Form>
+        </CustomLiveValidationForm>
       </ThemeProvider>
 
       <Box mt={3}>
