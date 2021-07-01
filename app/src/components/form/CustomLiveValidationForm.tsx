@@ -1,10 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import Form from '@rjsf/material-ui';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 
 function CustomLiveValidationForm(props) {
-  const myRef = useRef(props.customRef);
-
+  const [myRef, setMyRef] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
@@ -22,56 +21,126 @@ function CustomLiveValidationForm(props) {
 
   //Dialog Cancel OnClick func
   const cancelClick = () => {
-    /* TODO: implement cancel */
-    const $this = myRef.current;
-    let newFormData = $this.state.formData;
-
-    newFormData[activityDataTypeName][field] = isNaN(newFormData[activityDataTypeName][field]) ? '' : 0;
-    console.log(myRef.current.state.formData);
     handleClose();
   };
 
   //Dialog Proceed OnClick func
   const proceedClick = () => {
+    //setTimeout is called so that the setState works as expected
     setTimeout(() => {
-      const $this = myRef.current;
+      const $this = myRef;
+      //declare and initialize no validation fields array from formData if any
       let noValidationFields: string[] = [];
       if ($this.state.formData.forceNoValidationFields) {
         noValidationFields = [...$this.state.formData.forceNoValidationFields];
       }
+      //add field to no validation if not there already
       if (!noValidationFields.includes(field)) {
         noValidationFields.push(field);
       }
+      //set new state with updated array of noValidate fields
       let newFormData = $this.state.formData;
       newFormData.forceNoValidationFields = noValidationFields;
       $this.setState({ formData: newFormData }, () => {
+        //revalidate formData after the setState is run
         $this.validate($this.state.formData);
-        console.log(myRef.current.state.formData);
+        //update formData of the activity via onFormBlur
+        props.onFormBlur(myRef.state.formData);
       });
     }, 100);
     handleClose();
   };
 
+  //helper function to get field name from args
+  const getFieldNameFromArgs = (args): string => {
+    let argumentFieldName;
+    if (args[0].includes('root_activity_subtype_data_herbicide_0_')) {
+      argumentFieldName = 'root_activity_subtype_data_herbicide_0_';
+    } else if (args[0].includes('root_activity_subtype_data_')) {
+      argumentFieldName = 'root_activity_subtype_data_';
+    } else if (args[0].includes('root_activity_data_')) {
+      argumentFieldName = 'root_activity_data_';
+    }
+    let fieldName = args[0].substr(argumentFieldName.length);
+    return fieldName;
+  };
+
+  //herlper function to get the path to the field in an oject.
+  //if multiple found, stores multiple strings in array
+  const getPathToFieldName = (obj: any, predicate: Function) => {
+    const discoveredObjects = []; // For checking for cyclic object
+    const path = []; // The current path being searched
+    const results = []; // The array of paths that satify the predicate === true
+    if (!obj && (typeof obj !== 'object' || Array.isArray(obj))) {
+      throw new TypeError('First argument of finPropPath is not the correct type Object');
+    }
+    if (typeof predicate !== 'function') {
+      throw new TypeError('Predicate is not a function');
+    }
+    (function find(obj) {
+      for (const key of Object.keys(obj)) {
+        // use only enumrable own properties.
+        if (predicate(key, path, obj) === true) {
+          // Found a path
+          path.push(key); // push the key
+          results.push(path.join('.')); // Add the found path to results
+          path.pop(); // remove the key.
+        }
+        const o = obj[key]; // The next object to be searched
+        if (o && typeof o === 'object' && !Array.isArray(o)) {
+          // check for null then type object
+          if (!discoveredObjects.find((obj) => obj === o)) {
+            // check for cyclic link
+            path.push(key);
+            discoveredObjects.push(o);
+            find(o);
+            path.pop();
+          }
+        } else if (o && Array.isArray(o)) {
+          //if array
+          for (let item1 in o) {
+            if (typeof item1 != 'object') {
+              path.push(item1);
+            }
+            for (let item of o) {
+              if (typeof item != 'object') path.push(item);
+              find(item);
+              path.pop();
+              path.pop();
+            }
+          }
+        }
+      }
+    })(obj);
+    return results;
+  };
+
+  //helper function - find the value of the property given the path to it whithin the oject
+  const deepFind = (obj: any, path: string, newValue?: string) => {
+    let paths = path.split('.'),
+      current = obj;
+    for (let i = 0; i < paths.length; ++i) {
+      if (current[paths[i]] == undefined) {
+        return undefined;
+      } else {
+        current = current[paths[i]];
+      }
+    }
+    return current;
+  };
+
   //handle blur the field
   const blurHandler = (...args: string[]) => {
-    let activityDataType = args[0].includes('root_activity_subtype_data_')
-      ? 'root_activity_subtype_data_'
-      : 'root_activity_data_';
-    setAlertMsg(args);
-    setActivityDataTypeName(
-      args[0].includes('root_activity_subtype_data_') ? 'activity_subtype_data' : 'activity_data'
-    );
-    let activityDataTypeName = args[0].includes('root_activity_subtype_data_')
-      ? 'activity_subtype_data'
-      : 'activity_data';
-    const $this = myRef.current;
-    const field = args[0].substr(activityDataType.length);
+    const $this = myRef;
+    const field = getFieldNameFromArgs(args);
     const { formData, uiSchema } = $this.state;
-    if (uiSchema[activityDataTypeName][field]) {
-      if (uiSchema[activityDataTypeName][field] && uiSchema[activityDataTypeName][field].validateOnBlur) {
+    let path = getPathToFieldName(uiSchema, (key) => key === field);
+    if (deepFind(uiSchema, path[0] + '')) {
+      if (deepFind(uiSchema, path[0] + '.validateOnBlur')) {
         const { errorSchema } = $this.validate(formData);
-        if (errorSchema[activityDataTypeName][field]['__errors'][0]) {
-          setAlertMsg(errorSchema[activityDataTypeName][field]['__errors'][0]);
+        let errorPath = getPathToFieldName(errorSchema, (key) => key === field);
+        if (deepFind(errorSchema, errorPath[0] + '.__errors.0')) {
+          setAlertMsg(deepFind(errorSchema, errorPath[0] + '.__errors.0'));
           setField(field);
           openDialog();
         }
@@ -80,21 +149,36 @@ function CustomLiveValidationForm(props) {
   };
 
   //handle focus the field
+  //onFocus - if the field that is being focused is in forceNoValidation fields, remove it from there,
+  //so that the user will be tasked to force the value out of range again
   const focusHandler = (...args: string[]) => {
-    if (args[0].includes('root_activity_subtype_data_')) {
-      const field = args[0].substr('root_activity_subtype_data_'.length);
-      const $this = myRef.current;
-      const { formData, uiSchema, errorSchema } = $this.state;
-      if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes(field)) {
-        formData.forceNoValidationFields.pop(field);
+    let field = getFieldNameFromArgs(args);
+    const $this = myRef;
+    const { formData } = $this.state;
+    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes(field)) {
+      const index = formData.forceNoValidationFields.indexOf(field);
+      if (index > -1) {
+        formData.forceNoValidationFields.splice(index, 1);
       }
-      console.log(formData);
+      $this.setState({ formData: formData }, () => {
+        props.onFormBlur(myRef.state.formData);
+      });
     }
   };
 
   return (
     <>
-      <Form {...props} ref={myRef} onFocus={focusHandler} onBlur={blurHandler} />
+      <Form
+        {...props}
+        ref={(form) => {
+          if (form) {
+            setMyRef(form);
+            props.customRef(form);
+          }
+        }}
+        onFocus={focusHandler}
+        onBlur={blurHandler}
+      />
       <Dialog
         open={open}
         onClose={handleClose}

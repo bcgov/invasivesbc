@@ -238,6 +238,37 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }),
     [doc]
   );
+  /**
+   * Save the form whenever user the blur callback is fired.
+   *
+   * Callback is fired when user enters out of range value in the field and then proceeds with this value after the warning
+   * this is used to update the validation errors. If user clicks proceed, the error associated with particular field gets popped
+   *
+   * @param {*} sentFormData the new formData that was sent from the form
+   */
+  const onFormBlur = useCallback(
+    debounced(100, async (sentFormData: any) => {
+      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(sentFormData.activity_subtype_data);
+      updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
+
+      const updatedFormValues = {
+        formData: { ...sentFormData, activity_subtype_data: updatedActivitySubtypeData },
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date(),
+        formStatus: FormValidationStatus.VALID
+      };
+
+      setDoc({ ...doc, ...updatedFormValues });
+
+      await databaseContext.database.upsert(docId, (activity) => {
+        return {
+          ...activity,
+          ...updatedFormValues
+        };
+      });
+    }),
+    [doc]
+  );
 
   /**
    * Paste copied form data saved in session storage
@@ -438,6 +469,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           activity={doc}
           linkedActivity={linkedActivity}
           onFormChange={onFormChange}
+          onFormBlur={onFormBlur}
           onFormSubmitSuccess={onFormSubmitSuccess}
           onFormSubmitError={onFormSubmitError}
           photoState={{ photos, setPhotos }}

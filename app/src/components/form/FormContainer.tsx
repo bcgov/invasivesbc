@@ -25,6 +25,12 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   setParentFormRef?: Function;
   hideCheckFormForErrors?: boolean;
   /**
+   * A function executed everytime the form field blures.
+   *
+   * Note: This will fire frequently, so consider wrapping it in a debounce function (see utils.ts > debounced).
+   */
+  onFormBlur?: (data: Object, formRef: any) => any;
+  /**
    * A function executed everytime the form changes.
    *
    * Note: This will fire frequently, so consider wrapping it in a debounce function (see utils.ts > debounced).
@@ -96,6 +102,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           schema={schemas.schema}
           uiSchema={schemas.uiSchema}
           liveValidate={true}
+          onFormBlur={props.onFormBlur}
           showErrorList={true}
           validate={props.customValidation}
           transformErrors={props.customErrorTransformer}
@@ -139,7 +146,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             if (!form) {
               return;
             }
-
             if (props.setParentFormRef) {
               props.setParentFormRef(form);
             }

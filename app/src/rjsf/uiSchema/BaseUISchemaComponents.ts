@@ -47,7 +47,9 @@ const Herbicide = {
   },
   herbicide_amount: {},
   mix_delivery_rate: {},
-  application_rate: {},
+  application_rate: {
+    validateOnBlur: true
+  },
   dilution: {
     'ui:readonly': true
   },
