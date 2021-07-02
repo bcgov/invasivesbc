@@ -87,6 +87,15 @@ const Activity = {
   longitude: {
     'ui:readonly': true
   },
+  utm_easting: {
+    'ui:readonly': true
+  },
+  utm_northing: {
+    'ui:readonly': true
+  },
+  utm_zone: {
+    'ui:readonly': true
+  },
   reported_area: {
     'ui:readonly': true
   },

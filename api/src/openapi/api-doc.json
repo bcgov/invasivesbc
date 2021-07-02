@@ -367,6 +367,8 @@
           "activity_date_time",
           "latitude",
           "longitude",
+          "utm_easting",
+          "utm_northing",
           "reported_area"
         ],
         "properties": {
@@ -385,6 +387,21 @@
             "type": "number",
             "title": "Longitude",
             "x-tooltip-text": "Longitude of the anchor point for the specified geometry"
+          },
+          "utm_easting": {
+            "type": "number",
+            "title": "UTM Easting",
+            "x-tooltip-text": "UTM Easting of the anchor point for the specified geometry"
+          },
+          "utm_northing": {
+            "type": "number",
+            "title": "UTM Northing",
+            "x-tooltip-text": "UTM Northing of the anchor point for the specified geometry"
+          },
+          "utm_zone": {
+            "type": "string",
+            "title": "UTM Zone",
+            "x-tooltip-text": "UTM Zone of the anchor point for the specified geometry"
           },
           "reported_area": {
             "type": "number",

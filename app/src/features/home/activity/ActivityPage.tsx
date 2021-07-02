@@ -5,6 +5,7 @@ import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import proj4 from 'proj4';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
@@ -108,6 +109,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const { latitude, longitude } = calculateLatLng(geom) || {};
         const formData = activity.formData;
         const areaOfGeometry = calculateGeometryArea(geom);
+        /**
+         * latlong to utms / utm zone conversion
+         */
+        let utm_easting, utm_northing, utm_zone;
+        //if statement prevents errors on page load, as lat/long isn't defined
+        if (longitude !== undefined && latitude !== undefined) {
+          utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
+          proj4.defs([
+            ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
+            ['EPSG:AUTO', `+proj=utm +zone=${utm_zone} +datum=WGS84 +units=m +no_defs`]
+          ]);
+          const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
+          utm_easting = Number(en_m[0].toFixed(4));
+          utm_northing = Number(en_m[1].toFixed(4));
+        }
 
         const updatedFormData = {
           ...formData,
@@ -115,6 +131,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             ...formData.activity_data,
             latitude,
             longitude,
+            utm_easting,
+            utm_northing,
+            utm_zone,
             reported_area: areaOfGeometry
           }
         };
