@@ -19,6 +19,7 @@ import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import {
   getCustomValidator,
   getAreaValidator,
+  getDateAndTimeValidator,
   getWindValidator,
   getTemperatureValidator,
   getHerbicideApplicationRateValidator,
@@ -207,6 +208,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
       <ActivityComponent
         customValidation={getCustomValidator([
           getAreaValidator(activity.activitySubtype),
+          getDateAndTimeValidator(activity.activitySubtype),
           getWindValidator(activity.activitySubtype),
           getTemperatureValidator(activity.activitySubtype),
           getDuplicateInvasivePlantsValidator(activity.activitySubtype),
