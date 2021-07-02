@@ -43,6 +43,24 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
 }
 
 /*
+  Function to validate that the date and time is not in future
+*/
+export function getDateAndTimeValidator(activitySubtype: string): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    errors.activity_data['activity_date_time'].__errors = [];
+
+    if (formData.activity_data['activity_date_time']) {
+      if (Date.now() < Date.parse(formData.activity_data['activity_date_time'])) {
+        errors.activity_data['activity_date_time'].addError(
+          `Date and time cannot be later than your current date and time`
+        );
+      }
+    }
+    return errors;
+  };
+}
+
+/*
   Function to validate that the net geo area selected does not exceed the limits
   specified by business area for various activity types
 */

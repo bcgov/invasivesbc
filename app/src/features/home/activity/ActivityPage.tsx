@@ -12,6 +12,7 @@ import { MapContextMenuData } from '../map/MapContextMenu';
 import {
   getCustomValidator,
   getAreaValidator,
+  getDateAndTimeValidator,
   getWindValidator,
   getTemperatureValidator,
   getHerbicideApplicationRateValidator,
@@ -456,6 +457,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         <ActivityComponent
           customValidation={getCustomValidator([
             getAreaValidator(doc.activitySubtype),
+            getDateAndTimeValidator(doc.activitySubtype),
             getWindValidator(doc.activitySubtype),
             getTemperatureValidator(doc.activitySubtype),
             getDuplicateInvasivePlantsValidator(doc.activitySubtype),

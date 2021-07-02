@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import Form from '@rjsf/material-ui';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 
@@ -7,7 +7,6 @@ function CustomLiveValidationForm(props) {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
-  const [activityDataTypeName, setActivityDataTypeName] = React.useState('');
 
   //open dialog window (visual)
   const openDialog = () => {
@@ -17,11 +16,6 @@ function CustomLiveValidationForm(props) {
   //close the dialog windo (visual)
   const handleClose = () => {
     setOpen(false);
-  };
-
-  //Dialog Cancel OnClick func
-  const cancelClick = () => {
-    handleClose();
   };
 
   //Dialog Proceed OnClick func
@@ -120,7 +114,7 @@ function CustomLiveValidationForm(props) {
     let paths = path.split('.'),
       current = obj;
     for (let i = 0; i < paths.length; ++i) {
-      if (current[paths[i]] == undefined) {
+      if (current[paths[i]] === undefined) {
         return undefined;
       } else {
         current = current[paths[i]];
@@ -189,7 +183,7 @@ function CustomLiveValidationForm(props) {
           <DialogContentText id="alert-dialog-description">{alertMsg}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={cancelClick} color="primary">
+          <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
           <Button
