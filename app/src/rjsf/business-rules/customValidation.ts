@@ -23,6 +23,7 @@ export function getSlopeAspectBothFlatValidator(): rjsfValidator {
     if (
       !formData ||
       !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.observation_plant_terrestrial_data ||
       !formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code ||
       !formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code
     ) {
