@@ -19,6 +19,7 @@ import {
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
   getJurisdictionPercentValidator,
+  getSlopeAspectBothFlatValidator,
   getInvasivePlantsValidator,
   getDuplicateInvasivePlantsValidator
 } from 'rjsf/business-rules/customValidation';
@@ -478,6 +479,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             getAreaValidator(doc.activitySubtype),
             getDateAndTimeValidator(doc.activitySubtype),
             getWindValidator(doc.activitySubtype),
+            getSlopeAspectBothFlatValidator(),
             getTemperatureValidator(doc.activitySubtype),
             getDuplicateInvasivePlantsValidator(doc.activitySubtype),
             getHerbicideApplicationRateValidator(),

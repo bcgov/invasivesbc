@@ -15,6 +15,35 @@ export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
 }
 
 /*
+  Function to validate that in case 'slope' field has 'flat' option 
+  selected, 'aspect' field option has to be 'flat' as well (and vice versa)
+*/
+export function getSlopeAspectBothFlatValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code ||
+      !formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code
+    ) {
+      return errors;
+    }
+    const { slope_code, aspect_code } = formData.activity_subtype_data.observation_plant_terrestrial_data;
+    if (
+      (slope_code.includes('FL') && !aspect_code.includes('FL')) ||
+      (!slope_code.includes('FL') && aspect_code.includes('FL'))
+    ) {
+      errors.activity_subtype_data['observation_plant_terrestrial_data']['aspect_code'].addError(
+        'If either Aspect or Slope is flat, both of the must be flat.'
+      );
+      errors.activity_subtype_data['observation_plant_terrestrial_data']['slope_code'].addError(
+        'If either Aspect or Slope is flat, both of the must be flat.'
+      );
+    }
+    return errors;
+  };
+}
+/*
   Function to validate that the total percent value of all jurisdictions combined = 100
 */
 export function getJurisdictionPercentValidator(): rjsfValidator {

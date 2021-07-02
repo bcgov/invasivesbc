@@ -1,11 +1,10 @@
 code_header_name,code_name,code_description,code_sort_order
-pest_management_plan,n/a,n/a,1
-pest_management_plan,102-0670-16-21,102-0670-16-21 [South Coastal Mainland of BC],2
-pest_management_plan,FLNR PMP 402-0680-20/25,FLNR PMP 402-0680-20/25 [Central and Northern BC],3
-pest_management_plan,FLNR-PMP 402-0677-19/24,FLNR-PMP 402-0677-19/24 [South Coastal Region of BC],4
-pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24 [Southern Interior of BC],5
-pest_management_plan,KMC Facilities 879-0002-16/21,KMC Facilities 879-0002-16/21 [Kinder Morgan Canada Facilities],6
-pest_management_plan,KMC ROW 879-0001-16/21,KMC ROW 879-0001-16/21 [Kinder Morgan Canada ROW],7
+pest_management_plan,102-0670-16-21,102-0670-16-21 [South Coastal Mainland of BC],1
+pest_management_plan,FLNR PMP 402-0680-20/25,FLNR PMP 402-0680-20/25 [Central and Northern BC],2
+pest_management_plan,FLNR-PMP 402-0677-19/24,FLNR-PMP 402-0677-19/24 [South Coastal Region of BC],3
+pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24 [Southern Interior of BC],4
+pest_management_plan,KMC Facilities 879-0002-16/21,KMC Facilities 879-0002-16/21 [Kinder Morgan Canada Facilities],5
+pest_management_plan,KMC ROW 879-0001-16/21,KMC ROW 879-0001-16/21 [Kinder Morgan Canada ROW],6
 plant_life_stage_code,U,unknown,1
 plant_life_stage_code,SG,Small germinating plants,2
 plant_life_stage_code,RO,Rosettes,3
@@ -131,7 +130,7 @@ specific_use_code,MT,Mine tailings,22
 specific_use_code,BS,Burn scar,23
 specific_use_code,IS,Industrial site,24
 aspect_code,FL,Flat,1
-aspect_code,NA,unknown,2
+aspect_code,NA,variable,2
 aspect_code,N,North facing,3
 aspect_code,NE,Northeast facing,4
 aspect_code,E,East facing,5
@@ -145,7 +144,7 @@ invasive_plant_density_code,L,<= 1plant/m2 (Low),2
 invasive_plant_density_code,M,2-5 plants/m2 (Med),3
 invasive_plant_density_code,H,6-10 plants/m2 (High),4
 invasive_plant_density_code,D,>10 plants/m2 (Dense),5
-slope_code,NA,unknown,1
+slope_code,NA,variable,1
 slope_code,FL,Flat 0 %,2
 slope_code,NF,Nearly flat 1-4 %,3
 slope_code,GS,Gentle slope 5-9 %,4
