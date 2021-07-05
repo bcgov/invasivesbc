@@ -1732,10 +1732,6 @@
             "type": "number",
             "title": "Wind Speed (km/h)",
             "minimum": 0,
-<<<<<<< HEAD
-            "maximum": 50,
-=======
->>>>>>> c2b1446 (Second task of the issue is completed.)
             "default": 0,
             "x-tooltip-text": "Wind speed in km/hr at time of treatment"
           },
@@ -5447,10 +5443,6 @@
             "type": "number",
             "title": "Wind Speed (km/h)",
             "minimum": 0,
-<<<<<<< HEAD
-            "maximum": 50,
-=======
->>>>>>> c2b1446 (Second task of the issue is completed.)
             "default": 0,
             "x-tooltip-text": "Wind speed in km/hr at time of treatment"
           },
