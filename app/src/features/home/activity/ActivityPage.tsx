@@ -241,6 +241,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
       updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
+      // let updatedObservationSubtypeData;
+      // updatedObservationSubtypeData = event.formData.activity_subtype_data;
+
+      updatedActivitySubtypeData = slopeAspectAutoFill(updatedActivitySubtypeData);
+
       const updatedFormValues = {
         formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
@@ -290,6 +295,16 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }),
     [doc]
   );
+
+  //helper function that checks if either aspect_code or slope_code are set to Flat,
+  //if true, sets the other one to flat
+  const slopeAspectAutoFill = (activitySubtypeData: Object): Object => {
+    if (activitySubtypeData['observation_plant_terrestrial_data'].aspect_code === 'FL')
+      activitySubtypeData['observation_plant_terrestrial_data'].slope_code = 'FL';
+    if (activitySubtypeData['observation_plant_terrestrial_data'].slope_code === 'FL')
+      activitySubtypeData['observation_plant_terrestrial_data'].aspect_code = 'FL';
+    return activitySubtypeData;
+  };
 
   /**
    * Paste copied form data saved in session storage

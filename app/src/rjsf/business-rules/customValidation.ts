@@ -35,10 +35,10 @@ export function getSlopeAspectBothFlatValidator(): rjsfValidator {
       (!slope_code.includes('FL') && aspect_code.includes('FL'))
     ) {
       errors.activity_subtype_data['observation_plant_terrestrial_data']['aspect_code'].addError(
-        'If either Aspect or Slope is flat, both of the must be flat.'
+        'If either Aspect or Slope is flat, both of them must be flat.'
       );
       errors.activity_subtype_data['observation_plant_terrestrial_data']['slope_code'].addError(
-        'If either Aspect or Slope is flat, both of the must be flat.'
+        'If either Aspect or Slope is flat, both of them must be flat.'
       );
     }
     return errors;
