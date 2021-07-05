@@ -139,6 +139,13 @@ export interface IMedia {
  */
 export interface IPointOfInterestSearchCriteria {
   /**
+   * Will only grab geos from api or local db
+   *
+   * @type {boolean}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  geoOnly?: boolean;
+  /**
    * The page of results to return. Starts at 0.
    *
    * @type {number}
