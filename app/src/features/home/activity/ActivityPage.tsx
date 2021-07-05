@@ -5,6 +5,7 @@ import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import proj4 from 'proj4';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
@@ -12,6 +13,7 @@ import { MapContextMenuData } from '../map/MapContextMenu';
 import {
   getCustomValidator,
   getAreaValidator,
+  getDateAndTimeValidator,
   getWindValidator,
   getTemperatureValidator,
   getHerbicideApplicationRateValidator,
@@ -107,6 +109,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const { latitude, longitude } = calculateLatLng(geom) || {};
         const formData = activity.formData;
         const areaOfGeometry = calculateGeometryArea(geom);
+        /**
+         * latlong to utms / utm zone conversion
+         */
+        let utm_easting, utm_northing, utm_zone;
+        //if statement prevents errors on page load, as lat/long isn't defined
+        if (longitude !== undefined && latitude !== undefined) {
+          utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
+          proj4.defs([
+            ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
+            ['EPSG:AUTO', `+proj=utm +zone=${utm_zone} +datum=WGS84 +units=m +no_defs`]
+          ]);
+          const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
+          utm_easting = Number(en_m[0].toFixed(4));
+          utm_northing = Number(en_m[1].toFixed(4));
+        }
 
         const updatedFormData = {
           ...formData,
@@ -114,6 +131,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             ...formData.activity_data,
             latitude,
             longitude,
+            utm_easting,
+            utm_northing,
+            utm_zone,
             reported_area: areaOfGeometry
           }
         };
@@ -222,6 +242,37 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       const updatedFormValues = {
         formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date(),
+        formStatus: FormValidationStatus.VALID
+      };
+
+      setDoc({ ...doc, ...updatedFormValues });
+
+      await databaseContext.database.upsert(docId, (activity) => {
+        return {
+          ...activity,
+          ...updatedFormValues
+        };
+      });
+    }),
+    [doc]
+  );
+  /**
+   * Save the form whenever user the blur callback is fired.
+   *
+   * Callback is fired when user enters out of range value in the field and then proceeds with this value after the warning
+   * this is used to update the validation errors. If user clicks proceed, the error associated with particular field gets popped
+   *
+   * @param {*} sentFormData the new formData that was sent from the form
+   */
+  const onFormBlur = useCallback(
+    debounced(100, async (sentFormData: any) => {
+      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(sentFormData.activity_subtype_data);
+      updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
+
+      const updatedFormValues = {
+        formData: { ...sentFormData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.VALID
@@ -425,6 +476,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         <ActivityComponent
           customValidation={getCustomValidator([
             getAreaValidator(doc.activitySubtype),
+            getDateAndTimeValidator(doc.activitySubtype),
             getWindValidator(doc.activitySubtype),
             getTemperatureValidator(doc.activitySubtype),
             getDuplicateInvasivePlantsValidator(doc.activitySubtype),
@@ -438,6 +490,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           activity={doc}
           linkedActivity={linkedActivity}
           onFormChange={onFormChange}
+          onFormBlur={onFormBlur}
           onFormSubmitSuccess={onFormSubmitSuccess}
           onFormSubmitError={onFormSubmitError}
           photoState={{ photos, setPhotos }}
