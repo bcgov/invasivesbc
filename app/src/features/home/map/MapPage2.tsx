@@ -124,7 +124,8 @@ const MapPage2: React.FC<IMapProps> = (props) => {
 
   // don't load the map until interactive geos ready
   useEffect(() => {
-    const didInteractiveGeosLoad = interactiveGeometry ? true : false;
+    //const didInteractiveGeosLoad = interactiveGeometry ? true : false;
+    const didInteractiveGeosLoad = true;
     setIsReadyToLoadMap(didInteractiveGeosLoad);
   }, [databaseChangesContext, interactiveGeometry]);
 
@@ -169,36 +170,6 @@ const MapPage2: React.FC<IMapProps> = (props) => {
 
     setGeoUpdateTimestamp(now);
 
-    // this is temporary
-    console.log('use data poi fetch:');
-    let data = await da.getPointsOfInterest({ page: 1, limit: 10000, online: true });
-    let poiGeoJSON = {
-      type: 'FeatureCollection',
-      features: data.rows.map((row) => {
-        console.log(row);
-        return {
-          type: 'Feature',
-          geometry: {
-            ...row.point_of_interest_payload.geometry[0].geometry,
-            properties: {
-              recordDocID: row.id,
-              recordDocType: row.docType,
-              description: 'New Point of Interest:\n ' + row.id + '\n',
-
-              // basic display:
-              color: '#99E472',
-              zIndex: 99999
-            }
-          }
-          // interactive
-        } as Feature;
-      })
-    } as GeoJsonObject;
-
-    //setGeometry(geos);
-    console.log('interactive pois: ', JSON.stringify(poiGeoJSON));
-    setInteractiveGeometry(poiGeoJSON);
-
     //setIsReadyToLoadMap(true)
   }, [extent]);
 
@@ -239,6 +210,7 @@ const MapPage2: React.FC<IMapProps> = (props) => {
                 classes={classes}
                 showDrawControls={false}
                 mapId={'mainMap'}
+                pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
                 geometryState={{ geometry, setGeometry }}
                 interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
                 extentState={{ extent, setExtent }}

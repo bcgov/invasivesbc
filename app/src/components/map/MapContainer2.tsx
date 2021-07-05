@@ -22,6 +22,8 @@ import 'leaflet.offline';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
+import { useDataAccess } from 'hooks/useDataAccess';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -78,6 +80,7 @@ export interface IMapContainerProps {
   classes?: any;
   mapId: string;
   showDrawControls: boolean;
+  pointOfInterestFilter?: IPointOfInterestSearchCriteria;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
   interactiveGeometryState?: {
     interactiveGeometry: GeoJsonObject;
@@ -99,6 +102,75 @@ const interactiveGeometryStyle = () => {
 };
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
+  const da = useDataAccess();
+  const [allPOIS, setAllPOIS] = useState(null);
+  const getPOIS = async (filter: IPointOfInterestSearchCriteria) => {
+    let data = await da.getPointsOfInterest(filter);
+    let poiGeoJSON = {
+      type: 'FeatureCollection',
+      features: data.rows.map((row) => {
+        return {
+          type: 'Feature',
+          //TODO do this part server side to speed it up:
+          geometry: {
+            ...row.point_of_interest_payload.geometry[0].geometry,
+            properties: {
+              recordDocID: row.id,
+              recordDocType: row.docType,
+              description: 'New Point of Interest:\n ' + row.id + '\n',
+
+              // basic display:
+              color: '#99E472',
+              zIndex: 99999
+            }
+          }
+          // interactive
+        } as Feature;
+      })
+    } as GeoJsonObject;
+    setAllPOIS(poiGeoJSON);
+    // we look at poiGeoJSON and not allPOIS to avoid race condition:
+    let page = 2;
+    const startTime = new Date();
+    while ((poiGeoJSON as any).features.length < data.count) {
+      let newFilter = filter;
+      newFilter.page = page;
+      data = await da.getPointsOfInterest(filter);
+      poiGeoJSON = {
+        type: 'FeatureCollection',
+        features: [
+          ...data.rows.map((row) => {
+            return {
+              type: 'Feature',
+              geometry: {
+                ...row.point_of_interest_payload.geometry[0].geometry,
+                properties: {
+                  recordDocID: row.id,
+                  recordDocType: row.docType,
+                  description: 'New Point of Interest:\n ' + row.id + '\n',
+
+                  // basic display:
+                  color: '#99E472',
+                  zIndex: 99999
+                }
+              }
+              // interactive
+            } as Feature;
+          }),
+          ...(poiGeoJSON as any).features
+        ]
+      } as GeoJsonObject;
+      setAllPOIS(poiGeoJSON);
+      page += 1;
+    }
+  };
+
+  const loadData = async () => {
+    getPOIS(props.pointOfInterestFilter);
+  };
+
+  loadData();
+
   const databaseContext = useContext(DatabaseContext);
 
   const Offline = () => {
@@ -195,7 +267,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     //shadowSize: [50, 64], // size of the shadow
     iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
     //shadowAnchor: [4, 62], // the same for the shadow
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+    popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
+    className: 'greenIconFilter'
   });
 
   return (
@@ -214,7 +287,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         </LayersControl.BaseLayer>
         <LayersControl.Overlay checked name="Activities">
           <MarkerClusterGroup chunkedLoading>
-            {(props.interactiveGeometryState?.interactiveGeometry as any)?.features?.map((geo: any, index: any) => {
+            {allPOIS?.features?.map((geo: any, index: any) => {
               return (
                 <Marker
                   key={index}
