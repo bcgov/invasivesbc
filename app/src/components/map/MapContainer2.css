@@ -5,3 +5,7 @@
 /* .leaflet-draw.leaflet-control .leaflet-draw-section:nth-child(2) {
   transform: translate(0, -13px);
 } */
+
+.greenIconFilter {
+  filter: invert(100%);
+}
