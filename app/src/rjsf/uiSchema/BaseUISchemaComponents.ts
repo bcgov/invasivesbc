@@ -835,9 +835,25 @@ const Observation_PlantTerrestrial = {
 };
 
 const FREP_FormA_Data = {
-  soil_texture_code: {
-    'ui:widget': 'single-select-autocomplete'
-  }
+  date: {},
+  opening_id: {},
+  assessed_by: {},
+  plot_number: {},
+  stratum_id: { 'ui:widget': 'single-select-autocomplete' },
+  stratum_number: { 'ui:widget': 'single-select-autocomplete' },
+  stratum_type: { 'ui:widget': 'single-select-autocomplete' },
+  utm_zone: {},
+  easting: {},
+  northing: {},
+  trees_exist: {},
+  baf: {},
+  fixed_area: {},
+  tree_comments: {},
+  full_count_area: {},
+  cwd_in_transect: {},
+  first_leg: {},
+  second_leg: {},
+  log_comments: {},
 };
 
 const FREP_FormB_Data = {

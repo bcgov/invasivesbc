@@ -180,12 +180,6 @@
       "Activity_FREP_FormA": {
         "type": "object",
         "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/FREP"
-          },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/FREP_FormA"
           }
@@ -194,12 +188,6 @@
       "Activity_FREP_FormB": {
         "type": "object",
         "properties": {
-          "activity_data": {
-            "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/FREP"
-          },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/FREP_FormB"
           }
@@ -210,9 +198,6 @@
         "properties": {
           "activity_data": {
             "$ref": "#/components/schemas/Activity"
-          },
-          "activity_type_data": {
-            "$ref": "#/components/schemas/FREP"
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/FREP_FormC"
@@ -617,11 +602,6 @@
           }
         }
       },
-      "FREP": {
-        "title": "",
-        "type": "object",
-        "properties": {}
-      },
       "Observation_PlantTerrestrial": {
         "title": "Terrestrial Plant Information",
         "type": "object",
@@ -986,7 +966,7 @@
             },
             "x-tooltip-text": "Stand Table"
           },
-          "comments": {
+          "tree_comments": {
             "type": "string",
             "title": "Comments (tree)"
           },
@@ -1032,7 +1012,7 @@
                         },
                         "x-tooltip-text": "Logs"
                       },
-                      "comments": {
+                      "log_comments": {
                         "type": "string",
                         "title": "Comments (Logs)"
                       }
