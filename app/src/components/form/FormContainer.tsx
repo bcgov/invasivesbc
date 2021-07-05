@@ -151,19 +151,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             find(o);
             path.pop();
           }
-        } else if (o && Array.isArray(o)) {
-          //if array
-          for (let item1 in o) {
-            if (typeof item1 != 'object') {
-              path.push(item1);
-            }
-            for (let item of o) {
-              if (typeof item != 'object') path.push(item);
-              find(item);
-              path.pop();
-              path.pop();
-            }
-          }
         }
       }
     })(obj);
@@ -224,7 +211,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   useEffect(() => {
     const getApiSpec = async () => {
       const response = await invasivesApi.getCachedApiSpec();
-
       setSchemas({
         schema: { ...response.components.schemas[props.activity.activitySubtype], components: response.components },
         uiSchema: RootUISchemas[props.activity.activitySubtype]
