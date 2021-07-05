@@ -3,7 +3,7 @@ import Form from '@rjsf/material-ui';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 
 function CustomLiveValidationForm(props) {
-  const [myRef, setMyRef] = React.useState(null);
+  const [formRef, setFormRef] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
@@ -22,7 +22,7 @@ function CustomLiveValidationForm(props) {
   const proceedClick = () => {
     //setTimeout is called so that the setState works as expected
     setTimeout(() => {
-      const $this = myRef;
+      const $this = formRef;
       //declare and initialize no validation fields array from formData if any
       let noValidationFields: string[] = [];
       if ($this.state.formData.forceNoValidationFields) {
@@ -39,7 +39,7 @@ function CustomLiveValidationForm(props) {
         //revalidate formData after the setState is run
         $this.validate($this.state.formData);
         //update formData of the activity via onFormBlur
-        props.onFormBlur(myRef.state.formData);
+        props.onFormBlur(formRef.state.formData);
       });
     }, 100);
     handleClose();
@@ -125,7 +125,7 @@ function CustomLiveValidationForm(props) {
 
   //handle blur the field
   const blurHandler = (...args: string[]) => {
-    const $this = myRef;
+    const $this = formRef;
     const field = getFieldNameFromArgs(args);
     const { formData, uiSchema } = $this.state;
     let path = getPathToFieldName(uiSchema, (key) => key === field);
@@ -147,7 +147,7 @@ function CustomLiveValidationForm(props) {
   //so that the user will be tasked to force the value out of range again
   const focusHandler = (...args: string[]) => {
     let field = getFieldNameFromArgs(args);
-    const $this = myRef;
+    const $this = formRef;
     const { formData } = $this.state;
     if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes(field)) {
       const index = formData.forceNoValidationFields.indexOf(field);
@@ -155,7 +155,7 @@ function CustomLiveValidationForm(props) {
         formData.forceNoValidationFields.splice(index, 1);
       }
       $this.setState({ formData: formData }, () => {
-        props.onFormBlur(myRef.state.formData);
+        props.onFormBlur(formRef.state.formData);
       });
     }
   };
@@ -166,7 +166,7 @@ function CustomLiveValidationForm(props) {
         {...props}
         ref={(form) => {
           if (form) {
-            setMyRef(form);
+            setFormRef(form);
             props.customRef(form);
           }
         }}
