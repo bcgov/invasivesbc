@@ -72,7 +72,6 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
   const handleOnChange = (event: React.ChangeEvent<{}>, value: AutoCompleteMultiSelectOption[]): void => {
     const newValue: any[] = [];
     value.forEach((item) => newValue.push(item.value));
-
     props.onChange(newValue);
   };
 
