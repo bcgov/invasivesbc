@@ -1,4 +1,4 @@
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, Tooltip, Zoom } from '@material-ui/core';
 import React from 'react';
 
 export interface IFormControlsComponentProps {
@@ -37,9 +37,13 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
           </Grid>
           {props.onCopy && (
             <Grid item>
-              <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onCopy()}>
-                Copy Form Data
-              </Button>
+              <Tooltip
+                TransitionComponent={Zoom}
+                title="Copy the data from the fields, so that you can paste it when you create a new record.">
+                <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onCopy()}>
+                  Copy Form Data
+                </Button>
+              </Tooltip>
             </Grid>
           )}
           {sessionStorage.getItem('copiedFormData') &&

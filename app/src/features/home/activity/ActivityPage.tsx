@@ -1,4 +1,4 @@
-import { CircularProgress, Container, makeStyles, Box, Button, Typography } from '@material-ui/core';
+import { CircularProgress, Container, makeStyles, Box, Button, Typography, Zoom, Tooltip } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
@@ -363,17 +363,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const generateCloneActivityButton = () => {
     return (
       <Box mb={3} display="flex" flexDirection="row-reverse">
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<FileCopy />}
-          onClick={async () => {
-            const addedActivity = await addClonedActivityToDB(databaseContext, doc);
-            setActiveActivity(addedActivity);
-            notifySuccess(databaseContext, 'Successfully cloned activity. You are now viewing the cloned activity.');
-          }}>
-          Clone Activity
-        </Button>
+        <Tooltip TransitionComponent={Zoom} title="Create a new record with the same content.">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<FileCopy />}
+            onClick={async () => {
+              const addedActivity = await addClonedActivityToDB(databaseContext, doc);
+              setActiveActivity(addedActivity);
+              notifySuccess(databaseContext, 'Successfully cloned activity. You are now viewing the cloned activity.');
+            }}>
+            Clone Activity
+          </Button>
+        </Tooltip>
       </Box>
     );
   };
