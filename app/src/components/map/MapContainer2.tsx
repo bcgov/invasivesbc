@@ -11,7 +11,6 @@ import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core'
 import { GeoJSON, MapContainer, TileLayer, LayersControl, Marker, useMap, FeatureGroup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from 'leaflet/dist/images/marker-icon.png';
-import IAPPSiteMarker from './Icons/pinned.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { interactiveGeoInputData } from './GeoMeta';
 import Spinner from 'components/spinner/Spinner';
@@ -24,6 +23,7 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { useDataAccess } from 'hooks/useDataAccess';
+import TempPOILoader from './LayerLoaderHelpers/TempPOILoader';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -102,82 +102,6 @@ const interactiveGeometryStyle = () => {
 };
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
-  const da = useDataAccess();
-  const [allPOIS, setAllPOIS] = useState(null);
-  const getPOIS = async (filter: IPointOfInterestSearchCriteria) => {
-    let data = await da.getPointsOfInterest(filter);
-    let poiGeoJSON = {
-      type: 'FeatureCollection',
-      features: data.rows.map((row) => {
-        return {
-          type: 'Feature',
-          //TODO do this part server side to speed it up:
-          geometry: {
-            ...row.point_of_interest_payload.geometry[0].geometry,
-            properties: {
-              recordDocID: row.id,
-              recordDocType: row.docType,
-              description: 'New Point of Interest:\n ' + row.id + '\n',
-
-              // basic display:
-              color: '#99E472',
-              zIndex: 99999
-            }
-          }
-          // interactive
-        } as Feature;
-      })
-    } as GeoJsonObject;
-    setAllPOIS(poiGeoJSON);
-    // we look at poiGeoJSON and not allPOIS to avoid race condition:
-    let page = 2;
-    const startTime = new Date();
-    while ((poiGeoJSON as any).features.length < data.count) {
-      console.log((poiGeoJSON as any).features.length);
-      console.log('of ' + data.count);
-      console.log('page: ' + page);
-      let newFilter = filter;
-      newFilter.page = page;
-      data = await da.getPointsOfInterest(filter);
-      poiGeoJSON = {
-        type: 'FeatureCollection',
-        features: [
-          ...data.rows.map((row) => {
-            return {
-              type: 'Feature',
-              geometry: {
-                ...row.point_of_interest_payload.geometry[0].geometry,
-                properties: {
-                  recordDocID: row.id,
-                  recordDocType: row.docType,
-                  description: 'New Point of Interest:\n ' + row.id + '\n',
-
-                  // basic display:
-                  color: '#99E472',
-                  zIndex: 99999
-                }
-              }
-              // interactive
-            } as Feature;
-          }),
-          ...(poiGeoJSON as any).features
-        ]
-      } as GeoJsonObject;
-      setAllPOIS(poiGeoJSON);
-      page += 1;
-    }
-  };
-
-  const loadData = async () => {
-    getPOIS(props.pointOfInterestFilter);
-  };
-
-  console.log('everything rerendering');
-  //load once
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const databaseContext = useContext(DatabaseContext);
 
   const Offline = () => {
@@ -267,17 +191,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     return <div></div>;
   };
 
-  var IAPPSite = L.icon({
-    iconUrl: IAPPSiteMarker,
-    //shadowUrl: 'leaf-shadow.png',
-    iconSize: [38, 95], // size of the icon
-    //shadowSize: [50, 64], // size of the shadow
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    //shadowAnchor: [4, 62], // the same for the shadow
-    popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
-    className: 'greenIconFilter'
-  });
-
   return (
     <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={true}>
       {/* Here is the offline component */}
@@ -293,17 +206,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
         <LayersControl.Overlay checked name="Activities">
-          <MarkerClusterGroup chunkedLoading>
-            {allPOIS?.features?.map((geo: any, index: any) => {
-              return (
-                <Marker
-                  key={index}
-                  position={[geo.geometry.coordinates[1], geo.geometry.coordinates[0]]}
-                  icon={IAPPSite}></Marker>
-              );
-            })}
-          </MarkerClusterGroup>
-
+          <TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>
           {/* this line below works - its what you need for geosjon*/}
           {/* <GeoJSON data={props.interactiveGeometryState.interactiveGeometry} style={interactiveGeometryStyle} />*/}
         </LayersControl.Overlay>
