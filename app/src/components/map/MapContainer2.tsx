@@ -133,6 +133,9 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     let page = 2;
     const startTime = new Date();
     while ((poiGeoJSON as any).features.length < data.count) {
+      console.log((poiGeoJSON as any).features.length);
+      console.log('of ' + data.count);
+      console.log('page: ' + page);
       let newFilter = filter;
       newFilter.page = page;
       data = await da.getPointsOfInterest(filter);
@@ -169,7 +172,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     getPOIS(props.pointOfInterestFilter);
   };
 
-  loadData();
+  console.log('everything rerendering');
+  //load once
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const databaseContext = useContext(DatabaseContext);
 
