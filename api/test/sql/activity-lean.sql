@@ -4,7 +4,7 @@ select
     'properties', json_build_object(
       'activity_id', activity_id,
       'activity_type', activity_type,
-      'activity_subtype', activity_subtyp
+      'activity_subtype', activity_subtype
     ),
     'geometry', st_asGeoJSON(geog)::jsonb
   ) as "geojson"
