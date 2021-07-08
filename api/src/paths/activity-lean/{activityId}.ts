@@ -94,6 +94,7 @@ function getActivity(): RequestHandler {
       where
         activity_id = '${activityId}'
       `;
+      // TODO: Query most recent. Deleted timestamp null
 
       const response = await connection.query(sql);
 
