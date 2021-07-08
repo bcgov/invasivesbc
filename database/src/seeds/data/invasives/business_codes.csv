@@ -129,6 +129,7 @@ specific_use_code,MI,Mine site,21
 specific_use_code,MT,Mine tailings,22
 specific_use_code,BS,Burn scar,23
 specific_use_code,IS,Industrial site,24
+specific_use_code,CP,Community pasture,25
 aspect_code,FL,Flat,1
 aspect_code,NA,variable,2
 aspect_code,N,North facing,3
