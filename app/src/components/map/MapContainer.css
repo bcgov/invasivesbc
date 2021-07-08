@@ -14,6 +14,12 @@
   transform: scale(1.4) translate(0, -5px);
 }
 
+.leaflet-draw-draw-circlemarker{
+  background-image: url(./icons/cross-circle.svg) !important;
+  background-position: center !important;
+  background-size: cover !important;
+}
+
 .leaflet-control-locate.leaflet-control {
   transform: scale(1.5);
 }
