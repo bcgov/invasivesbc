@@ -247,7 +247,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.VALID
       };
-
       setDoc({ ...doc, ...updatedFormValues });
 
       await databaseContext.database.upsert(docId, (activity) => {
@@ -403,6 +402,24 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
+  //this sets up initial values for some of the fields in activity.
+  const setUpInitialValues = (activity: any, formData: any): Object => {
+    //Observations -- all:
+    if (activity.activityType === 'Observation' && !formData.activity_subtype_data) {
+      //set the invasice plants to start with 1 element, rather than with 0
+      formData.activity_subtype_data = {};
+      formData.activity_subtype_data.invasive_plants = [{ occurrence: 'Positive occurrence' }];
+    }
+    //Observations -- Plant Terrestrial activity:
+    if (activity.activitySubtype === 'Activity_Observation_PlantTerrestrial' && !formData.activity_subtype_data) {
+      //set specific use to 'None'
+      formData.activity_subtype_data = {};
+      formData.activity_subtype_data.observation_plant_terrestrial_data = {};
+      formData.activity_subtype_data.observation_plant_terrestrial_data.specific_use_code = 'NO';
+    }
+    return formData;
+  };
+
   useEffect(() => {
     const getActivityData = async () => {
       const activityResults = await getActivityResultsFromDB(props.activityId || null);
@@ -412,7 +429,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         return;
       }
 
-      const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
+      let updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
+      updatedFormData = setUpInitialValues(activityResults.docs[0], updatedFormData);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
 
       await handleRecordLinking(updatedDoc);
