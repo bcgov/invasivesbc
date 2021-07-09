@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { WidgetProps } from '@rjsf/core';
+import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
+import { setISODay } from 'date-fns/esm';
 
 // Custom type to support this widget
 export type AutoCompleteSelectOption = { label: string; value: any; title: any };
@@ -56,7 +58,8 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
 const SingleSelectAutoComplete = (props: WidgetProps) => {
   let enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
   if (!enumOptions) enumOptions = [];
-
+  const selectAutoCompleteContext = useContext(SelectAutoCompleteContext);
+  const { setLastFieldChanged, lastFieldChanged } = selectAutoCompleteContext;
   let optionValueLabels = {};
   let optionValues = Object.values(enumOptions).map((option) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
@@ -65,6 +68,31 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   const startingValue = props.value || '';
   const [value, setValue] = useState(startingValue);
   const [inputValue, setInputValue] = useState(startingValue ? optionValueLabels[startingValue] : '');
+  const [event, setEvent] = useState(null);
+
+  useEffect(() => {
+    if (!lastFieldChanged['id']) {
+      return;
+    }
+    if (
+      lastFieldChanged['id'].includes('slope_code') &&
+      lastFieldChanged['option'].includes('FL') &&
+      props.id.includes('aspect_code')
+    ) {
+      setValue('FL');
+    }
+    if (
+      lastFieldChanged['id'].includes('aspect_code') &&
+      lastFieldChanged['option'].includes('FL') &&
+      props.id.includes('slope_code')
+    ) {
+      setValue('FL');
+    }
+  }, [lastFieldChanged]);
+
+  useEffect(() => {
+    setLastFieldChanged({ id: props.id, option: value });
+  }, [event]);
 
   return (
     <div>
@@ -75,13 +103,16 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         blurOnSelect
         openOnFocus
         selectOnFocus
+        onFocus={(event) => {
+          props.onFocus(event.target.id, event.target.nodeValue);
+        }}
         clearOnEscape={!props.required}
         disableClearable={props.required}
         id={props.id}
         disabled={props.disabled}
         clearOnBlur={false}
         value={value}
-        onLoad={() => {
+        onLoad={(event) => {
           props.onChange(startingValue);
         }}
         onChange={(event: any, option: string, reason: string) => {
@@ -92,6 +123,8 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
             props.onChange('');
           } else {
             setValue(option);
+            setEvent(event);
+
             // NOTE: passing string value to onChange, which might be expecting format
             // object: { value, label }
             // this will likely result in future compatibility errors with custom onChange functions
