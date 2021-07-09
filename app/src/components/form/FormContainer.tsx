@@ -13,6 +13,7 @@ import {
 import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { ActivitySyncStatus } from 'constants/activities';
+import { SelectAutoCompleteContextProvider } from 'contexts/SelectAutoCompleteContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
@@ -45,7 +46,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
    *
    * Note: This will fire frequently, so consider wrapping it in a debounce function (see utils.ts > debounced).
    */
-  onFormChange?: (event: IChangeEvent<any>, formRef: any) => any;
+  onFormChange?: (event: IChangeEvent<any>, formRef: any, focusedField?: string) => any;
   /**
    * A function executed when the form submit hook fires, and form validation errors are found.
    */
@@ -64,7 +65,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
 
   const [formRef, setFormRef] = useState(null);
-
+  const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
@@ -195,6 +196,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   //so that the user will be tasked to force the value out of range again
   const focusHandler = (...args: string[]) => {
     let field = getFieldNameFromArgs(args);
+    setFocusedFieldArgs(args);
     const $this = formRef;
     const { formData } = $this.state;
     if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes(field)) {
@@ -240,71 +242,73 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       </Box>
 
       <ThemeProvider theme={rjsfTheme}>
-        <Form
-          ObjectFieldTemplate={ObjectFieldTemplate}
-          FieldTemplate={FieldTemplate}
-          ArrayFieldTemplate={ArrayFieldTemplate}
-          widgets={{
-            'multi-select-autocomplete': MultiSelectAutoComplete,
-            'single-select-autocomplete': SingleSelectAutoComplete
-          }}
-          key={props.activity?._id}
-          disabled={isDisabled}
-          formData={props.activity?.formData || null}
-          schema={schemas.schema}
-          onFocus={focusHandler}
-          onBlur={blurHandler}
-          uiSchema={schemas.uiSchema}
-          liveValidate={true}
-          showErrorList={true}
-          validate={props.customValidation}
-          transformErrors={props.customErrorTransformer}
-          autoComplete="off"
-          ErrorList={() => {
-            return (
-              <div>
-                <Typography color="error" variant="h5">
-                  The form contains one or more errors!
-                </Typography>
-                <Typography color="error" variant="h6">
-                  Incorrect fields are highlighted below.
-                </Typography>
-              </div>
-            );
-          }}
-          onChange={(event) => {
-            if (!props.onFormChange) {
-              return;
-            }
-            props.onFormChange(event, formRef);
-          }}
-          onError={(error) => {
-            if (!props.onFormSubmitError) {
-              return;
-            }
+        <SelectAutoCompleteContextProvider>
+          <Form
+            ObjectFieldTemplate={ObjectFieldTemplate}
+            FieldTemplate={FieldTemplate}
+            ArrayFieldTemplate={ArrayFieldTemplate}
+            widgets={{
+              'multi-select-autocomplete': MultiSelectAutoComplete,
+              'single-select-autocomplete': SingleSelectAutoComplete
+            }}
+            key={props.activity?._id}
+            disabled={isDisabled}
+            formData={props.activity?.formData || null}
+            schema={schemas.schema}
+            onFocus={focusHandler}
+            onBlur={blurHandler}
+            uiSchema={schemas.uiSchema}
+            liveValidate={true}
+            showErrorList={true}
+            validate={props.customValidation}
+            transformErrors={props.customErrorTransformer}
+            autoComplete="off"
+            ErrorList={() => {
+              return (
+                <div>
+                  <Typography color="error" variant="h5">
+                    The form contains one or more errors!
+                  </Typography>
+                  <Typography color="error" variant="h6">
+                    Incorrect fields are highlighted below.
+                  </Typography>
+                </div>
+              );
+            }}
+            onChange={(event) => {
+              if (!props.onFormChange) {
+                return;
+              }
+              props.onFormChange(event, formRef, focusedFieldArgs);
+            }}
+            onError={(error) => {
+              if (!props.onFormSubmitError) {
+                return;
+              }
 
-            props.onFormSubmitError(error, formRef);
-          }}
-          onSubmit={(event) => {
-            if (!props.onFormSubmitSuccess) {
-              return;
-            }
+              props.onFormSubmitError(error, formRef);
+            }}
+            onSubmit={(event) => {
+              if (!props.onFormSubmitSuccess) {
+                return;
+              }
 
-            props.onFormSubmitSuccess(event, formRef);
-          }}
-          // `ref` does exist, but currently is missing from the `index.d.ts` types file.
-          // @ts-ignore: No overload matches this call ts(2769)
-          ref={(form) => {
-            if (!form) {
-              return;
-            }
-            if (props.setParentFormRef) {
-              props.setParentFormRef(form);
-            }
-            setFormRef(form);
-          }}>
-          <React.Fragment />
-        </Form>
+              props.onFormSubmitSuccess(event, formRef);
+            }}
+            // `ref` does exist, but currently is missing from the `index.d.ts` types file.
+            // @ts-ignore: No overload matches this call ts(2769)
+            ref={(form) => {
+              if (!form) {
+                return;
+              }
+              if (props.setParentFormRef) {
+                props.setParentFormRef(form);
+              }
+              setFormRef(form);
+            }}>
+            <React.Fragment />
+          </Form>
+        </SelectAutoCompleteContextProvider>
       </ThemeProvider>
 
       <Box mt={3}>

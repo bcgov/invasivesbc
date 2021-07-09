@@ -229,6 +229,25 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     });
   };
 
+  const autoFillSlopeAspect = (formData: any, lastField: string) => {
+    if (!lastField) {
+      return formData;
+    }
+    const fieldId = lastField[0];
+    if (
+      fieldId.includes('slope_code') &&
+      formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code === 'FL'
+    ) {
+      formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code = 'FL';
+    }
+    if (
+      fieldId.includes('aspect_code') &&
+      formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code === 'FL'
+    ) {
+      formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code = 'FL';
+    }
+    return formData;
+  };
   /**
    * Save the form whenever it changes.
    *
@@ -237,12 +256,16 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} event the form change event
    */
   const onFormChange = useCallback(
-    debounced(100, async (event: any) => {
-      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
-      updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
+    debounced(100, async (event: any, ref: any, lastField: any) => {
+      let updatedFormData = event.formData;
 
+      updatedFormData.activity_subtype_data = populateHerbicideDilutionAndArea(updatedFormData.activity_subtype_data);
+      updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
+
+      //auto fills slope or aspect to flat if other is chosen flat
+      updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
       const updatedFormValues = {
-        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
+        formData: updatedFormData,
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.VALID
@@ -409,6 +432,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       //set the invasice plants to start with 1 element, rather than with 0
       formData.activity_subtype_data = {};
       formData.activity_subtype_data.invasive_plants = [{ occurrence: 'Positive occurrence' }];
+      //initialize slope and aspect code to '' so that its possible to auto fill flat values
+      //even though 1 of the fields hasn't been touched
+      formData.activity_subtype_data.observation_plant_terrestrial_data = {};
+      formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code = '';
+      formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code = '';
     }
     //Observations -- Plant Terrestrial activity:
     if (activity.activitySubtype === 'Activity_Observation_PlantTerrestrial' && !formData.activity_subtype_data) {
