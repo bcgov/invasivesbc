@@ -15,7 +15,7 @@ import {
 } from 'react-leaflet';
 import * as L from 'leaflet';
 
-import IAPPSiteMarker from '../Icons/pinned.png';
+import IAPPSiteMarker from '../icons/pinned.png';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 var IAPPSite = L.icon({
   iconUrl: IAPPSiteMarker,
