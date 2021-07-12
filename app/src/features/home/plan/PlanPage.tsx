@@ -384,7 +384,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 doneButtonCallBack={() => {
                   helperStepDoneOrSkip(1);
                 }}>
-                <TripNamer trip_ID={props.trip_ID} />
+                {/* <TripNamer trip_ID={props.trip_ID} /> */}
               </TripStep>
               <TripStep
                 title="Step 2: Add a spatial boundary for your trip."
@@ -403,7 +403,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                   <Typography variant="body1">
                     Draw a polygon or square on the map, or upload a KML containing 1 shape.
                   </Typography>
-                  <KMLUpload />
+                  {/* <KMLUpload /> */}
                 </Paper>
               </TripStep>
               <TripStep
