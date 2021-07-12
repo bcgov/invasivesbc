@@ -1,6 +1,16 @@
 import { CameraResultType, CameraSource } from '@capacitor/core';
 import { useCamera } from '@ionic/react-hooks/camera';
-import { Box, Button, Card, CardActions, CardMedia, CircularProgress, Grid, IconButton, TextField  } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardMedia,
+  CircularProgress,
+  Grid,
+  IconButton,
+  TextField
+} from '@material-ui/core';
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
 import React from 'react';
 
@@ -67,9 +77,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                       </IconButton>
                     </CardActions>
                   )}
-                  <Button>
-                    {photo.description}
-                  </Button>
+                  <Button>{photo.description}</Button>
                 </Card>
               </Grid>
             ))}
