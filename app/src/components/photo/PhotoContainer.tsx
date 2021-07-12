@@ -41,8 +41,8 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     const fileName = new Date().getTime() + '.' + cameraPhoto.format;
     const photo = {
       filepath: fileName,
-      description: 'text',
-      dataUrl: cameraPhoto.dataUrl
+      dataUrl: cameraPhoto.dataUrl,
+      description: 'text'
     };
 
     props.photoState.setPhotos([...props.photoState.photos, photo]);
@@ -77,7 +77,9 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                       </IconButton>
                     </CardActions>
                   )}
-                  <Button>{photo.description}</Button>
+                  <Button>
+                    {photo.description}
+                  </Button>
                 </Card>
               </Grid>
             ))}
