@@ -1,18 +1,8 @@
 import { CameraResultType, CameraSource } from '@capacitor/core';
 import { useCamera } from '@ionic/react-hooks/camera';
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardMedia,
-  CircularProgress,
-  Grid,
-  IconButton,
-  TextField
-} from '@material-ui/core';
+import { Box, Button, Card, CardActions, CardMedia, CircularProgress, FormControl, Grid, IconButton, TextField } from '@material-ui/core';
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
-import React from 'react';
+import React, {useState} from 'react';
 
 export interface IPhoto {
   filepath: string;
@@ -41,11 +31,18 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     const fileName = new Date().getTime() + '.' + cameraPhoto.format;
     const photo = {
       filepath: fileName,
+      dataUrl: cameraPhoto.dataUrl,
       description: 'text',
-      dataUrl: cameraPhoto.dataUrl
     };
 
     props.photoState.setPhotos([...props.photoState.photos, photo]);
+  };
+
+  const changePhotoDescription = (filepath: any, fieldsToUpdate: Object) => {
+    const oldPhoto = props.photoState.photos.find((photo) => photo.filepath === filepath);
+    const otherPhotos = props.photoState.photos.filter((photo) => photo.filepath !== filepath);
+    const updatedPhoto = { ...oldPhoto, ...fieldsToUpdate };
+    props.photoState.setPhotos([...otherPhotos, updatedPhoto] as any);
   };
 
   const deletePhotos = async () => {
@@ -77,7 +74,12 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                       </IconButton>
                     </CardActions>
                   )}
-                  <Button>{photo.description}</Button>
+                  <FormControl>
+                    {photo.description}
+                    <TextField label="Change Description"
+                      onBlur={(e) => changePhotoDescription(photo.filepath, { description: (e.target.value) }) } />
+                    <Button>Save</Button>
+                  </FormControl>
                 </Card>
               </Grid>
             ))}
