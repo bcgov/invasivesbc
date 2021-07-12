@@ -15,6 +15,36 @@ export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
 }
 
 /*
+  Function to validate that in case 'slope' field has 'flat' option 
+  selected, 'aspect' field option has to be 'flat' as well (and vice versa)
+*/
+export function getSlopeAspectBothFlatValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.observation_plant_terrestrial_data ||
+      !formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code ||
+      !formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code
+    ) {
+      return errors;
+    }
+    const { slope_code, aspect_code } = formData.activity_subtype_data.observation_plant_terrestrial_data;
+    if (
+      (slope_code.includes('FL') && !aspect_code.includes('FL')) ||
+      (!slope_code.includes('FL') && aspect_code.includes('FL'))
+    ) {
+      errors.activity_subtype_data['observation_plant_terrestrial_data']['aspect_code'].addError(
+        'If either Aspect or Slope is flat, both of them must be flat.'
+      );
+      errors.activity_subtype_data['observation_plant_terrestrial_data']['slope_code'].addError(
+        'If either Aspect or Slope is flat, both of them must be flat.'
+      );
+    }
+    return errors;
+  };
+}
+/*
   Function to validate that the total percent value of all jurisdictions combined = 100
 */
 export function getJurisdictionPercentValidator(): rjsfValidator {
@@ -38,6 +68,24 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
       );
     }
 
+    return errors;
+  };
+}
+
+/*
+  Function to validate that the date and time is not in future
+*/
+export function getDateAndTimeValidator(activitySubtype: string): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    errors.activity_data['activity_date_time'].__errors = [];
+
+    if (formData.activity_data['activity_date_time']) {
+      if (Date.now() < Date.parse(formData.activity_data['activity_date_time'])) {
+        errors.activity_data['activity_date_time'].addError(
+          `Date and time cannot be later than your current date and time`
+        );
+      }
+    }
     return errors;
   };
 }
@@ -117,15 +165,20 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
     if (activitySubtype !== 'Activity_Treatment_ChemicalPlant') {
       return errors;
     }
-
     // validate temperature
+
     errors.activity_subtype_data['temperature'].__errors = [];
     const { temperature } = formData.activity_subtype_data;
 
-    if (temperature < 10 || temperature > 30) {
+    //if themperature is out of normal range, display an error
+    if (temperature < 15 || temperature > 22) {
       errors.activity_subtype_data['temperature'].addError('Temperature should ideally be between 15 and 22 degrees');
     }
-
+    //if user clicked proceed in the warning dialog, remove the erro
+    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('temperature')) {
+      errors.activity_subtype_data['temperature'].__errors.pop();
+      return errors;
+    }
     return errors;
   };
 }
@@ -156,6 +209,16 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
       errors.activity_subtype_data['wind_direction_code'].addError(
         'Cannot specify a wind direction when wind speed is 0'
       );
+    }
+
+    //if wind is more than 50km/h, display an error
+    if (wind_speed > 50) {
+      errors.activity_subtype_data['wind_speed'].addError('Wind should ideally be less or equal to 50km/h');
+    }
+    //if user clicked proceed in the warning dialog, remove the error
+    if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('wind_speed')) {
+      errors.activity_subtype_data['wind_speed'].__errors.pop();
+      return errors;
     }
 
     return errors;
@@ -225,6 +288,11 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
             HerbicideApplicationRates[herbicide.liquid_herbicide_code]
           } L/ha for this herbicide`
         );
+      }
+      //if user clicked proceed in the warning dialog, remove the error
+      if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('application_rate')) {
+        errors.activity_subtype_data['herbicide'][0]['application_rate'].__errors.pop();
+        return errors;
       }
     });
 

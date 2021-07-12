@@ -28,7 +28,9 @@ const Treatment_ChemicalPlant = {
   chemical_method_code: {
     'ui:widget': 'single-select-autocomplete'
   },
-  temperature: {},
+  temperature: {
+    validateOnBlur: true
+  },
   humidity: {},
   pest_management_plan: {
     'ui:widget': 'single-select-autocomplete'
@@ -41,7 +43,9 @@ const Treatment_ChemicalPlant = {
       ...BaseUISchemaComponents.Herbicide
     }
   },
-  wind_speed: {},
+  wind_speed: {
+    validateOnBlur: true
+  },
   wind_direction_code: {
     'ui:widget': 'single-select-autocomplete'
   },
@@ -81,6 +85,15 @@ const Activity = {
     'ui:readonly': true
   },
   longitude: {
+    'ui:readonly': true
+  },
+  utm_easting: {
+    'ui:readonly': true
+  },
+  utm_northing: {
+    'ui:readonly': true
+  },
+  utm_zone: {
     'ui:readonly': true
   },
   reported_area: {

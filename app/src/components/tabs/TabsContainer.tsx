@@ -4,6 +4,8 @@ import { ALL_ROLES } from 'constants/roles';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import sunriseLogo from '../../bcGovSunriseLogo.png';
+import invbclogo from '../../InvasivesBC_Icon.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
   pointer: {
@@ -11,6 +13,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   alignment: {
     justifyContent: 'inherit',
+    flexWrap: 'nowrap',
     '@media (max-device-width: 1430px)': {
       justifyContent: 'center'
     }
@@ -29,7 +32,7 @@ export interface ITabsContainerProps {
 }
 
 //const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
-const invbclogo = require('InvasivesBC_Icon.svg');
+//const invbclogo = require('InvasivesBC_Icon.svg');
 
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const keycloak = useKeycloakWrapper();
@@ -143,13 +146,23 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     <AppBar position="static">
       <Toolbar>
         <Grid className={classes.alignment} flex-direction="row" container>
-          <Grid xs={1} item>
+          <Grid xs={1} item >
             <img
               className={classes.pointer}
               src={invbclogo}
               width="50"
               height="50"
               alt="B.C. Government Logo"
+              onClick={() => history.push('/')}
+            />
+            InvasivesBC
+          </Grid>
+          <Grid xs={1} item>
+            <img 
+              className={classes.pointer}
+              src={sunriseLogo}
+              width="100"
+              height="50"
               onClick={() => history.push('/')}
             />
           </Grid>

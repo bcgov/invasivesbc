@@ -1,10 +1,11 @@
-import { CircularProgress, Container, makeStyles, Box, Button, Typography } from '@material-ui/core';
+import { CircularProgress, Container, makeStyles, Box, Button, Typography, Zoom, Tooltip } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import proj4 from 'proj4';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
@@ -12,11 +13,13 @@ import { MapContextMenuData } from '../map/MapContextMenu';
 import {
   getCustomValidator,
   getAreaValidator,
+  getDateAndTimeValidator,
   getWindValidator,
   getTemperatureValidator,
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
   getJurisdictionPercentValidator,
+  getSlopeAspectBothFlatValidator,
   getInvasivePlantsValidator,
   getDuplicateInvasivePlantsValidator
 } from 'rjsf/business-rules/customValidation';
@@ -107,6 +110,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const { latitude, longitude } = calculateLatLng(geom) || {};
         const formData = activity.formData;
         const areaOfGeometry = calculateGeometryArea(geom);
+        /**
+         * latlong to utms / utm zone conversion
+         */
+        let utm_easting, utm_northing, utm_zone;
+        //if statement prevents errors on page load, as lat/long isn't defined
+        if (longitude !== undefined && latitude !== undefined) {
+          utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
+          proj4.defs([
+            ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
+            ['EPSG:AUTO', `+proj=utm +zone=${utm_zone} +datum=WGS84 +units=m +no_defs`]
+          ]);
+          const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
+          utm_easting = Number(en_m[0].toFixed(4));
+          utm_northing = Number(en_m[1].toFixed(4));
+        }
 
         const updatedFormData = {
           ...formData,
@@ -114,6 +132,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             ...formData.activity_data,
             latitude,
             longitude,
+            utm_easting,
+            utm_northing,
+            utm_zone,
             reported_area: areaOfGeometry
           }
         };
@@ -208,6 +229,25 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     });
   };
 
+  const autoFillSlopeAspect = (formData: any, lastField: string) => {
+    if (!lastField) {
+      return formData;
+    }
+    const fieldId = lastField[0];
+    if (
+      fieldId.includes('slope_code') &&
+      formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code === 'FL'
+    ) {
+      formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code = 'FL';
+    }
+    if (
+      fieldId.includes('aspect_code') &&
+      formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code === 'FL'
+    ) {
+      formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code = 'FL';
+    }
+    return formData;
+  };
   /**
    * Save the form whenever it changes.
    *
@@ -216,12 +256,46 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} event the form change event
    */
   const onFormChange = useCallback(
-    debounced(100, async (event: any) => {
-      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+    debounced(100, async (event: any, ref: any, lastField: any) => {
+      let updatedFormData = event.formData;
+
+      updatedFormData.activity_subtype_data = populateHerbicideDilutionAndArea(updatedFormData.activity_subtype_data);
+      updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
+
+      //auto fills slope or aspect to flat if other is chosen flat
+      updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
+      const updatedFormValues = {
+        formData: updatedFormData,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date(),
+        formStatus: FormValidationStatus.VALID
+      };
+      setDoc({ ...doc, ...updatedFormValues });
+
+      await databaseContext.database.upsert(docId, (activity) => {
+        return {
+          ...activity,
+          ...updatedFormValues
+        };
+      });
+    }),
+    [doc]
+  );
+  /**
+   * Save the form whenever user the blur callback is fired.
+   *
+   * Callback is fired when user enters out of range value in the field and then proceeds with this value after the warning
+   * this is used to update the validation errors. If user clicks proceed, the error associated with particular field gets popped
+   *
+   * @param {*} sentFormData the new formData that was sent from the form
+   */
+  const onFormBlur = useCallback(
+    debounced(100, async (sentFormData: any) => {
+      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(sentFormData.activity_subtype_data);
       updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
       const updatedFormValues = {
-        formData: { ...event.formData, activity_subtype_data: updatedActivitySubtypeData },
+        formData: { ...sentFormData, activity_subtype_data: updatedActivitySubtypeData },
         status: ActivityStatus.EDITED,
         dateUpdated: new Date(),
         formStatus: FormValidationStatus.VALID
@@ -311,17 +385,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const generateCloneActivityButton = () => {
     return (
       <Box mb={3} display="flex" flexDirection="row-reverse">
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<FileCopy />}
-          onClick={async () => {
-            const addedActivity = await addClonedActivityToDB(databaseContext, doc);
-            setActiveActivity(addedActivity);
-            notifySuccess(databaseContext, 'Successfully cloned activity. You are now viewing the cloned activity.');
-          }}>
-          Clone Activity
-        </Button>
+        <Tooltip TransitionComponent={Zoom} title="Create a new record with the same content.">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<FileCopy />}
+            onClick={async () => {
+              const addedActivity = await addClonedActivityToDB(databaseContext, doc);
+              setActiveActivity(addedActivity);
+              notifySuccess(databaseContext, 'Successfully cloned activity. You are now viewing the cloned activity.');
+            }}>
+            Clone Activity
+          </Button>
+        </Tooltip>
       </Box>
     );
   };
@@ -349,6 +425,29 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
+  //this sets up initial values for some of the fields in activity.
+  const setUpInitialValues = (activity: any, formData: any): Object => {
+    //Observations -- all:
+    if (activity.activityType === 'Observation' && !formData.activity_subtype_data) {
+      //set the invasice plants to start with 1 element, rather than with 0
+      formData.activity_subtype_data = {};
+      formData.activity_subtype_data.invasive_plants = [{ occurrence: 'Positive occurrence' }];
+      //initialize slope and aspect code to '' so that its possible to auto fill flat values
+      //even though 1 of the fields hasn't been touched
+      formData.activity_subtype_data.observation_plant_terrestrial_data = {};
+      formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code = '';
+      formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code = '';
+    }
+    //Observations -- Plant Terrestrial activity:
+    if (activity.activitySubtype === 'Activity_Observation_PlantTerrestrial' && !formData.activity_subtype_data) {
+      //set specific use to 'None'
+      formData.activity_subtype_data = {};
+      formData.activity_subtype_data.observation_plant_terrestrial_data = {};
+      formData.activity_subtype_data.observation_plant_terrestrial_data.specific_use_code = 'NO';
+    }
+    return formData;
+  };
+
   useEffect(() => {
     const getActivityData = async () => {
       const activityResults = await getActivityResultsFromDB(props.activityId || null);
@@ -358,7 +457,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         return;
       }
 
-      const updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
+      let updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
+      updatedFormData = setUpInitialValues(activityResults.docs[0], updatedFormData);
       const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
 
       await handleRecordLinking(updatedDoc);
@@ -425,7 +525,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         <ActivityComponent
           customValidation={getCustomValidator([
             getAreaValidator(doc.activitySubtype),
+            getDateAndTimeValidator(doc.activitySubtype),
             getWindValidator(doc.activitySubtype),
+            getSlopeAspectBothFlatValidator(),
             getTemperatureValidator(doc.activitySubtype),
             getDuplicateInvasivePlantsValidator(doc.activitySubtype),
             getHerbicideApplicationRateValidator(),
@@ -438,6 +540,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           activity={doc}
           linkedActivity={linkedActivity}
           onFormChange={onFormChange}
+          onFormBlur={onFormBlur}
           onFormSubmitSuccess={onFormSubmitSuccess}
           onFormSubmitError={onFormSubmitError}
           photoState={{ photos, setPhotos }}
