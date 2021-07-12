@@ -1,4 +1,4 @@
-import { DeviceInfo } from '@capacitor/core';
+import { Capacitor, DeviceInfo } from '@capacitor/core';
 import { IonReactRouter } from '@ionic/react-router';
 import { Box, CircularProgress, ThemeProvider } from '@material-ui/core';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
@@ -52,6 +52,13 @@ const App: React.FC<IAppProps> = (props) => {
             <DatabaseContextProvider>
               <DatabaseContext.Consumer>
                 {(databaseContext: IDatabaseContext) => {
+                  if (Capacitor.getPlatform() === 'ios') {
+                    return (
+                      <DatabaseChangesContextProvider>
+                        <AppRouter {...appRouterProps} />
+                      </DatabaseChangesContextProvider>
+                    );
+                  }
                   if (databaseContext.database || databaseContext.sqlite) {
                     // database not ready, delay loading app
                     return (

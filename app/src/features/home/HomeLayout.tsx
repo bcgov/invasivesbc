@@ -5,7 +5,7 @@ import { Alert } from '@material-ui/lab';
 import Footer from 'components/Footer/Footer';
 import TabsContainer from 'components/tabs/TabsContainer';
 import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
+// import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 
@@ -15,44 +15,44 @@ export interface IHomeLayoutProps {
 
 const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
   const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
+  // const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [isOpen, setIsOpen] = useState(false);
   const [notification, setNotification] = useState(null);
   const [notificationCount, setNotificationCount] = useState(0);
 
-  const addNotificationsToPage = useCallback(async () => {
-    let notifications = await databaseContext.database.find({
-      selector: {
-        docType: DocType.NOTIFICATION,
-        acknowledged: false
-      },
-      fields: ['dateCreated', '_id', 'notificationType', 'text', 'docType', 'acknowledged'],
-      use_index: 'notificationsIndex'
-    });
+  // const addNotificationsToPage = useCallback(async () => {
+  //   let notifications = await databaseContext.database.find({
+  //     selector: {
+  //       docType: DocType.NOTIFICATION,
+  //       acknowledged: false
+  //     },
+  //     fields: ['dateCreated', '_id', 'notificationType', 'text', 'docType', 'acknowledged'],
+  //     use_index: 'notificationsIndex'
+  //   });
 
-    notifications.docs = notifications.docs.filter((note) => note._id && note.notificationType && note.text);
-    notifications.docs.sort((a, b) => {
-      if (a.dateCreated < b.dateCreated) return 1;
-      if (a.dateCreated > b.dateCreated) return -1;
-      return 0;
-    });
+  //   notifications.docs = notifications.docs.filter((note) => note._id && note.notificationType && note.text);
+  //   notifications.docs.sort((a, b) => {
+  //     if (a.dateCreated < b.dateCreated) return 1;
+  //     if (a.dateCreated > b.dateCreated) return -1;
+  //     return 0;
+  //   });
 
-    setNotificationCount(notifications.docs.length);
+  //   setNotificationCount(notifications.docs.length);
 
-    if (notifications.docs.length > 0) {
-      setNotification(notifications.docs[0]);
-      setIsOpen(true);
-    }
-  }, [databaseContext.database]);
+  //   if (notifications.docs.length > 0) {
+  //     setNotification(notifications.docs[0]);
+  //     setIsOpen(true);
+  //   }
+  // }, [databaseContext.database]);
 
-  useEffect(() => {
-    const updateComponent = () => {
-      addNotificationsToPage();
-    };
+  // useEffect(() => {
+  //   const updateComponent = () => {
+  //     addNotificationsToPage();
+  //   };
 
-    updateComponent();
-  }, [databaseChangesContext, addNotificationsToPage]);
+  //   updateComponent();
+  // }, [databaseChangesContext, addNotificationsToPage]);
 
   const acknowledgeNotification = (docId: string) => {
     databaseContext.database.upsert(docId, (doc) => {
