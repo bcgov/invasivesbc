@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   alignment: {
     justifyContent: 'inherit',
+    flexWrap: 'nowrap',
     '@media (max-device-width: 1430px)': {
       justifyContent: 'center'
     }
@@ -145,7 +146,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     <AppBar position="static">
       <Toolbar>
         <Grid className={classes.alignment} flex-direction="row" container>
-          <Grid xs={1} item>
+          <Grid xs={1} item >
             <img
               className={classes.pointer}
               src={invbclogo}
@@ -155,6 +156,15 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               onClick={() => history.push('/')}
             />
             InvasivesBC
+          </Grid>
+          <Grid xs={1} item>
+            <img 
+              className={classes.pointer}
+              src={"https://raw.githubusercontent.com/bcgov/devhub-app-web/master/web/static/images/gov-logo-static.png"}
+              width="50"
+              height="50"
+              onClick={() => history.push('/')}
+            />
           </Grid>
           <Grid xs={11} item>
             <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
