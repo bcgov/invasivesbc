@@ -54,11 +54,8 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
 
   const changePhotoDescription = (filepath: any, fieldsToUpdate: Object) => {
     const oldPhoto = props.photoState.photos.find((photo) => photo.filepath === filepath);
-    console.log('oldPhoto', oldPhoto);
     const otherPhotos = props.photoState.photos.filter((photo) => photo.filepath !== filepath);
-    console.log('otherPhotos',otherPhotos);
     const updatedPhoto = { ...oldPhoto, ...fieldsToUpdate };
-    console.log('updatedPhoto',updatedPhoto);
     props.photoState.setPhotos([...otherPhotos, updatedPhoto] as any);
   };
 
