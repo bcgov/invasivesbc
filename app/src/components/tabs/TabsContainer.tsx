@@ -160,7 +160,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           <Grid xs={1} item>
             <img 
               className={classes.pointer}
-              src={"https://raw.githubusercontent.com/bcgov/devhub-app-web/master/web/static/images/gov-logo-static.png"}
+              src={"https://raw.githubusercontent.com/bcgov/devhub-app-web/master/web/static/images/favicon.ico"}
               width="50"
               height="50"
               onClick={() => history.push('/')}
