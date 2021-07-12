@@ -5,6 +5,8 @@ import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import invbclogo from '../../InvasivesBC_Icon.svg';
+
 const useStyles = makeStyles((theme: Theme) => ({
   pointer: {
     cursor: 'pointer'
@@ -29,7 +31,7 @@ export interface ITabsContainerProps {
 }
 
 //const bcGovLogoRev = 'https://bcgov.github.io/react-shared-components/images/bcid-logo-rev-en.svg';
-const invbclogo = require('InvasivesBC_Icon.svg');
+//const invbclogo = require('InvasivesBC_Icon.svg');
 
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const keycloak = useKeycloakWrapper();
@@ -152,6 +154,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               alt="B.C. Government Logo"
               onClick={() => history.push('/')}
             />
+            InvasivesBC
           </Grid>
           <Grid xs={11} item>
             <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
