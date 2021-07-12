@@ -92,8 +92,10 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                     </CardActions>
                   )}
                   <FormControl>
-                    <TextField id="this-photo" label={photo.description} value={photo.description}
-                      onChange={(e) => changePhotoDescription(photo.filepath, {description: e.target.value})} />
+                    {photo.description}
+                    <TextField label="Change Description"
+                      onBlur={(e) => changePhotoDescription(photo.filepath, { description: (e.target.value) }) } />
+                    <Button>Save</Button>
                   </FormControl>
                 </Card>
               </Grid>

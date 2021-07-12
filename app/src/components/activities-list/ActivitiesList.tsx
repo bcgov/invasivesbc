@@ -344,7 +344,7 @@ const ActivitiesList: React.FC = () => {
           media:
             activity.photos &&
             activity.photos.map((photo) => {
-              return { file_name: photo.filepath, encoded_file: photo.dataUrl };
+              return { file_name: photo.filepath, encoded_file: photo.dataUrl, description: photo.description };
             }),
           form_data: activity.formData
         });
