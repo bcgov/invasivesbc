@@ -13,7 +13,7 @@ import { getMediaItemsList } from './../media';
 
 const defaultLog = getLogger('activity/{activityId}');
 
-export const GET: Operation = [getActivity(), getMedia(),returnActivity()];
+export const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 
 GET.apiDoc = {
   description: 'Fetches a single activity based on its primary key.',
