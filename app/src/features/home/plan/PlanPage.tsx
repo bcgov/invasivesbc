@@ -116,21 +116,21 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   };
   */
 
-  const getExtent = async () => {
-    let docs = await databaseContext.database.find({
-      selector: { docType: DocType.PLAN_PAGE_EXTENT },
-      use_index: 'docTypeIndex'
-    });
-    if (!docs || !docs.docs || !docs.docs.length) {
-      return;
-    }
-    if (!docs[0]) {
-      return;
-    }
-    if (docs[0].extent) {
-      setExtent(docs[0].extent);
-    }
-  };
+  // const getExtent = async () => {
+  //   let docs = await databaseContext.database.find({
+  //     selector: { docType: DocType.PLAN_PAGE_EXTENT },
+  //     use_index: 'docTypeIndex'
+  //   });
+  //   if (!docs || !docs.docs || !docs.docs.length) {
+  //     return;
+  //   }
+  //   if (!docs[0]) {
+  //     return;
+  //   }
+  //   if (docs[0].extent) {
+  //     setExtent(docs[0].extent);
+  //   }
+  // };
 
   const getTrips = async () => {
     if (!databaseContext) {
@@ -145,10 +145,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
       results = await query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
     } else {
-      docs = await databaseContext.database.find({
-        selector: { docType: { $eq: DocType.TRIP } },
-        use_index: 'docTypeIndex'
-      });
+      return;
     }
 
     // stop loading spinner on trip db load
@@ -216,22 +213,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
     // pouch :
     if (Capacitor.getPlatform() == 'web') {
-      let docs = await databaseContext.database.find({
-        selector: { trip_ID: { $gte: null }, docType: DocType.TRIP },
-        sort: [{ trip_ID: 'desc' }],
-        use_index: 'tripDocTypeIndex',
-        limit: 1
-      });
-
-      if (!docs || !docs.docs || !docs.docs.length) {
-        return 0;
-      } else {
-        if (docs.docs[0].trip_ID) {
-          return parseInt(docs.docs[0]._id);
-        } else {
-          return 0;
-        }
-      }
+      return;
     } else {
       const sql = 'select max(id) as id from trip;';
       const results = await query({ type: QueryType.RAW_SQL, sql }, databaseContext);
@@ -315,24 +297,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
     const databaseContext = useContext(DatabaseContext);
     const [stepState, setStepState] = useState(null);
-
     const getStateFromTrip = useCallback(async () => {
       if (Capacitor.getPlatform() == 'web') {
-        if (!databaseContext.database) {
-          return;
-        }
-        let docs = await databaseContext.database.find({
-          selector: { docType: DocType.TRIP, trip_ID: props.trip_ID },
-          use_index: 'docTypeIndex'
-        });
-
-        if (docs.docs.length > 0) {
-          let tripDoc = docs.docs[0];
-          if (!tripDoc.stepState) {
-            return;
-          }
-          setStepState(tripDoc.stepState);
-        }
+        return;
       } //android and ios
       else {
         const results = await query(
@@ -482,7 +449,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 doneButtonCallBack={() => {
                   helperStepDoneOrSkip(5);
                 }}>
-                <MetabaseSearch />
+                {/* <MetabaseSearch /> */}
               </TripStep>
               <TripStep
                 title="Last Step: Cache, Refresh, or Delete data for Trip "
@@ -575,12 +542,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   }, [geometry, interactiveGeometry, tripsLoaded]);
 
   const trashTrip = async (trip_ID, tripName) => {
-    if (confirmDeleteTrip(trip_ID, tripName)) {
-      await deleteTripRecords(databaseContext, trip_ID);
-    }
-    await databaseContext.database.get(trip_ID.toString()).then((doc) => {
-      return databaseContext.database.remove(doc);
-    });
+    // if (confirmDeleteTrip(trip_ID, tripName)) {
+    //   await deleteTripRecords(databaseContext, trip_ID);
+    // }
+    // await databaseContext.database.get(trip_ID.toString()).then((doc) => {
+    //   return databaseContext.database.remove(doc);
+    // });
     setNewTripID(Math.random());
   };
 
