@@ -1,5 +1,6 @@
 import { CameraResultType, CameraSource } from '@capacitor/core';
 import { useCamera } from '@ionic/react-hooks/camera';
+<<<<<<< HEAD
 import {
   Box,
   Button,
@@ -11,8 +12,11 @@ import {
   IconButton,
   TextField
 } from '@material-ui/core';
+=======
+import { Box, Button, Card, CardActions, CardMedia, CircularProgress, FormControl, Grid, IconButton, TextField } from '@material-ui/core';
+>>>>>>> 1adb506 (added function to change description of photo and temporary textfield to change description)
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
-import React from 'react';
+import React, {useState} from 'react';
 
 export interface IPhoto {
   filepath: string;
@@ -42,10 +46,20 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     const photo = {
       filepath: fileName,
       dataUrl: cameraPhoto.dataUrl,
-      description: 'text'
+      description: 'text',
     };
 
     props.photoState.setPhotos([...props.photoState.photos, photo]);
+  };
+
+  const changePhotoDescription = (filepath: any, fieldsToUpdate: Object) => {
+    const oldPhoto = props.photoState.photos.find((photo) => photo.filepath === filepath);
+    console.log('oldPhoto', oldPhoto);
+    const otherPhotos = props.photoState.photos.filter((photo) => photo.filepath !== filepath);
+    console.log('otherPhotos',otherPhotos);
+    const updatedPhoto = { ...oldPhoto, ...fieldsToUpdate };
+    console.log('updatedPhoto',updatedPhoto);
+    props.photoState.setPhotos([...otherPhotos, updatedPhoto] as any);
   };
 
   const deletePhotos = async () => {
@@ -77,9 +91,10 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                       </IconButton>
                     </CardActions>
                   )}
-                  <Button>
-                    {photo.description}
-                  </Button>
+                  <FormControl>
+                    <TextField id="this-photo" label={photo.description} value={photo.description}
+                      onChange={(e) => changePhotoDescription(photo.filepath, {description: e.target.value})} />
+                  </FormControl>
                 </Card>
               </Grid>
             ))}

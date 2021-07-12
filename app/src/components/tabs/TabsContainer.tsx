@@ -146,7 +146,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     <AppBar position="static">
       <Toolbar>
         <Grid className={classes.alignment} flex-direction="row" container>
-          <Grid xs={1} item>
+          <Grid xs={1} item >
             <img
               className={classes.pointer}
               src={invbclogo}
@@ -158,7 +158,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             InvasivesBC
           </Grid>
           <Grid xs={1} item>
+<<<<<<< HEAD
             <img
+=======
+            <img 
+>>>>>>> 1adb506 (added function to change description of photo and temporary textfield to change description)
               className={classes.pointer}
               src={sunriseLogo}
               width="100"
