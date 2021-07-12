@@ -1,20 +1,6 @@
 import { CameraResultType, CameraSource } from '@capacitor/core';
 import { useCamera } from '@ionic/react-hooks/camera';
-<<<<<<< HEAD
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardMedia,
-  CircularProgress,
-  Grid,
-  IconButton,
-  TextField
-} from '@material-ui/core';
-=======
 import { Box, Button, Card, CardActions, CardMedia, CircularProgress, FormControl, Grid, IconButton, TextField } from '@material-ui/core';
->>>>>>> 1adb506 (added function to change description of photo and temporary textfield to change description)
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
 import React, {useState} from 'react';
 
