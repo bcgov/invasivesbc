@@ -115,14 +115,14 @@ const TempPOILoader: React.FC<any> = (props) => {
   };
   return (
     <MarkerClusterGroup chunkedLoading>
-      {allPOIS?.features?.map((geo: any, index: any) => {
+      {/*allPOIS?.features?.map((geo: any, index: any) => {
         return (
           <Marker
             key={index}
             position={[geo.geometry.coordinates[1], geo.geometry.coordinates[0]]}
             icon={IAPPSite}></Marker>
         );
-      })}
+      })*/}
     </MarkerClusterGroup>
   );
 };
