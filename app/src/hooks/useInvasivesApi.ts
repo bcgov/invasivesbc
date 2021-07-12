@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { DatabaseContext } from 'contexts/DatabaseContext';
@@ -233,15 +234,14 @@ export const useInvasivesApi = () => {
    */
   const getCachedApiSpec = async (): Promise<any> => {
     try {
-      //const data = await getApiSpec();
       let data;
-      /* TODO fix this so the forms work
+      if (Capacitor.getPlatform() !== 'ios') {
+        const data = await getApiSpec();
 
-      await databaseContext.database.upsert('ApiSpec', () => {
-        return data;
-      });
-
-      */
+        await databaseContext.database.upsert('ApiSpec', () => {
+          return data;
+        });
+      }
       return data;
     } catch (error) {
       const data = await databaseContext.database.get('ApiSpec');
