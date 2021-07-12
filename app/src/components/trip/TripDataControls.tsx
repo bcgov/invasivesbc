@@ -211,13 +211,15 @@ export const TripDataControls: React.FC<any> = (props) => {
 
       let pointOfInterestSearchCriteria: IPointOfInterestSearchCriteria = {
         ...((setOfChoices.pointOfInterestType && { point_of_interest_type: setOfChoices.pointOfInterestType }) || {}),
+        ...((setOfChoices.iappType && { iappType: setOfChoices.iappType }) || {}),
         ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
         ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
         ...((geometry && { search_feature: geometry }) || {}),
         limit: 1000,
         page: 1
       };
-
+      console.log('checking...');
+      console.log(pointOfInterestSearchCriteria);
       let response: any;
       console.log('*** fetching points of interest ***');
       try {
