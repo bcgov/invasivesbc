@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
-  const [iappSelected, setIappSelected] = useState(false);
+  const [iappSelected, setIappSelected] = useState(pointOfInterestChoices['iappType'] !== null);
 
   const getPointOfInterestChoicesFromTrip = async () => {
     console.log('trip id for point filter: ' + props.trip_ID);
