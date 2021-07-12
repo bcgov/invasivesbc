@@ -4,7 +4,7 @@ import { ALL_ROLES } from 'constants/roles';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-
+import sunriseLogo from '../../bcGovSunriseLogo.png';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -160,8 +160,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           <Grid xs={1} item>
             <img 
               className={classes.pointer}
-              src={"https://raw.githubusercontent.com/bcgov/devhub-app-web/master/web/static/images/favicon.ico"}
-              width="50"
+              src={sunriseLogo}
+              width="100"
               height="50"
               onClick={() => history.push('/')}
             />
