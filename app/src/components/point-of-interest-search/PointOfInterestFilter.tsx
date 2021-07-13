@@ -43,10 +43,9 @@ const useStyles = makeStyles((theme) => ({
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
-  const [iappSelected, setIappSelected] = useState(pointOfInterestChoices['iappType'] !== null);
+  const [iappSelected, setIappSelected] = useState(false);
 
   const getPointOfInterestChoicesFromTrip = async () => {
-    console.log('trip id for point filter: ' + props.trip_ID);
     if (Capacitor.getPlatform() == 'web') {
       let docs = await databaseContext.database.find({
         selector: {
@@ -68,6 +67,9 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
       const choices = JSON.parse(queryResults[0].json).pointOfInterestChoices;
       if (choices) {
         setPointOfInterestChoices([...choices]);
+        console.log('choices are here');
+        console.log(choices[0]['pointOfInterestType']);
+        setIappSelected(choices[0]['pointOfInterestType'] !== '');
       }
     }
   };
@@ -171,42 +173,42 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                             updatePointOfInterestChoice({ ...pointOfInterestChoice, iappType: e.target.value }, index);
                           }}>
                           <MenuItem value={''}>All</MenuItem>
-                          <MenuItem value={'Latest Survey Date'}>Latest Survey Date</MenuItem>
-                          <MenuItem value={'Earliest Survey Date'}>Earliest Survey Date</MenuItem>
-                          <MenuItem value={'Latest Chemical Treatment Date'}>Latest Chemical Treatment Date</MenuItem>
-                          <MenuItem value={'Earliest Chemical Treatment Date'}>
+                          <MenuItem value={'latest_survey_date'}>Latest Survey Date</MenuItem>
+                          <MenuItem value={'earliest_survey_date'}>Earliest Survey Date</MenuItem>
+                          <MenuItem value={'latest_chemical_treatment_date'}>Latest Chemical Treatment Date</MenuItem>
+                          <MenuItem value={'earliest_chemical_treatment_date'}>
                             Earliest Chemical Treatment Date
                           </MenuItem>
-                          <MenuItem value={'Latest Chemical Treatment Monitoring Date'}>
+                          <MenuItem value={'latest_chemical_treatment_monitoring_date'}>
                             Latest Chemical Treatment Monitoring Date
                           </MenuItem>
-                          <MenuItem value={'Earliest Chemical Treatment Monitoring Date'}>
+                          <MenuItem value={'earliest_chemical_treatment_monitoring_date'}>
                             Earliest Chemical Treatment Monitoring Date
                           </MenuItem>
-                          <MenuItem value={'Latest Biological Dispersal'}>Latest Biological Dispersal</MenuItem>
-                          <MenuItem value={'Earliest Biological Dispersal'}>Earliest Biological Dispersal</MenuItem>
-                          <MenuItem value={'Latest Biological Treatment Date'}>
+                          <MenuItem value={'latest_biological_dispersal'}>Latest Biological Dispersal</MenuItem>
+                          <MenuItem value={'earliest_biological_dispersal'}>Earliest Biological Dispersal</MenuItem>
+                          <MenuItem value={'latest_biological_treatment_date'}>
                             Latest Biological Treatment Date
                           </MenuItem>
-                          <MenuItem value={'Earliest Biological Treatment Date'}>
+                          <MenuItem value={'earliest Biological_treatment_date'}>
                             Earliest Biological Treatment Date
                           </MenuItem>
-                          <MenuItem value={'Latest Biological Treatment Monitoring Date'}>
+                          <MenuItem value={'latest_biological_treatment_monitoring_date'}>
                             Latest Biological Treatment Monitoring Date
                           </MenuItem>
-                          <MenuItem value={'Earliest Biological Treatment Monitoring Date'}>
+                          <MenuItem value={'earliest_biological_treatment_monitoring_date'}>
                             Earliest Biological Treatment Monitoring Date
                           </MenuItem>
-                          <MenuItem value={'Latest Mechanical Treatment Date'}>
+                          <MenuItem value={'latest_mechanical_treatment_date'}>
                             Latest Mechanical Treatment Date
                           </MenuItem>
-                          <MenuItem value={'Earliest Mechanical Treatment Date'}>
+                          <MenuItem value={'earliest_mechanical_treatment_date'}>
                             Earliest Mechanical Treatment Date
                           </MenuItem>
-                          <MenuItem value={'Latest Mechanical Treatment Monitoring Date'}>
+                          <MenuItem value={'latest_mechanical_treatment_monitoring_date'}>
                             Latest Mechanical Treatment Monitoring Date
                           </MenuItem>
-                          <MenuItem value={'Latest Mechanical Treatment Monitoring Date'}>
+                          <MenuItem value={'latest_mechanical_treatment_monitoring_date'}>
                             Latest Mechanical Treatment Monitoring Date
                           </MenuItem>
                         </Select>
