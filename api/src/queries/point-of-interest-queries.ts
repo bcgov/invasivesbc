@@ -159,7 +159,13 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
   // include the total count of results that would be returned if the limit and offset constraints weren't applied
   sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
 
-  sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1`);
+  if (searchCriteria.iappType) {
+    sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary_data ON
+    point_of_interest_incoming_data.point_of_interest_incoming_data_id = iapp_site_summary_data.id
+    `);
+  } else {
+    sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1`);
+  }
 
   if (searchCriteria.pointOfInterest_type) {
     sqlStatement.append(SQL` AND point_of_interest_type = ${searchCriteria.pointOfInterest_type}`);
@@ -169,12 +175,26 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
     sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);
   }
 
-  if (searchCriteria.date_range_start) {
-    sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
-  }
+  if (searchCriteria.iappType) {
+    if (searchCriteria.date_range_start) {
+      sqlStatement.append(
+        SQL` AND iapp_site_summary_data.${searchCriteria.iappType} >= ${searchCriteria.date_range_start}::DATE`
+      );
+    }
 
-  if (searchCriteria.date_range_end) {
-    sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
+    if (searchCriteria.date_range_end) {
+      sqlStatement.append(
+        SQL` AND iapp_site_summary_data.${searchCriteria.iappType} <= ${searchCriteria.date_range_end}::DATE`
+      );
+    }
+  } else {
+    if (searchCriteria.date_range_start) {
+      sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
+    }
+
+    if (searchCriteria.date_range_end) {
+      sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
+    }
   }
 
   if (searchCriteria.pointOfInterest_ids && searchCriteria.pointOfInterest_ids.length) {

@@ -45,6 +45,9 @@ POST.apiDoc = {
             point_of_interest_subtype: {
               type: 'string'
             },
+            iappType: {
+              type: 'string'
+            },
             date_range_start: {
               type: 'string',
               description: 'Date range start, in YYYY-MM-DD format. Defaults time to start of day.',
@@ -130,7 +133,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       message: 'getPointsOfInterestBySearchFilterCriteria',
       body: req.body
     });
-
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(req.body);
 
     const connection = await getDBConnection();

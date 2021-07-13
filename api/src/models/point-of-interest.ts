@@ -73,7 +73,7 @@ export class PointOfInterestSearchCriteria {
 
   pointOfInterest_type: string;
   pointOfInterest_subtype: string;
-
+  iappType: string;
   date_range_start: Date;
   date_range_end: Date;
 
@@ -97,6 +97,7 @@ export class PointOfInterestSearchCriteria {
 
     this.pointOfInterest_type = (obj && obj.pointOfInterest_type) || null;
     this.pointOfInterest_subtype = (obj && obj.pointOfInterest_subtype) || null;
+    this.iappType = (obj && obj.iappType) || null;
     this.pointOfInterest_ids = (obj && obj.pointOfInterest_ids) || [];
 
     this.date_range_start = (obj && obj.date_range_start) || null;
