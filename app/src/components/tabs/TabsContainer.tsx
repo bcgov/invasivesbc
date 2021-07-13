@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { AppBar, CircularProgress, Tab, Tabs, Toolbar, Grid, makeStyles, Theme } from '@material-ui/core';
 import { Assignment, Bookmarks, Explore, HomeWork, Map, Search, Home } from '@material-ui/icons';
 import { ALL_ROLES } from 'constants/roles';
@@ -97,11 +98,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: <Search />
           });
 
-          tabsUserHasAccessTo.push({
-            label: 'Plan My Trip',
-            path: '/home/plan',
-            icon: <Explore />
-          });
+          if(Capacitor.getPlatform() !== 'web'){
+            tabsUserHasAccessTo.push({
+              label: 'Plan My Trip',
+              path: '/home/plan',
+              icon: <Explore />
+            });
+          }
 
           tabsUserHasAccessTo.push({
             label: 'Cached Records',
