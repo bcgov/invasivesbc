@@ -148,6 +148,13 @@ export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBo
 export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
+  /* 
+  select poi.*, ot.survey_date
+  from point_of_interest_incoming_data poi
+  left join other_table ot on poi.id_column = ot.id_column
+  —where ot.iapp_type = ‘survey’ and ot.survey_date > ‘inputdate1’ and ot.survey_date < ‘input_date2’
+  */
+
   if (searchCriteria.column_names && searchCriteria.column_names.length) {
     // do not include the `SQL` template string prefix, as column names can not be parameterized
     sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
