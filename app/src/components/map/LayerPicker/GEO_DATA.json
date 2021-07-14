@@ -1,0 +1,154 @@
+[
+  {
+    "id": "water",
+    "name": "null",
+    "source": "null",
+    "type": "null",
+    "colorCode": "#000",
+    "order": 0,
+    "loaded": 70,
+    "expanded": false,
+    "enabled": false,
+    "children": [
+      {
+        "id": "waterShed",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 0,
+        "loaded": 70,
+        "enabled": true
+      },
+      {
+        "id": "waterStreams",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 1,
+        "loaded": 70,
+        "enabled": true
+      },
+      {
+        "id": "waterBeds",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 2,
+        "loaded": 70,
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "land",
+    "name": "null",
+    "source": "null",
+    "type": "null",
+    "colorCode": "#000",
+    "order": 1,
+    "loaded": 70,
+    "expanded": false,
+    "enabled": true,
+    "children": [
+      {
+        "id": "forest",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 0,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "first nations",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 1,
+        "loaded": 70,
+        "enabled": true
+      },
+      {
+        "id": "grassland",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 2,
+        "loaded": 70,
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "thing",
+    "name": "null",
+    "source": "null",
+    "type": "null",
+    "colorCode": "#000",
+    "order": 2,
+    "loaded": 70,
+    "expanded": false,
+    "enabled": false,
+    "children": [
+      {
+        "id": "something",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 0,
+        "loaded": 70,
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "notwater",
+    "name": "null",
+    "source": "null",
+    "type": "null",
+    "colorCode": "#000",
+    "order": 3,
+    "loaded": 70,
+    "expanded": false,
+    "enabled": false,
+    "children": [
+      {
+        "id": "waterShed",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 0,
+        "loaded": 70,
+        "enabled": true
+      },
+      {
+        "id": "waterStreams",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 1,
+        "loaded": 70,
+        "enabled": true
+      },
+      {
+        "id": "waterBeds",
+        "name": "null",
+        "source": "null",
+        "type": "null",
+        "colorCode": "#000",
+        "order": 2,
+        "loaded": 70,
+        "enabled": true
+      }
+    ]
+  }
+]

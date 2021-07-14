@@ -22,7 +22,7 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
   const [notificationCount, setNotificationCount] = useState(0);
 
   const addNotificationsToPage = useCallback(async () => {
-    let notifications = await databaseContext.database.find({
+    /*  let notifications = await databaseContext.database.find({
       selector: {
         docType: DocType.NOTIFICATION,
         acknowledged: false
@@ -44,11 +44,12 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
       setNotification(notifications.docs[0]);
       setIsOpen(true);
     }
+    */
   }, [databaseContext.database]);
 
   useEffect(() => {
     const updateComponent = () => {
-      addNotificationsToPage();
+      //  addNotificationsToPage();
     };
 
     updateComponent();
