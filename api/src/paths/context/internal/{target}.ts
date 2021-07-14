@@ -93,6 +93,7 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
         target.geog
       )
   `;
+  console.log(sql)
 
   try {
     const response = await connection.query(sql);
@@ -116,8 +117,9 @@ function getContext(): RequestHandler {
     // Grab coordinates from the query string
     const { lon, lat } = req.query;
 
+    console.log(typeof lon, typeof lat);
     // Error if no coordinates
-    if (!lon || !lat) {
+    if (!lon || !lat || lon === 'undefined' || lat === 'undefined') {
       throw {
         status: 400,
         message: 'Did not supply valid coordinates'

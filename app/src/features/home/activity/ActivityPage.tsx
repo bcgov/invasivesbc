@@ -1,5 +1,6 @@
 import { CircularProgress, Container, makeStyles, Box, Button, Typography, Zoom, Tooltip } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
@@ -32,7 +33,7 @@ import {
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
-import { addClonedActivityToDB } from 'utils/addActivity';
+import { addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -60,6 +61,7 @@ interface IActivityPageProps {
 //why does this page think I need a map context menu ?
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
+  const invasivesApi = useInvasivesApi();
 
   const databaseContext = useContext(DatabaseContext);
 
@@ -82,6 +84,52 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const docId = doc && doc._id;
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
+
+  /**
+   * Applies overriding updates to the current doc,
+   * and queues an update to the corresponding DB state
+   *
+   * @param {*} updates Updates as subsets of the doc/activity object
+   */
+  const updateDoc = async (updates) => {
+    const updatedDoc = {
+      ...doc,
+      ...updates, // TODO MERGE THESE
+      created_by: '1234' // TODO implement authorship
+    };
+    const hashedNewDoc = JSON.stringify(updatedDoc);
+    const hashedDoc = JSON.stringify(doc);
+    if (!updatedDoc || hashedDoc === hashedNewDoc) {
+      console.log("attempting doc update but not different ", updatedDoc);
+      return false;
+    }
+
+    console.log("updating doc ", updatedDoc);
+    if (!updatedDoc._id) {
+      console.log("no id found for doc ", updatedDoc);
+      return false;
+    }
+    setDoc(updatedDoc);
+    try {
+      const dbUpdates = debounced(1000, async (updated) => {
+        // TODO use an api endpoint to do this merge logic instead
+        const oldActivity = await invasivesApi.getActivityById(updated._id);
+        const newActivity = {
+          ...oldActivity,
+          ...mapDocToDBActivity(updated)
+        }
+        console.log("updating doc: db doc:", newActivity);
+        const res = await invasivesApi.updateActivity(newActivity);
+        console.log(7777, res)
+      });
+      await dbUpdates(updatedDoc);
+      console.log("updated doc ", updatedDoc);
+      return true;
+    } catch (e) {
+      console.log("error updating doc ", updatedDoc, e);
+      return false;
+    }
+  }
 
   /**
    * Set the default form data values
@@ -107,10 +155,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const saveGeometry = useCallback(
     (geom: Feature[]) => {
-      setDoc((activity: any) => {
+      setDoc(async (activity: any) => {
         const { latitude, longitude } = calculateLatLng(geom) || {};
         const formData = activity.formData;
         const areaOfGeometry = calculateGeometryArea(geom);
+
         /**
          * latlong to utms / utm zone conversion
          */
@@ -127,37 +176,28 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           utm_northing = Number(en_m[1].toFixed(4));
         }
 
-        const updatedFormData = {
-          ...formData,
-          activity_data: {
-            ...formData.activity_data,
-            latitude,
-            longitude,
-            utm_easting,
-            utm_northing,
-            utm_zone,
-            reported_area: areaOfGeometry
-          }
-        };
-
-        databaseContext.database.upsert(activity._id, (dbDoc) => {
-          return {
-            ...dbDoc,
-            ...activity,
-            formData: updatedFormData,
-            geometry: geom,
-            status: ActivityStatus.EDITED,
-            dateUpdated: new Date()
-          };
-        });
-
-        return {
+        const activityDoc = {
           ...activity,
-          formData: updatedFormData,
+          formData: {
+            ...activity.formData,
+            activity_data: {
+              ...activity.formData.activity_data,
+              latitude,
+              longitude,
+              utm_easting,
+              utm_northing,
+              utm_zone,
+              reported_area: calculateGeometryArea(geom)
+            }
+          },
           geometry: geom,
           status: ActivityStatus.EDITED,
           dateUpdated: new Date()
         };
+
+        await updateDoc(activityDoc);
+
+        return activityDoc;
       });
     },
     [databaseContext.database]
@@ -168,28 +208,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} extent The leaflet bounds object
    */
-  const saveExtent = useCallback(
-    async (newExtent: any) => {
-      await databaseContext.database.upsert(doc._id, (dbDoc) => {
-        return { ...dbDoc, extent: newExtent };
-      });
-    },
-    [databaseContext.database, doc]
-  );
+  const saveExtent = async (newExtent: any) => {
+    await updateDoc({ extent: newExtent });
+  }
 
   /**
    * Save the photos.
    *
    * @param {IPhoto} photosArr An array of photo objects.
    */
-  const savePhotos = useCallback(
-    async (photosArr: IPhoto[]) => {
-      await databaseContext.database.upsert(doc._id, (dbDoc) => {
-        return { ...dbDoc, photos: photosArr, dateUpdated: new Date() };
-      });
-    },
-    [databaseContext.database, doc]
-  );
+  const savePhotos = async (photosArr: IPhoto[]) => {
+    await updateDoc({ photos: photosArr, dateUpdated: new Date() });
+  }
 
   /*
     Function that runs if the form submit fails and has errors
@@ -199,6 +229,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       databaseContext,
       'There are errors in your form. Please make sure your form contains no errors and try again.'
     );
+
+    updateDoc({
+      formStatus: FormValidationStatus.INVALID,
+    });
   };
 
   /**
@@ -211,22 +245,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       props.setFormHasErrors(false);
     }
 
-    const updatedFormValues = {
+    await formRef.setState({
+      ...formRef.state,
+      schemaValidationErrors: [],
+      schemaValidationErrorSchema: {}
+    });
+
+    updateDoc({
       formData: event.formData,
       status: ActivityStatus.EDITED,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.VALID
-    };
-
-    formRef.setState({ ...formRef.state, schemaValidationErrors: [], schemaValidationErrorSchema: {} }, () => {
-      setDoc({ ...doc, ...updatedFormValues });
-    });
-
-    await databaseContext.database.upsert(doc._id, (activity) => {
-      return {
-        ...activity,
-        ...updatedFormValues
-      };
+      formStatus: FormValidationStatus.VALID,
     });
   };
 
@@ -256,32 +285,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} event the form change event
    */
-  const onFormChange = useCallback(
-    debounced(100, async (event: any, ref: any, lastField: any) => {
-      let updatedFormData = event.formData;
+  const onFormChange = debounced(100, async (event: any, ref: any, lastField: any) => {
+    let updatedFormData = event.formData;
 
-      updatedFormData.activity_subtype_data = populateHerbicideDilutionAndArea(updatedFormData.activity_subtype_data);
-      updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
+    updatedFormData.activity_subtype_data = populateHerbicideDilutionAndArea(updatedFormData.activity_subtype_data);
+    updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
 
-      //auto fills slope or aspect to flat if other is chosen flat
-      updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
-      const updatedFormValues = {
-        formData: updatedFormData,
-        status: ActivityStatus.EDITED,
-        dateUpdated: new Date(),
-        formStatus: FormValidationStatus.VALID
-      };
-      setDoc({ ...doc, ...updatedFormValues });
-
-      await databaseContext.database.upsert(docId, (activity) => {
-        return {
-          ...activity,
-          ...updatedFormValues
-        };
-      });
-    }),
-    [doc]
-  );
+    //auto fills slope or aspect to flat if other is chosen flat
+    updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
+    await updateDoc({
+      formData: updatedFormData,
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
+      formStatus: FormValidationStatus.NOT_VALIDATED
+    });
+  });
   /**
    * Save the form whenever user the blur callback is fired.
    *
@@ -290,53 +308,28 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {*} sentFormData the new formData that was sent from the form
    */
-  const onFormBlur = useCallback(
-    debounced(100, async (sentFormData: any) => {
-      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(sentFormData.activity_subtype_data);
-      updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
+  const onFormBlur = debounced(100, async (sentFormData: any) => {
+    let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(sentFormData.activity_subtype_data);
+    updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
-      const updatedFormValues = {
-        formData: { ...sentFormData, activity_subtype_data: updatedActivitySubtypeData },
-        status: ActivityStatus.EDITED,
-        dateUpdated: new Date(),
-        formStatus: FormValidationStatus.VALID
-      };
-
-      setDoc({ ...doc, ...updatedFormValues });
-
-      await databaseContext.database.upsert(docId, (activity) => {
-        return {
-          ...activity,
-          ...updatedFormValues
-        };
-      });
-    }),
-    [doc]
-  );
+    await updateDoc({
+      formData: { ...sentFormData, activity_subtype_data: updatedActivitySubtypeData },
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
+      formStatus: FormValidationStatus.VALID
+    });
+  });
 
   /**
    * Paste copied form data saved in session storage
    * Update the doc (activity) with the latest form data and store it in DB
    */
   const pasteFormData = async () => {
-    const formDataToPaste = retrieveFormDataFromSession(doc);
-
-    const updatedFormValues = {
-      formData: formDataToPaste,
+    await updateDoc({
+      formData: retrieveFormDataFromSession(doc),
       status: ActivityStatus.EDITED,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.VALID
-    };
-
-    setDoc({ ...doc, ...updatedFormValues });
-
-    notifySuccess(databaseContext, 'Successfully pasted form data.');
-
-    await databaseContext.database.upsert(docId, (activity) => {
-      return {
-        ...activity,
-        ...updatedFormValues
-      };
+      formStatus: FormValidationStatus.NOT_VALIDATED
     });
   };
 
@@ -360,11 +353,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    const activityResults = await databaseContext.database.find({
-      selector: { _id: activityId || appStateResults.docs[0].activeActivity }
-    });
-
-    return activityResults;
+    const activityResults = await invasivesApi.getActivityById(
+      activityId || appStateResults.docs[0].activeActivity
+    );
+    return mapDBActivityToDoc(activityResults);
   };
 
   /*
@@ -421,8 +413,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     if (linkedRecordId) {
-      const linkedRecordActivityResults = await getActivityResultsFromDB(linkedRecordId);
-      setLinkedActivity(linkedRecordActivityResults.docs[0]);
+      const linkedRecordActivityResult = await getActivityResultsFromDB(linkedRecordId);
+      setLinkedActivity(linkedRecordActivityResult);
     }
   };
 
@@ -451,16 +443,16 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   useEffect(() => {
     const getActivityData = async () => {
-      const activityResults = await getActivityResultsFromDB(props.activityId || null);
+      const activityResult = await getActivityResultsFromDB(props.activityId || null);
 
-      if (!activityResults) {
+      if (!activityResult) {
         setIsLoading(false);
         return;
       }
 
-      let updatedFormData = getDefaultFormDataValues(activityResults.docs[0]);
-      updatedFormData = setUpInitialValues(activityResults.docs[0], updatedFormData);
-      const updatedDoc = { ...activityResults.docs[0], formData: updatedFormData };
+      let updatedFormData = getDefaultFormDataValues(activityResult);
+      updatedFormData = setUpInitialValues(activityResult, updatedFormData);
+      const updatedDoc = { ...activityResult, formData: updatedFormData };
 
       await handleRecordLinking(updatedDoc);
 
@@ -468,6 +460,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
       setDoc(updatedDoc);
+
+      console.log(doc, updatedDoc, activityResult);
 
       setIsLoading(false);
     };
@@ -497,7 +491,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     savePhotos(photos);
-  }, [photos, isLoading, savePhotos]);
+  }, [photos, isLoading]);
 
   useEffect(() => {
     if (props.setObservation && doc) {
@@ -509,6 +503,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return <CircularProgress />;
   }
 
+  console.log(doc)
   return (
     <Container className={props.classes.container}>
       {!doc && (
