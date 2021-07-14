@@ -11,9 +11,72 @@ import { Feature } from 'geojson';
 import { DocType } from 'constants/database';
 import { IActivity } from 'interfaces/activity-interfaces';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+
+const camelCase = (str) => {
+  return str.replace(/(\_\w)/g, function(word, index) {
+    return index === 0 ? word.toLowerCase() : word.toUpperCase();
+  }).replace(/\s+|\_/g, '');
+}
+
+
+const snakeCase = (str) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+
+const mapKeys = (source, mappingFunction) => Object.keys(source).reduce(
+  (obj, key) => ({
+    ...obj,
+    [mappingFunction(key)]: source[key]
+  }),
+  {}
+);
 
 /*
-  Function to generate activity payload for a new activity
+  Function to temporarily deal with a grievous oversight by initial devs who thought 
+  naming variables differently in different contexts was a good idea.
+  Note for future refactoring: favor DB representation.
+*/
+export const mapDocToDBActivity = (doc: any) => ({
+  ...mapKeys(doc, snakeCase),
+  sync_status: doc.sync.status,
+  media: doc.photos?.map((photo) => ({
+    file_name: photo.filepath,
+    encoded_file: photo.dataUrl
+  }))
+});
+
+/*
+  Function to temporarily deal with a grievous oversight by initial devs who thought 
+  naming variables differently in different contexts was a good idea.
+  Note for future refactoring: favor DB representation.
+*/
+export const mapDBActivityToDoc = (dbActivity: any) => {
+  const { _id, ...otherKeys } = dbActivity;
+  let doc: any = {
+    ...generateActivityPayload(
+      dbActivity.form_data,
+      dbActivity.geometry,
+      dbActivity.activity_type,
+      dbActivity.activity_subtype
+    ),
+    ...mapKeys(otherKeys, camelCase)
+  };
+  console.log(doc);
+  doc = {
+    ...doc,
+    ...mapKeys(doc.activityPayload, camelCase),
+    sync: {
+      ...doc.sync,
+      ...doc.activityPayload?.sync,
+      status: dbActivity.sync_status
+    },
+    _id: dbActivity.activity_id
+  }
+  console.log(doc);
+  return doc;
+};
+
+/*
+  Function to generate activity payload for a new activity (in old pouchDB doc format)
 */
 export function generateActivityPayload(
   formData: any,
@@ -40,6 +103,42 @@ export function generateActivityPayload(
     formData,
     formStatus: FormValidationStatus.NOT_VALIDATED,
     geometry
+  };
+}
+
+/*
+  Function to generate activity payload for a new activity (in old pouchDB doc format)
+*/
+export function generateDBActivityPayload(
+  formData: any,
+  geometry: Feature[],
+  activityType: ActivityType,
+  activitySubtype: ActivitySubtype
+) {
+  const id = uuidv4();
+  const time = moment(new Date()).format();
+  return {
+    activity_id: id,
+    activity_type: activityType,
+    activity_subtype: activitySubtype,
+    geometry,
+    created_timestamp: time, // TODO different?
+    date_created: time, // TODO different?
+    date_updated: null,
+    form_data: {
+      ...formData,
+      activity_data: {
+        ...formData?.activity_data,
+        activity_date_time: time
+      }
+    },
+    media: undefined,
+    created_by: undefined,
+    sync_status: ActivitySyncStatus.NOT_SYNCED,
+    form_status: FormValidationStatus.NOT_VALIDATED
+    // sync_ready: false,
+    // sync_error: null
+    // status: ActivityStatus.NEW,
   };
 }
 

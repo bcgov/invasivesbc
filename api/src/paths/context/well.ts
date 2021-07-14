@@ -91,6 +91,7 @@ function getWell(req, res, next) {
       message: 'Did not supply valid coordinates'
     };
   }
+  console.log(req);
 
   defaultLog.debug({ label: 'dataBC', message: 'getElevation', body: req.body });
 

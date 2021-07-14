@@ -27,20 +27,6 @@ export interface IActivitySearchCriteria {
    */
   limit?: number;
   /**
-   * Column name to sort by.
-   *
-   * @type {string}
-   * @memberof IActivitySearchCriteria
-   */
-  sort_by?: string;
-  /**
-   * Direction to sort by.
-   *
-   * @type {SORT_DIRECTION}
-   * @memberof IActivitySearchCriteria
-   */
-  sort_direction?: SORT_DIRECTION;
-  /**
    * Columns to return.
    *
    * @type {string[]}
@@ -89,6 +75,20 @@ export interface IActivitySearchCriteria {
    * @memberof IActivitySearchCriteria
    */
   search_feature?: Feature;
+  /**
+   * Activity requested return order.
+   *
+   * @type {string[]}
+   * @memberof IActivitySearchCriteria
+   */
+  order?: string[];
+  /**
+   * Identifier of the original author of the activity
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  created_by?: string;
 }
 
 /**
@@ -100,11 +100,22 @@ export interface IActivitySearchCriteria {
 export interface ICreateOrUpdateActivity {
   activity_id: string;
   created_timestamp: string;
-  activity_type: ActivityType;
-  activity_subtype: ActivitySubtype;
+  activity_type: any;
+  activity_subtype: any;
   geometry: Feature[];
-  media: IMedia[];
+  media?: IMedia[];
   form_data: any;
+
+  sync_status?: string;
+  form_status?: string;
+  created_by?: string;
+  /*
+  date_created?: string;
+  date_updated?: string;
+  status?: string;
+  sync?: any;
+  form_status?: string;
+  */
 }
 
 /**
@@ -190,6 +201,13 @@ export interface IPointOfInterestSearchCriteria {
    * @memberof IPointOfInterestSearchCriteria
    */
   order?: string[];
+  /**
+   * Idenitifier of the original author of the point of interest
+   *
+   * @type {string}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  created_by?: string;
 }
 
 /**

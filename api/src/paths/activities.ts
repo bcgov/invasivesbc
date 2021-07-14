@@ -41,12 +41,11 @@ POST.apiDoc = {
               minimum: 0,
               maximum: SEARCH_LIMIT_MAX
             },
-            sort_by: {
-              type: 'string'
-            },
-            sort_direction: {
-              type: 'string',
-              enum: ['ASC', 'DESC']
+            order: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
             },
             activity_type: {
               type: 'array',

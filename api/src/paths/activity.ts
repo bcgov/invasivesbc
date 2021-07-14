@@ -32,7 +32,7 @@ const post_put_apiDoc = {
     content: {
       'application/json': {
         schema: {
-          required: ['activity_id', 'created_timestamp', 'activity_type', 'activity_subtype'],
+          required: ['activity_id', 'created_timestamp', 'activity_type', 'activity_subtype', 'created_by', 'sync_status', 'form_status'],
           properties: {
             activity_id: {
               type: 'string',
@@ -54,40 +54,87 @@ const post_put_apiDoc = {
               type: 'string',
               title: 'Activity subtype'
             },
-            media: {
-              type: 'array',
-              title: 'Media',
-              items: {
-                $ref: '#/components/schemas/Media'
-              }
+            created_by: {
+              type: 'string',
+              title: 'Created by',
+              description: 'ID of the author of the activity.'
             },
-            geometry: {
-              type: 'array',
-              title: 'Geometries',
-              items: {
-                ...(geoJSON_Feature_Schema as any)
-              },
-              description: 'An array of GeoJSON Features'
+            sync_status: {
+              enum: ['Sync Successful', 'Not Synced', 'Sync Failed'],
+              type: 'string',
+              title: 'Sync status',
+              description: 'Whether the activity was synced, not-synced, or had a sync error'
             },
-            form_data: {
-              oneOf: [
-                { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
-                { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
-                { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
-                { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
-                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
-                { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
-                { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
-                { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
-                { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
-              ]
+            form_status: {
+              enum: ['Valid', 'Invalid', 'Not Validated'],
+              type: 'string',
+              title: 'Form status',
+              description: 'Validation status of the activity form.'
             }
-          }
+          },
+          oneOf: [{
+            properties: {
+              media: {
+                type: 'array',
+                title: 'Media',
+                items: {
+                  $ref: '#/components/schemas/Media'
+                }
+              },
+              geometry: {
+                type: 'array',
+                title: 'Geometries',
+                items: {
+                  ...(geoJSON_Feature_Schema as any)
+                },
+                description: 'An array of GeoJSON Features'
+              },
+              form_data: {
+                oneOf: [
+                  { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
+                  { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
+                  { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
+                  { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
+                  { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
+                  { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
+                  { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
+                  { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
+                  { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+                  { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                  { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
+                  { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
+                  { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
+                  { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
+                ]
+              },
+              created_by: {
+                type: 'string',
+                title: 'Created by',
+                description: 'ID of the author of the activity.'
+              },
+              sync_status: {
+                enum: ['Not Synced', 'Sync Failed', 'Sync Successful'],
+                type: 'string',
+                title: 'Sync status',
+                description: 'Whether the activity was synced, not-synced, or had a sync error'
+              },
+              form_status: {
+                enum: ['Valid'],
+                type: 'string',
+                title: 'Form status',
+                description: 'Validation status of the activity form.'
+              }
+            }
+          },{
+            properties: {
+              form_status: {
+                enum: ['Invalid', 'Not Validated'],
+                type: 'string',
+                title: 'Form status',
+                description: 'Validation status of the activity form.'
+              }
+            }
+          }]
         }
       }
     }
@@ -192,7 +239,6 @@ function createActivity(): RequestHandler {
             message: 'Resource with matching activity_id already exists.'
           };
         }
-
         createResponse = await connection.query(createActivitySQLStatement.text, createActivitySQLStatement.values);
 
         await connection.query('COMMIT');
@@ -204,7 +250,8 @@ function createActivity(): RequestHandler {
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       // kick off asynchronous context collection activities
-      commitContext(result, req);
+      if (req.body.form_data.activity_data.latitude)
+        commitContext(result, req);
 
       return res.status(200).json(result);
     } catch (error) {
@@ -258,6 +305,7 @@ function updateActivity(): RequestHandler {
 
         await connection.query(sqlStatements.updateSQL.text, sqlStatements.updateSQL.values);
         createResponse = await connection.query(sqlStatements.createSQL.text, sqlStatements.createSQL.values);
+        console.log(444444, createResponse);
 
         await connection.query('COMMIT');
       } catch (error) {
@@ -268,7 +316,9 @@ function updateActivity(): RequestHandler {
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       // kick off asynchronous context collection activities
-      commitContext(result, req);
+      if (req.body.form_data.activity_data.latitude)
+        commitContext(result, req);
+      console.log(77777, result, req.body.form_data);
 
       return res.status(200).json(result);
     } catch (error) {

@@ -19,6 +19,9 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       activity_subtype,
       created_timestamp,
       received_timestamp,
+      created_by,
+      sync_status,
+      form_status,
       activity_payload,
       geog,
       media_keys
@@ -28,6 +31,9 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       ${activity.activity_subtype},
       ${activity.created_timestamp},
       ${activity.received_timestamp},
+      ${activity.created_by},
+      ${activity.sync_status},
+      ${activity.form_status},
       ${activity.activityPostBody}
   `;
 
@@ -67,6 +73,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       activity_id;
   `);
 
+  console.log(555, sqlStatement);
   return sqlStatement;
 };
 
@@ -186,9 +193,8 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     `);
   }
 
-  if (searchCriteria.sort_by) {
-    // do not include the `SQL` template string prefix, as column names and sort direction can not be parameterized
-    sqlStatement.append(` ORDER BY ${searchCriteria.sort_by} ${searchCriteria.sort_direction}`);
+  if (searchCriteria.order?.length) {
+    sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
   }
 
   if (searchCriteria.limit) {
