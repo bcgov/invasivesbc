@@ -94,18 +94,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const updatedDoc = {
       ...doc,
       ...updates, // TODO MERGE THESE
-      created_by: '1234' // TODO implement authorship
     };
     const hashedNewDoc = JSON.stringify(updatedDoc);
     const hashedDoc = JSON.stringify(doc);
     if (!updatedDoc || hashedDoc === hashedNewDoc) {
-      console.log("attempting doc update but not different ", updatedDoc);
+      // console.log("attempting doc update but not different ", updatedDoc);
       return false;
     }
 
-    console.log("updating doc ", updatedDoc);
+    // console.log("updating doc ", updatedDoc);
     if (!updatedDoc._id) {
-      console.log("no id found for doc ", updatedDoc);
+      // console.log("no id found for doc ", updatedDoc);
       return false;
     }
     setDoc(updatedDoc);
@@ -117,15 +116,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         }
-        console.log("updating doc: db doc:", newActivity);
+        // console.log("updating doc: db doc:", newActivity);
         const res = await invasivesApi.updateActivity(newActivity);
-        console.log(7777, res)
       });
       await dbUpdates(updatedDoc);
-      console.log("updated doc ", updatedDoc);
+      // console.log("updated doc ", updatedDoc);
       return true;
     } catch (e) {
-      console.log("error updating doc ", updatedDoc, e);
+      // console.log("error updating doc ", updatedDoc, e);
       return false;
     }
   }
@@ -460,8 +458,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       setPhotos(updatedDoc.photos || []);
       setDoc(updatedDoc);
 
-      console.log(doc, updatedDoc, activityResult);
-
       setIsLoading(false);
     };
 
@@ -502,7 +498,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return <CircularProgress />;
   }
 
-  console.log(doc)
   return (
     <Container className={props.classes.container}>
       {!doc && (

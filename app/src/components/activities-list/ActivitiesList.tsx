@@ -34,6 +34,7 @@ import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { useKeycloak } from '@react-keycloak/web';
 import { useHistory } from 'react-router-dom';
 import 'styles/spinners.scss';
 import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
@@ -41,7 +42,7 @@ import ActivityListDate from './ActivityListDate';
 import { getErrorMessages } from 'utils/errorHandling';
 import { addNewActivityToDB } from 'utils/addActivity';
 import WarningDialog from 'components/common/WarningDialog';
-import { ObservationsTable, TreatmentsTable, MonitoringTable, AnimalActivitiesTable, GeneralBiologicalControlTable, TransectsTable } from 'components/common/RecordTables';
+import { MyObservationsTable, MyTreatmentsTable, MyMonitoringTable, MyAnimalActivitiesTable, MyTransectsTable } from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -306,6 +307,12 @@ const ActivitiesList: React.FC = () => {
   const databaseContext = useContext(DatabaseContext);
 
   const invasivesApi = useInvasivesApi();
+  const { keycloak } = useKeycloak();
+  const userInfo: any = keycloak?.userInfo;
+  const userId = userInfo?.preferred_username;
+
+  if (!userId)
+    throw "Keycloak error: can not get current user's username";
 
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);
@@ -404,255 +411,15 @@ const ActivitiesList: React.FC = () => {
         <Box>
           {workflowFunction === 'Plant' && (
             <Box>
-              <ObservationsTable
-                startingOrderBy="sync_status"
-                startingOrder="asc"
-                headers={[
-                  'sync_status',
-                  'form_status',
-                  {
-                    id: 'reviewed',
-                    align: 'center'
-                  },
-                  'activity_id',
-                  {
-                    id: 'activity_subtype',
-                    valueMap: {
-                      ...ActivitySubtypeShortLabels,
-                      Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
-                    }
-                  },
-                  {
-                    id: 'created_timestamp',
-                    title: 'Created Date'
-                  },
-                  'biogeoclimatic_zones',
-                  {
-                    id: 'elevation',
-                    type: 'number'
-                  },
-                  {
-                    id: 'flnro_districts',
-                    title: 'FLNRO Districs'
-                  },
-                  'ownership',
-                  'regional_districts',
-                  'invasive_species_agency_code',
-                  'jurisdiction_code',
-                  {
-                    id: 'latitude',
-                    title: 'Latitude',
-                    type: 'number'
-                  },
-                  {
-                    id: 'longitude',
-                    title: 'Longitude',
-                    type: 'number'
-                  },
-                  {
-                    id: 'reported_area',
-                    title: 'Area (m\u00B2)',
-                    type: 'number'
-                  },
-                  'access_description',
-                  'general_comment'
-                ]}
-              />
-              <TreatmentsTable 
-                startingOrderBy="sync_status"
-                startingOrder="asc"
-                headers={[
-                  'sync_status',
-                  'form_status',
-                  {
-                    id: 'reviewed',
-                    align: 'center'
-                  },
-                  'activity_id',
-                  {
-                    id: 'activity_subtype',
-                    valueMap: {
-                      ...ActivitySubtypeShortLabels,
-                      Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
-                    }
-                  },
-                  {
-                    id: 'created_timestamp',
-                    title: 'Created Date'
-                  },
-                  'invasive_plant_code',
-                  'invasive_species_agency_code',
-                  'chemical_method_code',
-                  {
-                    id: 'reported_area',
-                    title: 'Area (m\u00B2)'
-                  },
-                  {
-                    id: 'latitude',
-                    title: 'Latitude',
-                    type: 'number'
-                  },
-                  {
-                    id: 'longitude',
-                    title: 'Longitude',
-                    type: 'number'
-                  },
-                  'elevation'
-                ]}
-              />
-              <MonitoringTable 
-                startingOrderBy="sync_status"
-                startingOrder="asc"
-                headers={[
-                  'sync_status',
-                  'form_status',
-                  {
-                    id: 'reviewed',
-                    align: 'center'
-                  },
-                  'activity_id',
-                  {
-                    id: 'activity_subtype',
-                    valueMap: {
-                      ...ActivitySubtypeShortLabels,
-                      Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
-                    }
-                  },
-                  {
-                    id: 'created_timestamp',
-                    title: 'Created Date'
-                  },
-                  'invasive_plant_code',
-                  'invasive_species_agency_code',
-                  {
-                    id: 'reported_area',
-                    title: 'Area (m\u00B2)'
-                  },
-                  {
-                    id: 'latitude',
-                    title: 'Latitude',
-                    type: 'number'
-                  },
-                  {
-                    id: 'longitude',
-                    title: 'Longitude',
-                    type: 'number'
-                  },
-                  'elevation'
-                ]}
-              />
-              <TransectsTable 
-                startingOrderBy="sync_status"
-                startingOrder="asc"
-                headers={[
-                  'sync_status',
-                  'form_status',
-                  {
-                    id: 'reviewed',
-                    align: 'center'
-                  },
-                  'activity_id',
-                  'activity_type',
-                  {
-                    id: 'activity_subtype',
-                    valueMap: {
-                      ...ActivitySubtypeShortLabels,
-                      Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
-                    }
-                  },
-                  {
-                    id: 'created_timestamp',
-                    title: 'Created Date'
-                  },
-                  'biogeoclimatic_zones',
-                  {
-                    id: 'elevation',
-                    type: 'number'
-                  },
-                  {
-                    id: 'flnro_districts',
-                    title: 'FLNRO Districs'
-                  },
-                  'ownership',
-                  'regional_districts',
-                  'invasive_species_agency_code',
-                  'jurisdiction_code',
-                  {
-                    id: 'latitude',
-                    title: 'Latitude',
-                    type: 'number'
-                  },
-                  {
-                    id: 'longitude',
-                    title: 'Longitude',
-                    type: 'number'
-                  },
-                  {
-                    id: 'reported_area',
-                    title: 'Area (m\u00B2)',
-                    type: 'number'
-                  },
-                  'access_description',
-                  'general_comment'
-                ]}
-              />
+              <MyObservationsTable />
+              <MyTreatmentsTable />
+              <MyMonitoringTable />
+              <MyTransectsTable />
             </Box>
           )}
           {workflowFunction === 'Animal' && (
             <Box>
-              <AnimalActivitiesTable
-                headers={[
-                  'sync_status',
-                  'form_status',
-                  {
-                    id: 'reviewed',
-                    align: 'center'
-                  },
-                  'activity_id',
-                  'activity_type',
-                  {
-                    id: 'activity_subtype',
-                    valueMap: {
-                      ...ActivitySubtypeShortLabels,
-                      Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
-                    }
-                  },
-                  {
-                    id: 'created_timestamp',
-                    title: 'Created Date'
-                  },
-                  'biogeoclimatic_zones',
-                  {
-                    id: 'elevation',
-                    type: 'number'
-                  },
-                  {
-                    id: 'flnro_districts',
-                    title: 'FLNRO Districs'
-                  },
-                  'ownership',
-                  'regional_districts',
-                  'invasive_species_agency_code',
-                  'jurisdiction_code',
-                  {
-                    id: 'latitude',
-                    title: 'Latitude',
-                    type: 'number'
-                  },
-                  {
-                    id: 'longitude',
-                    title: 'Longitude',
-                    type: 'number'
-                  },
-                  {
-                    id: 'reported_area',
-                    title: 'Area (m\u00B2)',
-                    type: 'number'
-                  },
-                  'access_description',
-                  'general_comment'
-                ]}
-              />
+              <MyAnimalActivitiesTable />
             </Box>
           )}
         </Box>

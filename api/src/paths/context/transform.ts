@@ -85,7 +85,6 @@ function getContext(): RequestHandler {
 
     // Grab coordinates and epsg from the query string
     const { lon, lat, epsg } = req.query;
-    console.log(7777, req.query);
 
     // Error if no coordinates
     if (!lon || !lat || !epsg) {
