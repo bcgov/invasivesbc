@@ -163,7 +163,6 @@ export const sortObject = (
 
     //update objects before old index left alone
     let parentsBefore = getObjectsBeforeIndex(objectState, oldIndex);
-    console.log("parentsB4:", parentsBefore);
 
     // update objects between old index and new index decrease
     //todo get inbetween
@@ -174,20 +173,16 @@ export const sortObject = (
       obj.order = obj.order - 1;
       inBetween.push({ ...obj });
       loopIndex += 1;
-      console.log("obj:", obj);
     }
 
     let objWeMoved: any = getParentByOrder(objectState, oldIndex);
     objWeMoved.order = newIndex;
-    console.log("objWeMoved: ", objWeMoved);
 
     let objWeSwapped: any = getParentByOrder(objectState, newIndex);
     objWeSwapped.order = newIndex - 1;
-    console.log("objWeSwapped: ", objWeSwapped);
 
     //leave objects after alone
     let parentsAfter = getObjectsAfterIndex(objectState, newIndex);
-    console.log("parentsAfter: ", parentsAfter);
 
     const newState = [
       ...parentsBefore,
@@ -197,7 +192,6 @@ export const sortObject = (
       ...parentsAfter,
     ];
 
-    console.log("newState: ", sortArray(newState));
     //setObjectState(newState);
     returnVal = newState;
   } else if (newIndex < oldIndex) {
@@ -205,7 +199,6 @@ export const sortObject = (
     //      [{ a: 1 }, { b: 2 }, { c: 3 }, { d: 4 }, { e: 5 }, { f: 6 }];
     //      [{ a: 1 }, { b: 2 }, { e: 3 }, { c: 4 }, { d: 5 }, ,{ f: 6 }];
     let parentsBefore = getObjectsBeforeIndex(objectState, newIndex);
-    console.log("parentsB4:", parentsBefore);
     // update objects between old index and new index decrease
     let loopIndex = newIndex + 1;
     let inBetween: any[] = [];
@@ -214,20 +207,16 @@ export const sortObject = (
       obj.order = obj.order + 1;
       inBetween.push({ ...obj });
       loopIndex += 1;
-      console.log("obj:", obj);
     }
 
     let objWeMoved: any = getParentByOrder(objectState, oldIndex);
     objWeMoved.order = newIndex;
-    console.log("objWeMoved: ", objWeMoved);
 
     let objWeSwapped: any = getParentByOrder(objectState, newIndex);
     objWeSwapped.order = newIndex + 1;
-    console.log("objWeSwapped: ", objWeSwapped);
 
     //leave objects after alone
     let parentsAfter = getObjectsAfterIndex(objectState, oldIndex);
-    console.log("parentsAfter: ", parentsAfter);
 
     const newState = [
       ...parentsBefore,
@@ -237,7 +226,6 @@ export const sortObject = (
       ...parentsAfter,
     ];
 
-    console.log("newState: ", newState);
     returnVal = newState;
   } else {
       return objectState;
