@@ -289,9 +289,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [totalRows, setTotalRows] = useState(props.totalRows ? props.totalRows : rows.length);
   const [loadedRowsOffset, setLoadedRowsOffset] = useState(0);
   const loadBuffer = 2;
-  console.log('RecordTable: props.rows.length' + props.rows?.length);
-  console.log('Recordtable rows.length:' + rows?.length);
-  console.log('RecordTable totalRows:' + totalRows);
 
   useEffect(() => {
     setRows(Array.isArray(props.rows) ? props.rows : []);
@@ -607,7 +604,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
           <AccordionDetails className={classes.paper}>
             {loading && <div className={classes.emptyTable}><Spinner /></div>}
             {!loading && !totalRows && <div className={classes.emptyTable}>No data to display</div>}
-            {!loading && !!totalRows && (
+            {!!totalRows && (
               <TableContainer>
                 <Table
                   className={classes.table}
@@ -651,7 +648,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
                 </Table>
               </TableContainer>
             )}
-            {!loading && !!totalRows && showPagination && (
+            {!!totalRows && showPagination && (
               <TablePagination
                 rowsPerPageOptions={rowsPerPageOptions === false ? undefined : rowsPerPageOptions}
                 component="div"
