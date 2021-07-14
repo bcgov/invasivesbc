@@ -298,7 +298,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   );
 
   const fetchRows = async () => {
-    console.log("fetching")
     if (props.rows instanceof Function) {
       if (
         rows.slice(

@@ -305,7 +305,6 @@ function updateActivity(): RequestHandler {
 
         await connection.query(sqlStatements.updateSQL.text, sqlStatements.updateSQL.values);
         createResponse = await connection.query(sqlStatements.createSQL.text, sqlStatements.createSQL.values);
-        console.log(444444, createResponse);
 
         await connection.query('COMMIT');
       } catch (error) {
@@ -318,7 +317,6 @@ function updateActivity(): RequestHandler {
       // kick off asynchronous context collection activities
       if (req.body.form_data.activity_data.latitude)
         commitContext(result, req);
-      console.log(77777, result, req.body.form_data);
 
       return res.status(200).json(result);
     } catch (error) {

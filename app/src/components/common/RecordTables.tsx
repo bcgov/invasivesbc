@@ -7,6 +7,7 @@ import { Add, DeleteForever, Sync, Edit, Delete } from '@material-ui/icons';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { useKeycloak } from '@react-keycloak/web';
 import { addLinkedActivityToDB, addNewActivityToDB, generateDBActivityPayload, mapDocToDBActivity } from 'utils/addActivity';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { notifyError, notifySuccess } from 'utils/NotificationUtils';
@@ -173,6 +174,9 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const invasivesApi = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
+  const { keycloak } = useKeycloak();
+  const userInfo : any = keycloak?.userInfo;
+
   const {
     tableSchemaType,
     actions,
@@ -180,7 +184,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     activitySubtypes,
     created_by,
     keyField = 'activity_id',
-    enableSelection = true, 
+    enableSelection = true,
+    headers = [],
     ...otherProps
   } = props;
 
@@ -190,8 +195,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     enabled: true,
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-      dbActivity.created_by = "12345";
-      console.log(dbActivity);
+      dbActivity.created_by = userInfo?.preferred_username;
       await invasivesApi.createActivity(dbActivity);
     },
     icon: <Add />,
@@ -229,6 +233,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       enableSelection={enableSelection}
       startExpanded
       headers={[
+        ...headers,
         'activity_id',
         'activity_type',
         {
@@ -399,6 +404,31 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     [rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
+export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo : any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <ActivitiesTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'reviewed',
+            align: 'center'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
+};
+
 export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const { tableSchemaType, ...otherProps } = props;
@@ -420,9 +450,34 @@ export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   );
 };
 
+export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo : any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <AnimalActivitiesTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'reviewed',
+            align: 'center'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
+};
+
 export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
-  const { tableSchemaType, actions, ...otherProps } = props;
+  const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -439,6 +494,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[
+          ...headers,
           'activity_id',
           {
             id: 'activity_subtype',
@@ -516,10 +572,35 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
   }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
+export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo : any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <ObservationsTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'reviewed',
+            align: 'center'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
+};
+
 export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
-  const { tableSchemaType, actions, ...otherProps } = props;
+  const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -537,6 +618,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[
+          ...headers,
           'activity_id',
           {
             id: 'activity_subtype',
@@ -634,8 +716,33 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
+export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo : any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <TreatmentsTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'reviewed',
+            align: 'center'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
+};
+
 export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const { tableSchemaType, ...otherProps } = props;
+  const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -654,6 +761,7 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[
+          ...headers,
           'activity_id',
           {
             id: 'activity_subtype',
@@ -690,6 +798,31 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
   }, [props.rows?.length, props.selected?.length]);
 };
 
+export const MyMonitoringTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo : any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <MonitoringTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'reviewed',
+            align: 'center'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
+};
+
 export const GeneralBiologicalControlTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
@@ -721,6 +854,31 @@ export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
       />
     );
   }, [props.rows?.length, props.selected?.length, JSON.stringify(props.actions)]);
+};
+
+export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo : any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <TransectsTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'reviewed',
+            align: 'center'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
 };
 
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
