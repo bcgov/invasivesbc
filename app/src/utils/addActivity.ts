@@ -60,7 +60,6 @@ export const mapDBActivityToDoc = (dbActivity: any) => {
     ),
     ...mapKeys(otherKeys, camelCase)
   };
-  console.log(doc);
   doc = {
     ...doc,
     ...mapKeys(doc.activityPayload, camelCase),
@@ -71,7 +70,6 @@ export const mapDBActivityToDoc = (dbActivity: any) => {
     },
     _id: dbActivity.activity_id
   }
-  console.log(doc);
   return doc;
 };
 

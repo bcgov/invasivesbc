@@ -99,6 +99,8 @@ export class ActivitySearchCriteria {
 
   column_names: string[];
 
+  created_by: string;
+
   order: string[];
 
   /**
@@ -122,6 +124,8 @@ export class ActivitySearchCriteria {
     this.search_feature = (obj && obj.search_feature) || null;
 
     this.column_names = (obj && obj.column_names) || [];
+
+    this.created_by = (obj && obj.created_by) || null;
 
     this.order = (obj && obj.order) || [];
   }

@@ -73,7 +73,6 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       activity_id;
   `);
 
-  console.log(555, sqlStatement);
   return sqlStatement;
 };
 
@@ -158,6 +157,10 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     }
 
     sqlStatement.append(SQL`)`);
+  }
+
+  if (searchCriteria.created_by) {
+    sqlStatement.append(SQL` AND created_by = ${searchCriteria.created_by}`);
   }
 
   if (searchCriteria.date_range_start) {
