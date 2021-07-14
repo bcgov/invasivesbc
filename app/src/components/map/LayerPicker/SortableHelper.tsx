@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -32,6 +32,7 @@ import {
 } from "./LayerPickerHelper";
 import Grid from "@material-ui/core/Grid";
 import ColorPicker from "material-ui-color-picker";
+import * as L from 'leaflet';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,6 +50,12 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center",
         justifyContent: "center",
     },
+    spinnerGridItem: {
+        width: "50px"
+    },
+    gridContainer: {
+        position: "relative"
+    }
 }));
 
 export function LayerPicker(props: any) {
@@ -113,8 +120,8 @@ export function LayerPicker(props: any) {
                     onChange={onParentLayerAccordionChange}
                     className={classes.accordion}
                 >
-                    <Grid container justify="space-evenly">
-                        <Grid item xs={3}>
+                    <Grid container justify="flex-start" alignItems="center" xs={12} >
+                        <Grid item xs={1}>
                             <Checkbox
                                 checked={parent.enabled}
                                 name={parent.id}
@@ -125,7 +132,7 @@ export function LayerPicker(props: any) {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={3}>
+                        <Grid item xs={5}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 className={classes.heading}
@@ -134,10 +141,9 @@ export function LayerPicker(props: any) {
                                 {parent.id}
                             </AccordionSummary>
                         </Grid>
-                        <Grid item xs={1}>
-                            <CircularProgress variant="determinate" value={parent.loaded} />
-                        </Grid>
-                        <Grid item xs={1}>
+                        
+                        
+                        <Grid item xs={2}>
                             <ColorPicker
                                 name="color"
                                 defaultValue={parent.colorCode}
@@ -146,9 +152,13 @@ export function LayerPicker(props: any) {
                                 }
                             />
                         </Grid>
+                        <Grid item xs={3} className={classes.spinnerGridItem} style={{position: "relative"}}>
+                            <CircularProgress variant="determinate" value={parent.loaded} />
+                        </Grid>
                     </Grid>
                     {parent.children.map((child: any) => (
-                        <Grid container direction="row" justify="space-evenly">
+                        <Grid container direction="row" justify="flex-start" alignItems="center">
+                            &emsp;
                             <Grid item xs={1}>
                                 <Checkbox
                                     checked={child.enabled}
@@ -165,10 +175,7 @@ export function LayerPicker(props: any) {
                             <Grid item xs={3}>
                                 {child.id}
                             </Grid>
-                            <Grid item xs={1}>
-                                <CircularProgress variant="determinate" value={child.loaded} />
-                            </Grid>
-                            <Grid item xs={1}>
+                            <Grid item xs={2}>
                                 <ColorPicker
                                     name="color"
                                     defaultValue={child.colorCode}
@@ -178,6 +185,10 @@ export function LayerPicker(props: any) {
                                         })
                                     }
                                 />
+                            </Grid>
+                            
+                            <Grid item xs={2} style={{ position: "relative" }} >
+                                <CircularProgress variant="determinate" value={child.loaded} />
                             </Grid>
                         </Grid>
                     ))}
@@ -189,8 +200,18 @@ export function LayerPicker(props: any) {
         );
     });
 
+    const divRef = React.useRef();
+
+    /* Only for ReactLeaflet */
+    React.useEffect(() => {
+        if(divRef?.current) {
+            L.DomEvent.disableClickPropagation(divRef?.current);
+            L.DomEvent.disableScrollPropagation(divRef?.current);
+        };
+    });
+
     const SortableListContainer = SortableContainer(({ items }: any) => (
-        <List>
+        <List ref={divRef}>
           {items.map((parent: { id: string; order: number }) => (
             <SortableParentLayer
               key={parent.id}
@@ -205,6 +226,8 @@ export function LayerPicker(props: any) {
         const returnVal = sortObject(objectState, oldIndex, newIndex);
         setObjectState(returnVal);
       };
+
+
 
     return (
         <div className={classes.root}>

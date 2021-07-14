@@ -199,6 +199,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   };
 
   const [menuState, setMenuState] = useState(false);
+  
+
 
   return (
     <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={true}>
