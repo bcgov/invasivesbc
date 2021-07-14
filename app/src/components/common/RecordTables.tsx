@@ -1,12 +1,15 @@
 import { makeStyles, Theme } from '@material-ui/core';
-import { ActivitySubtype, ActivityType } from 'constants/activities';
+import clsx from 'clsx';
+import { ActivitySubtype, ActivityType, ActivitySubtypeShortLabels, ActivitySyncStatus, FormValidationStatus } from 'constants/activities';
 import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
+import { Add, DeleteForever, Sync, Edit, Delete } from '@material-ui/icons';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { addLinkedActivityToDB } from 'utils/addActivity';
+import { addLinkedActivityToDB, addNewActivityToDB, generateDBActivityPayload, mapDocToDBActivity } from 'utils/addActivity';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
+import { notifyError, notifySuccess } from 'utils/NotificationUtils';
 
 export const activityStandardMapping = (doc) => ({
   ...doc,
@@ -19,7 +22,8 @@ export const activityStandardMapping = (doc) => ({
   ),
   created_timestamp: doc?.created_timestamp?.substring(0, 10),
   latitude: parseFloat(doc?.formData?.activity_data?.latitude).toFixed(6),
-  longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6)
+  longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6),
+  reviewed: doc?.reviewed_by?.length ? "\u2713" : "\u2716"
 });
 
 export const poiStandardMapping = (doc) => ({
@@ -60,7 +64,7 @@ export const poiStandardDBMapping = (doc) => ({
   _id: 'POI' + doc.point_of_interest_id,
   docType: DocType.REFERENCE_POINT_OF_INTEREST,
   //trip_IDs: doc?.trip_IDs ? [...doc.trip_IDs, props.trip_ID] : [props.trip_ID],
-  formData: doc.point_of_interest_payload.form_data,
+  formData: doc.point_of_interest_payload?.form_data,
   pointOfInterestType: doc.point_of_interest_type,
   pointOfInterestSubtype: doc.point_of_interest_subtype,
   geometry: [...doc.point_of_interest_payload.geometry]
@@ -89,6 +93,11 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
 
   return monitoringSubtype;
 };
+
+const arrayWrap = (value) => {
+  if (!value) return []; 
+  return Array.isArray(value) ? value : [value];
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -129,35 +138,313 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export const ObservationsTable: React.FC<IRecordTable> = (props) => {
+export const defaultActivitiesFetch = ({invasivesApi, activitySubtypes, created_by}) => async ({ page, rowsPerPage, order }) => {
+  // Fetches fresh from the API (web).  TODO fetch from SQLite
+  let dbPageSize = DEFAULT_PAGE_SIZE;
+  if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
+    // if page is right near the db page limit
+    dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
+
+  const types = activitySubtypes.map(subtype => subtype[0]);
+  const subtypes = activitySubtypes.map(subtype => subtype[1]);
+  const result = await invasivesApi.getActivities({
+    page: Math.floor((page * rowsPerPage) / dbPageSize),
+    limit: dbPageSize,
+    order: order,
+    // search_feature: geometry TODO
+    activity_type: arrayWrap(types),
+    activity_subtype: arrayWrap(subtypes),
+    // startDate, endDate will be filters
+    created_by: created_by // my_keycloak_id
+  });
+  return {
+    rows: result.rows.map(activityStandardMapping),
+    count: result.count
+  };
+};
+
+export interface IActivitiesTable extends IRecordTable {
+  workflow?: string;
+  activitySubtypes?: any[];
+  created_by?: string;
+}
+
+export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
-  const { selected, setSelected, actions } = props;
-  const rows = props.rows.map(activityStandardMapping);
+  const invasivesApi = useInvasivesApi();
+  const databaseContext = useContext(DatabaseContext);
+  const {
+    tableSchemaType,
+    actions,
+    rows,
+    activitySubtypes,
+    created_by,
+    keyField = 'activity_id',
+    enableSelection = true, 
+    ...otherProps
+  } = props;
+
+  let createActions = {};
+  const createAction = (type, subtype) => ({
+    key: `create_activity_${subtype.toLowerCase()}`,
+    enabled: true,
+    action: async (selectedRows) => {
+      const dbActivity = generateDBActivityPayload({}, null, type, subtype);
+      dbActivity.created_by = "12345";
+      console.log(dbActivity);
+      await invasivesApi.createActivity(dbActivity);
+    },
+    icon: <Add />,
+    label: ActivitySubtypeShortLabels[subtype],
+    bulkAction: false,
+    rowAction: false,
+    globalAction: true,
+    triggerReload: true,
+    displayInvalid: 'error',
+    ...actions?.create_activity // allow prop overwrites by default
+  });
+
+  arrayWrap(activitySubtypes).forEach(([type, subtype]) => {
+    const action = createAction(type, subtype);
+    createActions = {
+      ...createActions,
+      [action.key]: {
+        ...action,
+        ...actions?.[action.key] // allow prop overwrites still
+      }
+    }
+  })
+
+  return useMemo(() =>
+    <RecordTable
+      tableName="Activities"
+      keyField={keyField}
+      tableSchemaType={[
+        'Activity',
+        'Jurisdiction',
+        ...arrayWrap(tableSchemaType)
+      ]}
+      startingOrderBy="activity_id"
+      startingOrder="desc"
+      enableSelection={enableSelection}
+      startExpanded
+      headers={[
+        'activity_id',
+        'activity_type',
+        {
+          id: 'activity_subtype',
+          valueMap: {
+            ...ActivitySubtypeShortLabels,
+            Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
+          }
+        },
+        {
+          id: 'created_timestamp',
+          title: 'Created Date'
+        },
+        'biogeoclimatic_zones',
+        {
+          id: 'elevation',
+          type: 'number'
+        },
+        {
+          id: 'flnro_districts',
+          title: 'FLNRO Districs'
+        },
+        'ownership',
+        'regional_districts',
+        'invasive_species_agency_code',
+        'jurisdiction_code',
+        {
+          id: 'latitude',
+          title: 'Latitude',
+          type: 'number'
+        },
+        {
+          id: 'longitude',
+          title: 'Longitude',
+          type: 'number'
+        },
+        {
+          id: 'reported_area',
+          title: 'Area (m\u00B2)',
+          type: 'number'
+        },
+        'access_description',
+        'general_comment'
+      ]}
+      rows={rows
+        ? rows.map(activityStandardMapping)
+        : defaultActivitiesFetch({
+          invasivesApi,
+          created_by,
+          activitySubtypes
+        })
+      }
+      actions={{
+        ...actions,
+        edit: {
+          // NOTE: this might be a good candidate to be broken out to a parent class
+          // since it breaks generality of this multi-purpose table
+          key: 'edit',
+          enabled: enableSelection !== false,
+          action: async (allSelectedRows) => {
+            const selectedIds = allSelectedRows.map((row) => row[keyField]);
+            if (selectedIds.length === 1) {
+              // TODO switch by activity type, I guess...
+              await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
+                return { ...appStateDoc, activeActivity: selectedIds[0] };
+              });
+              history.push({ pathname: `/home/activity` });
+            } else {
+              history.push({
+                pathname: `/home/search/bulkedit`,
+                search: '?activities=' + selectedIds.join(','),
+                state: { activityIdsToEdit: selectedIds }
+              });
+            }
+          },
+          label: 'Edit',
+          icon: <Edit />,
+          bulkAction: true,
+          rowAction: true,
+          bulkCondition: (allSelectedRows) => allSelectedRows.every((a, _, [b]) => a.subtype === b.subtype),
+          // TODO limit to only some subtypes too
+          // TODO IAPP POIs not editable
+          rowCondition: undefined,
+          displayInvalid: 'error',
+          invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
+          ...actions?.edit
+        },
+        delete: {
+          key: 'delete',
+          enabled: enableSelection !== false,
+          action: async (allSelectedRows) => {
+            const selectedIds = allSelectedRows.map((row) => row[keyField]);
+            if (selectedIds.length)
+              await invasivesApi.deleteActivities(selectedIds);
+          },
+          label: 'Delete',
+          icon: <Delete />,
+          bulkAction: true,
+          rowAction: true,
+          bulkCondition: undefined, // TODO admin or author only
+          rowCondition: undefined,
+          displayInvalid: 'disable',
+          ...actions?.delete
+        },
+        create_treatment: {
+          key: 'create_treatment',
+          enabled: true,
+          action: (selectedRows) => {
+            const ids = selectedRows.map((row: any) => row['activity_id']);
+            history.push({
+              pathname: `/home/activity/treatment`,
+              search: '?observations=' + ids.join(','),
+              state: { observations: ids }
+            });
+          },
+          label: 'Create Treatment',
+          bulkAction: true,
+          rowAction: false,
+          displayInvalid: 'error',
+          invalidError: 'All selected activities must be of the same SubType to create a Treatment',
+          /*
+            Function to determine if all selected observation records are
+            of the same subtype. For example: Cannot create a treatment if you select a plant
+            and an animal observation, and most probably will not go treat a terrestrial
+            and aquatic observation in a single treatment as those are different areas
+          */
+          bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
+          ...actions?.create_treatment
+        },
+        sync: {
+          key: 'sync',
+          enabled: true,
+          label: 'Sync',
+          bulkAction: true,
+          rowAction: true,
+          displayInvalid: 'disable',
+          rowCondition: (row) =>
+            row.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
+            && row.form_status === FormValidationStatus.VALID,
+          bulkCondition: (selectedRows) => // only enable bulk sync if some field needs it
+            selectedRows?.filter((row) =>
+              row.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
+              && row.form_status === FormValidationStatus.VALID
+            )?.length > 0,
+          action: async (selectedRows) => {
+            try {
+              selectedRows.map(async (activity) => {
+                const dbActivity: any = await invasivesApi.getActivityById(activity.activityId);
+                await invasivesApi.updateActivity({
+                  ...dbActivity,
+                  ...mapDocToDBActivity(activity),
+                  sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
+                });
+
+                notifySuccess(databaseContext, `Syncing ${activity.activitySubtype.split('_')[2]} activity has succeeded.`);
+              })
+            } catch (error) {
+              notifyError(databaseContext, JSON.stringify(error));
+            }
+          },
+          icon: <Sync />,
+          ...actions?.sync
+        },
+        ...createActions
+      }}
+      {...otherProps}
+    />, 
+    [rows?.length, props.selected?.length, JSON.stringify(actions)]);
+};
+
+export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+  const history = useHistory();
+  const { tableSchemaType, ...otherProps } = props;
+  return (
+    <ActivitiesTable
+      tableName="Animal Activities"
+      activitySubtypes={[
+        [ActivityType.AnimalActivity, ActivitySubtype.Activity_AnimalTerrestrial],
+        [ActivityType.AnimalActivity, ActivitySubtype.Activity_AnimalAquatic]
+      ]}
+      tableSchemaType={[
+        'Observation',
+        'Activity_AnimalTerrestrial',
+        'Activity_AnimalAquatic',
+        ...arrayWrap(tableSchemaType)
+      ]}
+      {...otherProps}
+    />
+  );
+};
+
+export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
+  const history = useHistory();
+  const { tableSchemaType, actions, ...otherProps } = props;
   return useMemo(() => {
     return (
-      <RecordTable
+      <ActivitiesTable
         tableName="Observations"
+        activitySubtypes={[
+          [ActivityType.Observation, ActivitySubtype.Observation_PlantTerrestrial],
+          [ActivityType.Observation, ActivitySubtype.Observation_PlantAquatic]
+        ]}
         tableSchemaType={[
-          'Activity',
           'Observation',
           'Observation_PlantTerrestrial',
           'Observation_PlantAquatic',
           'ObservationPlantTerrestrialData',
-          'Jurisdiction'
+          ...arrayWrap(tableSchemaType)
         ]}
-        startingOrderBy="activity_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selected}
-        setSelected={setSelected}
         headers={[
           'activity_id',
           {
             id: 'activity_subtype',
             valueMap: {
-              Activity_Observation_PlantTerrestrial: 'Terrestrial Plant',
+              ...ActivitySubtypeShortLabels,
               Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
-              Activity_Observation_PlantAquatic: 'Aquatic Plant'
             }
           },
           {
@@ -195,13 +482,8 @@ export const ObservationsTable: React.FC<IRecordTable> = (props) => {
           'access_description',
           'general_comment'
         ]}
-        rows={rows}
         actions={{
           ...actions,
-          delete: {
-            enabled: false,
-            ...actions?.delete
-          },
           create_treatment: {
             key: 'create_treatment',
             enabled: true,
@@ -225,44 +507,42 @@ export const ObservationsTable: React.FC<IRecordTable> = (props) => {
               and aquatic observation in a single treatment as those are different areas
             */
             bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
-            ...props.actions?.create_treatment
+            ...actions?.create_treatment
           }
         }}
+        {...otherProps}
       />
     );
-  }, [rows?.length, selected?.length, JSON.stringify(actions)]);
+  }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
-export const TreatmentsTable: React.FC<IRecordTable> = (props) => {
+export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
-
-  const { selected, setSelected } = props;
-  const rows = props.rows.map(activityStandardMapping);
+  const { tableSchemaType, actions, ...otherProps } = props;
   return useMemo(() => {
     return (
-      <RecordTable
+      <ActivitiesTable
         tableName="Treatments"
+        activitySubtypes={[
+          [ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalPlant],
+          [ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalPlant],
+          [ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant]
+        ]}
         tableSchemaType={[
-          'Activity',
           'Treatment',
           'Treatment_ChemicalPlant',
           'Treatment_MechanicalPlant',
-          'Treatment_BiologicalPlant'
+          'Treatment_BiologicalPlant',
+          ...arrayWrap(tableSchemaType)
         ]}
-        startingOrderBy="activity_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selected}
-        setSelected={setSelected}
         headers={[
           'activity_id',
           {
             id: 'activity_subtype',
             valueMap: {
-              Activity_Treatment_ChemicalPlant: 'Chemical Plant',
-              Activity_Treatment_MechanicalPlant: 'Mechanical Plant',
-              Activity_Treatment_BiologicalPlant: 'Biological Plant'
+              ...ActivitySubtypeShortLabels,
+              Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
             }
           },
           {
@@ -288,20 +568,18 @@ export const TreatmentsTable: React.FC<IRecordTable> = (props) => {
           },
           'elevation'
         ]}
-        rows={rows}
         dropdown={(row) => (
-          <RecordTable
+          <ActivitiesTable
+            tableName=""
             key={row._id}
-            startingOrderBy="activity_id"
-            startingOrder="desc"
             tableSchemaType={[
-              'Activity',
               'Treatment',
               'Treatment_ChemicalPlant',
               'Treatment_MechanicalPlant',
               'Treatment_BiologicalPlant',
-              'Jurisdiction'
+              ...arrayWrap(tableSchemaType)
             ]}
+            enableSelection={false}
             headers={[
               'jurisdiction_code',
               'biogeoclimatic_zones',
@@ -319,9 +597,7 @@ export const TreatmentsTable: React.FC<IRecordTable> = (props) => {
           />
         )}
         actions={{
-          delete: {
-            enabled: false
-          },
+          ...actions,
           create_monitoring: {
             key: 'create_monitoring',
             enabled: true,
@@ -348,41 +624,42 @@ export const TreatmentsTable: React.FC<IRecordTable> = (props) => {
               });
 
               history.push(`/home/activity`);
-            }
+            },
+            ...actions?.create_monitoring,
           }
         }}
+        {...otherProps}
       />
     );
-  }, [rows?.length, selected?.length]);
+  }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
-export const MonitoringTable: React.FC<IRecordTable> = (props) => {
-  const { selected, setSelected } = props;
-  const rows = props.rows.map(activityStandardMapping);
+export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
+  const { tableSchemaType, ...otherProps } = props;
   return useMemo(() => {
     return (
-      <RecordTable
-        tableName="Monitoring"
+      <ActivitiesTable
+        tableName="Treatment Monitoring"
+        activitySubtypes={[
+          [ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant],
+          [ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant],
+          [ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant],
+          [ActivityType.Dispersal, ActivitySubtype.Activity_BiologicalDispersal]
+        ]}
         tableSchemaType={[
-          'Activity',
           'Monitoring',
           'Monitoring_ChemicalTerrestrialAquaticPlant',
           'Monitoring_MechanicalTerrestrialAquaticPlant',
-          'Monitoring_BiologicalTerrestrialPlant'
+          'Monitoring_BiologicalTerrestrialPlant',
+          ...arrayWrap(tableSchemaType)
         ]}
-        startingOrderBy="monitoring_id"
-        startingOrder="desc"
-        enableSelection
-        selected={selected}
-        setSelected={setSelected}
         headers={[
           'activity_id',
           {
             id: 'activity_subtype',
             valueMap: {
-              Activity_Monitoring_ChemicalPlant: 'Chemical Plant',
-              Activity_Monitoring_MechanicalPlant: 'Mechanical Plant',
-              Activity_Monitoring_BiologicalPlant: 'Biological Plant'
+              ...ActivitySubtypeShortLabels,
+              Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
             }
           },
           {
@@ -407,30 +684,56 @@ export const MonitoringTable: React.FC<IRecordTable> = (props) => {
           },
           'elevation'
         ]}
-        rows={rows}
-        actions={{
-          delete: {
-            enabled: false
-          }
-        }}
+        {...otherProps}
       />
     );
-  }, [rows?.length, selected?.length]);
+  }, [props.rows?.length, props.selected?.length]);
+};
+
+export const GeneralBiologicalControlTable: React.FC<IActivitiesTable> = (props) => {
+  return useMemo(() => {
+    return (
+      <ActivitiesTable
+        tableName="Biological Control"
+        activitySubtypes={[
+          [ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant],
+          [ActivityType.Transect, ActivitySubtype.Transect_BiocontrolEfficacy],
+          [ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant],
+          [ActivityType.Dispersal, ActivitySubtype.Activity_BiologicalDispersal]
+        ]}
+        {...props}
+      />
+    );
+  }, [props.rows?.length, props.selected?.length, JSON.stringify(props.actions)]);
+};
+
+export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
+  return useMemo(() => {
+    return (
+      <ActivitiesTable
+        tableName="Transects"
+        activitySubtypes={[
+          [ActivityType.Transect, ActivitySubtype.Transect_FireMonitoring],
+          [ActivityType.Transect, ActivitySubtype.Transect_BiocontrolEfficacy],
+          [ActivityType.Transect, ActivitySubtype.Transect_Vegetation]
+        ]}
+        {...props}
+      />
+    );
+  }, [props.rows?.length, props.selected?.length, JSON.stringify(props.actions)]);
 };
 
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
-  const { selected, setSelected } = props;
+  const { tableSchemaType, actions, ...otherProps } = props;
   const invasivesApi = useInvasivesApi();
   return useMemo(() => {
     return (
       <RecordTable
         tableName="Points of Interest"
-        tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdiction']}
+        tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdiction', ...arrayWrap(tableSchemaType)]}
         startingOrderBy="site_id"
         startingOrder="desc"
         enableSelection
-        selected={selected}
-        setSelected={setSelected}
         headers={[
           {
             id: 'site_id',
@@ -475,30 +778,40 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           };
         }}
         actions={{
+          ...actions,
           delete: {
-            enabled: false
+            enabled: false,
+            ...actions?.delete
           },
           edit: {
-            enabled: false
+            enabled: false,
+            ...actions?.edit
           }
         }}
+        {...otherProps}
       />
     );
-  }, [selected?.length]);
+  }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
+
+export const IAPPTable: React.FC<IRecordTable> = (props) =>
+  <PointsOfInterestTable
+    tableName="IAPP Points of Interest"
+    enableSelection={false}
+    {...props}
+  />;
+
 export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
-  const { selected, setSelected, rows } = props;
+  const { tableSchemaType, rows, ...otherProps } = props;
   return useMemo(() => {
     return (
-      <RecordTable
+      <IAPPTable
         tableName={'Survey Details'}
         keyField="survey_id"
         startingOrderBy="survey_id"
         startingOrder="desc"
-        selected={selected}
-        setSelected={setSelected}
-        tableSchemaType={['IAPP_Survey']}
+        tableSchemaType={['IAPP_Survey', ...arrayWrap(tableSchemaType)]}
         actions={false}
         headers={[
           {
@@ -523,20 +836,22 @@ export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
           },
           'general_comment'
         ]}
-        rows={
-          !rows?.length
-            ? []
-            : rows.map((row) => ({
-                ...row,
-                density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
-                distribution:
-                  row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
-              }))
-        }
+        rows={Array.isArray(rows) && (!rows?.length
+          ? []
+          : rows.map((row) => ({
+              ...row,
+              density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
+              distribution:
+                row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
+            }))
+        ) || rows}
+        {...otherProps}
       />
     );
-  }, [rows?.length, selected?.length]);
+  }, [rows?.length, props.selected?.length]);
 };
+
+// TODO convert tables below to easily modifiable (otherProps) versions:
 
 export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) => {
   const { rows } = props;

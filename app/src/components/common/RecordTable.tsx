@@ -29,6 +29,7 @@ import React, { useState, useContext, useEffect, useCallback, useMemo } from 're
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import Spinner from 'components/spinner/Spinner';
 import clsx from 'clsx';
 
 const snakeToPascal = (string, spaces = false) =>
@@ -126,7 +127,8 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 350
   },
   emptyTable: {
-    paddingLeft: 30
+    paddingLeft: 30,
+    alignSelf: 'center'
   },
   button: {
     marginLeft: 10,
@@ -158,14 +160,17 @@ const useToolbarStyles = makeStyles((theme) => ({
   title: {
     flex: '1 1 100%',
     fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightRegular
+    fontWeight: theme.typography.fontWeightRegular,
+    whiteSpace: 'nowrap'
   },
   toolbar: {
-    height: '1px'
+    justifyContent: 'space-between'
   },
   button: {
     marginLeft: 10,
     marginRight: 10,
+    marginTop: 20,
+    marginBottom: 20,
     whiteSpace: 'nowrap',
     minWidth: 'max-content'
   }
@@ -294,32 +299,39 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   }, [props.totalRows, Array.isArray(props.rows) && props.rows?.length]);
 
   useEffect(() => {
-    const fetchRows = async () => {
-      if (props.rows instanceof Function) {
-        if (
-          rows.slice(
-            // dont set loading indicator yet if you still have data visible
-            page * rowsPerPage - loadedRowsOffset,
-            (page + 1) * rowsPerPage - loadedRowsOffset
-          ).length < rowsPerPage
-        )
-          await setRowsLoaded(false);
-        const result = await props.rows({
-          page: Math.max(0, page - loadBuffer),
-          rowsPerPage: rowsPerPage,
-          order: [orderBy + ' ' + order]
-        });
-        if (result?.rows?.length) {
-          await setRows(result.rows);
-          if (!totalRows) await setTotalRows(result.count);
-          // offset from a couple pages back to avoid
-          await setLoadedRowsOffset(Math.max(0, (page - loadBuffer) * rowsPerPage));
-        }
-        await setRowsLoaded(true);
-      }
-      await setRowsLoaded(true);
-    };
+      setRows(Array.isArray(props.rows) ? props.rows : []);
+      setTotalRows(props.totalRows ? props.totalRows : props.rows.length);
+    },
+    [props.totalRows, Array.isArray(props.rows) && props.rows?.length]
+  );
 
+  const fetchRows = async () => {
+    console.log("fetching")
+    if (props.rows instanceof Function) {
+      if (
+        rows.slice(
+          // dont set loading indicator yet if you still have data visible
+          page * rowsPerPage - loadedRowsOffset,
+          (page + 1) * rowsPerPage - loadedRowsOffset
+        ).length < rowsPerPage
+      )
+        await setRowsLoaded(false);
+      const result = await props.rows({
+        page: Math.max(0, page - loadBuffer),
+        rowsPerPage: rowsPerPage,
+        order: [orderBy + ' ' + order]
+      });
+      if (result) {
+        await setRows(result.rows);
+        await setTotalRows(parseInt(result.count));
+        // offset from a couple pages back to avoid
+        await setLoadedRowsOffset(Math.max(0, (page - loadBuffer) * rowsPerPage));
+      }
+    }
+    await setRowsLoaded(true);
+  };
+
+  useEffect(() => {
     fetchRows();
   }, [
     Math.max(0, page - loadBuffer) * rowsPerPage <= loadedRowsOffset && page, // look two pages behind
@@ -378,63 +390,13 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
       };
     });
   }, [rows, props.headers?.length, schemasLoaded]);
-  const actions =
-    props.actions === false
-      ? {}
-      : {
-          ...props.actions,
-          edit: {
-            // NOTE: this might be a good candidate to be broken out to a parent class
-            // since it breaks generality of this multi-purpose table
-            key: 'edit',
-            enabled: enableSelection,
-            action: async (allSelectedRows) => {
-              const selectedIds = allSelectedRows.map((row) => row[keyField]);
-              if (selectedIds.length === 1) {
-                // TODO switch by activity type, I guess...
-                await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-                  return { ...appStateDoc, activeActivity: selectedIds[0] };
-                });
-                history.push({ pathname: `/home/activity` });
-              } else {
-                history.push({
-                  pathname: `/home/search/bulkedit`,
-                  search: '?activities=' + selectedIds.join(','),
-                  state: { activityIdsToEdit: selectedIds }
-                });
-              }
-            },
-            label: 'Edit',
-            icon: <Edit />,
-            bulkAction: true,
-            rowAction: true,
-            bulkCondition: (allSelectedRows) => allSelectedRows.every((a, _, [b]) => a.subtype === b.subtype),
-            // TODO limit to only some subtypes too
-            // TODO IAPP POIs not editable
-            rowCondition: undefined,
-            displayInvalid: 'error',
-            invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
-            ...props.actions?.edit
-          },
-          delete: {
-            key: 'delete',
-            enabled: enableSelection,
-            action: (allSelectedRows) => {},
-            label: 'Delete',
-            icon: <Delete />,
-            bulkAction: true,
-            rowAction: true,
-            bulkCondition: undefined, // TODO
-            rowCondition: undefined,
-            displayInvalid: 'disable',
-            ...props.actions?.delete
-          }
-        };
-  const bulkActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.bulkAction);
+  const actions = { ...props.actions };
   const rowActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.rowAction);
 
   const [expandedRows, setExpandedRows] = useState([]);
   const [selected, setSelected] = useState(props.selected || []);
+
+  const selectedHash = JSON.stringify(selected);
 
   const getApiSpec = useCallback(
     async (tableSchemaInput) => {
@@ -475,7 +437,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
 
   useEffect(() => {
     if (props.setSelected) props.setSelected(selected);
-  }, [JSON.stringify(selected)]);
+  }, [selectedHash]);
 
   const selectedRows = useMemo(
     () =>
@@ -485,7 +447,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
           return matches ? matches : undefined;
         })
         .filter((row) => row),
-    [JSON.stringify(selected), rows]
+    [selectedHash, rows]
   );
 
   // sort and limit the rows:
@@ -632,18 +594,19 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   return useMemo(
     () => (
       <div className={classes.component}>
-        <Accordion defaultExpanded={startExpanded || !totalRows}>
+        <Accordion defaultExpanded={startExpanded}>
           {(enableSelection || enableFiltering || tableName.length > 0) && (
             <RecordTableToolbar
               selectedRows={enableSelection ? selectedRows : []}
               tableName={tableName}
               enableFiltering={enableFiltering}
-              actions={bulkActions}
+              actions={actions}
               databaseContext={databaseContext}
+              fetchRows={fetchRows}
             />
           )}
           <AccordionDetails className={classes.paper}>
-            {loading && <div className={classes.emptyTable}>Loading</div>}
+            {loading && <div className={classes.emptyTable}><Spinner /></div>}
             {!loading && !totalRows && <div className={classes.emptyTable}>No data to display</div>}
             {!loading && !!totalRows && (
               <TableContainer>
@@ -677,6 +640,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
                         actions={rowActions}
                         actionStyle={rowActionStyle}
                         databaseContext={databaseContext}
+                        fetchRows={fetchRows}
                       />
                     ))}
                     {padEmptyRows && emptyRows > 0 && (
@@ -710,7 +674,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
       schemasLoaded,
       page,
       rowsPerPage,
-      JSON.stringify(selected),
+      selectedHash,
       JSON.stringify(expandedRows),
       order,
       orderBy
@@ -785,10 +749,11 @@ function RecordTableHead(props) {
 
 const RecordTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { selectedRows, tableName, enableFiltering, actions, databaseContext } = props;
+  const { selectedRows, tableName, enableFiltering, actions, databaseContext, fetchRows } = props;
   const numSelected = selectedRows?.length || 0;
 
-  const bulkActions: Array<any> = actions
+  const bulkActions: Array<any> = Object.values(actions)
+    .filter((action: any) => action.bulkAction)
     .map((action: any) => {
       const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
       if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
@@ -810,7 +775,53 @@ const RecordTableToolbar = (props) => {
               action.invalidError
             )
               notifyError(databaseContext, action.invalidError);
-            else action.action(selectedRows);
+            else {
+              try {
+                await action.action(selectedRows);
+                if (action.triggerReload)
+                  fetchRows()
+              } catch (error) {
+                notifyError(databaseContext, action.invalidError || error.message);
+              }
+            }
+          }}>
+          {action.label}
+        </Button>
+      );
+    })
+    .filter((button) => button); // remove hidden actions
+
+  const globalActions: Array<any> = Object.values(actions)
+    .filter((action: any) => action.globalAction)
+    .map((action: any) => {
+      const isValid = action.globalCondition ? action.globalCondition(selectedRows) : true;
+      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
+      return (
+        <Button
+          key={action.key}
+          variant="contained"
+          size="small"
+          disabled={action.displayInvalid === 'disable' && !isValid}
+          className={classes.button}
+          startIcon={action.icon}
+          onClick={async (e) => {
+            e.stopPropagation();
+            if (
+              action.displayInvalid === 'error' &&
+              action.globalCondition &&
+              !action.globalCondition(selectedRows) &&
+              action.invalidError
+            )
+              notifyError(databaseContext, action.invalidError);
+            else {
+              try {
+                await action.action(selectedRows);
+                if (action.triggerReload)
+                  fetchRows()
+              } catch (error) {
+                notifyError(databaseContext, action.invalidError || error.message);
+              }
+            }
           }}>
           {action.label}
         </Button>
@@ -820,7 +831,7 @@ const RecordTableToolbar = (props) => {
 
   return (
     <AccordionSummary
-      className={classes.toolbar}
+      classes={{ content: classes.toolbar }}
       expandIcon={<ExpandMore />}
       aria-controls="panel-map-content"
       id="panel-map-header">
@@ -847,12 +858,15 @@ const RecordTableToolbar = (props) => {
           </Tooltip>
         )}
       </Toolbar>
+      <Box>
+        {globalActions}
+      </Box>
     </AccordionSummary>
   );
 };
 
 const RecordTableCell = ({ row, header, className, valueMap }) => {
-  const ifApplicable = (val) => (val !== undefined && String(val).trim().length ? val : ' N/A');
+  const ifApplicable = (val) => (typeof val === 'string' || !isNaN(val) && String(val).trim().length ? val : ' N/A');
   const id = header.id;
 
   let overrideProps;
@@ -887,12 +901,13 @@ const RecordTableRow = (props) => {
     hasOverflow,
     actions,
     actionStyle,
-    databaseContext
+    databaseContext,
+    fetchRows
   } = props;
   const classes = useStyles();
 
   const key = row[keyField];
-  if (key === undefined) throw new Error('Error: table row has no matching key defined');
+  if (key === undefined) throw new Error('Error: table row has no matching key defined: ' + keyField);
 
   const renderedDropdown = !!dropdown && dropdown(row);
   const labelId = `record-table-checkbox-${key}`;
@@ -918,7 +933,15 @@ const RecordTableRow = (props) => {
               action.invalidError
             )
               notifyError(databaseContext, action.invalidError);
-            else action.action([row]);
+            else {
+              try {
+                await action.action([row]);
+                if (action.triggerReload)
+                  fetchRows()
+              } catch (error) {
+                notifyError(databaseContext, action.invalidError || error.message);
+              }
+            }
           }}>
           {action.label}
         </Button>

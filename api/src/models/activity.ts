@@ -28,13 +28,19 @@ export class ActivityPostRequestBody {
 
   mediaKeys: string[];
 
+  form_status: string;
+  sync_status: string;
+  created_by: string;
+
   /**
    * Creates an instance of ActivityPostRequestBody.
    *
    * @param {*} [obj]
    * @memberof ActivityPostRequestBody
    */
-  constructor(obj?: any) {
+  constructor(object?: any) {
+    const { activity_payload, ...obj } = object; // remove payload to prevent infinite recursion
+
     // Add whole original object for auditing
     this.activityPostBody = {
       ...obj,
@@ -64,6 +70,10 @@ export class ActivityPostRequestBody {
     this.geoJSONFeature = (obj && obj.geometry) || [];
 
     this.mediaKeys = (obj && obj.mediaKeys) || null;
+
+    this.form_status = (obj && obj.form_status) || null;
+    this.sync_status = (obj && obj.sync_status) || null;
+    this.created_by = (obj && obj.created_by) || null;
   }
 }
 
@@ -76,8 +86,6 @@ export class ActivityPostRequestBody {
 export class ActivitySearchCriteria {
   page: number;
   limit: number;
-  sort_by: string;
-  sort_direction: string;
 
   activity_type: string[];
   activity_subtype: string[];
@@ -91,6 +99,8 @@ export class ActivitySearchCriteria {
 
   column_names: string[];
 
+  order: string[];
+
   /**
    * Creates an instance of ActivitySearchCriteria.
    *
@@ -100,8 +110,6 @@ export class ActivitySearchCriteria {
   constructor(obj?: any) {
     this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
     this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;
-    this.sort_by = (obj && obj.sort_by) || '';
-    this.sort_direction = (obj && obj.sort_direction) || SORT_DIRECTION.ASC;
 
     this.activity_type = (obj && obj.activity_type) || [];
     this.activity_subtype = (obj && obj.activity_subtype) || [];
@@ -114,6 +122,8 @@ export class ActivitySearchCriteria {
     this.search_feature = (obj && obj.search_feature) || null;
 
     this.column_names = (obj && obj.column_names) || [];
+
+    this.order = (obj && obj.order) || [];
   }
 
   setPage(page: number): number {
