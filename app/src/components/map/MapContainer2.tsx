@@ -24,6 +24,13 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { useDataAccess } from 'hooks/useDataAccess';
 import TempPOILoader from './LayerLoaderHelpers/TempPOILoader';
+import { Box, Grid } from '@material-ui/core';
+
+// Layer Picker
+import LayersIcon from '@material-ui/icons/Layers';
+
+import { LayerPicker } from './LayerPicker/SortableHelper';
+import data from './LayerPicker/GEO_DATA.json';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -191,10 +198,31 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     return <div></div>;
   };
 
+  const [menuState, setMenuState] = useState(false);
+
   return (
     <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={true}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
-
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          height: '70vh'
+        }} >
+        <button 
+          style={{ background: 'white', zIndex: 1000 }}
+          onClick={() => { setMenuState(!menuState) }} >
+          <LayersIcon  style={{ fontSize: 35 }} />
+        </button>
+        {
+          menuState 
+          ? <div style={{ background: 'white', zIndex: 1000 }}>
+              <LayerPicker data={data} />
+            </div>
+          : <></> 
+        }
+      </div>
       {/* Here is the offline component */}
       <Offline />
 
