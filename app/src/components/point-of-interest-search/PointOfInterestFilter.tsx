@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import DateFnsUtils from '@date-io/date-fns';
+import DatesFnsUtils from '@date-io/date-fns';
 import {
   Box,
   Button,
@@ -173,43 +174,22 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                             updatePointOfInterestChoice({ ...pointOfInterestChoice, iappType: e.target.value }, index);
                           }}>
                           <MenuItem value={''}>All</MenuItem>
-                          <MenuItem value={'latest_survey_date'}>Latest Survey Date</MenuItem>
-                          <MenuItem value={'earliest_survey_date'}>Earliest Survey Date</MenuItem>
-                          <MenuItem value={'latest_chemical_treatment_date'}>Latest Chemical Treatment Date</MenuItem>
-                          <MenuItem value={'earliest_chemical_treatment_date'}>
-                            Earliest Chemical Treatment Date
+                          <MenuItem value={'survey_dates'}>Survey Dates</MenuItem>
+                          <MenuItem value={'chemical_treatment_dates'}>Chemical Treatment Dates</MenuItem>
+                          <MenuItem value={'chemical_treatment_monitoring_dates'}>
+                            Chemical Treatment Monitoring Dates
                           </MenuItem>
-                          <MenuItem value={'latest_chemical_treatment_monitoring_date'}>
-                            Latest Chemical Treatment Monitoring Date
+                          <MenuItem value={'biological_dispersal_dates'}>Biological Dispersal</MenuItem>
+                          <MenuItem value={'biological_treatment_dates'}>Biological Treatment Dates</MenuItem>
+                          <MenuItem value={'biological_treatment_monitoring_dates'}>
+                            Biological Treatment Monitoring Dates
                           </MenuItem>
-                          <MenuItem value={'earliest_chemical_treatment_monitoring_date'}>
-                            Earliest Chemical Treatment Monitoring Date
+                          <MenuItem value={'mechanical_treatment_dates'}>Mechanical Treatment Dates</MenuItem>
+                          <MenuItem value={'mechanical_treatment_monitoring_dates'}>
+                            Mechanical Treatment Monitoring Dates
                           </MenuItem>
-                          <MenuItem value={'latest_biological_dispersal'}>Latest Biological Dispersal</MenuItem>
-                          <MenuItem value={'earliest_biological_dispersal'}>Earliest Biological Dispersal</MenuItem>
-                          <MenuItem value={'latest_biological_treatment_date'}>
-                            Latest Biological Treatment Date
-                          </MenuItem>
-                          <MenuItem value={'earliest Biological_treatment_date'}>
-                            Earliest Biological Treatment Date
-                          </MenuItem>
-                          <MenuItem value={'latest_biological_treatment_monitoring_date'}>
-                            Latest Biological Treatment Monitoring Date
-                          </MenuItem>
-                          <MenuItem value={'earliest_biological_treatment_monitoring_date'}>
-                            Earliest Biological Treatment Monitoring Date
-                          </MenuItem>
-                          <MenuItem value={'latest_mechanical_treatment_date'}>
-                            Latest Mechanical Treatment Date
-                          </MenuItem>
-                          <MenuItem value={'earliest_mechanical_treatment_date'}>
-                            Earliest Mechanical Treatment Date
-                          </MenuItem>
-                          <MenuItem value={'latest_mechanical_treatment_monitoring_date'}>
-                            Latest Mechanical Treatment Monitoring Date
-                          </MenuItem>
-                          <MenuItem value={'latest_mechanical_treatment_monitoring_date'}>
-                            Latest Mechanical Treatment Monitoring Date
+                          <MenuItem value={'mechanical_treatment_monitoring_dates'}>
+                            Mechanical Treatment Monitoring Dates
                           </MenuItem>
                         </Select>
                       </div>
@@ -247,13 +227,13 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                         format="MM/dd/yyyy"
                         margin="normal"
                         id="date-picker-inline"
-                        label="Earliest Date"
+                        label="Earliest Dates"
                         value={pointOfInterestChoice.startDate}
                         onChange={(e) => {
                           updatePointOfInterestChoice({ ...pointOfInterestChoice, startDate: e }, index);
                         }}
                         KeyboardButtonProps={{
-                          'aria-label': 'change date start'
+                          'aria-label': 'change Dates start'
                         }}
                       />
                     </Grid>

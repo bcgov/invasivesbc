@@ -167,8 +167,8 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
   sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
 
   if (searchCriteria.iappType) {
-    sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary_data ON
-    point_of_interest_incoming_data.point_of_interest_incoming_data_id = iapp_site_summary_data.id
+    sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary ON
+    point_of_interest_incoming_data.point_of_interest_incoming_data_id = iapp_site_summary.id WHERE 1 = 1
     `);
   } else {
     sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1`);
@@ -184,21 +184,23 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
 
   if (searchCriteria.iappType) {
     if (searchCriteria.date_range_start) {
-      sqlStatement.append(
-        SQL` AND iapp_site_summary_data.${searchCriteria.iappType} >= ${searchCriteria.date_range_start}::DATE`
-      );
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const format = require('pg-format');
+      const noTime = searchCriteria.date_range_start.toString().substr(0, 10);
+      const sql = format(' AND iapp_site_summary.%I >= %s::DATE', 'min_' + searchCriteria.iappType, noTime);
+      sqlStatement.append(sql);
     }
-
     if (searchCriteria.date_range_end) {
-      sqlStatement.append(
-        SQL` AND iapp_site_summary_data.${searchCriteria.iappType} <= ${searchCriteria.date_range_end}::DATE`
-      );
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const format = require('pg-format');
+      const noTime = searchCriteria.date_range_end.toString().substr(0, 10);
+      const sql = format(' AND iapp_site_summary.%I <= %s::DATE', 'max_' + searchCriteria.iappType, noTime);
+      sqlStatement.append(sql);
     }
   } else {
     if (searchCriteria.date_range_start) {
       sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
     }
-
     if (searchCriteria.date_range_end) {
       sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
     }

@@ -81,7 +81,8 @@ export const TripDataControls: React.FC<any> = (props) => {
           photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
         });
       } catch {
-        notifyError(databaseContext, 'Could not fetch photos for ' + row._id);
+        alert('Could not fetch photos for ' + row._id);
+        //notifyError(databaseContext, 'Could not fetch photos for ' + row._id);
       }
       return photos;
     }
@@ -190,11 +191,12 @@ export const TripDataControls: React.FC<any> = (props) => {
           alert('Cached ' + numberActivitiesFetched + ' activities.');
         }
       } catch (error) {
-        notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
+        alert('There was an error: ' + error);
+        // notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
       }
     }
-
-    notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
+    alert('Fetched ' + numberActivitiesFetched + ' activities.');
+    // notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
   };
 
   const fetchPointsOfInterest = async () => {
@@ -297,13 +299,14 @@ export const TripDataControls: React.FC<any> = (props) => {
         } catch (error) {
           console.log('error saving points of interest');
           console.log(error);
-          notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
+          // notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
+          alert('Error with inserting Points of Interest into database: ' + error);
         }
         pointOfInterestSearchCriteria.page += 1;
       }
     }
     alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
-    notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
+    //notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
   };
 
   const fetchMetabaseQueries = async () => {
@@ -323,7 +326,8 @@ export const TripDataControls: React.FC<any> = (props) => {
       };
 
       if (!setOfChoices.metabaseQueryId) {
-        notifyError(databaseContext, 'Metabase Query ID cannot be blank, please select a query');
+        //notifyError(databaseContext, 'Metabase Query ID cannot be blank, please select a query');
+        alert('Metabase Query ID cannot be blank, please select a query');
         return;
       }
 
@@ -389,17 +393,25 @@ export const TripDataControls: React.FC<any> = (props) => {
       try {
         await bulkUpsert(upserts);
       } catch (error) {
-        notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
+        //notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
+        alert('Error with inserting Metabase results into database: ' + error);
       }
     }
-    notifySuccess(
-      databaseContext,
+    alert(
       'Cached ' +
         (countActivities ? countActivities + ' activities' : '') +
         (countActivities && countPois ? ' and ' : '') +
         (countPois ? countPois + ' points of interest' : '') +
         (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
     );
+    // notifySuccess(
+    //   databaseContext,
+    //   'Cached ' +
+    //     (countActivities ? countActivities + ' activities' : '') +
+    //     (countActivities && countPois ? ' and ' : '') +
+    //     (countPois ? countPois + ' points of interest' : '') +
+    //     (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
+    // );
   };
 
   const deleteTripAndFetch = async () => {
@@ -415,7 +427,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       .finally(() => setFetching(false))
       .catch((error) => {
         setFetching(false);
-        notifyError(databaseContext, 'Error when fetching from network: ' + error);
+        //notifyError(databaseContext, 'Error when fetching from network: ' + error);
       });
   };
 
