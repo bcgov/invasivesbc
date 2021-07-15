@@ -45,6 +45,31 @@ export function getSlopeAspectBothFlatValidator(): rjsfValidator {
   };
 }
 /* 
+  Function to validate duration of count and plant count fields of biological dispersal form
+*/
+export function getDurationCountAndPlantCountValidation(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_subtype_data) {
+      return errors;
+    }
+    if (formData.activity_subtype_data.count_duration && formData.activity_subtype_data.plant_count) {
+      errors.activity_subtype_data['count_duration'].addError(
+        "Can't specify both count duration and  plant count. If one field is specified, other must be empty."
+      );
+      errors.activity_subtype_data['plant_count'].addError(
+        "Can't specify both count duration and  plant count. If one field is specified, other must be empty."
+      );
+    }
+    if (!formData.activity_subtype_data.count_duration && !formData.activity_subtype_data.plant_count){
+      errors.activity_subtype_data['count_duration'].addError(
+        'Either count duration or  plant count must be specified.'
+      );
+      errors.activity_subtype_data['plant_count'].addError('Either count duration or  plant count must be specified.');
+    }
+    return errors;
+  };
+}
+/* 
   Function to validate total percent value of vegetation transect points percent cover
 */
 export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {

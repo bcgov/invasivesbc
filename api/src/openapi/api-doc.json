@@ -1256,9 +1256,7 @@
         "required": [
           "monitoring_organization",
           "biological_agent_presence_code",
-          "count_duration",
           "biological_agent_code",
-          "plant_count",
           "biological_agent_count",
           "applicator1_name",
           "applicator2_name",
@@ -2023,9 +2021,7 @@
         "title": "Biological Monitoring Information",
         "type": "object",
         "required": [
-          "plant_count",
           "agent_count",
-          "count_duration",
           "agent_destroyed_ind",
           "legacy_presence_ind",
           "foliar_feeding_damage_ind",
