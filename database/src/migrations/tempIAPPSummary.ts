@@ -1,4 +1,3 @@
-
 import * as Knex from 'knex';
 //For now moving to one consolidated migration for plant reporting.
 
@@ -28,7 +27,7 @@ $body$
 
 --id index
 drop index if exists point_of_interest_id_idx;
-CREATE INDEX point_of_interest_id_idx ON invasivesbc.point_of_interest_incoming_data USING btree (point_of_interest_id); 
+CREATE INDEX point_of_interest_id_idx ON invasivesbc.point_of_interest_incoming_data USING btree (point_of_interest_id);
 
 --nested array field indexes
 drop index if exists point_of_interest_survey_date_idx;
@@ -61,7 +60,7 @@ CREATE INDEX point_of_interest_mechanical_treatment_monitoring_date_idx ON invas
 
 drop view if exists IAPP_SITE_SUMMARY_slow cascade;
 create or replace view IAPP_SITE_SUMMARY_slow as (
-with  
+with
 summary_fields as (
 	SELECT
 	point_of_interest_incoming_data.point_of_interest_id as id
@@ -74,19 +73,19 @@ summary_fields as (
    	FROM point_of_interest_incoming_data
 ),
 survey_dates as (
-	SELECT 
+	SELECT
 		point_of_interest_incoming_data.point_of_interest_id AS id,
 		immutable_to_date(btrim((json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'surveys'::text) -> 'survey_date'::text)::text, '"'::text)::text) as survey_dates
-		FROM point_of_interest_incoming_data	
+		FROM point_of_interest_incoming_data
 ),
 chemical_treatment_dates as (
-	SELECT 
+	SELECT
 		point_of_interest_incoming_data.point_of_interest_id As id,
 		immutable_to_date(btrim((json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'chemical_treatments'::text) -> 'treatment_date'::text)::text, '"'::text)::text) as chemical_treatment_dates
-		FROM point_of_interest_incoming_data	
+		FROM point_of_interest_incoming_data
 ),
 chemical_treatment_monitoring_dates as (
-	SELECT 
+	SELECT
 		point_of_interest_incoming_data.point_of_interest_id AS id,
 		immutable_to_date(btrim((json_array_elements(json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'chemical_treatments'::text) -> 'monitoring'::text) -> 'monitoring_date'::text)::text, '"'::text)::text) as chemical_treatment_monitoring_dates
 		FROM point_of_interest_incoming_data
@@ -98,30 +97,30 @@ biological_dispersal_dates as (
 		FROM point_of_interest_incoming_data
 ),
 biological_treatment_dates as (
-	SELECT 
+	SELECT
 		point_of_interest_incoming_data.point_of_interest_id AS id,
 		immutable_to_date(btrim((json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'biological_treatments'::text) -> 'treatment_date'::text)::text, '"'::text)::text) as bio_treatment_dates
-		FROM point_of_interest_incoming_data	
+		FROM point_of_interest_incoming_data
 ),
 biological_treatment_monitoring_dates as (
-	SELECT 
+	SELECT
 		point_of_interest_incoming_data.point_of_interest_id AS id,
 		immutable_to_date(btrim((json_array_elements(json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'biological_treatments'::text) -> 'monitoring'::text) -> 'monitoring_date'::text)::text, '"'::text)::text) as bio_treatment_monitoring_dates
 		FROM point_of_interest_incoming_data
 ),
 mechanical_treatment_dates as (
-	SELECT 
+	SELECT
 		point_of_interest_incoming_data.point_of_interest_id AS id,
 		immutable_to_date(btrim((json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'mechanical_treatments'::text) -> 'treatment_date'::text)::text, '"'::text)::text) as mechanical_treatment_dates
-		FROM point_of_interest_incoming_data	
+		FROM point_of_interest_incoming_data
 ),
 mechanical_treatment_monitoring_dates as (
-	SELECT 
+	SELECT
 		point_of_interest_incoming_data.point_of_interest_id AS id,
 		immutable_to_date(btrim((json_array_elements(json_array_elements((point_of_interest_incoming_data.point_of_interest_payload::json -> 'form_data'::text) -> 'mechanical_treatments'::text) -> 'monitoring'::text) -> 'monitoring_date'::text)::text, '"'::text)::text) as mechanical_treatment_monitoring_dates
 		FROM point_of_interest_incoming_data
 )
-SELECT 
+SELECT
 	sf.id,
 	min(sd.survey_dates) as min_survey,
 	max(sd.survey_dates) as max_survey,
@@ -153,7 +152,7 @@ SELECT
 
 
 --for testing
---select * from IAPP_SITE_SUMMARY limit 100 
+--select * from IAPP_SITE_SUMMARY limit 100
 
 drop materialized view if exists iapp_site_summary;
 create materialized view iapp_site_summary as select * from iapp_site_summary_slow;
@@ -176,3 +175,4 @@ drop index if exists point_of_interest_mechanical_treatment_monitoring_date_idx;
 drop view if exists IAPP_SITE_SUMMARY_slow cascade;
 drop materialized view if exists iapp_site_summary;
 }`);
+}
