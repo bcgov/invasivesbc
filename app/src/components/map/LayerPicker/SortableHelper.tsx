@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -6,9 +6,9 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Checkbox from "@material-ui/core/Checkbox";
 import {
-  SortableContainer,
-  SortableElement,
-  SortableHandle,
+    SortableContainer,
+    SortableElement,
+    SortableHandle,
 } from "react-sortable-hoc";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -18,17 +18,17 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 /* HelperFiles */
 import {
-  sortArray,
-  getObjectsBeforeIndex,
-  getObjectsAfterIndex,
-  getChildObjBeforeIndex,
-  getChildObjAfterIndex,
-  getParentIndex,
-  getChildIndex,
-  getParent,
-  getChild,
-  getParentByOrder,
-  sortObject,
+    sortArray,
+    getObjectsBeforeIndex,
+    getObjectsAfterIndex,
+    getChildObjBeforeIndex,
+    getChildObjAfterIndex,
+    getParentIndex,
+    getChildIndex,
+    getParent,
+    getChild,
+    getParentByOrder,
+    sortObject,
 } from "./LayerPickerHelper";
 import Grid from "@material-ui/core/Grid";
 import ColorPicker from "material-ui-color-picker";
@@ -102,6 +102,14 @@ export function LayerPicker(props: any) {
         setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
     };
 
+    var divRef = React.useRef();
+
+    /* Only for ReactLeaflet */
+    React.useEffect(() => {
+        L.DomEvent.disableClickPropagation(divRef?.current);
+        L.DomEvent.disableScrollPropagation(divRef?.current);
+    });
+
     const DragHandle = SortableHandle(() => (
         <ListItemIcon>
             <DragHandleIcon />
@@ -114,133 +122,126 @@ export function LayerPicker(props: any) {
         };
         return (
             <ListItem ContainerComponent="div">
-                <ListItemText />
-                <Accordion
-                    expanded={parent.expanded}
-                    onChange={onParentLayerAccordionChange}
-                    className={classes.accordion}
-                >
-                    <Grid container justify="flex-start" alignItems="center" xs={12} >
-                        <Grid item xs={1}>
-                            <Checkbox
-                                checked={parent.enabled}
-                                name={parent.id}
-                                onChange={() => {
-                                    updateParent(parent.id, {
-                                        enabled: !getParent(objectState, parent.id).enabled,
-                                    });
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={5}>
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                className={classes.heading}
-                                id={parent.id}
-                            >
-                                {parent.id}
-                            </AccordionSummary>
-                        </Grid>
-                        
-                        
-                        <Grid item xs={2}>
-                            <ColorPicker
-                                name="color"
-                                defaultValue={parent.colorCode}
-                                onChange={(color: any) =>
-                                    updateParent(parent.id, { colorCode: color })
-                                }
-                            />
-                        </Grid>
-                        <Grid item xs={3} className={classes.spinnerGridItem} style={{position: "relative"}}>
-                            <CircularProgress variant="determinate" value={parent.loaded} />
-                        </Grid>
-                    </Grid>
-                    {parent.children.map((child: any) => (
-                        <Grid container direction="row" justify="flex-start" alignItems="center">
-                            &emsp;
-                            <Grid item xs={1}>
-                                <Checkbox
-                                    checked={child.enabled}
-                                    name={child.id}
-                                    onChange={() => {
-                                        updateChild(parent.id, child.id, {
-                                            enabled: !getChild(objectState, parent.id, child.id)
-                                                .enabled,
-                                        });
-                                    }}
-                                />
+                {/*<Grid container>
+                    {/*<Grid item>*/}
+                        <Accordion
+                            expanded={parent.expanded}
+                            onChange={onParentLayerAccordionChange}
+                            className={classes.accordion}
+                        >
+                            <Grid container justify="flex-start" alignItems="center">
+                                <Grid item xs={1}>
+                                    <Checkbox
+                                        checked={parent.enabled}
+                                        name={parent.id}
+                                        onChange={() => {
+                                            updateParent(parent.id, {
+                                                enabled: !getParent(objectState, parent.id).enabled,
+                                            });
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={5}>
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        className={classes.heading}
+                                        id={parent.id}
+                                    >
+                                        {parent.id}
+                                    </AccordionSummary>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <ColorPicker
+                                        name="color"
+                                        defaultValue={parent.colorCode}
+                                        onChange={(color: any) =>
+                                            updateParent(parent.id, { colorCode: color })
+                                        }
+                                    />
+                                </Grid>
+                                <Grid item xs={2} className={classes.spinnerGridItem} style={{ position: "relative" }}>
+                                    <CircularProgress variant="determinate" value={parent.loaded} />
+                                </Grid>
                             </Grid>
+                            {parent.children.map((child: any) => (
+                                <Grid container direction="row" justify="flex-start" alignItems="center">
+                                    &emsp;
+                                    <Grid item xs={2}>
+                                        <Checkbox
+                                            checked={child.enabled}
+                                            name={child.id}
+                                            onChange={() => {
+                                                updateChild(parent.id, child.id, {
+                                                    enabled: !getChild(objectState, parent.id, child.id)
+                                                        .enabled,
+                                                });
+                                            }}
+                                        />
+                                    </Grid>
 
-                            <Grid item xs={3}>
-                                {child.id}
-                            </Grid>
-                            <Grid item xs={2}>
-                                <ColorPicker
-                                    name="color"
-                                    defaultValue={child.colorCode}
-                                    onChange={(color: any) =>
-                                        updateChild(parent.id, child.id, {
-                                            colorCode: color,
-                                        })
-                                    }
-                                />
-                            </Grid>
-                            
-                            <Grid item xs={2} style={{ position: "relative" }} >
-                                <CircularProgress variant="determinate" value={child.loaded} />
-                            </Grid>
-                        </Grid>
-                    ))}
-                </Accordion>
-                <ListItemSecondaryAction>
-                    <DragHandle />
-                </ListItemSecondaryAction>
+                                    <Grid item xs={5}>
+                                        {child.id}
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <ColorPicker
+                                            name="color"
+                                            defaultValue={child.colorCode}
+                                            onChange={(color: any) => 
+                                                updateChild(parent.id, child.id, {
+                                                    colorCode: color,
+                                                })
+                                            }
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={2} style={{ position: "relative" }} >
+                                        <CircularProgress variant="determinate" value={child.loaded} />
+                                    </Grid>
+                                </Grid>
+                            ))}
+                        </Accordion>
+                    {/*</Grid>
+                    {/*<Grid item xs={2}>*/}
+                        <ListItemSecondaryAction>
+                            <DragHandle />
+                        </ListItemSecondaryAction>
+                    {/*</Grid>
+                </Grid>*/}
             </ListItem>
         );
     });
 
-    const divRef = React.useRef();
-
-    /* Only for ReactLeaflet */
-    React.useEffect(() => {
-        if(divRef?.current) {
-            L.DomEvent.disableClickPropagation(divRef?.current);
-            L.DomEvent.disableScrollPropagation(divRef?.current);
-        };
-    });
-
     const SortableListContainer = SortableContainer(({ items }: any) => (
         <List ref={divRef}>
-          {items.map((parent: { id: string; order: number }) => (
-            <SortableParentLayer
-              key={parent.id}
-              index={parent.order}
-              parent={parent}
-            />
-          ))}
+            {items.map((parent: { id: string; order: number }) => (
+                <SortableParentLayer
+                    key={parent.id}
+                    index={parent.order}
+                    parent={parent}
+                />
+            ))}
         </List>
-      ));
+    ));
 
-      const onSortEnd = ({ oldIndex, newIndex }: any) => {
+    const onSortEnd = ({ oldIndex, newIndex }: any) => {
         const returnVal = sortObject(objectState, oldIndex, newIndex);
         setObjectState(returnVal);
-      };
+    };
 
 
 
     return (
         <div className={classes.root}>
-      <SortableListContainer
-        items={sortArray(objectState)}
-        onSortEnd={onSortEnd}
-        useDragHandle={true}
-        lockAxis="y"
-      />
+            <SortableListContainer
+                items={sortArray(objectState)}
+                onSortEnd={onSortEnd}
+                useDragHandle={true}
+                lockAxis="y"
+            />
 
-      {/*<br />*/}
+            {/*<br />*/}
 
-      {/*<pre>{JSON.stringify(sortArray(objectState), null, 2)}</pre>*/}
-    </div>
+            {/*<pre>{JSON.stringify(sortArray(objectState), null, 2)}</pre>*/}
+        </div>
     )
 }
