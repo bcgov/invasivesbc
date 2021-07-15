@@ -1,6 +1,6 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
-import { Feature, GeoJsonObject } from 'geojson';
+import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
@@ -199,51 +199,38 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   };
 
   const [menuState, setMenuState] = useState(false);
-  
-const vanIsland: FeatureCollection = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
+
+  const vanIsland: FeatureCollection = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
             [
-              -123.31054687499999,
-              48.3416461723746
-            ],
-            [
-              -122.82714843749999,
-              48.69096039092549
-            ],
-            [
-              -122.6953125,
-              49.69606181911566
-            ],
-            [
-              -125.68359374999999,
-              50.875311142200765
-            ],
-            [
-              -129.0673828125,
-              51.39920565355378
-            ],
-            [
-              -128.1884765625,
-              49.55372551347579
-            ],
-            [
-              -123.31054687499999,
-              48.3416461723746
+              [-123.31054687499999, 48.3416461723746],
+              [-122.82714843749999, 48.69096039092549],
+              [-122.6953125, 49.69606181911566],
+              [-125.68359374999999, 50.875311142200765],
+              [-129.0673828125, 51.39920565355378],
+              [-128.1884765625, 49.55372551347579],
+              [-123.31054687499999, 48.3416461723746]
             ]
           ]
-        ]
+        }
       }
+    ]
+  };
+
+  const setupFeature = (feature, layer) => {
+    let popupContent = 'POP UP STUFFFFFFFFFFFFFFFFFFFFFFFFFF';
+    for (let i = 0; i < 100; i++) {
+      popupContent += '\nFFFFFFFFFFFF';
     }
-  ]
-}
+    layer.bindPopup(popupContent);
+  };
 
   return (
     <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={true}>
@@ -254,19 +241,21 @@ const vanIsland: FeatureCollection = {
           justifyContent: 'flex-end',
           alignItems: 'center',
           height: '70vh'
-        }} >
-        <button 
+        }}>
+        <button
           style={{ background: 'white', zIndex: 500 }}
-          onClick={() => { setMenuState(!menuState) }} >
-          <LayersIcon  style={{ fontSize: 35 }} />
+          onClick={() => {
+            setMenuState(!menuState);
+          }}>
+          <LayersIcon style={{ fontSize: 35 }} />
         </button>
-        {
-          menuState 
-          ? <div style={{ background: 'white', zIndex: 500, width: "400px" }}>
-              <LayerPicker data={data} />
-            </div>
-          : <></> 
-        }
+        {menuState ? (
+          <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
+            <LayerPicker data={data} />
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
       {/* Here is the offline component */}
       <Offline />
@@ -284,7 +273,7 @@ const vanIsland: FeatureCollection = {
           {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
           {/* this line below works - its what you need for geosjon*/}
           {/* <GeoJSON data={props.interactiveGeometryState.interactiveGeometry} style={interactiveGeometryStyle} />*/}
-          <GeoJSON data={vanIsland}  style={interactiveGeometryStyle}/>
+          <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} />
         </LayersControl.Overlay>
       </LayersControl>
     </MapContainer>
