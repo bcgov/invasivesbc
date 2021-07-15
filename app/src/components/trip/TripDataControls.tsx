@@ -239,6 +239,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
 
       let total_to_fetch = response.count;
+      console.log('*** total points of interest to get:  ' + response.count);
       while (numberPointsOfInterestFetched !== total_to_fetch) {
         if (pointOfInterestSearchCriteria.page != 1) {
           try {
@@ -252,58 +253,26 @@ export const TripDataControls: React.FC<any> = (props) => {
         for (const row of response.rows) {
           let photos = [];
           if (setOfChoices.includePhotos) photos = await getPhotos(row);
-
-          if (Capacitor.getPlatform() == 'web') {
-            upserts = {
-              ...upserts,
-              ['POI' + row.point_of_interest_id]: (existingDoc: any) => ({
-                ...existingDoc,
-                _id: 'POI' + row.point_of_interest_id,
-                docType: DocType.REFERENCE_POINT_OF_INTEREST,
-                trip_IDs: existingDoc?.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
-                ...row,
-                formData: row.point_of_interest_payload.form_data,
-                pointOfInterestType: row.point_of_interest_type,
-                pointOfInterestSubtype: row.point_of_interest_subtype,
-                geometry: [...row.point_of_interest_payload.geometry],
-                photos: photos
-              })
-            };
-          } else {
-            let jsonObj = {
-              _id: row.point_of_interest_id,
-              docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              ...row,
-              formData: row.point_of_interest_payload.form_data,
-              pointOfInterestType: row.point_of_interest_type,
-              pointOfInterestSubtype: row.point_of_interest_subtype,
-              geometry: [...row.point_of_interest_payload.geometry],
-              photos: photos
-            };
-            upserts.push({
-              docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              ID: row.point_of_interest_id,
-              type: UpsertType.DOC_TYPE_AND_ID,
-              json: jsonObj
-            });
-          }
+          let jsonObj = {
+            _id: row.point_of_interest_id,
+            docType: DocType.REFERENCE_POINT_OF_INTEREST,
+            ...row,
+            formData: row.point_of_interest_payload.form_data,
+            pointOfInterestType: row.point_of_interest_type,
+            pointOfInterestSubtype: row.point_of_interest_subtype,
+            geometry: [...row.point_of_interest_payload.geometry],
+            photos: photos
+          };
+          upserts.push({
+            docType: DocType.REFERENCE_POINT_OF_INTEREST,
+            ID: row.point_of_interest_id,
+            type: UpsertType.DOC_TYPE_AND_ID,
+            json: jsonObj
+          });
         }
-        try {
-          if (Capacitor.getPlatform() == 'web') {
-            numberPointsOfInterestFetched += await bulkUpsert(upserts);
-          } else {
-            console.log('*** passing to db ops ***');
-            numberPointsOfInterestFetched += await upsert(upserts, databaseContext);
-            console.log('*** done db ops ***');
-          }
-        } catch (error) {
-          console.log('error saving points of interest');
-          console.log(error);
-          // notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
-          alert('Error with inserting Points of Interest into database: ' + error);
-        }
-        pointOfInterestSearchCriteria.page += 1;
       }
+      numberPointsOfInterestFetched += response.rows.length;
+      pointOfInterestSearchCriteria.page += 1;
     }
     alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
     //notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
