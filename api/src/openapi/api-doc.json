@@ -2814,8 +2814,6 @@
           "site_slope",
           "site_slope_variability",
           "site_elevation",
-          "cloud_cover_code",
-          "beaufort_wind_code",
           "precipitation_code",
           "burn_severity_code",
           "ecological_moisture_regime_code",
@@ -2940,30 +2938,6 @@
             "minimum": 0,
             "maximum": 4000,
             "x-tooltip-text": "Use a GPS to obtain and record the average elevation"
-          },
-          "cloud_cover_code": {
-            "type": "string",
-            "title": "Cloud Cover",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "cloud_cover_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Select the most representative cloud cover"
-          },
-          "beaufort_wind_code": {
-            "type": "string",
-            "title": "Wind",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "beaufort_wind_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Select the most representative wind conditions"
           },
           "precipitation_code": {
             "type": "string",
