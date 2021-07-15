@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import DateFnsUtils from '@date-io/date-fns';
+import DatesFnsUtils from '@date-io/date-fns';
 import {
   Box,
   Button,
@@ -22,6 +23,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 interface IPointOfInterestChoices {
   pointOfInterestType: string;
+  iappType?: string;
   includePhotos: boolean;
   includeForms: boolean;
   startDate: string;
@@ -42,9 +44,9 @@ const useStyles = makeStyles((theme) => ({
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
+  const [iappSelected, setIappSelected] = useState(false);
 
   const getPointOfInterestChoicesFromTrip = async () => {
-    console.log('trip id for point filter: ' + props.trip_ID);
     if (Capacitor.getPlatform() == 'web') {
       let docs = await databaseContext.database.find({
         selector: {
@@ -66,6 +68,9 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
       const choices = JSON.parse(queryResults[0].json).pointOfInterestChoices;
       if (choices) {
         setPointOfInterestChoices([...choices]);
+        console.log('choices are here');
+        console.log(choices[0]['pointOfInterestType']);
+        setIappSelected(choices[0]['pointOfInterestType'] !== '');
       }
     }
   };
@@ -140,13 +145,52 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           id="demo-simple-select"
                           value={pointOfInterestChoice.pointOfInterestType}
                           onChange={(e) => {
+                            let iappType = null;
+                            if (e.target.value === 'IAPP Site') {
+                              iappType = '';
+                              setIappSelected(true);
+                            } else {
+                              iappType = null;
+                              setIappSelected(false);
+                            }
                             updatePointOfInterestChoice(
-                              { ...pointOfInterestChoice, pointOfInterestType: e.target.value },
+                              { ...pointOfInterestChoice, pointOfInterestType: e.target.value, iappType: iappType },
                               index
                             );
                           }}>
                           <MenuItem value={''}>All</MenuItem>
                           <MenuItem value={'IAPP Site'}>IAPP Site</MenuItem>
+                        </Select>
+                      </div>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <div style={{ display: iappSelected ? 'block' : 'none' }}>
+                        <InputLabel id="demo-simple-select-label">IAPP Data Type</InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={pointOfInterestChoice.iappType}
+                          onChange={(e) => {
+                            updatePointOfInterestChoice({ ...pointOfInterestChoice, iappType: e.target.value }, index);
+                          }}>
+                          <MenuItem value={''}>All</MenuItem>
+                          <MenuItem value={'survey_dates'}>Survey Dates</MenuItem>
+                          <MenuItem value={'chemical_treatment_dates'}>Chemical Treatment Dates</MenuItem>
+                          <MenuItem value={'chemical_treatment_monitoring_dates'}>
+                            Chemical Treatment Monitoring Dates
+                          </MenuItem>
+                          <MenuItem value={'biological_dispersal_dates'}>Biological Dispersal</MenuItem>
+                          <MenuItem value={'biological_treatment_dates'}>Biological Treatment Dates</MenuItem>
+                          <MenuItem value={'biological_treatment_monitoring_dates'}>
+                            Biological Treatment Monitoring Dates
+                          </MenuItem>
+                          <MenuItem value={'mechanical_treatment_dates'}>Mechanical Treatment Dates</MenuItem>
+                          <MenuItem value={'mechanical_treatment_monitoring_dates'}>
+                            Mechanical Treatment Monitoring Dates
+                          </MenuItem>
+                          <MenuItem value={'mechanical_treatment_monitoring_dates'}>
+                            Mechanical Treatment Monitoring Dates
+                          </MenuItem>
                         </Select>
                       </div>
                     </Grid>
@@ -183,13 +227,13 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                         format="MM/dd/yyyy"
                         margin="normal"
                         id="date-picker-inline"
-                        label="Earliest Date"
+                        label="Earliest Dates"
                         value={pointOfInterestChoice.startDate}
                         onChange={(e) => {
                           updatePointOfInterestChoice({ ...pointOfInterestChoice, startDate: e }, index);
                         }}
                         KeyboardButtonProps={{
-                          'aria-label': 'change date start'
+                          'aria-label': 'change Dates start'
                         }}
                       />
                     </Grid>

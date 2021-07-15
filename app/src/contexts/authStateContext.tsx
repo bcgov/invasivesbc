@@ -18,6 +18,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
   React.useEffect(() => {
     const loadUserInfo = async () => {
+      console.log(keycloak.obj + 'keycloak is here');
       const user = await keycloak.obj?.loadUserInfo();
       setUserInfo(user);
     };
