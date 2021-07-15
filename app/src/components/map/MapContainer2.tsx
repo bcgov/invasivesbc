@@ -200,7 +200,50 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
   const [menuState, setMenuState] = useState(false);
   
-
+const vanIsland: FeatureCollection = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -123.31054687499999,
+              48.3416461723746
+            ],
+            [
+              -122.82714843749999,
+              48.69096039092549
+            ],
+            [
+              -122.6953125,
+              49.69606181911566
+            ],
+            [
+              -125.68359374999999,
+              50.875311142200765
+            ],
+            [
+              -129.0673828125,
+              51.39920565355378
+            ],
+            [
+              -128.1884765625,
+              49.55372551347579
+            ],
+            [
+              -123.31054687499999,
+              48.3416461723746
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
 
   return (
     <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={true}>
@@ -213,13 +256,13 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           height: '70vh'
         }} >
         <button 
-          style={{ background: 'white', zIndex: 1000 }}
+          style={{ background: 'white', zIndex: 500 }}
           onClick={() => { setMenuState(!menuState) }} >
           <LayersIcon  style={{ fontSize: 35 }} />
         </button>
         {
           menuState 
-          ? <div style={{ background: 'white', zIndex: 1000 }}>
+          ? <div style={{ background: 'white', zIndex: 500, width: "400px" }}>
               <LayerPicker data={data} />
             </div>
           : <></> 
@@ -238,9 +281,10 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
         <LayersControl.Overlay checked name="Activities">
-          <TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>
+          {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
           {/* this line below works - its what you need for geosjon*/}
           {/* <GeoJSON data={props.interactiveGeometryState.interactiveGeometry} style={interactiveGeometryStyle} />*/}
+          <GeoJSON data={vanIsland}  style={interactiveGeometryStyle}/>
         </LayersControl.Overlay>
       </LayersControl>
     </MapContainer>
