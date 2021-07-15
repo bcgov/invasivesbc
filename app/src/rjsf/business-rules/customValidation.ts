@@ -44,6 +44,58 @@ export function getSlopeAspectBothFlatValidator(): rjsfValidator {
     return errors;
   };
 }
+/* 
+  Function to validate total percent value of vegetation transect points percent cover
+*/
+export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.vegetation_transect_lines) {
+      return errors;
+    }
+    const { vegetation_transect_lines } = formData.activity_subtype_data;
+    let vegTransectLineIndex = 0;
+    vegetation_transect_lines.forEach((vegTransectLine: any) => {
+      let vegTransectPointIndex = 0;
+      if (vegTransectLine['vegetation_transect_points_percent_cover']) {
+        vegTransectLine['vegetation_transect_points_percent_cover'].forEach(vegTransectPoint => {
+          let totalPercent = 0;
+          //if there are invasive plants
+          if (vegTransectPoint.vegetation_transect_species.invasive_plants) {
+            vegTransectPoint.vegetation_transect_species.invasive_plants.forEach((invasivePlant: any) => {
+              if (invasivePlant.percent_covered) {
+                totalPercent += invasivePlant.percent_covered;
+              }
+            });
+          }
+          //if there are lumped_species
+          if (vegTransectPoint.vegetation_transect_species.lumped_species) {
+            vegTransectPoint.vegetation_transect_species.lumped_species.forEach((lumpedSpecie: any) => {
+              if (lumpedSpecie.percent_covered) {
+                totalPercent += lumpedSpecie.percent_covered;
+              }
+            });
+          }
+          //if there are custom_species
+          if (vegTransectPoint.vegetation_transect_species.custom_species) {
+            vegTransectPoint.vegetation_transect_species.custom_species.forEach((customSpecie: any) => {
+              if (customSpecie.percent_covered) {
+                totalPercent += customSpecie.percent_covered;
+              }
+            });
+          }
+          if (totalPercent !== 100) {
+            errors.activity_subtype_data['vegetation_transect_lines'][vegTransectLineIndex]['vegetation_transect_points_percent_cover']
+            [vegTransectPointIndex].addError('The total percentage must be equal to 100');
+          }
+          vegTransectPointIndex++;
+        });
+      }
+      vegTransectLineIndex++;
+    });
+    return errors;
+  };
+}
+
 /*
   Function to validate that the total percent value of all jurisdictions combined = 100
 */
@@ -52,7 +104,6 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
     if (!formData || !formData.activity_data || !formData.activity_data.jurisdictions) {
       return errors;
     }
-
     const { jurisdictions } = formData.activity_data;
     let totalPercent = 0;
 
@@ -61,7 +112,6 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
     });
 
     errors.activity_data['jurisdictions'].__errors = [];
-
     if (totalPercent !== 100) {
       errors.activity_data['jurisdictions'].addError(
         'Total percentage of area covered by jurisdictions must equal 100%'
@@ -362,8 +412,10 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
     if (!transectLinesMatchingKeys.length) {
       return errors;
     }
-
     const isVegetationTransect = transectLinesMatchingKeys[0] === 'vegetation_transect_lines';
+    if (!formData.activity_subtype_data[transectLinesMatchingKeys[0]]) {
+      return errors;
+    }
     const transectLinesList = [...formData.activity_subtype_data[transectLinesMatchingKeys[0]]];
 
     transectLinesList.forEach((transectLineObj: any, lineIndex: number) => {
