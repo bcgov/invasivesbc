@@ -135,10 +135,10 @@ export function generateDBActivityPayload(
     media: undefined,
     created_by: undefined,
     sync_status: ActivitySyncStatus.NOT_SYNCED,
-    form_status: FormValidationStatus.NOT_VALIDATED
-    // sync_ready: false,
-    // sync_error: null
-    // status: ActivityStatus.NEW,
+    form_status: FormValidationStatus.NOT_VALIDATED,
+    review_status: 'Not Reviewed',
+    reviewed_by: undefined,
+    reviewed_at: undefined
   };
 }
 
