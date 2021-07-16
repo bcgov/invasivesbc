@@ -42,7 +42,13 @@ import ActivityListDate from './ActivityListDate';
 import { getErrorMessages } from 'utils/errorHandling';
 import { addNewActivityToDB } from 'utils/addActivity';
 import WarningDialog from 'components/common/WarningDialog';
-import { MyObservationsTable, MyTreatmentsTable, MyMonitoringTable, MyAnimalActivitiesTable, MyTransectsTable } from 'components/common/RecordTables';
+import {
+  MyObservationsTable,
+  MyTreatmentsTable,
+  MyMonitoringTable,
+  MyAnimalActivitiesTable,
+  MyTransectsTable
+} from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -311,8 +317,7 @@ const ActivitiesList: React.FC = () => {
   const userInfo: any = keycloak?.userInfo;
   const userId = userInfo?.preferred_username;
 
-  if (!userId)
-    throw "Keycloak error: can not get current user's username";
+  if (!userId) throw "Keycloak error: can not get current user's username";
 
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);

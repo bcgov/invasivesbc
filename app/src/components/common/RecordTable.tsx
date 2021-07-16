@@ -449,10 +449,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     );
   }, [rows.length, orderHeader, order, page, rowsPerPage]);
   // render all dropdowns on page
-  const renderedDropdowns = useMemo(
-    () => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)),
-    [pageRows, dropdown]
-  );
+  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
+    pageRows,
+    dropdown
+  ]);
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
   const verboseOverflows = useMemo(
@@ -595,7 +595,11 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
             />
           )}
           <AccordionDetails className={classes.paper}>
-            {loading && <div className={classes.emptyTable}><Spinner /></div>}
+            {loading && (
+              <div className={classes.emptyTable}>
+                <Spinner />
+              </div>
+            )}
             {!loading && !totalRows && <div className={classes.emptyTable}>No data to display</div>}
             {!!totalRows && (
               <TableContainer>
@@ -767,8 +771,7 @@ const RecordTableToolbar = (props) => {
             else {
               try {
                 await action.action(selectedRows);
-                if (action.triggerReload)
-                  fetchRows()
+                if (action.triggerReload) fetchRows();
               } catch (error) {
                 notifyError(databaseContext, action.invalidError || error.message);
               }
@@ -805,8 +808,7 @@ const RecordTableToolbar = (props) => {
             else {
               try {
                 await action.action(selectedRows);
-                if (action.triggerReload)
-                  fetchRows()
+                if (action.triggerReload) fetchRows();
               } catch (error) {
                 notifyError(databaseContext, action.invalidError || error.message);
               }
@@ -847,15 +849,13 @@ const RecordTableToolbar = (props) => {
           </Tooltip>
         )}
       </Toolbar>
-      <Box>
-        {globalActions}
-      </Box>
+      <Box>{globalActions}</Box>
     </AccordionSummary>
   );
 };
 
 const RecordTableCell = ({ row, header, className, valueMap }) => {
-  const ifApplicable = (val) => (typeof val === 'string' || !isNaN(val) && String(val).trim().length ? val : ' N/A');
+  const ifApplicable = (val) => (typeof val === 'string' || (!isNaN(val) && String(val).trim().length) ? val : ' N/A');
   const id = header.id;
 
   let overrideProps;
@@ -925,8 +925,7 @@ const RecordTableRow = (props) => {
             else {
               try {
                 await action.action([row]);
-                if (action.triggerReload)
-                  fetchRows()
+                if (action.triggerReload) fetchRows();
               } catch (error) {
                 notifyError(databaseContext, action.invalidError || error.message);
               }

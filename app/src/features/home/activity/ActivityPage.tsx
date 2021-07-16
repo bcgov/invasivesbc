@@ -93,7 +93,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const updateDoc = async (updates) => {
     const updatedDoc = {
       ...doc,
-      ...updates, // TODO MERGE THESE
+      ...updates // TODO MERGE THESE
     };
     const hashedNewDoc = JSON.stringify(updatedDoc);
     const hashedDoc = JSON.stringify(doc);
@@ -115,7 +115,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const newActivity = {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
-        }
+        };
         // console.log("updating doc: db doc:", newActivity);
         const res = await invasivesApi.updateActivity(newActivity);
       });
@@ -126,7 +126,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       // console.log("error updating doc ", updatedDoc, e);
       return false;
     }
-  }
+  };
 
   /**
    * Set the default form data values
@@ -207,7 +207,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const saveExtent = async (newExtent: any) => {
     await updateDoc({ extent: newExtent });
-  }
+  };
 
   /**
    * Save the photos.
@@ -216,7 +216,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const savePhotos = async (photosArr: IPhoto[]) => {
     await updateDoc({ photos: photosArr, dateUpdated: new Date() });
-  }
+  };
 
   /*
     Function that runs if the form submit fails and has errors
@@ -228,7 +228,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     );
 
     updateDoc({
-      formStatus: FormValidationStatus.INVALID,
+      formStatus: FormValidationStatus.INVALID
     });
   };
 
@@ -252,7 +252,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       formData: event.formData,
       status: ActivityStatus.EDITED,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.VALID,
+      formStatus: FormValidationStatus.VALID
     });
   };
 
@@ -349,9 +349,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    const activityResults = await invasivesApi.getActivityById(
-      activityId || appStateResults.docs[0].activeActivity
-    );
+    const activityResults = await invasivesApi.getActivityById(activityId || appStateResults.docs[0].activeActivity);
     return mapDBActivityToDoc(activityResults);
   };
 

@@ -1,7 +1,14 @@
 import { makeStyles, Theme } from '@material-ui/core';
 import clsx from 'clsx';
 import moment from 'moment';
-import { ActivitySubtype, ActivityType, ActivitySubtypeShortLabels, ActivitySyncStatus, FormValidationStatus, ReviewStatus } from 'constants/activities';
+import {
+  ActivitySubtype,
+  ActivityType,
+  ActivitySubtypeShortLabels,
+  ActivitySyncStatus,
+  FormValidationStatus,
+  ReviewStatus
+} from 'constants/activities';
 import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Add, DeleteForever, Sync, Edit, Delete, FindInPage, Check, Clear } from '@material-ui/icons';
@@ -9,7 +16,12 @@ import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useKeycloak } from '@react-keycloak/web';
-import { addLinkedActivityToDB, addNewActivityToDB, generateDBActivityPayload, mapDocToDBActivity } from 'utils/addActivity';
+import {
+  addLinkedActivityToDB,
+  addNewActivityToDB,
+  generateDBActivityPayload,
+  mapDocToDBActivity
+} from 'utils/addActivity';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { notifyError, notifySuccess } from 'utils/NotificationUtils';
 
@@ -25,10 +37,10 @@ export const activityStandardMapping = (doc) => ({
   created_timestamp: doc?.created_timestamp?.substring(0, 10),
   latitude: parseFloat(doc?.formData?.activity_data?.latitude).toFixed(6),
   longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6),
-  review_status_rendered: 
+  review_status_rendered:
     doc?.review_status === ReviewStatus.APPROVED || doc?.review_status === ReviewStatus.DISAPPROVED
-    ? doc?.review_status + ' by ' + doc?.reviewed_by + ' at ' + doc?.reviewed_at
-    : doc?.review_status 
+      ? doc?.review_status + ' by ' + doc?.reviewed_by + ' at ' + doc?.reviewed_at
+      : doc?.review_status
 });
 
 export const poiStandardMapping = (doc) => ({
@@ -100,9 +112,9 @@ const calculateMonitoringSubtypeByTreatmentSubtype = (treatmentSubtype: Activity
 };
 
 const arrayWrap = (value) => {
-  if (!value) return []; 
+  if (!value) return [];
   return Array.isArray(value) ? value : [value];
-}
+};
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -143,15 +155,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export const defaultActivitiesFetch = ({invasivesApi, activitySubtypes, created_by}) => async ({ page, rowsPerPage, order }) => {
+export const defaultActivitiesFetch = ({ invasivesApi, activitySubtypes, created_by }) => async ({
+  page,
+  rowsPerPage,
+  order
+}) => {
   // Fetches fresh from the API (web).  TODO fetch from SQLite
   let dbPageSize = DEFAULT_PAGE_SIZE;
   if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
     // if page is right near the db page limit
     dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
 
-  const types = activitySubtypes.map(subtype => subtype[0]);
-  const subtypes = activitySubtypes.map(subtype => subtype[1]);
+  const types = activitySubtypes.map((subtype) => subtype[0]);
+  const subtypes = activitySubtypes.map((subtype) => subtype[1]);
   const result = await invasivesApi.getActivities({
     page: Math.floor((page * rowsPerPage) / dbPageSize),
     limit: dbPageSize,
@@ -179,7 +195,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const invasivesApi = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
   const { keycloak } = useKeycloak();
-  const userInfo : any = keycloak?.userInfo;
+  const userInfo: any = keycloak?.userInfo;
 
   const {
     tableSchemaType,
@@ -219,300 +235,319 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         ...action,
         ...actions?.[action.key] // allow prop overwrites still
       }
-    }
-  })
+    };
+  });
 
-  return useMemo(() =>
-    <RecordTable
-      tableName="Activities"
-      keyField={keyField}
-      tableSchemaType={[
-        'Activity',
-        'Jurisdiction',
-        ...arrayWrap(tableSchemaType)
-      ]}
-      startingOrderBy="activity_id"
-      startingOrder="desc"
-      enableSelection={enableSelection}
-      startExpanded
-      headers={[
-        'activity_id',
-        'activity_type',
-        {
-          id: 'activity_subtype',
-          valueMap: {
-            ...ActivitySubtypeShortLabels,
-            Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
-          }
-        },
-        {
-          id: 'created_timestamp',
-          title: 'Created Date'
-        },
-        'biogeoclimatic_zones',
-        {
-          id: 'elevation',
-          type: 'number'
-        },
-        {
-          id: 'flnro_districts',
-          title: 'FLNRO Districs'
-        },
-        'ownership',
-        'regional_districts',
-        'invasive_species_agency_code',
-        'jurisdiction_code',
-        {
-          id: 'latitude',
-          title: 'Latitude',
-          type: 'number'
-        },
-        {
-          id: 'longitude',
-          title: 'Longitude',
-          type: 'number'
-        },
-        {
-          id: 'reported_area',
-          title: 'Area (m\u00B2)',
-          type: 'number'
-        },
-        'access_description',
-        'general_comment'
-      ]}
-      rows={rows
-        ? rows.map(activityStandardMapping)
-        : defaultActivitiesFetch({
-          invasivesApi,
-          created_by,
-          activitySubtypes
-        })
-      }
-      actions={{
-        ...actions,
-        edit: {
-          // NOTE: this might be a good candidate to be broken out to a parent class
-          // since it breaks generality of this multi-purpose table
-          key: 'edit',
-          enabled: enableSelection !== false,
-          action: async (allSelectedRows) => {
-            const selectedIds = allSelectedRows.map((row) => row[keyField]);
-            if (selectedIds.length === 1) {
-              // TODO switch by activity type, I guess...
-              await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-                return { ...appStateDoc, activeActivity: selectedIds[0] };
-              });
-              history.push({ pathname: `/home/activity` });
-            } else {
-              history.push({
-                pathname: `/home/search/bulkedit`,
-                search: '?activities=' + selectedIds.join(','),
-                state: { activityIdsToEdit: selectedIds }
-              });
+  return useMemo(
+    () => (
+      <RecordTable
+        tableName="Activities"
+        keyField={keyField}
+        tableSchemaType={['Activity', 'Jurisdiction', ...arrayWrap(tableSchemaType)]}
+        startingOrderBy="activity_id"
+        startingOrder="desc"
+        enableSelection={enableSelection}
+        startExpanded
+        headers={[
+          'activity_id',
+          'activity_type',
+          {
+            id: 'activity_subtype',
+            valueMap: {
+              ...ActivitySubtypeShortLabels,
+              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
             }
           },
-          label: 'Edit',
-          icon: <Edit />,
-          bulkAction: true,
-          rowAction: true,
-          bulkCondition: (allSelectedRows) => allSelectedRows.every((a, _, [b]) => a.subtype === b.subtype),
-          // TODO limit to only some subtypes too
-          // TODO IAPP POIs not editable
-          rowCondition: undefined,
-          displayInvalid: 'error',
-          invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
-          ...actions?.edit
-        },
-        delete: {
-          key: 'delete',
-          enabled: enableSelection !== false,
-          action: async (allSelectedRows) => {
-            const selectedIds = allSelectedRows.map((row) => row[keyField]);
-            if (selectedIds.length)
-              await invasivesApi.deleteActivities(selectedIds);
+          {
+            id: 'created_timestamp',
+            title: 'Created Date'
           },
-          label: 'Delete',
-          icon: <Delete />,
-          bulkAction: true,
-          rowAction: true,
-          bulkCondition: undefined, // TODO admin or author only
-          rowCondition: undefined,
-          displayInvalid: 'disable',
-          triggerReload: true,
-          ...actions?.delete
-        },
-        sync: {
-          key: 'sync',
-          enabled: true,
-          label: 'Save',
-          bulkAction: true,
-          rowAction: true,
-          displayInvalid: 'disable',
-          triggerReload: true,
-          rowCondition: (row) =>
-            row.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
-            && row.form_status === FormValidationStatus.VALID,
-          bulkCondition: (selectedRows) => // only enable bulk sync if some field needs it
-            selectedRows?.filter((row) =>
-              row.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
-              && row.form_status === FormValidationStatus.VALID
-            )?.length > 0,
-          action: async (selectedRows) => {
-            try {
-              selectedRows.map(async (activity) => {
-                if (activity.form_status !== FormValidationStatus.VALID
-                || activity.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL)
-                  return;
-                const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                await invasivesApi.updateActivity({
-                  ...dbActivity,
-                  sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
-                });
-                const typename = activity.activity_subtype?.split('_')[2];
-                notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
+          'biogeoclimatic_zones',
+          {
+            id: 'elevation',
+            type: 'number'
+          },
+          {
+            id: 'flnro_districts',
+            title: 'FLNRO Districs'
+          },
+          'ownership',
+          'regional_districts',
+          'invasive_species_agency_code',
+          'jurisdiction_code',
+          {
+            id: 'latitude',
+            title: 'Latitude',
+            type: 'number'
+          },
+          {
+            id: 'longitude',
+            title: 'Longitude',
+            type: 'number'
+          },
+          {
+            id: 'reported_area',
+            title: 'Area (m\u00B2)',
+            type: 'number'
+          },
+          'access_description',
+          'general_comment'
+        ]}
+        rows={
+          rows
+            ? rows.map(activityStandardMapping)
+            : defaultActivitiesFetch({
+                invasivesApi,
+                created_by,
+                activitySubtypes
               })
-            } catch (error) {
-              notifyError(databaseContext, JSON.stringify(error));
-            }
-          },
-          icon: <Sync />,
-          ...actions?.sync
-        },
-        submit: {
-          key: 'submit',
-          enabled: true,
-          label: 'Submit For Review',
-          bulkAction: true,
-          rowAction: true,
-          displayInvalid: 'hidden',
-          triggerReload: true,
-          rowCondition: (row) =>
-            row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
-            && row.form_status === FormValidationStatus.VALID
-            && row.review_status !== ReviewStatus.UNDER_REVIEW,
-          bulkCondition: (selectedRows) => // only enable bulk submit if some field needs it
-            selectedRows?.filter((row) =>
-              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
-              && row.form_status === FormValidationStatus.VALID
-              && row.review_status !== ReviewStatus.UNDER_REVIEW
-            )?.length > 0,
-          action: async (selectedRows) => {
-            try {
-              selectedRows.map(async (activity) => {
-                if (activity.form_status !== FormValidationStatus.VALID
-                || activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
-                || activity.review_status === ReviewStatus.UNDER_REVIEW)
-                  return;
-                const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                await invasivesApi.updateActivity({
-                  ...dbActivity,
-                  review_status: ReviewStatus.UNDER_REVIEW
+        }
+        actions={{
+          ...actions,
+          edit: {
+            // NOTE: this might be a good candidate to be broken out to a parent class
+            // since it breaks generality of this multi-purpose table
+            key: 'edit',
+            enabled: enableSelection !== false,
+            action: async (allSelectedRows) => {
+              const selectedIds = allSelectedRows.map((row) => row[keyField]);
+              if (selectedIds.length === 1) {
+                // TODO switch by activity type, I guess...
+                await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
+                  return { ...appStateDoc, activeActivity: selectedIds[0] };
                 });
-                console.log(666, dbActivity);
-                const typename = activity.activity_subtype?.split('_')[2];
-                notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
-              })
-            } catch (error) {
-              notifyError(databaseContext, JSON.stringify(error));
-            }
-          },
-          icon: <FindInPage />,
-          ...actions?.submit
-        },
-        approve: {
-          key: 'approve',
-          enabled: true,
-          label: 'Approve',
-          bulkAction: true,
-          rowAction: true,
-          displayInvalid: 'hidden',
-          triggerReload: true,
-          rowCondition: (row) =>
-            row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
-            && row.form_status === FormValidationStatus.VALID
-            && row.review_status === ReviewStatus.UNDER_REVIEW,
-          bulkCondition: (selectedRows) => // only enable bulk submit if some field needs it
-            selectedRows?.filter((row) =>
-              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
-              && row.form_status === FormValidationStatus.VALID
-              && row.review_status === ReviewStatus.UNDER_REVIEW
-            )?.length > 0,
-          action: async (selectedRows) => {
-            try {
-              selectedRows.map(async (activity) => {
-                if (activity.form_status !== FormValidationStatus.VALID
-                || activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
-                || activity.review_status !== ReviewStatus.UNDER_REVIEW)
-                  return;
-                const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                await invasivesApi.updateActivity({
-                  ...dbActivity,
-                  review_status: ReviewStatus.APPROVED,
-                  reviewed_by: userInfo.preferred_username, // latest reviewer
-                  reviewed_at: moment(new Date()).format()
+                history.push({ pathname: `/home/activity` });
+              } else {
+                history.push({
+                  pathname: `/home/search/bulkedit`,
+                  search: '?activities=' + selectedIds.join(','),
+                  state: { activityIdsToEdit: selectedIds }
                 });
-                const typename = activity.activity_subtype?.split('_')[2];
-                notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
-              })
-            } catch (error) {
-              notifyError(databaseContext, JSON.stringify(error));
-            }
+              }
+            },
+            label: 'Edit',
+            icon: <Edit />,
+            bulkAction: true,
+            rowAction: true,
+            bulkCondition: (allSelectedRows) => allSelectedRows.every((a, _, [b]) => a.subtype === b.subtype),
+            // TODO limit to only some subtypes too
+            // TODO IAPP POIs not editable
+            rowCondition: undefined,
+            displayInvalid: 'error',
+            invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
+            ...actions?.edit
           },
-          icon: <Check />,
-          ...actions?.approve
-        },
-        disapprove: {
-          key: 'disapprove',
-          enabled: true,
-          label: 'Disapprove',
-          bulkAction: true,
-          rowAction: true,
-          displayInvalid: 'hidden',
-          triggerReload: true,
-          rowCondition: (row) =>
-            row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
-            && row.form_status === FormValidationStatus.VALID
-            && row.review_status === ReviewStatus.UNDER_REVIEW,
-          bulkCondition: (selectedRows) => // only enable bulk submit if some field needs it
-            selectedRows?.filter((row) =>
-              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
-              && row.form_status === FormValidationStatus.VALID
-              && row.review_status === ReviewStatus.UNDER_REVIEW
-            )?.length > 0,
-          action: async (selectedRows) => {
-            try {
-              selectedRows.map(async (activity) => {
-                if (activity.form_status !== FormValidationStatus.VALID
-                || activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
-                || activity.review_status !== ReviewStatus.UNDER_REVIEW)
-                  return;
-                const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                await invasivesApi.updateActivity({
-                  ...dbActivity,
-                  review_status: ReviewStatus.DISAPPROVED,
-                  reviewed_by: userInfo.preferred_username, // latest reviewer
-                  reviewed_at: moment(new Date()).format()
+          delete: {
+            key: 'delete',
+            enabled: enableSelection !== false,
+            action: async (allSelectedRows) => {
+              const selectedIds = allSelectedRows.map((row) => row[keyField]);
+              console.log(selectedIds);
+              if (selectedIds.length) await invasivesApi.deleteActivities(selectedIds);
+            },
+            label: 'Delete',
+            icon: <Delete />,
+            bulkAction: true,
+            rowAction: true,
+            bulkCondition: undefined, // TODO admin or author only
+            rowCondition: undefined,
+            displayInvalid: 'disable',
+            triggerReload: true,
+            ...actions?.delete
+          },
+          sync: {
+            key: 'sync',
+            enabled: true,
+            label: 'Save',
+            bulkAction: true,
+            rowAction: true,
+            displayInvalid: 'disable',
+            triggerReload: true,
+            rowCondition: (row) =>
+              row.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL && row.form_status === FormValidationStatus.VALID,
+            bulkCondition: (
+              selectedRows // only enable bulk sync if some field needs it
+            ) =>
+              selectedRows?.filter(
+                (row) =>
+                  row.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL &&
+                  row.form_status === FormValidationStatus.VALID
+              )?.length > 0,
+            action: async (selectedRows) => {
+              try {
+                selectedRows.map(async (activity) => {
+                  if (
+                    activity.form_status !== FormValidationStatus.VALID ||
+                    activity.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
+                  )
+                    return;
+                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                  await invasivesApi.updateActivity({
+                    ...dbActivity,
+                    sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
+                  });
+                  const typename = activity.activity_subtype?.split('_')[2];
+                  notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
                 });
-                const typename = activity.activity_subtype?.split('_')[2];
-                notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
-              })
-            } catch (error) {
-              notifyError(databaseContext, JSON.stringify(error));
-            }
+              } catch (error) {
+                notifyError(databaseContext, JSON.stringify(error));
+              }
+            },
+            icon: <Sync />,
+            ...actions?.sync
           },
-          icon: <Clear />,
-          ...actions?.disapprove
-        },
-        ...createActions
-      }}
-      {...otherProps}
-    />, 
-    [rows?.length, props.selected?.length, JSON.stringify(actions)]);
+          submit: {
+            key: 'submit',
+            enabled: true,
+            label: 'Submit For Review',
+            bulkAction: true,
+            rowAction: true,
+            displayInvalid: 'hidden',
+            triggerReload: true,
+            rowCondition: (row) =>
+              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+              row.form_status === FormValidationStatus.VALID &&
+              row.review_status !== ReviewStatus.UNDER_REVIEW,
+            bulkCondition: (
+              selectedRows // only enable bulk submit if some field needs it
+            ) =>
+              selectedRows?.filter(
+                (row) =>
+                  row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+                  row.form_status === FormValidationStatus.VALID &&
+                  row.review_status !== ReviewStatus.UNDER_REVIEW
+              )?.length > 0,
+            action: async (selectedRows) => {
+              try {
+                selectedRows.map(async (activity) => {
+                  if (
+                    activity.form_status !== FormValidationStatus.VALID ||
+                    activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL ||
+                    activity.review_status === ReviewStatus.UNDER_REVIEW
+                  )
+                    return;
+                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                  await invasivesApi.updateActivity({
+                    ...dbActivity,
+                    review_status: ReviewStatus.UNDER_REVIEW
+                  });
+                  console.log(666, dbActivity);
+                  const typename = activity.activity_subtype?.split('_')[2];
+                  notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
+                });
+              } catch (error) {
+                notifyError(databaseContext, JSON.stringify(error));
+              }
+            },
+            icon: <FindInPage />,
+            ...actions?.submit
+          },
+          approve: {
+            key: 'approve',
+            enabled: true,
+            label: 'Approve',
+            bulkAction: true,
+            rowAction: true,
+            displayInvalid: 'hidden',
+            triggerReload: true,
+            rowCondition: (row) =>
+              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+              row.form_status === FormValidationStatus.VALID &&
+              row.review_status === ReviewStatus.UNDER_REVIEW,
+            bulkCondition: (
+              selectedRows // only enable bulk submit if some field needs it
+            ) =>
+              selectedRows?.filter(
+                (row) =>
+                  row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+                  row.form_status === FormValidationStatus.VALID &&
+                  row.review_status === ReviewStatus.UNDER_REVIEW
+              )?.length > 0,
+            action: async (selectedRows) => {
+              try {
+                selectedRows.map(async (activity) => {
+                  if (
+                    activity.form_status !== FormValidationStatus.VALID ||
+                    activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL ||
+                    activity.review_status !== ReviewStatus.UNDER_REVIEW
+                  )
+                    return;
+                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                  await invasivesApi.updateActivity({
+                    ...dbActivity,
+                    review_status: ReviewStatus.APPROVED,
+                    reviewed_by: userInfo.preferred_username, // latest reviewer
+                    reviewed_at: moment(new Date()).format()
+                  });
+                  const typename = activity.activity_subtype?.split('_')[2];
+                  notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
+                });
+              } catch (error) {
+                notifyError(databaseContext, JSON.stringify(error));
+              }
+            },
+            icon: <Check />,
+            ...actions?.approve
+          },
+          disapprove: {
+            key: 'disapprove',
+            enabled: true,
+            label: 'Disapprove',
+            bulkAction: true,
+            rowAction: true,
+            displayInvalid: 'hidden',
+            triggerReload: true,
+            rowCondition: (row) =>
+              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+              row.form_status === FormValidationStatus.VALID &&
+              row.review_status === ReviewStatus.UNDER_REVIEW,
+            bulkCondition: (
+              selectedRows // only enable bulk submit if some field needs it
+            ) =>
+              selectedRows?.filter(
+                (row) =>
+                  row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+                  row.form_status === FormValidationStatus.VALID &&
+                  row.review_status === ReviewStatus.UNDER_REVIEW
+              )?.length > 0,
+            action: async (selectedRows) => {
+              try {
+                selectedRows.map(async (activity) => {
+                  if (
+                    activity.form_status !== FormValidationStatus.VALID ||
+                    activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL ||
+                    activity.review_status !== ReviewStatus.UNDER_REVIEW
+                  )
+                    return;
+                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                  await invasivesApi.updateActivity({
+                    ...dbActivity,
+                    review_status: ReviewStatus.DISAPPROVED,
+                    reviewed_by: userInfo.preferred_username, // latest reviewer
+                    reviewed_at: moment(new Date()).format()
+                  });
+                  const typename = activity.activity_subtype?.split('_')[2];
+                  notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
+                });
+              } catch (error) {
+                notifyError(databaseContext, JSON.stringify(error));
+              }
+            },
+            icon: <Clear />,
+            ...actions?.disapprove
+          },
+          ...createActions
+        }}
+        {...otherProps}
+      />
+    ),
+    [rows?.length, props.selected?.length, JSON.stringify(actions)]
+  );
 };
 
 export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo : any = keycloak?.userInfo;
+  const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -558,7 +593,7 @@ export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 
 export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo : any = keycloak?.userInfo;
+  const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -606,7 +641,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
             id: 'activity_subtype',
             valueMap: {
               ...ActivitySubtypeShortLabels,
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
+              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
             }
           },
           {
@@ -680,7 +715,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
 
 export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo : any = keycloak?.userInfo;
+  const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -730,7 +765,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
             id: 'activity_subtype',
             valueMap: {
               ...ActivitySubtypeShortLabels,
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
+              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
             }
           },
           {
@@ -818,7 +853,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 
               history.push(`/home/activity`);
             },
-            ...actions?.create_monitoring,
+            ...actions?.create_monitoring
           }
         }}
         {...otherProps}
@@ -829,7 +864,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 
 export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo : any = keycloak?.userInfo;
+  const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -878,7 +913,7 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
             id: 'activity_subtype',
             valueMap: {
               ...ActivitySubtypeShortLabels,
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant', // TODO remove when our data isn't awful
+              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
             }
           },
           {
@@ -911,7 +946,7 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
 
 export const MyMonitoringTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo : any = keycloak?.userInfo;
+  const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -969,7 +1004,7 @@ export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
 
 export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo : any = keycloak?.userInfo;
+  const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1063,13 +1098,9 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
   }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
-
-export const IAPPTable: React.FC<IRecordTable> = (props) =>
-  <PointsOfInterestTable
-    tableName="IAPP Points of Interest"
-    enableSelection={false}
-    {...props}
-  />;
+export const IAPPTable: React.FC<IRecordTable> = (props) => (
+  <PointsOfInterestTable tableName="IAPP Points of Interest" enableSelection={false} {...props} />
+);
 
 export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
   const { tableSchemaType, rows, ...otherProps } = props;
@@ -1105,15 +1136,18 @@ export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => {
           },
           'general_comment'
         ]}
-        rows={Array.isArray(rows) && (!rows?.length
-          ? []
-          : rows.map((row) => ({
-              ...row,
-              density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
-              distribution:
-                row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
-            }))
-        ) || rows}
+        rows={
+          (Array.isArray(rows) &&
+            (!rows?.length
+              ? []
+              : rows.map((row) => ({
+                  ...row,
+                  density: row.density + (row.density ? ' (' + row.invasive_plant_density_code + ')' : ''),
+                  distribution:
+                    row.distribution + (row.distribution ? ' (' + row.invasive_plant_distribution_code + ')' : '')
+                })))) ||
+          rows
+        }
         {...otherProps}
       />
     );
