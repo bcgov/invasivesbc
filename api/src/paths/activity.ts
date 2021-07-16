@@ -80,58 +80,58 @@ const post_put_apiDoc = {
           },
           allOf: [{
             oneOf: [{
-            properties: {
-              media: {
-                type: 'array',
-                title: 'Media',
-                items: {
-                  $ref: '#/components/schemas/Media'
-                }
-              },
-              geometry: {
-                type: 'array',
-                title: 'Geometries',
-                items: {
-                  ...(geoJSON_Feature_Schema as any)
+              properties: {
+                media: {
+                  type: 'array',
+                  title: 'Media',
+                  items: {
+                    $ref: '#/components/schemas/Media'
+                  }
                 },
-                description: 'An array of GeoJSON Features'
-              },
-              form_data: {
-                oneOf: [
-                  { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
-                  { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
-                  { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
-                  { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
-                  { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
-                  { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
-                  { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
-                  { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                  { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
-                  { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
-                  { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
-                  { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
-                  { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
-                  { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
-                ]
-              },
-              created_by: {
-                type: 'string',
-                title: 'Created by',
-                description: 'ID of the author of the activity.'
-              },
-              sync_status: {
-                enum: ['Not Synced', 'Sync Failed', 'Sync Successful'],
-                type: 'string',
-                title: 'Sync status',
-                description: 'Whether the activity was synced, not-synced, or had a sync error'
-              },
-              form_status: {
-                enum: ['Valid'],
-                type: 'string',
-                title: 'Form status',
-                description: 'Validation status of the activity form.'
+                geometry: {
+                  type: 'array',
+                  title: 'Geometries',
+                  items: {
+                    ...(geoJSON_Feature_Schema as any)
+                  },
+                  description: 'An array of GeoJSON Features'
+                },
+                form_data: {
+                  oneOf: [
+                    { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
+                    { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
+                    { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
+                    { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
+                    { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
+                    { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
+                    { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
+                    { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
+                    { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+                    { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                    { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
+                    { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
+                    { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
+                    { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
+                  ]
+                },
+                created_by: {
+                  type: 'string',
+                  title: 'Created by',
+                  description: 'ID of the author of the activity.'
+                },
+                sync_status: {
+                  enum: ['Not Synced', 'Sync Failed', 'Sync Successful'],
+                  type: 'string',
+                  title: 'Sync status',
+                  description: 'Whether the activity was synced, not-synced, or had a sync error'
+                },
+                form_status: {
+                  enum: ['Valid'],
+                  type: 'string',
+                  title: 'Form status',
+                  description: 'Validation status of the activity form.'
+                }
               }
-            }
             },{
               properties: {
                 form_status: {
@@ -143,7 +143,7 @@ const post_put_apiDoc = {
               }
             }]
           }, {
-            oneOf: [{
+            anyOf: [{
               properties: {
                 review_status: {
                   enum: ['Pre-Approved', 'Not Reviewed', 'Under Review'],
