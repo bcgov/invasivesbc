@@ -22,6 +22,9 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       created_by,
       sync_status,
       form_status,
+      review_status,
+      reviewed_by,
+      reviewed_at,
       activity_payload,
       geog,
       media_keys
@@ -34,6 +37,9 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       ${activity.created_by},
       ${activity.sync_status},
       ${activity.form_status},
+      ${activity.review_status},
+      ${activity.reviewed_by},
+      ${activity.reviewed_at},
       ${activity.activityPostBody}
   `;
 

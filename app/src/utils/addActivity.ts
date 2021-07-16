@@ -37,7 +37,7 @@ const mapKeys = (source, mappingFunction) => Object.keys(source).reduce(
 */
 export const mapDocToDBActivity = (doc: any) => ({
   ...mapKeys(doc, snakeCase),
-  sync_status: doc.sync.status,
+  sync_status: doc.sync?.status,
   media: doc.photos?.map((photo) => ({
     file_name: photo.filepath,
     encoded_file: photo.dataUrl

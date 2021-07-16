@@ -32,6 +32,10 @@ export class ActivityPostRequestBody {
   sync_status: string;
   created_by: string;
 
+  review_status: string;
+  reviewed_by: string;
+  reviewed_at: string;
+
   /**
    * Creates an instance of ActivityPostRequestBody.
    *
@@ -74,6 +78,10 @@ export class ActivityPostRequestBody {
     this.form_status = (obj && obj.form_status) || null;
     this.sync_status = (obj && obj.sync_status) || null;
     this.created_by = (obj && obj.created_by) || null;
+
+    this.review_status = (obj && obj.review_status) || null;
+    this.reviewed_by = (obj && obj.reviewed_by) || null;
+    this.reviewed_at = (obj && obj.reviewed_at) || null;
   }
 }
 
