@@ -218,7 +218,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
         ...((geometry && { search_feature: geometry }) || {}),
         limit: 1000,
-        page: 1
+        page: 0
       };
       console.log('checking...');
       console.log(pointOfInterestSearchCriteria);
@@ -239,8 +239,9 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
 
       let total_to_fetch = response.count;
+      console.log('*** total points of interest to get:  ' + response.count);
       while (numberPointsOfInterestFetched !== total_to_fetch) {
-        if (pointOfInterestSearchCriteria.page != 1) {
+        if (pointOfInterestSearchCriteria.page !== 0) {
           try {
             response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
           } catch (e) {
@@ -252,57 +253,29 @@ export const TripDataControls: React.FC<any> = (props) => {
         for (const row of response.rows) {
           let photos = [];
           if (setOfChoices.includePhotos) photos = await getPhotos(row);
-
-          if (Capacitor.getPlatform() == 'web') {
-            upserts = {
-              ...upserts,
-              ['POI' + row.point_of_interest_id]: (existingDoc: any) => ({
-                ...existingDoc,
-                _id: 'POI' + row.point_of_interest_id,
-                docType: DocType.REFERENCE_POINT_OF_INTEREST,
-                trip_IDs: existingDoc?.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
-                ...row,
-                formData: row.point_of_interest_payload.form_data,
-                pointOfInterestType: row.point_of_interest_type,
-                pointOfInterestSubtype: row.point_of_interest_subtype,
-                geometry: [...row.point_of_interest_payload.geometry],
-                photos: photos
-              })
-            };
-          } else {
-            let jsonObj = {
-              _id: row.point_of_interest_id,
-              docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              ...row,
-              formData: row.point_of_interest_payload.form_data,
-              pointOfInterestType: row.point_of_interest_type,
-              pointOfInterestSubtype: row.point_of_interest_subtype,
-              geometry: [...row.point_of_interest_payload.geometry],
-              photos: photos
-            };
-            upserts.push({
-              docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              ID: row.point_of_interest_id,
-              type: UpsertType.DOC_TYPE_AND_ID,
-              json: jsonObj
-            });
-          }
+          let jsonObj = {
+            _id: row.point_of_interest_id,
+            docType: DocType.REFERENCE_POINT_OF_INTEREST,
+            ...row,
+            formData: row.point_of_interest_payload.form_data,
+            pointOfInterestType: row.point_of_interest_type,
+            pointOfInterestSubtype: row.point_of_interest_subtype,
+            geometry: [...row.point_of_interest_payload.geometry],
+            photos: photos
+          };
+          upserts.push({
+            docType: DocType.REFERENCE_POINT_OF_INTEREST,
+            ID: row.point_of_interest_id,
+            type: UpsertType.DOC_TYPE_AND_ID,
+            json: jsonObj
+          });
         }
-        try {
-          if (Capacitor.getPlatform() == 'web') {
-            numberPointsOfInterestFetched += await bulkUpsert(upserts);
-          } else {
-            console.log('*** passing to db ops ***');
-            numberPointsOfInterestFetched += await upsert(upserts, databaseContext);
-            console.log('*** done db ops ***');
-          }
-        } catch (error) {
-          console.log('error saving points of interest');
-          console.log(error);
-          // notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
-          alert('Error with inserting Points of Interest into database: ' + error);
-        }
+        console.log('');
+        numberPointsOfInterestFetched += response.rows.length;
+        console.log('*** total points of interest fetched:  ' + numberPointsOfInterestFetched);
+        console.log('*** total points of interest to get:  ' + total_to_fetch);
         pointOfInterestSearchCriteria.page += 1;
+        console.log(pointOfInterestSearchCriteria);
       }
     }
     alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
@@ -415,7 +388,8 @@ export const TripDataControls: React.FC<any> = (props) => {
   };
 
   const deleteTripAndFetch = async () => {
-    //wipe activities associated to that trip here:
+    //get the trip again cause it prob changed
+    await getTrip();
     const deleteOldTrip = () => {};
     //todo:
     deleteOldTrip();

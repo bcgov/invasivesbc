@@ -148,7 +148,7 @@ export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBo
 export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
-  /* 
+  /*
   select poi.*, ot.survey_date
   from point_of_interest_incoming_data poi
   left join other_table ot on poi.id_column = ot.id_column
@@ -187,14 +187,14 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const format = require('pg-format');
       const noTime = searchCriteria.date_range_start.toString().substr(0, 10);
-      const sql = format(' AND iapp_site_summary.%I >= %s::DATE', 'min_' + searchCriteria.iappType, noTime);
+      const sql = format(" AND iapp_site_summary.%I >= '%s'::DATE", 'min_' + searchCriteria.iappType, noTime);
       sqlStatement.append(sql);
     }
     if (searchCriteria.date_range_end) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const format = require('pg-format');
       const noTime = searchCriteria.date_range_end.toString().substr(0, 10);
-      const sql = format(' AND iapp_site_summary.%I <= %s::DATE', 'max_' + searchCriteria.iappType, noTime);
+      const sql = format(" AND iapp_site_summary.%I <= '%s'::DATE", 'max_' + searchCriteria.iappType, noTime);
       sqlStatement.append(sql);
     }
   } else {
