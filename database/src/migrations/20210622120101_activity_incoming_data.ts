@@ -15,17 +15,22 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.created_by IS 'Identifier of the author of an activity';
 
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
-    ADD COLUMN form_status VARCHAR(100) DEFAULT 'Sync Successful';
+    ADD COLUMN form_status VARCHAR(100) DEFAULT 'Not Validated';
     
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.form_status IS 'Validation status of the activity form';
     
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
-    ADD COLUMN sync_status VARCHAR(100) DEFAULT 'Not Validated';
+    ADD COLUMN sync_status VARCHAR(100) DEFAULT 'Sync Successful';
     
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.sync_status IS 'Sync status of the activity form';
 
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
-    ADD COLUMN reviewed_by VARCHAR(100) DEFAULT NULL;
+    ADD COLUMN review_status VARCHAR(100) DEFAULT 'Not Reviewed';
+    
+    COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.review_status IS 'Indicator of whether the activity is up for review by administrators';
+
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
+    ADD COLUMN reviewed_by VARCHAR(100);
     
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.reviewed_by IS 'Identifier of the latest reviewer approving an activity for wide usage';
   

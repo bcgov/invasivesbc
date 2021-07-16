@@ -315,7 +315,7 @@ function updateActivity(): RequestHandler {
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       // kick off asynchronous context collection activities
-      if (req.body.form_data.activity_data.latitude)
+      if (req.body.form_data?.activity_data?.latitude)
         commitContext(result, req);
 
       return res.status(200).json(result);
