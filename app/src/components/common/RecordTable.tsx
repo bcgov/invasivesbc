@@ -295,13 +295,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     setTotalRows(props.totalRows ? props.totalRows : props.rows.length);
   }, [props.totalRows, Array.isArray(props.rows) && props.rows?.length]);
 
-  useEffect(() => {
-      setRows(Array.isArray(props.rows) ? props.rows : []);
-      setTotalRows(props.totalRows ? props.totalRows : props.rows.length);
-    },
-    [props.totalRows, Array.isArray(props.rows) && props.rows?.length]
-  );
-
   const fetchRows = async () => {
     if (props.rows instanceof Function) {
       if (
@@ -665,7 +658,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     ),
     [
       loading,
-      pageRows?.[0]?._id,
+      JSON.stringify(pageRows),
       totalRows,
       schemasLoaded,
       page,

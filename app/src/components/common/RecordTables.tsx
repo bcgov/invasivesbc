@@ -185,7 +185,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     created_by,
     keyField = 'activity_id',
     enableSelection = true,
-    headers = [],
     ...otherProps
   } = props;
 
@@ -233,7 +232,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       enableSelection={enableSelection}
       startExpanded
       headers={[
-        ...headers,
         'activity_id',
         'activity_type',
         {
@@ -676,6 +674,11 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
             ]}
             rows={[row]}
             pagination={false}
+            actions={{
+              sync: {
+                enabled: false
+              }
+            }}
           />
         )}
         actions={{
