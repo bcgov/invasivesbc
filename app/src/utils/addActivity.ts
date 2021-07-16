@@ -14,21 +14,23 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const camelCase = (str) => {
-  return str.replace(/(\_\w)/g, function(word, index) {
-    return index === 0 ? word.toLowerCase() : word.toUpperCase();
-  }).replace(/\s+|\_/g, '');
-}
+  return str
+    .replace(/(\_\w)/g, function (word, index) {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+    .replace(/\s+|\_/g, '');
+};
 
+const snakeCase = (str) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
-const snakeCase = (str) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-
-const mapKeys = (source, mappingFunction) => Object.keys(source).reduce(
-  (obj, key) => ({
-    ...obj,
-    [mappingFunction(key)]: source[key]
-  }),
-  {}
-);
+const mapKeys = (source, mappingFunction) =>
+  Object.keys(source).reduce(
+    (obj, key) => ({
+      ...obj,
+      [mappingFunction(key)]: source[key]
+    }),
+    {}
+  );
 
 /*
   Function to temporarily deal with a grievous oversight by initial devs who thought 
@@ -69,7 +71,7 @@ export const mapDBActivityToDoc = (dbActivity: any) => {
       status: dbActivity.sync_status
     },
     _id: dbActivity.activity_id
-  }
+  };
   return doc;
 };
 

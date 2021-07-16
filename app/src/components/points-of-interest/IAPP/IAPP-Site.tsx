@@ -55,8 +55,13 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     ...form_data?.point_of_interest_data,
     ...form_data?.point_of_interest_type_data
   };
-  const { surveys, mechanical_treatments, chemical_treatments, biological_treatments, biological_dispersals } =
-    form_data;
+  const {
+    surveys,
+    mechanical_treatments,
+    chemical_treatments,
+    biological_treatments,
+    biological_dispersals
+  } = form_data;
   const coordinates = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates;
   const longitude = parseFloat(coordinates[0]).toFixed(6);
   const latitude = parseFloat(coordinates[1]).toFixed(6);
