@@ -295,7 +295,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       formData: updatedFormData,
       status: ActivityStatus.EDITED,
       dateUpdated: new Date(),
-      formStatus: FormValidationStatus.NOT_VALIDATED
+      formStatus: ref?.state?.errors?.length === 0 ? FormValidationStatus.VALID : FormValidationStatus.INVALID
     });
   });
   /**
@@ -313,8 +313,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     await updateDoc({
       formData: { ...sentFormData, activity_subtype_data: updatedActivitySubtypeData },
       status: ActivityStatus.EDITED,
-      dateUpdated: new Date(),
-      formStatus: FormValidationStatus.VALID
+      dateUpdated: new Date()
     });
   });
 

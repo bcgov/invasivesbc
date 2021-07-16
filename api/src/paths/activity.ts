@@ -70,9 +70,16 @@ const post_put_apiDoc = {
               type: 'string',
               title: 'Form status',
               description: 'Validation status of the activity form.'
+            },
+            review_status: {
+              enum: ['Pre-Approved', 'Not Reviewed', 'Under Review', 'Approved', 'Disapproved'],
+              type: 'string',
+              title: 'Review status',
+              description: 'The current review status of the activity'
             }
           },
-          oneOf: [{
+          allOf: [{
+            oneOf: [{
             properties: {
               media: {
                 type: 'array',
@@ -125,15 +132,48 @@ const post_put_apiDoc = {
                 description: 'Validation status of the activity form.'
               }
             }
-          },{
-            properties: {
-              form_status: {
-                enum: ['Invalid', 'Not Validated'],
-                type: 'string',
-                title: 'Form status',
-                description: 'Validation status of the activity form.'
+            },{
+              properties: {
+                form_status: {
+                  enum: ['Invalid', 'Not Validated'],
+                  type: 'string',
+                  title: 'Form status',
+                  description: 'Validation status of the activity form.'
+                }
               }
-            }
+            }]
+          }, {
+            oneOf: [{
+              properties: {
+                review_status: {
+                  enum: ['Pre-Approved', 'Not Reviewed', 'Under Review'],
+                  type: 'string',
+                  title: 'Review status',
+                  description: 'The current review status of the activity'
+                }
+              }
+            },{
+              properties: {
+                review_status: {
+                  enum: ['Approved', 'Disapproved'],
+                  type: 'string',
+                  title: 'Review status',
+                  description: 'The current review status of the activity'
+                },
+                reviewed_by: {
+                  type: 'string',
+                  title: 'Reviewed by',
+                  description: 'The id of the latest reviewer'
+                },
+                reviewed_at: {
+                  type: 'string',
+                  title: 'Reviewed at',
+                  format: 'date-time',
+                  example: '2018-11-13T20:20:39+00:00',
+                  description: 'Date of latest review. Must be in ISO8601 format.'
+                }
+              }
+            }]
           }]
         }
       }

@@ -91,3 +91,11 @@ export enum FormValidationStatus {
   INVALID = 'Invalid',
   VALID = 'Valid'
 }
+
+export enum ReviewStatus {
+  PREAPPROVED = 'Pre-Approved', // is an admin activity, requiring no mandatory review process
+  NOT_REVIEWED = 'Not Reviewed', // unreviewed, requiring review eventually
+  UNDER_REVIEW = 'Under Review', // passed to review process
+  APPROVED = 'Approved', // approved by review process
+  DISAPPROVED = 'Disapproved' // deemed invalid by review process - can be resubmitted for review
+}

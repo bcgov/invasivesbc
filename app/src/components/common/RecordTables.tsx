@@ -1,9 +1,10 @@
 import { makeStyles, Theme } from '@material-ui/core';
 import clsx from 'clsx';
-import { ActivitySubtype, ActivityType, ActivitySubtypeShortLabels, ActivitySyncStatus, FormValidationStatus } from 'constants/activities';
+import moment from 'moment';
+import { ActivitySubtype, ActivityType, ActivitySubtypeShortLabels, ActivitySyncStatus, FormValidationStatus, ReviewStatus } from 'constants/activities';
 import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { Add, DeleteForever, Sync, Edit, Delete } from '@material-ui/icons';
+import { Add, DeleteForever, Sync, Edit, Delete, FindInPage, Check, Clear } from '@material-ui/icons';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -24,7 +25,10 @@ export const activityStandardMapping = (doc) => ({
   created_timestamp: doc?.created_timestamp?.substring(0, 10),
   latitude: parseFloat(doc?.formData?.activity_data?.latitude).toFixed(6),
   longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6),
-  reviewed: doc?.reviewed_by?.length ? "\u2713" : "\u2716"
+  review_status_rendered: 
+    doc?.review_status === ReviewStatus.APPROVED || doc?.review_status === ReviewStatus.DISAPPROVED
+    ? doc?.review_status + ' by ' + doc?.reviewed_by + ' at ' + doc?.reviewed_at
+    : doc?.review_status 
 });
 
 export const poiStandardMapping = (doc) => ({
@@ -334,40 +338,17 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           bulkCondition: undefined, // TODO admin or author only
           rowCondition: undefined,
           displayInvalid: 'disable',
+          triggerReload: true,
           ...actions?.delete
-        },
-        create_treatment: {
-          key: 'create_treatment',
-          enabled: true,
-          action: (selectedRows) => {
-            const ids = selectedRows.map((row: any) => row['activity_id']);
-            history.push({
-              pathname: `/home/activity/treatment`,
-              search: '?observations=' + ids.join(','),
-              state: { observations: ids }
-            });
-          },
-          label: 'Create Treatment',
-          bulkAction: true,
-          rowAction: false,
-          displayInvalid: 'error',
-          invalidError: 'All selected activities must be of the same SubType to create a Treatment',
-          /*
-            Function to determine if all selected observation records are
-            of the same subtype. For example: Cannot create a treatment if you select a plant
-            and an animal observation, and most probably will not go treat a terrestrial
-            and aquatic observation in a single treatment as those are different areas
-          */
-          bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
-          ...actions?.create_treatment
         },
         sync: {
           key: 'sync',
           enabled: true,
-          label: 'Sync',
+          label: 'Save',
           bulkAction: true,
           rowAction: true,
           displayInvalid: 'disable',
+          triggerReload: true,
           rowCondition: (row) =>
             row.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
             && row.form_status === FormValidationStatus.VALID,
@@ -379,14 +360,16 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           action: async (selectedRows) => {
             try {
               selectedRows.map(async (activity) => {
-                const dbActivity: any = await invasivesApi.getActivityById(activity.activityId);
+                if (activity.form_status !== FormValidationStatus.VALID
+                || activity.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL)
+                  return;
+                const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
                 await invasivesApi.updateActivity({
                   ...dbActivity,
-                  ...mapDocToDBActivity(activity),
                   sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
                 });
-
-                notifySuccess(databaseContext, `Syncing ${activity.activitySubtype.split('_')[2]} activity has succeeded.`);
+                const typename = activity.activity_subtype?.split('_')[2];
+                notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
               })
             } catch (error) {
               notifyError(databaseContext, JSON.stringify(error));
@@ -394,6 +377,131 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           },
           icon: <Sync />,
           ...actions?.sync
+        },
+        submit: {
+          key: 'submit',
+          enabled: true,
+          label: 'Submit For Review',
+          bulkAction: true,
+          rowAction: true,
+          displayInvalid: 'hidden',
+          triggerReload: true,
+          rowCondition: (row) =>
+            row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
+            && row.form_status === FormValidationStatus.VALID
+            && row.review_status !== ReviewStatus.UNDER_REVIEW,
+          bulkCondition: (selectedRows) => // only enable bulk submit if some field needs it
+            selectedRows?.filter((row) =>
+              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
+              && row.form_status === FormValidationStatus.VALID
+              && row.review_status !== ReviewStatus.UNDER_REVIEW
+            )?.length > 0,
+          action: async (selectedRows) => {
+            try {
+              selectedRows.map(async (activity) => {
+                if (activity.form_status !== FormValidationStatus.VALID
+                || activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
+                || activity.review_status === ReviewStatus.UNDER_REVIEW)
+                  return;
+                const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                await invasivesApi.updateActivity({
+                  ...dbActivity,
+                  review_status: ReviewStatus.UNDER_REVIEW
+                });
+                console.log(666, dbActivity);
+                const typename = activity.activity_subtype?.split('_')[2];
+                notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
+              })
+            } catch (error) {
+              notifyError(databaseContext, JSON.stringify(error));
+            }
+          },
+          icon: <FindInPage />,
+          ...actions?.submit
+        },
+        approve: {
+          key: 'approve',
+          enabled: true,
+          label: 'Approve',
+          bulkAction: true,
+          rowAction: true,
+          displayInvalid: 'hidden',
+          triggerReload: true,
+          rowCondition: (row) =>
+            row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
+            && row.form_status === FormValidationStatus.VALID
+            && row.review_status === ReviewStatus.UNDER_REVIEW,
+          bulkCondition: (selectedRows) => // only enable bulk submit if some field needs it
+            selectedRows?.filter((row) =>
+              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
+              && row.form_status === FormValidationStatus.VALID
+              && row.review_status === ReviewStatus.UNDER_REVIEW
+            )?.length > 0,
+          action: async (selectedRows) => {
+            try {
+              selectedRows.map(async (activity) => {
+                if (activity.form_status !== FormValidationStatus.VALID
+                || activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
+                || activity.review_status !== ReviewStatus.UNDER_REVIEW)
+                  return;
+                const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                await invasivesApi.updateActivity({
+                  ...dbActivity,
+                  review_status: ReviewStatus.APPROVED,
+                  reviewed_by: userInfo.preferred_username, // latest reviewer
+                  reviewed_at: moment(new Date()).format()
+                });
+                const typename = activity.activity_subtype?.split('_')[2];
+                notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
+              })
+            } catch (error) {
+              notifyError(databaseContext, JSON.stringify(error));
+            }
+          },
+          icon: <Check />,
+          ...actions?.approve
+        },
+        disapprove: {
+          key: 'disapprove',
+          enabled: true,
+          label: 'Disapprove',
+          bulkAction: true,
+          rowAction: true,
+          displayInvalid: 'hidden',
+          triggerReload: true,
+          rowCondition: (row) =>
+            row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
+            && row.form_status === FormValidationStatus.VALID
+            && row.review_status === ReviewStatus.UNDER_REVIEW,
+          bulkCondition: (selectedRows) => // only enable bulk submit if some field needs it
+            selectedRows?.filter((row) =>
+              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
+              && row.form_status === FormValidationStatus.VALID
+              && row.review_status === ReviewStatus.UNDER_REVIEW
+            )?.length > 0,
+          action: async (selectedRows) => {
+            try {
+              selectedRows.map(async (activity) => {
+                if (activity.form_status !== FormValidationStatus.VALID
+                || activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL
+                || activity.review_status !== ReviewStatus.UNDER_REVIEW)
+                  return;
+                const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                await invasivesApi.updateActivity({
+                  ...dbActivity,
+                  review_status: ReviewStatus.DISAPPROVED,
+                  reviewed_by: userInfo.preferred_username, // latest reviewer
+                  reviewed_at: moment(new Date()).format()
+                });
+                const typename = activity.activity_subtype?.split('_')[2];
+                notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
+              })
+            } catch (error) {
+              notifyError(databaseContext, JSON.stringify(error));
+            }
+          },
+          icon: <Clear />,
+          ...actions?.disapprove
         },
         ...createActions
       }}
@@ -416,8 +524,8 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           'sync_status',
           'form_status',
           {
-            id: 'reviewed',
-            align: 'center'
+            id: 'review_status_rendered',
+            title: 'Review Status'
           }
         ]}
         created_by={userInfo?.preferred_username}
@@ -462,8 +570,8 @@ export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           'sync_status',
           'form_status',
           {
-            id: 'reviewed',
-            align: 'center'
+            id: 'review_status_rendered',
+            title: 'Review Status'
           }
         ]}
         created_by={userInfo?.preferred_username}
@@ -584,8 +692,8 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
           'sync_status',
           'form_status',
           {
-            id: 'reviewed',
-            align: 'center'
+            id: 'review_status_rendered',
+            title: 'Review Status'
           }
         ]}
         created_by={userInfo?.preferred_username}
@@ -733,8 +841,8 @@ export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
           'sync_status',
           'form_status',
           {
-            id: 'reviewed',
-            align: 'center'
+            id: 'review_status_rendered',
+            title: 'Review Status'
           }
         ]}
         created_by={userInfo?.preferred_username}
@@ -815,8 +923,8 @@ export const MyMonitoringTable: React.FC<IActivitiesTable> = (props) => {
           'sync_status',
           'form_status',
           {
-            id: 'reviewed',
-            align: 'center'
+            id: 'review_status_rendered',
+            title: 'Review Status'
           }
         ]}
         created_by={userInfo?.preferred_username}
@@ -873,8 +981,8 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
           'sync_status',
           'form_status',
           {
-            id: 'reviewed',
-            align: 'center'
+            id: 'review_status_rendered',
+            title: 'Review Status'
           }
         ]}
         created_by={userInfo?.preferred_username}
