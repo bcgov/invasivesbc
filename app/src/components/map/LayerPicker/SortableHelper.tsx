@@ -101,13 +101,13 @@ export function LayerPicker(props: any) {
 
         setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
     };
-
-    var divRef = React.useRef();
-
+    
+    const colorDiv = React.useRef();
     /* Only for ReactLeaflet */
     React.useEffect(() => {
-        L.DomEvent.disableClickPropagation(divRef?.current);
-        L.DomEvent.disableScrollPropagation(divRef?.current);
+        console.log('in hook');
+        //L.DomEvent.disableClickPropagation(divRef?.current);
+        //L.DomEvent.disableScrollPropagation(divRef?.current);
     });
 
     const DragHandle = SortableHandle(() => (
@@ -154,9 +154,10 @@ export function LayerPicker(props: any) {
                                     <ColorPicker
                                         name="color"
                                         defaultValue={parent.colorCode}
-                                        onChange={(color: any) =>
+                                        ref={colorDiv}
+                                        onChange={(color: any) => {
                                             updateParent(parent.id, { colorCode: color })
-                                        }
+                                        }}
                                     />
                                 </Grid>
                                 <Grid item xs={2} className={classes.spinnerGridItem} style={{ position: "relative" }}>
@@ -212,7 +213,7 @@ export function LayerPicker(props: any) {
     });
 
     const SortableListContainer = SortableContainer(({ items }: any) => (
-        <List ref={divRef}>
+        <List>
             {items.map((parent: { id: string; order: number }) => (
                 <SortableParentLayer
                     key={parent.id}
