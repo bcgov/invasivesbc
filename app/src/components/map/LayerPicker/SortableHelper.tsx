@@ -102,10 +102,18 @@ export function LayerPicker(props: any) {
         setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
     };
     
-    const colorDiv = React.useRef();
+    const [state, setState] = React.useState(true);
+    
+    const colorRef = React.useRef();
+    console.log(state);
+    const divRef = React.useRef();
+
     /* Only for ReactLeaflet */
     React.useEffect(() => {
-        console.log('in hook');
+        //if(divRef?.current)
+            //console.log('in hook');
+        if(colorRef?.current)
+            console.log('in colorPicker');
         //L.DomEvent.disableClickPropagation(divRef?.current);
         //L.DomEvent.disableScrollPropagation(divRef?.current);
     });
@@ -121,7 +129,7 @@ export function LayerPicker(props: any) {
             updateParent((parent as any).id, { expanded: expanded });
         };
         return (
-            <ListItem ContainerComponent="div">
+            <ListItem ContainerComponent="div" ref={divRef}>
                 {/*<Grid container>
                     {/*<Grid item>*/}
                         <Accordion
@@ -154,7 +162,7 @@ export function LayerPicker(props: any) {
                                     <ColorPicker
                                         name="color"
                                         defaultValue={parent.colorCode}
-                                        ref={colorDiv}
+                                        ref={colorRef}
                                         onChange={(color: any) => {
                                             updateParent(parent.id, { colorCode: color })
                                         }}
