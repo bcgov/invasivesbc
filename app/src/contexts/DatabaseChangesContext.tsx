@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { DatabaseContext } from './DatabaseContext';
 import moment from 'moment';
+import { Capacitor } from '@capacitor/core';
 
 export type IDatabaseChanges = PouchDB.Core.ChangesResponseChange<any> | PouchDB.Core.ChangesResponse<any> | any;
 
@@ -26,6 +27,9 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
 
   const addChange = useCallback(
     async (change) => {
+      if (Capacitor.getPlatform() === 'ios') {
+        return;
+      }
       const now = moment().valueOf();
       setLastChangeTimestamp(now);
       if (!lastChangeTimestamp || now > lastChangeTimestamp + MIN_INTERVAL) {
@@ -46,6 +50,9 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
   );
 
   const setupDatabaseChanges = useCallback(async () => {
+    if (Capacitor.getPlatform() === 'ios') {
+      return;
+    }
     if (!changesListener || changesListener['isCancelled']) {
       const listener = databaseContext.database
         .changes({ live: true, since: 'now' })

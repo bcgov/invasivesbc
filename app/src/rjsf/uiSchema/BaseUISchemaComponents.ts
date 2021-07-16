@@ -566,9 +566,7 @@ const LumpedSpeciesPercentCover = {
   lumped_species_type: {
     'ui:widget': 'single-select-autocomplete'
   },
-  percent_covered: {
-    'ui:widget': 'single-select-autocomplete'
-  }
+  percent_covered: {}
 };
 
 const LumpedSpeciesDaubenmire = {

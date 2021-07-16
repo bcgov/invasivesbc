@@ -81,7 +81,8 @@ export const TripDataControls: React.FC<any> = (props) => {
           photos.push({ filepath: media.file_name, dataUrl: media.encoded_file });
         });
       } catch {
-        notifyError(databaseContext, 'Could not fetch photos for ' + row._id);
+        alert('Could not fetch photos for ' + row._id);
+        //notifyError(databaseContext, 'Could not fetch photos for ' + row._id);
       }
       return photos;
     }
@@ -190,11 +191,12 @@ export const TripDataControls: React.FC<any> = (props) => {
           alert('Cached ' + numberActivitiesFetched + ' activities.');
         }
       } catch (error) {
-        notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
+        alert('There was an error: ' + error);
+        // notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
       }
     }
-
-    notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
+    alert('Fetched ' + numberActivitiesFetched + ' activities.');
+    // notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
   };
 
   const fetchPointsOfInterest = async () => {
@@ -211,13 +213,15 @@ export const TripDataControls: React.FC<any> = (props) => {
 
       let pointOfInterestSearchCriteria: IPointOfInterestSearchCriteria = {
         ...((setOfChoices.pointOfInterestType && { point_of_interest_type: setOfChoices.pointOfInterestType }) || {}),
+        ...((setOfChoices.iappType && { iappType: setOfChoices.iappType }) || {}),
         ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
         ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
         ...((geometry && { search_feature: geometry }) || {}),
         limit: 1000,
-        page: 1
+        page: 0
       };
-
+      console.log('checking...');
+      console.log(pointOfInterestSearchCriteria);
       let response: any;
       console.log('*** fetching points of interest ***');
       try {
@@ -235,8 +239,9 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
 
       let total_to_fetch = response.count;
+      console.log('*** total points of interest to get:  ' + response.count);
       while (numberPointsOfInterestFetched !== total_to_fetch) {
-        if (pointOfInterestSearchCriteria.page != 1) {
+        if (pointOfInterestSearchCriteria.page !== 0) {
           try {
             response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
           } catch (e) {
@@ -248,60 +253,33 @@ export const TripDataControls: React.FC<any> = (props) => {
         for (const row of response.rows) {
           let photos = [];
           if (setOfChoices.includePhotos) photos = await getPhotos(row);
-
-          if (Capacitor.getPlatform() == 'web') {
-            upserts = {
-              ...upserts,
-              ['POI' + row.point_of_interest_id]: (existingDoc: any) => ({
-                ...existingDoc,
-                _id: 'POI' + row.point_of_interest_id,
-                docType: DocType.REFERENCE_POINT_OF_INTEREST,
-                trip_IDs: existingDoc?.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
-                ...row,
-                formData: row.point_of_interest_payload.form_data,
-                pointOfInterestType: row.point_of_interest_type,
-                pointOfInterestSubtype: row.point_of_interest_subtype,
-                geometry: [...row.point_of_interest_payload.geometry],
-                photos: photos
-              })
-            };
-          } else {
-            let jsonObj = {
-              _id: row.point_of_interest_id,
-              docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              ...row,
-              formData: row.point_of_interest_payload.form_data,
-              pointOfInterestType: row.point_of_interest_type,
-              pointOfInterestSubtype: row.point_of_interest_subtype,
-              geometry: [...row.point_of_interest_payload.geometry],
-              photos: photos
-            };
-            upserts.push({
-              docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              ID: row.point_of_interest_id,
-              type: UpsertType.DOC_TYPE_AND_ID,
-              json: jsonObj
-            });
-          }
+          let jsonObj = {
+            _id: row.point_of_interest_id,
+            docType: DocType.REFERENCE_POINT_OF_INTEREST,
+            ...row,
+            formData: row.point_of_interest_payload.form_data,
+            pointOfInterestType: row.point_of_interest_type,
+            pointOfInterestSubtype: row.point_of_interest_subtype,
+            geometry: [...row.point_of_interest_payload.geometry],
+            photos: photos
+          };
+          upserts.push({
+            docType: DocType.REFERENCE_POINT_OF_INTEREST,
+            ID: row.point_of_interest_id,
+            type: UpsertType.DOC_TYPE_AND_ID,
+            json: jsonObj
+          });
         }
-        try {
-          if (Capacitor.getPlatform() == 'web') {
-            numberPointsOfInterestFetched += await bulkUpsert(upserts);
-          } else {
-            console.log('*** passing to db ops ***');
-            numberPointsOfInterestFetched += await upsert(upserts, databaseContext);
-            console.log('*** done db ops ***');
-          }
-        } catch (error) {
-          console.log('error saving points of interest');
-          console.log(error);
-          notifyError(databaseContext, 'Error with inserting Points of Interest into database: ' + error);
-        }
+        console.log('');
+        numberPointsOfInterestFetched += response.rows.length;
+        console.log('*** total points of interest fetched:  ' + numberPointsOfInterestFetched);
+        console.log('*** total points of interest to get:  ' + total_to_fetch);
         pointOfInterestSearchCriteria.page += 1;
+        console.log(pointOfInterestSearchCriteria);
       }
     }
     alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
-    notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
+    //notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
   };
 
   const fetchMetabaseQueries = async () => {
@@ -321,7 +299,8 @@ export const TripDataControls: React.FC<any> = (props) => {
       };
 
       if (!setOfChoices.metabaseQueryId) {
-        notifyError(databaseContext, 'Metabase Query ID cannot be blank, please select a query');
+        //notifyError(databaseContext, 'Metabase Query ID cannot be blank, please select a query');
+        alert('Metabase Query ID cannot be blank, please select a query');
         return;
       }
 
@@ -387,21 +366,30 @@ export const TripDataControls: React.FC<any> = (props) => {
       try {
         await bulkUpsert(upserts);
       } catch (error) {
-        notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
+        //notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
+        alert('Error with inserting Metabase results into database: ' + error);
       }
     }
-    notifySuccess(
-      databaseContext,
+    alert(
       'Cached ' +
         (countActivities ? countActivities + ' activities' : '') +
         (countActivities && countPois ? ' and ' : '') +
         (countPois ? countPois + ' points of interest' : '') +
         (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
     );
+    // notifySuccess(
+    //   databaseContext,
+    //   'Cached ' +
+    //     (countActivities ? countActivities + ' activities' : '') +
+    //     (countActivities && countPois ? ' and ' : '') +
+    //     (countPois ? countPois + ' points of interest' : '') +
+    //     (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
+    // );
   };
 
   const deleteTripAndFetch = async () => {
-    //wipe activities associated to that trip here:
+    //get the trip again cause it prob changed
+    await getTrip();
     const deleteOldTrip = () => {};
     //todo:
     deleteOldTrip();
@@ -413,7 +401,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       .finally(() => setFetching(false))
       .catch((error) => {
         setFetching(false);
-        notifyError(databaseContext, 'Error when fetching from network: ' + error);
+        //notifyError(databaseContext, 'Error when fetching from network: ' + error);
       });
   };
 

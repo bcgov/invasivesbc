@@ -96,7 +96,6 @@ POST.apiDoc = {
 function createPointOfInterest(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
-
     const connection = await getDBConnection();
     if (!connection) {
       throw {
