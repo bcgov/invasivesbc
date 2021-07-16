@@ -218,7 +218,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
         ...((geometry && { search_feature: geometry }) || {}),
         limit: 1000,
-        page: 1
+        page: 0
       };
       console.log('checking...');
       console.log(pointOfInterestSearchCriteria);
@@ -241,7 +241,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       let total_to_fetch = response.count;
       console.log('*** total points of interest to get:  ' + response.count);
       while (numberPointsOfInterestFetched !== total_to_fetch) {
-        if (pointOfInterestSearchCriteria.page != 1) {
+        if (pointOfInterestSearchCriteria.page !== 0) {
           try {
             response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
           } catch (e) {
@@ -270,9 +270,13 @@ export const TripDataControls: React.FC<any> = (props) => {
             json: jsonObj
           });
         }
+        console.log('');
+        numberPointsOfInterestFetched += response.rows.length;
+        console.log('*** total points of interest fetched:  ' + numberPointsOfInterestFetched);
+        console.log('*** total points of interest to get:  ' + total_to_fetch);
+        pointOfInterestSearchCriteria.page += 1;
+        console.log(pointOfInterestSearchCriteria);
       }
-      numberPointsOfInterestFetched += response.rows.length;
-      pointOfInterestSearchCriteria.page += 1;
     }
     alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
     //notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
@@ -384,7 +388,8 @@ export const TripDataControls: React.FC<any> = (props) => {
   };
 
   const deleteTripAndFetch = async () => {
-    //wipe activities associated to that trip here:
+    //get the trip again cause it prob changed
+    await getTrip();
     const deleteOldTrip = () => {};
     //todo:
     deleteOldTrip();

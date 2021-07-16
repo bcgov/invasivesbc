@@ -243,7 +243,7 @@ export const useInvasivesApi = () => {
         return data;
       });
       return data;
-    
+
     } catch (error) {
       const data = await databaseContext.database.get('ApiSpec');
 
