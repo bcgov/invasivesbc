@@ -215,6 +215,20 @@ const Activity_Monitoring_BiologicalTerrestrialPlant = {
   }
 };
 
+const Activity_Collection_Biocontrol = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_type_data: {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.Collection
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.Collection_BioControll
+  }
+};
+
 const RootUISchemas = {
   Activity_Observation_PlantTerrestrial,
   Activity_Observation_PlantTerrestrial_BulkEdit,
@@ -233,7 +247,8 @@ const RootUISchemas = {
   Activity_Treatment_BiologicalPlant_BulkEdit,
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant,
-  Activity_Monitoring_BiologicalTerrestrialPlant
+  Activity_Monitoring_BiologicalTerrestrialPlant,
+  Activity_Collection_Biocontrol
 };
 
 export default RootUISchemas;

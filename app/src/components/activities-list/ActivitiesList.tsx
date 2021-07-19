@@ -47,7 +47,8 @@ import {
   MyTreatmentsTable,
   MyMonitoringTable,
   MyAnimalActivitiesTable,
-  MyTransectsTable
+  MyTransectsTable,
+  MyCollectionsTable
 } from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -257,7 +258,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
 
         if (
           !doc.activitySubtype.includes(props.workflowFunction) &&
-          !['Transect', 'Dispersal'].includes(doc.activityType)
+          !['Transect', 'Dispersal', 'Collection'].includes(doc.activityType)
         ) {
           return null;
         }
@@ -420,6 +421,7 @@ const ActivitiesList: React.FC = () => {
               <MyTreatmentsTable />
               <MyMonitoringTable />
               <MyTransectsTable />
+              <MyCollectionsTable />
             </Box>
           )}
           {workflowFunction === 'Animal' && (

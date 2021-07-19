@@ -158,7 +158,6 @@ export async function addNewActivityToDB(
   const doc: IActivity = generateActivityPayload(formData, null, activityType, activitySubtype);
 
   await databaseContext.database.put(doc);
-
   return doc;
 }
 

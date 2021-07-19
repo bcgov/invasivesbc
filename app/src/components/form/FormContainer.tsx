@@ -36,12 +36,6 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   setParentFormRef?: Function;
   hideCheckFormForErrors?: boolean;
   /**
-   * A function executed everytime the form field blures.
-   *
-   * Note: This will fire frequently, so consider wrapping it in a debounce function (see utils.ts > debounced).
-   */
-  onFormBlur?: (data: Object, formRef: any) => any;
-  /**
    * A function executed everytime the form changes.
    *
    * Note: This will fire frequently, so consider wrapping it in a debounce function (see utils.ts > debounced).
@@ -100,8 +94,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       $this.setState({ formData: newFormData }, () => {
         //revalidate formData after the setState is run
         $this.validate($this.state.formData);
-        //update formData of the activity via onFormBlur
-        props.onFormBlur(formRef.state.formData, formRef);
+        //update formData of the activity via onFormChange
+        props.onFormChange(formRef.state.formData, formRef);
       });
     }, 100);
     handleClose();
@@ -109,7 +103,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   //helper function to get field name from args
   const getFieldNameFromArgs = (args): string => {
-    let argumentFieldName;
+    let argumentFieldName = '';
     if (args[0].includes('root_activity_subtype_data_herbicide_0_')) {
       argumentFieldName = 'root_activity_subtype_data_herbicide_0_';
     } else if (args[0].includes('root_activity_subtype_data_')) {
@@ -205,7 +199,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         formData.forceNoValidationFields.splice(index, 1);
       }
       $this.setState({ formData: formData }, () => {
-        props.onFormBlur(formRef.state.formData, formRef);
+        props.onFormChange(formRef.state.formData, formRef);
       });
     }
   };
