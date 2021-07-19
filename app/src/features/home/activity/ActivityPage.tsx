@@ -265,7 +265,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const start = Number(collection.start_time);
         const stop = Number(collection.stop_time);
         const total = stop - start;
-        collection.total_time = total.toString();
+        collection.total_time = total;
       }
     });
     return formData;

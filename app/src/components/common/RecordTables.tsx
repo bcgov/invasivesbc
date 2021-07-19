@@ -1049,15 +1049,78 @@ export const MyCollectionsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
+  const history = useHistory();
+  const databaseContext = useContext(DatabaseContext);
+  const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
         tableName="Collections"
         activitySubtypes={[[ActivityType.Collection, ActivitySubtype.Collection_Biocontrol]]}
-        {...props}
+        tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
+        headers={[
+          ...headers,
+          'activity_id',
+          {
+            id: 'activity_subtype',
+            valueMap: {
+              ...ActivitySubtypeShortLabels,
+              Activity_Collection_Biocontrol: 'Bio Control' // TODO remove when our data isn't awful
+            }
+          },
+          {
+            id: 'created_timestamp',
+            title: 'Created Date'
+          },
+          {
+            id: 'reported_area',
+            title: 'Area (m\u00B2)'
+          },
+          {
+            id: 'latitude',
+            title: 'Latitude',
+            type: 'number'
+          },
+          {
+            id: 'longitude',
+            title: 'Longitude',
+            type: 'number'
+          }
+        ]}
+        dropdown={(row) => (
+          <ActivitiesTable
+            tableName=""
+            key={row._id}
+            tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
+            enableSelection={false}
+            headers={[
+              'jurisdiction_code',
+              'biogeoclimatic_zones',
+              {
+                id: 'flnro_districts',
+                title: 'FLNRO Districts'
+              },
+              'ownership',
+              'regional_districts',
+              'access_description',
+              'general_comment'
+            ]}
+            rows={[row]}
+            pagination={false}
+            actions={{
+              sync: {
+                enabled: false
+              }
+            }}
+          />
+        )}
+        actions={{
+          ...actions
+        }}
+        {...otherProps}
       />
     );
-  }, [props.rows?.length, props.selected?.length, JSON.stringify(props.actions)]);
+  }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
