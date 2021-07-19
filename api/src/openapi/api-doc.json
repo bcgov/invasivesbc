@@ -2178,7 +2178,7 @@
       "Collection": {
         "title": "Collection Information",
         "type": "object",
-        "required": ["collection_persons", "collection_persons_number", "weather_conditions"],
+        "required": ["collection_persons", "weather_conditions"],
         "properties": {
           "weather_conditions": {
             "$ref": "#/components/schemas/Weather_Conditions"
@@ -2268,8 +2268,9 @@
                   "title": "Stop time collecting (mins)"
                 },
                 "total_time": {
-                  "type": "string",
-                  "title": "Total time collecting (mins)"
+                  "type": "number",
+                  "title": "Total time collecting (mins)",
+                  "minimum": 0
                 },
                 "actual_quantity_and_life_stage_of_agent_collected": {
                   "type": "array",

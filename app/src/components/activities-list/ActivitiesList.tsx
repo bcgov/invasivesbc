@@ -214,7 +214,6 @@ const ActivityList: React.FC<IActivityList> = (props) => {
       selector: { docType: DocType.ACTIVITY, activityType: props.activityType },
       use_index: 'activitiesIndex'
     });
-
     setDocs([...activityResult.docs]);
   }, [databaseContext.database, props.activityType]);
 
