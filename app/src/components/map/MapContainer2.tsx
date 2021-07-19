@@ -8,7 +8,17 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer2.css';
 import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
-import { GeoJSON, MapContainer, TileLayer, LayersControl, Marker, useMap, FeatureGroup } from 'react-leaflet';
+import {
+  GeoJSON,
+  MapContainer,
+  TileLayer,
+  LayersControl,
+  Marker,
+  useMap,
+  FeatureGroup,
+  useMapEvents,
+  useMapEvent
+} from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -31,6 +41,7 @@ import LayersIcon from '@material-ui/icons/Layers';
 
 import { LayerPicker } from './LayerPicker/SortableHelper';
 import data from './LayerPicker/GEO_DATA.json';
+import { DomEvent } from 'leaflet';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -106,6 +117,25 @@ const interactiveGeometryStyle = () => {
     weight: 5,
     opacity: 0.65
   };
+};
+
+export const ClickBlocker = (props) => {
+  const divContainer = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (divContainer.current) {
+      DomEvent.disableClickPropagation(divContainer.current);
+      DomEvent.disableScrollPropagation(divContainer.current);
+    }
+  });
+  const map = useMapEvent('click', (e) => {
+    console.log('blocking click from leaflet side');
+    console.dir(e);
+    //e.preventDefault();
+    (e.originalEvent.view as any).L.DomEvent.stopPropagation(e);
+  });
+  return (
+    <div ref={divContainer} style={{ width: 100, height: 100, background: 'blue', zIndex: 999999999999999 }}></div>
+  );
 };
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
@@ -257,8 +287,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           <></>
         )}
       </div>
+
+      <div></div>
       {/* Here is the offline component */}
       <Offline />
+      <ClickBlocker />
 
       {/* Here are the editing tools */}
       <FeatureGroup>
