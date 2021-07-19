@@ -30,7 +30,7 @@ import Grid from '@material-ui/core/Grid';
 import ColorPicker from 'material-ui-color-picker';
 import * as L from 'leaflet';
 import { DragHandle } from '@material-ui/icons';
-import { useMapEvent } from 'react-leaflet';
+import { useMap, useMapEvent } from 'react-leaflet';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -98,25 +98,7 @@ export function LayerPicker(props: any) {
 
   const [state, setState] = React.useState(true);
 
-  const colorRef = React.useRef();
   console.log(state);
-
-  /* Only for ReactLeaflet */
-  React.useEffect(() => {
-    //if(divRef?.current)
-    //console.log('in hook');
-    if (colorRef?.current) console.log('in colorPicker');
-    //L.DomEvent.disableClickPropagation(divRef?.current);
-    //L.DomEvent.disableScrollPropagation(divRef?.current);
-  });
-
-  const DragHandleFC: React.FC = (props) => {
-    return (
-      <>
-        <DragHandle />
-      </>
-    );
-  };
 
   const DragHandle = SortableHandle(() => (
     <ListItemIcon>
@@ -124,54 +106,7 @@ export function LayerPicker(props: any) {
     </ListItemIcon>
   ));
 
-  const SortableParentLayerFC: React.FC<any> = ({ parent }: any) => {
-    const divRef = React.useRef();
-    /* Only for ReactLeaflet */
-    React.useEffect(() => {
-      if (divRef && divRef !== undefined) {
-        if (divRef.current && divRef.current !== undefined && divRef.current !== null) {
-          //    console.log('ref from hook');
-          //    console.dir(divRef);
-          //    console.dir(divRef.current);
-          L.DomEvent.disableClickPropagation(divRef?.current);
-          L.DomEvent.disableScrollPropagation(divRef?.current);
-        }
-      }
-    });
-    return (
-      <>
-        <SortableParentLayer key={parent.id} index={parent.order} parent={parent} aRef={divRef} />
-      </>
-    );
-  };
-
-  const blockAnything = (e) => {
-    console.log('blocking click');
-    console.dir(e);
-    switch (e.detail) {
-      case 1:
-        console.log('single click');
-        e.preventDefault();
-        e.stopPropagation();
-        break;
-      case 2:
-        console.log('double click');
-        e.preventDefault();
-        e.stopPropagation();
-        break;
-      case 3:
-        console.log('wtf');
-        e.preventDefault();
-        e.stopPropagation();
-        break;
-      default:
-        console.log('extra wtf');
-    }
-  };
-
-  const SortableParentLayer = SortableElement(({ parent, aRef }: any) => {
-    // console.log('ref:');
-    // console.dir(aRef);
+  const SortableParentLayer = SortableElement(({ parent }: any) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
       updateParent((parent as any).id, { expanded: expanded });
     };
@@ -201,7 +136,6 @@ export function LayerPicker(props: any) {
               <ColorPicker
                 name="color"
                 defaultValue={parent.colorCode}
-                ref={colorRef}
                 onChange={(color: any) => {
                   updateParent(parent.id, { colorCode: color });
                 }}
@@ -245,23 +179,9 @@ export function LayerPicker(props: any) {
             </Grid>
           ))}
         </Accordion>
-        {/*</Grid>
-                    {/*<Grid item xs={2}>*/}
         <ListItemSecondaryAction>
-          {/*<div ref={aRef}>*/}
-          <div onClick={blockAnything} onDoubleClick={blockAnything} onScroll={blockAnything}>
-            <DragHandle />
-          </div>
-
-          <div
-            onClick={blockAnything}
-            onDoubleClick={blockAnything}
-            onScroll={blockAnything}
-            style={{ width: 100, height: 100, background: 'blue' }}></div>
-          {/* <DragHandle />*/}
+          <DragHandle />
         </ListItemSecondaryAction>
-        {/*</Grid>
-                </Grid>*/}
       </ListItem>
     );
   });
@@ -269,7 +189,7 @@ export function LayerPicker(props: any) {
   const SortableListContainer = SortableContainer(({ items }: any) => (
     <List>
       {items.map((parent: { id: string; order: number }) => (
-        <SortableParentLayerFC key={parent.id} index={parent.order} parent={parent} />
+        <SortableParentLayer key={parent.id} index={parent.order} parent={parent} />
       ))}
     </List>
   ));
@@ -278,9 +198,19 @@ export function LayerPicker(props: any) {
     const returnVal = sortObject(objectState, oldIndex, newIndex);
     setObjectState(returnVal);
   };
+  const map = useMap();
 
   return (
-    <div className={classes.root}>
+    <div
+      className={classes.root}
+      onMouseOver={() => {
+        map.dragging.disable();
+        map.doubleClickZoom.disable();
+      }}
+      onMouseOut={() => {
+        map.dragging.enable();
+        map.doubleClickZoom.enable();
+      }}>
       <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
 
       {/*<br />*/}
