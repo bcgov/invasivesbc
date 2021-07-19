@@ -93,7 +93,6 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
         target.geog
       )
   `;
-  console.log(sql)
 
   try {
     const response = await connection.query(sql);

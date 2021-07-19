@@ -342,7 +342,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             enabled: enableSelection !== false,
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
-              console.log(selectedIds);
               if (selectedIds.length) await invasivesApi.deleteActivities(selectedIds);
             },
             label: 'Delete',
@@ -431,7 +430,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     ...dbActivity,
                     review_status: ReviewStatus.UNDER_REVIEW
                   });
-                  console.log(666, dbActivity);
                   const typename = activity.activity_subtype?.split('_')[2];
                   notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
                 });
