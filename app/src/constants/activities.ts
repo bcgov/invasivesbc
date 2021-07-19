@@ -35,6 +35,37 @@ export enum ActivitySubtype {
   Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant'
 }
 
+export enum ActivitySubtypeShortLabels {
+  // Observations:
+  Activity_Observation_PlantTerrestrial = 'Plant Terrestrial',
+  Activity_Observation_PlantTerrestrial_BulkEdit = 'Plant Terrestrial',
+  Activity_Observation_PlantAquatic = 'Plant Aquatic',
+  Activity_AnimalActivity_AnimalTerrestrial = 'Animal Terrestrial',
+  Activity_AnimalActivity_AnimalAquatic = 'Animal Aquatic',
+
+  // Treatments:
+  Activity_Treatment_ChemicalPlant = 'Chemical',
+  Activity_Treatment_ChemicalPlant_BulkEdit = 'Chemical',
+  Activity_Treatment_MechanicalPlant = 'Mechanical',
+  Activity_Treatment_MechanicalPlant_BulkEdit = 'Mechanical',
+
+  // Monitoring:
+  Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical',
+  Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical',
+
+  // Biocontrol:
+  Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
+  Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release',
+  Activity_Monitoring_BiologicalTerrestrialPlant = 'Biocontrol Release Monitoring',
+  Activity_Dispersal_BiologicalDispersal = 'Biocontrol Dispersal Monitoring',
+  Activity_Transect_BiocontrolEfficacy = 'Biocontrol Efficacy Transect',
+  // missing: Biocontrol Collection
+
+  // Transects:
+  Activity_Transect_FireMonitoring = 'Wildfire & Prescribed Burn Monitoring',
+  Activity_Transect_Vegetation = 'Vegetation Transect (Full, Lumped, Invasive Plant Density)'
+}
+
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
   [ActivityType.Observation]: Assignment,
   [ActivityType.AnimalActivity]: Assignment,
@@ -59,4 +90,12 @@ export enum FormValidationStatus {
   NOT_VALIDATED = 'Not Validated',
   INVALID = 'Invalid',
   VALID = 'Valid'
+}
+
+export enum ReviewStatus {
+  PREAPPROVED = 'Pre-Approved', // is an admin activity, requiring no mandatory review process
+  NOT_REVIEWED = 'Not Reviewed', // unreviewed, requiring review eventually
+  UNDER_REVIEW = 'Under Review', // passed to review process
+  APPROVED = 'Approved', // approved by review process
+  DISAPPROVED = 'Disapproved' // deemed invalid by review process - can be resubmitted for review
 }

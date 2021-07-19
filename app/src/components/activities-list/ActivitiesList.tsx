@@ -26,13 +26,15 @@ import {
   ActivitySyncStatus,
   ActivityType,
   ActivityTypeIcon,
-  FormValidationStatus
+  FormValidationStatus,
+  ActivitySubtypeShortLabels
 } from 'constants/activities';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { useKeycloak } from '@react-keycloak/web';
 import { useHistory } from 'react-router-dom';
 import 'styles/spinners.scss';
 import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
@@ -40,6 +42,13 @@ import ActivityListDate from './ActivityListDate';
 import { getErrorMessages } from 'utils/errorHandling';
 import { addNewActivityToDB } from 'utils/addActivity';
 import WarningDialog from 'components/common/WarningDialog';
+import {
+  MyObservationsTable,
+  MyTreatmentsTable,
+  MyMonitoringTable,
+  MyAnimalActivitiesTable,
+  MyTransectsTable
+} from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -304,16 +313,15 @@ const ActivitiesList: React.FC = () => {
   const databaseContext = useContext(DatabaseContext);
 
   const invasivesApi = useInvasivesApi();
+  const { keycloak } = useKeycloak();
+  const userInfo: any = keycloak?.userInfo;
+  const userId = userInfo?.preferred_username;
+
+  if (!userId) throw "Keycloak error: can not get current user's username";
 
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
-
-  const specialFunctions = [
-    { label: 'Fire Monitoring', type: ActivitySubtype.Transect_FireMonitoring },
-    { label: 'Vegetation Transect (Full, Lumped, Invasive Plant Density)', type: ActivitySubtype.Transect_Vegetation },
-    { label: 'Biocontrol Efficacy', type: ActivitySubtype.Transect_BiocontrolEfficacy }
-  ];
 
   const syncActivities = async () => {
     setIsDisable(true);
@@ -391,10 +399,9 @@ const ActivitiesList: React.FC = () => {
         <Box mb={3} display="flex" justifyContent="space-between">
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>Workflow Functions</InputLabel>
-            <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Workflow Function">
+            <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Form Type">
               <MenuItem value="Plant">Plant</MenuItem>
               <MenuItem value="Animal">Animal</MenuItem>
-              <MenuItem value="Special">Enhanced Collection</MenuItem>
             </Select>
           </FormControl>
           <Button
@@ -407,289 +414,18 @@ const ActivitiesList: React.FC = () => {
           </Button>
         </Box>
         <Box>
-          {workflowFunction !== 'Special' && (
+          {workflowFunction === 'Plant' && (
             <Box>
-              <Box>
-                {workflowFunction === 'Plant' && <Typography variant="h5">Observations</Typography>}
-                {workflowFunction === 'Animal' && <Typography variant="h5">Activities</Typography>}
-              </Box>
-              <Box className={classes.newActivityButtonsRow}>
-                {workflowFunction === 'Plant' && (
-                  <>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Observation,
-                          ActivitySubtype.Observation_PlantTerrestrial
-                        )
-                      }>
-                      Plant Terrestrial
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Observation,
-                          ActivitySubtype.Observation_PlantAquatic
-                        )
-                      }>
-                      Plant Aquatic
-                    </Button>
-                  </>
-                )}
-
-                <ActivityList
-                  workflowFunction={workflowFunction}
-                  isDisabled={isDisabled}
-                  activityType={ActivityType.Observation}
-                />
-              </Box>
-
-              <Box className={classes.newActivityButtonsRow}>
-                {workflowFunction === 'Animal' && (
-                  <>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.AnimalActivity,
-                          ActivitySubtype.Activity_AnimalTerrestrial
-                        )
-                      }>
-                      Animal Terrestrial
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.AnimalActivity,
-                          ActivitySubtype.Activity_AnimalAquatic
-                        )
-                      }>
-                      Animal Aquatic
-                    </Button>
-                  </>
-                )}
-
-                <ActivityList
-                  workflowFunction={workflowFunction}
-                  isDisabled={isDisabled}
-                  activityType={ActivityType.AnimalActivity}
-                />
-              </Box>
+              <MyObservationsTable />
+              <MyTreatmentsTable />
+              <MyMonitoringTable />
+              <MyTransectsTable />
             </Box>
           )}
-          {workflowFunction !== 'Special' && workflowFunction !== 'Animal' && (
+          {workflowFunction === 'Animal' && (
             <Box>
-              <Box>
-                <Typography variant="h5">Treatments</Typography>
-              </Box>
-              <Box className={classes.newActivityButtonsRow}>
-                {workflowFunction === 'Plant' && (
-                  <>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_MechanicalPlant
-                        )
-                      }>
-                      Mechanical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_ChemicalPlant
-                        )
-                      }>
-                      Chemical
-                    </Button>
-                    <Button
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() =>
-                        addNewActivityToDB(
-                          databaseContext,
-                          ActivityType.Treatment,
-                          ActivitySubtype.Treatment_BiologicalPlant
-                        )
-                      }>
-                      Biological
-                    </Button>
-                  </>
-                )}
-
-                <ActivityList
-                  workflowFunction={workflowFunction}
-                  isDisabled={isDisabled}
-                  activityType={ActivityType.Treatment}
-                />
-              </Box>
+              <MyAnimalActivitiesTable />
             </Box>
-          )}
-          {workflowFunction !== 'Special' && workflowFunction !== 'Animal' && (
-            <Box>
-              <Box>
-                <Typography variant="h5">Efficacy Monitorings</Typography>
-              </Box>
-              {workflowFunction === 'Plant' && (
-                <>
-                  <Button
-                    disabled={isDisabled}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() =>
-                      addNewActivityToDB(
-                        databaseContext,
-                        ActivityType.Monitoring,
-                        ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant
-                      )
-                    }>
-                    Mechanical
-                  </Button>
-                  <Button
-                    disabled={isDisabled}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() =>
-                      addNewActivityToDB(
-                        databaseContext,
-                        ActivityType.Monitoring,
-                        ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant
-                      )
-                    }>
-                    Mechanical
-                  </Button>
-                  <Button
-                    disabled={isDisabled}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() =>
-                      addNewActivityToDB(
-                        databaseContext,
-                        ActivityType.Monitoring,
-                        ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
-                      )
-                    }>
-                    Biological
-                  </Button>
-                </>
-              )}
-
-              <ActivityList
-                workflowFunction={workflowFunction}
-                isDisabled={isDisabled}
-                activityType={ActivityType.Monitoring}
-              />
-            </Box>
-          )}
-          {workflowFunction === 'Special' && (
-            <>
-              <Box>
-                <Box>
-                  <Typography variant="h5">Transects</Typography>
-                </Box>
-                <Box className={classes.newActivityButtonsRow}>
-                  {specialFunctions.map((item) => (
-                    <Button
-                      key={item.label}
-                      disabled={isDisabled}
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() => {
-                        addNewActivityToDB(databaseContext, ActivityType.Transect, item.type);
-                      }}>
-                      {item.label}
-                    </Button>
-                  ))}
-                </Box>
-
-                <ActivityList
-                  workflowFunction={workflowFunction}
-                  isDisabled={isDisabled}
-                  activityType={ActivityType.Transect}
-                />
-              </Box>
-              <br />
-              <Box>
-                <Box>
-                  <Typography variant="h5">Dispersals</Typography>
-                </Box>
-                <Box className={classes.newActivityButtonsRow}>
-                  <Button
-                    disabled={isDisabled}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => {
-                      addNewActivityToDB(
-                        databaseContext,
-                        ActivityType.Dispersal,
-                        ActivitySubtype.Activity_BiologicalDispersal
-                      );
-                    }}>
-                    Biological Dispersal
-                  </Button>
-                </Box>
-
-                <ActivityList
-                  workflowFunction={workflowFunction}
-                  isDisabled={isDisabled}
-                  activityType={ActivityType.Dispersal}
-                />
-              </Box>
-              <br />
-              <Box>
-                <Box>
-                  <Typography variant="h5">Development/Testing</Typography>
-                </Box>
-                <Box className={classes.newActivityButtonsRow}>
-                  <Button
-                    disabled={isDisabled}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => notifyError(databaseContext, 'An error message!')}>
-                    Simulate Error
-                  </Button>
-                  <Button
-                    disabled={isDisabled}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => notifySuccess(databaseContext, 'A Success message!')}>
-                    Simulate Success
-                  </Button>
-                  <Button
-                    disabled={isDisabled}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => notifyWarning(databaseContext, 'A Warning message!')}>
-                    Simulate Warning
-                  </Button>
-                </Box>
-              </Box>
-            </>
           )}
         </Box>
       </Box>
