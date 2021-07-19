@@ -43,6 +43,7 @@ export class ActivityPostRequestBody {
    * @memberof ActivityPostRequestBody
    */
   constructor(object?: any) {
+    // eslint-disable-next-line no-unused-vars
     const { activity_payload, ...obj } = object; // remove payload from obj to prevent infinite recursion
 
     // Add whole original object for auditing
