@@ -1,19 +1,8 @@
 import { CameraResultType, CameraSource } from '@capacitor/core';
 import { useCamera } from '@ionic/react-hooks/camera';
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardMedia,
-  CircularProgress,
-  FormControl,
-  Grid,
-  IconButton,
-  TextField
-} from '@material-ui/core';
+import { Box, Button, Card, CardActions, CardMedia, CircularProgress, FormControl, Grid, IconButton, TextField } from '@material-ui/core';
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
 export interface IPhoto {
   filepath: string;
@@ -43,7 +32,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     const photo = {
       filepath: fileName,
       dataUrl: cameraPhoto.dataUrl,
-      description: 'text'
+      description: 'text',
     };
 
     props.photoState.setPhotos([...props.photoState.photos, photo]);
@@ -87,10 +76,8 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                   )}
                   <FormControl>
                     {photo.description}
-                    <TextField
-                      label="Change Description"
-                      onBlur={(e) => changePhotoDescription(photo.filepath, { description: e.target.value })}
-                    />
+                    <TextField label="Change Description"
+                      onBlur={(e) => changePhotoDescription(photo.filepath, { description: (e.target.value) }) } />
                     <Button>Save</Button>
                   </FormControl>
                 </Card>

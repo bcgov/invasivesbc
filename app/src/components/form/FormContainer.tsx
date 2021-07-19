@@ -117,7 +117,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     } else if (args[0].includes('root_activity_data_')) {
       argumentFieldName = 'root_activity_data_';
     }
-    let fieldName = argumentFieldName ? args[0].substr(argumentFieldName.length) : args[0]; // else use the full arg name
+    let fieldName = args[0].substr(argumentFieldName.length);
     return fieldName;
   };
 

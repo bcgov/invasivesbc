@@ -400,7 +400,7 @@ const determineErrorStateOnTransectPoint = (
 */
 export function getTransectOffsetDistanceValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    if (!formData || !formData.activity_subtype_data?.length) {
+    if (!formData || !formData.activity_subtype_data) {
       return errors;
     }
 

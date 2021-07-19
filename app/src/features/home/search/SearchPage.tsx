@@ -104,7 +104,8 @@ const SearchPage: React.FC<ISearchPagePage> = (props) => {
     const activitySearchCriteria: IActivitySearchCriteria = {
       page: currentPage - 1, // The api starts at page 0, while the UI starts at page 1.
       limit: itemsPerPage,
-      order: [sortColumn + ' ' + (sortDirection === '-' && SORT_DIRECTION.DESC) || SORT_DIRECTION.ASC],
+      sort_by: sortColumn,
+      sort_direction: (sortDirection === '-' && SORT_DIRECTION.DESC) || SORT_DIRECTION.ASC,
       column_names: [
         'activity_id',
         'activity_type',
