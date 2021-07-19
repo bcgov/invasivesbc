@@ -1,4 +1,4 @@
-import { SEARCH_LIMIT_MAX, SORT_DIRECTION } from '../constants/misc';
+import { SEARCH_LIMIT_MAX } from '../constants/misc';
 import { IMediaItem } from './media';
 
 /**
@@ -43,7 +43,7 @@ export class ActivityPostRequestBody {
    * @memberof ActivityPostRequestBody
    */
   constructor(object?: any) {
-    const { activity_payload, ...obj } = object; // remove payload to prevent infinite recursion
+    const { activity_payload, ...obj } = object; // remove payload from obj to prevent infinite recursion
 
     // Add whole original object for auditing
     this.activityPostBody = {
