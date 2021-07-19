@@ -119,54 +119,6 @@ const interactiveGeometryStyle = () => {
   };
 };
 
-export const ClickBlocker = (props) => {
-  const divContainer = useRef<HTMLDivElement>(null);
-  /*useEffect(() => {
-    if (divContainer.current) {
-      DomEvent.disableClickPropagation(divContainer.current);
-      DomEvent.disableScrollPropagation(divContainer.current);
-    }
-  });
-  */
-
-  const map = useMap();
-
-  /*const mapClick = useMapEvent('click', (e) => {
-    console.log('blocking click from leaflet side');
-    console.dir(e);
-    (e.originalEvent.view as any).L.DomEvent.preventDefault(e);
-    (e.originalEvent.view as any).L.DomEvent.stopPropagation(e);
-  });
-  const mapScroll = useMapEvent('mousedown', (e) => {
-    console.log('blocking click from leaflet side - drag');
-    console.dir(e);
-    (e.originalEvent.view as any).L.DomEvent.preventDefault(e);
-    (e.originalEvent.view as any).L.DomEvent.stopPropagation(e);
-  });
-  */
-  return (
-    <div
-      ref={divContainer}
-      onMouseOver={() => {
-        console.log('disabling drag');
-        map.dragging.disable();
-      }}
-      onMouseOut={() => {
-        console.log('enabling drag');
-        map.dragging.enable();
-      }}
-      style={{
-        left: 800,
-        top: 0,
-        width: 200,
-        height: 800,
-        background: 'green',
-        zIndex: 400,
-        position: 'absolute'
-      }}></div>
-  );
-};
-
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
