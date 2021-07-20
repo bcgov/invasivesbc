@@ -183,6 +183,9 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
   }
 
   if (searchCriteria.iappType) {
+    if (searchCriteria.iappSiteID) {
+      sqlStatement.append(SQL` AND iapp_site_summary.id = ${searchCriteria.iappSiteID}`);
+    }
     if (searchCriteria.date_range_start) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const format = require('pg-format');
