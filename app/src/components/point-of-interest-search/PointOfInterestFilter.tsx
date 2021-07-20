@@ -47,20 +47,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   const [iappSelected, setIappSelected] = useState(false);
 
   const getPointOfInterestChoicesFromTrip = async () => {
-    if (Capacitor.getPlatform() == 'web') {
-      let docs = await databaseContext.database.find({
-        selector: {
-          _id: props.trip_ID
-        }
-      });
-      if (docs.docs.length > 0) {
-        let tripDoc = docs.docs[0];
-        if (tripDoc.pointOfInterestChoices) {
-          setPointOfInterestChoices([...tripDoc.pointOfInterestChoices]);
-        }
-      }
-      //sqlite mobile:
-    } else {
+    if (Capacitor.getPlatform() !== 'web') {
       let queryResults = await query(
         { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
         databaseContext
@@ -84,14 +71,8 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
   }, []);
 
   const saveChoices = async (newPointOfInterestChoices) => {
-    //legacy pouch
-    if (Capacitor.getPlatform() == 'web') {
-      await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-        return { ...tripDoc, pointOfInterestChoices: newPointOfInterestChoices };
-      });
-    }
     //sqlite
-    else {
+    if (Capacitor.getPlatform() !== 'web') {
       const tripID: string = props.trip_ID;
       let result = await upsert(
         [
@@ -105,8 +86,6 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
         databaseContext
       );
     }
-    console.log('point of interest json');
-    console.log(JSON.stringify(newPointOfInterestChoices));
     setPointOfInterestChoices([...newPointOfInterestChoices]);
   };
 

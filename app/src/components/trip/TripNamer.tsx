@@ -1,7 +1,8 @@
 import { Input, makeStyles } from '@material-ui/core';
 import Spinner from 'components/spinner/Spinner';
+import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext, query, QueryType } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useCallback } from 'react';
 
@@ -16,20 +17,16 @@ export interface ITripNamer {
 export const TripNamer: React.FC<ITripNamer> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const [name, setName] = useState(null);
-  const [docs, setDocs] = useState(null);
 
   const getNameFromTrip = useCallback(async () => {
-    let docs = await databaseContext.database.find({
-      selector: {
-        _id: props.trip_ID
-      }
-    });
-    if (docs.docs.length > 0) {
-      let tripDoc = docs.docs[0];
-      setDocs(tripDoc);
-      if (tripDoc.name != name) {
-        setName(tripDoc.name);
-      }
+    let queryResults = await query(
+      { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
+      databaseContext
+    );
+    let name = JSON.parse(queryResults[0].json).name;
+
+    if (name) {
+      setName(name);
     }
   }, [databaseContext.database]);
 
