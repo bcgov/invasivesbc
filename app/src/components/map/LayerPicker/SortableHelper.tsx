@@ -203,6 +203,18 @@ export function LayerPicker(props: any) {
   return (
     <div
       className={classes.root}
+      onTouchStart={() => {
+        map.dragging.disable();
+        map.doubleClickZoom.disable();
+      }}
+      onTouchMove={() => {
+        map.dragging.disable();
+        map.doubleClickZoom.disable();
+      }}
+      onTouchEnd={() => {
+        map.dragging.disable();
+        map.doubleClickZoom.disable();
+      }}
       onMouseOver={() => {
         map.dragging.disable();
         map.doubleClickZoom.disable();
