@@ -386,7 +386,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 doneButtonCallBack={() => {
                   helperStepDoneOrSkip(1);
                 }}>
-                {/* <TripNamer trip_ID={props.trip_ID} /> */}
+                <TripNamer trip_ID={props.trip_ID} />
               </TripStep>
               <TripStep
                 title="Step 2: Add a spatial boundary for your trip."
