@@ -155,8 +155,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     (geom: Feature[]) => {
       setDoc(async (activity: any) => {
         const { latitude, longitude } = calculateLatLng(geom) || {};
-        const formData = activity.formData;
-        const areaOfGeometry = calculateGeometryArea(geom);
 
         /**
          * latlong to utms / utm zone conversion
