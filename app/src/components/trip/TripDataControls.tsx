@@ -214,6 +214,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       let pointOfInterestSearchCriteria: IPointOfInterestSearchCriteria = {
         ...((setOfChoices.pointOfInterestType && { point_of_interest_type: setOfChoices.pointOfInterestType }) || {}),
         ...((setOfChoices.iappType && { iappType: setOfChoices.iappType }) || {}),
+        ...((setOfChoices.iappSiteID && { iappSiteID: setOfChoices.iappSiteID }) || {}),
         ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
         ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
         ...((geometry && { search_feature: geometry }) || {}),

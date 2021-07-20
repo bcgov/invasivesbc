@@ -4,7 +4,9 @@ import DatesFnsUtils from '@date-io/date-fns';
 import {
   Box,
   Button,
+  FormControlLabel,
   Grid,
+  Input,
   InputLabel,
   List,
   ListItem,
@@ -12,7 +14,8 @@ import {
   MenuItem,
   Paper,
   Select,
-  Switch
+  Switch,
+  TextField
 } from '@material-ui/core';
 import { Add, ContactlessOutlined, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -146,6 +149,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           value={pointOfInterestChoice.pointOfInterestType}
                           onChange={(e) => {
                             let iappType = null;
+                            let iappSiteID = '';
                             if (e.target.value === 'IAPP Site') {
                               iappType = '';
                               setIappSelected(true);
@@ -154,7 +158,12 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                               setIappSelected(false);
                             }
                             updatePointOfInterestChoice(
-                              { ...pointOfInterestChoice, pointOfInterestType: e.target.value, iappType: iappType },
+                              {
+                                ...pointOfInterestChoice,
+                                pointOfInterestType: e.target.value,
+                                iappType: iappType,
+                                iappSiteID: iappSiteID
+                              },
                               index
                             );
                           }}>
@@ -193,6 +202,35 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           </MenuItem>
                         </Select>
                       </div>
+                    </Grid>
+                    <Grid style={{ display: iappSelected ? 'block' : 'none' }} item xs={6}>
+                      <InputLabel>Filter by IAPP Site ID?</InputLabel>
+                      <Switch
+                        checked={pointOfInterestChoice.filterByIappSiteID}
+                        onChange={() => {
+                          updatePointOfInterestChoice(
+                            { ...pointOfInterestChoice, filterByIappSiteID: !pointOfInterestChoice.filterByIappSiteID },
+                            index
+                          );
+                        }}
+                        name="checkedB"
+                        color="primary"
+                      />
+                    </Grid>
+
+                    <Grid style={{ display: iappSelected ? 'block' : 'none' }} item xs={6}>
+                      <InputLabel style={{ display: pointOfInterestChoice.filterByIappSiteID ? 'block' : 'none' }}>
+                        IAPP Site ID
+                      </InputLabel>
+                      <Input
+                        type={'number'}
+                        style={{ display: pointOfInterestChoice.filterByIappSiteID ? 'block' : 'none' }}
+                        id="poi-id-filter"
+                        value={pointOfInterestChoice.iappSiteID}
+                        onChange={(e) => {
+                          updatePointOfInterestChoice({ ...pointOfInterestChoice, iappSiteID: e.target.value }, index);
+                        }}
+                      />
                     </Grid>
                     {/*   <Grid item xs={4}>
                       <InputLabel>Photos</InputLabel>
