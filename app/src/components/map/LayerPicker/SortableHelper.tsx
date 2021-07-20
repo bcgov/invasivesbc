@@ -31,6 +31,7 @@ import ColorPicker from 'material-ui-color-picker';
 import * as L from 'leaflet';
 import { DragHandle } from '@material-ui/icons';
 import { useMap, useMapEvent } from 'react-leaflet';
+import { Capacitor } from '@capacitor/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -212,12 +213,16 @@ export function LayerPicker(props: any) {
         map.doubleClickZoom.disable();
       }}
       onMouseOver={() => {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
+        if (Capacitor.getPlatform() == 'web') {
+          map.dragging.disable();
+          map.doubleClickZoom.disable();
+        }
       }}
       onMouseOut={() => {
-        map.dragging.enable();
-        map.doubleClickZoom.enable();
+        if (Capacitor.getPlatform() == 'web') {
+          map.dragging.enable();
+          map.doubleClickZoom.enable();
+        }
       }}>
       <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
 
