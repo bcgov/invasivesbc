@@ -33,6 +33,7 @@ import { useCallback } from 'react';
 import Spinner from 'components/spinner/Spinner';
 import { confirmDeleteTrip, deleteTripRecords } from './PlanPageHelpers';
 import { Capacitor } from '@capacitor/core';
+import { useMap } from 'react-leaflet';
 
 interface IPlanPageProps {
   classes?: any;
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary
   },
   map: {
-    height: '500px',
+    height: '100%',
     width: '100%',
     zIndex: 0
   },
@@ -471,7 +472,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           ) : (
             <>
               test
-              <Spinner />
+              {/*  <Spinner /> */}
             </>
           )}
         </>
@@ -558,12 +559,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Button onClick={addTrip} color="primary" variant="contained">
         Add Trip
       </Button>
-      {!tripsLoaded && (
-        <>
-          {' '}
-          spinner <Spinner />
-        </>
-      )}
+      {!tripsLoaded && <> spinner {/*<Spinner /> */}</>}
       {tripsLoaded && (
         <RecordTable
           className={classes.tripList}
