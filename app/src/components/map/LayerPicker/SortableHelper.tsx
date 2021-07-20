@@ -96,10 +96,6 @@ export function LayerPicker(props: any) {
     setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
   };
 
-  const [state, setState] = React.useState(true);
-
-  console.log(state);
-
   const DragHandle = SortableHandle(() => (
     <ListItemIcon>
       <DragHandleIcon />
