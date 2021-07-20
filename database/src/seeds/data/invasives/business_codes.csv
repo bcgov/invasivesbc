@@ -1138,7 +1138,6 @@ vegetation_transect_data_code,BG,Bare ground,5
 vegetation_transect_data_code,ST,Shrubs / trees,6
 vegetation_transect_data_code,BY,Byrophytes,7
 vegetation_transect_data_code,LF,Litter / Feces,8
-cloud_cover_code,-1,Unknown or indeterminant,1
 cloud_cover_code,0,Clear Sky,2
 cloud_cover_code,1,Few 10% clouds,3
 cloud_cover_code,2,Few 20-30% clouds,4
@@ -1149,7 +1148,6 @@ cloud_cover_code,6,Broken 60-70% clouds,8
 cloud_cover_code,7,Broken 90% clouds,9
 cloud_cover_code,8,Overcast 100% clouds,10
 cloud_cover_code,9,Obscured,11
-beaufort_wind_code,-1,Unknown or indeterminant,1
 beaufort_wind_code,0,Calm < 1 km/h,2
 beaufort_wind_code,1,Light air 1-5 km/h,3
 beaufort_wind_code,2,Light breeze 6-11 km/h,4
@@ -1234,3 +1232,47 @@ frame_size_code,NA,Unknown or indeterminant,1
 frame_size_code,L,1.0 sq metre,2
 frame_size_code,M,0.75 sq metre,3
 frame_size_code,S,0.1 sq metre,4
+biocontrol_collection_code,As,Aspirate*,1
+biocontrol_collection_code,Hp,Hand pick*,2
+biocontrol_collection_code,Cl,Clipping**,3
+biocontrol_collection_code,Cs,Sweep (counted)**,4
+biocontrol_collection_code,Sw,Sweep (timed)*,5
+biocontrol_collection_code,Tt,Tap and tray*,6
+biocontrol_collection_code,Tp,Transplant**,7
+invasive_plant_code_withbiocontrol,BL,Black knapweed (CENT NIG Centaurea nigra),1
+invasive_plant_code_withbiocontrol,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),2
+invasive_plant_code_withbiocontrol,BK,Brown knapweed (CENT JAC Centaurea jacea),3
+invasive_plant_code_withbiocontrol,BT,Bull thistle (CIRS VUL Cirsium vulgare),4
+invasive_plant_code_withbiocontrol,BU,Burdock species (ARCT SPP Arctium spp),5
+invasive_plant_code_withbiocontrol,CT,Canada thistle (CIRS ARV Cirsium arvense),6
+invasive_plant_code_withbiocontrol,CS,Cypress spurge (EUPH CYP Euphorbia cyparissias),7
+invasive_plant_code_withbiocontrol,DT,Dalmatian toadflax (LINA DAL Linaria dalmatica),8
+invasive_plant_code_withbiocontrol,DK,Diffuse knapweed (CENT DIF Centaurea diffusa),9
+invasive_plant_code_withbiocontrol,FB,Field bindweed (CONV ARV Convolvulus arvensis),10
+invasive_plant_code_withbiocontrol,GO,Gorse (ULEX EUR Ulex europaeus),11
+invasive_plant_code_withbiocontrol,BI,Hedge false bindweed (CALY SEP Calystegia sepium),12
+invasive_plant_code_withbiocontrol,HT,Hound's-tongue (CYNO OFF Cynoglossum officinale),13
+invasive_plant_code_withbiocontrol,JK,Japanese knotweed (FALL JAP Fallopia japonica),14
+invasive_plant_code_withbiocontrol,KH,King devil hawkweed (HIER FLO Hieracium floribundum),15
+invasive_plant_code_withbiocontrol,LS,Leafy spurge (EUPH ESU Euphorbia esula),16
+invasive_plant_code_withbiocontrol,MT,Marsh plume thistle/Marsh thistle (CIRS PAL Cirsium palustre),17
+invasive_plant_code_withbiocontrol,MH,Meadow hawkweed (HIER CAE Hieracium caespitosum),18
+invasive_plant_code_withbiocontrol,MK,Meadow knapweed (CENT DEB Centaurea debeauxii),19
+invasive_plant_code_withbiocontrol,ME,Mouse ear hawkweed (HIER PIL Hieracium pilosella),20
+invasive_plant_code_withbiocontrol,MU,Mullein (VERB THA Verbascum thapsis),21
+invasive_plant_code_withbiocontrol,NT,Nodding thistle (CARD NUT Carduus nutans),22
+invasive_plant_code_withbiocontrol,OH,Orange hawkweed (HIER AUR Hieracium aurantiacum),23
+invasive_plant_code_withbiocontrol,PS,Perennial sow thistle (SONC ARV Sonchus arvensis),24
+invasive_plant_code_withbiocontrol,PT,Plumeless thistle (CARD ACA Carduus acanthoides),25
+invasive_plant_code_withbiocontrol,PV,Puncturevine (TRIB TER Tribulus terrestris),26
+invasive_plant_code_withbiocontrol,PL,Purple loosestrife (LYTH SAL Lythrum salicaria),27
+invasive_plant_code_withbiocontrol,RS,Rush skeletonweed (CHON JUN Chondrilla juncea),28
+invasive_plant_code_withbiocontrol,RK,Russian knapweed (ACRO REP Acroptilon repens),29
+invasive_plant_code_withbiocontrol,SH,Scentless chamomile (MATR PER Matricaria perforata),30
+invasive_plant_code_withbiocontrol,SB,Scotch broom (CYTI SCO Cytisus scoparius),31
+invasive_plant_code_withbiocontrol,CN,Short-fringed knapweed (CENT NIR Centaurea nigrescens),32
+invasive_plant_code_withbiocontrol,SK,Spotted knapweed (CENT BIE Centaurea biebersteinii),33
+invasive_plant_code_withbiocontrol,SJ,St. John's wort/Saint John's wort/ Goatweed (HYPE PER Hypericum perforatum),34
+invasive_plant_code_withbiocontrol,TR,Tansy ragwort (SENE JAC Senecio jacobaea),35
+invasive_plant_code_withbiocontrol,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),36
+invasive_plant_code_withbiocontrol,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),37

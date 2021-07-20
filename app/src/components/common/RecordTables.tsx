@@ -155,34 +155,32 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export const defaultActivitiesFetch = ({ invasivesApi, activitySubtypes, created_by }) => async ({
-  page,
-  rowsPerPage,
-  order
-}) => {
-  // Fetches fresh from the API (web).  TODO fetch from SQLite
-  let dbPageSize = DEFAULT_PAGE_SIZE;
-  if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
-    // if page is right near the db page limit
-    dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
+export const defaultActivitiesFetch =
+  ({ invasivesApi, activitySubtypes, created_by }) =>
+  async ({ page, rowsPerPage, order }) => {
+    // Fetches fresh from the API (web).  TODO fetch from SQLite
+    let dbPageSize = DEFAULT_PAGE_SIZE;
+    if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
+      // if page is right near the db page limit
+      dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
 
-  const types = activitySubtypes.map((subtype) => subtype[0]);
-  const subtypes = activitySubtypes.map((subtype) => subtype[1]);
-  const result = await invasivesApi.getActivities({
-    page: Math.floor((page * rowsPerPage) / dbPageSize),
-    limit: dbPageSize,
-    order: order,
-    // search_feature: geometry TODO
-    activity_type: arrayWrap(types),
-    activity_subtype: arrayWrap(subtypes),
-    // startDate, endDate will be filters
-    created_by: created_by // my_keycloak_id
-  });
-  return {
-    rows: result.rows.map(activityStandardMapping),
-    count: result.count
+    const types = activitySubtypes.map((subtype) => subtype[0]);
+    const subtypes = activitySubtypes.map((subtype) => subtype[1]);
+    const result = await invasivesApi.getActivities({
+      page: Math.floor((page * rowsPerPage) / dbPageSize),
+      limit: dbPageSize,
+      order: order,
+      // search_feature: geometry TODO
+      activity_type: arrayWrap(types),
+      activity_subtype: arrayWrap(subtypes),
+      // startDate, endDate will be filters
+      created_by: created_by // my_keycloak_id
+    });
+    return {
+      rows: result.rows.map(activityStandardMapping),
+      count: result.count
+    };
   };
-};
 
 export interface IActivitiesTable extends IRecordTable {
   workflow?: string;
@@ -1023,6 +1021,106 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
       />
     );
   }, [headers?.length]);
+};
+
+export const MyCollectionsTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo: any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <CollectionsTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'review_status_rendered',
+            title: 'Review Status'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
+};
+
+export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
+  const history = useHistory();
+  const databaseContext = useContext(DatabaseContext);
+  const { tableSchemaType, actions, headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <ActivitiesTable
+        tableName="Collections"
+        activitySubtypes={[[ActivityType.Collection, ActivitySubtype.Collection_Biocontrol]]}
+        tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
+        headers={[
+          ...headers,
+          'activity_id',
+          {
+            id: 'activity_subtype',
+            valueMap: {
+              ...ActivitySubtypeShortLabels,
+              Activity_Collection_Biocontrol: 'Bio Control' // TODO remove when our data isn't awful
+            }
+          },
+          {
+            id: 'created_timestamp',
+            title: 'Created Date'
+          },
+          {
+            id: 'reported_area',
+            title: 'Area (m\u00B2)'
+          },
+          {
+            id: 'latitude',
+            title: 'Latitude',
+            type: 'number'
+          },
+          {
+            id: 'longitude',
+            title: 'Longitude',
+            type: 'number'
+          }
+        ]}
+        dropdown={(row) => (
+          <ActivitiesTable
+            tableName=""
+            key={row._id}
+            tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
+            enableSelection={false}
+            headers={[
+              'jurisdiction_code',
+              'biogeoclimatic_zones',
+              {
+                id: 'flnro_districts',
+                title: 'FLNRO Districts'
+              },
+              'ownership',
+              'regional_districts',
+              'access_description',
+              'general_comment'
+            ]}
+            rows={[row]}
+            pagination={false}
+            actions={{
+              sync: {
+                enabled: false
+              }
+            }}
+          />
+        )}
+        actions={{
+          ...actions
+        }}
+        {...otherProps}
+      />
+    );
+  }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {

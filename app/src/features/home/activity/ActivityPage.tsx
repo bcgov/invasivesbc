@@ -20,6 +20,7 @@ import {
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
   getVegTransectPointsPercentCoverValidator,
+  getDurationCountAndPlantCountValidation,
   getJurisdictionPercentValidator,
   getSlopeAspectBothFlatValidator,
   getInvasivePlantsValidator,
@@ -256,6 +257,19 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       formStatus: FormValidationStatus.VALID
     });
   };
+  const autoFillTotalCollectionTime = (formData: any) => {
+    if (!formData.activity_subtype_data.collections) return formData;
+
+    formData.activity_subtype_data.collections.forEach((collection) => {
+      if (collection.start_time && collection.stop_time) {
+        const start = Number(collection.start_time);
+        const stop = Number(collection.stop_time);
+        const total = stop - start;
+        collection.total_time = total;
+      }
+    });
+    return formData;
+  };
 
   const autoFillSlopeAspect = (formData: any, lastField: string) => {
     if (!lastField) {
@@ -291,6 +305,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     //auto fills slope or aspect to flat if other is chosen flat
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
+    //auto fills total collection time (only on biocontrol collection activity)
+    updatedFormData = autoFillTotalCollectionTime(updatedFormData);
+
     await updateDoc({
       formData: updatedFormData,
       status: ActivityStatus.EDITED,
@@ -298,25 +315,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       formStatus: ref?.state?.errors?.length === 0 ? FormValidationStatus.VALID : FormValidationStatus.INVALID
     });
   });
-  /**
-   * Save the form whenever user the blur callback is fired.
-   *
-   * Callback is fired when user enters out of range value in the field and then proceeds with this value after the warning
-   * this is used to update the validation errors. If user clicks proceed, the error associated with particular field gets popped
-   *
-   * @param {*} sentFormData the new formData that was sent from the form
-   */
-  const onFormBlur = debounced(100, async (sentFormData: any) => {
-    let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(sentFormData.activity_subtype_data);
-    updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
-
-    await updateDoc({
-      formData: { ...sentFormData, activity_subtype_data: updatedActivitySubtypeData },
-      status: ActivityStatus.EDITED,
-      dateUpdated: new Date()
-    });
-  });
-
   /**
    * Paste copied form data saved in session storage
    * Update the doc (activity) with the latest form data and store it in DB
@@ -521,6 +519,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             getHerbicideApplicationRateValidator(),
             getTransectOffsetDistanceValidator(),
             getVegTransectPointsPercentCoverValidator(),
+            getDurationCountAndPlantCountValidation(),
             getJurisdictionPercentValidator(),
             getInvasivePlantsValidator(linkedActivity)
           ])}
@@ -529,7 +528,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           activity={doc}
           linkedActivity={linkedActivity}
           onFormChange={onFormChange}
-          onFormBlur={onFormBlur}
           onFormSubmitSuccess={onFormSubmitSuccess}
           onFormSubmitError={onFormSubmitError}
           photoState={{ photos, setPhotos }}

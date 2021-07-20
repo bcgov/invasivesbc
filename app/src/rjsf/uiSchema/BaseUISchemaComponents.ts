@@ -41,6 +41,21 @@ const Jurisdictions = {
   percent_covered: {}
 };
 
+const Weather_Conditions = {
+  cloud_cover_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  precipitation_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  beaufort_wind_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  weather_comments: {
+    'ui:widget': 'textarea'
+  }
+};
+
 const Herbicide = {
   liquid_herbicide_code: {
     'ui:widget': 'single-select-autocomplete'
@@ -862,6 +877,53 @@ const Observation_PlantAquatic = {
   }
 };
 
+/* 
+  Collection
+*/
+
+const Collection = {
+  collection_persons: {
+    items: {
+      ...Persons
+    }
+  },
+  weather_conditions: {
+    ...Weather_Conditions
+  }
+};
+
+const Biocontrol_Collection_Details = {
+  ...ThreeColumnStyle,
+  invasive_plant_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  biological_agent_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  historical_iapp_site_id: {},
+  collection_method: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  start_time: {},
+  stop_time: {},
+  total_time: {
+    'ui:readonly': true
+  },
+  actual_quantity_and_life_stage_of_agent_collected: {},
+  estimated_quantity_and_life_stage_of_agent_collected: {},
+  comment: {
+    'ui:widget': 'textarea'
+  }
+};
+
+const Collection_BioControll = {
+  collections: {
+    items: {
+      ...Biocontrol_Collection_Details
+    }
+  }
+};
+
 /*
   Animal Activity
 */
@@ -1157,12 +1219,15 @@ const BaseUISchemaComponents = {
   Treatment_BiologicalPlant_BulkEdit,
   Monitoring,
   Monitoring_BiologicalTerrestrialPlant,
+  Collection,
+  Collection_BioControll,
   ProjectCode,
   Herbicide,
   FourColumnStyle,
   ThreeColumnStyle,
   TwoColumnStyle,
-  Jurisdictions
+  Jurisdictions,
+  Weather_Conditions
 };
 
 export default BaseUISchemaComponents;

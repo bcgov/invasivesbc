@@ -13,7 +13,6 @@ export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
     return errors;
   };
 }
-
 /*
   Function to validate that in case 'slope' field has 'flat' option 
   selected, 'aspect' field option has to be 'flat' as well (and vice versa)
@@ -45,6 +44,41 @@ export function getSlopeAspectBothFlatValidator(): rjsfValidator {
   };
 }
 /* 
+  Function to validate duration of count and plant count fields of biological dispersal form
+*/
+export function getDurationCountAndPlantCountValidation(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_subtype_data) {
+      return errors;
+    }
+    if (formData.activity_subtype_data.count_duration && formData.activity_subtype_data.plant_count) {
+      if (errors.activity_subtype_data['count_duration']) {
+        errors.activity_subtype_data['count_duration'].addError(
+          "Can't specify both count duration and  plant count. If one field is specified, other must be empty."
+        );
+      }
+      if (errors.activity_subtype_data['plant_count']) {
+        errors.activity_subtype_data['plant_count'].addError(
+          "Can't specify both count duration and  plant count. If one field is specified, other must be empty."
+        );
+      }
+    }
+    if (!formData.activity_subtype_data.count_duration && !formData.activity_subtype_data.plant_count) {
+      if (errors.activity_subtype_data['count_duration']) {
+        errors.activity_subtype_data['count_duration'].addError(
+          'Either count duration or  plant count must be specified.'
+        );
+      }
+      if (errors.activity_subtype_data['plant_count']) {
+        errors.activity_subtype_data['plant_count'].addError(
+          'Either count duration or  plant count must be specified.'
+        );
+      }
+    }
+    return errors;
+  };
+}
+/* 
   Function to validate total percent value of vegetation transect points percent cover
 */
 export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
@@ -57,7 +91,7 @@ export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
     vegetation_transect_lines.forEach((vegTransectLine: any) => {
       let vegTransectPointIndex = 0;
       if (vegTransectLine['vegetation_transect_points_percent_cover']) {
-        vegTransectLine['vegetation_transect_points_percent_cover'].forEach(vegTransectPoint => {
+        vegTransectLine['vegetation_transect_points_percent_cover'].forEach((vegTransectPoint) => {
           let totalPercent = 0;
           //if there are invasive plants
           if (vegTransectPoint.vegetation_transect_species.invasive_plants) {
@@ -84,8 +118,9 @@ export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
             });
           }
           if (totalPercent !== 100) {
-            errors.activity_subtype_data['vegetation_transect_lines'][vegTransectLineIndex]['vegetation_transect_points_percent_cover']
-            [vegTransectPointIndex].addError('The total percentage must be equal to 100');
+            errors.activity_subtype_data['vegetation_transect_lines'][vegTransectLineIndex][
+              'vegetation_transect_points_percent_cover'
+            ][vegTransectPointIndex].addError('The total percentage must be equal to 100');
           }
           vegTransectPointIndex++;
         });
