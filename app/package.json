@@ -94,7 +94,7 @@
   "devDependencies": {
     "@capacitor/cli": "2.4.0",
     "@capacitor/core": "^2.4.7",
-    "@ionic/cli": "^6.15.0",
+    "@ionic/cli": "^6.16.3",
     "@ionic/lab": "3.2.7",
     "@types/geojson": "^7946.0.3",
     "@types/jest": "^24.0.25",
