@@ -1,7 +1,8 @@
 import { Input, makeStyles } from '@material-ui/core';
 import Spinner from 'components/spinner/Spinner';
+import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useCallback } from 'react';
 
@@ -16,27 +17,32 @@ export interface ITripNamer {
 export const TripNamer: React.FC<ITripNamer> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const [name, setName] = useState(null);
-  const [docs, setDocs] = useState(null);
 
   const getNameFromTrip = useCallback(async () => {
-    let docs = await databaseContext.database.find({
-      selector: {
-        _id: props.trip_ID
-      }
-    });
-    if (docs.docs.length > 0) {
-      let tripDoc = docs.docs[0];
-      setDocs(tripDoc);
-      if (tripDoc.name != name) {
-        setName(tripDoc.name);
-      }
+    let queryResults = await query(
+      { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
+      databaseContext
+    );
+    let aName = JSON.parse(queryResults[0].json).name;
+
+    if (aName) {
+      setName(aName);
     }
   }, [databaseContext.database]);
 
   const saveInput = async (newName) => {
-    await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-      return { ...tripDoc, name: newName, persistenceStep: 'naming trip' };
-    });
+    const tripID: string = props.trip_ID;
+    let result = await upsert(
+      [
+        {
+          type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+          ID: tripID,
+          docType: DocType.TRIP,
+          json: { name: newName }
+        }
+      ],
+      databaseContext
+    );
   };
 
   // initial fetch
@@ -48,17 +54,13 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
 
   return (
     <>
-      {docs ? (
-        <Input
-          defaultValue={name}
-          onBlur={(event) => {
-            saveInput(event.target.value);
-          }}
-          color="primary"
-        />
-      ) : (
-        <Spinner />
-      )}
+      <Input
+        defaultValue={name}
+        onBlur={(event) => {
+          saveInput(event.target.value);
+        }}
+        color="primary"
+      />
     </>
   );
 };
