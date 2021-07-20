@@ -16,11 +16,11 @@ import { DeleteForever, ExpandMore, Rowing } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
 import MetabaseSearch from 'components/search/MetabaseSearch';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
-import MapContainer from 'components/map/MapContainer';
+import MapContainer2 from 'components/map/MapContainer2';
 import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 import TripDataControls from 'components/trip/TripDataControls';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
-import { Feature } from 'geojson';
+import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import HelpIcon from '@material-ui/icons/Help';
@@ -99,7 +99,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
-  const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
+  // const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
+  const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
   const [extent, setExtent] = useState(null);
 
   const [workingTripID, setWorkingTripID] = useState(null);
@@ -195,7 +196,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
 
     if (geos.length > 0) {
-      setInteractiveGeometry(geos);
+      //  setInteractiveGeometry(geos);
     }
     setTrips([...trips]);
     console.log('set trips to ' + trips.length);
@@ -527,7 +528,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const mapMemo = useMemo(() => {
     return (
       <Paper className={classes.paper}>
-        <MapContainer
+        <MapContainer2
           {...props}
           classes={classes}
           showDrawControls={true}
