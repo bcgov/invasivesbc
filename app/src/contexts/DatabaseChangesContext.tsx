@@ -53,8 +53,10 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
     if (Capacitor.getPlatform() === 'ios') {
       return;
     }
+    /*
     if (!changesListener || changesListener['isCancelled']) {
-      const listener = databaseContext.database
+
+      const listener = databaseContext?.database?
         .changes({ live: true, since: 'now' })
         .on('change', (change) => addChange(change))
         .on('complete', (final) => () => addChange(final))
@@ -62,6 +64,7 @@ export const DatabaseChangesContextProvider: React.FC = (props) => {
 
       setChangesListener(listener);
     }
+    */
   }, [changesListener, databaseContext.database, addChange]);
 
   const cleanupDatabaseChanges = useCallback(() => {

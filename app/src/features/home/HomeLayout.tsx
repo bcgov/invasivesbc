@@ -21,38 +21,40 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
   const [notification, setNotification] = useState(null);
   const [notificationCount, setNotificationCount] = useState(0);
 
-  // const addNotificationsToPage = useCallback(async () => {
-  //   let notifications = await databaseContext.database.find({
-  //     selector: {
-  //       docType: DocType.NOTIFICATION,
-  //       acknowledged: false
-  //     },
-  //     fields: ['dateCreated', '_id', 'notificationType', 'text', 'docType', 'acknowledged'],
-  //     use_index: 'notificationsIndex'
-  //   });
+  const addNotificationsToPage = null;
 
-  //   notifications.docs = notifications.docs.filter((note) => note._id && note.notificationType && note.text);
-  //   notifications.docs.sort((a, b) => {
-  //     if (a.dateCreated < b.dateCreated) return 1;
-  //     if (a.dateCreated > b.dateCreated) return -1;
-  //     return 0;
-  //   });
+    /*  let notifications = await databaseContext.database.find({
+      selector: {
+        docType: DocType.NOTIFICATION,
+        acknowledged: false
+      },
+      fields: ['dateCreated', '_id', 'notificationType', 'text', 'docType', 'acknowledged'],
+      use_index: 'notificationsIndex'
+    });
 
-  //   setNotificationCount(notifications.docs.length);
+    notifications.docs = notifications.docs.filter((note) => note._id && note.notificationType && note.text);
+    notifications.docs.sort((a, b) => {
+      if (a.dateCreated < b.dateCreated) return 1;
+      if (a.dateCreated > b.dateCreated) return -1;
+      return 0;
+    });
 
-  //   if (notifications.docs.length > 0) {
-  //     setNotification(notifications.docs[0]);
-  //     setIsOpen(true);
-  //   }
-  // }, [databaseContext.database]);
+    setNotificationCount(notifications.docs.length);
 
-  // useEffect(() => {
-  //   const updateComponent = () => {
-  //     addNotificationsToPage();
-  //   };
+    if (notifications.docs.length > 0) {
+      setNotification(notifications.docs[0]);
+      setIsOpen(true);
+    }
+    */
 
-  //   updateComponent();
-  // }, [databaseChangesContext, addNotificationsToPage]);
+
+  useEffect(() => {
+    const updateComponent = () => {
+      //  addNotificationsToPage();
+    };
+
+    updateComponent();
+  }, [addNotificationsToPage]);
 
   const acknowledgeNotification = (docId: string) => {
     databaseContext.database.upsert(docId, (doc) => {

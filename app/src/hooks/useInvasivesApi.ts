@@ -233,19 +233,18 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getCachedApiSpec = async (): Promise<any> => {
+    let data;
     try {
-    if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
-        return;
-    }
-          const data = await getApiSpec();
+      if (Capacitor.getPlatform() !== 'ios') {
+        data = await getApiSpec();
 
-      await databaseContext.database.upsert('ApiSpec', () => {
-        return data;
-      });
+        await databaseContext.database.upsert('ApiSpec', () => {
+          return data;
+        });
+      }
       return data;
-
     } catch (error) {
-      const data = await databaseContext.database.get('ApiSpec');
+      data = await databaseContext.database.get('ApiSpec');
 
       return data;
     }

@@ -16,11 +16,11 @@ import { DeleteForever, ExpandMore, Rowing } from '@material-ui/icons';
 import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
 import MetabaseSearch from 'components/search/MetabaseSearch';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
-import MapContainer from 'components/map/MapContainer';
+import MapContainer2 from 'components/map/MapContainer2';
 import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 import TripDataControls from 'components/trip/TripDataControls';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
-import { Feature } from 'geojson';
+import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import HelpIcon from '@material-ui/icons/Help';
@@ -33,6 +33,7 @@ import { useCallback } from 'react';
 import Spinner from 'components/spinner/Spinner';
 import { confirmDeleteTrip, deleteTripRecords } from './PlanPageHelpers';
 import { Capacitor } from '@capacitor/core';
+import { useMap } from 'react-leaflet';
 
 interface IPlanPageProps {
   classes?: any;
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary
   },
   map: {
-    height: '500px',
+    height: '100%',
     width: '100%',
     zIndex: 0
   },
@@ -99,7 +100,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
-  const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
+  // const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
+  const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
   const [extent, setExtent] = useState(null);
 
   const [workingTripID, setWorkingTripID] = useState(null);
@@ -195,7 +197,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
 
     if (geos.length > 0) {
-      setInteractiveGeometry(geos);
+      //  setInteractiveGeometry(geos);
     }
     setTrips([...trips]);
     console.log('set trips to ' + trips.length);
@@ -384,7 +386,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 doneButtonCallBack={() => {
                   helperStepDoneOrSkip(1);
                 }}>
-                {/* <TripNamer trip_ID={props.trip_ID} /> */}
+                <TripNamer trip_ID={props.trip_ID} />
               </TripStep>
               <TripStep
                 title="Step 2: Add a spatial boundary for your trip."
@@ -470,7 +472,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           ) : (
             <>
               test
-              <Spinner />
+              {/*  <Spinner /> */}
             </>
           )}
         </>
@@ -527,7 +529,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const mapMemo = useMemo(() => {
     return (
       <Paper className={classes.paper}>
-        <MapContainer
+        <MapContainer2
           {...props}
           classes={classes}
           showDrawControls={true}
@@ -557,12 +559,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Button onClick={addTrip} color="primary" variant="contained">
         Add Trip
       </Button>
-      {!tripsLoaded && (
-        <>
-          {' '}
-          spinner <Spinner />
-        </>
-      )}
+      {!tripsLoaded && <> spinner {/*<Spinner /> */}</>}
       {tripsLoaded && (
         <RecordTable
           className={classes.tripList}

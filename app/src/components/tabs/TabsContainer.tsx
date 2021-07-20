@@ -121,7 +121,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
           tabsUserHasAccessTo.push({
             label: 'Map',
-            path: '/home/map',
+            path: '/home/map2',
             icon: <Map />
           });
 
