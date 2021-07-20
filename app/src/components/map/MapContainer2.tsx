@@ -2,7 +2,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import 'leaflet/dist/leaflet.css';
+//import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -243,8 +243,18 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     layer.bindPopup(popupContent);
   };
 
+  // hack to deal with leaflet getting handed the wrong window size before it calls invalidateSize on load
+  const MapResizer = () => {
+    const map = useMap();
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+
+    return null;
+  };
+
   return (
-    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%' }} zoomControl={true}>
+    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%', width: '100%' }} zoomControl={true}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <div
         style={{
@@ -277,6 +287,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       <FeatureGroup>
         <EditTools />
       </FeatureGroup>
+
+      <MapResizer />
 
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="Regular Layer">
