@@ -62,6 +62,7 @@ export enum ActivitySubtypeShortLabels {
   Activity_Monitoring_BiologicalTerrestrialPlant = 'Biocontrol Release Monitoring',
   Activity_Dispersal_BiologicalDispersal = 'Biocontrol Dispersal Monitoring',
   Activity_Transect_BiocontrolEfficacy = 'Biocontrol Efficacy Transect',
+  Activity_Collection_Biocontrol = 'Biocontrol Collection',
   // missing: Biocontrol Collection
 
   // Transects:
