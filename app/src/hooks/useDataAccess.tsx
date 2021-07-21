@@ -21,7 +21,10 @@ export const useDataAccess = () => {
    * @param {pointsOfInterestSearchCriteria} pointsOfInterestSearchCriteria
    * @return {*}  {Promise<any>}
    */
-  const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
+  const getPointsOfInterest = async (
+    pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
+    isOnline?: boolean
+  ): Promise<any> => {
     if (pointsOfInterestSearchCriteria.online) {
       return api.getPointsOfInterest(pointsOfInterestSearchCriteria);
     } else {
@@ -43,7 +46,7 @@ export const useDataAccess = () => {
    * @param {string} activityId
    * @return {*}  {Promise<any>}
    */
-  const getActivityById = async (activityId: string): Promise<any> => {
+  const getActivityById = async (activityId: string, isOnline?: boolean): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       return api.getActivityById(activityId);
     } else {
@@ -59,7 +62,7 @@ export const useDataAccess = () => {
    * @param {ICreateOrUpdateActivity} activity
    * @return {*}  {Promise<any>}
    */
-  const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
+  const updateActivity = async (activity: ICreateOrUpdateActivity, isOnline?: boolean): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       return api.updateActivity(activity);
     } else {

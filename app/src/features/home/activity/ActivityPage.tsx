@@ -1,6 +1,5 @@
 import { CircularProgress, Container, makeStyles, Box, Button, Typography, Zoom, Tooltip } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
@@ -63,7 +62,6 @@ interface IActivityPageProps {
 //why does this page think I need a map context menu ?
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
-  const invasivesApi = useInvasivesApi();
   const dataAccess = useDataAccess();
 
   const databaseContext = useContext(DatabaseContext);
