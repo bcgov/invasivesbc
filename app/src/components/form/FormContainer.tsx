@@ -224,7 +224,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   return (
     <Box width="100%">
-      <Box mb={3}>
+      {/* <Box mb={3}>
         <FormControlsComponent
           onSubmit={() => formRef.submit()}
           isDisabled={isDisabled}
@@ -233,7 +233,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           activitySubtype={props.activity.activitySubtype}
           hideCheckFormForErrors={props.hideCheckFormForErrors}
         />
-      </Box>
+      </Box> */}
 
       <ThemeProvider theme={rjsfTheme}>
         <SelectAutoCompleteContextProvider>
