@@ -1,6 +1,5 @@
 import { CircularProgress, Container, makeStyles, Box, Button, Typography, Zoom, Tooltip } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
@@ -35,6 +34,7 @@ import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from 'utils/addActivity';
+import { useDataAccess } from 'hooks/useDataAccess';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -62,7 +62,7 @@ interface IActivityPageProps {
 //why does this page think I need a map context menu ?
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
-  const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
 
   const databaseContext = useContext(DatabaseContext);
 
@@ -106,20 +106,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     // console.log("updating doc ", updatedDoc);
     if (!updatedDoc._id) {
-      // console.log("no id found for doc ", updatedDoc);
       return false;
     }
     setDoc(updatedDoc);
     try {
       const dbUpdates = debounced(1000, async (updated) => {
         // TODO use an api endpoint to do this merge logic instead
-        const oldActivity = await invasivesApi.getActivityById(updated._id);
+        const oldActivity = await dataAccess.getActivityById(updated._id);
         const newActivity = {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
-        // console.log("updating doc: db doc:", newActivity);
-        const res = await invasivesApi.updateActivity(newActivity);
+        const res = await dataAccess.updateActivity(newActivity);
       });
       await dbUpdates(updatedDoc);
       // console.log("updated doc ", updatedDoc);
@@ -346,7 +344,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    const activityResults = await invasivesApi.getActivityById(activityId || appStateResults.docs[0].activeActivity);
+    const activityResults = await dataAccess.getActivityById(activityId || appStateResults.docs[0].activeActivity);
     return mapDBActivityToDoc(activityResults);
   };
 

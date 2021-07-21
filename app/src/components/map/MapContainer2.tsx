@@ -181,10 +181,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     // Put new feature into the FeatureGroup
     const onDrawCreate = (e: any) => {
       context.layerContainer.addLayer(e.layer);
-      console.log('just drew something');
-      console.log(e);
       let aGeo = e.layer.toGeoJSON();
-      console.log('hello there');
       if (e.layerType === 'circle') {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: e.layer.getRadius() } };
       } else if (e.layerType === 'rectangle') {
