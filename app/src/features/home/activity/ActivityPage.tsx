@@ -299,7 +299,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     updatedFormData.activity_subtype_data = populateHerbicideDilutionAndArea(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
 
-    //auto fills slope or aspect to flat if other is chosen flat
+    //auto fills slope or aspect to flat if other is chosen flat (plant terrastrial observation activity)
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
     //auto fills total collection time (only on biocontrol collection activity)
     updatedFormData = autoFillTotalCollectionTime(updatedFormData);
