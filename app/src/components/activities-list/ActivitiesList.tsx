@@ -48,7 +48,7 @@ import {
   MyMonitoringTable,
   MyAnimalActivitiesTable,
   MyTransectsTable,
-  MyCollectionsTable
+  MyAdditionalBiocontrolActivitiesTable
 } from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -419,8 +419,8 @@ const ActivitiesList: React.FC = () => {
               <MyObservationsTable />
               <MyTreatmentsTable />
               <MyMonitoringTable />
+              <MyAdditionalBiocontrolActivitiesTable />
               <MyTransectsTable />
-              <MyCollectionsTable />
             </Box>
           )}
           {workflowFunction === 'Animal' && (
