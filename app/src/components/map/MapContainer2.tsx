@@ -18,7 +18,8 @@ import {
   useMap,
   FeatureGroup,
   useMapEvents,
-  useMapEvent
+  useMapEvent,
+  ZoomControl
 } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from 'leaflet/dist/images/marker-icon.png';
@@ -35,7 +36,7 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { useDataAccess } from 'hooks/useDataAccess';
 import TempPOILoader from './LayerLoaderHelpers/TempPOILoader';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid, IconButton } from '@material-ui/core';
 
 // Layer Picker
 import LayersIcon from '@material-ui/icons/Layers';
@@ -43,6 +44,7 @@ import LayersIcon from '@material-ui/icons/Layers';
 import { LayerPicker } from './LayerPicker/SortableHelper';
 import data from './LayerPicker/GEO_DATA.json';
 import { DomEvent } from 'leaflet';
+import DisplayPosition from './DisplayPosition';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -446,23 +448,32 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     return null;
   };
 
+  const [map, setMap] = useState<any>(null);
+
   return (
-    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%', width: '100%' }} zoomControl={true}>
+    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%', width: '100%' }} zoomControl={false} whenCreated={setMap}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'flex-end',
-          alignItems: 'center',
+          alignItems: 'flex-end',
+          flexFlow: 'column wrap',
           height: '70vh'
         }}>
-        <button
-          style={{ background: 'white', zIndex: 500 }}
+         
+        <IconButton
+          style={{ 
+            margin: '5px',
+            background: 'white', 
+            zIndex: 500, 
+            borderRadius: '15%', 
+            border: '1px solid black' }}
           onClick={() => {
             setMenuState(!menuState);
           }}>
-          <LayersIcon style={{ fontSize: 35 }} />
-        </button>
+          <LayersIcon />
+        </IconButton>
         {menuState ? (
           <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
             <LayerPicker data={data} />
@@ -470,11 +481,22 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         ) : (
           <></>
         )}
-      </div>
 
-      <div></div>
+        <div style={{
+          margin: '5px',
+          zIndex: 1500, 
+          background: 'white', 
+          borderRadius: '15%',
+          border: '1px solid black'}} >
+          {map ? <DisplayPosition map={map} /> : null }
+        </div>
+      </div>
+       
+      
       {/* Here is the offline component */}
       <Offline />
+
+      <ZoomControl position='bottomright' />
 
       {/* Here are the editing tools */}
       {props.showDrawControls && (
