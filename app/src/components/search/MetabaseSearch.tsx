@@ -1,9 +1,8 @@
 import DateFnsUtils from '@date-io/date-fns';
 import moment from 'moment';
 import { Button, Grid, List, ListItem, makeStyles, MenuItem, Paper, Select, TextField } from '@material-ui/core';
-import { Add, DeleteForever } from '@material-ui/icons';
+import { Add, DeleteForever, SettingsBrightnessSharp } from '@material-ui/icons';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
@@ -35,90 +34,78 @@ const useStyles = makeStyles((theme) => ({
 
 export const MetabaseSearch: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
   const [metabaseChoices, setMetabaseChoices] = useState([]);
   const [metabaseOptions, setMetabaseOptions] = useState([]);
+  const [trip, setTrip] = useState(null);
   const invasivesApi = useInvasivesApi();
 
-  const getMetabaseChoicesFromTrip = useCallback(async () => {
+  const getMetabaseChoicesFromTrip = async () => {
     let docs = await query(
       {
-        type: QueryType.DOC_TYPE_AND_TRIP_ID,
+        type: QueryType.DOC_TYPE_AND_ID,
         docType: DocType.TRIP,
-        ID: 'trip'
+        ID: props.trip_ID
       },
       databaseContext
     );
-
-    if (docs.docs.length) {
-      let tripDoc = docs.docs[0];
-      if (tripDoc.metabaseChoices) {
-        setMetabaseChoices([...tripDoc.metabaseChoices]);
-      }
-    }
-  }, [databaseContext.database]);
+    console.log(docs);
+    if (docs[0].json.metabaseChoices) setMetabaseChoices([...JSON.parse(docs[0].json).metabaseChoices]);
+    if (docs[0].json.metabaseOptions) setMetabaseOptions([...JSON.parse(docs[0].json).metabaseOptions]);
+    setTrip(JSON.parse(docs[0].json));
+  };
 
   const getMetabaseQueryOptions = useCallback(async () => {
-    let docs = await query(
-      {
-        type: QueryType.DOC_TYPE_AND_TRIP_ID,
-        docType: DocType.TRIP,
-        ID: 'trip'
-      },
-      databaseContext
-    );
-
-    if (docs.docs.length) {
-      let tripDoc = docs.docs[0];
-
-      // update metabase query options (rate limited to once per minute so we don't break metabase)
-      if (
-        tripDoc.metabaseChoices &&
-        (!tripDoc.metabaseQueryOptionsLastChecked ||
-          moment().diff(tripDoc.metabaseQueryOptionsLastChecked, 'minutes') >= 1)
-      ) {
-        try {
-          let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
-          await upsert(
-            [
-              {
-                type: UpsertType.DOC_TYPE_AND_ID,
-                docType: DocType.TRIP,
-                ID: 'trip',
-                json: { metabaseQueryOptionsLastChecked: moment().valueOf(), metabaseQueryOptions: options }
-              }
-            ],
-            databaseContext
-          );
-          setMetabaseOptions(options);
-        } catch (error) {
-          if (tripDoc.metabaseQueryOptions) setMetabaseOptions(tripDoc.metabaseQueryOptions);
-        }
-      } else {
-        if (tripDoc.metabaseQueryOptions) setMetabaseOptions(tripDoc.metabaseQueryOptions);
-      }
+    // update metabase query options (rate limited to once per minute so we don't break metabase)
+    if (!trip) {
+      return;
     }
-  }, [databaseContext.database]);
+    if (
+      metabaseChoices &&
+      (!trip.metabaseQueryOptionsLastChecked || moment().diff(trip.metabaseQueryOptionsLastChecked, 'minutes') >= 1)
+    ) {
+      try {
+        let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
+        await upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+              docType: DocType.TRIP,
+              ID: props.trip_ID,
+              json: { metabaseQueryOptionsLastChecked: moment().valueOf(), metabaseQueryOptions: options }
+            }
+          ],
+          databaseContext
+        );
+        setMetabaseOptions([...options]);
+      } catch (error) {
+        console.log('error here' + error);
+        if (trip.metabaseQueryOptions) setMetabaseOptions(trip.metabaseQueryOptions);
+      }
+    } else {
+      if (trip.metabaseQueryOptions) setMetabaseOptions(trip.metabaseQueryOptions);
+    }
+  }, [trip]);
 
   useEffect(() => {
     const updateComponent = () => {
       getMetabaseChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext, getMetabaseChoicesFromTrip]);
+  }, []);
 
   const saveChoices = async (newMetabaseChoices) => {
     await upsert(
       [
         {
-          type: UpsertType.DOC_TYPE_AND_ID,
+          type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
           docType: DocType.TRIP,
-          ID: 'trip',
+          ID: props.trip_ID,
           json: { metabaseChoices: newMetabaseChoices }
         }
       ],
       databaseContext
     );
+    setMetabaseChoices([...newMetabaseChoices]);
   };
 
   const addMetabaseChoice = (newMetabase: IMetabaseChoices) => {
