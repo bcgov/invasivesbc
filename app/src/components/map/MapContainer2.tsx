@@ -448,8 +448,10 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     return null;
   };
 
+  const [map, setMap] = useState<any>(null);
+
   return (
-    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%', width: '100%' }} zoomControl={true}>
+    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%', width: '100%' }} zoomControl={true} whenCreated={setMap}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <div
         style={{
