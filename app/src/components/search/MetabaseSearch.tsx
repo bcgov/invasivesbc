@@ -48,7 +48,6 @@ export const MetabaseSearch: React.FC<any> = (props) => {
       },
       databaseContext
     );
-    console.log(docs);
     if (docs[0].json.metabaseChoices) setMetabaseChoices([...JSON.parse(docs[0].json).metabaseChoices]);
     if (docs[0].json.metabaseOptions) setMetabaseOptions([...JSON.parse(docs[0].json).metabaseOptions]);
     setTrip(JSON.parse(docs[0].json));
@@ -78,7 +77,6 @@ export const MetabaseSearch: React.FC<any> = (props) => {
         );
         setMetabaseOptions([...options]);
       } catch (error) {
-        console.log('error here' + error);
         if (trip.metabaseQueryOptions) setMetabaseOptions(trip.metabaseQueryOptions);
       }
     } else {
