@@ -1,11 +1,11 @@
 import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext, query } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import MapContainer, { getZIndex } from 'components/map/MapContainer';
+import MapContainer2, { getZIndex } from 'components/map/MapContainer2';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
@@ -265,11 +265,11 @@ const CachedRecordsList: React.FC = (props) => {
       </Box>
       {docs.length > 0 && !loading && (
         <Paper>
-          <MapContainer
+          <MapContainer2
             classes={classes}
             mapId="references_page_map_container"
             geometryState={{ geometry, setGeometry }}
-            interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+            // interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
             extentState={{ extent, setExtent }}
             showDrawControls={true}
             contextMenuState={{ state: contextMenuState, setContextMenuState }}

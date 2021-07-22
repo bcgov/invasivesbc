@@ -136,14 +136,16 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       databaseContext
     );
     if (queryResults.length !== 0) {
-      console.log('there was one result');
+      console.log('***extent exists in db');
       anExtent = JSON.parse(queryResults[0].json).extent;
     } else {
-      console.log('no record found, using static extent');
-      anExtent = {
-        _southWest: { lat: 75.37989200147882, lng: -101.11816406250001 },
-        _northEast: { lat: 82.26989810728256, lng: -67.98339843750001 }
-      };
+      console.log('***no record found, using static extent');
+      anExtent = [
+        [40.05514703525347, -74.92986917495729],
+        [41.403788879821406, -72.64471292495729]
+      ];
+      console.log('***setting extent to:');
+      console.log('***' + JSON.stringify(anExtent));
     }
 
     if (anExtent) {
@@ -283,6 +285,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   // persist extent changes
   useEffect(() => {
     if (!tripsLoaded || !extent) {
+      return;
+    }
+    if (extent[1][1] > 3000) {
       return;
     }
     console.log('are we still here');

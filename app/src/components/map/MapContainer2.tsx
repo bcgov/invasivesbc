@@ -18,7 +18,8 @@ import {
   useMap,
   FeatureGroup,
   useMapEvents,
-  useMapEvent
+  useMapEvent,
+  ZoomControl
 } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import marker from 'leaflet/dist/images/marker-icon.png';
@@ -440,31 +441,60 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const MapResizer = () => {
     const map = useMap();
     setTimeout(() => {
+      console.log('***invalidating map size');
       map.invalidateSize();
-    }, 100);
+    }, 1000);
 
     return null;
   };
-
+  const makeBoundsUsableForMapContainerProp: any = (input: any) => {
+    return [
+      [input._southWest.lat, input._southWest.lng],
+      [input._northEast.lat, input._northEast.lng]
+    ] as any;
+  };
   const MapExtent = () => {
+    useEffect(() => {
+      console.log('***detected change from map container hook extentstate');
+      console.log('***fitting bounds');
+      const currentBoundsRaw = map.getBounds();
+      const currentBoundsConverted = makeBoundsUsableForMapContainerProp(currentBoundsRaw);
+      if (
+        props.extentState.extent !== currentBoundsConverted &&
+        //i still dont get why i have to do this but i do
+        props.extentState.extent[1][1]! > 3000 &&
+        currentBoundsConverted[1][1]! > 3000
+      ) {
+        console.log('impossible');
+        map.fitBounds(props.extentState.extent);
+      }
+    }, [props.extentState.extent]);
+
     const map = useMapEvent('moveend', () => {
-      props.extentState.setExtent(map.getBounds());
+      const rawBounds = map.getBounds();
+      const stringBounds = JSON.stringify(rawBounds);
+      console.log('***on moveend:');
+      console.log('****map.getBounds: ' + stringBounds);
+      const parsedBounds = JSON.parse(stringBounds);
+      const newBounds = makeBoundsUsableForMapContainerProp(parsedBounds);
+      const newBoundsSTring = JSON.stringify(newBounds);
+      console.log('****convertedBounds: ' + newBoundsSTring);
+
+      if (newBounds !== props.extentState.extent) {
+        console.log('***they are different, updating extent via setExtent from map');
+        props.extentState.setExtent(newBounds);
+      } else {
+        console.log('***they are same, do nthing');
+      }
     });
 
-    useEffect(() => {
-      console.log('logging extent');
-      console.log(props.extentState.extent);
-    }, [props.extentState.extent]);
     return null;
   };
+  //zoom={5}
+  //center={[50.5, 30.5]}
 
   return (
-    <MapContainer
-      bounds={props.extentState.extent && props.extentState.extent}
-      center={[50.5, 30.5]}
-      zoom={5}
-      style={{ height: '100%', width: '100%' }}
-      zoomControl={true}>
+    <MapContainer bounds={props.extentState.extent} style={{ height: '100%', width: '100%' }} zoomControl={true}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <div
         style={{
@@ -514,6 +544,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
         </LayersControl.Overlay>
       </LayersControl>
+      <ZoomControl position="bottomright" zoomInText="🧐" zoomOutText="🗺️" />
     </MapContainer>
   );
 };

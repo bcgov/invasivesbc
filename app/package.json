@@ -8,7 +8,7 @@
     "url": "https://github.com/bcgov/invasivesbc.git"
   },
   "engines": {
-    "node": ">= 10.0.0",
+    "node": ">= 14.0.0",
     "npm": ">= 6.0.0"
   },
   "dependencies": {

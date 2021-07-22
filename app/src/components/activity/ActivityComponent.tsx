@@ -1,7 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, Button, Grid, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
-import MapContainer, { IMapContainerProps } from 'components/map/MapContainer2';
+import MapContainer2, { IMapContainerProps } from 'components/map/MapContainer2';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
@@ -9,7 +9,6 @@ import { notifySuccess } from 'utils/NotificationUtils';
 import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
 import { Feature } from 'geojson';
-import MapContainer2 from 'components/map/MapContainer2';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
