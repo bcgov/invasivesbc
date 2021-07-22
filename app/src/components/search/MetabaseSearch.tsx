@@ -4,9 +4,10 @@ import { Button, Grid, List, ListItem, makeStyles, MenuItem, Paper, Select, Text
 import { Add, DeleteForever } from '@material-ui/icons';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { DocType } from 'constants/database';
 
 interface IMetabaseChoices {
   metabaseQueryId: string;
@@ -40,11 +41,14 @@ export const MetabaseSearch: React.FC<any> = (props) => {
   const invasivesApi = useInvasivesApi();
 
   const getMetabaseChoicesFromTrip = useCallback(async () => {
-    let docs = await databaseContext.database.find({
-      selector: {
-        _id: 'trip'
-      }
-    });
+    let docs = await query(
+      {
+        type: QueryType.DOC_TYPE_AND_TRIP_ID,
+        docType: DocType.TRIP,
+        ID: 'trip'
+      },
+      databaseContext
+    );
 
     if (docs.docs.length) {
       let tripDoc = docs.docs[0];
@@ -55,11 +59,14 @@ export const MetabaseSearch: React.FC<any> = (props) => {
   }, [databaseContext.database]);
 
   const getMetabaseQueryOptions = useCallback(async () => {
-    let docs = await databaseContext.database.find({
-      selector: {
-        _id: 'trip'
-      }
-    });
+    let docs = await query(
+      {
+        type: QueryType.DOC_TYPE_AND_TRIP_ID,
+        docType: DocType.TRIP,
+        ID: 'trip'
+      },
+      databaseContext
+    );
 
     if (docs.docs.length) {
       let tripDoc = docs.docs[0];
@@ -72,13 +79,17 @@ export const MetabaseSearch: React.FC<any> = (props) => {
       ) {
         try {
           let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
-          await databaseContext.database.upsert('trip', (doc) => {
-            return {
-              ...doc,
-              metabaseQueryOptionsLastChecked: moment().valueOf(),
-              metabaseQueryOptions: options
-            };
-          });
+          await upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID,
+                docType: DocType.TRIP,
+                ID: 'trip',
+                json: { metabaseQueryOptionsLastChecked: moment().valueOf(), metabaseQueryOptions: options }
+              }
+            ],
+            databaseContext
+          );
           setMetabaseOptions(options);
         } catch (error) {
           if (tripDoc.metabaseQueryOptions) setMetabaseOptions(tripDoc.metabaseQueryOptions);
@@ -97,9 +108,17 @@ export const MetabaseSearch: React.FC<any> = (props) => {
   }, [databaseChangesContext, getMetabaseChoicesFromTrip]);
 
   const saveChoices = async (newMetabaseChoices) => {
-    await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...tripDoc, metabaseChoices: newMetabaseChoices };
-    });
+    await upsert(
+      [
+        {
+          type: UpsertType.DOC_TYPE_AND_ID,
+          docType: DocType.TRIP,
+          ID: 'trip',
+          json: { metabaseChoices: newMetabaseChoices }
+        }
+      ],
+      databaseContext
+    );
   };
 
   const addMetabaseChoice = (newMetabase: IMetabaseChoices) => {
