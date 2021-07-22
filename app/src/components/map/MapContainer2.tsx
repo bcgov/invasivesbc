@@ -450,8 +450,25 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
   const [map, setMap] = useState<any>(null);
 
+  const MapExtent = () => {
+    const map = useMapEvent('moveend', () => {
+      props.extentState.setExtent(map.getBounds());
+    });
+
+    useEffect(() => {
+      console.log('logging extent');
+      console.log(props.extentState.extent);
+    }, [props.extentState.extent]);
+    return null;
+  };
+
   return (
-    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%', width: '100%' }} zoomControl={false} whenCreated={setMap}>
+    <MapContainer
+      center={[55, -128]}
+      zoom={5}
+      style={{ height: '100%', width: '100%' }}
+      zoomControl={false}
+      whenCreated={setMap}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <div
         style={{
@@ -461,14 +478,14 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           flexFlow: 'column wrap',
           height: '70vh'
         }}>
-         
         <IconButton
-          style={{ 
+          style={{
             margin: '5px',
-            background: 'white', 
-            zIndex: 500, 
-            borderRadius: '15%', 
-            border: '1px solid black' }}
+            background: 'white',
+            zIndex: 500,
+            borderRadius: '15%',
+            border: '1px solid black'
+          }}
           onClick={() => {
             setMenuState(!menuState);
           }}>
@@ -482,21 +499,22 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           <></>
         )}
 
-        <div style={{
-          margin: '5px',
-          zIndex: 1500, 
-          background: 'white', 
-          borderRadius: '15%',
-          border: '1px solid black'}} >
-          {map ? <DisplayPosition map={map} /> : null }
+        <div
+          style={{
+            margin: '5px',
+            zIndex: 1500,
+            background: 'white',
+            borderRadius: '15%',
+            border: '1px solid black'
+          }}>
+          {map ? <DisplayPosition map={map} /> : null}
         </div>
       </div>
-       
-      
+
       {/* Here is the offline component */}
       <Offline />
 
-      <ZoomControl position='bottomright' />
+      <ZoomControl position="bottomright" />
 
       {/* Here are the editing tools */}
       {props.showDrawControls && (
@@ -506,6 +524,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       )}
 
       <MapResizer />
+      <MapExtent />
 
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="Regular Layer">

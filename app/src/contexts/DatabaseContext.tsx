@@ -279,7 +279,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
   processSlowUpserts(patchSlowUpserts, databaseContext);
 
   const docTypeAndIDUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID);
-  if (docTypeAndIDUpserts.length > 1) {
+  if (docTypeAndIDUpserts.length >= 1) {
     batchUpdate = buildSQLStringDOC_TYPE_AND_ID(docTypeAndIDUpserts);
     ret = await handleExecute(batchUpdate, db);
     if (ret != false) {

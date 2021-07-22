@@ -51,6 +51,7 @@ export const useDataAccess = () => {
       return api.getActivityById(activityId);
     } else {
       //TODO: Implement for mobile
+
       console.log('not implemented yet');
       return;
     }
@@ -67,6 +68,7 @@ export const useDataAccess = () => {
       return api.updateActivity(activity);
     } else {
       //TODO: Implement for mobile
+
       console.log('not implemented yet');
     }
   };

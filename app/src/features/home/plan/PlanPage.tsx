@@ -112,27 +112,44 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
-  /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
+  /* 
+  commented out for sonar cloud, but this will be needed to close the context menu for this page:
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
   */
 
-  // const getExtent = async () => {
-  //   let docs = await databaseContext.database.find({
-  //     selector: { docType: DocType.PLAN_PAGE_EXTENT },
-  //     use_index: 'docTypeIndex'
-  //   });
-  //   if (!docs || !docs.docs || !docs.docs.length) {
-  //     return;
-  //   }
-  //   if (!docs[0]) {
-  //     return;
-  //   }
-  //   if (docs[0].extent) {
-  //     setExtent(docs[0].extent);
-  //   }
-  // };
+  console.log('not caching');
+
+  const getExtent = async () => {
+    // let docs = await databaseContext.database.find({
+    //   selector: { docType: DocType.PLAN_PAGE_EXTENT },
+    //   use_index: 'docTypeIndex'
+    // });
+    let anExtent;
+    let queryResults = await query(
+      {
+        type: QueryType.DOC_TYPE_AND_ID,
+        docType: DocType.PLAN_PAGE_EXTENT,
+        ID: '1'
+      },
+      databaseContext
+    );
+    if (queryResults.length !== 0) {
+      console.log('there was one result');
+      anExtent = JSON.parse(queryResults[0].json).extent;
+    } else {
+      console.log('no record found, using static extent');
+      anExtent = {
+        _southWest: { lat: 75.37989200147882, lng: -101.11816406250001 },
+        _northEast: { lat: 82.26989810728256, lng: -67.98339843750001 }
+      };
+    }
+
+    if (anExtent) {
+      setExtent(anExtent);
+    }
+  };
 
   const getTrips = async () => {
     if (!databaseContext) {
@@ -145,7 +162,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     let results: any; //sqlite db response
 
     if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
-      results = await query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
+      try {
+        results = await query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
+      } catch (e) {
+        console.log('problem here');
+        console.log(e);
+      }
     } else {
       return;
     }
@@ -227,7 +249,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   useEffect(() => {
     const initialLoad = async () => {
       await getTrips();
-      //await getExtent();
+      await getExtent();
     };
     initialLoad();
   }, [newTripID, tripsLoaded]);
@@ -241,9 +263,20 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       return;
     }
     if (geometry) {
-      databaseContext.database.upsert(workingTripID, (tripDoc) => {
-        return { ...tripDoc, geometry: geometry, persistenceStep: 'update geo' };
-      });
+      // upsert(
+      //   [
+      //     {
+      //       type: UpsertType.DOC_TYPE,
+      //       docType: DocType.TRIP,
+      //       trip_ID: workingTripID,
+      //       json: { geometry: geometry }
+      //     }
+      //   ],
+      //   databaseContext
+      // );
+      // databaseContext.database.upsert(workingTripID, (tripDoc) => {
+      //   return { ...tripDoc, geometry: geometry, persistenceStep: 'update geo' };
+      // });
     }
   }, [geometry, tripsLoaded, databaseContext.database]);
 
@@ -252,9 +285,28 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!tripsLoaded || !extent) {
       return;
     }
-    databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
-      return { ...planPageExtentDoc, docType: DocType.PLAN_PAGE_EXTENT, extent: extent };
-    });
+    console.log('are we still here');
+
+    try {
+      upsert(
+        [
+          {
+            type: UpsertType.DOC_TYPE_AND_ID,
+            docType: DocType.PLAN_PAGE_EXTENT,
+            ID: '1',
+            json: { extent: extent }
+          }
+        ],
+        databaseContext
+      );
+    } catch (e) {
+      console.log(' did something go wrong here');
+      console.log(e);
+      console.log(JSON.stringify(e));
+    }
+    // databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
+    //   return { ...planPageExtentDoc, docType: DocType.PLAN_PAGE_EXTENT, extent: extent };
+    // });
   }, [extent, tripsLoaded]);
 
   const addTrip = async () => {
@@ -276,20 +328,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         { status: TripStatusCode.initial, expanded: false }
       ]
     };
-
-    if (Capacitor.getPlatform() == 'web') {
-      databaseContext.database.upsert(newID.toString(), (doc) => {
-        return {
-          ...doc,
-          ...newTripObj
-        };
-      });
-    } else {
-      //android & iOS
-      const results = await upsert(
-        [{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }],
-        databaseContext
-      );
+    try {
+      await upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], databaseContext);
+    } catch (e) {
+      console.log('problem here');
+      console.log(e);
     }
 
     setNewTripID(newID);
@@ -304,33 +347,59 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         return;
       } //android and ios
       else {
-        const results = await query(
-          { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
-          databaseContext
-        );
-        setStepState(JSON.parse(results[0].json).stepState);
+        try {
+          const results = await query(
+            { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
+            databaseContext
+          );
+          setStepState(JSON.parse(results[0].json).stepState);
+        } catch (e) {
+          console.log('problem here');
+          console.log(e);
+        }
       }
     }, [databaseContext.database]);
 
     const saveState = async (newState) => {
       setStepState(newState);
       if (Capacitor.getPlatform() == 'web') {
-        await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-          return { ...tripDoc, docType: DocType.TRIP, stepState: newState, persistenceStep: 'updating state' };
-        });
+        try {
+          await upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE,
+                docType: DocType.TRIP,
+                trip_ID: props.trip_ID,
+                json: { stepState: newState }
+              }
+            ],
+            databaseContext
+          );
+        } catch (e) {
+          console.log('problem here');
+          console.log(e);
+        }
+        // await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
+        //   return { ...tripDoc, docType: DocType.TRIP, stepState: newState, persistenceStep: 'updating state' };
+        // });
       } else {
         // only overwrite newstate property of db record:
-        await upsert(
-          [
-            {
-              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-              ID: props.trip_ID,
-              docType: DocType.TRIP,
-              json: { stepState: newState }
-            }
-          ],
-          databaseContext
-        );
+        try {
+          await upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                ID: props.trip_ID,
+                docType: DocType.TRIP,
+                json: { stepState: newState }
+              }
+            ],
+            databaseContext
+          );
+        } catch (e) {
+          console.log('problem here');
+          console.log(e);
+        }
       }
     };
 
@@ -529,27 +598,40 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const mapMemo = useMemo(() => {
     return (
       <Paper className={classes.paper}>
-        <MapContainer2
-          {...props}
-          classes={classes}
-          showDrawControls={true}
-          mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
-          geometryState={{ geometry, setGeometry }}
-          interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-          extentState={{ extent, setExtent }}
-          contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-        />
+        {extent ? (
+          <MapContainer2
+            {...props}
+            classes={classes}
+            showDrawControls={true}
+            mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
+            geometryState={{ geometry, setGeometry }}
+            interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+            extentState={{ extent, setExtent }}
+            contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+          />
+        ) : (
+          'banana'
+        )}
       </Paper>
     );
-  }, [geometry, interactiveGeometry, tripsLoaded]);
+  }, [geometry, interactiveGeometry, tripsLoaded, extent]);
 
   const trashTrip = async (trip_ID, tripName) => {
-    // if (confirmDeleteTrip(trip_ID, tripName)) {
-    //   await deleteTripRecords(databaseContext, trip_ID);
-    // }
+    if (confirmDeleteTrip(trip_ID, tripName)) {
+      await deleteTripRecords(databaseContext, trip_ID);
+    }
     // await databaseContext.database.get(trip_ID.toString()).then((doc) => {
     //   return databaseContext.database.remove(doc);
     // });
+    await query({ type: QueryType.DOC_TYPE_AND_ID, ID: trip_ID, docType: DocType.TRIP }, databaseContext).then(
+      (doc) => {
+        return upsert(
+          [{ type: UpsertType.RAW_SQL, docType: DocType.TRIP, sql: `DELETE * FROM trip WHERE trip.id = ${trip_ID}` }],
+          databaseContext
+        );
+      }
+    );
+
     setNewTripID(Math.random());
   };
 
