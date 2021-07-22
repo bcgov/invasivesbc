@@ -59,7 +59,7 @@ export default function DisplayPosition({ map }) {
                 <Popup>
                     {/*position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)}
                     <br />
-                    {*/utm_zone(position.lng, position.lat)}
+                    {*/utm_zone(watchPosition.coords.longitude, watchPosition.coords.latitude)}
                 </Popup>
             </Marker> : null}
             <IconButton aria-label="my position" onClick={startThing}>
