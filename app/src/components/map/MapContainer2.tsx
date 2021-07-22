@@ -452,13 +452,14 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
   const MapExtent = () => {
     const map = useMapEvent('moveend', () => {
+      console.log('hello');
       props.extentState.setExtent(map.getBounds());
     });
 
     useEffect(() => {
       console.log('logging extent');
       console.log(props.extentState.extent);
-    }, [props.extentState.extent]);
+    }, []);
     return null;
   };
 
