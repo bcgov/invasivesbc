@@ -446,8 +446,25 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     return null;
   };
 
+  const MapExtent = () => {
+    const map = useMapEvent('moveend', () => {
+      props.extentState.setExtent(map.getBounds());
+    });
+
+    useEffect(() => {
+      console.log('logging extent');
+      console.log(props.extentState.extent);
+    }, [props.extentState.extent]);
+    return null;
+  };
+
   return (
-    <MapContainer center={[55, -128]} zoom={5} style={{ height: '100%', width: '100%' }} zoomControl={true}>
+    <MapContainer
+      bounds={props.extentState.extent && props.extentState.extent}
+      center={[50.5, 30.5]}
+      zoom={5}
+      style={{ height: '100%', width: '100%' }}
+      zoomControl={true}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <div
         style={{
@@ -484,6 +501,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       )}
 
       <MapResizer />
+      <MapExtent />
 
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="Regular Layer">
