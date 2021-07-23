@@ -68,6 +68,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
 
     return new PouchDB(DB_SCHEMA, { adapter: 'idb' });
   };
+  /*
   const {
     echo,
     getPlatform,
@@ -81,7 +82,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
     isJsonValid,
     copyFromAssets,
     isAvailable
-  } = useSQLite();
+  } = useSQLite();*/
 
   /**
    * Create the database.
