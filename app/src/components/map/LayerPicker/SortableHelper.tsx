@@ -32,10 +32,20 @@ import * as L from 'leaflet';
 import { DragHandle } from '@material-ui/icons';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
+// for confirming loaded layers
+import DoneIcon from '@material-ui/icons/Done';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import { IconButton } from '@material-ui/core';
+import LayersIcon from '@material-ui/icons/Layers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%'
+    width: '360px',
+    height: '300px',
+    backgroundColor: 'white',
+    position: 'absolute',
+    zIndex: 1500,
+    right: 55, top: 20
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -103,82 +113,109 @@ export function LayerPicker(props: any) {
     </ListItemIcon>
   ));
 
+  function WithCounter() {
+    const [seconds, setSeconds] = React.useState(10);
+    React.useEffect(() => {
+      if (seconds > 0) {
+        setTimeout(() => setSeconds(seconds - 1), 1000);
+      }
+    });
+    return seconds;
+  };
+
   const SortableParentLayer = SortableElement(({ parent }: any) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
       updateParent((parent as any).id, { expanded: expanded });
     };
+    const seconds = WithCounter();
+
     return (
       <ListItem ContainerComponent="div">
-        {/*<Grid container>
-                    {/*<Grid item>*/}
-        <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
-          <Grid container justify="flex-start" alignItems="center">
-            <Grid item xs={1}>
-              <Checkbox
-                checked={parent.enabled}
-                name={parent.id}
-                onChange={() => {
-                  updateParent(parent.id, {
-                    enabled: !getParent(objectState, parent.id).enabled
-                  });
-                }}
-              />
-            </Grid>
-            <Grid item xs={5}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
-                {parent.id}
-              </AccordionSummary>
-            </Grid>
-            <Grid item xs={3}>
-              <ColorPicker
-                name="color"
-                defaultValue={parent.colorCode}
-                onChange={(color: any) => {
-                  updateParent(parent.id, { colorCode: color });
-                }}
-              />
-            </Grid>
-            <Grid item xs={2} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
-              <CircularProgress variant="determinate" value={parent.loaded} />
-            </Grid>
-          </Grid>
-          {parent.children.map((child: any) => (
-            <Grid container direction="row" justify="flex-start" alignItems="center">
-              &emsp;
-              <Grid item xs={2}>
+        <Grid container xs={12}>
+          <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
+            <Grid container justify="flex-start" alignItems="center">
+              <Grid item xs={1}>
                 <Checkbox
-                  checked={child.enabled}
-                  name={child.id}
+                  checked={parent.enabled}
+                  name={parent.id}
                   onChange={() => {
-                    updateChild(parent.id, child.id, {
-                      enabled: !getChild(objectState, parent.id, child.id).enabled
+                    updateParent(parent.id, {
+                      enabled: !getParent(objectState, parent.id).enabled
                     });
                   }}
                 />
               </Grid>
-              <Grid item xs={5}>
-                {child.id}
+              <Grid item xs={6}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
+                  {parent.id}
+                </AccordionSummary>
               </Grid>
-              <Grid item xs={2}>
+              <Grid item xs={2} style={{ backgroundColor: parent.colorCode }}>
                 <ColorPicker
                   name="color"
-                  defaultValue={child.colorCode}
-                  onChange={(color: any) =>
-                    updateChild(parent.id, child.id, {
-                      colorCode: color
-                    })
-                  }
+                  defaultValue={parent.colorCode}
+                  onChange={(color: any) => {
+                    updateParent(parent.id, { colorCode: color });
+                  }}
                 />
               </Grid>
-              <Grid item xs={2} style={{ position: 'relative' }}>
-                <CircularProgress variant="determinate" value={child.loaded} />
+              <Grid item xs={2} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
+                {parent.loaded === 100 ?
+                  <DoneIcon /> :
+                  <div>
+                    {seconds === 0 ?
+                      <ErrorOutlineIcon /> :
+                      <CircularProgress variant="determinate" value={parent.loaded} />
+                    }
+                  </div>
+                }
               </Grid>
             </Grid>
-          ))}
-        </Accordion>
-        <ListItemSecondaryAction>
-          <DragHandle />
-        </ListItemSecondaryAction>
+            {parent.children.map((child: any) => (
+              <Grid container direction="row" justify="flex-start" alignItems="center">
+                &emsp;
+                <Grid item xs={2}>
+                  <Checkbox
+                    checked={child.enabled}
+                    name={child.id}
+                    onChange={() => {
+                      updateChild(parent.id, child.id, {
+                        enabled: !getChild(objectState, parent.id, child.id).enabled
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={5}>
+                  {child.id}
+                </Grid>
+                <Grid item xs={2} style={{ backgroundColor: child.colorCode }}>
+                  <ColorPicker
+                    name="color"
+                    defaultValue={child.colorCode}
+                    onChange={(color: any) =>
+                      updateChild(parent.id, child.id, {
+                        colorCode: color
+                      })
+                    }
+                  />
+                </Grid>
+                <Grid item xs={2} style={{ position: 'relative' }}>
+                  {child.loaded === 100 ?
+                    <DoneIcon /> :
+                    <div>
+                      {seconds === 0 ?
+                        <ErrorOutlineIcon /> :
+                        <CircularProgress variant="determinate" value={child.loaded} />}
+                    </div>
+                  }
+                </Grid>
+              </Grid>
+            ))}
+          </Accordion>
+          <ListItemSecondaryAction>
+            <DragHandle />
+          </ListItemSecondaryAction>
+        </Grid>
       </ListItem>
     );
   });
@@ -196,39 +233,55 @@ export function LayerPicker(props: any) {
     setObjectState(returnVal);
   };
   const map = useMap();
+  const [menuState, setMenuState] = useState(false);
 
   return (
-    <div
-      className={classes.root}
-      onTouchStart={() => {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
+    <div style={{ zIndex: 1000 }}>
+      <IconButton style={{
+        margin: '5px',
+        background: 'white',
+        borderRadius: '4px',
+        position: 'relative'
       }}
-      onTouchMove={() => {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
-      }}
-      onTouchEnd={() => {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
-      }}
-      onMouseOver={() => {
-        if (Capacitor.getPlatform() == 'web') {
-          map.dragging.disable();
-          map.doubleClickZoom.disable();
-        }
-      }}
-      onMouseOut={() => {
-        if (Capacitor.getPlatform() == 'web') {
-          map.dragging.enable();
-          map.doubleClickZoom.enable();
-        }
-      }}>
-      <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
+        onClick={() => {
+          setMenuState(!menuState);
+        }}>
+        <LayersIcon />
+      </IconButton>
 
-      {/*<br />*/}
+      {menuState ?
+        <div
+          className={classes.root}
+          onTouchStart={() => {
+            map.dragging.disable();
+            map.doubleClickZoom.disable();
+          }}
+          onTouchMove={() => {
+            map.dragging.disable();
+            map.doubleClickZoom.disable();
+          }}
+          onTouchEnd={() => {
+            map.dragging.disable();
+            map.doubleClickZoom.disable();
+          }}
+          onMouseOver={() => {
+            if (Capacitor.getPlatform() == 'web') {
+              map.dragging.disable();
+              map.doubleClickZoom.disable();
+            }
+          }}
+          onMouseOut={() => {
+            if (Capacitor.getPlatform() == 'web') {
+              map.dragging.enable();
+              map.doubleClickZoom.enable();
+            }
+          }}>
+          <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
 
-      {/*<pre>{JSON.stringify(sortArray(objectState), null, 2)}</pre>*/}
+          {/*<br />*/}
+
+          {/*<pre>{JSON.stringify(sortArray(objectState), null, 2)}</pre>*/}
+        </div> : null}
     </div>
   );
 }

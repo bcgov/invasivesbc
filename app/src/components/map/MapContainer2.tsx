@@ -125,7 +125,6 @@ const interactiveGeometryStyle = () => {
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const drawRef = useRef();
-  const [menuState, setMenuState] = useState(false);
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
 
   const Offline = () => {
@@ -459,44 +458,15 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           justifyContent: 'flex-end',
           alignItems: 'flex-end',
           flexFlow: 'column wrap',
-          height: '70vh'
+          height: '45vh'
         }}>
-         
-        <IconButton
-          style={{ 
-            margin: '5px',
-            background: 'white', 
-            zIndex: 500, 
-            borderRadius: '15%', 
-            border: '1px solid black' }}
-          onClick={() => {
-            setMenuState(!menuState);
-          }}>
-          <LayersIcon />
-        </IconButton>
-        {menuState ? (
-          <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
-            <LayerPicker data={data} />
-          </div>
-        ) : (
-          <></>
-        )}
-
-        <div style={{
-          margin: '5px',
-          zIndex: 1500, 
-          background: 'white', 
-          borderRadius: '15%',
-          border: '1px solid black'}} >
-          {map ? <DisplayPosition map={map} /> : null }
-        </div>
+        <LayerPicker data={data} />
+        {map ? <DisplayPosition map={map} /> : null }
+        <ZoomControl position='bottomright' />
       </div>
-       
-      
       {/* Here is the offline component */}
       <Offline />
 
-      <ZoomControl position='bottomright' />
 
       {/* Here are the editing tools */}
       {props.showDrawControls && (

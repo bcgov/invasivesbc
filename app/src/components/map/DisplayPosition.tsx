@@ -7,15 +7,15 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 export default function DisplayPosition({ map }) {
     const [position, setPosition] = useState(map.getCenter());
-    
-    
+
+
     const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
     const { getPosition } = useCurrentPosition();
 
     useEffect(() => {
         getPosition();
     }, []);
-    
+
     const utm_zone = (longitude: any, latitude: any) => {
         let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
         proj4.defs([
@@ -33,70 +33,32 @@ export default function DisplayPosition({ map }) {
     }
 
     useEffect(() => {
-        if(watchPosition){
-            let myPos = [watchPosition.coords.latitude,watchPosition.coords.longitude];
+        if (watchPosition) {
+            let myPos = [watchPosition.coords.latitude, watchPosition.coords.longitude];
             map.flyTo(myPos, 17);
             setPosition(map.getCenter());
             clearWatch();
-        } 
+        }
     }, [watchPosition]);
-/*
-    const onMove = useCallback(() => {
-        setPosition(map.getCenter());
-    }, [map]);
-
-    useEffect(() => {
-        map.on('move', onMove);
-        return () => {
-            map.off('move', onMove);
-        };
-    }, [map, onMove]);*/
 
     return (
         <div>
-            {watchPosition ? 
-            <Marker position={[watchPosition.coords.latitude,watchPosition.coords.longitude]}>
-                <Popup>
-                    {/*position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)}
+            {watchPosition ?
+                <Marker position={[watchPosition.coords.latitude, watchPosition.coords.longitude]}>
+                    <Popup>
+                        {/*position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)}
                     <br />
                     {*/utm_zone(watchPosition.coords.longitude, watchPosition.coords.latitude)}
-                </Popup>
-            </Marker> : null}
-            <IconButton aria-label="my position" onClick={startThing}>
+                    </Popup>
+                </Marker> : null}
+            <IconButton style={{
+                margin: '5px',
+                zIndex: 1500,
+                background: 'white',
+                borderRadius: '4px'
+            }} aria-label="my position" onClick={startThing}>
                 <LocationOnIcon />
             </IconButton>
-            {/*<button onClick={() => {setState(!state)}}>
-                Get Position
-            </button>
-            {state ? 
-            <div style={{
-                position: 'fixed',
-                width: '100%',
-                height: '100%',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                margin: 'auto',
-                backgroundColor: 'rgba(0,0,0, 0.5)',
-                }}>
-                <div style={{
-                    position: 'absolute',
-                    left: '25%',
-                    right: '25%',
-                    top: '25%',
-                    bottom: '25%',
-                    margin: 'auto',
-                    background: 'white'
-                    }}>
-                    <p>
-                        {position.lat.toFixed(4)}
-                        &ensp;
-                        {position.lng.toFixed(4)}
-                    </p>
-                    <button onClick={() => setState(false)}>exit</button>
-                </div>
-            </div> : null*/}
         </div>
     )
 }
