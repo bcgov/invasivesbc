@@ -2,6 +2,7 @@ export enum DocType {
   APPSTATE = 'appstate',
   ACTIVITY = 'activity',
   TRIP = 'trip',
+  API_SPEC = 'api_spec',
   REFERENCE_ACTIVITY = 'reference_activity',
   REFERENCE_POINT_OF_INTEREST = 'reference_point_of_interest',
   POINT_OF_INTEREST = 'point_of_interest',
