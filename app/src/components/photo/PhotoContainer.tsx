@@ -1,4 +1,4 @@
-import { CameraResultType, CameraSource } from '@capacitor/core';
+//import { CameraResultType, CameraSource } from '@capacitor/core';
 import { useCamera } from '@ionic/react-hooks/camera';
 import {
   Box,
@@ -33,7 +33,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const { getPhoto } = useCamera();
 
   const takePhoto = async () => {
-    const cameraPhoto = await getPhoto({
+    /*   const cameraPhoto = await getPhoto({
       resultType: CameraResultType.DataUrl,
       source: CameraSource.Camera,
       quality: 100
@@ -47,6 +47,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     };
 
     props.photoState.setPhotos([...props.photoState.photos, photo]);
+    */
   };
 
   const changePhotoDescription = (filepath: any, fieldsToUpdate: Object) => {

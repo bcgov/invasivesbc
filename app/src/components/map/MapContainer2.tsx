@@ -106,7 +106,11 @@ export interface IMapContainerProps {
     interactiveGeometry: any;
     setInteractiveGeometry: (interactiveGeometry: GeoJsonObject) => void;
   };
-  extentState: { extent: any; setExtent: (extent: any) => void };
+  extentState: {
+    extent: L.LatLngBoundsLiteral;
+    setExtent: (LatLngBoundsLiteral) => void;
+    setNewExtent?: (LatLngBoundsLiteral) => void;
+  };
   contextMenuState: {
     state: MapContextMenuData;
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;
@@ -216,10 +220,10 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         };
         const bboxCoords = turf.bbox(allGeosFeatureCollection);
 
-        map.fitBounds([
+        /*  map.fitBounds([
           [bboxCoords[1], bboxCoords[0]],
           [bboxCoords[3], bboxCoords[2]]
-        ]);
+        ]);*/
       }
     };
 
@@ -443,7 +447,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     setTimeout(() => {
       console.log('***invalidating map size');
       map.invalidateSize();
-    }, 1000);
+    }, 100);
 
     return null;
   };
@@ -453,23 +457,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       [input._northEast.lat, input._northEast.lng]
     ] as any;
   };
-  const MapExtent = () => {
-    useEffect(() => {
-      console.log('***detected change from map container hook extentstate');
-      console.log('***fitting bounds');
-      const currentBoundsRaw = map.getBounds();
-      const currentBoundsConverted = makeBoundsUsableForMapContainerProp(currentBoundsRaw);
-      if (
-        props.extentState.extent !== currentBoundsConverted &&
-        //i still dont get why i have to do this but i do
-        props.extentState.extent[1][1]! > 3000 &&
-        currentBoundsConverted[1][1]! > 3000
-      ) {
-        console.log('impossible');
-        map.fitBounds(props.extentState.extent);
-      }
-    }, [props.extentState.extent]);
 
+  const SubsequentExtentSaver = () => {
     const map = useMapEvent('moveend', () => {
       const rawBounds = map.getBounds();
       const stringBounds = JSON.stringify(rawBounds);
@@ -480,9 +469,9 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       const newBoundsSTring = JSON.stringify(newBounds);
       console.log('****convertedBounds: ' + newBoundsSTring);
 
-      if (newBounds !== props.extentState.extent) {
-        console.log('***they are different, updating extent via setExtent from map');
-        props.extentState.setExtent(newBounds);
+      if (newBounds !== props.extentState.extent && newBounds[1][1] < 500) {
+        console.log('***they are different, updating extent via setNewExtent from map');
+        props.extentState.setNewExtent(newBounds);
       } else {
         console.log('***they are same, do nthing');
       }
@@ -490,62 +479,103 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
     return null;
   };
+
+  const [isReady, setIsReady] = useState(false);
   //zoom={5}
   //center={[50.5, 30.5]}
 
+  const InitialExtentSetter = (input: { extent: L.LatLngBoundsLiteral }) => {
+    const map = useMap();
+    useEffect(() => {
+      if (isReady) {
+        const timeout = 1000;
+        console.log('***map is ready, fitting bounds in ' + timeout + ' ***');
+        setTimeout(() => {
+          console.log('***fitting bounds***');
+          try {
+            console.log('extent passed to map:');
+            console.log(JSON.stringify(input.extent));
+            const rawBounds = map.getBounds();
+            const convertedBounds = makeBoundsUsableForMapContainerProp(rawBounds);
+            if (input.extent !== convertedBounds) {
+              map.fitBounds(input.extent);
+            }
+          } catch (e) {
+            console.log('***error fitting bounds');
+            console.log(JSON.stringify(e));
+          }
+        }, timeout);
+      }
+    }, []);
+    return null;
+  };
+
   return (
-    <MapContainer bounds={props.extentState.extent} style={{ height: '100%', width: '100%' }} zoomControl={true}>
-      {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          height: '70vh'
-        }}>
-        <button
-          style={{ background: 'white', zIndex: 500 }}
-          onClick={() => {
-            setMenuState(!menuState);
-          }}>
-          <LayersIcon style={{ fontSize: 35 }} />
-        </button>
-        {menuState ? (
-          <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
-            <LayerPicker data={data} />
+    <>
+      {props.extentState.extent ? (
+        <MapContainer
+          bounds={props.extentState.extent}
+          style={{ height: '100%', width: '100%' }}
+          whenReady={() => {
+            setIsReady(true);
+          }}
+          zoomControl={true}>
+          {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              height: '70vh'
+            }}>
+            <button
+              style={{ background: 'white', zIndex: 500 }}
+              onClick={() => {
+                setMenuState(!menuState);
+              }}>
+              <LayersIcon style={{ fontSize: 35 }} />
+            </button>
+            {menuState ? (
+              <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
+                <LayerPicker data={data} />
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
-        ) : (
-          <></>
-        )}
-      </div>
 
-      <div></div>
-      {/* Here is the offline component */}
-      <Offline />
+          <div></div>
+          {/* Here is the offline component */}
+          <Offline />
 
-      {/* Here are the editing tools */}
-      {props.showDrawControls && (
-        <FeatureGroup>
-          <EditTools />
-        </FeatureGroup>
+          {/* Here are the editing tools */}
+          {props.showDrawControls && (
+            <FeatureGroup>
+              <EditTools />
+            </FeatureGroup>
+          )}
+          <MapResizer />
+          {/*          <MapExtent />*/}
+          <InitialExtentSetter extent={props.extentState.extent} />
+          <SubsequentExtentSaver />
+
+          <LayersControl position="topright">
+            <LayersControl.BaseLayer checked name="Regular Layer">
+              <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+            </LayersControl.BaseLayer>
+            <LayersControl.Overlay checked name="Activities">
+              {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
+              {/* this line below works - its what you need for geosjon*/}
+              <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
+              {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
+            </LayersControl.Overlay>
+          </LayersControl>
+          <ZoomControl position="bottomright" zoomInText="🧐" zoomOutText="🗺️" />
+        </MapContainer>
+      ) : (
+        <></>
       )}
-
-      <MapResizer />
-      <MapExtent />
-
-      <LayersControl position="topright">
-        <LayersControl.BaseLayer checked name="Regular Layer">
-          <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-        </LayersControl.BaseLayer>
-        <LayersControl.Overlay checked name="Activities">
-          {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
-          {/* this line below works - its what you need for geosjon*/}
-          <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
-          {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
-        </LayersControl.Overlay>
-      </LayersControl>
-      <ZoomControl position="bottomright" zoomInText="🧐" zoomOutText="🗺️" />
-    </MapContainer>
+    </>
   );
 };
 

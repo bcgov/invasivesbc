@@ -116,9 +116,21 @@ const CachedRecordsList: React.FC = (props) => {
   */
   const updateRecordList = useCallback(async () => {
     setLoading(true);
-    const result = await databaseContext.database.allDocs({ include_docs: true });
-    let pois = await getPointsOfInterest();
-    setPointsOfInterest(pois);
+    //  const pointsOfInterests = await query({QueryType.DOC_TYPE })
+
+    let result;
+    try {
+      result = await databaseContext.database.allDocs({ include_docs: true });
+    } catch (e) {
+      console.log('unable to do pouch stuff');
+    }
+    try {
+      let pois = await getPointsOfInterest();
+      setPointsOfInterest(pois);
+    } catch (e) {
+      console.log('unable to getch anything');
+      console.log(e);
+    }
 
     const newDocs = result?.rows
       ?.map((doc) => doc.doc)
@@ -188,7 +200,10 @@ const CachedRecordsList: React.FC = (props) => {
   const [selectedMonitorings, setSelectedMonitorings] = useState([]);
 
   const getPointsOfInterest = async () => {
-    return await dataAccess.getPointsOfInterest({ page: 1, limit: 1000, online: true });
+    const results = await dataAccess.getPointsOfInterest({ page: 1, limit: 1, online: false });
+    console.log('*** points on cache page');
+    console.log(JSON.stringify(results));
+    return results;
   };
 
   const [pointsOfInterest, setPointsOfInterest] = useState([]);

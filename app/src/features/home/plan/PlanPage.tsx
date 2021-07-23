@@ -34,6 +34,8 @@ import Spinner from 'components/spinner/Spinner';
 import { confirmDeleteTrip, deleteTripRecords } from './PlanPageHelpers';
 import { Capacitor } from '@capacitor/core';
 import { useMap } from 'react-leaflet';
+import { LatLngBoundsLiteral } from 'leaflet';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 
 interface IPlanPageProps {
   classes?: any;
@@ -97,12 +99,13 @@ const useStyles = makeStyles((theme) => ({
 const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const classes = useStyles();
 
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   // const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
-  const [extent, setExtent] = useState(null);
+  const [extent, setExtent] = useState<LatLngBoundsLiteral>(null);
+  const [newExtent, setNewExtent] = useState<LatLngBoundsLiteral>(null);
 
   const [workingTripID, setWorkingTripID] = useState(null);
   const [newTripID, setNewTripID] = useState(null);
@@ -126,29 +129,33 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     //   selector: { docType: DocType.PLAN_PAGE_EXTENT },
     //   use_index: 'docTypeIndex'
     // });
-    let anExtent;
-    let queryResults = await query(
-      {
-        type: QueryType.DOC_TYPE_AND_ID,
-        docType: DocType.PLAN_PAGE_EXTENT,
-        ID: '1'
-      },
-      databaseContext
-    );
-    if (queryResults.length !== 0) {
-      console.log('***extent exists in db');
-      anExtent = JSON.parse(queryResults[0].json).extent;
+
+    let anExtent: LatLngBoundsLiteral = [
+      [40.05514703525347, -74.92986917495729],
+      [41.403788879821406, -72.64471292495729]
+    ];
+    if (Capacitor.getPlatform() !== 'web') {
+      await setTimeout(() => {}, 500);
+      let queryResults = await query(
+        {
+          type: QueryType.DOC_TYPE_AND_ID,
+          docType: DocType.PLAN_PAGE_EXTENT,
+          ID: '1'
+        },
+        databaseContext
+      );
+      if (queryResults.length !== 0) {
+        console.log('***extent exists in db');
+        anExtent = JSON.parse(queryResults[0].json).extent;
+      }
     } else {
       console.log('***no record found, using static extent');
-      anExtent = [
-        [40.05514703525347, -74.92986917495729],
-        [41.403788879821406, -72.64471292495729]
-      ];
-      console.log('***setting extent to:');
       console.log('***' + JSON.stringify(anExtent));
     }
 
     if (anExtent) {
+      console.log('typeof');
+      console.log(typeof anExtent);
       setExtent(anExtent);
     }
   };
@@ -250,11 +257,17 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   // initial fetch
   useEffect(() => {
     const initialLoad = async () => {
-      await getTrips();
+      if (Capacitor.getPlatform() !== 'web') {
+        if (!databaseContext.sqliteDB) {
+          await setTimeout(() => {}, 3000);
+        }
+        await getTrips();
+      }
+
       await getExtent();
     };
     initialLoad();
-  }, [newTripID, tripsLoaded]);
+  }, [newTripID, tripsLoaded, databaseContext]);
 
   // persist geometry changes
   useEffect(() => {
@@ -280,14 +293,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       //   return { ...tripDoc, geometry: geometry, persistenceStep: 'update geo' };
       // });
     }
-  }, [geometry, tripsLoaded, databaseContext.database]);
+  }, [geometry, tripsLoaded, databaseContext.sqliteDB]);
 
   // persist extent changes
   useEffect(() => {
-    if (!tripsLoaded || !extent) {
+    if (!tripsLoaded || !newExtent) {
       return;
     }
-    if (extent[1][1] > 3000) {
+    if (newExtent[1][1] > 1000) {
       return;
     }
     console.log('are we still here');
@@ -299,7 +312,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
             type: UpsertType.DOC_TYPE_AND_ID,
             docType: DocType.PLAN_PAGE_EXTENT,
             ID: '1',
-            json: { extent: extent }
+            json: { extent: newExtent }
           }
         ],
         databaseContext
@@ -312,7 +325,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     // databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
     //   return { ...planPageExtentDoc, docType: DocType.PLAN_PAGE_EXTENT, extent: extent };
     // });
-  }, [extent, tripsLoaded]);
+  }, [newExtent, tripsLoaded]);
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
@@ -345,7 +358,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const SingleTrip: React.FC<any> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
-    const databaseContext = useContext(DatabaseContext);
+    const databaseContext = useContext(DatabaseContext2);
     const [stepState, setStepState] = useState(null);
     const getStateFromTrip = useCallback(async () => {
       if (Capacitor.getPlatform() == 'web') {
@@ -363,7 +376,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           console.log(e);
         }
       }
-    }, [databaseContext.database]);
+    }, [databaseContext]);
 
     const saveState = async (newState) => {
       setStepState(newState);
@@ -601,23 +614,20 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     );
   };
   const mapMemo = useMemo(() => {
+    console.log('rendering map');
     return (
-      <Paper className={classes.paper}>
-        {extent ? (
-          <MapContainer2
-            {...props}
-            classes={classes}
-            showDrawControls={true}
-            mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
-            geometryState={{ geometry, setGeometry }}
-            interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-            extentState={{ extent, setExtent }}
-            contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-          />
-        ) : (
-          'banana'
-        )}
-      </Paper>
+      <>
+        <MapContainer2
+          {...props}
+          classes={classes}
+          showDrawControls={true}
+          mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
+          geometryState={{ geometry, setGeometry }}
+          interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+          extentState={{ extent, setExtent, setNewExtent }}
+          contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+        />
+      </>
     );
   }, [geometry, interactiveGeometry, tripsLoaded, extent]);
 
@@ -628,13 +638,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     // await databaseContext.database.get(trip_ID.toString()).then((doc) => {
     //   return databaseContext.database.remove(doc);
     // });
-    await query({ type: QueryType.DOC_TYPE_AND_ID, ID: trip_ID, docType: DocType.TRIP }, databaseContext).then(
-      (doc) => {
-        return upsert(
-          [{ type: UpsertType.RAW_SQL, docType: DocType.TRIP, sql: `DELETE * FROM trip WHERE trip.id = ${trip_ID}` }],
-          databaseContext
-        );
-      }
+    upsert(
+      [{ type: UpsertType.RAW_SQL, docType: DocType.TRIP, sql: `DELETE * FROM trip WHERE trip.id = ${trip_ID}` }],
+      databaseContext
     );
 
     setNewTripID(Math.random());
@@ -644,7 +650,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     <Container className={props.classes.container}>
       {mapMemo}
       <Button onClick={addTrip} color="primary" variant="contained">
-        Add Trip
+        Add Trip test hot relaoding
       </Button>
       {!tripsLoaded && <> spinner {/*<Spinner /> */}</>}
       {tripsLoaded && (
