@@ -48,7 +48,8 @@ import {
   MyMonitoringTable,
   MyAnimalActivitiesTable,
   MyTransectsTable,
-  MyAdditionalBiocontrolActivitiesTable
+  MyCollectionsTable,
+  ReviewActivitiesTable
 } from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -402,16 +403,9 @@ const ActivitiesList: React.FC = () => {
             <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Form Type">
               <MenuItem value="Plant">Plant</MenuItem>
               <MenuItem value="Animal">Animal</MenuItem>
+              <MenuItem value="Review">Review</MenuItem>
             </Select>
           </FormControl>
-          <Button
-            disabled={isDisabled}
-            variant="contained"
-            color="primary"
-            startIcon={<Sync className={clsx(syncing && 'rotating')} />}
-            onClick={() => syncActivities()}>
-            Submit Records
-          </Button>
         </Box>
         <Box>
           {workflowFunction === 'Plant' && (
@@ -419,13 +413,18 @@ const ActivitiesList: React.FC = () => {
               <MyObservationsTable />
               <MyTreatmentsTable />
               <MyMonitoringTable />
-              <MyAdditionalBiocontrolActivitiesTable />
               <MyTransectsTable />
+              <MyCollectionsTable />
             </Box>
           )}
           {workflowFunction === 'Animal' && (
             <Box>
               <MyAnimalActivitiesTable />
+            </Box>
+          )}
+          {workflowFunction === 'Review' && (
+            <Box>
+              <ReviewActivitiesTable />
             </Box>
           )}
         </Box>

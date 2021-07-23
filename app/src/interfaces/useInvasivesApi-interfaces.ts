@@ -89,6 +89,13 @@ export interface IActivitySearchCriteria {
    * @memberof IActivitySearchCriteria
    */
   created_by?: string;
+  /**
+   * Review status of the record
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  review_status?: string[];
 }
 
 /**
@@ -98,10 +105,33 @@ export interface IActivitySearchCriteria {
  * @interface ICreateOrUpdateActivity
  */
 export interface ICreateOrUpdateActivity {
+  version?: string;
   activity_id: string;
-  created_timestamp: string;
   activity_type: any;
   activity_subtype: any;
+  received_timestamp?: string;
+  deleted_timestamp?: string;
+  media_keys?: any;
+  biogeoclimatic_zones?: any;
+  regional_invasive_species_organization_areas?: any;
+  invasive_plant_management_areas?: any;
+  ownership?: any;
+  regional_districts?: any;
+  flnro_districts?: any;
+  moti_districts?: any;
+  elevation?: any;
+  well_proximity?: any;
+  utm_zone?: any;
+  utm_northing?: any;
+  utm_easting?: any;
+  albers_northing?: any;
+  albers_easting?: any;
+  activity_incoming_data?: any;
+  reviewed_by?: any;
+  reviewed_at?: any;
+  
+  created_timestamp: string;
+  
   geometry: Feature[];
   media?: IMedia[];
   form_data: any;
@@ -109,13 +139,7 @@ export interface ICreateOrUpdateActivity {
   sync_status?: string;
   form_status?: string;
   created_by?: string;
-  /*
-  date_created?: string;
-  date_updated?: string;
-  status?: string;
-  sync?: any;
-  form_status?: string;
-  */
+  review_status?: string;
 }
 
 /**

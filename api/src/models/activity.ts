@@ -110,6 +110,8 @@ export class ActivitySearchCriteria {
 
   created_by: string;
 
+  review_status: string[];
+
   order: string[];
 
   /**
@@ -135,6 +137,8 @@ export class ActivitySearchCriteria {
     this.column_names = (obj && obj.column_names) || [];
 
     this.created_by = (obj && obj.created_by) || null;
+
+    this.review_status = (obj && obj.review_status) || [];
 
     this.order = (obj && obj.order) || [];
   }
