@@ -103,8 +103,8 @@ const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
 const MapPage2: React.FC<IMapProps> = (props) => {
   const classes = useStyles();
 
-  //  const databaseContext = useContext(DatabaseContext);
-  // const databaseChangesContext = useContext(DatabaseChangesContext);
+  //const databaseContext = useContext(DatabaseContext);
+  //const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
@@ -123,29 +123,27 @@ const MapPage2: React.FC<IMapProps> = (props) => {
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
   // don't load the map until interactive geos ready
-  /*useEffect(() => {
-    //const didInteractiveGeosLoad = interactiveGeometry ? true : false;
-    const didInteractiveGeosLoad = true;
-    setIsReadyToLoadMap(didInteractiveGeosLoad);
-  }, [databaseChangesContext, interactiveGeometry]);
-  */
+  // useEffect(() => {
+  //   //const didInteractiveGeosLoad = interactiveGeometry ? true : false;
+  //   const didInteractiveGeosLoad = true;
+  //   setIsReadyToLoadMap(didInteractiveGeosLoad);
+  // }, [databaseChangesContext, interactiveGeometry]);
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
   const handleGeoClick = async (geo: any) => {
-    /*  setShowPopOut(true);
+    setShowPopOut(true);
     // fetch all data for the given geo
-    const results = await databaseContext.database.find({ selector: { _id: geo._id } });
+    // const results = await databaseContext.database.find({ selector: { _id: geo._id } });
 
-    setSelectedInteractiveGeometry(results.docs[0]);
-    */
+    //setSelectedInteractiveGeometry(results.docs[0]);
   };
 
-  //const da = useDataAccess();
+  const da = useDataAccess();
   let poiInteractiveGeos;
-  /*const getEverythingWithAGeo = useCallback(async () => {
+  const getEverythingWithAGeo = useCallback(async () => {
     const now = moment().valueOf();
     if (geoUpdateTimestamp !== null && now < geoUpdateTimestamp + GEO_UPDATE_MIN_INTERVAL) {
       return;
@@ -154,24 +152,17 @@ const MapPage2: React.FC<IMapProps> = (props) => {
     setGeoUpdateTimestamp(now);
   }, []);
 
-  setIsReadyToLoadMap(true);
   useEffect(() => {
     const updateComponent = () => {
       getEverythingWithAGeo();
     };
-
     updateComponent();
   }, [showPopOut, getEverythingWithAGeo]);
 
-  useEffect(() => {
-    console.log('chosen geo');
-    console.dir(selectedInteractiveGeometry);
-  }, [selectedInteractiveGeometry]);*/
-
-  /* useEffect(() => {
-  //  getActivityData();
-  }, [getActivityData]);
-  */
+  // useEffect(() => {
+  //   console.log('chosen geo');
+  //   console.dir(selectedInteractiveGeometry);
+  // }, [selectedInteractiveGeometry]);
 
   const photoState = {
     photos,
@@ -182,32 +173,32 @@ const MapPage2: React.FC<IMapProps> = (props) => {
     activity: formActivityData,
     photoState
   };
-  setExtent([
-    [-50.96591949462891, -20.817741019786485],
-    [-3.6807632446289067, 12.103780891645817]
-  ]);
-  alert('made it to here');
+  //-- causes to rerender
+  useEffect(() => {
+    setIsReadyToLoadMap(true);
+    setExtent([
+      [-50.96591949462891, -20.817741019786485],
+      [-3.6807632446289067, 12.103780891645817]
+    ]);
+  }, []);
+
+  console.log('made it to here');
 
   return (
     <Box height="inherit" width="inherit">
       <Grid className={classes.mainGrid} container>
         <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
           <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
-            {extent ? /*
-              <MapContainer2
-                classes={classes}
-                showDrawControls={false}
-                mapId={'mainMap'}
-                pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
-                geometryState={{ geometry, setGeometry }}
-                interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-                extentState={{ extent, setExtent }}
-                contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-              />
-              */
-            null : (
-              <CircularProgress />
-            )}
+            <MapContainer2
+              classes={classes}
+              showDrawControls={false}
+              mapId={'mainMap'}
+              pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
+              geometryState={{ geometry, setGeometry }}
+              interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+              extentState={{ extent, setExtent }}
+              contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+            />
           </Container>
         </Grid>
       </Grid>

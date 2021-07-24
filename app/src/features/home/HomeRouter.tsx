@@ -27,7 +27,7 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
     return `InvasivesBC - ${page}`;
   };
 
-  alert('from the router');
+  console.log('from the router');
 
   return (
     <Switch>
