@@ -27,6 +27,8 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
     return `InvasivesBC - ${page}`;
   };
 
+  alert('from the router');
+
   return (
     <Switch>
       <Redirect exact from="/home" to="/home/landing" />

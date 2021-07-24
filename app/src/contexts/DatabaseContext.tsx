@@ -195,32 +195,22 @@ export interface IQuery {
   offset?: number;
 }
 
-const openConnection = async (sqlite) => {
-  // initialize the connection
+export const query = async (queryConfig: IQuery, databaseContext: any) => {
+  /*  while (!databaseContext.sqliteDB) {
+    await setTimeout(() => {
+      alert('...waiting');
+    }, 3000);
+  }*/
   try {
-    console.log('setting up db');
-    console.log('setting up db');
-    console.log(JSON.stringify(sqlite));
-    let db = await sqlite.createConnection('localInvasivesBC', false, 'no-encryption', 1);
-    let ret: any; //= await deleteDatabase(db);
-    ret = await db.open();
-    if (!ret.result) {
-      console.log('unable to open db');
-      return false;
-    } else {
-      return db;
+    if (!databaseContext.sqliteDB.isAvailable || !databaseContext.db.isDBOpen()) {
+      alert('but unavailable');
+      return;
     }
   } catch (e) {
-    console.log('error connecting to db');
-    console.log(JSON.stringify(e));
-    throw e;
+    alert('crashing checking if available');
+    alert(JSON.stringify(e));
   }
-};
-export const query = async (queryConfig: IQuery, databaseContext: any) => {
-  if (!databaseContext.isAvailable) {
-    return;
-  }
-  console.log('typeof input');
+  alert('supposedly available');
   //alert(JSON.stringify(databaseContext));
   if (Capacitor.getPlatform() != 'web') {
     // alert('made it here');
@@ -230,6 +220,8 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
     let db;
     if (databaseContext.sqliteDB) {
       db = databaseContext.sqliteDB;
+    } else {
+      return;
     }
     switch (queryConfig.type) {
       case QueryType.DOC_TYPE_AND_ID:

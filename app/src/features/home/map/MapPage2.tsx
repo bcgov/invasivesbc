@@ -7,8 +7,8 @@ import MapContainer, { getZIndex } from 'components/map/MapContainer';
 import { IAPPSite } from 'components/points-of-interest/IAPP/IAPP-Site';
 import { ActivitiesPOI } from 'components/points-of-interest/ActivitiesPOI/ActivitiesPOI';
 import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+//import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
+//import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
@@ -103,8 +103,8 @@ const PopOutComponent: React.FC<popOutComponentProps> = (props) => {
 const MapPage2: React.FC<IMapProps> = (props) => {
   const classes = useStyles();
 
-  const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
+  //  const databaseContext = useContext(DatabaseContext);
+  // const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
@@ -123,72 +123,55 @@ const MapPage2: React.FC<IMapProps> = (props) => {
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
   // don't load the map until interactive geos ready
-  useEffect(() => {
+  /*useEffect(() => {
     //const didInteractiveGeosLoad = interactiveGeometry ? true : false;
     const didInteractiveGeosLoad = true;
     setIsReadyToLoadMap(didInteractiveGeosLoad);
   }, [databaseChangesContext, interactiveGeometry]);
+  */
 
   const handleContextMenuClose = () => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
   const handleGeoClick = async (geo: any) => {
-    setShowPopOut(true);
+    /*  setShowPopOut(true);
     // fetch all data for the given geo
     const results = await databaseContext.database.find({ selector: { _id: geo._id } });
 
     setSelectedInteractiveGeometry(results.docs[0]);
+    */
   };
 
-  const getActivityData = useCallback(async () => {
-    // const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
-    let appStateResults; // = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
-
-    if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
-      return;
-    }
-
-    /*const activityResults = await databaseContext.database.find({
-      selector: { _id: appStateResults.docs[0].activeActivity }
-    });*/
-    const activityResults = null;
-
-    if (activityResults && activityResults?.docs[0]) {
-      setFormActivityData(activityResults?.docs[0]);
-      setPhotos(activityResults?.docs[0].photos || []);
-    }
-  }, [databaseContext.database]);
-
-  const da = useDataAccess();
+  //const da = useDataAccess();
   let poiInteractiveGeos;
-  const getEverythingWithAGeo = useCallback(async () => {
+  /*const getEverythingWithAGeo = useCallback(async () => {
     const now = moment().valueOf();
     if (geoUpdateTimestamp !== null && now < geoUpdateTimestamp + GEO_UPDATE_MIN_INTERVAL) {
       return;
     }
 
     setGeoUpdateTimestamp(now);
+  }, []);
 
-    //setIsReadyToLoadMap(true)
-  }, [extent]);
-
+  setIsReadyToLoadMap(true);
   useEffect(() => {
     const updateComponent = () => {
       getEverythingWithAGeo();
     };
 
     updateComponent();
-  }, [databaseChangesContext, showPopOut, getEverythingWithAGeo]);
+  }, [showPopOut, getEverythingWithAGeo]);
 
   useEffect(() => {
     console.log('chosen geo');
     console.dir(selectedInteractiveGeometry);
-  }, [selectedInteractiveGeometry]);
+  }, [selectedInteractiveGeometry]);*/
 
-  useEffect(() => {
-    getActivityData();
+  /* useEffect(() => {
+  //  getActivityData();
   }, [getActivityData]);
+  */
 
   const photoState = {
     photos,
@@ -199,13 +182,18 @@ const MapPage2: React.FC<IMapProps> = (props) => {
     activity: formActivityData,
     photoState
   };
+  setExtent([
+    [-50.96591949462891, -20.817741019786485],
+    [-3.6807632446289067, 12.103780891645817]
+  ]);
+  alert('made it to here');
 
   return (
     <Box height="inherit" width="inherit">
       <Grid className={classes.mainGrid} container>
         <Grid className={showPopOut ? classes.mapGridItemShrunk : classes.mapGridItemExpanded} item>
           <Container className={clsx(classes.mapContainer)} maxWidth={false} disableGutters={true}>
-            {isReadyToLoadMap ? (
+            {extent ? /*
               <MapContainer2
                 classes={classes}
                 showDrawControls={false}
@@ -216,12 +204,14 @@ const MapPage2: React.FC<IMapProps> = (props) => {
                 extentState={{ extent, setExtent }}
                 contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
               />
-            ) : (
+              */
+            null : (
               <CircularProgress />
             )}
           </Container>
         </Grid>
-        <Grid className={showPopOut ? classes.popOutGridItemExpanded : classes.popOutGridItemShrunk} item>
+      </Grid>
+      {/* <Grid className={showPopOut ? classes.popOutGridItemExpanded : classes.popOutGridItemShrunk} item>
           <PopOutComponent
             buttonCloseCallback={() => {
               setShowPopOut(false);
@@ -232,7 +222,6 @@ const MapPage2: React.FC<IMapProps> = (props) => {
             ) : (
               <>{formActivityData && <ActivitiesPOI containerProps={containerProps} />}</>
             )}
-            {/*<ActivityPage activityId={selectedInteractiveGeometry?.recordDocID} />*/}
           </PopOutComponent>
         </Grid>
       </Grid>
@@ -240,6 +229,7 @@ const MapPage2: React.FC<IMapProps> = (props) => {
         contextMenuState={{ state: contextMenuState, setContextMenuState }}
         handleClose={handleContextMenuClose}
       />
+            */}
     </Box>
   );
 };

@@ -100,7 +100,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext2);
-
   const [geometry, setGeometry] = useState<Feature[]>([]);
   // const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
@@ -135,7 +134,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       [41.403788879821406, -72.64471292495729]
     ];
     if (Capacitor.getPlatform() !== 'web') {
-      await setTimeout(() => {}, 500);
       let queryResults = await query(
         {
           type: QueryType.DOC_TYPE_AND_ID,
@@ -358,7 +356,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const SingleTrip: React.FC<any> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
-    const databaseContext = useContext(DatabaseContext2);
+    //const databaseContext = useContext(DatabaseContext2);
     const [stepState, setStepState] = useState(null);
     const getStateFromTrip = useCallback(async () => {
       if (Capacitor.getPlatform() == 'web') {

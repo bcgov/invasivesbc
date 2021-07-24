@@ -48,11 +48,12 @@ const App: React.FC<IAppProps> = (props) => {
   };
 
   return (
-    <Box height="100vh" width="100vw" display="flex" overflow="hidden">
-      <ThemeProvider theme={appTheme}>
-        <IonReactRouter>
-          <NetworkContextProvider>
-            <DatabaseContext2Provider>
+    <>
+      {/*<DatabaseContext2Provider>*/}
+      <Box height="100vh" width="100vw" display="flex" overflow="hidden">
+        <ThemeProvider theme={appTheme}>
+          <IonReactRouter>
+            <NetworkContextProvider>
               <DatabaseContextProvider>
                 <DatabaseContext.Consumer>
                   {(databaseContext: IDatabaseContext) => {
@@ -75,11 +76,12 @@ const App: React.FC<IAppProps> = (props) => {
                   }}
                 </DatabaseContext.Consumer>
               </DatabaseContextProvider>
-            </DatabaseContext2Provider>
-          </NetworkContextProvider>
-        </IonReactRouter>
-      </ThemeProvider>
-    </Box>
+            </NetworkContextProvider>
+          </IonReactRouter>
+        </ThemeProvider>
+      </Box>
+      {/*</DatabaseContext2Provider>*/}
+    </>
   );
 };
 

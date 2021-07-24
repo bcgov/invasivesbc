@@ -1,4 +1,4 @@
-import { DatabaseContext } from 'contexts/DatabaseContext';
+//import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -126,7 +126,6 @@ const interactiveGeometryStyle = () => {
 };
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
   const drawRef = useRef();
   const [menuState, setMenuState] = useState(false);
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
@@ -510,73 +509,81 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     return null;
   };
 
-  return (
-    <>
-      {props.extentState.extent ? (
-        <MapContainer
-          bounds={props.extentState.extent}
-          style={{ height: '100%', width: '100%' }}
-          whenReady={() => {
-            setIsReady(true);
-          }}
-          zoomControl={true}>
-          {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-              height: '70vh'
-            }}>
-            <button
-              style={{ background: 'white', zIndex: 500 }}
-              onClick={() => {
-                setMenuState(!menuState);
+  alert('made it to return of mapcontainer2');
+
+  try {
+    return (
+      <>
+        {true ? (
+          <MapContainer
+            //          bounds={props.extentState.extent}
+            center={[55, -128]}
+            zoom={5}
+            style={{ height: '100%', width: '100%' }}
+            whenReady={() => {
+              setIsReady(true);
+            }}
+            zoomControl={true}>
+            {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                height: '70vh'
               }}>
-              <LayersIcon style={{ fontSize: 35 }} />
-            </button>
-            {menuState ? (
-              <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
-                <LayerPicker data={data} />
-              </div>
-            ) : (
-              <></>
+              <button
+                style={{ background: 'white', zIndex: 500 }}
+                onClick={() => {
+                  setMenuState(!menuState);
+                }}>
+                <LayersIcon style={{ fontSize: 35 }} />
+              </button>
+              {menuState ? (
+                <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
+                  <LayerPicker data={data} />
+                </div>
+              ) : (
+                <></>
+              )}
+            </div>
+
+            <div></div>
+            {/* Here is the offline component */}
+            <Offline />
+
+            {/* Here are the editing tools */}
+            {props.showDrawControls && (
+              <FeatureGroup>
+                <EditTools />
+              </FeatureGroup>
             )}
-          </div>
+            <MapResizer />
+            {/*          <MapExtent />*/}
+            <InitialExtentSetter extent={props.extentState.extent} />
+            <SubsequentExtentSaver />
 
-          <div></div>
-          {/* Here is the offline component */}
-          <Offline />
-
-          {/* Here are the editing tools */}
-          {props.showDrawControls && (
-            <FeatureGroup>
-              <EditTools />
-            </FeatureGroup>
-          )}
-          <MapResizer />
-          {/*          <MapExtent />*/}
-          <InitialExtentSetter extent={props.extentState.extent} />
-          <SubsequentExtentSaver />
-
-          <LayersControl position="topright">
-            <LayersControl.BaseLayer checked name="Regular Layer">
-              <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-            </LayersControl.BaseLayer>
-            <LayersControl.Overlay checked name="Activities">
-              {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
-              {/* this line below works - its what you need for geosjon*/}
-              <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
-              {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
-            </LayersControl.Overlay>
-          </LayersControl>
-          <ZoomControl position="bottomright" zoomInText="🧐" zoomOutText="🗺️" />
-        </MapContainer>
-      ) : (
-        <></>
-      )}
-    </>
-  );
+            <LayersControl position="topright">
+              <LayersControl.BaseLayer checked name="Regular Layer">
+                <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+              </LayersControl.BaseLayer>
+              <LayersControl.Overlay checked name="Activities">
+                {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
+                {/* this line below works - its what you need for geosjon*/}
+                <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
+                {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
+              </LayersControl.Overlay>
+            </LayersControl>
+            <ZoomControl position="bottomright" zoomInText="🧐" zoomOutText="🗺️" />
+          </MapContainer>
+        ) : (
+          <></>
+        )}
+      </>
+    );
+  } catch (e) {
+    alert('react-leaflet crashed');
+  }
 };
 
 export default MapContainer2;
