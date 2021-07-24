@@ -81,6 +81,7 @@ const ProjectCode = {
 };
 
 const TerrestrialPlants = {
+  ...ThreeColumnStyle,
   invasive_plant_code: {
     'ui:widget': 'single-select-autocomplete'
   },
