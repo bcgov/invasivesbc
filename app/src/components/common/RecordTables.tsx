@@ -174,7 +174,8 @@ export const defaultActivitiesFetch = ({ invasivesApi, activitySubtypes, created
     // if page is right near the db page limit
     dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
 
-  const types = arrayWrap(activitySubtypes).map((subtype) => subtype.split('_')[1]);
+  const types = arrayWrap(activitySubtypes).map((subtype : string) => String(subtype).split('_')[1]);
+  
   const result = await invasivesApi.getActivities({
     page: Math.floor((page * rowsPerPage) / dbPageSize),
     limit: dbPageSize,
@@ -191,6 +192,7 @@ export const defaultActivitiesFetch = ({ invasivesApi, activitySubtypes, created
     rows: result.rows.map(activityStandardMapping),
     count: result.count
   };
+}
 
 export interface IActivitiesTable extends IRecordTable {
   workflow?: string;
@@ -220,8 +222,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     ...otherProps
   } = props;
 
-  const createAction = (type, subtype) => ({
-    key: `create_activity_${subtype.toLowerCase()}`,
+  const createAction = (type : string, subtype : string) => ({
+    key: `create_activity_${subtype.toString().toLowerCase()}`,
     enabled: true,
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
@@ -240,7 +242,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 
   let createActions = {};
   arrayWrap(activitySubtypes).forEach((subtype) => {
-    const action = createAction(subtype.split('_')[1], subtype);
+    const action = createAction(subtype.toString().split('_')[1], subtype);
     createActions = {
       ...createActions,
       [action.key]: {
@@ -577,6 +579,7 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           }
         ]}
         created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
     );
@@ -605,29 +608,25 @@ export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
-  const { headers = [], ...otherProps } = props;
+  const { tableSchemaType, ...otherProps } = props;
   return useMemo(() => {
     return (
-      <AnimalActivitiesTable
-        startingOrderBy="created_timestamp"
-        startingOrder="asc"
-        headers={[
-          ...headers,
-          'sync_status',
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
+      <MyActivitiesTable
+        tableName="Animal Activities"
+        activitySubtypes={[
+          ActivitySubtype.Activity_AnimalTerrestrial,
+          ActivitySubtype.Activity_AnimalAquatic
         ]}
-        created_by={userInfo?.preferred_username}
-        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
+        tableSchemaType={[
+          'Observation',
+          'Activity_AnimalTerrestrial',
+          'Activity_AnimalAquatic',
+          ...arrayWrap(tableSchemaType)
+        ]}
         {...otherProps}
       />
     );
-  }, [headers?.length]);
+  }, []);
 };
 
 export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
@@ -707,17 +706,20 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
               });
             },
             label: 'Create Treatment',
-            bulkAction: true,
-            rowAction: false,
+            bulkAction: false,
+            rowAction: true,
             displayInvalid: 'error',
-            invalidError: 'All selected activities must be of the same SubType to create a Treatment',
+            invalidError: 'Observation forms must be validated before they can be used to create a new Treatment',
+            // invalidError: 'All selected activities must be of the same SubType to create a Treatment',
             /*
               Function to determine if all selected observation records are
               of the same subtype. For example: Cannot create a treatment if you select a plant
               and an animal observation, and most probably will not go treat a terrestrial
               and aquatic observation in a single treatment as those are different areas
+              NOTE: we might have deprecated multiple treatment creation
             */
             bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
+            rowCondition: (row) => row.form_status === FormValidationStatus.VALID,
             ...actions?.create_treatment
           }
         }}
@@ -1100,7 +1102,7 @@ export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
     return (
       <ActivitiesTable
         tableName="Collections"
-        activitySubtypes={[[ActivityType.Collection, ActivitySubtype.Collection_Biocontrol]]}
+        activitySubtypes={[ActivitySubtype.Collection_Biocontrol]}
         tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
         headers={[
           ...headers,
@@ -1158,9 +1160,6 @@ export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
             }}
           />
         )}
-        actions={{
-          ...actions
-        }}
         {...otherProps}
       />
     );
@@ -1186,6 +1185,7 @@ export const MyCollectionsTable: React.FC<IActivitiesTable> = (props) => {
           }
         ]}
         created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
     );
@@ -1720,4 +1720,16 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       />
     );
   }, [rows?.length]);
+};
+
+export const MyPastActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+  return useMemo(() => {
+    return (
+      <MyActivitiesTable
+        tableName="My Old Activities"
+        review_status={[ReviewStatus.APPROVED, ReviewStatus.PREAPPROVED]}
+        {...props}
+      />
+    );
+  }, []);
 };

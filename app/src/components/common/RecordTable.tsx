@@ -314,7 +314,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
         order: [orderBy + ' ' + order]
       });
 
-      // console.log('fetchRows: ', result);
+      console.log('fetchRows: ', result);
       if (result) {
         await setRows(result.rows);
         await setTotalRows(parseInt(result.count));
