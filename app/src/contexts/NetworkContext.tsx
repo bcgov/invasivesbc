@@ -1,7 +1,7 @@
-import { Network, NetworkStatus } from '@capacitor/core';
+import { Network, ConnectionStatus } from '@capacitor/network';
 import React, { useEffect, useState } from 'react';
 
-export const NetworkContext = React.createContext<NetworkStatus>(null);
+export const NetworkContext = React.createContext<ConnectionStatus>(null);
 
 /**
  * Provides access to the database and to related functions to manipulate the database instance.
@@ -9,7 +9,7 @@ export const NetworkContext = React.createContext<NetworkStatus>(null);
  * @param {*} props
  */
 export const NetworkContextProvider: React.FC = (props) => {
-  const [networkContext, setNetworkContext] = useState<NetworkStatus>(null);
+  const [networkContext, setNetworkContext] = useState<ConnectionStatus>(null);
 
   useEffect(() => {
     // Remove old listeners, if any
