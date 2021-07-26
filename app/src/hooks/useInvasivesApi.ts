@@ -1,6 +1,5 @@
 import { Capacitor } from '@capacitor/core';
 import { useKeycloak } from '@react-keycloak/web';
-import axios from 'axios';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
@@ -10,15 +9,16 @@ import {
 } from 'interfaces/useInvasivesApi-interfaces';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
-import { Http, HttpPluginWeb } from '@capacitor-community/http';
-import { Plugins } from '@capacitor/core';
+import { Http } from '@capacitor-community/http';
 import { useContext, useMemo } from 'react';
 import { DocType } from 'constants/database';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
 const API_URL =
-  (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
+  `http://` + (API_PORT && `${API_HOST}:${API_PORT}`) ||
+  API_HOST ||
+  'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
