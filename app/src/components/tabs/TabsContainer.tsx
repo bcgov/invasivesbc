@@ -98,7 +98,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: <Search />
           });
 
-          if(Capacitor.getPlatform() !== 'web'){
+          if (Capacitor.getPlatform() !== 'web') {
             tabsUserHasAccessTo.push({
               label: 'Plan My Trip',
               path: '/home/plan',

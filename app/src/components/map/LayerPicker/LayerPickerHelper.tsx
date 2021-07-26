@@ -56,11 +56,7 @@ export function getObjectsAfterIndex(inputArray: any[], index: number) {
  * @param cIndex
  * @returns
  */
-export function getChildObjBeforeIndex(
-  inputArray: any[],
-  pIndex: number,
-  cIndex: number
-) {
+export function getChildObjBeforeIndex(inputArray: any[], pIndex: number, cIndex: number) {
   const sorted = sortArray(inputArray);
   return [...(sorted[pIndex] as any).children.slice(0, cIndex)];
 }
@@ -72,11 +68,7 @@ export function getChildObjBeforeIndex(
  * @param cIndex
  * @returns
  */
-export function getChildObjAfterIndex(
-  inputArray: any[],
-  pIndex: number,
-  cIndex: number
-) {
+export function getChildObjAfterIndex(inputArray: any[], pIndex: number, cIndex: number) {
   const sorted = sortArray(inputArray);
   return [...(sorted[pIndex] as any).children.slice(cIndex + 1)];
 }
@@ -99,11 +91,7 @@ export function getParentIndex(inputArray: any[], id: string) {
  * @param childId
  * @returns
  */
-export function getChildIndex(
-  inputArray: any[],
-  parentId: string,
-  childId: string
-) {
+export function getChildIndex(inputArray: any[], parentId: string, childId: string) {
   const sorted = sortArray(inputArray);
   let pIndex = getParentIndex(sorted, parentId);
   let childArray = sorted[pIndex].children;
@@ -150,11 +138,7 @@ export function getParentByOrder(inputArray: any[], order: number) {
   return { ...parent };
 }
 
-export const sortObject = (
-  objectState: any[],
-  oldIndex: number,
-  newIndex: number
-) => {
+export const sortObject = (objectState: any[], oldIndex: number, newIndex: number) => {
   let returnVal = [];
   if (newIndex > oldIndex) {
     // 3 to 5
@@ -184,13 +168,7 @@ export const sortObject = (
     //leave objects after alone
     let parentsAfter = getObjectsAfterIndex(objectState, newIndex);
 
-    const newState = [
-      ...parentsBefore,
-      ...inBetween,
-      objWeSwapped,
-      objWeMoved,
-      ...parentsAfter,
-    ];
+    const newState = [...parentsBefore, ...inBetween, objWeSwapped, objWeMoved, ...parentsAfter];
 
     //setObjectState(newState);
     returnVal = newState;
@@ -218,17 +196,11 @@ export const sortObject = (
     //leave objects after alone
     let parentsAfter = getObjectsAfterIndex(objectState, oldIndex);
 
-    const newState = [
-      ...parentsBefore,
-      ...inBetween,
-      objWeMoved,
-      objWeSwapped,
-      ...parentsAfter,
-    ];
+    const newState = [...parentsBefore, ...inBetween, objWeMoved, objWeSwapped, ...parentsAfter];
 
     returnVal = newState;
   } else {
-      return objectState;
+    return objectState;
   }
   return returnVal;
 };
