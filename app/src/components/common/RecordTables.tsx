@@ -208,6 +208,52 @@ export interface IActivitiesTable extends IRecordTable {
   review_status?: string[];
 }
 
+const activitesDefaultHeaders = [
+  'activity_id',
+  'activity_type',
+  {
+    id: 'activity_subtype',
+    valueMap: {
+      ...ActivitySubtypeShortLabels,
+      Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
+    }
+  },
+  {
+    id: 'created_timestamp',
+    title: 'Created Date'
+  },
+  'biogeoclimatic_zones',
+  {
+    id: 'elevation',
+    type: 'number'
+  },
+  {
+    id: 'flnro_districts',
+    title: 'FLNRO Districs'
+  },
+  'ownership',
+  'regional_districts',
+  'invasive_species_agency_code',
+  'jurisdiction_code',
+  {
+    id: 'latitude',
+    title: 'Latitude',
+    type: 'number'
+  },
+  {
+    id: 'longitude',
+    title: 'Longitude',
+    type: 'number'
+  },
+  {
+    id: 'reported_area',
+    title: 'Area (m\u00B2)',
+    type: 'number'
+  },
+  'access_description',
+  'general_comment'
+];
+
 export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const invasivesApi = useInvasivesApi();
@@ -276,51 +322,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="desc"
         enableSelection={enableSelection}
         startExpanded
-        headers={[
-          'activity_id',
-          'activity_type',
-          {
-            id: 'activity_subtype',
-            valueMap: {
-              ...ActivitySubtypeShortLabels,
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
-            }
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          'biogeoclimatic_zones',
-          {
-            id: 'elevation',
-            type: 'number'
-          },
-          {
-            id: 'flnro_districts',
-            title: 'FLNRO Districs'
-          },
-          'ownership',
-          'regional_districts',
-          'invasive_species_agency_code',
-          'jurisdiction_code',
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
-          },
-          'access_description',
-          'general_comment'
-        ]}
+        headers={activitesDefaultHeaders}
         rows={rows}
         actions={{
           ...actions,
@@ -587,7 +589,8 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           {
             id: 'review_status_rendered',
             title: 'Review Status'
-          }
+          },
+          ...activitesDefaultHeaders
         ]}
         created_by={userInfo?.preferred_username}
         review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
@@ -651,48 +654,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
         ]}
         headers={[
           ...headers,
-          'activity_id',
-          {
-            id: 'activity_subtype',
-            valueMap: {
-              ...ActivitySubtypeShortLabels,
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
-            }
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          'biogeoclimatic_zones',
-          {
-            id: 'elevation',
-            type: 'number'
-          },
-          {
-            id: 'flnro_districts',
-            title: 'FLNRO Districs'
-          },
-          'ownership',
-          'regional_districts',
-          'invasive_species_agency_code',
-          'jurisdiction_code',
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
-          },
-          'access_description',
-          'general_comment'
+          ...activitesDefaultHeaders
         ]}
         actions={{
           ...actions,
@@ -1018,49 +980,7 @@ export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
         ]}
         headers={[
           ...headers,
-          'activity_id',
-          'activity_type',
-          {
-            id: 'activity_subtype',
-            valueMap: {
-              ...ActivitySubtypeShortLabels,
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
-            }
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          'biogeoclimatic_zones',
-          {
-            id: 'elevation',
-            type: 'number'
-          },
-          {
-            id: 'flnro_districts',
-            title: 'FLNRO Districs'
-          },
-          'ownership',
-          'regional_districts',
-          'invasive_species_agency_code',
-          'jurisdiction_code',
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
-          },
-          'access_description',
-          'general_comment'
+          ...activitesDefaultHeaders
         ]}
         {...otherProps}
       />
@@ -1667,49 +1587,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             id: 'review_status_rendered',
             title: 'Review Status'
           },
-          'activity_id',
-          'activity_type',
-          {
-            id: 'activity_subtype',
-            valueMap: {
-              ...ActivitySubtypeShortLabels,
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
-            }
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          'biogeoclimatic_zones',
-          {
-            id: 'elevation',
-            type: 'number'
-          },
-          {
-            id: 'flnro_districts',
-            title: 'FLNRO Districs'
-          },
-          'ownership',
-          'regional_districts',
-          'invasive_species_agency_code',
-          'jurisdiction_code',
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
-          },
-          'access_description',
-          'general_comment'
+          ...activitesDefaultHeaders
         ]}
         rows={
           rows ||
