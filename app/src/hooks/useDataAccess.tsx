@@ -71,5 +71,5 @@ export const useDataAccess = () => {
     }
   };
 
-  return { getPointsOfInterest, getActivityById, updateActivity };
+  return { ...api, getPointsOfInterest, getActivityById, updateActivity };
 };

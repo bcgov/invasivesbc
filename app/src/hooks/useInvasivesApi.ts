@@ -1,7 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { useKeycloak } from '@react-keycloak/web';
-import axios from 'axios';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
   ICreateOrUpdateActivity,
@@ -10,44 +9,41 @@ import {
 } from 'interfaces/useInvasivesApi-interfaces';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
+import { Http } from '@capacitor-community/http';
 import { useContext, useMemo } from 'react';
+import { DocType } from 'constants/database';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
-
-const API_URL =
-  (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
+const API_URL = (API_HOST && API_PORT)? `http://` + (API_PORT && `${API_HOST}:${API_PORT}`) ||
+  API_HOST : 
+  'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
  *
  * @return {*}
  */
-const useApi = () => {
+const useRequestOptions = () => {
   const { keycloak } = useKeycloak();
   const instance = useMemo(() => {
-    return axios.create({
-      headers: {
-        // 'Access-Control-Allow-Origin': '*',
-        Authorization: `Bearer ${keycloak?.token}`
-      },
-      baseURL: API_URL
-    });
+    const options = {
+      baseUrl: API_URL,
+      headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.token}` }
+    };
+    return options;
   }, [keycloak]);
 
   return instance;
 };
-
 /**
  * Returns a set of supported api methods.
  *
  * @return {object} object whose properties are supported api methods.
  */
 export const useInvasivesApi = () => {
-  const api = useApi();
-
+  const options = useRequestOptions();
   const databaseContext = useContext(DatabaseContext);
-
   /**
    * Fetch*
  activities by search criteria.
@@ -55,8 +51,12 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
-    const { data } = await api.post(`/api/activities/`, activitiesSearchCriteria);
-
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/activities/`,
+      data: activitiesSearchCriteria
+    });
     return data;
   };
 
@@ -67,13 +67,11 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const deleteActivities = async (activityIds: string[]): Promise<any> => {
-    const { data } = await api.delete(`/api/activities`, {
-      params: { id: activityIds },
-      paramsSerializer: (params) => {
-        return qs.stringify(params);
-      }
+    const { data } = await Http.request({
+      method: 'DELETE',
+      url: options.baseUrl + `/api/activities?` + qs.stringify({ id: activityIds }),
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
-
     return data;
   };
 
@@ -84,11 +82,10 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const undeleteActivities = async (activityIds: string[]): Promise<any> => {
-    const { data } = await api.post(`/api/deleted/activities`, {
-      params: { id: activityIds },
-      paramsSerializer: (params) => {
-        return qs.stringify(params);
-      }
+    const { data } = await Http.request({
+      method: 'POST',
+      url: options.baseUrl + `/api/deleted/activities?` + qs.stringify({ id: activityIds }),
+      headers: { ...options.headers, 'Content-Type': 'application/json' }
     });
 
     return data;
@@ -101,7 +98,12 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
-    const { data } = await api.post(`/api/points-of-interest/`, pointsOfInterestSearchCriteria);
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/points-of-interest/`,
+      data: pointsOfInterestSearchCriteria
+    });
 
     return data;
   };
@@ -115,7 +117,11 @@ export const useInvasivesApi = () => {
   const getMetabaseQueryResults = async (metabaseQueriesSearchCriteria: IMetabaseQuerySearchCriteria): Promise<any> => {
     let activities, points_of_interest;
     try {
-      const { data } = await api.get(`/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`);
+      const { data } = await Http.request({
+        headers: { ...options.headers },
+        method: 'GET',
+        url: options.baseUrl + `/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`
+      });
       if (data?.activity_ids?.length)
         activities = await getActivities({
           activity_ids: data.activity_ids,
@@ -146,8 +152,12 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const createMetabaseQuery = async (metabaseQueriesCreateCriteria: ICreateMetabaseQuery): Promise<any> => {
-    const { data } = await api.post(`/api/metabase-query`, metabaseQueriesCreateCriteria);
-
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/metabase-query`,
+      data: metabaseQueriesCreateCriteria
+    });
     return data;
   };
 
@@ -157,8 +167,11 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getMetabaseQueryOptions = async (): Promise<any> => {
-    const { data } = await api.get('/api/metabase-query');
-
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'GET',
+      url: options.baseUrl + `/api/metabase-query`
+    });
     return data.options;
   };
 
@@ -169,8 +182,11 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getActivityById = async (activityId: string): Promise<any> => {
-    const { data } = await api.get(`/api/activity/${activityId}`);
-
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'GET',
+      url: options.baseUrl + `/api/activity/${activityId}`
+    });
     return data;
   };
 
@@ -181,11 +197,10 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getMedia = async (mediaKeys: string[]): Promise<any> => {
-    const { data } = await api.get('/api/media/', {
-      params: { key: mediaKeys },
-      paramsSerializer: (params) => {
-        return qs.stringify(params);
-      }
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'GET',
+      url: options.baseUrl + `/api/media?` + qs.stringify({ key: mediaKeys })
     });
 
     return data;
@@ -198,8 +213,12 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const createActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
-    const { data } = await api.post('/api/activity', activity);
-
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: activity,
+      url: options.baseUrl + '/api/activity'
+    });
     return data;
   };
 
@@ -210,8 +229,12 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
-    const { data } = await api.put('/api/activity', activity);
-
+    const { data } = await Http.request({
+      method: 'PUT',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: activity,
+      url: options.baseUrl + '/api/activity'
+    });
     return data;
   };
 
@@ -221,8 +244,11 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getApiSpec = async (): Promise<any> => {
-    const { data } = await api.get('/api/api-docs/');
-
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'GET',
+      url: options.baseUrl + `/api/api-docs/`
+    });
     return data;
   };
 
@@ -235,17 +261,35 @@ export const useInvasivesApi = () => {
   const getCachedApiSpec = async (): Promise<any> => {
     let data;
     try {
-      if (Capacitor.getPlatform() !== 'ios') {
-        data = await getApiSpec();
+      data = await getApiSpec();
+      // await databaseContext.database.upsert('ApiSpec', () => {
+      //   return data;
+      // });
+      if (Capacitor.getPlatform() !== 'web')
+        await upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID,
+              docType: DocType.API_SPEC,
+              json: data,
+              ID: '1'
+            }
+          ],
+          databaseContext
+        );
 
-        await databaseContext.database.upsert('ApiSpec', () => {
-          return data;
-        });
-      }
       return data;
     } catch (error) {
       data = await databaseContext.database.get('ApiSpec');
 
+      data = await query(
+        {
+          type: QueryType.DOC_TYPE_AND_ID,
+          docType: DocType.API_SPEC,
+          ID: '1'
+        },
+        databaseContext
+      );
       return data;
     }
   };
@@ -257,11 +301,10 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getSpeciesDetails = async (species: string[]): Promise<any> => {
-    const { data } = await api.get('/api/species', {
-      params: { key: species },
-      paramsSerializer: (params) => {
-        return qs.stringify(params);
-      }
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'GET',
+      url: options.baseUrl + `/api/species?` + qs.stringify({ key: species })
     });
 
     return data;

@@ -14,7 +14,7 @@ import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { ActivitySyncStatus } from 'constants/activities';
 import { SelectAutoCompleteContextProvider } from 'contexts/SelectAutoCompleteContext';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { useDataAccess } from 'hooks/useDataAccess';
 import React, { useEffect, useState } from 'react';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
@@ -54,7 +54,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
-  const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
 
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
 
@@ -206,7 +206,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
-      const response = await invasivesApi.getCachedApiSpec();
+      const response = await dataAccess.getCachedApiSpec();
       setSchemas({
         schema: { ...response.components.schemas[props.activity.activitySubtype], components: response.components },
         uiSchema: RootUISchemas[props.activity.activitySubtype]
@@ -224,7 +224,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   return (
     <Box width="100%">
-      <Box mb={3}>
+      {/* <Box mb={3}>
         <FormControlsComponent
           onSubmit={() => formRef.submit()}
           isDisabled={isDisabled}
@@ -233,7 +233,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           activitySubtype={props.activity.activitySubtype}
           hideCheckFormForErrors={props.hideCheckFormForErrors}
         />
-      </Box>
+      </Box> */}
 
       <ThemeProvider theme={rjsfTheme}>
         <SelectAutoCompleteContextProvider>

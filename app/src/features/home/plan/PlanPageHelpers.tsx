@@ -1,4 +1,5 @@
 import { DocType } from 'constants/database';
+import { query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import { notifyError, notifySuccess } from 'utils/NotificationUtils';
 
 export const confirmDeleteTrip = (trip_ID, tripName) => {
@@ -15,66 +16,72 @@ export const deleteTripRecords = async (databaseContext, trip_ID) => {
     if (!databaseContext) {
     }
     console.log('trip id to delete ' + trip_ID);
-    let docs = await databaseContext.database.find({
-      selector: {
-        $and: [
-          {
-            docType: {
-              $in: [DocType.REFERENCE_ACTIVITY, DocType.POINT_OF_INTEREST, DocType.REFERENCE_POINT_OF_INTEREST]
-            }
-          },
-          { trip_IDs: { $elemMatch: { $eq: trip_ID.toString() } } }
-        ]
-      },
-      use_index: 'tripIDIndex'
-    });
-    console.log(docs.docs);
-
-    let docsToDelete = [];
-    let docsToUpdate = [];
-
-    // sort into docs that have other trips and those we can delete
-    docs.docs.map((doc) => {
-      let isDocToDelete = true;
-      doc.trip_IDs.map((id) => {
-        if (id !== trip_ID.toString()) {
-          isDocToDelete = false;
-        }
-      });
-      if (isDocToDelete) {
-        docsToDelete.push({ ...doc, _deleted: true });
-      } else {
-        docsToUpdate.push(doc);
-      }
-    });
-
-    //bulk delete
-    databaseContext.database.bulkDocs(docsToDelete);
-
-    //wipe trip id off overlapping records
-    docsToUpdate.map((doc) => {
-      let newTripIDs = [];
-      doc.trip_IDs.map((id) => {
-        if (id !== trip_ID.toString()) {
-          newTripIDs.push(id.toString());
-        }
-      });
-      databaseContext.database.upsert(doc._id, (existingDoc) => {
-        return {
-          ...existingDoc,
-          trip_IDs: [...newTripIDs]
-        };
-      });
-    });
-
-    notifySuccess(
-      databaseContext,
-      'Wiped ' +
-        docsToDelete.length +
-        ' records from trip.  ' +
-        docsToUpdate.length +
-        ' were not removed because they belong to another trip'
+    await upsert(
+      [{ type: UpsertType.RAW_SQL, docType: DocType.TRIP, sql: `DELETE * FROM trip WHERE trip.id = ${trip_ID}` }],
+      databaseContext
     );
+    console.log('trip:' + trip_ID + ' has been deleted!');
+
+    // let docs = await databaseContext.database.find({
+    //   selector: {
+    //     $and: [
+    //       {
+    //         docType: {
+    //           $in: [DocType.REFERENCE_ACTIVITY, DocType.POINT_OF_INTEREST, DocType.REFERENCE_POINT_OF_INTEREST]
+    //         }
+    //       },
+    //       { trip_IDs: { $elemMatch: { $eq: trip_ID.toString() } } }
+    //     ]
+    //   },
+    //   use_index: 'tripIDIndex'
+    // });
+    // console.log(docs.docs);
+
+    // let docsToDelete = [];
+    // let docsToUpdate = [];
+
+    // // sort into docs that have other trips and those we can delete
+    // docs.docs.map((doc) => {
+    //   let isDocToDelete = true;
+    //   doc.trip_IDs.map((id) => {
+    //     if (id !== trip_ID.toString()) {
+    //       isDocToDelete = false;
+    //     }
+    //   });
+    //   if (isDocToDelete) {
+    //     docsToDelete.push({ ...doc, _deleted: true });
+    //   } else {
+    //     docsToUpdate.push(doc);
+    //   }
+    // });
+
+    // //bulk delete
+    // databaseContext.database.bulkDocs(docsToDelete);
+
+    // //wipe trip id off overlapping records
+    // docsToUpdate.map((doc) => {
+    //   let newTripIDs = [];
+    //   doc.trip_IDs.map((id) => {
+    //     if (id !== trip_ID.toString()) {
+    //       newTripIDs.push(id.toString());
+    //     }
+    //   });
+    //   databaseContext.database.upsert(doc._id, (existingDoc) => {
+    //     return {
+    //       ...existingDoc,
+    //       trip_IDs: [...newTripIDs]
+    //     };
+    //   });
+    // });
+
+    // notifySuccess(
+    //   databaseContext,
+    //   'Wiped ' +
+    //     docsToDelete.length +
+    //     ' records from trip.  ' +
+    //     docsToUpdate.length +
+    //     ' were not removed because they belong to another trip'
+    // );
     // sort into records to update and those to delete
     // update records
     // delete records

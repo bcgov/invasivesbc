@@ -14,6 +14,7 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Add, DeleteForever, Sync, Edit, Delete, FindInPage, Check, Clear } from '@material-ui/icons';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useDataAccess } from 'hooks/useDataAccess';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useKeycloak } from '@react-keycloak/web';
 import {
@@ -170,7 +171,7 @@ const arrayWrap = (value) => {
 };
 
 export const defaultActivitiesFetch =
-  ({ invasivesApi, activitySubtypes, created_by = undefined, review_status = [] }) =>
+  ({ dataAccess, activitySubtypes, created_by = undefined, review_status = [] }) =>
   async ({ page, rowsPerPage, order }) => {
     // Fetches fresh from the API (web).  TODO fetch from SQLite
     let dbPageSize = DEFAULT_PAGE_SIZE;
@@ -180,7 +181,7 @@ export const defaultActivitiesFetch =
 
     const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
 
-    const result = await invasivesApi.getActivities({
+    const result = await dataAccess.getActivities({
       page: Math.floor((page * rowsPerPage) / dbPageSize),
       limit: dbPageSize,
       order: order,
@@ -253,7 +254,7 @@ const activitesDefaultHeaders = [
 
 export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
-  const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext);
   const { keycloak } = useKeycloak();
   const userInfo: any = keycloak?.userInfo;
@@ -275,7 +276,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
       dbActivity.created_by = userInfo?.preferred_username;
-      await invasivesApi.createActivity(dbActivity);
+      await dataAccess.createActivity(dbActivity);
     },
     icon: <Add />,
     label: ActivitySubtypeShortLabels[subtype],
@@ -303,7 +304,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   if (Array.isArray(rows)) rows = rows.map(activityStandardMapping);
   if (typeof rows === 'undefined')
     rows = defaultActivitiesFetch({
-      invasivesApi,
+      dataAccess,
       activitySubtypes: arrayWrap(activitySubtypes),
       created_by,
       review_status: review_status
@@ -361,7 +362,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             enabled: enableSelection !== false,
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
-              if (selectedIds.length) await invasivesApi.deleteActivities(selectedIds);
+              if (selectedIds.length) await dataAccess.deleteActivities(selectedIds);
             },
             label: 'Delete',
             icon: <Delete />,
@@ -399,8 +400,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity(
+                  const dbActivity: any = await dataAccess.getActivityById(activity.activity_id);
+                  await dataAccess.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
                       sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
@@ -446,8 +447,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.review_status === ReviewStatus.UNDER_REVIEW
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity(
+                  const dbActivity: any = await dataAccess.getActivityById(activity.activity_id);
+                  await dataAccess.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
                       review_status: ReviewStatus.UNDER_REVIEW
@@ -493,8 +494,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.review_status !== ReviewStatus.UNDER_REVIEW
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity(
+                  const dbActivity: any = await dataAccess.getActivityById(activity.activity_id);
+                  await dataAccess.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
                       review_status: ReviewStatus.APPROVED,
@@ -542,8 +543,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.review_status !== ReviewStatus.UNDER_REVIEW
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity(
+                  const dbActivity: any = await dataAccess.getActivityById(activity.activity_id);
+                  await dataAccess.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
                       review_status: ReviewStatus.DISAPPROVED,
@@ -730,7 +731,6 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
           'Treatment',
           'Treatment_ChemicalPlant',
           'Treatment_MechanicalPlant',
-          'Treatment_BiologicalPlant',
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[
@@ -879,7 +879,6 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
           'Monitoring',
           'Monitoring_ChemicalTerrestrialAquaticPlant',
           'Monitoring_MechanicalTerrestrialAquaticPlant',
-          'Monitoring_BiologicalTerrestrialPlant',
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[
@@ -1024,7 +1023,7 @@ export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
             id: 'activity_subtype',
             valueMap: {
               ...ActivitySubtypeShortLabels,
-              Activity_Collection_Biocontrol: 'Bio Control' // TODO remove when our data isn't awful
+              Activity_Collection_Biocontrol: 'Biocontrol Collection' // TODO remove when our data isn't awful
             }
           },
           {
@@ -1107,7 +1106,8 @@ export const MyCollectionsTable: React.FC<IActivitiesTable> = (props) => {
 
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
   const { tableSchemaType, actions, ...otherProps } = props;
-  const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
+
   return useMemo(() => {
     return (
       <RecordTable
@@ -1149,7 +1149,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
             // if page is right near the db page limit
             dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
-          const result = await invasivesApi.getPointsOfInterest({
+          const result = await dataAccess.getPointsOfInterest({
             page: Math.floor((page * rowsPerPage) / dbPageSize),
             limit: dbPageSize,
             order: order
@@ -1565,7 +1565,7 @@ export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (
 
 export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { rows, headers = [], ...otherProps } = props;
-  const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -1585,7 +1585,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         rows={
           rows ||
           defaultActivitiesFetch({
-            invasivesApi,
+            dataAccess,
             activitySubtypes: Object.values(ActivitySubtype),
             review_status: [ReviewStatus.UNDER_REVIEW]
           })

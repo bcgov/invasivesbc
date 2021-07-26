@@ -28,7 +28,7 @@ import { notifyError } from 'utils/NotificationUtils';
 import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { useDataAccess } from 'hooks/useDataAccess';
 import Spinner from 'components/spinner/Spinner';
 import clsx from 'clsx';
 
@@ -253,7 +253,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
-  const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
 
   const {
     tableName = '',
@@ -394,28 +394,32 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
 
   const getApiSpec = useCallback(
     async (tableSchemaInput) => {
-      const apiSpecResponse = await invasivesApi.getCachedApiSpec();
-      const schemaTypeList = typeof tableSchemaInput === 'string' ? [tableSchemaInput] : tableSchemaInput || [];
+      try {
+        const apiSpecResponse = await dataAccess.getCachedApiSpec();
+        const schemaTypeList = typeof tableSchemaInput === 'string' ? [tableSchemaInput] : tableSchemaInput || [];
 
-      await setSchemas({
-        schema: schemaTypeList.reduce(
-          (prevSchema, schemaType) => ({
-            ...prevSchema,
-            properties: {
-              ...prevSchema.properties,
-              ...apiSpecResponse.components?.schemas[schemaType]?.properties
-            }
-          }),
-          {}
-        ),
-        uiSchema: schemaTypeList.reduce(
-          (prevSchema, schemaType) => ({
-            ...prevSchema,
-            ...RootUISchemas[schemaType]
-          }),
-          {}
-        )
-      });
+        await setSchemas({
+          schema: schemaTypeList.reduce(
+            (prevSchema, schemaType) => ({
+              ...prevSchema,
+              properties: {
+                ...prevSchema.properties,
+                ...apiSpecResponse.components?.schemas[schemaType]?.properties
+              }
+            }),
+            {}
+          ),
+          uiSchema: schemaTypeList.reduce(
+            (prevSchema, schemaType) => ({
+              ...prevSchema,
+              ...RootUISchemas[schemaType]
+            }),
+            {}
+          )
+        });
+      } catch (error) {
+        console.log(error);
+      }
       setSchemasLoaded(true);
     },
     [tableSchemaType]
