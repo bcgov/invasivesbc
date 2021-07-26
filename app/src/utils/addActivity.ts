@@ -33,7 +33,7 @@ const mapKeys = (source, mappingFunction) => {
     }),
     {}
   );
-}
+};
 
 export const activityDefaults = {
   doc_type: DocType.ACTIVITY,
@@ -51,10 +51,9 @@ export const activityDefaults = {
 AKA "IDGAF Record Formatter".  wraps an activity or doc or whatever and turns it into a format favoring DB-style
 */
 export const sanitizeRecord = (input: any) => {
-  if (typeof input !== 'object')
-    throw "Okay, you have to at least give an object though"
+  if (typeof input !== 'object') throw 'Okay, you have to at least give an object though';
 
-  const soup : any = {
+  const soup: any = {
     ...mapKeys(input?.formData, snakeCase),
     ...mapKeys(input?.formData?.point_of_interest_data, snakeCase),
     ...mapKeys(input?.formData?.point_of_interest_type_data, snakeCase),
@@ -67,35 +66,35 @@ export const sanitizeRecord = (input: any) => {
 
     ...mapKeys(input?.activityPayload, snakeCase),
     ...mapKeys(input?.activity_payload, snakeCase),
-    ...mapKeys(input, snakeCase),
+    ...mapKeys(input, snakeCase)
   };
   soup.activity_payload = {
     ...soup.activity_payload,
     form_data: {
       activity_data: {
         ...mapKeys(soup?.form_data?.activity_data, snakeCase),
-        ...mapKeys(soup?.activity_payload?.formData?.activity_data, snakeCase),
+        ...mapKeys(soup?.activity_payload?.formData?.activity_data, snakeCase)
       },
       activity_type_data: {
         ...mapKeys(soup?.form_data?.activity_type_data, snakeCase),
-        ...mapKeys(soup?.activity_payload?.formData?.activity_type_data, snakeCase),
+        ...mapKeys(soup?.activity_payload?.formData?.activity_type_data, snakeCase)
       },
       activity_subtype_data: {
         ...mapKeys(soup?.form_data?.activity_subtype_data, snakeCase),
-        ...mapKeys(soup?.activity_payload?.formData?.activity_subtype_data, snakeCase),
+        ...mapKeys(soup?.activity_payload?.formData?.activity_subtype_data, snakeCase)
       }
     }
-  }
+  };
 
   if (soup.activity_id && soup.point_of_interest_id)
-    throw "This is confusing.  A record should be an activity OR a POI";
+    throw 'This is confusing.  A record should be an activity OR a POI';
 
   if (!soup.activity_id && !soup.point_of_interest_id) {
     if (soup.doc_type === DocType.ACTIVITY) {
       if (soup._id) soup.activity_id = soup._id;
       else {
         soup.activity_id = uuidv4();
-        console.log("Generating a new id for activity", soup);
+        console.log('Generating a new id for activity', soup);
       }
     }
 
@@ -103,7 +102,7 @@ export const sanitizeRecord = (input: any) => {
       if (soup._id) soup.point_of_interest_id = soup._id;
       // TODO else generate id
     }
-    
+
     // throw "This should have an id of some sort.  Should we generate a new one here?";
   }
 
@@ -112,7 +111,8 @@ export const sanitizeRecord = (input: any) => {
     const {
       activity_id,
       version,
-      activity_type,                                                                                                        _type,
+      activity_type,
+      _type,
       activity_subtype,
       created_timestamp,
       received_timestamp,
@@ -151,7 +151,7 @@ export const sanitizeRecord = (input: any) => {
       // all the DB fields:
       activity_id,
       version,
-      activity_type,                                                                                                        _type,
+      activity_type,
       activity_subtype,
       received_timestamp,
       deleted_timestamp,
@@ -175,15 +175,15 @@ export const sanitizeRecord = (input: any) => {
       reviewed_by,
       reviewed_at,
       review_status,
-      
+
       // db-field overrides:
       created_timestamp: created_timestamp || soup.date_created || now,
       sync_status: sync_status || soup.sync?.status || ActivitySyncStatus.NOT_SYNCED,
-      form_status: form_status ||FormValidationStatus.NOT_VALIDATED,
+      form_status: form_status || FormValidationStatus.NOT_VALIDATED,
       geom: geom || soup.geometry || soup.activity_payload.geometry,
       geog: geog || soup.geography,
-      
-      // legacy: 
+
+      // legacy:
       /*
       form_data: {
         ...soup.form_data,
@@ -205,7 +205,7 @@ export const sanitizeRecord = (input: any) => {
           }
         }
       },
-      
+
       // legacy: dont actually care about these:
       status: soup.status || ActivityStatus.NEW,
       date_created: soup.date_created || now,
@@ -217,8 +217,7 @@ export const sanitizeRecord = (input: any) => {
 
       // gross mapping for yet another db api field...
       form_data: activity_payload?.form_data,
-      geometry: geom || soup.geometry || activity_payload?.geometry,
-
+      geometry: geom || soup.geometry || activity_payload?.geometry
     };
   }
 };

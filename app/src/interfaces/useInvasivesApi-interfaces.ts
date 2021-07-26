@@ -129,9 +129,9 @@ export interface ICreateOrUpdateActivity {
   activity_incoming_data?: any;
   reviewed_by?: any;
   reviewed_at?: any;
-  
+
   created_timestamp: string;
-  
+
   geometry: Feature[];
   media?: IMedia[];
   form_data: any;

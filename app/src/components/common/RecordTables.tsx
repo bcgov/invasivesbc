@@ -71,13 +71,19 @@ export const activityStandardMapping = (doc) => {
     ...record.activity_payload?.form_data?.activity_data,
     ...record.activity_payload?.form_data?.activity_type_data,
     ...record.activity_payload?.form_data?.activity_subtype_data,
-    ...record,
-  }
+    ...record
+  };
   return {
     ...flattened,
     activity_id: flattened.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
     jurisdiction_code: flattened.activity_payload?.form_data?.activity_data?.jurisdictions?.reduce(
-      (output, jurisdiction) => [...output, jurisdiction.jurisdiction_code, '(', jurisdiction.percent_covered + '%', ')'],
+      (output, jurisdiction) => [
+        ...output,
+        jurisdiction.jurisdiction_code,
+        '(',
+        jurisdiction.percent_covered + '%',
+        ')'
+      ],
       []
     ),
     created_timestamp: flattened.created_timestamp?.substring(0, 10),
@@ -87,7 +93,7 @@ export const activityStandardMapping = (doc) => {
       flattened.review_status === ReviewStatus.APPROVED || flattened.review_status === ReviewStatus.DISAPPROVED
         ? flattened.review_status + ' by ' + flattened.reviewed_by + ' at ' + flattened.reviewed_at
         : flattened.review_status
-  }
+  };
 };
 
 export const poiStandardMapping = (doc) => ({
@@ -163,19 +169,20 @@ const arrayWrap = (value) => {
   return Array.isArray(value) ? value : [value];
 };
 
-export const defaultActivitiesFetch = ({ invasivesApi, activitySubtypes, created_by = undefined, review_status = [] }) => async ({
-  page,
-  rowsPerPage,
-  order
-}) => {
+export const defaultActivitiesFetch = ({
+  invasivesApi,
+  activitySubtypes,
+  created_by = undefined,
+  review_status = []
+}) => async ({ page, rowsPerPage, order }) => {
   // Fetches fresh from the API (web).  TODO fetch from SQLite
   let dbPageSize = DEFAULT_PAGE_SIZE;
   if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
     // if page is right near the db page limit
     dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
 
-  const types = arrayWrap(activitySubtypes).map((subtype : string) => String(subtype).split('_')[1]);
-  
+  const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
+
   const result = await invasivesApi.getActivities({
     page: Math.floor((page * rowsPerPage) / dbPageSize),
     limit: dbPageSize,
@@ -192,7 +199,7 @@ export const defaultActivitiesFetch = ({ invasivesApi, activitySubtypes, created
     rows: result.rows.map(activityStandardMapping),
     count: result.count
   };
-}
+};
 
 export interface IActivitiesTable extends IRecordTable {
   workflow?: string;
@@ -215,14 +222,11 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     created_by,
     keyField = 'activity_id',
     enableSelection = true,
-    review_status = [
-      ReviewStatus.APPROVED,
-      ReviewStatus.PREAPPROVED
-    ],
+    review_status = [ReviewStatus.APPROVED, ReviewStatus.PREAPPROVED],
     ...otherProps
   } = props;
 
-  const createAction = (type : string, subtype : string) => ({
+  const createAction = (type: string, subtype: string) => ({
     key: `create_activity_${subtype.toString().toLowerCase()}`,
     enabled: true,
     action: async (selectedRows) => {
@@ -253,15 +257,14 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   });
 
   let rows = props.rows;
-  if (Array.isArray(rows))
-    rows = rows.map(activityStandardMapping);
+  if (Array.isArray(rows)) rows = rows.map(activityStandardMapping);
   if (typeof rows === 'undefined')
     rows = defaultActivitiesFetch({
       invasivesApi,
       activitySubtypes: arrayWrap(activitySubtypes),
       created_by,
       review_status: review_status
-    })
+    });
 
   return useMemo(
     () => (
@@ -398,10 +401,12 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   )
                     return;
                   const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity(sanitizeRecord({
-                    ...dbActivity,
-                    sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
-                  }));
+                  await invasivesApi.updateActivity(
+                    sanitizeRecord({
+                      ...dbActivity,
+                      sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
+                    })
+                  );
                   const typename = activity.activity_subtype?.split('_')[2];
                   notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
                 });
@@ -443,10 +448,12 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   )
                     return;
                   const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity(sanitizeRecord({
-                    ...dbActivity,
-                    review_status: ReviewStatus.UNDER_REVIEW
-                  }));
+                  await invasivesApi.updateActivity(
+                    sanitizeRecord({
+                      ...dbActivity,
+                      review_status: ReviewStatus.UNDER_REVIEW
+                    })
+                  );
                   const typename = activity.activity_subtype?.split('_')[2];
                   notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
                 });
@@ -488,12 +495,14 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   )
                     return;
                   const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity(sanitizeRecord({
-                    ...dbActivity,
-                    review_status: ReviewStatus.APPROVED,
-                    reviewed_by: userInfo.preferred_username, // latest reviewer
-                    reviewed_at: moment(new Date()).format()
-                  }));
+                  await invasivesApi.updateActivity(
+                    sanitizeRecord({
+                      ...dbActivity,
+                      review_status: ReviewStatus.APPROVED,
+                      reviewed_by: userInfo.preferred_username, // latest reviewer
+                      reviewed_at: moment(new Date()).format()
+                    })
+                  );
                   const typename = activity.activity_subtype?.split('_')[2];
                   notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
                 });
@@ -535,12 +544,14 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   )
                     return;
                   const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity(sanitizeRecord({
-                    ...dbActivity,
-                    review_status: ReviewStatus.DISAPPROVED,
-                    reviewed_by: userInfo.preferred_username, // latest reviewer
-                    reviewed_at: moment(new Date()).format()
-                  }));
+                  await invasivesApi.updateActivity(
+                    sanitizeRecord({
+                      ...dbActivity,
+                      review_status: ReviewStatus.DISAPPROVED,
+                      reviewed_by: userInfo.preferred_username, // latest reviewer
+                      reviewed_at: moment(new Date()).format()
+                    })
+                  );
                   const typename = activity.activity_subtype?.split('_')[2];
                   notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
                 });
@@ -592,10 +603,7 @@ export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   return (
     <ActivitiesTable
       tableName="Animal Activities"
-      activitySubtypes={[
-        ActivitySubtype.Activity_AnimalTerrestrial,
-        ActivitySubtype.Activity_AnimalAquatic
-      ]}
+      activitySubtypes={[ActivitySubtype.Activity_AnimalTerrestrial, ActivitySubtype.Activity_AnimalAquatic]}
       tableSchemaType={[
         'Observation',
         'Activity_AnimalTerrestrial',
@@ -613,10 +621,7 @@ export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     return (
       <MyActivitiesTable
         tableName="Animal Activities"
-        activitySubtypes={[
-          ActivitySubtype.Activity_AnimalTerrestrial,
-          ActivitySubtype.Activity_AnimalAquatic
-        ]}
+        activitySubtypes={[ActivitySubtype.Activity_AnimalTerrestrial, ActivitySubtype.Activity_AnimalAquatic]}
         tableSchemaType={[
           'Observation',
           'Activity_AnimalTerrestrial',
@@ -636,10 +641,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
     return (
       <ActivitiesTable
         tableName="Observations"
-        activitySubtypes={[
-          ActivitySubtype.Observation_PlantTerrestrial,
-          ActivitySubtype.Observation_PlantAquatic
-        ]}
+        activitySubtypes={[ActivitySubtype.Observation_PlantTerrestrial, ActivitySubtype.Observation_PlantAquatic]}
         tableSchemaType={[
           'Observation',
           'Observation_PlantTerrestrial',
@@ -1711,11 +1713,14 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           'access_description',
           'general_comment'
         ]}
-        rows={rows || defaultActivitiesFetch({
-          invasivesApi,
-          activitySubtypes: Object.values(ActivitySubtype),
-          review_status: [ReviewStatus.UNDER_REVIEW]
-        })}
+        rows={
+          rows ||
+          defaultActivitiesFetch({
+            invasivesApi,
+            activitySubtypes: Object.values(ActivitySubtype),
+            review_status: [ReviewStatus.UNDER_REVIEW]
+          })
+        }
         {...otherProps}
       />
     );
