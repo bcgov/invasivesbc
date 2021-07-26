@@ -63,9 +63,9 @@ export enum ActivitySubtypeShortLabels {
   Activity_Transect_FireMonitoring = 'Wildfire & Prescribed Burn Monitoring',
   Activity_Transect_Vegetation = 'Vegetation Transect (Full, Lumped, Invasive Plant Density)',
   Activity_Transect_BiocontrolEfficacy = 'Biocontrol Efficacy Transect',
-  
+
   // Collections:
-  Activity_Collection_Biocontrol = "Biocontrol Collection"
+  Activity_Collection_Biocontrol = 'Biocontrol Collection'
 }
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
