@@ -104,7 +104,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   // const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
   const [extent, setExtent] = useState<LatLngBoundsLiteral>(null);
-  const [newExtent, setNewExtent] = useState<LatLngBoundsLiteral>(null);
+  // const [newExtent, setNewExtent] = useState<LatLngBoundsLiteral>(null);
 
   const [workingTripID, setWorkingTripID] = useState(null);
   const [newTripID, setNewTripID] = useState(null);
@@ -130,8 +130,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     // });
 
     let anExtent: LatLngBoundsLiteral = [
-      [40.05514703525347, -74.92986917495729],
-      [41.403788879821406, -72.64471292495729]
+      [51.06578046957064, -135.49747467041018],
+      [60.4330012633174, -111.85489654541017]
     ];
     if (Capacitor.getPlatform() !== 'web') {
       let queryResults = await query(
@@ -294,13 +294,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   }, [geometry, tripsLoaded, databaseContext.sqliteDB]);
 
   // persist extent changes
+  /*
   useEffect(() => {
-    if (!tripsLoaded || !newExtent) {
+    //if (!tripsLoaded || !newExtent) {
+    if (!tripsLoaded) {
       return;
     }
-    if (newExtent[1][1] > 1000) {
+       if (newExtent[1][1] > 1000) {
       return;
-    }
     console.log('are we still here');
 
     try {
@@ -325,6 +326,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     // });
   }, [newExtent, tripsLoaded]);
 
+    }*/
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
     newID = newID != 'NULL' ? newID + 1 : 1;
@@ -622,7 +624,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
           geometryState={{ geometry, setGeometry }}
           interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-          extentState={{ extent, setExtent, setNewExtent }}
+          //extentState={{ extent, setExtent, setNewExtent }}
+          inputExtentState={{ extent, setExtent }}
           contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
         />
       </>

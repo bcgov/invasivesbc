@@ -9,6 +9,7 @@ import { notifySuccess } from 'utils/NotificationUtils';
 import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
 import { Feature } from 'geojson';
+import { Capacitor } from '@capacitor/core';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -30,7 +31,9 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   useEffect(() => {
-    getPosition();
+    if (Capacitor.getPlatform() != 'web') {
+      getPosition();
+    }
   }, []);
 
   const isGreaterDistanceThan = (from, to, distance) => {

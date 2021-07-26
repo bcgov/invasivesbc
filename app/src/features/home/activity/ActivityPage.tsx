@@ -530,7 +530,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           mapId={doc._id}
           geometryState={{ geometry, setGeometry }}
           //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-          extentState={{ extent, setExtent }}
+          inputExtentState={{ extent, setExtent }}
           contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
           pasteFormData={() => pasteFormData()}
           copyFormData={() => copyFormData()}

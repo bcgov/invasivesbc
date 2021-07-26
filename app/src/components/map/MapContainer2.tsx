@@ -106,10 +106,13 @@ export interface IMapContainerProps {
     interactiveGeometry: any;
     setInteractiveGeometry: (interactiveGeometry: GeoJsonObject) => void;
   };
-  extentState: {
+  inputExtentState: {
     extent: L.LatLngBoundsLiteral;
     setExtent: (LatLngBoundsLiteral) => void;
-    setNewExtent?: (LatLngBoundsLiteral) => void;
+    //  setNewExtent?: (LatLngBoundsLiteral) => void;
+  };
+  outputExtentState?: {
+    setExtent: (LatLngBoundsLiteral) => void;
   };
   contextMenuState: {
     state: MapContextMenuData;
@@ -468,9 +471,9 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       const newBoundsSTring = JSON.stringify(newBounds);
       console.log('****convertedBounds: ' + newBoundsSTring);
 
-      if (newBounds !== props.extentState.extent && newBounds[1][1] < 500) {
-        console.log('***they are different, updating extent via setNewExtent from map');
-        props.extentState.setNewExtent(newBounds);
+      if (newBounds !== props.inputExtentState.extent && newBounds[1][1] < 500) {
+        // alert('***they are different, updating extent via setNewExtent from map');
+        //props.outputExtentState.setExtent(newBounds);
       } else {
         console.log('***they are same, do nthing');
       }
@@ -508,8 +511,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     }, []);
     return null;
   };
-
-  alert('made it to return of mapcontainer2');
 
   try {
     return (
@@ -560,7 +561,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
             )}
             <MapResizer />
             {/*          <MapExtent />*/}
-            <InitialExtentSetter extent={props.extentState.extent} />
+            <InitialExtentSetter extent={props.inputExtentState.extent} />
             <SubsequentExtentSaver />
 
             <LayersControl position="topright">

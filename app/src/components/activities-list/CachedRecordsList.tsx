@@ -285,7 +285,7 @@ const CachedRecordsList: React.FC = (props) => {
             mapId="references_page_map_container"
             geometryState={{ geometry, setGeometry }}
             // interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-            extentState={{ extent, setExtent }}
+            inputExtentState={{ extent, setExtent }}
             showDrawControls={true}
             contextMenuState={{ state: contextMenuState, setContextMenuState }}
           />

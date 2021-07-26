@@ -29,7 +29,7 @@ export interface IMapContainerProps {
     interactiveGeometry: any[];
     setInteractiveGeometry: (interactiveGeometry: interactiveGeoInputData[]) => void;
   };
-  extentState: { extent: any; setExtent: (extent: any) => void };
+  //extentState: { extent: any; setExtent: (extent: any) => void };
   contextMenuState: {
     state: MapContextMenuData;
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;

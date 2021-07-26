@@ -225,7 +225,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
         mapId={activity._id}
         showDrawControls={false}
         geometryState={{ geometry, setGeometry }}
-        extentState={{ extent, setExtent }}
+        inputExtentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }}
         setParentFormRef={setParentFormRef}
         hideCheckFormForErrors={true}

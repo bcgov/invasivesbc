@@ -79,7 +79,7 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
         photoState={{ photos, setPhotos }}
         showDrawControls={false}
         geometryState={{ geometry, setGeometry }}
-        extentState={{ extent, setExtent }}
+        inputExtentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
       />
     </Container>

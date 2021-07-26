@@ -114,6 +114,7 @@ const MapPage2: React.FC<IMapProps> = (props) => {
   const [showPopOut, setShowPopOut] = useState(false);
 
   const [extent, setExtent] = useState(null);
+  const [newExtent, setNewExtent] = useState(null);
   const [formActivityData, setFormActivityData] = useState(null);
   const [photos, setPhotos] = useState<IPhoto[]>([]);
   const [geoUpdateTimestamp, setGeoUpdateTimestamp] = useState(null);
@@ -174,11 +175,18 @@ const MapPage2: React.FC<IMapProps> = (props) => {
     photoState
   };
   //-- causes to rerender
-  useEffect(() => {
+  /*useEffect(() => {
     setIsReadyToLoadMap(true);
     setExtent([
       [-50.96591949462891, -20.817741019786485],
       [-3.6807632446289067, 12.103780891645817]
+    ]);
+  }, []);*/
+  useEffect(() => {
+    setIsReadyToLoadMap(true);
+    setExtent([
+      [51.06578046957064, -135.49747467041018],
+      [60.4330012633174, -111.85489654541017]
     ]);
   }, []);
 
@@ -196,7 +204,8 @@ const MapPage2: React.FC<IMapProps> = (props) => {
               pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
               geometryState={{ geometry, setGeometry }}
               interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-              extentState={{ extent, setExtent }}
+              inputExtentState={{ extent, setExtent }}
+              outputExtentState={{ setExtent: setNewExtent }}
               contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
             />
           </Container>
