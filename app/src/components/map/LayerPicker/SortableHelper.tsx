@@ -30,13 +30,50 @@ import Grid from '@material-ui/core/Grid';
 import ColorPicker from 'material-ui-color-picker';
 import * as L from 'leaflet';
 import { DragHandle } from '@material-ui/icons';
-import { useMap, useMapEvent } from 'react-leaflet';
+import { LayersControl, useMap, useMapEvent } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
 // for confirming loaded layers
 import DoneIcon from '@material-ui/icons/Done';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import { IconButton } from '@material-ui/core';
 import LayersIcon from '@material-ui/icons/Layers';
+
+import { FormControl, FormControlLabel } from '@material-ui/core';
+import IMapContainerProps from '../MapContainer2';
+import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
+import { GeoJSON } from 'react-leaflet';
+import TempPOILoader from '../LayerLoaderHelpers/TempPOILoader';
+
+const vanIsland: FeatureCollection = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-123.31054687499999, 48.3416461723746],
+            [-122.82714843749999, 48.69096039092549],
+            [-122.6953125, 49.69606181911566],
+            [-125.68359374999999, 50.875311142200765],
+            [-129.0673828125, 51.39920565355378],
+            [-128.1884765625, 49.55372551347579],
+            [-123.31054687499999, 48.3416461723746]
+          ]
+        ]
+      }
+    }
+  ]
+};
+const setupFeature = (feature, layer) => {
+  let popupContent = 'POP UP STUFFFFFFFFFFFFFFFFFFFFFFFFFF';
+  for (let i = 0; i < 100; i++) {
+    popupContent += '\nFFFFFFFFFFFF';
+  }
+  layer.bindPopup(popupContent);
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,7 +82,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'white',
     position: 'absolute',
     zIndex: 1500,
-    right: 55, top: 20
+    right: 55, top: 20,
+    ['@media (max-width:800px)']: {
+      top: 100
+    }
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -159,7 +199,7 @@ export function LayerPicker(props: any) {
                   }}
                 />
               </Grid>
-              <Grid item xs={2} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
+              <Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
                 {parent.loaded === 100 ?
                   <DoneIcon /> :
                   <div>
@@ -234,6 +274,10 @@ export function LayerPicker(props: any) {
   };
   const map = useMap();
   const [menuState, setMenuState] = useState(false);
+  const [checked, setChecked] = useState(true);
+  const handleChange = (event) => {
+    setChecked(event.target.checked);
+  };
 
   return (
     <div style={{ zIndex: 1000 }}>
@@ -248,7 +292,6 @@ export function LayerPicker(props: any) {
         }}>
         <LayersIcon />
       </IconButton>
-
       {menuState ?
         <div
           className={classes.root}
@@ -274,14 +317,20 @@ export function LayerPicker(props: any) {
             if (Capacitor.getPlatform() == 'web') {
               map.dragging.enable();
               map.doubleClickZoom.enable();
-            }
-          }}>
+            }}}>
+          
           <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
-
-          {/*<br />*/}
-
-          {/*<pre>{JSON.stringify(sortArray(objectState), null, 2)}</pre>*/}
+          <FormControlLabel
+              control={<Checkbox checked={checked} onChange={handleChange} />}
+              label='Activities' />
         </div> : null}
+        {checked ?
+        <>
+          <TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>
+          <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} />
+          <GeoJSON data={vanIsland} onEachFeature={setupFeature} />
+        </>
+        : null}
     </div>
   );
 }

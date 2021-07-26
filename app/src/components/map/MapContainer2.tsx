@@ -446,6 +446,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
     return null;
   };
+  
+  console.log(window.innerWidth)
 
   const [map, setMap] = useState<any>(null);
 
@@ -460,7 +462,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           flexFlow: 'column wrap',
           height: '45vh'
         }}>
-        <LayerPicker data={data} />
+        <LayerPicker {...props} data={data} />
         {map ? <DisplayPosition map={map} /> : null }
         <ZoomControl position='bottomright' />
       </div>
@@ -484,7 +486,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         <LayersControl.Overlay checked name="Activities">
           {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
           {/* this line below works - its what you need for geosjon*/}
-          <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
+          {/*<GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />*/}
           {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
         </LayersControl.Overlay>
       </LayersControl>
