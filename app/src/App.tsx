@@ -1,10 +1,13 @@
-import { Capacitor, DeviceInfo } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
+import { Device, DeviceInfo } from '@capacitor/device';
+
 import { IonReactRouter } from '@ionic/react-router';
 import { Box, CircularProgress, ThemeProvider } from '@material-ui/core';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { DatabaseChangesContextProvider } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext, DatabaseContextProvider, IDatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext2, DatabaseContext2Provider } from 'contexts/DatabaseContext2';
 import { NetworkContextProvider } from 'contexts/NetworkContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
@@ -45,36 +48,40 @@ const App: React.FC<IAppProps> = (props) => {
   };
 
   return (
-    <Box height="100vh" width="100vw" display="flex" overflow="hidden">
-      <ThemeProvider theme={appTheme}>
-        <IonReactRouter>
-          <NetworkContextProvider>
-            <DatabaseContextProvider>
-              <DatabaseContext.Consumer>
-                {(databaseContext: IDatabaseContext) => {
-                  if (Capacitor.getPlatform() === 'ios') {
-                    return (
-                      <DatabaseChangesContextProvider>
-                        <AppRouter {...appRouterProps} />
-                      </DatabaseChangesContextProvider>
-                    );
-                  }
-                  if (databaseContext.database || databaseContext.sqlite) {
-                    // database not ready, delay loading app
-                    return (
-                      <DatabaseChangesContextProvider>
-                        <AppRouter {...appRouterProps} />
-                      </DatabaseChangesContextProvider>
-                    );
-                  }
-                  return <CircularProgress />;
-                }}
-              </DatabaseContext.Consumer>
-            </DatabaseContextProvider>
-          </NetworkContextProvider>
-        </IonReactRouter>
-      </ThemeProvider>
-    </Box>
+    <>
+      {/*<DatabaseContext2Provider>*/}
+      <Box height="100vh" width="100vw" display="flex" overflow="hidden">
+        <ThemeProvider theme={appTheme}>
+          <IonReactRouter>
+            <NetworkContextProvider>
+              <DatabaseContextProvider>
+                <DatabaseContext.Consumer>
+                  {(databaseContext: IDatabaseContext) => {
+                    if (Capacitor.getPlatform() === 'ios') {
+                      return (
+                        <DatabaseChangesContextProvider>
+                          <AppRouter {...appRouterProps} />
+                        </DatabaseChangesContextProvider>
+                      );
+                    }
+                    if (databaseContext.database || databaseContext.sqliteDB) {
+                      // database not ready, delay loading app
+                      return (
+                        <DatabaseChangesContextProvider>
+                          <AppRouter {...appRouterProps} />
+                        </DatabaseChangesContextProvider>
+                      );
+                    }
+                    return <CircularProgress />;
+                  }}
+                </DatabaseContext.Consumer>
+              </DatabaseContextProvider>
+            </NetworkContextProvider>
+          </IonReactRouter>
+        </ThemeProvider>
+      </Box>
+      {/*</DatabaseContext2Provider>*/}
+    </>
   );
 };
 
