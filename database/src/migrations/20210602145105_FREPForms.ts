@@ -569,7 +569,7 @@ export async function up(knex: Knex): Promise<void> {
       select *
       from stand_table_parser
     );
-      `);
+  `);
 }
 
 export async function down(knex: Knex): Promise<void> {
