@@ -49,7 +49,8 @@ import {
   MyAnimalActivitiesTable,
   MyTransectsTable,
   MyCollectionsTable,
-  ReviewActivitiesTable
+  ReviewActivitiesTable,
+  MyPastActivitiesTable
 } from 'components/common/RecordTables';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -404,6 +405,7 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Plant">Plant</MenuItem>
               <MenuItem value="Animal">Animal</MenuItem>
               <MenuItem value="Review">Review</MenuItem>
+              <MenuItem value="Past Activities">Past Activities</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -425,6 +427,11 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Review' && (
             <Box>
               <ReviewActivitiesTable />
+            </Box>
+          )}
+          {workflowFunction === 'Past Activities' && (
+            <Box>
+              <MyPastActivitiesTable />
             </Box>
           )}
         </Box>
