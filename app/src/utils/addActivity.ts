@@ -303,8 +303,8 @@ export function generateActivityPayload(
 export function generateDBActivityPayload(
   formData: any,
   geometry: Feature[],
-  activityType: ActivityType,
-  activitySubtype: ActivitySubtype
+  activityType: string,
+  activitySubtype: string
 ) {
   const id = uuidv4();
   const time = moment(new Date()).format();
