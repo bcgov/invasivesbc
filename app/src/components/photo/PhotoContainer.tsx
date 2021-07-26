@@ -1,4 +1,5 @@
 //import { CameraResultType, CameraSource } from '@capacitor/core';
+import { CameraResultType, CameraSource } from '@capacitor/camera';
 import { useCamera } from '@ionic/react-hooks/camera';
 import {
   Box,
@@ -33,21 +34,25 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const { getPhoto } = useCamera();
 
   const takePhoto = async () => {
-    /*   const cameraPhoto = await getPhoto({
-      resultType: CameraResultType.DataUrl,
-      source: CameraSource.Camera,
-      quality: 100
-    });
+    try {
+      const cameraPhoto = await getPhoto({
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+        quality: 100
+      });
 
-    const fileName = new Date().getTime() + '.' + cameraPhoto.format;
-    const photo = {
-      filepath: fileName,
-      dataUrl: cameraPhoto.dataUrl,
-      description: 'text'
-    };
+      const fileName = new Date().getTime() + '.' + cameraPhoto.format;
+      const photo = {
+        filepath: fileName,
+        dataUrl: cameraPhoto.dataUrl,
+        description: 'text'
+      };
 
-    props.photoState.setPhotos([...props.photoState.photos, photo]);
-    */
+      props.photoState.setPhotos([...props.photoState.photos, photo]);
+    } catch (e) {
+      console.log('user cancelled or other camera problem');
+      console.log(JSON.stringify(e));
+    }
   };
 
   const changePhotoDescription = (filepath: any, fieldsToUpdate: Object) => {
