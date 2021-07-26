@@ -744,14 +744,12 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
         tableName="Treatments"
         activitySubtypes={[
           [ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalPlant],
-          [ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalPlant],
-          [ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant]
+          [ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalPlant]
         ]}
         tableSchemaType={[
           'Treatment',
           'Treatment_ChemicalPlant',
           'Treatment_MechanicalPlant',
-          'Treatment_BiologicalPlant',
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[
@@ -892,14 +890,12 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
         activitySubtypes={[
           [ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant],
           [ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant],
-          [ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant],
-          [ActivityType.Dispersal, ActivitySubtype.Activity_BiologicalDispersal]
+          [ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant]
         ]}
         tableSchemaType={[
           'Monitoring',
           'Monitoring_ChemicalTerrestrialAquaticPlant',
           'Monitoring_MechanicalTerrestrialAquaticPlant',
-          'Monitoring_BiologicalTerrestrialPlant',
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[
@@ -1023,13 +1019,13 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
   }, [headers?.length]);
 };
 
-export const MyCollectionsTable: React.FC<IActivitiesTable> = (props) => {
+export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
   const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
-      <CollectionsTable
+      <AdditionalBiocontrolActivitiesTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
@@ -1048,16 +1044,24 @@ export const MyCollectionsTable: React.FC<IActivitiesTable> = (props) => {
   }, [headers?.length]);
 };
 
-export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
+export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
   const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
-        tableName="Collections"
-        activitySubtypes={[[ActivityType.Collection, ActivitySubtype.Collection_Biocontrol]]}
-        tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
+        tableName="Additional Biocontrol ActivitiesTable"
+        activitySubtypes={[
+          [ActivityType.Collection, ActivitySubtype.Collection_Biocontrol],
+          [ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant]
+        ]}
+        tableSchemaType={[
+          'Collection',
+          'Collection_Biocontrol',
+          'Treatment_BiologicalPlant',
+          ...arrayWrap(tableSchemaType)
+        ]}
         headers={[
           ...headers,
           'activity_id',
@@ -1065,7 +1069,7 @@ export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
             id: 'activity_subtype',
             valueMap: {
               ...ActivitySubtypeShortLabels,
-              Activity_Collection_Biocontrol: 'Bio Control' // TODO remove when our data isn't awful
+              Activity_Collection_Biocontrol: 'Biocontrol Collection' // TODO remove when our data isn't awful
             }
           },
           {
