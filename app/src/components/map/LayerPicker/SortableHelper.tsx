@@ -30,7 +30,7 @@ import Grid from '@material-ui/core/Grid';
 import ColorPicker from 'material-ui-color-picker';
 import * as L from 'leaflet';
 import { DragHandle } from '@material-ui/icons';
-import { LayersControl, useMap, useMapEvent } from 'react-leaflet';
+import { TileLayer, LayersControl, useMap, useMapEvent } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
 // for confirming loaded layers
 import DoneIcon from '@material-ui/icons/Done';
@@ -38,7 +38,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import { IconButton } from '@material-ui/core';
 import LayersIcon from '@material-ui/icons/Layers';
 
-import { FormControl, FormControlLabel } from '@material-ui/core';
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
 import IMapContainerProps from '../MapContainer2';
 import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
 import { GeoJSON } from 'react-leaflet';
@@ -78,11 +78,12 @@ const setupFeature = (feature, layer) => {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '360px',
-    height: '300px',
+    height: '360px',
     backgroundColor: 'white',
     position: 'absolute',
     zIndex: 1500,
-    right: 55, top: 20,
+    borderRadius: '4px',
+    right: 60, top: 20,
     ['@media (max-width:800px)']: {
       top: 100
     }
@@ -274,9 +275,15 @@ export function LayerPicker(props: any) {
   };
   const map = useMap();
   const [menuState, setMenuState] = useState(false);
-  const [checked, setChecked] = useState(true);
-  const handleChange = (event) => {
+  const [checked, setChecked] = useState(false);
+  const [radio, setRadio] = useState('default');
+  
+  const handleCheckboxChange = (event) => {
     setChecked(event.target.checked);
+  };
+
+  const handleRadioChange = (event) => {
+    setRadio(event.target.value);
   };
 
   return (
@@ -317,18 +324,29 @@ export function LayerPicker(props: any) {
             if (Capacitor.getPlatform() == 'web') {
               map.dragging.enable();
               map.doubleClickZoom.enable();
-            }}}>
-          
-          <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
-          <FormControlLabel
-              control={<Checkbox checked={checked} onChange={handleChange} />}
+            }
+          }}>
+          <FormControl style={{ display: 'flex', marginLeft: '10px' }}>
+          <RadioGroup row value={radio} onChange={handleRadioChange}>
+            <FormControlLabel value='default' control={<Radio />} label='default' />
+            { radio === 'default' ? <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" /> : null }
+
+            <FormControlLabel value='other' control={<Radio />} label='other' />
+            { radio === 'other' ? <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null }
+          </RadioGroup>
+          </FormControl>
+          <FormControl style={{ display: 'flex', marginLeft: '10px' }}>
+            <FormControlLabel
+              control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
               label='Activities' />
+          </FormControl>
+          <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
         </div> : null}
-        {checked ?
+      {checked ?
         <>
           <TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>
           <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} />
-          <GeoJSON data={vanIsland} onEachFeature={setupFeature} />
+          {/*<GeoJSON data={vanIsland} onEachFeature={setupFeature} />*/}
         </>
         : null}
     </div>
