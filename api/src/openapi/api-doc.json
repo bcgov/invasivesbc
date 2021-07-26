@@ -953,6 +953,13 @@
                       }
                     },
                     "required": ["full_count_area", "fixed_area", "baf"]
+                  },
+                  {
+                    "properties": {
+                      "trees_exist": {
+                        "enum": ["No"]
+                      }
+                    }
                   }
                 ]
               }
@@ -1017,7 +1024,14 @@
                         "title": "Comments (Logs)"
                       }
                     },
-                    "required": ["first_leg", "second_leg"]
+                    "required": ["firest_leg", "second_leg"]
+                  },
+                  {
+                    "properties": {
+                      "cwd_in_transect": {
+                        "enum": ["No"]
+                      }
+                    }
                   }
                 ]
               }
@@ -1147,6 +1161,7 @@
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
                 },
+                "default": "Yes",
                 "x-tooltip-text": "Stratum location and size consistent with map"
               }
             },
@@ -1179,6 +1194,13 @@
                       }
                     },
                     "required": ["estimated_size"]
+                  },
+                  {
+                    "properties": {
+                      "stratum_location_consistent": {
+                        "enum": ["Yes"]
+                      }
+                    }
                   }
                 ]
               }
@@ -1257,6 +1279,7 @@
               "reserve_constraints_none": {
                 "type": "string",
                 "title": "Were there any reserve constraints for this stratum?",
+                "default": "No",
                 "x-enum-code": {
                   "x-enum-code-category-name": "invasives",
                   "x-enum-code-header-name": "reserve_constraints_none_code",
@@ -1442,6 +1465,13 @@
                       "rmz",
                       "wetsite"
                     ]
+                  },
+                  {
+                    "properties": {
+                      "reserve_constraints_none": {
+                        "enum": ["No"]
+                      }
+                    }
                   }
                 ]
               }
@@ -1611,6 +1641,13 @@
                       "active_wildlife_trails",
                       "uncommon_tree_species"
                     ]
+                  },
+                  {
+                    "properties": {
+                      "ecological_anchors_none": {
+                        "enum": ["No"]
+                      }
+                    }
                   }
                 ]
               }
