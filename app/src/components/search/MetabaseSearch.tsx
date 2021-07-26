@@ -63,9 +63,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
       (!trip.metabaseQueryOptionsLastChecked || moment().diff(trip.metabaseQueryOptionsLastChecked, 'minutes') >= 1)
     ) {
       try {
-        alert('before getting options');
         let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
-        alert(options);
         await upsert(
           [
             {
@@ -80,7 +78,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
         setMetabaseOptions([...options]);
       } catch (error) {
         // if (trip.metabaseQueryOptions) setMetabaseOptions(trip.metabaseQueryOptions);
-        alert(error);
+        // alert(error);
       }
     } else {
       if (trip.metabaseQueryOptions) setMetabaseOptions(trip.metabaseQueryOptions);
@@ -89,6 +87,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
 
   useEffect(() => {
     const updateComponent = () => {
+      getMetabaseQueryOptions();
       getMetabaseChoicesFromTrip();
     };
     updateComponent();
@@ -144,9 +143,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
                             label="Metabase Query"
                             id="select"
                             value={metabaseChoice.metabaseQueryId}
-                            onClick={() => {
-                              getMetabaseQueryOptions();
-                            }}
+                            onClick={() => {}}
                             onChange={(e) => {
                               updateMetabaseChoice(
                                 {
@@ -170,9 +167,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
                             className={classes.metabaseSearchField}
                             label="Metabase Query ID"
                             value={metabaseChoice.metabaseQueryId}
-                            onClick={() => {
-                              getMetabaseQueryOptions();
-                            }}
+                            onClick={() => {}}
                             onChange={(e) => {
                               updateMetabaseChoice({ ...metabaseChoice, metabaseQueryId: e.target.value }, index);
                             }}
@@ -198,7 +193,8 @@ export const MetabaseSearch: React.FC<any> = (props) => {
             color="primary"
             className={classes.metabaseAddButton}
             startIcon={<Add />}
-            onClick={() => {
+            onClick={async () => {
+              await getMetabaseQueryOptions();
               addMetabaseChoice({
                 metabaseQueryId: ''
               });
