@@ -172,6 +172,7 @@ export const useInvasivesApi = () => {
       method: 'GET',
       url: options.baseUrl + `/api/metabase-query`
     });
+    alert(JSON.stringify(data));
     return data.options;
   };
 

@@ -48,9 +48,9 @@ export const MetabaseSearch: React.FC<any> = (props) => {
       },
       databaseContext
     );
-    if (docs[0].json.metabaseChoices) setMetabaseChoices([...JSON.parse(docs[0].json).metabaseChoices]);
-    if (docs[0].json.metabaseOptions) setMetabaseOptions([...JSON.parse(docs[0].json).metabaseOptions]);
-    setTrip(JSON.parse(docs[0].json));
+    if (docs[0]?.json?.metabaseChoices) setMetabaseChoices([...JSON.parse(docs[0]?.json).metabaseChoices]);
+    if (docs[0]?.json?.metabaseOptions) setMetabaseOptions([...JSON.parse(docs[0]?.json).metabaseOptions]);
+    if (docs[0]?.json) setTrip(JSON.parse(docs[0]?.json));
   };
 
   const getMetabaseQueryOptions = useCallback(async () => {
@@ -63,7 +63,9 @@ export const MetabaseSearch: React.FC<any> = (props) => {
       (!trip.metabaseQueryOptionsLastChecked || moment().diff(trip.metabaseQueryOptionsLastChecked, 'minutes') >= 1)
     ) {
       try {
+        alert('before getting options');
         let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
+        alert(options);
         await upsert(
           [
             {
@@ -77,7 +79,8 @@ export const MetabaseSearch: React.FC<any> = (props) => {
         );
         setMetabaseOptions([...options]);
       } catch (error) {
-        if (trip.metabaseQueryOptions) setMetabaseOptions(trip.metabaseQueryOptions);
+        // if (trip.metabaseQueryOptions) setMetabaseOptions(trip.metabaseQueryOptions);
+        alert(error);
       }
     } else {
       if (trip.metabaseQueryOptions) setMetabaseOptions(trip.metabaseQueryOptions);
@@ -123,8 +126,6 @@ export const MetabaseSearch: React.FC<any> = (props) => {
   };
 
   const classes = useStyles();
-
-  if (!metabaseOptions?.length) getMetabaseQueryOptions();
 
   return (
     <>
