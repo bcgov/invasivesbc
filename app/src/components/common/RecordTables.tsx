@@ -652,10 +652,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
           'ObservationPlantTerrestrialData',
           ...arrayWrap(tableSchemaType)
         ]}
-        headers={[
-          ...headers,
-          ...activitesDefaultHeaders
-        ]}
+        headers={[...headers, ...activitesDefaultHeaders]}
         actions={{
           ...actions,
           create_treatment: {
@@ -980,10 +977,7 @@ export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
           ActivitySubtype.Transect_BiocontrolEfficacy,
           ActivitySubtype.Transect_Vegetation
         ]}
-        headers={[
-          ...headers,
-          ...activitesDefaultHeaders
-        ]}
+        headers={[...headers, ...activitesDefaultHeaders]}
         {...otherProps}
       />
     );
