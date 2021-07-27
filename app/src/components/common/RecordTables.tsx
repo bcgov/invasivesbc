@@ -1006,7 +1006,33 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
   }, [headers?.length]);
 };
 
-export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
+export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo: any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <AdditionalBiocontrolActivitiesTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'review_status_rendered',
+            title: 'Review Status'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+>>>>>>> dev
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
+};
+
+export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
   const { tableSchemaType, actions, headers = [], ...otherProps } = props;
