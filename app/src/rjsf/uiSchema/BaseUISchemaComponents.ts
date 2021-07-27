@@ -101,7 +101,7 @@ const AquaticAnimals = {
     'ui:widget': 'single-select-autocomplete'
   },
   early_detection_rapid_resp_ind: {},
-  negative_obs_ind: {},
+  observation_type: {},
   life_stage: {
     'ui:widget': 'single-select-autocomplete'
   },
@@ -155,7 +155,7 @@ const AquaticPlants = {
   e_dna_sample: {},
   genetic_structure_collected: {},
   genetic_sample_id: {},
-  negative_obs_ind: {}
+  observation_type: {}
 };
 
 const WaterbodyData = {
@@ -164,7 +164,9 @@ const WaterbodyData = {
   waterbody_type: {
     'ui:widget': 'single-select-autocomplete'
   },
-  waterbody_use: {}
+  waterbody_use: {
+    'ui:widget': 'multi-select-autocomplete'
+  }
 };
 
 const ProjectData = {

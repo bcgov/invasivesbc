@@ -99,6 +99,9 @@ const Activity = {
   reported_area: {
     'ui:readonly': true
   },
+  employer_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
   invasive_species_agency_code: {
     'ui:widget': 'single-select-autocomplete'
   },
@@ -108,6 +111,9 @@ const Activity = {
     }
   },
   general_comment: {},
+  location_description: {
+    'ui:widget': 'textarea'
+  },
   access_description: {
     'ui:widget': 'textarea'
   },

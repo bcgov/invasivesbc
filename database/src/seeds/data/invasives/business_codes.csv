@@ -1276,3 +1276,60 @@ invasive_plant_code_withbiocontrol,SJ,St. John's wort/Saint John's wort/ Goatwee
 invasive_plant_code_withbiocontrol,TR,Tansy ragwort (SENE JAC Senecio jacobaea),35
 invasive_plant_code_withbiocontrol,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),36
 invasive_plant_code_withbiocontrol,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),37
+employer_code,SIGD,Sechelt Indian Government District,1
+employer_code,DOSicamous,District of Sicamous,2
+employer_code,TOSidney,Town of Sidney,3
+employer_code,VOSilverton,Village of Silverton,4
+employer_code,VOSlocan,Village of Slocan,5
+employer_code,TOSmithers,Town of Smithers,6
+employer_code,DOSooke,District of Sooke,7
+employer_code,TOSpallumcheen,Township of Spallumcheen,8
+employer_code,DOSparwood,District of Sparwood,9
+employer_code,DOSquamish,District of Squamish,10
+employer_code,DOStewart,District of Stewart,11
+employer_code,DOSummerland,District of Summerland,12
+employer_code,MRMOSP,Mountain Resort Municipality of Sun Peaks,13
+employer_code,COSurrey,City of Surrey,14
+employer_code,VOTahsis,Village of Tahsis,15
+employer_code,DOTaylor,District of Taylor,16
+employer_code,VOTelkwa,Village of Telkwa,17
+employer_code,COTerrace,City of Terrace,18
+employer_code,DOTofino,District of Tofino,19
+employer_code,COTrail,City of Trail,20
+employer_code,DTTR,District of Tumbler Ridge,21
+employer_code,DOUcluelet,District of Ucluelet,22
+employer_code,VOValemount,Village of Valemount,23
+employer_code,COVancouver,City of Vancouver,24
+employer_code,DOVanderhoof,District of Vanderhoof,25
+employer_code,COVernon,City of Vernon,26
+employer_code,COVictoria,City of Victoria,27
+employer_code,TVN ,Town of View Royal,28
+employer_code,VOWarfield,Village of Warfield,29
+employer_code,CWY ,City of West Kelowna,30
+employer_code,DWTR,District of West Vancouver,31
+employer_code,RMOR,Resort Municipality of Whistler,32
+employer_code,CWY ,City of White Rock,33
+employer_code,CWY ,City of Williams Lake,34
+employer_code,VOZeballos,Village of Zeballos,35
+employer_code,BSND,Boundary Invasive Species Society,36
+employer_code,CCCIPC,Cariboo Chilcotin Coast Invasive Plant Committee Society,37
+employer_code,CCCIIC,Central Kootenay Invasive Species Society,38
+employer_code,CCCISC,Coastal Invasive Species Committee Society,39
+employer_code,CCCIIC,Columbia Shuswap Invasive Species Society,40
+employer_code,EEUNIE,East Kootenay Invasive Species Council,41
+employer_code,FFCIIF,Fraser Valley Invasive Species Society,42
+employer_code,IICIBI,Invasive Species Council of British Columbia Society,43
+employer_code,IICIMI,Invasive Species Council of Metro Vancouver Society,44
+employer_code,LLCIIL,Lillooet Regional Invasive Species Society,45
+employer_code,NPTH,Northwest Invasive Plant Council,46
+employer_code,OOCIIO,Okanagan and Similkameen Invasive Species Society,47
+employer_code,SSUNIS,Sea to Sky Invasive Species Council,48
+waterbody_use_code,R,recreation,1
+waterbody_use_code,F,fishing,2
+waterbody_use_code,B,boating,3
+waterbody_use_code,S,swimming,4
+waterbody_use_code,AI,agricultural intake,5
+waterbody_use_code,IU,industrial discharge,6
+waterbody_use_code,SW,spawning channel,7
+waterbody_use_code,CWI,community water intake,8
+waterbody_use_code,O,other,9
