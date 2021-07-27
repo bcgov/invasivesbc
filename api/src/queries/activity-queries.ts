@@ -169,6 +169,15 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(SQL` AND created_by = ${searchCriteria.created_by}`);
   }
 
+  if (searchCriteria.review_status && searchCriteria.review_status.length) {
+    sqlStatement.append(SQL` AND review_status IN (`);
+    sqlStatement.append(SQL`${searchCriteria.review_status[0]}`);
+    for (let idx = 1; idx < searchCriteria.review_status.length; idx++) {
+      sqlStatement.append(SQL`, ${searchCriteria.review_status[idx]}`);
+    }
+    sqlStatement.append(SQL`)`);
+  }
+
   if (searchCriteria.date_range_start) {
     sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
   }

@@ -17,31 +17,84 @@ import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useKeycloak } from '@react-keycloak/web';
 import {
+  sanitizeRecord,
   addLinkedActivityToDB,
   addNewActivityToDB,
-  generateDBActivityPayload,
-  mapDocToDBActivity
+  generateDBActivityPayload
 } from 'utils/addActivity';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { notifyError, notifySuccess } from 'utils/NotificationUtils';
 
-export const activityStandardMapping = (doc) => ({
-  ...doc,
-  ...doc?.formData?.activity_data,
-  ...doc?.formData?.activity_subtype_data,
-  activity_id: doc.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-  jurisdiction_code: doc?.formData?.activity_data?.jurisdictions?.reduce(
-    (output, jurisdiction) => [...output, jurisdiction.jurisdiction_code, '(', jurisdiction.percent_covered + '%', ')'],
-    []
-  ),
-  created_timestamp: doc?.created_timestamp?.substring(0, 10),
-  latitude: parseFloat(doc?.formData?.activity_data?.latitude).toFixed(6),
-  longitude: parseFloat(doc?.formData?.activity_data?.longitude).toFixed(6),
-  review_status_rendered:
-    doc?.review_status === ReviewStatus.APPROVED || doc?.review_status === ReviewStatus.DISAPPROVED
-      ? doc?.review_status + ' by ' + doc?.reviewed_by + ' at ' + doc?.reviewed_at
-      : doc?.review_status
-});
+const useStyles = makeStyles((theme: Theme) => ({
+  activitiesContent: {},
+  activityList: {},
+  activitiyListItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: '0.5rem',
+    marginBottom: '0.5rem',
+    border: '1px solid',
+    borderColor: theme.palette.grey[300],
+    borderRadius: '6px'
+  },
+  activityListItem_Grid: {
+    flexWrap: 'nowrap',
+    flexDirection: 'row',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column'
+    }
+  },
+  activitiyListItem_Typography: {
+    [theme.breakpoints.down('sm')]: {
+      display: 'inline',
+      marginRight: '1rem'
+    }
+  },
+  formControl: {
+    minWidth: 180
+  },
+  map: {
+    height: 500,
+    width: '100%',
+    zIndex: 0
+  },
+  metabaseAddButton: {
+    marginLeft: 10,
+    marginRight: 10
+  }
+}));
+
+export const activityStandardMapping = (doc) => {
+  const record = sanitizeRecord(doc);
+  const flattened = {
+    ...record.activity_payload,
+    ...record.activity_payload?.form_data?.activity_data,
+    ...record.activity_payload?.form_data?.activity_type_data,
+    ...record.activity_payload?.form_data?.activity_subtype_data,
+    ...record
+  };
+  return {
+    ...flattened,
+    activity_id: flattened.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
+    jurisdiction_code: flattened.activity_payload?.form_data?.activity_data?.jurisdictions?.reduce(
+      (output, jurisdiction) => [
+        ...output,
+        jurisdiction.jurisdiction_code,
+        '(',
+        jurisdiction.percent_covered + '%',
+        ')'
+      ],
+      []
+    ),
+    created_timestamp: flattened.created_timestamp?.substring(0, 10),
+    latitude: flattened.latitude && parseFloat(flattened.latitude).toFixed(6),
+    longitude: flattened.longitude && parseFloat(flattened.longitude).toFixed(6),
+    review_status_rendered:
+      flattened.review_status === ReviewStatus.APPROVED || flattened.review_status === ReviewStatus.DISAPPROVED
+        ? flattened.review_status + ' by ' + flattened.reviewed_by + ' at ' + flattened.reviewed_at
+        : flattened.review_status
+  };
+};
 
 export const poiStandardMapping = (doc) => ({
   ...doc,
@@ -116,47 +169,8 @@ const arrayWrap = (value) => {
   return Array.isArray(value) ? value : [value];
 };
 
-const useStyles = makeStyles((theme: Theme) => ({
-  activitiesContent: {},
-  activityList: {},
-  activitiyListItem: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: '0.5rem',
-    marginBottom: '0.5rem',
-    border: '1px solid',
-    borderColor: theme.palette.grey[300],
-    borderRadius: '6px'
-  },
-  activityListItem_Grid: {
-    flexWrap: 'nowrap',
-    flexDirection: 'row',
-    [theme.breakpoints.down('sm')]: {
-      flexDirection: 'column'
-    }
-  },
-  activitiyListItem_Typography: {
-    [theme.breakpoints.down('sm')]: {
-      display: 'inline',
-      marginRight: '1rem'
-    }
-  },
-  formControl: {
-    minWidth: 180
-  },
-  map: {
-    height: 500,
-    width: '100%',
-    zIndex: 0
-  },
-  metabaseAddButton: {
-    marginLeft: 10,
-    marginRight: 10
-  }
-}));
-
 export const defaultActivitiesFetch =
-  ({ invasivesApi, activitySubtypes, created_by }) =>
+  ({ invasivesApi, activitySubtypes, created_by = undefined, review_status = [] }) =>
   async ({ page, rowsPerPage, order }) => {
     // Fetches fresh from the API (web).  TODO fetch from SQLite
     let dbPageSize = DEFAULT_PAGE_SIZE;
@@ -164,18 +178,20 @@ export const defaultActivitiesFetch =
       // if page is right near the db page limit
       dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
 
-    const types = activitySubtypes.map((subtype) => subtype[0]);
-    const subtypes = activitySubtypes.map((subtype) => subtype[1]);
+    const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
+
     const result = await invasivesApi.getActivities({
       page: Math.floor((page * rowsPerPage) / dbPageSize),
       limit: dbPageSize,
       order: order,
       // search_feature: geometry TODO
       activity_type: arrayWrap(types),
-      activity_subtype: arrayWrap(subtypes),
+      activity_subtype: arrayWrap(activitySubtypes),
       // startDate, endDate will be filters
-      created_by: created_by // my_keycloak_id
+      created_by: created_by, // my_keycloak_id
+      review_status: review_status
     });
+    // console.log('defaultActivitiesFetch: ', result);
     return {
       rows: result.rows.map(activityStandardMapping),
       count: result.count
@@ -186,7 +202,54 @@ export interface IActivitiesTable extends IRecordTable {
   workflow?: string;
   activitySubtypes?: any[];
   created_by?: string;
+  review_status?: string[];
 }
+
+const activitesDefaultHeaders = [
+  'activity_id',
+  'activity_type',
+  {
+    id: 'activity_subtype',
+    valueMap: {
+      ...ActivitySubtypeShortLabels,
+      Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
+    }
+  },
+  {
+    id: 'created_timestamp',
+    title: 'Created Date'
+  },
+  'biogeoclimatic_zones',
+  {
+    id: 'elevation',
+    type: 'number'
+  },
+  {
+    id: 'flnro_districts',
+    title: 'FLNRO Districs'
+  },
+  'ownership',
+  'regional_districts',
+  'invasive_species_agency_code',
+  'jurisdiction_code',
+  {
+    id: 'latitude',
+    title: 'Latitude',
+    type: 'number'
+  },
+  {
+    id: 'longitude',
+    title: 'Longitude',
+    type: 'number'
+  },
+  {
+    id: 'reported_area',
+    title: 'Area (m\u00B2)',
+    type: 'number'
+  },
+  'access_description',
+  'general_comment'
+];
 
 export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
@@ -198,17 +261,16 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const {
     tableSchemaType,
     actions,
-    rows,
     activitySubtypes,
     created_by,
     keyField = 'activity_id',
     enableSelection = true,
+    review_status = [ReviewStatus.APPROVED, ReviewStatus.PREAPPROVED],
     ...otherProps
   } = props;
 
-  let createActions = {};
-  const createAction = (type, subtype) => ({
-    key: `create_activity_${subtype.toLowerCase()}`,
+  const createAction = (type: string, subtype: string) => ({
+    key: `create_activity_${subtype.toString().toLowerCase()}`,
     enabled: true,
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
@@ -225,8 +287,9 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     ...actions?.create_activity // allow prop overwrites by default
   });
 
-  arrayWrap(activitySubtypes).forEach(([type, subtype]) => {
-    const action = createAction(type, subtype);
+  let createActions = {};
+  arrayWrap(activitySubtypes).forEach((subtype) => {
+    const action = createAction(subtype.toString().split('_')[1], subtype);
     createActions = {
       ...createActions,
       [action.key]: {
@@ -235,6 +298,16 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       }
     };
   });
+
+  let rows = props.rows;
+  if (Array.isArray(rows)) rows = rows.map(activityStandardMapping);
+  if (typeof rows === 'undefined')
+    rows = defaultActivitiesFetch({
+      invasivesApi,
+      activitySubtypes: arrayWrap(activitySubtypes),
+      created_by,
+      review_status: review_status
+    });
 
   return useMemo(
     () => (
@@ -246,60 +319,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="desc"
         enableSelection={enableSelection}
         startExpanded
-        headers={[
-          'activity_id',
-          'activity_type',
-          {
-            id: 'activity_subtype',
-            valueMap: {
-              ...ActivitySubtypeShortLabels,
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
-            }
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          'biogeoclimatic_zones',
-          {
-            id: 'elevation',
-            type: 'number'
-          },
-          {
-            id: 'flnro_districts',
-            title: 'FLNRO Districs'
-          },
-          'ownership',
-          'regional_districts',
-          'invasive_species_agency_code',
-          'jurisdiction_code',
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
-          },
-          'access_description',
-          'general_comment'
-        ]}
-        rows={
-          rows
-            ? rows.map(activityStandardMapping)
-            : defaultActivitiesFetch({
-                invasivesApi,
-                created_by,
-                activitySubtypes
-              })
-        }
+        headers={activitesDefaultHeaders}
+        rows={rows}
         actions={{
           ...actions,
           edit: {
@@ -379,10 +400,12 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   )
                     return;
                   const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity({
-                    ...dbActivity,
-                    sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
-                  });
+                  await invasivesApi.updateActivity(
+                    sanitizeRecord({
+                      ...dbActivity,
+                      sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
+                    })
+                  );
                   const typename = activity.activity_subtype?.split('_')[2];
                   notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
                 });
@@ -424,10 +447,12 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   )
                     return;
                   const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity({
-                    ...dbActivity,
-                    review_status: ReviewStatus.UNDER_REVIEW
-                  });
+                  await invasivesApi.updateActivity(
+                    sanitizeRecord({
+                      ...dbActivity,
+                      review_status: ReviewStatus.UNDER_REVIEW
+                    })
+                  );
                   const typename = activity.activity_subtype?.split('_')[2];
                   notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
                 });
@@ -469,12 +494,14 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   )
                     return;
                   const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity({
-                    ...dbActivity,
-                    review_status: ReviewStatus.APPROVED,
-                    reviewed_by: userInfo.preferred_username, // latest reviewer
-                    reviewed_at: moment(new Date()).format()
-                  });
+                  await invasivesApi.updateActivity(
+                    sanitizeRecord({
+                      ...dbActivity,
+                      review_status: ReviewStatus.APPROVED,
+                      reviewed_by: userInfo.preferred_username, // latest reviewer
+                      reviewed_at: moment(new Date()).format()
+                    })
+                  );
                   const typename = activity.activity_subtype?.split('_')[2];
                   notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
                 });
@@ -516,12 +543,14 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   )
                     return;
                   const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
-                  await invasivesApi.updateActivity({
-                    ...dbActivity,
-                    review_status: ReviewStatus.DISAPPROVED,
-                    reviewed_by: userInfo.preferred_username, // latest reviewer
-                    reviewed_at: moment(new Date()).format()
-                  });
+                  await invasivesApi.updateActivity(
+                    sanitizeRecord({
+                      ...dbActivity,
+                      review_status: ReviewStatus.DISAPPROVED,
+                      reviewed_by: userInfo.preferred_username, // latest reviewer
+                      reviewed_at: moment(new Date()).format()
+                    })
+                  );
                   const typename = activity.activity_subtype?.split('_')[2];
                   notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
                 });
@@ -557,9 +586,11 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           {
             id: 'review_status_rendered',
             title: 'Review Status'
-          }
+          },
+          ...activitesDefaultHeaders
         ]}
         created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
     );
@@ -572,10 +603,7 @@ export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   return (
     <ActivitiesTable
       tableName="Animal Activities"
-      activitySubtypes={[
-        [ActivityType.AnimalActivity, ActivitySubtype.Activity_AnimalTerrestrial],
-        [ActivityType.AnimalActivity, ActivitySubtype.Activity_AnimalAquatic]
-      ]}
+      activitySubtypes={[ActivitySubtype.Activity_AnimalTerrestrial, ActivitySubtype.Activity_AnimalAquatic]}
       tableSchemaType={[
         'Observation',
         'Activity_AnimalTerrestrial',
@@ -588,28 +616,22 @@ export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
-  const { headers = [], ...otherProps } = props;
+  const { tableSchemaType, ...otherProps } = props;
   return useMemo(() => {
     return (
-      <AnimalActivitiesTable
-        startingOrderBy="created_timestamp"
-        startingOrder="asc"
-        headers={[
-          ...headers,
-          'sync_status',
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
+      <MyActivitiesTable
+        tableName="Animal Activities"
+        activitySubtypes={[ActivitySubtype.Activity_AnimalTerrestrial, ActivitySubtype.Activity_AnimalAquatic]}
+        tableSchemaType={[
+          'Observation',
+          'Activity_AnimalTerrestrial',
+          'Activity_AnimalAquatic',
+          ...arrayWrap(tableSchemaType)
         ]}
-        created_by={userInfo?.preferred_username}
         {...otherProps}
       />
     );
-  }, [headers?.length]);
+  }, []);
 };
 
 export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
@@ -619,10 +641,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
     return (
       <ActivitiesTable
         tableName="Observations"
-        activitySubtypes={[
-          [ActivityType.Observation, ActivitySubtype.Observation_PlantTerrestrial],
-          [ActivityType.Observation, ActivitySubtype.Observation_PlantAquatic]
-        ]}
+        activitySubtypes={[ActivitySubtype.Observation_PlantTerrestrial, ActivitySubtype.Observation_PlantAquatic]}
         tableSchemaType={[
           'Observation',
           'Observation_PlantTerrestrial',
@@ -630,51 +649,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
           'ObservationPlantTerrestrialData',
           ...arrayWrap(tableSchemaType)
         ]}
-        headers={[
-          ...headers,
-          'activity_id',
-          {
-            id: 'activity_subtype',
-            valueMap: {
-              ...ActivitySubtypeShortLabels,
-              Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
-            }
-          },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
-          'biogeoclimatic_zones',
-          {
-            id: 'elevation',
-            type: 'number'
-          },
-          {
-            id: 'flnro_districts',
-            title: 'FLNRO Districs'
-          },
-          'ownership',
-          'regional_districts',
-          'invasive_species_agency_code',
-          'jurisdiction_code',
-          {
-            id: 'latitude',
-            title: 'Latitude',
-            type: 'number'
-          },
-          {
-            id: 'longitude',
-            title: 'Longitude',
-            type: 'number'
-          },
-          {
-            id: 'reported_area',
-            title: 'Area (m\u00B2)',
-            type: 'number'
-          },
-          'access_description',
-          'general_comment'
-        ]}
+        headers={[...headers, ...activitesDefaultHeaders]}
         actions={{
           ...actions,
           create_treatment: {
@@ -689,17 +664,20 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
               });
             },
             label: 'Create Treatment',
-            bulkAction: true,
-            rowAction: false,
+            bulkAction: false,
+            rowAction: true,
             displayInvalid: 'error',
-            invalidError: 'All selected activities must be of the same SubType to create a Treatment',
+            invalidError: 'Observation forms must be validated before they can be used to create a new Treatment',
+            // invalidError: 'All selected activities must be of the same SubType to create a Treatment',
             /*
               Function to determine if all selected observation records are
               of the same subtype. For example: Cannot create a treatment if you select a plant
               and an animal observation, and most probably will not go treat a terrestrial
               and aquatic observation in a single treatment as those are different areas
+              NOTE: we might have deprecated multiple treatment creation
             */
             bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
+            rowCondition: (row) => row.form_status === FormValidationStatus.VALID,
             ...actions?.create_treatment
           }
         }}
@@ -728,6 +706,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
           }
         ]}
         created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
     );
@@ -743,8 +722,9 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
       <ActivitiesTable
         tableName="Treatments"
         activitySubtypes={[
-          [ActivityType.Treatment, ActivitySubtype.Treatment_ChemicalPlant],
-          [ActivityType.Treatment, ActivitySubtype.Treatment_MechanicalPlant]
+          ActivitySubtype.Treatment_ChemicalPlant,
+          ActivitySubtype.Treatment_MechanicalPlant,
+          ActivitySubtype.Treatment_BiologicalPlant
         ]}
         tableSchemaType={[
           'Treatment',
@@ -875,6 +855,7 @@ export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
           }
         ]}
         created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
     );
@@ -888,9 +869,10 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
       <ActivitiesTable
         tableName="Treatment Monitoring"
         activitySubtypes={[
-          [ActivityType.Monitoring, ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant],
-          [ActivityType.Monitoring, ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant],
-          [ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant]
+          ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant,
+          ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant,
+          ActivitySubtype.Monitoring_BiologicalTerrestrialPlant,
+          ActivitySubtype.Activity_BiologicalDispersal
         ]}
         tableSchemaType={[
           'Monitoring',
@@ -955,6 +937,7 @@ export const MyMonitoringTable: React.FC<IActivitiesTable> = (props) => {
           }
         ]}
         created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
     );
@@ -967,10 +950,10 @@ export const GeneralBiologicalControlTable: React.FC<IActivitiesTable> = (props)
       <ActivitiesTable
         tableName="Biological Control"
         activitySubtypes={[
-          [ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant],
-          [ActivityType.Transect, ActivitySubtype.Transect_BiocontrolEfficacy],
-          [ActivityType.Monitoring, ActivitySubtype.Monitoring_BiologicalTerrestrialPlant],
-          [ActivityType.Dispersal, ActivitySubtype.Activity_BiologicalDispersal]
+          ActivitySubtype.Treatment_BiologicalPlant,
+          ActivitySubtype.Transect_BiocontrolEfficacy,
+          ActivitySubtype.Monitoring_BiologicalTerrestrialPlant,
+          ActivitySubtype.Activity_BiologicalDispersal
         ]}
         {...props}
       />
@@ -979,16 +962,18 @@ export const GeneralBiologicalControlTable: React.FC<IActivitiesTable> = (props)
 };
 
 export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
+  const { headers, ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
         tableName="Transects"
         activitySubtypes={[
-          [ActivityType.Transect, ActivitySubtype.Transect_FireMonitoring],
-          [ActivityType.Transect, ActivitySubtype.Transect_BiocontrolEfficacy],
-          [ActivityType.Transect, ActivitySubtype.Transect_Vegetation]
+          ActivitySubtype.Transect_FireMonitoring,
+          ActivitySubtype.Transect_BiocontrolEfficacy,
+          ActivitySubtype.Transect_Vegetation
         ]}
-        {...props}
+        headers={[...headers, ...activitesDefaultHeaders]}
+        {...otherProps}
       />
     );
   }, [props.rows?.length, props.selected?.length, JSON.stringify(props.actions)]);
@@ -1013,55 +998,23 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
           }
         ]}
         created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
         {...otherProps}
       />
     );
   }, [headers?.length]);
 };
 
-export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
-  const { headers = [], ...otherProps } = props;
-  return useMemo(() => {
-    return (
-      <AdditionalBiocontrolActivitiesTable
-        startingOrderBy="created_timestamp"
-        startingOrder="asc"
-        headers={[
-          ...headers,
-          'sync_status',
-          'form_status',
-          {
-            id: 'review_status_rendered',
-            title: 'Review Status'
-          }
-        ]}
-        created_by={userInfo?.preferred_username}
-        {...otherProps}
-      />
-    );
-  }, [headers?.length]);
-};
-
-export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
   const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
-        tableName="Additional Biocontrol ActivitiesTable"
-        activitySubtypes={[
-          [ActivityType.Collection, ActivitySubtype.Collection_Biocontrol],
-          [ActivityType.Treatment, ActivitySubtype.Treatment_BiologicalPlant]
-        ]}
-        tableSchemaType={[
-          'Collection',
-          'Collection_Biocontrol',
-          'Treatment_BiologicalPlant',
-          ...arrayWrap(tableSchemaType)
-        ]}
+        tableName="Collections"
+        activitySubtypes={[ActivitySubtype.Collection_Biocontrol]}
+        tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
         headers={[
           ...headers,
           'activity_id',
@@ -1118,13 +1071,36 @@ export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (
             }}
           />
         )}
-        actions={{
-          ...actions
-        }}
         {...otherProps}
       />
     );
   }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
+};
+
+export const MyCollectionsTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo: any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <CollectionsTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'review_status_rendered',
+            title: 'Review Status'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
 };
 
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
@@ -1583,4 +1559,49 @@ export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (
       />
     );
   }, [rows?.length]);
+};
+
+export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+  const { rows, headers = [], ...otherProps } = props;
+  const invasivesApi = useInvasivesApi();
+  return useMemo(() => {
+    return (
+      <ActivitiesTable
+        tableName="Under Review"
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          'sync_status',
+          'form_status',
+          {
+            id: 'review_status_rendered',
+            title: 'Review Status'
+          },
+          ...activitesDefaultHeaders
+        ]}
+        rows={
+          rows ||
+          defaultActivitiesFetch({
+            invasivesApi,
+            activitySubtypes: Object.values(ActivitySubtype),
+            review_status: [ReviewStatus.UNDER_REVIEW]
+          })
+        }
+        {...otherProps}
+      />
+    );
+  }, [rows?.length]);
+};
+
+export const MyPastActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+  return useMemo(() => {
+    return (
+      <MyActivitiesTable
+        tableName="My Old Activities"
+        review_status={[ReviewStatus.APPROVED, ReviewStatus.PREAPPROVED]}
+        {...props}
+      />
+    );
+  }, []);
 };

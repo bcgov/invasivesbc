@@ -32,6 +32,8 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import Spinner from 'components/spinner/Spinner';
 import clsx from 'clsx';
 
+const ACTION_TIMEOUT = 1000;
+
 const snakeToPascal = (string, spaces = false) =>
   string
     .split('/')
@@ -296,6 +298,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   }, [props.totalRows, Array.isArray(props.rows) && props.rows?.length]);
 
   const fetchRows = async () => {
+    // console.log('fetchRows start: ', tableName);
     if (props.rows instanceof Function) {
       if (
         rows.slice(
@@ -310,6 +313,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
         rowsPerPage: rowsPerPage,
         order: [orderBy + ' ' + order]
       });
+
+      console.log('fetchRows: ', result);
       if (result) {
         await setRows(result.rows);
         await setTotalRows(parseInt(result.count));
@@ -449,10 +454,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     );
   }, [rows.length, orderHeader, order, page, rowsPerPage]);
   // render all dropdowns on page
-  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
-    pageRows,
-    dropdown
-  ]);
+  const renderedDropdowns = useMemo(
+    () => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)),
+    [pageRows, dropdown]
+  );
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
   const verboseOverflows = useMemo(
@@ -771,7 +776,7 @@ const RecordTableToolbar = (props) => {
             else {
               try {
                 await action.action(selectedRows);
-                if (action.triggerReload) fetchRows();
+                if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
               } catch (error) {
                 notifyError(databaseContext, action.invalidError || error.message);
               }
@@ -808,7 +813,7 @@ const RecordTableToolbar = (props) => {
             else {
               try {
                 await action.action(selectedRows);
-                if (action.triggerReload) fetchRows();
+                if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
               } catch (error) {
                 notifyError(databaseContext, action.invalidError || error.message);
               }
@@ -925,7 +930,8 @@ const RecordTableRow = (props) => {
             else {
               try {
                 await action.action([row]);
-                if (action.triggerReload) fetchRows();
+                // await console.log('action ', action.key);
+                if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
               } catch (error) {
                 notifyError(databaseContext, action.invalidError || error.message);
               }

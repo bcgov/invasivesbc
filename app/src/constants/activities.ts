@@ -18,12 +18,6 @@ export enum ActivitySubtype {
   Activity_AnimalTerrestrial = 'Activity_AnimalActivity_AnimalTerrestrial',
   Activity_AnimalAquatic = 'Activity_AnimalActivity_AnimalAquatic',
 
-  Activity_BiologicalDispersal = 'Activity_Dispersal_BiologicalDispersal',
-
-  Transect_FireMonitoring = 'Activity_Transect_FireMonitoring',
-  Transect_Vegetation = 'Activity_Transect_Vegetation',
-  Transect_BiocontrolEfficacy = 'Activity_Transect_BiocontrolEfficacy',
-
   Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlant',
   Treatment_ChemicalPlant_BulkEdit = 'Activity_Treatment_ChemicalPlant_BulkEdit',
   Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlant',
@@ -34,6 +28,11 @@ export enum ActivitySubtype {
   Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
   Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
   Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
+  Activity_BiologicalDispersal = 'Activity_Dispersal_BiologicalDispersal',
+
+  Transect_FireMonitoring = 'Activity_Transect_FireMonitoring',
+  Transect_Vegetation = 'Activity_Transect_Vegetation',
+  Transect_BiocontrolEfficacy = 'Activity_Transect_BiocontrolEfficacy',
 
   Collection_Biocontrol = 'Activity_Collection_Biocontrol'
 }
@@ -51,23 +50,22 @@ export enum ActivitySubtypeShortLabels {
   Activity_Treatment_ChemicalPlant_BulkEdit = 'Chemical',
   Activity_Treatment_MechanicalPlant = 'Mechanical',
   Activity_Treatment_MechanicalPlant_BulkEdit = 'Mechanical',
+  Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
+  Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release',
 
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical',
-
-  // Biocontrol:
-  Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
-  Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release',
   Activity_Monitoring_BiologicalTerrestrialPlant = 'Biocontrol Release Monitoring',
   Activity_Dispersal_BiologicalDispersal = 'Biocontrol Dispersal Monitoring',
-  Activity_Transect_BiocontrolEfficacy = 'Biocontrol Efficacy Transect',
-  Activity_Collection_Biocontrol = 'Biocontrol Collection',
-  // missing: Biocontrol Collection
 
   // Transects:
   Activity_Transect_FireMonitoring = 'Wildfire & Prescribed Burn Monitoring',
-  Activity_Transect_Vegetation = 'Vegetation Transect (Full, Lumped, Invasive Plant Density)'
+  Activity_Transect_Vegetation = 'Vegetation Transect (Full, Lumped, Invasive Plant Density)',
+  Activity_Transect_BiocontrolEfficacy = 'Biocontrol Efficacy Transect',
+
+  // Collections:
+  Activity_Collection_Biocontrol = 'Biocontrol Collection'
 }
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
