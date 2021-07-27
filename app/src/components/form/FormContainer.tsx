@@ -2,11 +2,13 @@ import {
   Box,
   Button,
   CircularProgress,
+  createMuiTheme,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  ThemeOptions,
   ThemeProvider,
   Typography
 } from '@material-ui/core';
@@ -14,8 +16,9 @@ import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { ActivitySyncStatus } from 'constants/activities';
 import { SelectAutoCompleteContextProvider } from 'contexts/SelectAutoCompleteContext';
+import { ThemeContext } from 'contexts/themeContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
 import ObjectFieldTemplate from 'rjsf/templates/ObjectFieldTemplate';
@@ -63,6 +66,14 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
+
+  const themeContext = useContext(ThemeContext);
+  const { themeType } = themeContext;
+  const rjsfThemeDark = createMuiTheme({
+    ...rjsfTheme,
+    palette: { ...rjsfTheme.palette, type: 'dark' }
+  } as ThemeOptions);
+  const rjsfThemeLight = createMuiTheme(rjsfTheme as ThemeOptions);
 
   //open dialog window (visual)
   const openDialog = () => {
@@ -235,7 +246,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         />
       </Box> */}
 
-      <ThemeProvider theme={rjsfTheme}>
+      <ThemeProvider theme={themeType ? rjsfThemeDark : rjsfThemeLight}>
         <SelectAutoCompleteContextProvider>
           <Form
             ObjectFieldTemplate={ObjectFieldTemplate}

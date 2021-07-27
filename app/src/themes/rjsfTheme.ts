@@ -1,13 +1,12 @@
-import { createMuiTheme } from '@material-ui/core';
 import appTheme from './appTheme';
 
-const rjsfTheme = createMuiTheme({
+const rjsfTheme = {
   ...appTheme,
   props: {
     MuiTextField: {
       variant: 'outlined'
     }
   }
-});
+};
 
 export default rjsfTheme;
