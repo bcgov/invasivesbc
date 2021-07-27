@@ -198,7 +198,13 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
 
-    const connection = await getDBConnection();
+    let connection;
+    try {
+      connection = await getDBConnection();
+    } catch (e) {
+      console.log('error getting database connetion');
+      console.log(JSON.stringify(e));
+    }
 
     if (!connection) {
       throw {
