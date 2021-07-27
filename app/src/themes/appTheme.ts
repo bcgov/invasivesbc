@@ -1,9 +1,10 @@
 import { createMuiTheme } from '@material-ui/core';
 import 'styles/fonts.scss';
 
-const appTheme = createMuiTheme({
+const appTheme = {
   palette: {
     // https://material-ui.com/customization/palette/
+    type: 'light',
     primary: {
       light: '#5469a4',
       main: '#223f75', // BC ID: corporate blue
@@ -69,6 +70,6 @@ const appTheme = createMuiTheme({
       }
     }
   }
-});
+};
 
 export default appTheme;

@@ -1,12 +1,27 @@
 import { Capacitor } from '@capacitor/core';
-import { AppBar, CircularProgress, Tab, Tabs, Toolbar, Grid, makeStyles, Theme } from '@material-ui/core';
+import {
+  AppBar,
+  CircularProgress,
+  Tab,
+  Tabs,
+  Toolbar,
+  Grid,
+  makeStyles,
+  Theme,
+  FormGroup,
+  FormControlLabel,
+  Switch
+} from '@material-ui/core';
 import { Assignment, Bookmarks, Explore, HomeWork, Map, Search, Home } from '@material-ui/icons';
 import { ALL_ROLES } from 'constants/roles';
+import { ThemeContext } from 'contexts/themeContext';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import sunriseLogo from '../../bcGovSunriseLogo.png';
 import invbclogo from '../../InvasivesBC_Icon.svg';
+import Brightness2Icon from '@material-ui/icons/Brightness2';
+import WbSunnyIcon from '@material-ui/icons/WbSunny';
 
 const useStyles = makeStyles((theme: Theme) => ({
   pointer: {
@@ -76,6 +91,9 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setActiveTab(newValue);
   };
 
+  const themeContext = useContext(ThemeContext);
+  const { themeType, setThemeType } = themeContext;
+
   useEffect(() => {
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
   }, [history.location.pathname, getActiveTab]);
@@ -98,7 +116,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: <Search />
           });
 
-          if(Capacitor.getPlatform() !== 'web'){
+          if (Capacitor.getPlatform() !== 'web') {
             tabsUserHasAccessTo.push({
               label: 'Plan My Trip',
               path: '/home/plan',
@@ -149,22 +167,25 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     <AppBar position="static">
       <Toolbar>
         <Grid className={classes.alignment} flex-direction="row" container>
-          <Grid xs={1} item>
+          <Grid container justify="center" alignItems="center" xs={1} item>
             <img
               className={classes.pointer}
               src={invbclogo}
               width="50"
+              style={{ marginRight: '5px' }}
               height="50"
               alt="B.C. Government Logo"
               onClick={() => history.push('/')}
             />
-            InvasivesBC
+            <b>InvasivesBC</b>
           </Grid>
-          <Grid xs={1} item>
+          <Grid container justify="center" alignItems="center" xs={1} item>
             <img
+              alt="bcLogo"
               className={classes.pointer}
               src={sunriseLogo}
-              width="100"
+              width="130"
+              style={{ objectFit: 'cover' }}
               height="50"
               onClick={() => history.push('/')}
             />
@@ -180,6 +201,20 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 />
               ))}
             </Tabs>
+          </Grid>
+          <Grid xs={1} container justify="center" alignItems="center" item>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={themeType}
+                  checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                  onChange={() => {
+                    setThemeType(!themeType);
+                  }}
+                />
+              }
+              label="Theme Mode"
+            />
           </Grid>
         </Grid>
       </Toolbar>
