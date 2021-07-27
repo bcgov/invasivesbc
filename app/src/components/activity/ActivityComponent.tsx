@@ -31,7 +31,11 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   useEffect(() => {
-    getPosition();
+    try {
+      getPosition();
+    } catch (e) {
+      console.log('unable to get position');
+    }
   }, []);
 
   const isGreaterDistanceThan = (from, to, distance) => {
@@ -48,28 +52,36 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   };
 
   const startTrack = async () => {
-    startWatch({ enableHighAccuracy: true });
+    try {
+      startWatch({ enableHighAccuracy: true });
+    } catch (e) {
+      console.log('unable to start watch');
+    }
     notifySuccess(databaseContext, JSON.stringify('Starting track.'));
   };
 
   const endTrack = async () => {
-    // convert poly to polygon
-    if (workingPolyline.length >= 4) {
-      var line = turf.lineString(workingPolyline);
-      var polygon = turf.lineToPolygon(line);
-      if (window.confirm('Convert track to polygon?')) {
-        props.geometryState.setGeometry([polygon as any]);
-        notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  '));
-        clearWatch();
+    try {
+      // convert poly to polygon
+      if (workingPolyline.length >= 4) {
+        var line = turf.lineString(workingPolyline);
+        var polygon = turf.lineToPolygon(line);
+        if (window.confirm('Convert track to polygon?')) {
+          props.geometryState.setGeometry([polygon as any]);
+          notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  '));
+          clearWatch();
+        } else {
+          notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  '));
+          clearWatch();
+        }
       } else {
-        notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  '));
-        clearWatch();
+        if (window.confirm("Sure you're done walkin'?  Didn't collect 4 points.")) {
+          alert('Cancelled track.');
+          clearWatch();
+        }
       }
-    } else {
-      if (window.confirm("Sure you're done walkin'?  Didn't collect 4 points.")) {
-        alert('Cancelled track.');
-        clearWatch();
-      }
+    } catch (e) {
+      console.log('error stopping track');
     }
   };
 

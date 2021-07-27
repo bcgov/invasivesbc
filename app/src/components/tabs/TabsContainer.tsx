@@ -124,12 +124,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          tabsUserHasAccessTo.push({
-            label: 'Cached Records',
-            path: '/home/references',
-            childPaths: ['/home/references/activity'],
-            icon: <Bookmarks />
-          });
+          if (Capacitor.getPlatform() != 'web') {
+            tabsUserHasAccessTo.push({
+              label: 'Cached Records',
+              path: '/home/references',
+              childPaths: ['/home/references/activity'],
+              icon: <Bookmarks />
+            });
+          }
 
           tabsUserHasAccessTo.push({
             label: 'My Records',

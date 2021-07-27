@@ -8,12 +8,14 @@ import PouchDBUpsert from 'pouchdb-upsert';
 import React, { useEffect, useState, useCallback } from 'react';
 
 import { useSQLite } from 'react-sqlite-hook/dist';
+import { isNull } from 'util';
 
 const DB_SCHEMA = process.env.REACT_APP_DB_SCHEMA || 'invasivesbc';
 
 export type IDatabaseContext = {
   // sqlite stuff:
   sqlite?: any;
+  sqliteDB?: any;
 
   //pouch stuff:
   database?: PouchDB.Database<any>;
@@ -25,7 +27,7 @@ const createDB = () => {
     return React.createContext<IDatabaseContext>({ database: null, resetDatabase: () => {} });
   } else {
     let sqlite: any;
-    return React.createContext<IDatabaseContext>({ sqlite: sqlite });
+    return React.createContext<IDatabaseContext>({ sqlite: sqlite, sqliteDB: null });
   }
 };
 export const DatabaseContext = createDB();
@@ -38,6 +40,7 @@ export const DatabaseContext = createDB();
 export const DatabaseContextProvider: React.FC = (props) => {
   const [databaseContext, setDatabaseContext] = useState<IDatabaseContext>({
     sqlite: null,
+    sqliteDB: null,
     database: null,
     resetDatabase: () => {}
   });
@@ -65,6 +68,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
 
     return new PouchDB(DB_SCHEMA, { adapter: 'idb' });
   };
+  /*
   const {
     echo,
     getPlatform,
@@ -78,13 +82,17 @@ export const DatabaseContextProvider: React.FC = (props) => {
     isJsonValid,
     copyFromAssets,
     isAvailable
-  } = useSQLite();
+  } = useSQLite();*/
 
   /**
    * Create the database.
    */
   const setupDatabase = useCallback(async () => {
-    if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
+    /* if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
+      if (databaseContext.sqlite) {
+        return;
+      }
+
       let sqlite = {
         echo: echo,
         getPlatform: getPlatform,
@@ -99,11 +107,13 @@ export const DatabaseContextProvider: React.FC = (props) => {
         copyFromAssets: copyFromAssets,
         isAvailable: isAvailable
       };
-      setDatabaseContext({ sqlite: sqlite });
-      createSqliteTables(sqlite);
-    } else {
-      let db = databaseContext.database;
 
+      console.log('about to open db');
+      let db = await openConnection(sqlite);
+   //   setDatabaseContext({ sqlite: sqlite, sqliteDB: db });
+   //   createSqliteTables(databaseContext);
+    } else */ {
+      let db = databaseContext.database;
       if (db) {
         return;
       }
@@ -157,7 +167,7 @@ export const DatabaseContextProvider: React.FC = (props) => {
     setupDatabase();
 
     const callCleanupDatabase = async () => {
-      await cleanupDatabase();
+      //   await cleanupDatabase();
     };
 
     callCleanupDatabase();
@@ -184,28 +194,43 @@ export interface IQuery {
   limit?: number;
   offset?: number;
 }
+
 export const query = async (queryConfig: IQuery, databaseContext: any) => {
-  if (Capacitor.getPlatform() != 'web') {
-    const adb = databaseContext.sqlite;
-
-    // initialize the connection
-    const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
-
-    let ret: any; //= await deleteDatabase(db);
-
-    ret = await db.open();
-    if (!ret.result) {
-      return false;
+  /*  while (!databaseContext.sqliteDB) {
+    await setTimeout(() => {
+      alert('...waiting');
+    }, 3000);
+  }*/
+  try {
+    if (!databaseContext.sqliteDB.isAvailable || !databaseContext.db.isDBOpen()) {
+      alert('but unavailable');
+      return;
     }
-
+  } catch (e) {
+    alert('crashing checking if available');
+    alert(JSON.stringify(e));
+  }
+  alert('supposedly available');
+  //alert(JSON.stringify(databaseContext));
+  if (Capacitor.getPlatform() != 'web') {
+    // alert('made it here');
+    console.log('typeof input');
+    console.log(typeof databaseContext);
+    let ret;
+    let db;
+    if (databaseContext.sqliteDB) {
+      db = databaseContext.sqliteDB;
+    } else {
+      return;
+    }
     switch (queryConfig.type) {
       case QueryType.DOC_TYPE_AND_ID:
         ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
         if (!ret.values) {
-          db.close();
+          //  db.close();
           return false;
         } else {
-          db.close();
+          //  db.close();
           return ret.values;
         }
       case QueryType.DOC_TYPE:
@@ -213,19 +238,19 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
           'select * from ' + queryConfig.docType + (queryConfig.limit > 0 ? ' limit ' + queryConfig.limit + ';' : ';')
         );
         if (!ret.values) {
-          db.close();
+          // db.close();
           return false;
         } else {
-          db.close();
+          //db.close();
           return ret.values;
         }
       case QueryType.RAW_SQL:
         ret = await db.query(queryConfig.sql);
         if (!ret.values) {
-          db.close();
+          //db.close();
           return false;
         } else {
-          db.close();
+          // db.close();
           return ret.values;
         }
         break;
@@ -265,13 +290,19 @@ export interface IUpsert {
 // v1: assumes all upsertconfigs are the same, will allow for multiple in v2
 export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
   let batchUpdate = '';
-  const adb = databaseContext.sqlite;
-  const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
+  let db;
+  if (databaseContext.sqliteDB) {
+    db = databaseContext.sqliteDB;
+  } else {
+    await setTimeout(() => {
+      console.log('waiting to upsert');
+    }, 1000);
+    // db = await openConnection(databaseContext);
+  }
 
   let totalRecordsChanged = 0;
 
   let ret: any;
-  ret = await db.open();
 
   // workaround until we get json1 extension working:
   //TODO: change to return a count and share db like the other ones:
@@ -364,10 +395,10 @@ const handleExecute = async (input: string, db: any) => {
   if (batchUpdate !== '') {
     ret = await db.execute(batchUpdate);
     if (!ret.changes) {
-      db.close();
+      //db.close();
       return false;
     } else {
-      db.close();
+      //db.close();
       return ret.changes.changes;
     }
   } else {
@@ -406,11 +437,17 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
       slowPatchDocType = upsertConfig.docType;
     }
 
+    let ret;
     //open db
-    const adb = databaseContext.sqlite;
-    const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
-    let ret: any;
-    ret = await db.open();
+    let db;
+    if (databaseContext.sqliteDB) {
+      db = databaseContext.sqliteDB;
+    } else {
+      await setTimeout(() => {
+        console.log('waiting to slow upsert');
+      }, 1000);
+      //  db = await openConnection(databaseContext);
+    }
 
     //build the query to get old records
     const idsJSON = JSON.stringify(slowPatchOldIDS);
@@ -450,22 +487,21 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
       ret = db.execute(batchUpdate);
     }
     console.log('*** done sql ***');
-    db.close();
+    //db.close();
   }
 };
 
-export const createSqliteTables = async (adb: any) => {
+export const createSqliteTables = async (databaseContext) => {
   // initialize the connection
-  const db = await adb.createConnection('localInvasivesBC', false, 'no-encryption', 1);
-  let ret: any;
-
-  //TODO:  keep connection open
-
-  // open db testNew
-  ret = await db.open();
-  if (!ret.result) {
-    return false;
+  let db;
+  if (databaseContext.sqliteDB) {
+    db = databaseContext.sqliteDB;
+  } else {
+    await setTimeout(() => {
+      console.log('waiting to create tables');
+    }, 1000);
   }
+  let ret;
 
   let setupSQL = ``;
   for (const value of enumKeys(DocType)) {
@@ -501,10 +537,12 @@ export const createSqliteTables = async (adb: any) => {
   //in sqlite doctypes will get their own table
   ret = await db.execute(setupSQL);
   if (!ret.result) {
-    db.close();
+    //console.log('closing database - no result');
+    //db.close();
     return false;
   } else {
-    db.close();
+    //console.log('closing database with result');
+    //db.close();
     return ret.result;
   }
 };

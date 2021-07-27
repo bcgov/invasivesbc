@@ -1,10 +1,13 @@
-import { Capacitor, DeviceInfo } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
+import { Device, DeviceInfo } from '@capacitor/device';
+
 import { IonReactRouter } from '@ionic/react-router';
 import { Box, CircularProgress, createMuiTheme, ThemeOptions, ThemeProvider } from '@material-ui/core';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { DatabaseChangesContextProvider } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext, DatabaseContextProvider, IDatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext2, DatabaseContext2Provider } from 'contexts/DatabaseContext2';
 import { NetworkContextProvider } from 'contexts/NetworkContext';
 import { ThemeContextProvider } from 'contexts/themeContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
@@ -62,7 +65,7 @@ const App: React.FC<IAppProps> = (props) => {
                         </DatabaseChangesContextProvider>
                       );
                     }
-                    if (databaseContext.database || databaseContext.sqlite) {
+                    if (databaseContext.database || databaseContext.sqliteDB) {
                       // database not ready, delay loading app
                       return (
                         <DatabaseChangesContextProvider>
