@@ -402,6 +402,11 @@
             "title": "Longitude",
             "x-tooltip-text": "Longitude of the anchor point for the specified geometry"
           },
+          "utm_zone": {
+            "type": "string",
+            "title": "UTM Zone",
+            "x-tooltip-text": "UTM Zone of the anchor point for the specified geometry"
+          },
           "utm_easting": {
             "type": "number",
             "title": "UTM Easting",
@@ -412,16 +417,23 @@
             "title": "UTM Northing",
             "x-tooltip-text": "UTM Northing of the anchor point for the specified geometry"
           },
-          "utm_zone": {
-            "type": "string",
-            "title": "UTM Zone",
-            "x-tooltip-text": "UTM Zone of the anchor point for the specified geometry"
-          },
           "reported_area": {
             "type": "number",
             "title": "Area (m\u00B2)",
             "minimum": 1,
             "x-tooltip-text": "Area of the activity automatically created from the geometry in square metres"
+          },
+          "employer_code": {
+            "type": "string",
+            "title": "Employer",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "employer_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Employer of an agent"
           },
           "invasive_species_agency_code": {
             "type": "string",
@@ -435,12 +447,13 @@
             },
             "x-tooltip-text": "Organization that is paying to have this work done"
           },
-          "general_comment": {
+          "location_description": {
             "type": "string",
-            "title": "Comment",
-            "maxLength": 2000,
+            "title": "Location Description",
+            "maxLength": 300,
+            "minLength": 5,
             "default": "",
-            "x-tooltip-text": "Plain text description of any supporting information about the observation that is not captured elsewhere (up to 2000 characters)"
+            "x-tooltip-text": "Text entry to provide location directions. Locations should start general and get more specific"
           },
           "access_description": {
             "type": "string",
@@ -448,7 +461,7 @@
             "maxLength": 300,
             "minLength": 5,
             "default": "",
-            "x-tooltip-text": "Text entry to provide location and access directions. Locations should start general and get more specific"
+            "x-tooltip-text": "Text entry to provide access directions."
           },
           "jurisdictions": {
             "type": "array",
@@ -464,7 +477,14 @@
             "items": {
               "$ref": "#/components/schemas/ProjectCode"
             },
-            "x-tooltip-text": "User defined identifier related to associated paper documents (alphanumeric, 50 characters)"
+            "x-tooltip-text": "User defined identifier that can be used to filter or sort records"
+          },
+          "general_comment": {
+            "type": "string",
+            "title": "Comment",
+            "maxLength": 2000,
+            "default": "",
+            "x-tooltip-text": "Plain text description of any supporting information about the observation that is not captured elsewhere (up to 2000 characters)"
           }
         }
       },
@@ -672,9 +692,13 @@
             "title": "Project Data",
             "properties": {
               "surveyors": {
-                "type": "string",
-                "title": "Surveyors",
-                "x-tooltip-text": "Supply surveyor names"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Persons"
+                },
+                "x-tooltip-text": "Name of person(s) doing the observation",
+
+                "title": "Observer(s)"
               },
               "survey_type": {
                 "type": "string",
@@ -691,7 +715,14 @@
               "adjacent_land_use": {
                 "type": "string",
                 "title": "Adjacent Land Use",
-                "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "adjacent_land_use_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Select all adjacent land uses that apply and add details in the comment box."
               },
               "inflow_permanent": {
                 "type": "string",
@@ -700,7 +731,7 @@
               },
               "inflow_other": {
                 "type": "string",
-                "title": "Inflow (Other)",
+                "title": "Inflow (Temp. or seasonal)",
                 "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
               },
               "outflow": {
@@ -756,7 +787,14 @@
                       "adjacent_land_use": {
                         "type": "string",
                         "title": "Adjacent Land Use",
-                        "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "adjacent_land_use_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Select all adjacent land uses that apply and add details in the comment box."
                       },
                       "watershed_code": {
                         "type": "string",
@@ -2437,6 +2475,13 @@
         "properties": {
           "shoreline_type": {
             "type": "string",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "shoreline_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "title": "Shoreline Type",
             "x-tooltip-text": "Describe shoreline composition adjacent to observation (e.g. rip rap, road/parking lot, overhanging natural riparian veg, turf, fence, etc)"
           },
@@ -2858,117 +2903,234 @@
       },
       "AquaticPlants": {
         "type": "object",
+        "required": ["observation_type"],
         "properties": {
           "sample_point_id": {
             "type": "string",
             "title": "Sample Point ID",
             "x-tooltip-text": "For Presence Surveys. Number each sample point in the same waterbody (e.g. 001, 002, 003, etc). Do not use for Extent Surveys"
           },
-          "invasive_plant_code": {
+          "observation_type": {
             "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "For Presence survey: select species observed at coordinates. For Extent Survey: select target species for survey"
-          },
-          "provincial_edrr": {
-            "type": "string",
-            "title": "Provincial EDRR",
-            "enum": ["Yes", "No"],
-            "x-tooltip-text": "The target species you have selected is a candidate for provincial eradication. Please contact the provincial government Invasive Plant Program to verify this report"
-          },
-          "invasive_plant_density_code": {
-            "type": "string",
-            "title": "Density",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_density_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Average number of individual plants per square meter expressed as a density class code"
-          },
-          "invasive_plant_distribution_code": {
-            "type": "string",
-            "title": "Distribution",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_distribution_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
-          },
-          "plant_life_stage_code": {
-            "type": "string",
-            "title": "Life Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_life_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Select description of life stage that best describes the target plant(s)"
-          },
-          "plant_health_code": {
-            "type": "string",
-            "title": "Health",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_health_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Select description of plant vigour that best describes the target plant(s)"
-          },
-          "plant_seed_stage_code": {
-            "type": "string",
-            "title": "Seed Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "plant_seed_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Select appropriate seed stage"
-          },
-          "voucher_specimen_collected": {
-            "type": "string",
-            "title": "Voucher Specimen Collected",
-            "enum": ["Yes", "No"],
-            "x-tooltip-text": "If specimen collected, provide details in observation comments"
-          },
-          "e_dna_sample": {
-            "type": "string",
-            "title": "eDNA Sample",
-            "x-tooltip-text": "Genetic material that can be extracted from bulk environmental samples such as water and soil"
-          },
-          "genetic_sample_id": {
-            "type": "string",
-            "title": "Genetic Sample ID",
-            "x-tooltip-text": "Unique identifier for each voucher collected. Helpful to include abbreviation of waterbody name"
-          },
-          "genetic_structure_collected": {
-            "type": "string",
-            "title": "Genetic Structure Collected",
-            "x-tooltip-text": "Describe plant parts collected. Ideal to collect entire plant structure for verification purposes"
-          },
-          "negative_obs_ind": {
-            "type": "string",
-            "title": "Negative Observation",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
+            "title": "Observation Type",
+            "enum": ["Positive Observation", "Negative Observation"],
+            "default": "Positive Observation",
             "x-tooltip-text": "The observation describes the absence of target invasive plants within a defined area"
+          }
+        },
+        "dependencies": {
+          "observation_type": {
+            "oneOf": [
+              {
+                "properties": {
+                  "observation_type": {
+                    "enum": ["Negative Observation"]
+                  },
+                  "invasive_plant_code": {
+                    "type": "string",
+                    "title": "Invasive Plant",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "invasive_plant_aquatic_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "For Presence survey: select species observed at coordinates. For Extent Survey: select target species for survey"
+                  },
+                  "invasive_plant_density_code": {
+                    "type": "string",
+                    "title": "Density",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "invasive_plant_density_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Average number of individual plants per square meter expressed as a density class code"
+                  },
+                  "invasive_plant_distribution_code": {
+                    "type": "string",
+                    "title": "Distribution",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "invasive_plant_distribution_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
+                  },
+                  "plant_life_stage_code": {
+                    "type": "string",
+                    "title": "Life Stage",
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "plant_life_stage_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Average phenological stage of plant; rosette, flowering, etc"
+                  },
+                  "voucher_specimen_collected": {
+                    "type": "string",
+                    "title": "Voucher Specimen Collected",
+                    "enum": ["Yes", "No"],
+                    "x-tooltip-text": "If specimen collected, provide details in observation comments"
+                  },
+                  "edna_sample": {
+                    "type": "string",
+                    "title": "eDNA Sample",
+                    "enum": ["Yes", "No"],
+                    "default": "No",
+                    "x-tooltip-text": "Genetic material that can be extracted from bulk environmental samples such as water and soil"
+                  },
+                  "genetic_sample_id": {
+                    "type": "string",
+                    "title": "Genetic Sample ID",
+                    "x-tooltip-text": "Unique identifier for each voucher collected. Helpful to include abbreviation of waterbody name"
+                  },
+                  "genetic_structure_collected": {
+                    "type": "string",
+                    "title": "Genetic Structure Collected",
+                    "x-tooltip-text": "Describe plant parts collected. Ideal to collect entire plant structure for verification purposes"
+                  }
+                },
+                "required": ["voucher_specimen_collected", "edna_sample"],
+                "dependencies": {
+                  "edna_sample": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "edna_sample": {
+                            "enum": ["Yes"]
+                          },
+                          "enda_sample_information": {
+                            "type": "object",
+                            "title": "eDNA Sample Information",
+                            "properties": {
+                              "edna_sample_id": {
+                                "title": "eDNA sample ID",
+                                "type": "number"
+                              },
+                              "genetic_structure_collected": {
+                                "title": "Genetic Structure Collected",
+                                "type": "string"
+                              }
+                            },
+                            "required": ["edna_sample_id", "genetic_structure_collected"]
+                          }
+                        },
+                        "required": ["enda_sample_information"]
+                      },
+                      {
+                        "properties": {
+                          "edna_sample": {
+                            "enum": ["No"]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "voucher_specimen_collected": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "voucher_specimen_collected": {
+                            "enum": ["Yes"]
+                          },
+                          "voucher_specimen_collection_information": {
+                            "type": "object",
+                            "title": "Voucher Specimen Collection Information",
+                            "required": [
+                              "voucher_sample_id",
+                              "date_voucher_collected",
+                              "accession_number",
+                              "name_of_herbarium",
+                              "voucher_verification_completed_by",
+                              "exact_utm_coords",
+                              "date_voucher_verified"
+                            ],
+                            "properties": {
+                              "voucher_sample_id": {
+                                "title": "Voucher Sample ID",
+                                "type": "string",
+                                "x-tooltip-text": "Unique identifier for each voucher collected."
+                              },
+                              "date_voucher_collected": {
+                                "title": "Date Voucher Collected",
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "date_voucher_verified": {
+                                "title": "Date voucher verified",
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "accession_number": {
+                                "title": "Accession number",
+                                "type": "string"
+                              },
+                              "voucher_verification_completed_by": {
+                                "type": "object",
+                                "title": "Voucher verification completed by",
+                                "required": ["person_name", "organization"],
+                                "properties": {
+                                  "person_name": {
+                                    "type": "string",
+                                    "title": "Name"
+                                  },
+                                  "organization": {
+                                    "type": "string",
+                                    "title": "Organization"
+                                  }
+                                }
+                              },
+                              "exact_utm_coords": {
+                                "title": "Exact UTM coordinates of voucher collection site",
+                                "type": "object",
+                                "required": ["utm_zone", "utm_easting", "utm_northing"],
+                                "properties": {
+                                  "utm_zone": {
+                                    "title": "UTM Zone",
+                                    "type": "number"
+                                  },
+                                  "utm_easting": {
+                                    "title": "UTM Easting",
+                                    "type": "number"
+                                  },
+                                  "utm_northing": {
+                                    "title": "UTM Northing",
+                                    "type": "number"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "required": ["voucher_specimen_collection_information"]
+                      },
+                      {
+                        "properties": {
+                          "voucher_specimen_collected": {
+                            "enum": ["No"]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "observation_type": {
+                    "enum": ["Positive Observation"]
+                  }
+                }
+              }
+            ]
           }
         }
       },
@@ -4611,13 +4773,13 @@
         "properties": {
           "water_sample_depth": {
             "type": "number",
-            "title": "Water Depth (m)",
+            "title": "Average depth of waterbody (m)",
             "x-tooltip-text": "Enter the water depth in metres"
           },
           "secchi_depth": {
             "type": "number",
             "title": "Secchi Depth (m)",
-            "x-tooltip-text": "Enter the secchi depth in metres"
+            "x-tooltip-text": "Enter the secchi depth in metres. The secchi depth is the depth of water beyond which a high-contrast pattern on a submerged disk is no longer visible."
           },
           "water_colour": {
             "type": "string",
@@ -4738,7 +4900,14 @@
           "waterbody_use": {
             "type": "string",
             "title": "Waterbody Use",
-            "x-tooltip-text": "Comment box to describe all observed uses of waterbody (e.g. fishing, boating, swimming, agriculture intake, industrial discharge, spawning channel, etc)"
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "waterbody_use_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Choose all observed uses of waterbody that apply. If other is chosen, add details in the comments."
           }
         }
       },
@@ -5382,17 +5551,6 @@
           }
         ],
         "properties": {
-          "biological_agent_code": {
-            "type": "string",
-            "title": "Biological Agent",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "biological_agent_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
           "collection_date": {
             "type": "string",
             "title": "Collection Date"
