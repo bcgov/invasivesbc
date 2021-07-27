@@ -862,7 +862,9 @@ const Observation_PlantAquatic = {
   },
   terrain_characteristics: {
     ...ThreeColumnStyle,
-    adjacent_land_use: {},
+    adjacent_land_use: {
+      'ui:widget': 'multi-select-autocomplete'
+    },
     inflow_permanent: {},
     inflow_other: {},
     outflow: {},

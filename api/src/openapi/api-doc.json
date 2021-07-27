@@ -715,7 +715,14 @@
               "adjacent_land_use": {
                 "type": "string",
                 "title": "Adjacent Land Use",
-                "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "adjacent_land_use_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Select all adjacent land uses that apply and add details in the comment box."
               },
               "inflow_permanent": {
                 "type": "string",
@@ -780,7 +787,14 @@
                       "adjacent_land_use": {
                         "type": "string",
                         "title": "Adjacent Land Use",
-                        "x-tooltip-text": "Specify all that apply. Example: residential, parkland/commercial, agricultural, commercial, industrial, transportation (roadway/railway/floatplane) etc"
+                        "x-enum-code": {
+                          "x-enum-code-category-name": "invasives",
+                          "x-enum-code-header-name": "adjacent_land_use_code",
+                          "x-enum-code-name": "code_name",
+                          "x-enum-code-text": "code_description",
+                          "x-enum-code-sort-order": "code_sort_order"
+                        },
+                        "x-tooltip-text": "Select all adjacent land uses that apply and add details in the comment box."
                       },
                       "watershed_code": {
                         "type": "string",
@@ -2461,6 +2475,13 @@
         "properties": {
           "shoreline_type": {
             "type": "string",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "shoreline_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
             "title": "Shoreline Type",
             "x-tooltip-text": "Describe shoreline composition adjacent to observation (e.g. rip rap, road/parking lot, overhanging natural riparian veg, turf, fence, etc)"
           },
@@ -2910,7 +2931,7 @@
                     "title": "Invasive Plant",
                     "x-enum-code": {
                       "x-enum-code-category-name": "invasives",
-                      "x-enum-code-header-name": "invasive_plant_code",
+                      "x-enum-code-header-name": "invasive_plant_aquatic_code",
                       "x-enum-code-name": "code_name",
                       "x-enum-code-text": "code_description",
                       "x-enum-code-sort-order": "code_sort_order"
@@ -5530,17 +5551,6 @@
           }
         ],
         "properties": {
-          "biological_agent_code": {
-            "type": "string",
-            "title": "Biological Agent",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "biological_agent_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
-          },
           "collection_date": {
             "type": "string",
             "title": "Collection Date"

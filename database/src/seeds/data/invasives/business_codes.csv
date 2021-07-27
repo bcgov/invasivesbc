@@ -1303,19 +1303,19 @@ employer_code,COVancouver,City of Vancouver,24
 employer_code,DOVanderhoof,District of Vanderhoof,25
 employer_code,COVernon,City of Vernon,26
 employer_code,COVictoria,City of Victoria,27
-employer_code,TVN ,Town of View Royal,28
+employer_code,TVN,Town of View Royal,28
 employer_code,VOWarfield,Village of Warfield,29
-employer_code,CWY ,City of West Kelowna,30
+employer_code,COWKelowna ,City of West Kelowna,30
 employer_code,DWTR,District of West Vancouver,31
 employer_code,RMOR,Resort Municipality of Whistler,32
-employer_code,CWY ,City of White Rock,33
-employer_code,CWY ,City of Williams Lake,34
+employer_code,COWhiteRock,City of White Rock,33
+employer_code,COWWilliamsLake,City of Williams Lake,34
 employer_code,VOZeballos,Village of Zeballos,35
 employer_code,BSND,Boundary Invasive Species Society,36
-employer_code,CCCIPC,Cariboo Chilcotin Coast Invasive Plant Committee Society,37
-employer_code,CCCIIC,Central Kootenay Invasive Species Society,38
-employer_code,CCCISC,Coastal Invasive Species Committee Society,39
-employer_code,CCCIIC,Columbia Shuswap Invasive Species Society,40
+employer_code,CCCIPCS,Cariboo Chilcotin Coast Invasive Plant Committee Society,37
+employer_code,CKISS,Central Kootenay Invasive Species Society,38
+employer_code,CISCS,Coastal Invasive Species Committee Society,39
+employer_code,CSISS,Columbia Shuswap Invasive Species Society,40
 employer_code,EEUNIE,East Kootenay Invasive Species Council,41
 employer_code,FFCIIF,Fraser Valley Invasive Species Society,42
 employer_code,IICIBI,Invasive Species Council of British Columbia Society,43
@@ -1324,12 +1324,32 @@ employer_code,LLCIIL,Lillooet Regional Invasive Species Society,45
 employer_code,NPTH,Northwest Invasive Plant Council,46
 employer_code,OOCIIO,Okanagan and Similkameen Invasive Species Society,47
 employer_code,SSUNIS,Sea to Sky Invasive Species Council,48
-waterbody_use_code,R,recreation,1
-waterbody_use_code,F,fishing,2
-waterbody_use_code,B,boating,3
-waterbody_use_code,S,swimming,4
-waterbody_use_code,AI,agricultural intake,5
-waterbody_use_code,IU,industrial discharge,6
-waterbody_use_code,SW,spawning channel,7
-waterbody_use_code,CWI,community water intake,8
-waterbody_use_code,O,other,9
+waterbody_use_code,R,Recreation,1
+waterbody_use_code,F,Fishing,2
+waterbody_use_code,B,Boating,3
+waterbody_use_code,S,Swimming,4
+waterbody_use_code,AI,Agricultural Intake,5
+waterbody_use_code,IU,Industrial Discharge,6
+waterbody_use_code,SW,Spawning Channel,7
+waterbody_use_code,CWI,Community Water Intake,8
+waterbody_use_code,O,Other,9
+adjacent_land_use_code,AO,Agricultural Operation,1
+adjacent_land_use_code,RP,Recreational Property,2
+adjacent_land_use_code,PL,Private Land,3
+adjacent_land_use_code,IS,Industrial Site,4
+adjacent_land_use_code,SF,Small Farms,5
+adjacent_land_use_code,L,Livestock,6
+adjacent_land_use_code,P,Parkland,7
+adjacent_land_use_code,RES,Residential,8
+adjacent_land_use_code,PPL,Provincial Public Lands,9
+adjacent_land_use_code,RW,Railway,10
+adjacent_land_use_code,H,Highway,11
+adjacent_land_use_code,O,Other,12
+shoreline_type_code,RR,Riprap,1
+shoreline_type_code,RPL,Road/Parking Lot,2
+shoreline_type_code,BLoDI,Boat Launch or Dock Infrastructure,3
+shoreline_type_code,RRV,Riparian Vegetation,4
+shoreline_type_code,T,Turf,5
+shoreline_type_code,F,Fence,6
+shoreline_type_code,LGA,Livestock Grazing Access,7
+shoreline_type_code,O,Other,8
