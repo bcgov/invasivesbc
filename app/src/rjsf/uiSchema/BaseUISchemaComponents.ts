@@ -70,9 +70,6 @@ const Herbicide = {
   },
   specific_treatment_area: {
     'ui:readonly': true
-  },
-  tank_volume: {
-    'ui:readonly': true
   }
 };
 
@@ -1181,6 +1178,9 @@ const Monitoring = {
   },
   observer_first_name: {},
   observer_last_name: {},
+  tank_mix: {
+    'ui:widget': 'select'
+  },
   efficacy_code: {
     'ui:widget': 'single-select-autocomplete'
   }

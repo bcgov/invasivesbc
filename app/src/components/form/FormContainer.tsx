@@ -43,7 +43,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
    *
    * Note: This will fire frequently, so consider wrapping it in a debounce function (see utils.ts > debounced).
    */
-  onFormChange?: (event: IChangeEvent<any>, formRef: any, focusedField?: string) => any;
+  onFormChange?: (event: any, formRef: any, focusedField?: string) => any;
   /**
    * A function executed when the form submit hook fires, and form validation errors are found.
    */
@@ -106,7 +106,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         //revalidate formData after the setState is run
         $this.validate($this.state.formData);
         //update formData of the activity via onFormChange
-        props.onFormChange(formRef.state.formData, formRef);
+        props.onFormChange({ formData: formRef.state.formData }, formRef);
       });
     }, 100);
     handleClose();
