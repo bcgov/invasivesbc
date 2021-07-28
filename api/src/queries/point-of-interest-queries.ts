@@ -145,6 +145,7 @@ export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBo
  * @param {PointOfInterestSearchCriteria} searchCriteria
  * @returns {SQLStatement} sql query object
  */
+//NOSONAR
 export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT`;
 

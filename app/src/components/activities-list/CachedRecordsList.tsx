@@ -83,6 +83,7 @@ const CachedRecordsList: React.FC = (props) => {
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
   /* Select or unselect a single doc */
+  //NOSONAR
   const toggleDocSelected = useCallback((doc) => {
     const toggleSelectedFunction = (key) => (prevSelected) => {
       const wasPrevSelected = prevSelected.indexOf(key) !== -1;

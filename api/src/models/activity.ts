@@ -42,6 +42,7 @@ export class ActivityPostRequestBody {
    * @param {*} [obj]
    * @memberof ActivityPostRequestBody
    */
+  //NOSONAR
   constructor(object?: any) {
     // eslint-disable-next-line no-unused-vars
     const { activity_payload, ...obj } = object; // remove payload from obj to prevent infinite recursion
@@ -120,6 +121,7 @@ export class ActivitySearchCriteria {
    * @param {*} [obj]
    * @memberof ActivitySearchCriteria
    */
+  //NOSONAR
   constructor(obj?: any) {
     this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
     this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;

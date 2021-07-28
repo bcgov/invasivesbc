@@ -118,6 +118,7 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
  * @param {ActivitySearchCriteria} searchCriteria
  * @returns {SQLStatement} sql query object
  */
+//NOSONAR
 export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
@@ -288,7 +289,7 @@ export const undeleteActivitiesSQL = (activityIds: Array<string>): SQLStatement 
   const sqlStatement: SQLStatement = SQL`
     UPDATE activity_incoming_data
     SET deleted_timestamp = NULL
-    WHERE 
+    WHERE
     activity_id in (${activityIds[0]}`;
 
   for (let i = 1; i < activityIds.length; i++) {
