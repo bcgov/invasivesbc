@@ -45,6 +45,7 @@ import { LayerPicker } from './LayerPicker/SortableHelper';
 import data from './LayerPicker/GEO_DATA.json';
 import { DomEvent } from 'leaflet';
 import DisplayPosition from './DisplayPosition';
+import { setWeekYear } from 'date-fns/esm';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -129,6 +130,7 @@ const MeasureTool = (props) => {
   const [startLocation, setStartLocation] = useState(null);
   const [endLocation, setEndLocation] = useState(null);
   const [aGeoJSON, setGeoJSON] = useState(null);
+  const [aKey, setKey] = useState(1);
 
   const map = useMapEvent('click', (e) => {
     const loc = e.latlng;
@@ -150,7 +152,8 @@ const MeasureTool = (props) => {
   }, [startLocation, endLocation]);
 
   useEffect(() => {
-    alert(JSON.stringify(aGeoJSON));
+    setKey(Math.random());
+    //alert(JSON.stringify(aGeoJSON));
   }, [aGeoJSON]);
 
   useEffect(() => {
@@ -187,7 +190,8 @@ const MeasureTool = (props) => {
   const toggleMeasure = () => {
     setStartLocation(null);
     setEndLocation(null);
-    //setGeoJSON(null);
+
+    //if (isMeasuring) setGeoJSON(null);
     setIsMeasuring(!isMeasuring);
   };
 
@@ -196,7 +200,7 @@ const MeasureTool = (props) => {
       <Button style={{ height: 100, zIndex: 600 }} variant="contained" onClick={toggleMeasure}>
         toggle measuring tool: {JSON.stringify(isMeasuring)}
       </Button>
-      <GeoJSON data={aGeoJSON} style={interactiveGeometryStyle} />
+      <GeoJSON key={aKey} data={aGeoJSON} style={interactiveGeometryStyle} />
     </>
   );
 };
