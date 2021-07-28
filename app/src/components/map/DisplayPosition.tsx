@@ -91,12 +91,9 @@ export default function DisplayPosition({ map }) {
       {newPosition && newPosition?.coords && newPosition?.coords?.latitude ? (
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
           <Popup>
-            {
-              /*position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)}
-                    <br />
-                    {*/
-              utm_zone(newPosition.coords.longitude, newPosition.coords.latitude)
-            }
+            {position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)}
+            <br />
+            {utm_zone(newPosition.coords.longitude, newPosition.coords.latitude)}
           </Popup>
         </Marker>
       ) : null}
