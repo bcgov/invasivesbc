@@ -48,8 +48,8 @@ import {
   MyMonitoringTable,
   MyAnimalActivitiesTable,
   MyTransectsTable,
-  MyCollectionsTable,
   ReviewActivitiesTable,
+  MyAdditionalBiocontrolActivitiesTable,
   MyPastActivitiesTable
 } from 'components/common/RecordTables';
 
@@ -416,7 +416,7 @@ const ActivitiesList: React.FC = () => {
               <MyTreatmentsTable />
               <MyMonitoringTable />
               <MyTransectsTable />
-              <MyCollectionsTable />
+              <MyAdditionalBiocontrolActivitiesTable />
             </Box>
           )}
           {workflowFunction === 'Animal' && (

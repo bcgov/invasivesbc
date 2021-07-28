@@ -13,7 +13,7 @@ export const ThemeContext = React.createContext<IThemeContext>({
 });
 
 export const ThemeContextProvider: React.FC = (props) => {
-  const [themeType, setThemeType] = React.useState(true);
+  const [themeType, setThemeType] = React.useState(false);
 
   return <ThemeContext.Provider value={{ themeType, setThemeType }}>{props.children}</ThemeContext.Provider>;
 };

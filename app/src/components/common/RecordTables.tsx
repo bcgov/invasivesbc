@@ -721,11 +721,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
     return (
       <ActivitiesTable
         tableName="Treatments"
-        activitySubtypes={[
-          ActivitySubtype.Treatment_ChemicalPlant,
-          ActivitySubtype.Treatment_MechanicalPlant,
-          ActivitySubtype.Treatment_BiologicalPlant
-        ]}
+        activitySubtypes={[ActivitySubtype.Treatment_ChemicalPlant, ActivitySubtype.Treatment_MechanicalPlant]}
         tableSchemaType={[
           'Treatment',
           'Treatment_ChemicalPlant',
@@ -1005,15 +1001,15 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
   }, [headers?.length]);
 };
 
-export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
+export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
   const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
-        tableName="Collections"
-        activitySubtypes={[ActivitySubtype.Collection_Biocontrol]}
+        tableName="Biocontrol"
+        activitySubtypes={[ActivitySubtype.Collection_Biocontrol, ActivitySubtype.Treatment_BiologicalPlant]}
         tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
         headers={[
           ...headers,
@@ -1077,13 +1073,13 @@ export const CollectionsTable: React.FC<IActivitiesTable> = (props) => {
   }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
-export const MyCollectionsTable: React.FC<IActivitiesTable> = (props) => {
+export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
   const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
-      <CollectionsTable
+      <AdditionalBiocontrolActivitiesTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
