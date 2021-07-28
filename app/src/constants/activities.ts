@@ -48,10 +48,9 @@ export enum ActivitySubtypeShortLabels {
   // Treatments:
   Activity_Treatment_ChemicalPlant = 'Chemical',
   Activity_Treatment_ChemicalPlant_BulkEdit = 'Chemical',
-  Activity_Treatment_MechanicalPlant = 'Mechanical',
+  Activity_Treatment_MechanicalPlant = 'Terrestrial Invasive Plant Mechanical Treatment',
   Activity_Treatment_MechanicalPlant_BulkEdit = 'Mechanical',
   Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
-  Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release',
 
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical',
@@ -64,8 +63,9 @@ export enum ActivitySubtypeShortLabels {
   Activity_Transect_Vegetation = 'Vegetation Transect (Full, Lumped, Invasive Plant Density)',
   Activity_Transect_BiocontrolEfficacy = 'Biocontrol Efficacy Transect',
 
-  // Collections:
-  Activity_Collection_Biocontrol = 'Biocontrol Collection'
+  // Additional Biocontrol Activities:
+  Activity_Collection_Biocontrol = 'Biocontrol Collection',
+  Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release'
 }
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
