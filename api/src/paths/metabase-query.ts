@@ -201,6 +201,7 @@ export async function closeMetabaseSession(): Promise<any> {
  * @return {RequestHandler}
  */
 function createMetabaseQuery(): RequestHandler {
+  //NOSONAR
   return async (req, res) => {
     defaultLog.debug({ label: 'metabase', message: 'createMetabaseQuery', body: req.body });
 

@@ -31,6 +31,7 @@ export class PointOfInterestPostRequestBody {
    * @param {*} [obj]
    * @memberof PointOfInterestPostRequestBody
    */
+  //NOSONAR
   constructor(obj?: any) {
     // Add whole original object for auditing
     this.pointOfInterestPostBody = {
@@ -92,6 +93,7 @@ export class PointOfInterestSearchCriteria {
    * @param {*} [obj]
    * @memberof PointOfInterestSearchCriteria
    */
+  //NOSONAR
   constructor(obj?: any) {
     this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
     this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;
