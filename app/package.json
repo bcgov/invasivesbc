@@ -17,7 +17,7 @@
     "@capacitor-community/http": "^1.0.0",
     "@capacitor-community/react-hooks": "0.0.11",
     "@capacitor-community/sqlite": "^3.0.0",
-    "@capacitor/android": "^2.4.7",
+    "@capacitor/android": "^3.1.2",
     "@capacitor/camera": "^1.0.3",
     "@capacitor/device": "^1.0.2",
     "@capacitor/geolocation": "^1.0.2",
