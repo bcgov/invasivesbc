@@ -10,18 +10,33 @@ import {
   Theme,
   FormGroup,
   FormControlLabel,
-  Switch
+  Switch,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Drawer,
+  List,
+  createStyles,
+  IconButton,
+  Divider,
+  Hidden
 } from '@material-ui/core';
+import clsx from 'clsx';
 import { Assignment, Bookmarks, Explore, HomeWork, Map, Search, Home } from '@material-ui/icons';
 import { ALL_ROLES } from 'constants/roles';
 import { ThemeContext } from 'contexts/themeContext';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import React, { useCallback, useLayoutEffect, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import sunriseLogo from '../../bcGovSunriseLogo.png';
 import invbclogo from '../../InvasivesBC_Icon.svg';
+import MenuIcon from '@material-ui/icons/Menu';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
+
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme: Theme) => ({
   pointer: {
@@ -33,6 +48,62 @@ const useStyles = makeStyles((theme: Theme) => ({
     '@media (max-device-width: 1430px)': {
       justifyContent: 'center'
     }
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
+  appBarShift: {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  menuButton: {
+    marginRight: 36
+  },
+  hide: {
+    display: 'none'
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: 'nowrap'
+  },
+  drawerOpen: {
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  drawerClose: {
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    overflowX: 'hidden',
+    width: 0,
+    [theme.breakpoints.up('sm')]: {
+      width: 0
+    }
+  },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(1, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3)
   }
 }));
 
@@ -55,6 +126,24 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const classes = useStyles();
   const history = useHistory();
+
+  const [open, setOpen] = React.useState(false);
+
+  useEffect(() => {
+    function handleResize() {
+      setOpen(false);
+    }
+
+    window.addEventListener('resize', handleResize);
+  }, []);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
 
   const [tabConfig, setTabConfig] = useState<ITabConfig[]>([]);
 
@@ -166,45 +255,112 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   }
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Grid className={classes.alignment} flex-direction="row" container>
-          <Grid container justify="center" alignItems="center" xs={1} item>
-            <img
-              className={classes.pointer}
-              src={invbclogo}
-              width="50"
-              style={{ marginRight: '5px' }}
-              height="50"
-              alt="B.C. Government Logo"
-              onClick={() => history.push('/')}
-            />
-            <b>InvasivesBC</b>
-          </Grid>
-          <Grid container justify="center" alignItems="center" xs={1} item>
-            <img
-              alt="bcLogo"
-              className={classes.pointer}
-              src={sunriseLogo}
-              width="130"
-              style={{ objectFit: 'cover' }}
-              height="50"
-              onClick={() => history.push('/')}
-            />
-          </Grid>
-          <Grid xs={11} item>
-            <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
-              {tabConfig.map((tab) => (
-                <Tab
-                  label={tab.label}
-                  key={tab.label.split(' ').join('_')}
-                  icon={tab.icon}
-                  onClick={() => history.push(tab.path)}
+    <>
+      <AppBar
+        className={clsx(classes.appBar, {
+          [classes.appBarShift]: open
+        })}
+        position="static">
+        <Toolbar>
+          <Hidden mdUp>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, {
+                [classes.hide]: open
+              })}>
+              <MenuIcon />
+            </IconButton>
+          </Hidden>
+
+          <Grid className={classes.alignment} flex-direction="row" container>
+            <Grid container justify="center" alignItems="center" xs={6} md={1} item>
+              <img
+                className={classes.pointer}
+                src={invbclogo}
+                width="50"
+                style={{ marginRight: '5px' }}
+                height="50"
+                alt="B.C. Government Logo"
+                onClick={() => history.push('/')}
+              />
+              <b>InvasivesBC</b>
+            </Grid>
+            <Grid container justify="center" alignItems="center" xs={6} md={1} item>
+              <img
+                alt="bcLogo"
+                className={classes.pointer}
+                src={sunriseLogo}
+                width="130"
+                style={{ objectFit: 'cover' }}
+                height="50"
+                onClick={() => history.push('/')}
+              />
+            </Grid>
+            <Hidden smDown>
+              <Grid xs={11} item>
+                <Tabs value={activeTab} onChange={handleChange} variant="scrollable" scrollButtons="on">
+                  {tabConfig.map((tab) => (
+                    <Tab
+                      label={tab.label}
+                      key={tab.label.split(' ').join('_')}
+                      icon={tab.icon}
+                      onClick={() => history.push(tab.path)}
+                    />
+                  ))}
+                </Tabs>
+              </Grid>
+              <Grid xs={1} container justify="center" alignItems="center" item>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={themeType}
+                      checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                      onChange={() => {
+                        setThemeType(!themeType);
+                      }}
+                    />
+                  }
+                  label="Theme Mode"
                 />
-              ))}
-            </Tabs>
+              </Grid>
+            </Hidden>
           </Grid>
-          <Grid xs={1} container justify="center" alignItems="center" item>
+        </Toolbar>
+      </AppBar>
+      <Hidden mdUp>
+        <Drawer
+          className={clsx(classes.drawer, {
+            [classes.drawerOpen]: open,
+            [classes.drawerClose]: !open
+          })}
+          classes={{
+            paper: clsx({
+              [classes.drawerOpen]: open,
+              [classes.drawerClose]: !open
+            })
+          }}
+          style={{ paddingTop: '100px' }}
+          variant="permanent">
+          <div className={classes.toolbar}>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          <Divider />
+          <List>
+            {tabConfig.map((tab) => (
+              <ListItem button onClick={() => history.push(tab.path)} key={tab.label.split(' ').join('_')}>
+                <ListItemIcon>{tab.icon}</ListItemIcon>
+                <ListItemText primary={tab.label} />
+              </ListItem>
+            ))}
+          </List>
+
+          <Divider />
+          <Grid container justify="center" alignItems="center">
             <FormControlLabel
               control={
                 <Switch
@@ -218,9 +374,9 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               label="Theme Mode"
             />
           </Grid>
-        </Grid>
-      </Toolbar>
-    </AppBar>
+        </Drawer>
+      </Hidden>
+    </>
   );
 };
 
