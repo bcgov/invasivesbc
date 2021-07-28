@@ -47,7 +47,7 @@ export enum ActivitySubtypeShortLabels {
 
   // Treatments:
   Activity_Treatment_ChemicalPlant = 'Chemical',
-  Activity_Treatment_ChemicalPlant_BulkEdit = 'Chemical',
+  Activity_Treatment_ChemicalPlant_BulkEdit = 'Terrestrial Invasive Plant Chemical Treatment',
   Activity_Treatment_MechanicalPlant = 'Terrestrial Invasive Plant Mechanical Treatment',
   Activity_Treatment_MechanicalPlant_BulkEdit = 'Mechanical',
   Activity_Treatment_BiologicalPlant = 'Biocontrol Release',

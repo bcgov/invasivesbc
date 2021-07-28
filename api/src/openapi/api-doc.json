@@ -1557,8 +1557,7 @@
           "chemical_method_code",
           "temperature",
           "humidity",
-          "invasive_plant_code",
-          "herbicide",
+          "treatment_information",
           "wind_speed",
           "wind_direction_code",
           "signage_on_site"
@@ -1581,7 +1580,7 @@
           },
           "applicator1_license": {
             "type": "string",
-            "title": "Primary Applicator License",
+            "title": "Primary Pesticide Applicator Certificate Number",
             "x-tooltip-text": "Valid pesticide applicator certificate number"
           },
           "applicator2_name": {
@@ -1591,15 +1590,15 @@
           },
           "applicator2_license": {
             "type": "string",
-            "title": "Service License Number",
-            "x-tooltip-text": "Valid pesticide applicator certificate number"
+            "title": "Secondary Pesticide Applicator Certificate Number",
+            "x-tooltip-text": "Valid secondary pesticide applicator certificate number"
           },
           "pesticide_employer_code": {
             "type": "string",
-            "title": "Pesticide Applicator Employer",
+            "title": "Service License Number and Company Name",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "pesticide_employer_code",
+              "x-enum-code-header-name": "service_license_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
@@ -1619,7 +1618,7 @@
           },
           "pest_management_plan": {
             "type": "string",
-            "title": "Pesticide Management Plan",
+            "title": "Pest Management Plan",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "pest_management_plan",
@@ -1672,25 +1671,51 @@
             "default": "No",
             "x-tooltip-text": "Treatment notice sign placed at site prior to treatment"
           },
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
+          "treatment_information": {
+            "title": "Treatment Information",
+            "type": "object",
+            "properties": {
+              "application_start_time": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Application Start Time"
+              },
+              "invasive_plants_information": {
+                "title": "Invasive Plants",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "invasive_plant_code": {
+                      "type": "string",
+                      "title": "Invasive Plant",
+                      "x-enum-code": {
+                        "x-enum-code-category-name": "invasives",
+                        "x-enum-code-header-name": "invasive_plant_code",
+                        "x-enum-code-name": "code_name",
+                        "x-enum-code-text": "code_description",
+                        "x-enum-code-sort-order": "code_sort_order"
+                      },
+                      "x-tooltip-text": "Target invasive plant species being treated at this location"
+                    },
+                    "tank_mix": {
+                      "type": "boolean",
+                      "title": "Tank Mix",
+                      "x-tooltip-text": "Check if there is a mix of herbicides in the tank"
+                    },
+                    "herbicide": {
+                      "type": "array",
+                      "title": "Herbicide",
+                      "items": {
+                        "$ref": "#/components/schemas/Herbicide"
+                      },
+                      "x-tooltip-text": "Herbicide information for the treatment"
+                    }
+                  }
+                },
+                "required": ["invasive_plant_code", "herbicide"]
+              }
             },
-            "x-tooltip-text": "Target invasive plant species being treated at this location"
-          },
-          "herbicide": {
-            "type": "array",
-            "title": "Herbicide",
-            "items": {
-              "$ref": "#/components/schemas/Herbicide"
-            },
-            "x-tooltip-text": "Herbicide information for the treatment"
+            "required": ["invasive_plants_information"]
           }
         }
       },
@@ -1700,10 +1725,10 @@
         "properties": {
           "pesticide_employer_code": {
             "type": "string",
-            "title": "Pesticide Applicator Employer",
+            "title": "Service License Number and Company Name",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "pesticide_employer_code",
+              "x-enum-code-header-name": "service_license_code",
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
@@ -3155,13 +3180,6 @@
             "minimum": 0,
             "x-tooltip-text": "Calibrated delivery rate of the device used to apply herbicide in L/ha"
           },
-          "tank_volume": {
-            "type": "number",
-            "title": "Tank Volume (L)",
-            "format": "float",
-            "minimum": 0,
-            "x-tooltip-text": "Capacity of tank measured in litres"
-          },
           "specific_treatment_area": {
             "type": "number",
             "title": "Specific Treatment Area (ha)",
@@ -3173,6 +3191,10 @@
             "title": "Dilution %",
             "minimum": 0,
             "x-tooltip-text": "Percent (%) of product in the mix"
+          },
+          "area_treated": {
+            "type": "string",
+            "title": "Area Treated"
           }
         }
       },

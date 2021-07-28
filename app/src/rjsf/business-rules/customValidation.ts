@@ -332,6 +332,35 @@ export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
     return errors;
   };
 }
+/*
+  Function to validate that if the herbicide mix is set to true,
+  there must be 2 or more herbicides chosen
+*/
+export function getHerbicideMixValidation(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    console.log(formData);
+    if (
+      !formData ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.treatment_information ||
+      formData.activity_subtype_data.treatment_information.invasive_plants_information.length < 1
+    ) {
+      return errors;
+    }
+    let index = 0;
+    formData.activity_subtype_data.treatment_information.invasive_plants_information.forEach((treatment_info_item) => {
+      if (treatment_info_item.herbicide)
+        if (treatment_info_item.tank_mix && treatment_info_item.herbicide.length < 2) {
+          errors.activity_subtype_data['treatment_information']['invasive_plants_information'][index].addError(
+            'There must be 2 or more herbicides added if the tank mix field is checked'
+          );
+        }
+      index++;
+    });
+
+    return errors;
+  };
+}
 
 /*
   Function to validate that the application rate specified for a given herbicide
