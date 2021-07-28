@@ -657,7 +657,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
                 count={totalRows}
                 rowsPerPage={rowsPerPage}
                 page={page}
-                onChangePage={handleChangePage}
+                onPageChange={handleChangePage}
                 onChangeRowsPerPage={handleChangeRowsPerPage}
               />
             )}
