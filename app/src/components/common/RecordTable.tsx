@@ -930,9 +930,7 @@ const RecordTableRow = (props) => {
           startIcon={action.icon}
           onClick={async (e) => {
             e.stopPropagation();
-            console.log(555, actionError);
             try {
-              console.log(555, actionError, action.rowCondition(row));
               if (
                 action.displayInvalid === 'error' &&
                 action.rowCondition &&
