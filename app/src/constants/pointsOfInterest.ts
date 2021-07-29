@@ -18,7 +18,7 @@ export enum PointOfInterestStatus {
 }
 
 export enum PointOfInterestSyncStatus {
-  NOT_SYNCED = 'Not Synced',
-  SYNC_SUCCESSFUL = 'Sync Successful',
-  SYNC_FAILED = 'Sync Failed'
+  NOT_SAVED = 'Not Saved',
+  SAVE_SUCCESSFUL = 'Save Successful',
+  SAVE_FAILED = 'Saving Failed'
 }
