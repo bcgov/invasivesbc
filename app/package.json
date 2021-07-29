@@ -45,6 +45,7 @@
     "@turf/boolean-intersects": "^6.3.0",
     "@turf/turf": "^5.1.6",
     "@types/react-leaflet": "^2.8.1",
+    "async": "^3.2.0",
     "axios": "^0.21.1",
     "clsx": "~1.1.1",
     "cordova-plugin-advanced-http": "^3.1.0",

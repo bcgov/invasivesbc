@@ -276,7 +276,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           </Hidden>
 
           <Grid className={classes.alignment} flex-direction="row" container>
-            <Grid container justify="center" alignItems="center" xs={6} md={1} item>
+            <Grid container justifyContent="center" alignItems="center" xs={6} md={1} item>
               <img
                 className={classes.pointer}
                 src={invbclogo}
@@ -288,7 +288,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               />
               <b>InvasivesBC</b>
             </Grid>
-            <Grid container justify="center" alignItems="center" xs={6} md={1} item>
+            <Grid container justifyContent="center" alignItems="center" xs={6} md={1} item>
               <img
                 alt="bcLogo"
                 className={classes.pointer}
@@ -312,7 +312,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                   ))}
                 </Tabs>
               </Grid>
-              <Grid xs={1} container justify="center" alignItems="center" item>
+              <Grid xs={1} container justifyContent="center" alignItems="center" item>
                 <FormControlLabel
                   control={
                     <Switch
@@ -360,7 +360,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           </List>
 
           <Divider />
-          <Grid container justify="center" alignItems="center">
+          <Grid container justifyContent="center" alignItems="center">
             <FormControlLabel
               control={
                 <Switch

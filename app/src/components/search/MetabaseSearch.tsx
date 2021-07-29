@@ -174,7 +174,7 @@ export const MetabaseSearch: React.FC<any> = (props) => {
                           />
                         )}
                       </Grid>
-                      <Grid container item xs={4} justify="flex-end">
+                      <Grid container item xs={4} justifyContent="flex-end">
                         <Button
                           variant="contained"
                           startIcon={<DeleteForever />}
