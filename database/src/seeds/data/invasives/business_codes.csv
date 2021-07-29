@@ -165,11 +165,13 @@ invasive_plant_distribution_code,WS,several well-spaced patches or clumps,7
 invasive_plant_distribution_code,CU,continuous uniform occurrence of well-spaced individuals,8
 invasive_plant_distribution_code,CO,continuous occurrence of a species with a few gaps in the distribution,9
 invasive_plant_distribution_code,CD,continuous dense occurrence of a species,10
-mechanical_disposal_code,N,None (in situ),1
-mechanical_disposal_code,GP,Gravel pit,2
-mechanical_disposal_code,BD,Buried,3
-mechanical_disposal_code,BT,Burnt,4
-mechanical_disposal_code,OT,Other,5
+mechanical_disposal_code,N,In Situ,1
+mechanical_disposal_code,DPC,Dry and Passive Compost,2
+mechanical_disposal_code,IC,Industrial Compost,3
+mechanical_disposal_code,B,Burned,4
+mechanical_disposal_code,II,Industrial Incineration,5
+mechanical_disposal_code,LR,Landfill Regular,6
+mechanical_disposal_code,LDB,Landfill deep Burial,7
 mechanical_method_code,DIG,Digging,1
 mechanical_method_code,BRY,Bury,2
 mechanical_method_code,BUR,Controlled Burning,3
