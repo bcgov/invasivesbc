@@ -435,7 +435,7 @@ const RecordTableHeader = {
     },
     padding: {
       type: 'string',
-      default: 'default'
+      default: 'normal'
     },
     className: {
       type: 'string'

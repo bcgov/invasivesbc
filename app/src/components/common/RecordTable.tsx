@@ -361,7 +361,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
           // defaults:
           id: id,
           align: header.type === 'number' ? 'right' : 'left',
-          padding: 'default',
+          padding: 'normal',
           defaultOrder: 'asc',
           ...header
         };
