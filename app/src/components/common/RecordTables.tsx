@@ -169,34 +169,37 @@ const arrayWrap = (value) => {
   return Array.isArray(value) ? value : [value];
 };
 
-export const defaultActivitiesFetch =
-  ({ invasivesApi, activitySubtypes, created_by = undefined, review_status = [] }) =>
-  async ({ page, rowsPerPage, order }) => {
-    // Fetches fresh from the API (web).  TODO fetch from SQLite
-    let dbPageSize = DEFAULT_PAGE_SIZE;
-    if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
-      // if page is right near the db page limit
-      dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
+export const defaultActivitiesFetch = ({
+  invasivesApi,
+  activitySubtypes,
+  created_by = undefined,
+  review_status = []
+}) => async ({ page, rowsPerPage, order }) => {
+  // Fetches fresh from the API (web).  TODO fetch from SQLite
+  let dbPageSize = DEFAULT_PAGE_SIZE;
+  if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
+    // if page is right near the db page limit
+    dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
 
-    const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
+  const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
 
-    const result = await invasivesApi.getActivities({
-      page: Math.floor((page * rowsPerPage) / dbPageSize),
-      limit: dbPageSize,
-      order: order,
-      // search_feature: geometry TODO
-      activity_type: arrayWrap(types),
-      activity_subtype: arrayWrap(activitySubtypes),
-      // startDate, endDate will be filters
-      created_by: created_by, // my_keycloak_id
-      review_status: review_status
-    });
-    // console.log('defaultActivitiesFetch: ', result);
-    return {
-      rows: result.rows.map(activityStandardMapping),
-      count: result.count
-    };
+  const result = await invasivesApi.getActivities({
+    page: Math.floor((page * rowsPerPage) / dbPageSize),
+    limit: dbPageSize,
+    order: order,
+    // search_feature: geometry TODO
+    activity_type: arrayWrap(types),
+    activity_subtype: arrayWrap(activitySubtypes),
+    // startDate, endDate will be filters
+    created_by: created_by, // my_keycloak_id
+    review_status: review_status
+  });
+  // console.log('defaultActivitiesFetch: ', result);
+  return {
+    rows: result.rows.map(activityStandardMapping),
+    count: result.count
   };
+};
 
 export interface IActivitiesTable extends IRecordTable {
   workflow?: string;

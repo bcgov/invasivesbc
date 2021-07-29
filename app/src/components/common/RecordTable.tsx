@@ -33,6 +33,7 @@ import Spinner from 'components/spinner/Spinner';
 import clsx from 'clsx';
 
 const ACTION_TIMEOUT = 1000;
+const ACTION_ERROR_TIMEOUT = 30000;
 
 const snakeToPascal = (string, spaces = false) =>
   string
@@ -454,10 +455,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     );
   }, [rows.length, orderHeader, order, page, rowsPerPage]);
   // render all dropdowns on page
-  const renderedDropdowns = useMemo(
-    () => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)),
-    [pageRows, dropdown]
-  );
+  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
+    pageRows,
+    dropdown
+  ]);
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
   const verboseOverflows = useMemo(
@@ -750,6 +751,8 @@ const RecordTableToolbar = (props) => {
   const { selectedRows, tableName, enableFiltering, actions, databaseContext, fetchRows } = props;
   const numSelected = selectedRows?.length || 0;
 
+  const [actionError, setActionError] = useState(props.actionError || '');
+
   const bulkActions: Array<any> = Object.values(actions)
     .filter((action: any) => action.bulkAction)
     .map((action: any) => {
@@ -766,20 +769,21 @@ const RecordTableToolbar = (props) => {
           startIcon={action.icon}
           onClick={async (e) => {
             e.stopPropagation();
-            if (
-              action.displayInvalid === 'error' &&
-              action.bulkCondition &&
-              !action.bulkCondition(selectedRows) &&
-              action.invalidError
-            )
-              notifyError(databaseContext, action.invalidError);
-            else {
-              try {
-                await action.action(selectedRows);
-                if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
-              } catch (error) {
-                notifyError(databaseContext, action.invalidError || error.message);
-              }
+            try {
+              if (
+                action.displayInvalid === 'error' &&
+                // error if bulk condition fails or if any row's condition fails
+                ((action.bulkCondition && !action.bulkCondition(selectedRows)) ||
+                  (action.rowCondition && selectedRows.filter((row) => !action.rowCondition(row))?.length)) &&
+                action.invalidError
+              )
+                throw action.invalidError;
+              await action.action(selectedRows);
+              if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
+            } catch (error) {
+              setActionError(error.message);
+              setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
+              notifyError(databaseContext, error.message || action.invalidError);
             }
           }}>
           {action.label}
@@ -803,20 +807,22 @@ const RecordTableToolbar = (props) => {
           startIcon={action.icon}
           onClick={async (e) => {
             e.stopPropagation();
-            if (
-              action.displayInvalid === 'error' &&
-              action.globalCondition &&
-              !action.globalCondition(selectedRows) &&
-              action.invalidError
-            )
-              notifyError(databaseContext, action.invalidError);
-            else {
-              try {
-                await action.action(selectedRows);
-                if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
-              } catch (error) {
-                notifyError(databaseContext, action.invalidError || error.message);
-              }
+            try {
+              if (
+                action.displayInvalid === 'error' &&
+                // error if bulk condition fails or if any row's condition fails
+                ((action.globalCondition && !action.globalCondition(selectedRows)) ||
+                  (action.bulkCondition && !action.bulkCondition(selectedRows)) ||
+                  (action.rowCondition && selectedRows.filter((row) => !action.rowCondition(row))?.length)) &&
+                action.invalidError
+              )
+                throw action.invalidError;
+              await action.action(selectedRows);
+              if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
+            } catch (error) {
+              setActionError(error.message);
+              setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
+              notifyError(databaseContext, error.message || action.invalidError);
             }
           }}>
           {action.label}
@@ -900,6 +906,8 @@ const RecordTableRow = (props) => {
   } = props;
   const classes = useStyles();
 
+  const [actionError, setActionError] = useState(props.actionError || '');
+
   const key = row[keyField];
   if (key === undefined) throw new Error('Error: table row has no matching key defined: ' + keyField);
 
@@ -920,21 +928,23 @@ const RecordTableRow = (props) => {
           startIcon={action.icon}
           onClick={async (e) => {
             e.stopPropagation();
-            if (
-              action.displayInvalid === 'error' &&
-              action.rowCondition &&
-              !action.rowCondition(row) &&
-              action.invalidError
-            )
-              notifyError(databaseContext, action.invalidError);
-            else {
-              try {
-                await action.action([row]);
-                // await console.log('action ', action.key);
-                if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
-              } catch (error) {
-                notifyError(databaseContext, action.invalidError || error.message);
-              }
+            console.log(555, actionError);
+            try {
+              console.log(555, actionError, action.rowCondition(row));
+              if (
+                action.displayInvalid === 'error' &&
+                action.rowCondition &&
+                !action.rowCondition(row) &&
+                action.invalidError
+              )
+                throw action.invalidError;
+              await action.action([row]);
+              // await console.log('action ', action.key);
+              if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
+            } catch (error) {
+              setActionError(error.message);
+              setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
+              notifyError(databaseContext, error.message || action.invalidError);
             }
           }}>
           {action.label}
@@ -984,7 +994,11 @@ const RecordTableRow = (props) => {
         <TableRow className={classes.tableRow}>
           <TableCell className={classes.dropdown} colSpan={100}>
             <Collapse in={isExpanded} timeout="auto">
-              {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
+              <Box>
+                {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
+                TEST
+                {actionError}
+              </Box>
               <Box margin={2}>{renderedDropdown}</Box>
             </Collapse>
           </TableCell>
