@@ -133,6 +133,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     function handleResize() {
       setOpen(false);
     }
+    window.scrollTo(0, 0);
 
     window.addEventListener('resize', handleResize);
   }, []);
