@@ -12,15 +12,33 @@ const interactiveGeometryStyle = () => {
   };
 };
 
+const calc_distance = 
+  (lat1: number, lat2: number, lng1: number, lng2: number) => {
+    const R = 6371e3; // metres
+    const φ1 = lat1 * Math.PI/180; // φ, λ in radians
+    const φ2 = lat2 * Math.PI/180;
+    const Δφ = (lat2-lat1) * Math.PI/180;
+    const Δλ = (lng2-lng1) * Math.PI/180;
+    
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    
+    return R * c;
+}
+
 const MeasureTool = (props) => {
   const [isMeasuring, setIsMeasuring] = useState(false);
   const [startLocation, setStartLocation] = useState(null);
   const [endLocation, setEndLocation] = useState(null);
   const [aGeoJSON, setGeoJSON] = useState([]);
   const [aKey, setKey] = useState(1);
+  var distance = 0;
 
   const [locArray, setLocArray] = useState([]);
   console.log(locArray);
+  console.log('distance',distance);
 
   // get mouse click location on map
   const map = useMapEvent('click', (e) => {
@@ -85,6 +103,7 @@ const MeasureTool = (props) => {
             name: 'Dinagat Islands'
           }
         }]);
+        console.log('distance ',calc_distance(locArray[0].lat,locArray[1].lat,locArray[0].lng,locArray[1].lng));
       } 
     }
     /*
