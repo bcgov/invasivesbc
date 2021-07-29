@@ -180,7 +180,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         <AccordionDetails>
           <Grid xs={12} alignItems="flex-start" container>
             <Grid xs={2} item>
-              <Button variant="contained" color="primary" onClick={startTrack}>
+              <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record a Polygon!
               </Button>
             </Grid>
@@ -190,7 +190,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
               </Button>
             </Grid>
             <Grid xs={2} item>
-              <Button variant="contained" color="secondary" onClick={endTrack}>
+              <Button disabled={true} variant="contained" color="secondary" onClick={endTrack}>
                 End Track Recording
               </Button>
             </Grid>
