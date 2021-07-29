@@ -1,4 +1,14 @@
-import { CircularProgress, Container, makeStyles, Box, Button, Typography, Zoom, Tooltip } from '@material-ui/core';
+import {
+  CircularProgress,
+  Container,
+  makeStyles,
+  Box,
+  Button,
+  Typography,
+  Zoom,
+  Tooltip,
+  Paper
+} from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
@@ -10,6 +20,7 @@ import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from 'utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
+import './scrollbar.css';
 import {
   getCustomValidator,
   getAreaValidator,
@@ -493,6 +504,26 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   return (
     <Container className={props.classes.container}>
+      <Paper style={{ width: '100%' }} elevation={5}>
+        <Typography align="center" style={{ paddingTop: 50, paddingBottom: 30 }} variant="h3">
+          How to test this page:
+        </Typography>
+        <Box display="flex" width="80%" justifyContent="center">
+          <Typography
+            align="left"
+            style={{ whiteSpace: 'pre-line', paddingLeft: 100, paddingTop: 10, paddingBottom: 30 }}
+            variant="body1">
+            {`Make a geometry on the map near your current location. Add your form content and hit "Check Form For Errors". If there are none, hit "I'm done here." to return to My Records.
+            
+            Some tips:
+            
+            * The 'pin' button on the bottom right of the map jumps to your location.
+            * This new map is in beta.  Ignore the layer pickers for the time being.
+            * You can minimize the map, form, and photos boxes by clicking their titles (or anywhere on top of them).
+            * There is a big scrollbar on the right.`}
+          </Typography>
+        </Box>
+      </Paper>
       {!doc && (
         <>
           <Box mb={3}>
