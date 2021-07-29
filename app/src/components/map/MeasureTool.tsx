@@ -1,6 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useMapEvent, GeoJSON } from 'react-leaflet';
-import { Button } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
+import L from 'leaflet';
+import ruler from './icons/ruler.png';
+
+const useStyles = makeStyles((theme) => ({
+  image: {
+    height: 24,
+    width: 24
+  },
+  rulerButton: {
+    margin: '5px',
+    background: 'white',
+    zIndex: 1500,
+    height: '48px', width: '48px',
+    borderRadius: '4px',
+    "&:hover": {
+      background: 'white'
+    }
+  }
+}));
 
 const interactiveGeometryStyle = () => {
   return {
@@ -29,16 +48,23 @@ const calc_distance =
 }
 
 const MeasureTool = (props) => {
+  const classes = useStyles();
   const [isMeasuring, setIsMeasuring] = useState(false);
   const [startLocation, setStartLocation] = useState(null);
   const [endLocation, setEndLocation] = useState(null);
   const [aGeoJSON, setGeoJSON] = useState([]);
   const [aKey, setKey] = useState(1);
-  var distance = 0;
+  const [totalDistance, setTotalDistance] = useState(0);
 
   const [locArray, setLocArray] = useState([]);
-  console.log(locArray);
-  console.log('distance',distance);
+  console.log('total distance:',totalDistance);
+
+  const divRef = useRef(null);
+
+  useEffect(() => {
+    L.DomEvent.disableClickPropagation(divRef.current);
+    L.DomEvent.disableScrollPropagation(divRef.current);
+  });
 
   // get mouse click location on map
   const map = useMapEvent('click', (e) => {
@@ -103,7 +129,9 @@ const MeasureTool = (props) => {
             name: 'Dinagat Islands'
           }
         }]);
-        console.log('distance ',calc_distance(locArray[0].lat,locArray[1].lat,locArray[0].lng,locArray[1].lng));
+        const distance = calc_distance(locArray[i].lat,locArray[i+1].lat,locArray[i].lng,locArray[i+1].lng) as any;
+        console.log('distance between points: ', distance);
+        setTotalDistance(totalDistance+distance);
       } 
     }
     /*
@@ -134,9 +162,9 @@ const MeasureTool = (props) => {
 
   return (
     <>
-      <Button style={{ height: 100, zIndex: 600 }} variant="contained" onClick={toggleMeasure}>
-        toggle measuring tool: {JSON.stringify(isMeasuring)}
-      </Button>
+      <IconButton ref={divRef} className={classes.rulerButton} onClick={toggleMeasure}>
+        <img className={classes.image} src={ruler} />
+      </IconButton>
       <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle} />
     </>
   );

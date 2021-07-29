@@ -503,6 +503,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           }}>
           {map ? <DisplayPosition map={map} /> : null}
         </div>
+        <MeasureTool />
       </div>
 
       {/* Here is the offline component */}
@@ -526,7 +527,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         <LayersControl.Overlay checked name="Activities">
           {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
           {/* this line below works - its what you need for geosjon*/}
-          <MeasureTool />
           <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
           {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
         </LayersControl.Overlay>
