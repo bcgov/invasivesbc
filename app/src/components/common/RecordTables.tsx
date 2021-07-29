@@ -670,7 +670,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
               });
             },
             label: 'Create Treatment',
-            bulkAction: false,
+            bulkAction: true,
             rowAction: true,
             displayInvalid: 'error',
             invalidError: 'Observation forms must be validated before they can be used to create a new Treatment',

@@ -32,8 +32,8 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import Spinner from 'components/spinner/Spinner';
 import clsx from 'clsx';
 
-const ACTION_TIMEOUT = 1000;
-const ACTION_ERROR_TIMEOUT = 30000;
+const ACTION_TIMEOUT = 1500; // 1.5s
+const ACTION_ERROR_TIMEOUT = 15000; // 15s
 
 const snakeToPascal = (string, spaces = false) =>
   string
@@ -315,7 +315,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
         order: [orderBy + ' ' + order]
       });
 
-      console.log('fetchRows: ', result);
+      // console.log('fetchRows: ', result);
       if (result) {
         await setRows(result.rows);
         await setTotalRows(parseInt(result.count));
@@ -781,9 +781,9 @@ const RecordTableToolbar = (props) => {
               await action.action(selectedRows);
               if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
             } catch (error) {
-              setActionError(error.message);
+              setActionError(error?.message || error);
               setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error.message || action.invalidError);
+              notifyError(databaseContext, error?.message || error || action.invalidError);
             }
           }}>
           {action.label}
@@ -820,9 +820,9 @@ const RecordTableToolbar = (props) => {
               await action.action(selectedRows);
               if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
             } catch (error) {
-              setActionError(error.message);
+              setActionError(error?.message || error);
               setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error.message || action.invalidError);
+              notifyError(databaseContext, error?.message || error || action.invalidError);
             }
           }}>
           {action.label}
@@ -841,25 +841,27 @@ const RecordTableToolbar = (props) => {
         className={clsx(classes.root, {
           [classes.highlight]: numSelected > 0
         })}>
-        {numSelected > 0 ? (
-          <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-            {numSelected} selected
-          </Typography>
-        ) : (
-          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-            {tableName}
-          </Typography>
-        )}
-
-        {numSelected > 0 && bulkActions}
-        {enableFiltering && !numSelected && (
+        <Box>
+          {numSelected > 0 ? (
+            <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
+              {numSelected} selected
+            </Typography>
+          ) : (
+            <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+              {tableName}
+            </Typography>
+          )}
+          {numSelected > 0 && bulkActions}
+        </Box>
+        {numSelected > 0 && actionError}
+      </Toolbar>
+      {enableFiltering && !numSelected && (
           <Tooltip title="Filter list">
             <IconButton aria-label="filter list">
               <FilterList />
             </IconButton>
           </Tooltip>
         )}
-      </Toolbar>
       <Box>{globalActions}</Box>
     </AccordionSummary>
   );
@@ -942,9 +944,9 @@ const RecordTableRow = (props) => {
               // await console.log('action ', action.key);
               if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
             } catch (error) {
-              setActionError(error.message);
+              setActionError(error?.message || error);
               setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error.message || action.invalidError);
+              notifyError(databaseContext, error?.message || error || action.invalidError);
             }
           }}>
           {action.label}
@@ -996,8 +998,7 @@ const RecordTableRow = (props) => {
             <Collapse in={isExpanded} timeout="auto">
               <Box>
                 {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
-                TEST
-                {actionError}
+                <span style={{ color: '#ff9533' }}>{actionError}</span>
               </Box>
               <Box margin={2}>{renderedDropdown}</Box>
             </Collapse>
