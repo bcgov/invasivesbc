@@ -382,13 +382,13 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             displayInvalid: 'disable',
             triggerReload: true,
             rowCondition: (row) =>
-              row.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL && row.form_status === FormValidationStatus.VALID,
+              row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID,
             bulkCondition: (
               selectedRows // only enable bulk sync if some field needs it
             ) =>
               selectedRows?.filter(
                 (row) =>
-                  row.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL &&
+                  row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL &&
                   row.form_status === FormValidationStatus.VALID
               )?.length > 0,
             action: async (selectedRows) => {
@@ -396,14 +396,14 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                 selectedRows.map(async (activity) => {
                   if (
                     activity.form_status !== FormValidationStatus.VALID ||
-                    activity.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL
+                    activity.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
                   )
                     return;
                   const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
                   await invasivesApi.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
-                      sync_status: ActivitySyncStatus.SYNC_SUCCESSFUL
+                      sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL
                     })
                   );
                   const typename = activity.activity_subtype?.split('_')[2];
@@ -425,7 +425,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             displayInvalid: 'hidden',
             triggerReload: true,
             rowCondition: (row) =>
-              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+              row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
               row.form_status === FormValidationStatus.VALID &&
               row.review_status !== ReviewStatus.UNDER_REVIEW,
             bulkCondition: (
@@ -433,7 +433,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             ) =>
               selectedRows?.filter(
                 (row) =>
-                  row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+                  row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
                   row.form_status === FormValidationStatus.VALID &&
                   row.review_status !== ReviewStatus.UNDER_REVIEW
               )?.length > 0,
@@ -442,7 +442,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                 selectedRows.map(async (activity) => {
                   if (
                     activity.form_status !== FormValidationStatus.VALID ||
-                    activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL ||
+                    activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
                     activity.review_status === ReviewStatus.UNDER_REVIEW
                   )
                     return;
@@ -472,7 +472,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             displayInvalid: 'hidden',
             triggerReload: true,
             rowCondition: (row) =>
-              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+              row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
               row.form_status === FormValidationStatus.VALID &&
               row.review_status === ReviewStatus.UNDER_REVIEW,
             bulkCondition: (
@@ -480,7 +480,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             ) =>
               selectedRows?.filter(
                 (row) =>
-                  row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+                  row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
                   row.form_status === FormValidationStatus.VALID &&
                   row.review_status === ReviewStatus.UNDER_REVIEW
               )?.length > 0,
@@ -489,7 +489,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                 selectedRows.map(async (activity) => {
                   if (
                     activity.form_status !== FormValidationStatus.VALID ||
-                    activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL ||
+                    activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
                     activity.review_status !== ReviewStatus.UNDER_REVIEW
                   )
                     return;
@@ -521,7 +521,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             displayInvalid: 'hidden',
             triggerReload: true,
             rowCondition: (row) =>
-              row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+              row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
               row.form_status === FormValidationStatus.VALID &&
               row.review_status === ReviewStatus.UNDER_REVIEW,
             bulkCondition: (
@@ -529,7 +529,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             ) =>
               selectedRows?.filter(
                 (row) =>
-                  row.sync_status === ActivitySyncStatus.SYNC_SUCCESSFUL &&
+                  row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
                   row.form_status === FormValidationStatus.VALID &&
                   row.review_status === ReviewStatus.UNDER_REVIEW
               )?.length > 0,
@@ -538,7 +538,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                 selectedRows.map(async (activity) => {
                   if (
                     activity.form_status !== FormValidationStatus.VALID ||
-                    activity.sync_status !== ActivitySyncStatus.SYNC_SUCCESSFUL ||
+                    activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
                     activity.review_status !== ReviewStatus.UNDER_REVIEW
                   )
                     return;
@@ -581,7 +581,10 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -698,7 +701,10 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -843,7 +849,10 @@ export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -925,7 +934,10 @@ export const MyMonitoringTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -986,7 +998,10 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -1084,7 +1099,10 @@ export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> =
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -1568,7 +1586,10 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',

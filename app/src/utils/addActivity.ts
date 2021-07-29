@@ -40,7 +40,7 @@ export const activityDefaults = {
   date_created: new Date(),
   media: undefined,
   created_by: undefined,
-  sync_status: ActivitySyncStatus.NOT_SYNCED,
+  sync_status: ActivitySyncStatus.NOT_SAVED,
   form_status: FormValidationStatus.NOT_VALIDATED,
   review_status: ReviewStatus.NOT_REVIEWED,
   reviewed_by: undefined,
@@ -178,7 +178,7 @@ export const sanitizeRecord = (input: any) => {
 
       // db-field overrides:
       created_timestamp: created_timestamp || soup.date_created || now,
-      sync_status: sync_status || soup.sync?.status || ActivitySyncStatus.NOT_SYNCED,
+      sync_status: sync_status || soup.sync?.status || ActivitySyncStatus.NOT_SAVED,
       form_status: form_status || FormValidationStatus.NOT_VALIDATED,
       geom: geom || soup.geometry || soup.activity_payload.geometry,
       geog: geog || soup.geography,
@@ -285,7 +285,7 @@ export function generateActivityPayload(
     status: ActivityStatus.NEW,
     sync: {
       ready: false,
-      status: ActivitySyncStatus.NOT_SYNCED,
+      status: ActivitySyncStatus.NOT_SAVED,
       error: null
     },
     dateCreated: new Date(),
@@ -324,7 +324,7 @@ export function generateDBActivityPayload(
     },
     media: undefined,
     created_by: undefined,
-    sync_status: ActivitySyncStatus.NOT_SYNCED,
+    sync_status: ActivitySyncStatus.NOT_SAVED,
     form_status: FormValidationStatus.NOT_VALIDATED,
     review_status: 'Not Reviewed',
     reviewed_by: undefined,

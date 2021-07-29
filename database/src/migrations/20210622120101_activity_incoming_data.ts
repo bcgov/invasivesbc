@@ -20,9 +20,9 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.form_status IS 'Validation status of the activity form';
     
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
-    ADD COLUMN sync_status VARCHAR(100) DEFAULT 'Sync Successful';
+    ADD COLUMN sync_status VARCHAR(100) DEFAULT 'Save Successful';
     
-    COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.sync_status IS 'Sync status of the activity form';
+    COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.sync_status IS 'Sync/Save status of the activity form';
 
     ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
     ADD COLUMN review_status VARCHAR(100) DEFAULT 'Not Reviewed';

@@ -142,7 +142,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
     });
   };
 
-  const isDisabled = props.isDisabled || props.activity.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
+  const isDisabled = props.isDisabled || props.activity.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL;
 
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
@@ -173,7 +173,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={species ? 1 : 2}>
-        <Typography className={classes.activitiyListItem_Typography}>Sync Status</Typography>
+        <Typography className={classes.activitiyListItem_Typography}>Save Status</Typography>
         {props.activity.sync.status}
       </Grid>
       <ActivityListDate classes={classes} activity={props.activity} />
@@ -255,7 +255,7 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   return (
     <List>
       {sortedActivities.map((doc) => {
-        const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL;
+        const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL;
 
         if (
           !doc.activitySubtype.includes(props.workflowFunction) &&
@@ -274,8 +274,8 @@ const ActivityList: React.FC<IActivityList> = (props) => {
                 <SvgIcon
                   fontSize="large"
                   className={clsx(
-                    (doc.sync.status === ActivitySyncStatus.SYNC_SUCCESSFUL && classes.syncSuccessful) ||
-                      (doc.sync.status === ActivitySyncStatus.SYNC_FAILED && classes.syncFailed)
+                    (doc.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL && classes.syncSuccessful) ||
+                      (doc.sync.status === ActivitySyncStatus.SAVE_FAILED && classes.syncFailed)
                   )}
                   component={ActivityTypeIcon[props.activityType]}
                 />
@@ -335,7 +335,7 @@ const ActivitiesList: React.FC = () => {
         docType: DocType.ACTIVITY,
         formStatus: FormValidationStatus.VALID,
         'sync.ready': true,
-        'sync.status': { $ne: ActivitySyncStatus.SYNC_SUCCESSFUL }
+        'sync.status': { $ne: ActivitySyncStatus.SAVE_SUCCESSFUL }
       },
       use_index: 'formStatusIndex'
     });
@@ -364,7 +364,7 @@ const ActivitiesList: React.FC = () => {
         await databaseContext.database.upsert(activity._id, (activityDoc) => {
           return {
             ...activityDoc,
-            sync: { ...activityDoc.sync, status: ActivitySyncStatus.SYNC_SUCCESSFUL, error: null }
+            sync: { ...activityDoc.sync, status: ActivitySyncStatus.SAVE_SUCCESSFUL, error: null }
           };
         });
       } catch (error) {
@@ -377,7 +377,7 @@ const ActivitiesList: React.FC = () => {
         await databaseContext.database.upsert(activity._id, (activityDoc) => {
           return {
             ...activityDoc,
-            sync: { ...activityDoc.sync, status: ActivitySyncStatus.SYNC_FAILED, error: error.message }
+            sync: { ...activityDoc.sync, status: ActivitySyncStatus.SAVE_FAILED, error: error.message }
           };
         });
       }
