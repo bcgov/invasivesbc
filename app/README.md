@@ -38,8 +38,7 @@ Android Studio will open and, after a short delay, will allow you to run the app
 On MacOS, in the app directory:
 
 First time setup:
-Install Ionic CLI 6.16.1
-1. npm i -g @ionic/cli@6.16.1
+1. npm i -g @ionic/cli
 2. from the /app dir of the repo `ionic cap add ios` (Only the first time, does not need to be repeated after)
 
 To build and open xcode:
