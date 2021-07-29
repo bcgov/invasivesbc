@@ -271,7 +271,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                         }}
                       />
                     </Grid>
-                    <Grid container item justify="flex-end">
+                    <Grid container item justifyContent="flex-end">
                       <Button
                         variant="contained"
                         startIcon={<DeleteForever />}

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -32,6 +32,7 @@ import * as L from 'leaflet';
 import { DragHandle } from '@material-ui/icons';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
+import { MapLayersContext } from 'contexts/MapLayersContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,9 +60,16 @@ const useStyles = makeStyles((theme) => ({
 
 export function LayerPicker(props: any) {
   const classes = useStyles();
-  const [objectState, setObjectState] = useState(props.data);
+  const mapLayersContext = useContext(MapLayersContext);
+  const { mapLayers, setMapLayers } = mapLayersContext;
+  const [objectState, setObjectState] = useState(mapLayers);
   // Progress bar
   // const [progress, setProgress] = useState(props.progress);
+
+  //update context on ObjectState change
+  useEffect(() => {
+    setMapLayers(objectState);
+  }, [objectState]);
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
@@ -112,7 +120,7 @@ export function LayerPicker(props: any) {
         {/*<Grid container>
                     {/*<Grid item>*/}
         <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
-          <Grid container justify="flex-start" alignItems="center">
+          <Grid container justifyContent="flex-start" alignItems="center">
             <Grid item xs={1}>
               <Checkbox
                 checked={parent.enabled}
@@ -143,7 +151,7 @@ export function LayerPicker(props: any) {
             </Grid>
           </Grid>
           {parent.children.map((child: any) => (
-            <Grid container direction="row" justify="flex-start" alignItems="center">
+            <Grid container direction="row" justifyContent="flex-start" alignItems="center">
               &emsp;
               <Grid item xs={2}>
                 <Checkbox
