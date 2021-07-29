@@ -536,7 +536,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
           pasteFormData={() => pasteFormData()}
           copyFormData={() => copyFormData()}
-          cloneActivityButton={generateCloneActivityButton}
+          //cloneActivityButton={generateCloneActivityButton}
           setParentFormRef={props.setParentFormRef}
           showDrawControls={true}
         />
