@@ -581,7 +581,10 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -698,7 +701,10 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -843,7 +849,10 @@ export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -925,7 +934,10 @@ export const MyMonitoringTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -986,7 +998,10 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -1084,7 +1099,10 @@ export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> =
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',
@@ -1568,7 +1586,10 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="asc"
         headers={[
           ...headers,
-          'sync_status',
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
           'form_status',
           {
             id: 'review_status_rendered',

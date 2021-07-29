@@ -173,7 +173,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={species ? 1 : 2}>
-        <Typography className={classes.activitiyListItem_Typography}>Sync Status</Typography>
+        <Typography className={classes.activitiyListItem_Typography}>Save Status</Typography>
         {props.activity.sync.status}
       </Grid>
       <ActivityListDate classes={classes} activity={props.activity} />
