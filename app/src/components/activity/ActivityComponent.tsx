@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Grid, Typography } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer2';
@@ -10,6 +10,7 @@ import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geoloca
 import * as turf from '@turf/turf';
 import { Feature } from 'geojson';
 import MapContainer2 from 'components/map/MapContainer2';
+import { useHistory } from 'react-router-dom';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -143,6 +144,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     }
   }, [watchPosition]);
 
+  const history = useHistory();
   return (
     <>
       {props.cloneActivityButton && props.cloneActivityButton()}
@@ -214,6 +216,15 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <PhotoContainer {...props} />
         </AccordionDetails>
       </Accordion>
+      <Box display="flex" paddingTop={5} justifyContent="center" width="100%">
+        <Button
+          color="primary"
+          style={{ width: 200, height: 100 }}
+          variant="contained"
+          onClick={() => history.push('/home/activities')}>
+          I'm done here
+        </Button>
+      </Box>
     </>
   );
 };
