@@ -452,41 +452,64 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   };
 
   const AsyncExtent = () => {
-    const map = useMap();
-    let currentExtent;
     const async = require('async');
+
+    const [extents, setExtents] = useState(null);
+    const [moveCount, setMoveCount] = useState(0);
+
     const mapLayersContext = useContext(MapLayersContext);
     const { mapLayers } = mapLayersContext;
-    let mapLayersArray = [];
+    const [mapLayersArray, setMapLayersArray] = useState([]);
+
     useEffect(() => {
-      mapLayersArray = [];
-      mapLayers.forEach((layer) => {
-        if (layer.enabled) {
-          mapLayersArray.push(layer.id);
-        }
-      });
+      console.log('map layer changed');
+      console.dir(mapLayers);
     }, [mapLayers]);
 
     useEffect(() => {
-      const q = async.queue(function (task, callback) {
-        console.log('%cGot a new extent!', 'color:blue');
-        setTimeout(() => {
-          currentExtent = task;
-          callback();
-        }, 2000);
-      }, 1);
+      console.log('map extent changed');
+      console.dir(extents);
+    }, [extents]);
 
-      q.drain(function () {
-        // console.log('all items have been processed');
+    /*
+
+    useEffect(() => {
+      let newArray = [];
+      mapLayers.forEach((layer) => {
+        if (layer.enabled) {
+          console.log('in for each');
+          newArray.push(layer);
+        }
+        setMapLayersArray(newArray);
+        console.log('maplayers hook, setting mapLayersArray');
+        console.log(JSON.stringify(newArray));
       });
+    }, [mapLayers]);
+    */
 
-      // map.addEventListener('movestart', () => {
-      //   currentExtent = { layerIds: mapLayersArray, geo: createPolygonFromBounds(map.getBounds(), map).toGeoJSON() };
-      //   q.push(currentExtent);
-      // });
+    const q = async.queue(function (task, callback) {
+      console.log('queue setup');
+      //console.log('%cGot a new extent!', 'color:blue');
+      setTimeout(() => {
+        callback();
+      }, 2000);
+    }, 1);
 
-      map.addEventListener('moveend', (e) => {
-        let newExtent = { layerIds: mapLayersArray, geo: createPolygonFromBounds(map.getBounds(), map).toGeoJSON() };
+    // map.addEventListener('movestart', () => {
+    //   currentExtent = { layerIds: mapLayersArray, geo: createPolygonFromBounds(map.getBounds(), map).toGeoJSON() };
+    //   q.push(currentExtent);
+    // });
+    const map = useMapEvent('zoomend', () => {
+      setMoveCount(moveCount + 1);
+      console.log(moveCount);
+      let aNewExtent = { geo: createPolygonFromBounds(map.getBounds(), map).toGeoJSON() };
+      if (extents && extents.new) {
+        setExtents({ old: { ...extents.new }, new: { ...aNewExtent } });
+      } else {
+        setExtents({ new: { ...aNewExtent } });
+      }
+    });
+    /*
         q.remove((worker) => {
           if (worker.data && currentExtent) {
             if (
@@ -505,6 +528,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           }
           return false;
         });
+        console.log('pushed to queue');
         q.push(newExtent, function (err) {
           if (err) {
             console.log('There was an error pushing extent: ' + err);
@@ -513,6 +537,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         });
       });
     }, []);
+    */
 
     return null;
   };
