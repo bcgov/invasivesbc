@@ -143,7 +143,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           </Grid>
         </Box>
       )}
-
+      {/*
       <Box mt={4}>
         <Typography variant="h5">What Would You Like To Do?</Typography>
         <br />
@@ -204,6 +204,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
           '/home/activity'
         )}
       </Grid>
+        */}
     </Container>
   );
 };
