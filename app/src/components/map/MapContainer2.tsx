@@ -132,6 +132,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const [menuState, setMenuState] = useState(false);
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
 
+  const [locArray, setLocArray] = useState([]);
+
   const Offline = () => {
     const map = useMap();
     const offlineLayer = (L.tileLayer as any).offline(

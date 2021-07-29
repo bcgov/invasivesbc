@@ -16,25 +16,30 @@ const MeasureTool = (props) => {
   const [isMeasuring, setIsMeasuring] = useState(false);
   const [startLocation, setStartLocation] = useState(null);
   const [endLocation, setEndLocation] = useState(null);
-  const [aGeoJSON, setGeoJSON] = useState(null);
+  const [aGeoJSON, setGeoJSON] = useState([]);
   const [aKey, setKey] = useState(1);
+
+  const [locArray, setLocArray] = useState([]);
+  console.log(locArray);
 
   // get mouse click location on map
   const map = useMapEvent('click', (e) => {
     const loc = e.latlng;
     //if we're measuring
     if (isMeasuring) {
+      setLocArray([...locArray, loc]);
+      /*
       // check if start location is null
-      if (startLocation == null) {
+      if (startLocation == null && locArray[0] != null) {
         // set start location coord
-        setStartLocation(loc);
-        return;
+        setStartLocation(locArray[0]);
       }
       // check if end location is null
       if (endLocation == null) {
         // set end location coord
         setEndLocation(loc);
-      }
+      }*/
+      return;
     }
   });
 
@@ -53,18 +58,36 @@ const MeasureTool = (props) => {
 
   useEffect(() => {
     // we are dropping first point
-    if (aGeoJSON == null && startLocation) {
-      setGeoJSON({
+    if (aGeoJSON == null && locArray[0]) {
+      setGeoJSON([...aGeoJSON, {
         type: 'Feature',
         geometry: {
           type: 'Point',
-          coordinates: [startLocation.lng, startLocation.lat]
+          coordinates: [locArray[0].lng, locArray[0].lat]
         },
         properties: {
           name: 'Dinagat Islands'
         }
-      });
+      }]);
     }
+    if (locArray.length > 1) {
+      for (var i = 0; i < locArray.length-1; i++) {
+        setGeoJSON([...aGeoJSON, {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [locArray[i].lng, locArray[i].lat],
+              [locArray[i+1].lng, locArray[i+1].lat]
+            ]
+          },
+          properties: {
+            name: 'Dinagat Islands'
+          }
+        }]);
+      } 
+    }
+    /*
     if (aGeoJSON && endLocation) {
       setGeoJSON({
         type: 'Feature',
@@ -79,12 +102,12 @@ const MeasureTool = (props) => {
           name: 'Dinagat Islands'
         }
       });
-    }
-  }, [startLocation, endLocation]);
+    }*/
+  }, [locArray]);
 
   const toggleMeasure = () => {
-    setStartLocation(null);
-    setEndLocation(null);
+    //setStartLocation(null);
+    //setEndLocation(null);
 
     //if (isMeasuring) setGeoJSON(null);
     setIsMeasuring(!isMeasuring);
@@ -95,7 +118,7 @@ const MeasureTool = (props) => {
       <Button style={{ height: 100, zIndex: 600 }} variant="contained" onClick={toggleMeasure}>
         toggle measuring tool: {JSON.stringify(isMeasuring)}
       </Button>
-      <GeoJSON key={aKey} data={aGeoJSON} style={interactiveGeometryStyle} />
+      <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle} />
     </>
   );
 };
