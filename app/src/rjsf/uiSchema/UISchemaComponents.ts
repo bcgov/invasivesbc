@@ -103,7 +103,7 @@ const Activity = {
     'ui:widget': 'single-select-autocomplete'
   },
   invasive_species_agency_code: {
-    'ui:widget': 'single-select-autocomplete'
+    'ui:widget': 'multi-select-autocomplete'
   },
   jurisdictions: {
     items: {

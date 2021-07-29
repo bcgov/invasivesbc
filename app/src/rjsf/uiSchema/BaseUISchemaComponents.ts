@@ -812,7 +812,7 @@ const Observation_PlantTerrestrial_Data = {
     'ui:widget': 'single-select-autocomplete'
   },
   specific_use_code: {
-    'ui:widget': 'single-select-autocomplete'
+    'ui:widget': 'multi-select-autocomplete'
   },
   slope_code: {
     'ui:widget': 'single-select-autocomplete'
