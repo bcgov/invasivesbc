@@ -46,6 +46,7 @@ import data from './LayerPicker/GEO_DATA.json';
 import { DomEvent } from 'leaflet';
 import DisplayPosition from './DisplayPosition';
 import { setWeekYear } from 'date-fns/esm';
+import MeasureTool from './MeasureTool';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -123,86 +124,6 @@ const interactiveGeometryStyle = () => {
     stroke: true,
     strokeWidth: 10
   };
-};
-
-const MeasureTool = (props) => {
-  const [isMeasuring, setIsMeasuring] = useState(false);
-  const [startLocation, setStartLocation] = useState(null);
-  const [endLocation, setEndLocation] = useState(null);
-  const [aGeoJSON, setGeoJSON] = useState(null);
-  const [aKey, setKey] = useState(1);
-
-  const map = useMapEvent('click', (e) => {
-    const loc = e.latlng;
-    if (isMeasuring) {
-      if (startLocation == null) {
-        setStartLocation(loc);
-        return;
-      }
-      if (endLocation == null) {
-        setEndLocation(loc);
-      }
-    }
-  });
-
-  useEffect(() => {
-    if (isMeasuring && startLocation && endLocation) {
-      toggleMeasure();
-    }
-  }, [startLocation, endLocation]);
-
-  useEffect(() => {
-    setKey(Math.random());
-    //alert(JSON.stringify(aGeoJSON));
-  }, [aGeoJSON]);
-
-  useEffect(() => {
-    // we are dropping first point
-    if (aGeoJSON == null && startLocation) {
-      setGeoJSON({
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [startLocation.lng, startLocation.lat]
-        },
-        properties: {
-          name: 'Dinagat Islands'
-        }
-      });
-    }
-    if (aGeoJSON && endLocation) {
-      setGeoJSON({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [
-            [startLocation.lng, startLocation.lat],
-            [endLocation.lng, endLocation.lat]
-          ]
-        },
-        properties: {
-          name: 'Dinagat Islands'
-        }
-      });
-    }
-  }, [startLocation, endLocation]);
-
-  const toggleMeasure = () => {
-    setStartLocation(null);
-    setEndLocation(null);
-
-    //if (isMeasuring) setGeoJSON(null);
-    setIsMeasuring(!isMeasuring);
-  };
-
-  return (
-    <>
-      <Button style={{ height: 100, zIndex: 600 }} variant="contained" onClick={toggleMeasure}>
-        toggle measuring tool: {JSON.stringify(isMeasuring)}
-      </Button>
-      <GeoJSON key={aKey} data={aGeoJSON} style={interactiveGeometryStyle} />
-    </>
-  );
 };
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
