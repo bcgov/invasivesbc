@@ -95,7 +95,14 @@ export default function DisplayPosition({ map }) {
           </Popup>
         </Marker>
       ) : null}
-      <IconButton aria-label="my position" onClick={getLocation}>
+      <IconButton
+        style={{
+          margin: '5px',
+          zIndex: 1500,
+          background: 'white',
+          borderRadius: '15%'
+        }}
+        aria-label="my position" onClick={getLocation}>
         <LocationOnIcon />
       </IconButton>
       {/*<button onClick={() => {setState(!state)}}>
