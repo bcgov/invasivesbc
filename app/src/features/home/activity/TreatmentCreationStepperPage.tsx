@@ -45,8 +45,7 @@ const getStepContent = (step: number) => {
     case 1:
       return 'Is this the first treatment of the year on the targeted invasive species?';
     case 2:
-      return `Does the selected observation accurately represent the current size and shape
-              of the treatment area? If the area has expanded then please select No.`;
+      return `Is the geometry of the treatment you wish to create exactly the same as this observation? If the area has expanded then please select No.`;
     case 3:
       return 'Please create an overarching observation.';
     case 4:
