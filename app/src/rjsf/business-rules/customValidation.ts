@@ -343,6 +343,7 @@ export function getHerbicideMixValidation(): rjsfValidator {
       !formData ||
       !formData.activity_subtype_data ||
       !formData.activity_subtype_data.treatment_information ||
+      !formData.activity_subtype_data.treatment_information.invasive_plants_information ||
       formData.activity_subtype_data.treatment_information.invasive_plants_information.length < 1
     ) {
       return errors;

@@ -2614,50 +2614,9 @@
             "enum": ["Yes", "No"],
             "default": "No",
             "x-tooltip-text": "Ideal to collect entire plant structure for verification purposes."
-          },
-          "edna_sample": {
-            "title": "eDNA sample",
-            "type": "string",
-            "enum": ["Yes", "No"],
-            "default": "No",
-            "x-tooltip-text": "Genetic material that can be extracted from bulk environmental samples such as water and soil."
           }
         },
         "dependencies": {
-          "edna_sample": {
-            "oneOf": [
-              {
-                "properties": {
-                  "edna_sample": {
-                    "enum": ["Yes"]
-                  },
-                  "enda_sample_information": {
-                    "type": "object",
-                    "title": "eDNA Sample Information",
-                    "properties": {
-                      "edna_sample_id": {
-                        "title": "eDNA sample ID",
-                        "type": "number"
-                      },
-                      "genetic_structure_collected": {
-                        "title": "Genetic Structure Collected",
-                        "type": "string"
-                      }
-                    },
-                    "required": ["edna_sample_id", "genetic_structure_collected"]
-                  }
-                },
-                "required": ["enda_sample_information"]
-              },
-              {
-                "properties": {
-                  "edna_sample": {
-                    "enum": ["No"]
-                  }
-                }
-              }
-            ]
-          },
           "voucher_specimen_collected": {
             "oneOf": [
               {
@@ -2756,6 +2715,13 @@
                   "occurrence": {
                     "enum": ["Positive occurrence"]
                   },
+                  "edna_sample": {
+                    "title": "eDNA sample",
+                    "type": "string",
+                    "enum": ["Yes", "No"],
+                    "default": "No",
+                    "x-tooltip-text": "Genetic material that can be extracted from bulk environmental samples such as water and soil."
+                  },
                   "invasive_plant_density_code": {
                     "type": "string",
                     "title": "Density",
@@ -2791,6 +2757,42 @@
                       "x-enum-code-sort-order": "code_sort_order"
                     },
                     "x-tooltip-text": "Average phenological stage of plant; rosette, flowering, etc"
+                  }
+                },
+                "dependencies": {
+                  "edna_sample": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "edna_sample": {
+                            "enum": ["Yes"]
+                          },
+                          "enda_sample_information": {
+                            "type": "object",
+                            "title": "eDNA Sample Information",
+                            "properties": {
+                              "edna_sample_id": {
+                                "title": "eDNA sample ID",
+                                "type": "number"
+                              },
+                              "genetic_structure_collected": {
+                                "title": "Genetic Structure Collected",
+                                "type": "string"
+                              }
+                            },
+                            "required": ["edna_sample_id", "genetic_structure_collected"]
+                          }
+                        },
+                        "required": ["enda_sample_information"]
+                      },
+                      {
+                        "properties": {
+                          "edna_sample": {
+                            "enum": ["No"]
+                          }
+                        }
+                      }
+                    ]
                   }
                 },
                 "required": ["invasive_plant_density_code", "invasive_plant_distribution_code", "plant_life_stage_code"]
@@ -2990,13 +2992,6 @@
                     "enum": ["Yes", "No"],
                     "x-tooltip-text": "If specimen collected, provide details in observation comments"
                   },
-                  "edna_sample": {
-                    "type": "string",
-                    "title": "eDNA Sample",
-                    "enum": ["Yes", "No"],
-                    "default": "No",
-                    "x-tooltip-text": "Genetic material that can be extracted from bulk environmental samples such as water and soil"
-                  },
                   "genetic_sample_id": {
                     "type": "string",
                     "title": "Genetic Sample ID",
@@ -3008,7 +3003,7 @@
                     "x-tooltip-text": "Describe plant parts collected. Ideal to collect entire plant structure for verification purposes"
                   }
                 },
-                "required": ["voucher_specimen_collected", "edna_sample"],
+                "required": ["voucher_specimen_collected"],
                 "dependencies": {
                   "edna_sample": {
                     "oneOf": [
@@ -3137,6 +3132,50 @@
                 "properties": {
                   "observation_type": {
                     "enum": ["Positive Observation"]
+                  },
+                  "edna_sample": {
+                    "type": "string",
+                    "title": "eDNA Sample",
+                    "enum": ["Yes", "No"],
+                    "default": "No",
+                    "x-tooltip-text": "Genetic material that can be extracted from bulk environmental samples such as water and soil"
+                  }
+                },
+                "required": ["edna_sample"],
+                "dependencies": {
+                  "edna_sample": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "edna_sample": {
+                            "enum": ["Yes"]
+                          },
+                          "enda_sample_information": {
+                            "type": "object",
+                            "title": "eDNA Sample Information",
+                            "properties": {
+                              "edna_sample_id": {
+                                "title": "eDNA sample ID",
+                                "type": "number"
+                              },
+                              "genetic_structure_collected": {
+                                "title": "Genetic Structure Collected",
+                                "type": "string"
+                              }
+                            },
+                            "required": ["edna_sample_id", "genetic_structure_collected"]
+                          }
+                        },
+                        "required": ["enda_sample_information"]
+                      },
+                      {
+                        "properties": {
+                          "edna_sample": {
+                            "enum": ["No"]
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
