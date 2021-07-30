@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
+import { useMapEvent, GeoJSON, Popup, Marker, useMapEvents } from 'react-leaflet';
 import { IconButton, Button, makeStyles, Popover, Typography } from '@material-ui/core';
 import L from 'leaflet';
+import dotMarker from './icons/dotMarker.png';
 import ruler from './icons/ruler.png';
 
 const useStyles = makeStyles((theme) => ({
@@ -34,32 +35,39 @@ const interactiveGeometryStyle = () => {
   };
 };
 
-const calc_distance = 
+const calc_distance =
   (lat1: number, lat2: number, lng1: number, lng2: number) => {
     const R = 6371e3; // metres
-    const φ1 = lat1 * Math.PI/180; // φ, λ in radians
-    const φ2 = lat2 * Math.PI/180;
-    const Δφ = (lat2-lat1) * Math.PI/180;
-    const Δλ = (lng2-lng1) * Math.PI/180;
-    
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    
+    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lng2 - lng1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
     return R * c;
-}
+  }
 
 const MeasureTool = (props) => {
   const classes = useStyles();
   const [isMeasuringDistance, setIsMeasuringDistance] = useState(false);
   const [isMeasuringArea, setIsMeasuringArea] = useState(false);
   const [aGeoJSON, setGeoJSON] = useState([]);
+  const [startGeoJSON, setStartGeoJSON] = useState();
   const [aKey, setKey] = useState(1);
   const [totalDistance, setTotalDistance] = useState(0);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const [locArray, setLocArray] = useState([]);
+
+  const markerIcon = L.icon({
+    iconUrl: dotMarker,
+
+    iconSize: [24, 24]
+  })
 
   const divRef = useRef(null);
 
@@ -77,7 +85,9 @@ const MeasureTool = (props) => {
       return;
     }
     if (isMeasuringArea) {
-      setLocArray([...locArray, loc])
+      setLocArray([...locArray, loc]);
+      console.log(locArray);
+      return
     }
   });
 
@@ -89,7 +99,7 @@ const MeasureTool = (props) => {
   // used for measuring distance
   useEffect(() => {
     // we are dropping first point
-    if (aGeoJSON == null && locArray[0] && isMeasuringDistance) {
+    if (aGeoJSON == null && locArray[0]) {
       setGeoJSON([...aGeoJSON, {
         type: 'Feature',
         geometry: {
@@ -100,32 +110,30 @@ const MeasureTool = (props) => {
           name: 'Dinagat Islands'
         }
       }]);
-    }
-    if (locArray.length > 1) {
-      for (var i = 0; i < locArray.length-1; i++) {
-        setGeoJSON([...aGeoJSON, {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [locArray[i].lng, locArray[i].lat],
-              [locArray[i+1].lng, locArray[i+1].lat]
-            ]
-          },
-          properties: {
-            name: 'Dinagat Islands'
-          }
-        }]);
-        const distance = calc_distance(locArray[i].lat,locArray[i+1].lat,locArray[i].lng,locArray[i+1].lng) as any;
-        console.log('distance between points: ', distance);
-        setTotalDistance(totalDistance+distance);
-      } 
-    }
-  }, [locArray]);
+    } else if (locArray.length > 1) {
+      for (var i = 0; i < locArray.length - 1; i++) {
+        if (isMeasuringDistance) {
+          setGeoJSON([...aGeoJSON, {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [locArray[i].lng, locArray[i].lat],
+                [locArray[i + 1].lng, locArray[i + 1].lat]
+              ]
+            },
+            properties: {
+              name: 'Dinagat Islands'
+            }
+          }]);
+          const distance = calc_distance(locArray[i].lat, locArray[i + 1].lat, locArray[i].lng, locArray[i + 1].lng) as any;
+          console.log('distance between points: ', distance);
+          setTotalDistance(totalDistance + distance);
+        } else if (isMeasuringArea) {
 
-  // used for measuring polygon area
-  useEffect(() => {
-    
+        }
+      }
+    }
   }, [locArray]);
 
   const toggleMeasureDistance = () => {
@@ -169,23 +177,32 @@ const MeasureTool = (props) => {
           horizontal: 'right',
         }}
       >
-        <Typography className={classes.typography}>
-          The content of the Popover.
-        </Typography>
         <Button onClick={toggleMeasureDistance}>Measure Distance:
-          {isMeasuringDistance 
+          {isMeasuringDistance
             ? (<Typography>Enabled</Typography>)
             : (<Typography>Disabled</Typography>)}
         </Button>
         <Button onClick={toggleMeasureArea}>Measure Area:
-          {isMeasuringArea 
+          {isMeasuringArea
             ? (<Typography>Enabled</Typography>)
             : (<Typography>Disabled</Typography>)}
         </Button>
+        <br />
+        <Button onClick={() => {
+          setGeoJSON([]);
+          setLocArray([])
+        }}>Clear Measurements</Button>
       </Popover>
       <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle}>
         <Popup>{totalDistance.toFixed(1)} meters</Popup>
       </GeoJSON>
+
+      <Marker position={[locArray[0].lat, locArray[0].lng]}>
+      </Marker>
+
+      {locArray.map((item: { lat: any; lng: any }) => (
+        <Marker position={[item.lat, item.lng]} icon={markerIcon}></Marker>
+      ))}
     </>
   );
 };
