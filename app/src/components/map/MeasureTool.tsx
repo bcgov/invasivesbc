@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useMapEvent, GeoJSON } from 'react-leaflet';
-import { IconButton, makeStyles } from '@material-ui/core';
+import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
+import { IconButton, Button, makeStyles, Popover, Typography } from '@material-ui/core';
 import L from 'leaflet';
 import ruler from './icons/ruler.png';
 
@@ -18,7 +18,10 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       background: 'white'
     }
-  }
+  },
+  typography: {
+    padding: theme.spacing(2),
+  },
 }));
 
 const interactiveGeometryStyle = () => {
@@ -49,15 +52,14 @@ const calc_distance =
 
 const MeasureTool = (props) => {
   const classes = useStyles();
-  const [isMeasuring, setIsMeasuring] = useState(false);
-  const [startLocation, setStartLocation] = useState(null);
-  const [endLocation, setEndLocation] = useState(null);
+  const [isMeasuringDistance, setIsMeasuringDistance] = useState(false);
+  const [isMeasuringArea, setIsMeasuringArea] = useState(false);
   const [aGeoJSON, setGeoJSON] = useState([]);
   const [aKey, setKey] = useState(1);
   const [totalDistance, setTotalDistance] = useState(0);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const [locArray, setLocArray] = useState([]);
-  console.log('total distance:',totalDistance);
 
   const divRef = useRef(null);
 
@@ -70,39 +72,25 @@ const MeasureTool = (props) => {
   const map = useMapEvent('click', (e) => {
     const loc = e.latlng;
     //if we're measuring
-    if (isMeasuring) {
+    if (isMeasuringDistance) {
       setLocArray([...locArray, loc]);
-      /*
-      // check if start location is null
-      if (startLocation == null && locArray[0] != null) {
-        // set start location coord
-        setStartLocation(locArray[0]);
-      }
-      // check if end location is null
-      if (endLocation == null) {
-        // set end location coord
-        setEndLocation(loc);
-      }*/
       return;
+    }
+    if (isMeasuringArea) {
+      setLocArray([...locArray, loc])
     }
   });
 
   useEffect(() => {
-    // toggle isMeasur if startLocation and endLocation have values
-    if (isMeasuring && startLocation && endLocation) {
-      toggleMeasure();
-    }
-  }, [startLocation, endLocation]);
-
-  useEffect(() => {
     // need for geoJSON
     setKey(Math.random());
-    //alert(JSON.stringify(aGeoJSON));
   }, [aGeoJSON]);
 
   useEffect(() => {
     // we are dropping first point
-    if (aGeoJSON == null && locArray[0]) {
+    if (aGeoJSON == null 
+        && locArray[0] 
+        && isMeasuringDistance || isMeasuringArea) {
       setGeoJSON([...aGeoJSON, {
         type: 'Feature',
         geometry: {
@@ -114,7 +102,7 @@ const MeasureTool = (props) => {
         }
       }]);
     }
-    if (locArray.length > 1) {
+    if (locArray.length > 1 && isMeasuringDistance || isMeasuringArea) {
       for (var i = 0; i < locArray.length-1; i++) {
         setGeoJSON([...aGeoJSON, {
           type: 'Feature',
@@ -134,38 +122,83 @@ const MeasureTool = (props) => {
         setTotalDistance(totalDistance+distance);
       } 
     }
-    /*
-    if (aGeoJSON && endLocation) {
-      setGeoJSON({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [
-            [startLocation.lng, startLocation.lat],
-            [endLocation.lng, endLocation.lat]
-          ]
-        },
-        properties: {
-          name: 'Dinagat Islands'
-        }
-      });
-    }*/
+    if (locArray.length > 2 && isMeasuringArea) {
+      for (var i = 0; i < locArray.length-1; i++) {
+        setGeoJSON([...aGeoJSON, {
+          type: 'FeatureCollection',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [locArray[i].lng, locArray[i].lat],
+              [locArray[i+1].lng, locArray[i+1].lat]
+            ]
+          },
+          properties: {
+            name: 'Dinagat Islands'
+          }
+        }]);
+      }
+    }
   }, [locArray]);
 
-  const toggleMeasure = () => {
+  const toggleMeasureDistance = () => {
     //setStartLocation(null);
     //setEndLocation(null);
 
     //if (isMeasuring) setGeoJSON(null);
-    setIsMeasuring(!isMeasuring);
+    setIsMeasuringArea(false);
+    setIsMeasuringDistance(!isMeasuringDistance);
   };
+  const toggleMeasureArea = () => {
+    setIsMeasuringDistance(false);
+    setIsMeasuringArea(!isMeasuringArea);
+  }
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <>
-      <IconButton ref={divRef} className={classes.rulerButton} onClick={toggleMeasure}>
+      <IconButton ref={divRef} className={classes.rulerButton} onClick={handleClick}>
         <img className={classes.image} src={ruler} />
       </IconButton>
-      <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle} />
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <Typography className={classes.typography}>
+          The content of the Popover.
+        </Typography>
+        <Button onClick={toggleMeasureDistance}>Measure Distance:
+          {isMeasuringDistance 
+            ? (<Typography>Enabled</Typography>)
+            : (<Typography>Disabled</Typography>)}
+        </Button>
+        <Button onClick={toggleMeasureArea}>Measure Area:
+          {isMeasuringArea 
+            ? (<Typography>Enabled</Typography>)
+            : (<Typography>Disabled</Typography>)}
+        </Button>
+      </Popover>
+      <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle}>
+        <Popup>{totalDistance.toFixed(1)} meters</Popup>
+      </GeoJSON>
     </>
   );
 };

@@ -501,7 +501,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
             borderRadius: '15%',
             border: '1px solid black'
           }}>
-          {map ? <DisplayPosition map={map} /> : null}
+          <DisplayPosition map={map} />
         </div>
         <MeasureTool />
       </div>

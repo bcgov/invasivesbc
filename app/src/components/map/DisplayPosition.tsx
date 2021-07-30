@@ -7,8 +7,8 @@ import { IconButton } from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 export default function DisplayPosition({ map }) {
-  const [position, setPosition] = useState(map.getCenter());
-
+  //const [position, setPosition] = useState(map.getCenter());
+  
   //updated for capacitor 3
   const watchPosition = Geolocation.watchPosition;
   const startWatch = watchPosition;
@@ -57,8 +57,6 @@ export default function DisplayPosition({ map }) {
 
   useEffect(() => {
     if (newPosition) {
-      console.log(newPosition);
-      console.dir(newPosition);
       map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
     }
   }, [newPosition]);
@@ -91,7 +89,7 @@ export default function DisplayPosition({ map }) {
       {newPosition && newPosition?.coords && newPosition?.coords?.latitude ? (
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
           <Popup>
-            {position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)}
+            {/*position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)*/}
             <br />
             {utm_zone(newPosition.coords.longitude, newPosition.coords.latitude)}
           </Popup>
