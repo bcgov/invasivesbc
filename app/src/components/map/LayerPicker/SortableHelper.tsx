@@ -30,12 +30,63 @@ import Grid from '@material-ui/core/Grid';
 import ColorPicker from 'material-ui-color-picker';
 import * as L from 'leaflet';
 import { DragHandle } from '@material-ui/icons';
-import { useMap, useMapEvent } from 'react-leaflet';
+import { TileLayer, LayersControl, useMap, useMapEvent } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
+// for confirming loaded layers
+import DoneIcon from '@material-ui/icons/Done';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import { IconButton } from '@material-ui/core';
+import LayersIcon from '@material-ui/icons/Layers';
+
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
+import IMapContainerProps from '../MapContainer2';
+import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
+import { GeoJSON } from 'react-leaflet';
+import TempPOILoader from '../LayerLoaderHelpers/TempPOILoader';
+
+const vanIsland: FeatureCollection = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-123.31054687499999, 48.3416461723746],
+            [-122.82714843749999, 48.69096039092549],
+            [-122.6953125, 49.69606181911566],
+            [-125.68359374999999, 50.875311142200765],
+            [-129.0673828125, 51.39920565355378],
+            [-128.1884765625, 49.55372551347579],
+            [-123.31054687499999, 48.3416461723746]
+          ]
+        ]
+      }
+    }
+  ]
+};
+const setupFeature = (feature, layer) => {
+  let popupContent = 'POP UP STUFFFFFFFFFFFFFFFFFFFFFFFFFF';
+  for (let i = 0; i < 100; i++) {
+    popupContent += '\nFFFFFFFFFFFF';
+  }
+  layer.bindPopup(popupContent);
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%'
+    width: '360px',
+    height: '360px',
+    backgroundColor: 'white',
+    position: 'absolute',
+    zIndex: 1500,
+    borderRadius: '4px',
+    right: 60, top: 20,
+    ['@media (max-width:800px)']: {
+      top: 100
+    }
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -103,82 +154,109 @@ export function LayerPicker(props: any) {
     </ListItemIcon>
   ));
 
+  function WithCounter() {
+    const [seconds, setSeconds] = React.useState(10);
+    React.useEffect(() => {
+      if (seconds > 0) {
+        setTimeout(() => setSeconds(seconds - 1), 1000);
+      }
+    });
+    return seconds;
+  };
+
   const SortableParentLayer = SortableElement(({ parent }: any) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
       updateParent((parent as any).id, { expanded: expanded });
     };
+    const seconds = WithCounter();
+
     return (
       <ListItem ContainerComponent="div">
-        {/*<Grid container>
-                    {/*<Grid item>*/}
-        <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
-          <Grid container justify="flex-start" alignItems="center">
-            <Grid item xs={1}>
-              <Checkbox
-                checked={parent.enabled}
-                name={parent.id}
-                onChange={() => {
-                  updateParent(parent.id, {
-                    enabled: !getParent(objectState, parent.id).enabled
-                  });
-                }}
-              />
-            </Grid>
-            <Grid item xs={5}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
-                {parent.id}
-              </AccordionSummary>
-            </Grid>
-            <Grid item xs={3}>
-              <ColorPicker
-                name="color"
-                defaultValue={parent.colorCode}
-                onChange={(color: any) => {
-                  updateParent(parent.id, { colorCode: color });
-                }}
-              />
-            </Grid>
-            <Grid item xs={2} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
-              <CircularProgress variant="determinate" value={parent.loaded} />
-            </Grid>
-          </Grid>
-          {parent.children.map((child: any) => (
-            <Grid container direction="row" justify="flex-start" alignItems="center">
-              &emsp;
-              <Grid item xs={2}>
+        <Grid container xs={12}>
+          <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
+            <Grid container justify="flex-start" alignItems="center">
+              <Grid item xs={1}>
                 <Checkbox
-                  checked={child.enabled}
-                  name={child.id}
+                  checked={parent.enabled}
+                  name={parent.id}
                   onChange={() => {
-                    updateChild(parent.id, child.id, {
-                      enabled: !getChild(objectState, parent.id, child.id).enabled
+                    updateParent(parent.id, {
+                      enabled: !getParent(objectState, parent.id).enabled
                     });
                   }}
                 />
               </Grid>
-              <Grid item xs={5}>
-                {child.id}
+              <Grid item xs={6}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
+                  {parent.id}
+                </AccordionSummary>
               </Grid>
-              <Grid item xs={2}>
+              <Grid item xs={2} style={{ backgroundColor: parent.colorCode }}>
                 <ColorPicker
                   name="color"
-                  defaultValue={child.colorCode}
-                  onChange={(color: any) =>
-                    updateChild(parent.id, child.id, {
-                      colorCode: color
-                    })
-                  }
+                  defaultValue={parent.colorCode}
+                  onChange={(color: any) => {
+                    updateParent(parent.id, { colorCode: color });
+                  }}
                 />
               </Grid>
-              <Grid item xs={2} style={{ position: 'relative' }}>
-                <CircularProgress variant="determinate" value={child.loaded} />
+              <Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
+                {parent.loaded === 100 ?
+                  <DoneIcon /> :
+                  <div>
+                    {seconds === 0 ?
+                      <ErrorOutlineIcon /> :
+                      <CircularProgress variant="determinate" value={parent.loaded} />
+                    }
+                  </div>
+                }
               </Grid>
             </Grid>
-          ))}
-        </Accordion>
-        <ListItemSecondaryAction>
-          <DragHandle />
-        </ListItemSecondaryAction>
+            {parent.children.map((child: any) => (
+              <Grid container direction="row" justify="flex-start" alignItems="center">
+                &emsp;
+                <Grid item xs={2}>
+                  <Checkbox
+                    checked={child.enabled}
+                    name={child.id}
+                    onChange={() => {
+                      updateChild(parent.id, child.id, {
+                        enabled: !getChild(objectState, parent.id, child.id).enabled
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={5}>
+                  {child.id}
+                </Grid>
+                <Grid item xs={2} style={{ backgroundColor: child.colorCode }}>
+                  <ColorPicker
+                    name="color"
+                    defaultValue={child.colorCode}
+                    onChange={(color: any) =>
+                      updateChild(parent.id, child.id, {
+                        colorCode: color
+                      })
+                    }
+                  />
+                </Grid>
+                <Grid item xs={2} style={{ position: 'relative' }}>
+                  {child.loaded === 100 ?
+                    <DoneIcon /> :
+                    <div>
+                      {seconds === 0 ?
+                        <ErrorOutlineIcon /> :
+                        <CircularProgress variant="determinate" value={child.loaded} />}
+                    </div>
+                  }
+                </Grid>
+              </Grid>
+            ))}
+          </Accordion>
+          <ListItemSecondaryAction>
+            <DragHandle />
+          </ListItemSecondaryAction>
+        </Grid>
       </ListItem>
     );
   });
@@ -196,39 +274,81 @@ export function LayerPicker(props: any) {
     setObjectState(returnVal);
   };
   const map = useMap();
+  const [menuState, setMenuState] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [radio, setRadio] = useState('default');
+  
+  const handleCheckboxChange = (event) => {
+    setChecked(event.target.checked);
+  };
+
+  const handleRadioChange = (event) => {
+    setRadio(event.target.value);
+  };
 
   return (
-    <div
-      className={classes.root}
-      onTouchStart={() => {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
+    <div style={{ zIndex: 1000 }}>
+      <IconButton style={{
+        margin: '5px',
+        background: 'white',
+        borderRadius: '4px',
+        position: 'relative'
       }}
-      onTouchMove={() => {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
-      }}
-      onTouchEnd={() => {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
-      }}
-      onMouseOver={() => {
-        if (Capacitor.getPlatform() == 'web') {
-          map.dragging.disable();
-          map.doubleClickZoom.disable();
-        }
-      }}
-      onMouseOut={() => {
-        if (Capacitor.getPlatform() == 'web') {
-          map.dragging.enable();
-          map.doubleClickZoom.enable();
-        }
-      }}>
-      <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
+        onClick={() => {
+          setMenuState(!menuState);
+        }}>
+        <LayersIcon />
+      </IconButton>
+      {menuState ?
+        <div
+          className={classes.root}
+          onTouchStart={() => {
+            map.dragging.disable();
+            map.doubleClickZoom.disable();
+          }}
+          onTouchMove={() => {
+            map.dragging.disable();
+            map.doubleClickZoom.disable();
+          }}
+          onTouchEnd={() => {
+            map.dragging.disable();
+            map.doubleClickZoom.disable();
+          }}
+          onMouseOver={() => {
+            if (Capacitor.getPlatform() == 'web') {
+              map.dragging.disable();
+              map.doubleClickZoom.disable();
+            }
+          }}
+          onMouseOut={() => {
+            if (Capacitor.getPlatform() == 'web') {
+              map.dragging.enable();
+              map.doubleClickZoom.enable();
+            }
+          }}>
+          <FormControl style={{ display: 'flex', marginLeft: '10px' }}>
+          <RadioGroup row value={radio} onChange={handleRadioChange}>
+            <FormControlLabel value='default' control={<Radio />} label='default' />
+            { radio === 'default' ? <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" /> : null }
 
-      {/*<br />*/}
-
-      {/*<pre>{JSON.stringify(sortArray(objectState), null, 2)}</pre>*/}
+            <FormControlLabel value='other' control={<Radio />} label='other' />
+            { radio === 'other' ? <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null }
+          </RadioGroup>
+          </FormControl>
+          <FormControl style={{ display: 'flex', marginLeft: '10px' }}>
+            <FormControlLabel
+              control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
+              label='Activities' />
+          </FormControl>
+          <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
+        </div> : null}
+      {checked ?
+        <>
+          {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>*/}
+          <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} />
+          {/*<GeoJSON data={vanIsland} onEachFeature={setupFeature} />*/}
+        </>
+        : null}
     </div>
   );
 }
