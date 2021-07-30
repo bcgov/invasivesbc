@@ -463,7 +463,14 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
     useEffect(() => {
       console.log('map layer changed');
-      console.dir(mapLayers);
+      let newArray = [];
+      mapLayers.forEach((layer) => {
+        if (layer.enabled) {
+          console.log('in for each');
+          newArray.push(layer.id);
+        }
+        setMapLayersArray(newArray);
+      });
     }, [mapLayers]);
 
     useEffect(() => {
@@ -499,10 +506,10 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     //   currentExtent = { layerIds: mapLayersArray, geo: createPolygonFromBounds(map.getBounds(), map).toGeoJSON() };
     //   q.push(currentExtent);
     // });
-    const map = useMapEvent('zoomend', () => {
+    const map = useMapEvent('moveend', () => {
       setMoveCount(moveCount + 1);
       console.log(moveCount);
-      let aNewExtent = { geo: createPolygonFromBounds(map.getBounds(), map).toGeoJSON() };
+      let aNewExtent = { geo: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layers: mapLayersArray };
       if (extents && extents.new) {
         setExtents({ old: { ...extents.new }, new: { ...aNewExtent } });
       } else {
