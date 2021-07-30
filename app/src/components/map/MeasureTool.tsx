@@ -86,11 +86,10 @@ const MeasureTool = (props) => {
     setKey(Math.random());
   }, [aGeoJSON]);
 
+  // used for measuring distance
   useEffect(() => {
     // we are dropping first point
-    if (aGeoJSON == null 
-        && locArray[0] 
-        && isMeasuringDistance || isMeasuringArea) {
+    if (aGeoJSON == null && locArray[0] && isMeasuringDistance) {
       setGeoJSON([...aGeoJSON, {
         type: 'Feature',
         geometry: {
@@ -102,7 +101,7 @@ const MeasureTool = (props) => {
         }
       }]);
     }
-    if (locArray.length > 1 && isMeasuringDistance || isMeasuringArea) {
+    if (locArray.length > 1) {
       for (var i = 0; i < locArray.length-1; i++) {
         setGeoJSON([...aGeoJSON, {
           type: 'Feature',
@@ -122,23 +121,11 @@ const MeasureTool = (props) => {
         setTotalDistance(totalDistance+distance);
       } 
     }
-    if (locArray.length > 2 && isMeasuringArea) {
-      for (var i = 0; i < locArray.length-1; i++) {
-        setGeoJSON([...aGeoJSON, {
-          type: 'FeatureCollection',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [locArray[i].lng, locArray[i].lat],
-              [locArray[i+1].lng, locArray[i+1].lat]
-            ]
-          },
-          properties: {
-            name: 'Dinagat Islands'
-          }
-        }]);
-      }
-    }
+  }, [locArray]);
+
+  // used for measuring polygon area
+  useEffect(() => {
+    
   }, [locArray]);
 
   const toggleMeasureDistance = () => {
