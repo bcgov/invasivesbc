@@ -3,6 +3,57 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
   knex.raw(`
   set search_path = invasivesbc;
+  drop VIEW if exists invasivesbc.FREP_FormC cascade;
+  CREATE OR REPLACE VIEW invasivesbc.FREP_FormC as (
+    select	
+    activity_id as activity_id,
+
+    activity_payload::json->'form_data'->'activity_data'->'latitude' as latitude,
+    activity_payload::json->'form_data'->'activity_data'->'longitude' as longitude,
+    activity_payload::json->'form_data'->'activity_data'->'reported_area' as reported_area,
+    activity_payload::json->'form_data'->'activity_data'->'invasive_species_agency_code' as invasive_species_agency_code,
+    activity_payload::json->'form_data'->'activity_data'->'general_comment' as general_comment,
+    activity_payload::json->'form_data'->'activity_data'->'access_description' as access_description,
+    activity_payload::json->'form_data'->'activity_data'->'jurisdictions' as jurisdictions,
+    activity_payload::json->'form_data'->'activity_data'->'project_code' as project_code,
+    activity_payload::json->'form_data'->'activity_data'->'general_comment' as general_observation_comment__NEEDS_VERIFY,
+
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'opening_number')::text)) as opening_number,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'opening_id')::text)) as opening_id,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'license_number')::text)) as license_number,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'cp_number')::text)) as cp_number,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'block')::text)) as block,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'licensee')::text)) as licensee,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'district_code')::text)) as district_code,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'location_description')::text)) as location_description,
+    (activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'nar')::text::decimal as nar,
+    (activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'gross_area')::text::decimal as gross_area,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'opening_identification'->'override_code')::text)) as override_code,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'innovative_practices'->'innovative_practices')::text)) as innovative_practices,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'invasive_plants'->'invasive_code')::text)) as invasive_code,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'evaluator_opinion'->'evaluator_opinion_code')::text)) as evaluator_opinion_code,
+    trim('"' from((activity_payload::json->'form_data'->'activity_subtype_data'->'evaluator_opinion'->'rationale')::text)) as rationale,
+
+    biogeoclimatic_zones,
+    regional_invasive_species_organization_areas,
+    invasive_plant_management_areas,
+    ownership,
+    regional_districts,
+    flnro_districts,
+    moti_districts,
+    elevation,
+    well_proximity,
+    utm_zone,
+    utm_northing,
+    utm_easting,
+    albers_northing,
+    albers_easting
+
+    from invasivesbc.activity_incoming_data
+    where invasivesbc.activity_incoming_data.activity_type = 'FREP'
+	and deleted_timestamp is null
+    );
+    COMMENT ON VIEW invasivesbc.FREP_FormC IS 'View on fields common to all types of observations, with table activity_incoming_data as source.';
   drop VIEW if exists invasivesbc.FREP_FormB cascade;
   CREATE OR REPLACE VIEW invasivesbc.FREP_FormB as (
       with obj_array as (
