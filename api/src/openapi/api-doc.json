@@ -836,42 +836,6 @@
                 "type": "number",
                 "title": "Plot #"
               },
-              "stratum_id": {
-                "type": "string",
-                "title": "Stratum ID",
-                "x-enum-code": {
-                  "x-enum-code-category-name": "invasives",
-                  "x-enum-code-header-name": "stratum_id_code",
-                  "x-enum-code-name": "code_name",
-                  "x-enum-code-text": "code_description",
-                  "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Stratum ID"
-              },
-              "stratum_number": {
-                "type": "string",
-                "title": "Stratum Number",
-                "x-enum-code": {
-                  "x-enum-code-category-name": "invasives",
-                  "x-enum-code-header-name": "stratum_number_code",
-                  "x-enum-code-name": "code_name",
-                  "x-enum-code-text": "code_description",
-                  "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Stratum numer"
-              },
-              "stratum_type": {
-                "type": "string",
-                "title": "Stratum Type",
-                "x-enum-code": {
-                  "x-enum-code-category-name": "invasives",
-                  "x-enum-code-header-name": "stratum_type_code",
-                  "x-enum-code-name": "code_name",
-                  "x-enum-code-text": "code_description",
-                  "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Stratum Type"
-              },
               "utm_zone": {
                 "type": "string",
                 "title": "UTM Zone",
@@ -897,9 +861,6 @@
               "opening_id",
               "assessed_by",
               "plot_number",
-              "stratum_id",
-              "stratum_number",
-              "stratum_type",
               "utm_zone",
               "easting",
               "northing"
@@ -951,8 +912,7 @@
                         "type": "number",
                         "title": "Full Count Area (ha)"
                       }
-                    },
-                    "required": ["full_count_area", "fixed_area", "baf"]
+                    }
                   },
                   {
                     "properties": {
@@ -1005,11 +965,15 @@
                       },
                       "first_leg": {
                         "type": "number",
-                        "title": "1st Leg"
+                        "title": "1st Leg",
+                        "minimum": 0,
+                        "maximum": 360
                       },
                       "second_leg": {
                         "type": "number",
-                        "title": "2nd Leg"
+                        "title": "2nd Leg",
+                        "minimum": 0,
+                        "maximum": 360
                       },
                       "log": {
                         "type": "array",
@@ -1024,7 +988,7 @@
                         "title": "Comments (Logs)"
                       }
                     },
-                    "required": ["firest_leg", "second_leg"]
+                    "required": ["first_leg", "second_leg"]
                   },
                   {
                     "properties": {
@@ -1081,7 +1045,7 @@
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
                 },
-                "x-tooltip-text": "Stratum numer"
+                "x-tooltip-text": "Stratum number"
               },
               "stratum_type": {
                 "type": "string",
