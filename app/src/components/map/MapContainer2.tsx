@@ -463,9 +463,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     const mapRequestContext = useContext(MapRequestContext);
     const { layersSelected } = mapRequestContext;
     const [lastRequestPushed, setLastRequestPushed] = useState(null);
-    useEffect(() => {
-      console.log(q._tasks.length);
-    }, [layersSelected]);
 
     const map = useMapEvent('moveend', () => {
       let newArray = [];
@@ -489,7 +486,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         }
         return false;
       });
-      console.log(q._tasks.length);
 
       if (newArray.length > 0) {
         newArray.forEach((layer) => {
