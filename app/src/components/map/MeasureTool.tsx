@@ -129,8 +129,6 @@ const MeasureTool = (props) => {
           const distance = calc_distance(locArray[i].lat, locArray[i + 1].lat, locArray[i].lng, locArray[i + 1].lng) as any;
           console.log('distance between points: ', distance);
           setTotalDistance(totalDistance + distance);
-        } else if (isMeasuringArea) {
-
         }
       }
     }
@@ -187,6 +185,9 @@ const MeasureTool = (props) => {
             ? (<Typography>Enabled</Typography>)
             : (<Typography>Disabled</Typography>)}
         </Button>
+        {isMeasuringArea ? <Button onClick={() => {
+          //set GeoJSON to polygon
+        }}>Finish Polymeasure</Button> : null}
         <br />
         <Button onClick={() => {
           setGeoJSON([]);
@@ -197,12 +198,10 @@ const MeasureTool = (props) => {
         <Popup>{totalDistance.toFixed(1)} meters</Popup>
       </GeoJSON>
 
-      <Marker position={[locArray[0].lat, locArray[0].lng]}>
-      </Marker>
-
       {locArray.map((item: { lat: any; lng: any }) => (
         <Marker position={[item.lat, item.lng]} icon={markerIcon}></Marker>
       ))}
+
     </>
   );
 };
