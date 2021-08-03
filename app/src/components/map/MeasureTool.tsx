@@ -193,15 +193,20 @@ const MeasureTool = (props) => {
             }
           };
           console.log(tempArr);
-          /*setGeoJSON([...aGeoJSON, {
+          var obj = {
             type: 'Feature',
             geometry: {
               type: 'Polygon',
-              coordinates: tempArr
+              coordinates: [
+                tempArr
+              ]
             },
             properties: {
+              name: 'Dinagat Islands'
             }
-          }]);*/
+          };
+          console.log(JSON.stringify(obj));
+          setGeoJSON([...aGeoJSON, obj]);
         }}>Finish Polymeasure</Button> : null}
         <br />
         <Button onClick={() => {
