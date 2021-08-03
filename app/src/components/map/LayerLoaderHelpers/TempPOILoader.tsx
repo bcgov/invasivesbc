@@ -51,6 +51,7 @@ const TempPOILoader: React.FC<any> = (props) => {
     loadData();
   }, [updatedFilter]);
   const getPOIS = async (filter: IPointOfInterestSearchCriteria) => {
+    console.log('here is the filter for POIs', filter);
     let data = await da.getPointsOfInterest(filter);
     let poiGeoJSON = {
       type: 'FeatureCollection',
