@@ -56,7 +56,7 @@ const MeasureTool = (props) => {
   const [isMeasuringDistance, setIsMeasuringDistance] = useState(false);
   const [isMeasuringArea, setIsMeasuringArea] = useState(false);
   const [aGeoJSON, setGeoJSON] = useState([]);
-  const [startGeoJSON, setStartGeoJSON] = useState();
+  var polyJSON = {};
   const [aKey, setKey] = useState(1);
   const [totalDistance, setTotalDistance] = useState(0);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -86,7 +86,6 @@ const MeasureTool = (props) => {
     }
     if (isMeasuringArea) {
       setLocArray([...locArray, loc]);
-      console.log(locArray);
       return
     }
   });
@@ -186,12 +185,28 @@ const MeasureTool = (props) => {
             : (<Typography>Disabled</Typography>)}
         </Button>
         {isMeasuringArea ? <Button onClick={() => {
-          //set GeoJSON to polygon
+          const tempArr = [];
+          for (var i = 0; i < locArray.length; i++) {
+            tempArr[i] = [locArray[i].lng, locArray[i].lat];
+            if (i === 0) {
+              tempArr[locArray.length] = [locArray[i].lng, locArray[i].lat];
+            }
+          };
+          console.log(tempArr);
+          /*setGeoJSON([...aGeoJSON, {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: tempArr
+            },
+            properties: {
+            }
+          }]);*/
         }}>Finish Polymeasure</Button> : null}
         <br />
         <Button onClick={() => {
           setGeoJSON([]);
-          setLocArray([])
+          setLocArray([]);
         }}>Clear Measurements</Button>
       </Popover>
       <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle}>
