@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useMapEvent, GeoJSON, Popup, Marker, useMapEvents } from 'react-leaflet';
 import { IconButton, Button, makeStyles, Popover, Typography } from '@material-ui/core';
 import L from 'leaflet';
-import dotMarker from './icons/dotMarker.png';
-import ruler from './icons/ruler.png';
+import dotMarker from './Icons/dotMarker.png';
+import ruler from './Icons/ruler.png';
 
 const useStyles = makeStyles((theme) => ({
   image: {
