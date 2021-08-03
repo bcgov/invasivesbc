@@ -47,7 +47,7 @@ import { DomEvent } from 'leaflet';
 import DisplayPosition from './DisplayPosition';
 import { debounced } from 'utils/FunctionUtils';
 import { createPolygonFromBounds } from './LayerLoaderHelpers/LtlngBoundsToPoly';
-import { MapLayersContext, MapLayersContextProvider } from 'contexts/MapLayersContext';
+import { MapRequestContextProvider, MapRequestContext } from 'contexts/MapRequestsContext';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -99,6 +99,14 @@ export const getZIndex = (doc) => {
   }
   return zIndex;
 };
+
+export const async = require('async');
+export const q = async.queue(function (task, callback) {
+  setTimeout(() => {
+    console.log('Working on task: ' + JSON.stringify(task));
+    callback();
+  }, 2000);
+}, 1);
 
 export interface IMapContainerProps {
   classes?: any;
@@ -452,99 +460,44 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   };
 
   const AsyncExtent = () => {
-    const async = require('async');
-
-    const [extents, setExtents] = useState(null);
-    const [moveCount, setMoveCount] = useState(0);
-
-    const mapLayersContext = useContext(MapLayersContext);
-    const { mapLayers } = mapLayersContext;
-    const [mapLayersArray, setMapLayersArray] = useState([]);
-
+    const mapRequestContext = useContext(MapRequestContext);
+    const { layersSelected } = mapRequestContext;
+    const [lastRequestPushed, setLastRequestPushed] = useState(null);
     useEffect(() => {
-      console.log('map layer changed');
-      let newArray = [];
-      mapLayers.forEach((layer) => {
-        if (layer.enabled) {
-          console.log('in for each');
-          newArray.push(layer.id);
-        }
-        setMapLayersArray(newArray);
-      });
-    }, [mapLayers]);
+      console.log(q._tasks.length);
+    }, [layersSelected]);
 
-    useEffect(() => {
-      console.log('map extent changed');
-      console.dir(extents);
-    }, [extents]);
-
-    /*
-
-    useEffect(() => {
-      let newArray = [];
-      mapLayers.forEach((layer) => {
-        if (layer.enabled) {
-          console.log('in for each');
-          newArray.push(layer);
-        }
-        setMapLayersArray(newArray);
-        console.log('maplayers hook, setting mapLayersArray');
-        console.log(JSON.stringify(newArray));
-      });
-    }, [mapLayers]);
-    */
-
-    const q = async.queue(function (task, callback) {
-      console.log('queue setup');
-      //console.log('%cGot a new extent!', 'color:blue');
-      setTimeout(() => {
-        callback();
-      }, 2000);
-    }, 1);
-
-    // map.addEventListener('movestart', () => {
-    //   currentExtent = { layerIds: mapLayersArray, geo: createPolygonFromBounds(map.getBounds(), map).toGeoJSON() };
-    //   q.push(currentExtent);
-    // });
     const map = useMapEvent('moveend', () => {
-      setMoveCount(moveCount + 1);
-      console.log(moveCount);
-      let aNewExtent = { geo: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layers: mapLayersArray };
-      if (extents && extents.new) {
-        setExtents({ old: { ...extents.new }, new: { ...aNewExtent } });
-      } else {
-        setExtents({ new: { ...aNewExtent } });
+      let newArray = [];
+      layersSelected.forEach((layer) => {
+        if (layer.enabled) newArray.push(layer.id);
+      });
+
+      q.remove((worker) => {
+        if (worker.data && lastRequestPushed?.extent) {
+          if (
+            !turf.booleanWithin(worker.data.extent, lastRequestPushed.extent) &&
+            !turf.booleanOverlap(worker.data.extent, lastRequestPushed.extent)
+          ) {
+            console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
+            return true;
+          }
+          if (!newArray.includes(worker.data.layer)) {
+            console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
+            return true;
+          }
+        }
+        return false;
+      });
+      console.log(q._tasks.length);
+
+      if (newArray.length > 0) {
+        newArray.forEach((layer) => {
+          q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
+          setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
+        });
       }
     });
-    /*
-        q.remove((worker) => {
-          if (worker.data && currentExtent) {
-            if (
-              !turf.booleanWithin(worker.data.geo, currentExtent.geo) &&
-              !turf.booleanOverlap(worker.data.geo, currentExtent.geo)
-            ) {
-              console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
-              return true;
-            }
-            console.log('New extent layer ids:' + worker.data.layerIds);
-            console.log('Prev extent layer ids:' + currentExtent.layerIds);
-            if (worker.data.layerIds !== currentExtent.layerIds) {
-              console.log('%cLayer ids of new and old extents are different!', 'color:red');
-              return true;
-            }
-          }
-          return false;
-        });
-        console.log('pushed to queue');
-        q.push(newExtent, function (err) {
-          if (err) {
-            console.log('There was an error pushing extent: ' + err);
-          }
-          console.log('%cfinished processing pushed extent', 'color:green');
-        });
-      });
-    }, []);
-    */
 
     return null;
   };
@@ -559,7 +512,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       zoomControl={false}
       whenCreated={setMap}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
-      <MapLayersContextProvider>
+      <MapRequestContextProvider>
         <div
           style={{
             display: 'flex',
@@ -576,7 +529,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
               borderRadius: '15%',
               border: '1px solid black'
             }}
-            onClick={() => {
+            onClick={(e) => {
               setMenuState(!menuState);
             }}>
             <LayersIcon />
@@ -627,7 +580,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
           </LayersControl.Overlay>
         </LayersControl>
-      </MapLayersContextProvider>
+      </MapRequestContextProvider>
     </MapContainer>
   );
 };

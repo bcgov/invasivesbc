@@ -32,7 +32,7 @@ import * as L from 'leaflet';
 import { DragHandle } from '@material-ui/icons';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
-import { MapLayersContext } from 'contexts/MapLayersContext';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,15 +60,15 @@ const useStyles = makeStyles((theme) => ({
 
 export function LayerPicker(props: any) {
   const classes = useStyles();
-  const mapLayersContext = useContext(MapLayersContext);
-  const { mapLayers, setMapLayers } = mapLayersContext;
-  const [objectState, setObjectState] = useState(mapLayers);
+  const mapLayersContext = useContext(MapRequestContext);
+  const { layersSelected, setLayersSelected } = mapLayersContext;
+  const [objectState, setObjectState] = useState(layersSelected);
   // Progress bar
   // const [progress, setProgress] = useState(props.progress);
 
   //update context on ObjectState change
   useEffect(() => {
-    setMapLayers(objectState);
+    setLayersSelected(objectState);
   }, [objectState]);
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
