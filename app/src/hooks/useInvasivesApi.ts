@@ -123,7 +123,7 @@ export const useInvasivesApi = () => {
       type: 'FeatureCollection',
       features: features
     };
-    console.log('Activites as geojson', geojson);
+    console.log('Observations as geojson', geojson);
 
     return data;
   };
