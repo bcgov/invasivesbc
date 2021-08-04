@@ -381,6 +381,7 @@
           "activity_date_time",
           "latitude",
           "longitude",
+          "employer_code",
           "utm_easting",
           "utm_northing",
           "reported_area"
