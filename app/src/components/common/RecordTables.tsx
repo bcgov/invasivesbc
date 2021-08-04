@@ -20,7 +20,8 @@ import {
   sanitizeRecord,
   addLinkedActivityToDB,
   addNewActivityToDB,
-  generateDBActivityPayload
+  generateDBActivityPayload,
+  getShortActivityID
 } from 'utils/addActivity';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { notifyError, notifySuccess } from 'utils/NotificationUtils';
@@ -75,6 +76,7 @@ export const activityStandardMapping = (doc) => {
   };
   return {
     ...flattened,
+    short_id: getShortActivityID(flattened),
     activity_id: flattened.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
     jurisdiction_code: flattened.activity_payload?.form_data?.activity_data?.jurisdictions?.reduce(
       (output, jurisdiction) => [
@@ -209,7 +211,10 @@ export interface IActivitiesTable extends IRecordTable {
 }
 
 const activitesDefaultHeaders = [
-  'activity_id',
+  {
+    id: 'short_id',
+    title: 'Activity ID'
+  },
   'activity_type',
   {
     id: 'activity_subtype',
@@ -249,6 +254,10 @@ const activitesDefaultHeaders = [
     id: 'reported_area',
     title: 'Area (m\u00B2)',
     type: 'number'
+  },
+  {
+    id: 'activity_id',
+    title: 'Full ID'
   },
   'access_description',
   'general_comment'
@@ -739,7 +748,10 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
         ]}
         headers={[
           ...headers,
-          'activity_id',
+          {
+            id: 'short_id',
+            title: 'Activity ID'
+          },
           {
             id: 'activity_subtype',
             valueMap: {
@@ -768,7 +780,11 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
             title: 'Longitude',
             type: 'number'
           },
-          'elevation'
+          'elevation',
+          {
+            id: 'activity_id',
+            title: 'Full ID'
+          },
         ]}
         dropdown={(row) => (
           <ActivitiesTable
@@ -890,7 +906,10 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
         ]}
         headers={[
           ...headers,
-          'activity_id',
+          {
+            id: 'short_id',
+            title: 'Activity ID'
+          },
           {
             id: 'activity_subtype',
             valueMap: {
@@ -918,7 +937,11 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
             title: 'Longitude',
             type: 'number'
           },
-          'elevation'
+          'elevation',
+          {
+            id: 'activity_id',
+            title: 'Full ID'
+          }
         ]}
         {...otherProps}
       />
@@ -1031,7 +1054,10 @@ export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (
         tableSchemaType={['Collection', 'Collection_Biocontrol', ...arrayWrap(tableSchemaType)]}
         headers={[
           ...headers,
-          'activity_id',
+          {
+            id: 'short_id',
+            title: 'Activity ID'
+          },
           {
             id: 'activity_subtype',
             valueMap: {
@@ -1056,7 +1082,11 @@ export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (
             id: 'longitude',
             title: 'Longitude',
             type: 'number'
-          }
+          },
+          {
+            id: 'activity_id',
+            title: 'Full ID'
+          },
         ]}
         dropdown={(row) => (
           <ActivitiesTable

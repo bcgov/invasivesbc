@@ -16,6 +16,7 @@ import { ActivityTypeIcon, ActivitySubtype } from 'constants/activities';
 import { MediumDateFormat } from 'constants/misc';
 import moment from 'moment';
 import React from 'react';
+import { getShortActivityID } from 'utils/addActivity';
 import { useHistory } from 'react-router-dom';
 import ActivityListItem from './ActivityListItem';
 
@@ -52,14 +53,13 @@ interface ISearchActivityListItem {
 
 const SearchActivityListItem: React.FC<ISearchActivityListItem> = (props) => {
   const classes = useStyles();
-
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={1}>
-        <Box overflow="hidden" textOverflow="ellipsis" title={props.activity._id}>
+        <Box overflow="hidden" textOverflow="ellipsis" title={props.activity.short_id || getShortActivityID(props.activity) || props.activity._id}>
           <Typography className={classes.activitiyListItem_Typography}>ID</Typography>
-          {props.activity._id}
+          {props.activity.short_id || getShortActivityID(props.activity) || props.activity._id}
         </Box>
       </Grid>
       <Divider flexItem={true} orientation="vertical" />

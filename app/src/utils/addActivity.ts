@@ -6,7 +6,8 @@ import {
   FormValidationStatus,
   ReviewStatus,
   ActivitySubtype,
-  ActivityType
+  ActivityType,
+  ActivityLetter
 } from 'constants/activities';
 import { Feature } from 'geojson';
 import { DocType } from 'constants/database';
@@ -35,6 +36,14 @@ const mapKeys = (source, mappingFunction) => {
   );
 };
 
+export const getShortActivityID = (activity) => {
+  const record : any = mapKeys(activity, snakeCase);
+  if (!record?.activity_subtype || ! record?.activity_id || !record?.date_created)
+    return;
+  const shortYear = moment(record.date_created).format().substr(2,2);
+  return shortYear + ActivityLetter[record.activity_subtype] + record.activity_id.substr(0,4).toUpperCase();
+}
+
 export const activityDefaults = {
   doc_type: DocType.ACTIVITY,
   date_created: new Date(),
@@ -53,7 +62,7 @@ AKA "IDGAF Record Formatter".  wraps an activity or doc or whatever and turns it
 export const sanitizeRecord = (input: any) => {
   if (typeof input !== 'object') throw 'Okay, you have to at least give an object though';
 
-  const soup: any = {
+  const flattened: any = {
     ...mapKeys(input?.formData, snakeCase),
     ...mapKeys(input?.formData?.point_of_interest_data, snakeCase),
     ...mapKeys(input?.formData?.point_of_interest_type_data, snakeCase),
@@ -68,45 +77,47 @@ export const sanitizeRecord = (input: any) => {
     ...mapKeys(input?.activity_payload, snakeCase),
     ...mapKeys(input, snakeCase)
   };
-  soup.activity_payload = {
-    ...soup.activity_payload,
+  flattened.activity_payload = {
+    ...flattened.activity_payload,
     form_data: {
       activity_data: {
-        ...mapKeys(soup?.form_data?.activity_data, snakeCase),
-        ...mapKeys(soup?.activity_payload?.formData?.activity_data, snakeCase)
+        ...mapKeys(flattened?.form_data?.activity_data, snakeCase),
+        ...mapKeys(flattened?.activity_payload?.formData?.activity_data, snakeCase)
       },
       activity_type_data: {
-        ...mapKeys(soup?.form_data?.activity_type_data, snakeCase),
-        ...mapKeys(soup?.activity_payload?.formData?.activity_type_data, snakeCase)
+        ...mapKeys(flattened?.form_data?.activity_type_data, snakeCase),
+        ...mapKeys(flattened?.activity_payload?.formData?.activity_type_data, snakeCase)
       },
       activity_subtype_data: {
-        ...mapKeys(soup?.form_data?.activity_subtype_data, snakeCase),
-        ...mapKeys(soup?.activity_payload?.formData?.activity_subtype_data, snakeCase)
+        ...mapKeys(flattened?.form_data?.activity_subtype_data, snakeCase),
+        ...mapKeys(flattened?.activity_payload?.formData?.activity_subtype_data, snakeCase)
       }
     }
   };
 
-  if (soup.activity_id && soup.point_of_interest_id)
+  if (flattened.activity_id && flattened.point_of_interest_id)
     throw 'This is confusing.  A record should be an activity OR a POI';
 
-  if (!soup.activity_id && !soup.point_of_interest_id) {
-    if (soup.doc_type === DocType.ACTIVITY) {
-      if (soup._id) soup.activity_id = soup._id;
+  if (!flattened.activity_id && !flattened.point_of_interest_id) {
+    if (flattened.doc_type === DocType.ACTIVITY) {
+      if (flattened._id) flattened.activity_id = flattened._id;
       else {
-        soup.activity_id = uuidv4();
-        console.log('Generating a new id for activity', soup);
+        flattened.activity_id = uuidv4();
+        flattened.date_created = flattened.date_created || moment(new Date()).format();
+        flattened.short_id = flattened.short_id || getShortActivityID(flattened);
+        // console.log('Generating a new id for activity', flattened);
       }
     }
 
-    if (soup.doc_type === DocType.POINT_OF_INTEREST || soup.doc_type === DocType.REFERENCE_POINT_OF_INTEREST) {
-      if (soup._id) soup.point_of_interest_id = soup._id;
+    if (flattened.doc_type === DocType.POINT_OF_INTEREST || flattened.doc_type === DocType.REFERENCE_POINT_OF_INTEREST) {
+      if (flattened._id) flattened.point_of_interest_id = flattened._id;
       // TODO else generate id
     }
 
     // throw "This should have an id of some sort.  Should we generate a new one here?";
   }
 
-  if (soup.activity_id) {
+  if (flattened.activity_id) {
     const now = moment(new Date()).format();
     const {
       activity_id,
@@ -143,7 +154,7 @@ export const sanitizeRecord = (input: any) => {
       reviewed_at,
       review_status,
       ...otherKeys
-    } = soup;
+    } = flattened;
 
     return {
       ...activityDefaults,
@@ -177,26 +188,27 @@ export const sanitizeRecord = (input: any) => {
       review_status,
 
       // db-field overrides:
-      created_timestamp: created_timestamp || soup.date_created || now,
-      sync_status: sync_status || soup.sync?.status || ActivitySyncStatus.NOT_SAVED,
+      created_timestamp: created_timestamp || flattened.date_created || now,
+      sync_status: sync_status || flattened.sync?.status || ActivitySyncStatus.NOT_SAVED,
       form_status: form_status || FormValidationStatus.NOT_VALIDATED,
-      geom: geom || soup.geometry || soup.activity_payload.geometry,
-      geog: geog || soup.geography,
+      geom: geom || flattened.geometry || flattened.activity_payload.geometry,
+      geog: geog || flattened.geography,
+      short_id: flattened.short_id || getShortActivityID(flattened),
 
       // legacy:
       /*
       form_data: {
-        ...soup.form_data,
+        ...flattened.form_data,
         activity_data: {
-          ...soup.form_data?.activity_data,
+          ...flattened.form_data?.activity_data,
           activity_date_time: now
         }
       },
       */
       activity_payload: {
         ...activity_payload,
-        geom: geom || soup.geometry || activity_payload?.geometry,
-        geog: geog || soup.geography,
+        geom: geom || flattened.geometry || activity_payload?.geometry,
+        geog: geog || flattened.geography,
         form_data: {
           ...activity_payload?.form_data,
           activity_data: {
@@ -207,17 +219,17 @@ export const sanitizeRecord = (input: any) => {
       },
 
       // legacy: dont actually care about these:
-      status: soup.status || ActivityStatus.NEW,
-      date_created: soup.date_created || now,
-      date_updated: soup.date_updated || null,
-      media: soup.photos?.map((photo) => ({
+      status: flattened.status || ActivityStatus.NEW,
+      date_created: flattened.date_created || now,
+      date_updated: flattened.date_updated || null,
+      media: flattened.photos?.map((photo) => ({
         file_name: photo.filepath,
         encoded_file: photo.dataUrl
       })),
 
       // gross mapping for yet another db api field...
       form_data: activity_payload?.form_data,
-      geometry: geom || soup.geometry || activity_payload?.geometry
+      geometry: geom || flattened.geometry || activity_payload?.geometry
     };
   }
 };
@@ -275,9 +287,14 @@ export function generateActivityPayload(
   activitySubtype: ActivitySubtype
 ): IActivity {
   const id = uuidv4();
-
+  const short_id : string = getShortActivityID({
+    activity_subtype: activitySubtype,
+    activity_id: id,
+    date_created: new Date()
+  });
   return {
     _id: id,
+    shortId: short_id,
     activityId: id,
     docType: DocType.ACTIVITY,
     activityType,
@@ -307,7 +324,13 @@ export function generateDBActivityPayload(
 ) {
   const id = uuidv4();
   const time = moment(new Date()).format();
+  const short_id : string = getShortActivityID({
+    activity_subtype: activitySubtype,
+    activity_id: id,
+    date_created: time
+  });
   return {
+    short_id: short_id,
     activity_id: id,
     activity_type: activityType,
     activity_subtype: activitySubtype,

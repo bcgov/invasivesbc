@@ -51,6 +51,7 @@ export enum ActivitySubtypeShortLabels {
   Activity_Treatment_MechanicalPlant = 'Terrestrial Invasive Plant Mechanical Treatment',
   Activity_Treatment_MechanicalPlant_BulkEdit = 'Terrestrial Invasive Plant Mechanical Treatment',
   Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
+  Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release',
 
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical',
@@ -63,9 +64,8 @@ export enum ActivitySubtypeShortLabels {
   Activity_Transect_Vegetation = 'Vegetation Transect (Full, Lumped, Invasive Plant Density)',
   Activity_Transect_BiocontrolEfficacy = 'Biocontrol Efficacy Transect',
 
-  // Additional Biocontrol Activities:
-  Activity_Collection_Biocontrol = 'Biocontrol Collection',
-  Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release'
+  // Collections:
+  Activity_Collection_Biocontrol = 'Biocontrol Collection'
 }
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
@@ -76,6 +76,36 @@ export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
   [ActivityType.Monitoring]: Visibility,
   [ActivityType.Dispersal]: Visibility,
   [ActivityType.Collection]: Assignment
+};
+
+export enum ActivityLetter {
+  Activity_Observation_PlantTerrestrial = 'P',
+  Activity_Observation_PlantTerrestrial_BulkEdit = 'P',
+  Activity_Observation_PlantAquatic = 'C',
+  Activity_AnimalActivity_AnimalTerrestrial = 'A',
+  Activity_AnimalActivity_AnimalAquatic = 'N',
+
+  // Treatments:
+  Activity_Treatment_ChemicalPlant = 'P', // Aquatic?
+  Activity_Treatment_ChemicalPlant_BulkEdit = 'P',
+  Activity_Treatment_MechanicalPlant = 'P',
+  Activity_Treatment_MechanicalPlant_BulkEdit = 'P',
+  Activity_Treatment_BiologicalPlant = 'R',
+  Activity_Treatment_BiologicalPlant_BulkEdit = 'R',
+
+  // Monitoring:
+  Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'C',
+  Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'P', // Aquatic?
+  Activity_Monitoring_BiologicalTerrestrialPlant = 'P',
+  Activity_Dispersal_BiologicalDispersal = 'D',
+
+  // Transects:
+  Activity_Transect_FireMonitoring = 'T',
+  Activity_Transect_Vegetation = 'T',
+  Activity_Transect_BiocontrolEfficacy = 'T',
+
+  // Collections:
+  Activity_Collection_Biocontrol = 'B'
 };
 
 export enum ActivityStatus {
