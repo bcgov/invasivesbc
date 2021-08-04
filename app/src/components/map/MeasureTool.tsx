@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useMapEvent, GeoJSON, Popup, Marker, useMapEvents } from 'react-leaflet';
-import { IconButton, Button, makeStyles, Popover, Typography } from '@material-ui/core';
+import { IconButton, Button, makeStyles, Popover, Grid, Typography } from '@material-ui/core';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import turf, { polygon, area } from '@turf/turf';
 import L from 'leaflet';
 import dotMarker from './Icons/dotMarker.png';
@@ -23,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
   typography: {
     padding: theme.spacing(2),
+    fontSize: 8
   },
 }));
 
@@ -133,15 +136,18 @@ const MeasureTool = (props) => {
     }
   }, [locArray]);
 
+  function clearMeasure() {
+    setTotalDistance(0);
+    setGeoJSON([]);
+    setLocArray([]);
+  };
   const toggleMeasureDistance = () => {
-    //setStartLocation(null);
-    //setEndLocation(null);
-
-    //if (isMeasuring) setGeoJSON(null);
+    clearMeasure();
     setIsMeasuringArea(false);
     setIsMeasuringDistance(!isMeasuringDistance);
   };
   const toggleMeasureArea = () => {
+    clearMeasure();
     setIsMeasuringDistance(false);
     setIsMeasuringArea(!isMeasuringArea);
   };
@@ -198,22 +204,35 @@ const MeasureTool = (props) => {
           horizontal: 'right',
         }}
       >
-        <Button onClick={toggleMeasureDistance}>Measure Distance:
-          {isMeasuringDistance
-            ? (<Typography>Enabled</Typography>)
-            : (<Typography>Disabled</Typography>)}
-        </Button>
-        <Button onClick={toggleMeasureArea}>Measure Area:
-          {isMeasuringArea
-            ? (<Typography>Enabled</Typography>)
-            : (<Typography>Disabled</Typography>)}
-        </Button>
-        {isMeasuringArea ? <Button onClick={finishPolygon}>Finish Polymeasure</Button> : null}
-        <br />
-        <Button onClick={() => {
-          setGeoJSON([]);
-          setLocArray([]);
-        }}>Clear Measurements</Button>
+        <Grid container direction='column'>
+
+          <Grid item xs={3}>
+            <Button size='small' onClick={toggleMeasureDistance}>
+              {isMeasuringDistance
+                ? (<RadioButtonCheckedIcon />)
+                : (<RadioButtonUncheckedIcon />)}
+              Distance
+            </Button>
+          </Grid>
+
+          <Grid item xs={3}>
+            <Button size='small' onClick={toggleMeasureArea}>
+              {isMeasuringArea
+                ? (<RadioButtonCheckedIcon />)
+                : (<RadioButtonUncheckedIcon />)}
+              Area
+            </Button>
+          </Grid>
+
+          <Grid item xs={3}>
+            {isMeasuringArea ? <Button onClick={finishPolygon}>Finish Draw</Button> : null}
+          </Grid>
+
+          <Grid item xs={3}>
+            <Button size='small' onClick={() => clearMeasure()}>Clear</Button>
+          </Grid>
+
+        </Grid>
       </Popover>
       <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle}>
         {isMeasuringDistance ? <Popup>{totalDistance.toFixed(1)} meters</Popup>
