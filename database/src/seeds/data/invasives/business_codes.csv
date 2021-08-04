@@ -140,11 +140,11 @@ aspect_code,S,South facing,7
 aspect_code,SW,Southwest facing,8
 aspect_code,W,West facing,9
 aspect_code,NW,Northwest facing,10
-invasive_plant_density_code,X,unknown,1
-invasive_plant_density_code,L,<= 1plant/m2 (Low),2
-invasive_plant_density_code,M,2-5 plants/m2 (Med),3
-invasive_plant_density_code,H,6-10 plants/m2 (High),4
-invasive_plant_density_code,D,>10 plants/m2 (Dense),5
+invasive_plant_density_code,NA,unknown,1
+invasive_plant_density_code,L,1|<= 1plant/m2 (Low),2
+invasive_plant_density_code,M,2|2-5 plants/m2 (Med),3
+invasive_plant_density_code,H,3|6-10 plants/m2 (High),4
+invasive_plant_density_code,D,4|>10 plants/m2 (Dense),5
 slope_code,NA,variable,1
 slope_code,FL,Flat 0 %,2
 slope_code,NF,Nearly flat 1-4 %,3
@@ -155,16 +155,16 @@ slope_code,VS,Very strong slope 20-24 %,7
 slope_code,ES,Extreme slope 25-29 %,8
 slope_code,ST,Steep slope 30-44 %,9
 slope_code,VT,Very steep slope > 45 %,10
-invasive_plant_distribution_code,NA,unknown,1
-invasive_plant_distribution_code,RS,"rare individual,a single occurrence ",2
-invasive_plant_distribution_code,FS,few sporadically occurring individuals,3
-invasive_plant_distribution_code,CL,single patch or clump of a species,4
-invasive_plant_distribution_code,SS,several sporadically occurring individuals,5
-invasive_plant_distribution_code,FP,a few patches or clumps of a species,6
-invasive_plant_distribution_code,WS,several well-spaced patches or clumps,7
-invasive_plant_distribution_code,CU,continuous uniform occurrence of well-spaced individuals,8
-invasive_plant_distribution_code,CO,continuous occurrence of a species with a few gaps in the distribution,9
-invasive_plant_distribution_code,CD,continuous dense occurrence of a species,10
+invasive_plant_distribution_code,X,unknown,1
+invasive_plant_distribution_code,RS,"1|rare individual,a single occurrence",2
+invasive_plant_distribution_code,FS,2|few sporadically occurring individuals,3
+invasive_plant_distribution_code,CL,3|single patch or clump of a species,4
+invasive_plant_distribution_code,SS,4|several sporadically occurring individuals,5
+invasive_plant_distribution_code,FP,5|a few patches or clumps of a species,6
+invasive_plant_distribution_code,WS,6|several well-spaced patches or clumps,7
+invasive_plant_distribution_code,CU,7|continuous uniform occurrence of well-spaced individuals,8
+invasive_plant_distribution_code,CO,8|continuous occurrence of a species with a few gaps in the distribution,9
+invasive_plant_distribution_code,CD,9|continuous dense occurrence of a species,10
 mechanical_disposal_code,N,In Situ,1
 mechanical_disposal_code,DPC,Dry and Passive Compost,2
 mechanical_disposal_code,IC,Industrial Compost,3
@@ -1278,54 +1278,199 @@ invasive_plant_code_withbiocontrol,SJ,St. John's wort/Saint John's wort/ Goatwee
 invasive_plant_code_withbiocontrol,TR,Tansy ragwort (SENE JAC Senecio jacobaea),35
 invasive_plant_code_withbiocontrol,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),36
 invasive_plant_code_withbiocontrol,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),37
-employer_code,SIGD,Sechelt Indian Government District,1
-employer_code,DOSicamous,District of Sicamous,2
-employer_code,TOSidney,Town of Sidney,3
-employer_code,VOSilverton,Village of Silverton,4
-employer_code,VOSlocan,Village of Slocan,5
-employer_code,TOSmithers,Town of Smithers,6
-employer_code,DOSooke,District of Sooke,7
-employer_code,TOSpallumcheen,Township of Spallumcheen,8
-employer_code,DOSparwood,District of Sparwood,9
-employer_code,DOSquamish,District of Squamish,10
-employer_code,DOStewart,District of Stewart,11
-employer_code,DOSummerland,District of Summerland,12
-employer_code,MRMOSP,Mountain Resort Municipality of Sun Peaks,13
-employer_code,COSurrey,City of Surrey,14
-employer_code,VOTahsis,Village of Tahsis,15
-employer_code,DOTaylor,District of Taylor,16
-employer_code,VOTelkwa,Village of Telkwa,17
-employer_code,COTerrace,City of Terrace,18
-employer_code,DOTofino,District of Tofino,19
-employer_code,COTrail,City of Trail,20
-employer_code,DTTR,District of Tumbler Ridge,21
-employer_code,DOUcluelet,District of Ucluelet,22
-employer_code,VOValemount,Village of Valemount,23
-employer_code,COVancouver,City of Vancouver,24
-employer_code,DOVanderhoof,District of Vanderhoof,25
-employer_code,COVernon,City of Vernon,26
-employer_code,COVictoria,City of Victoria,27
-employer_code,TVN,Town of View Royal,28
-employer_code,VOWarfield,Village of Warfield,29
-employer_code,COWKelowna ,City of West Kelowna,30
-employer_code,DWTR,District of West Vancouver,31
-employer_code,RMOR,Resort Municipality of Whistler,32
-employer_code,COWhiteRock,City of White Rock,33
-employer_code,COWWilliamsLake,City of Williams Lake,34
-employer_code,VOZeballos,Village of Zeballos,35
-employer_code,BSND,Boundary Invasive Species Society,36
-employer_code,CCCIPCS,Cariboo Chilcotin Coast Invasive Plant Committee Society,37
-employer_code,CKISS,Central Kootenay Invasive Species Society,38
-employer_code,CISCS,Coastal Invasive Species Committee Society,39
-employer_code,CSISS,Columbia Shuswap Invasive Species Society,40
-employer_code,EEUNIE,East Kootenay Invasive Species Council,41
-employer_code,FFCIIF,Fraser Valley Invasive Species Society,42
-employer_code,IICIBI,Invasive Species Council of British Columbia Society,43
-employer_code,IICIMI,Invasive Species Council of Metro Vancouver Society,44
-employer_code,LLCIIL,Lillooet Regional Invasive Species Society,45
-employer_code,NPTH,Northwest Invasive Plant Council,46
-employer_code,OOCIIO,Okanagan and Similkameen Invasive Species Society,47
-employer_code,SSUNIS,Sea to Sky Invasive Species Council,48
+employer_code,BCMAEST,BC Ministry of Advanced Education and Skills Training,1
+employer_code,BCMAFF,"""BC Ministry of Agriculture, Food and Fisheries""",2
+employer_code,BCAG,BC Attorney General,3
+employer_code,BCMCFD,BC Ministry of Children & Family Development,4
+employer_code,BCMCS,BC Ministry of Citizens' Services,5
+employer_code,BCME,BC Ministry of Education,6
+employer_code,BCMEMLCI,"BC Ministry of Energy, Mines and Low Carbon Innovation",7
+employer_code,BCMECCS,BC Ministry of Environment & Climate Change Strategy,8
+employer_code,BCMF,BC Ministry of Finance,9
+employer_code,BCMFLNRORD,"""BC Ministry of Forests, Lands, Natural Resource Operations and Rural Development""",10
+employer_code,BCMH,BC Ministry of Health,11
+employer_code,BCMIRR,BC Ministry of Indigenous Relations & Reconciliation,12
+employer_code,BCMJERI,"BC Ministry of Jobs, Economic Recovery and Innovation",13
+employer_code,BCML,BC Ministry of Labour,14
+employer_code,BCMMHA,BC Ministry of Mental Health & Addictions,15
+employer_code,BCMMA,BC Ministry of Municipal Affairs,16
+employer_code,BCMPSSGEBC,BC Ministry of Public Safety & Solicitor General & Emergency B.C.,17
+employer_code,BCMSDPR,BC Ministry of Social Development & Poverty Reduction,18
+employer_code,BCMTACS,"BC Ministry of Tourism, Arts, Culture and Sport",19
+employer_code,BCMTI,BC Ministry of Transportation & Infrastructure,20
+employer_code,DOHMH,District of 100 Mile House,21
+employer_code,COABB,City of Abbotsford,22
+employer_code,VOALE,Village of Alert Bay,23
+employer_code,VOANM,Village of Anmore,24
+employer_code,COARM,City of Armstrong,25
+employer_code,VOASH,Village of Ashcroft,26
+employer_code,DOBAR,District of Barriere,27
+employer_code,VOBEL,Village of Belcarra,28
+employer_code,IOOF ,Island Municipality of Bowen Island,29
+employer_code,COBUR,City of Burnaby ,30
+employer_code,VOBUR,Village of Burns Lake,31
+employer_code,VOCAC,Village of Cache Creek,32
+employer_code,COCAM,City of Campbell River,33
+employer_code,VOCAN,Village of Canal Flats,34
+employer_code,COCAS,City of Castlegar,35
+employer_code,DOCEN,District of Central Saanich,36
+employer_code,VOCHA,Villiage of Chase,37
+employer_code,DOCHE,District of Chetwynd,38
+employer_code,COCHI,City of Chilliwack,39
+employer_code,DOCLE,District of Clearwater,40
+employer_code,VOCLI,Villiage of Clinton,41
+employer_code,DOCOL,District of Coldstream,42
+employer_code,COCOL,City of Colwood,43
+employer_code,TOCOM,Town of Comox,44
+employer_code,COCOQ,City of Coquitlam,45
+employer_code,COCOU,City of Courtenay,46
+employer_code,COCRA,City of Cranbrook,47
+employer_code,TOCRE,Town of Creston,48
+employer_code,CODAW,City of Dawson Creek,49
+employer_code,CODEL,City of Delta,50
+employer_code,CODUN,City of Duncan ,51
+employer_code,DOELK,District of Elkford,52
+employer_code,COEND,City of Enderby,53
+employer_code,TOESQ,Township of Esquimalt,54
+employer_code,COFER,City of Fernie,55
+employer_code,DOFORT,District of Fort St. James,56
+employer_code,COFORT,City of Fort St. John,57
+employer_code,VOFRA,Village of Fraser Lake,58
+employer_code,VOFRU,Village of Fruitvale,59
+employer_code,TOGIB,Town of Gibsons,60
+employer_code,VOGOL,Village of Gold River,61
+employer_code,TOGOL,Town of Golden ,62
+employer_code,COGRA,City of Grandforks,63
+employer_code,VOGRA,Village of Granisle,64
+employer_code,COGRE,City of Greenwood,65
+employer_code,VOHAR,Village of Harrison Hot Springs,66
+employer_code,VOHAZ,Village of Hazelton,67
+employer_code,DOHIG,District of Highlands,68
+employer_code,DOHOP,District of Hope,69
+employer_code,DOHOU,District of Houston,70
+employer_code,DOHUD,District of Hudson's Hope,71
+employer_code,DOINV,District of Invermere,72
+employer_code,MOMUN,Mountain Resort Municipality of Jumbo Glacier,73
+employer_code,COKAM,City of Kamloops,74
+employer_code,VOKAS,Village of Kaslo,75
+employer_code,COKEL,City of Kelowna,76
+employer_code,DOKEN,District of Kent,77
+employer_code,VOKER,Village of Keremeos,78
+employer_code,COKIM,City of Kimberley,79
+employer_code,DOKIT,District of Kitimat,80
+employer_code,TOLAD,Town of Ladysmith,81
+employer_code,DOLAK,District of Lake Country,82
+employer_code,TOLAK,Town of Lake Cowichan,83
+employer_code,COLANGF,City of Langford,84
+employer_code,COLANGLE,City of Langley,85
+employer_code,TOLAN,Township of Langley,86
+employer_code,DOLAN,District of Lantzville,87
+employer_code,DOLIL,District of Lillooet,88
+employer_code,VOLIO,Village of Lions Bay,89
+employer_code,DOLOG,District of Logan Lake,90
+employer_code,VOLUM,Village of Lumby,91
+employer_code,VOLYT,Village of Lytton,92
+employer_code,DOMAC,District of Mackenzie,93
+employer_code,COMAP,City of Maple Ridge,94
+employer_code,VOMAS,Village of Masset,95
+employer_code,VOMCB,Village of McBride,96
+employer_code,COMER,City of Merritt,97
+employer_code,DOMET,District of Metchosin,98
+employer_code,VOMID,Village of Midway,99
+employer_code,COMIS,City of Mission,100
+employer_code,VOMON,Village of Montrose,101
+employer_code,VONAK,Village of Nakusp,102
+employer_code,CONAN,City of Nanaimo,103
+employer_code,CONEL,City of Nelson,104
+employer_code,VONEW,Village of New Denver,105
+employer_code,DONEW,District of New Hazelton,106
+employer_code,CONEW,City of New Westminister,107
+employer_code,DONORC,District of North Cowichan,108
+employer_code,DONORS,District of North Saanich,109
+employer_code,CONOR,City of North Vancouver,110
+employer_code,DONOR,District of North Vancouver,111
+employer_code,NOREG,Northern Rockies Regional Municipality ,112
+employer_code,DOOAK,District of Oak Bay,113
+employer_code,TOOLI,Town of Oliver,114
+employer_code,TOOSO,Town of Osoyoos,115
+employer_code,COPAR,City of Parksville,116
+employer_code,DOPEA,District of Peachland ,117
+employer_code,VOPEM,Village of Pemberton,118
+employer_code,COPEN,City of Penticton,119
+employer_code,COPIT,City of Pitt Meadows,120
+employer_code,COPORALB,City of Port Alberni,121
+employer_code,VOPORALICE,Village of Port Alice,122
+employer_code,VOPORCLEM,Village of Port Clements,123
+employer_code,COPORCOQ,City of Port Coquitlam,124
+employer_code,DOPOREDW,District of Port Edward,125
+employer_code,DOPORHARD,District of Port Hardy,126
+employer_code,TOPOR,Town of Port McNeill,127
+employer_code,COPOR,City of Port Moody,128
+employer_code,VOPOU,Village of Pouce Coupe,129
+employer_code,COPOW,City of Powell River,130
+employer_code,COPRIGE,City of Prince George,131
+employer_code,COPRIRUP,City of Prince Rupert,132
+employer_code,TOPRI,Town of Princeton,133
+employer_code,TOQUA,Town of Qualicum Beach,134
+employer_code,VOQUE,Village of Queen Charlotte,135
+employer_code,COQUE,City of Quesnel,136
+employer_code,VORAD,Village of Radium Hot Springs,137
+employer_code,COREV,City of Revelstoke,138
+employer_code,CORIC,City of Richmond,139
+employer_code,COROS,City of Rossland,140
+employer_code,DOSAA,District of Saanich,141
+employer_code,VOSAL,Village of Salmo,142
+employer_code,COSAL,City of Salmon Arm,143
+employer_code,VOSAY,Village of Sayward,144
+employer_code,DOSEC,District of Sechelt,145
+employer_code,SOGOV,Sechelt Indian Government District,146
+employer_code,DOSIC,District of Sicamous,147
+employer_code,TOSID,Town of Sidney,148
+employer_code,VOSIL,Village of Silverton,149
+employer_code,VOSLO,Village of Slocan,150
+employer_code,TOSMI,Town of Smithers,151
+employer_code,DOSOO,District of Sooke,152
+employer_code,TOSPA,Township of Spallumcheen,153
+employer_code,DOSPA,District of Sparwood,154
+employer_code,DOSQU,District of Squamish,155
+employer_code,DOSTE,District of Stewart,156
+employer_code,DOSUM,District of Summerland,157
+employer_code,MOMUNSUNP,Mountain Resort Municipality of Sun Peaks,158
+employer_code,COSUR,City of Surrey,159
+employer_code,VOTAH,Village of Tahsis,160
+employer_code,DOTAY,District of Taylor,161
+employer_code,VOTEL,Village of Telkwa,162
+employer_code,COTER,City of Terrace,163
+employer_code,DOTOF,District of Tofino,164
+employer_code,COTRA,City of Trail,165
+employer_code,DOTUM,District of Tumbler Ridge,166
+employer_code,DOUCL,District of Ucluelet,167
+employer_code,VOVAL,Village of Valemount,168
+employer_code,COVAN,City of Vancouver,169
+employer_code,DOVAN,District of Vanderhoof,170
+employer_code,COVER,City of Vernon,171
+employer_code,COVIC,City of Victoria,172
+employer_code,TOVIE,Town of View Royal,173
+employer_code,VOWAR,Village of Warfield,174
+employer_code,COWES,City of West Kelowna,175
+employer_code,DOWES,District of West Vancouver,176
+employer_code,ROOF ,Resort Municipality of Whistler,177
+employer_code,COWHI,City of White Rock,178
+employer_code,COWIL,City of Williams Lake,179
+employer_code,VOZEB,Village of Zeballos,180
+employer_code,BOSPE,Boundary Invasive Species Society,181
+employer_code,COCOA,Cariboo Chilcotin Coast Invasive Plant Committee Society,182
+employer_code,COINVSPSO,Central Kootenay Invasive Species Society,183
+employer_code,COSPE,Coastal Invasive Species Committee Society,184
+employer_code,COSHINVSPSO,Columbia Shuswap Invasive Species Society,185
+employer_code,EOINV,East Kootenay Invasive Species Council,186
+employer_code,FOINV,Fraser Valley Invasive Species Society,187
+employer_code,ISCOBCS,Invasive Species Council of British Columbia Society,188
+employer_code,ISCOMVS,Invasive Species Council of Metro Vancouver Society,189
+employer_code,LOINV,Lillooet Regional Invasive Species Society,190
+employer_code,NOPLA,Northwest Invasive Plant Council,191
+employer_code,OOSIM,Okanagan and Similkameen Invasive Species Society,192
+employer_code,SOSKY,Sea to Sky Invasive Species Council,193
 waterbody_use_code,R,Recreation,1
 waterbody_use_code,F,Fishing,2
 waterbody_use_code,B,Boating,3
