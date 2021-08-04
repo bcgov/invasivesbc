@@ -123,7 +123,9 @@ POST.apiDoc = {
 };
 
 /**
- * Fetches all point-of-interest records based on request search filter criteria.
+ * Fetches all point-of-interest records based on request search
+ * filter criteria. The attributes and geometries are formatted
+ * to match the GeoJSON specification.
  *
  * @return {RequestHandler}
  */

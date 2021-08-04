@@ -262,26 +262,16 @@ export const getPointOfInterestSQL = (point_of_interestId: number): SQLStatement
   return SQL`SELECT * FROM point_of_interest_incoming_data where point_of_interest_incoming_data_id = ${point_of_interestId}`;
 };
 
+/**
+ * ## getPointsOfInterestLeanSQL
+ * Get Points of interest based on search criteria.
+ * The output is formatted to the GeoJSON specification.
+ * @param searchCriteria Extent, type ext...
+ * @returns Postgres data object
+ */
 export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
-  /*
-  select poi.*, ot.survey_date
-  from point_of_interest_incoming_data poi
-  left join other_table ot on poi.id_column = ot.id_column
-  —where ot.iapp_type = ‘survey’ and ot.survey_date > ‘inputdate1’ and ot.survey_date < ‘input_date2’
-  */
-
-  // if (searchCriteria.column_names && searchCriteria.column_names.length) {
-  //   // do not include the `SQL` template string prefix, as column names can not be parameterized
-  //   sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
-  // } else {
-  //   // if no column_names specified, select all
-  //   sqlStatement.append(SQL` *`);
-  // }
-
-  // include the total count of results that would be returned if the limit and offset constraints weren't applied
-  // sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
   sqlStatement.append(SQL`
     jsonb_build_object (
       'type', 'Feature',
