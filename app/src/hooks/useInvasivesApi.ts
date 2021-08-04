@@ -14,8 +14,8 @@ import { useContext, useMemo } from 'react';
 import { DocType } from '../constants/database';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 
-const API_HOST = process.env.REACT_APP_API_HOST;
-const API_PORT = process.env.REACT_APP_API_PORT;
+const API_HOST = process.env.REACT_APP_API_HOST || 'localhost';
+const API_PORT = process.env.REACT_APP_API_PORT || 3002;
 const API_URL =
   API_HOST && API_PORT
     ? `http://` + (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST
@@ -111,15 +111,12 @@ export const useInvasivesApi = () => {
     /**
      * Hijacking this function to test out the GeoJSON output API
      */
-    console.log(options.baseUrl + `/api/points-of-interest-lean/`);
-    // const geojson = await Http.request({
-    //   method: 'POST',
-    //   headers: { ...options.headers, 'Content-Type': 'application/json' },
-    //   url: options.baseUrl + `/api/points-of-interest-lean/`,
-    //   data: pointsOfInterestSearchCriteria
-    // });
-
-    // console.log('Activites as geojson', geojson);
+    const geojson = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/points-of-interest-lean/`,
+      data: pointsOfInterestSearchCriteria
+    });
 
     return data;
   };

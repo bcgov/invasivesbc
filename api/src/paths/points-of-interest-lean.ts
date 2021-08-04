@@ -7,7 +7,8 @@ import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getPointsOfInterestSQL } from '../queries/point-of-interest-queries';
+import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries';
+
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('point-of-interest');
@@ -145,8 +146,10 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
     try {
       // TODO: Need a new function for producing GeoJSON
-      const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
+      // const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
+      const sqlStatement: SQLStatement = getPointsOfInterestLeanSQL(sanitizedSearchCriteria);
       console.log(sqlStatement);
+      defaultLog.info('GeoJSON statement', sqlStatement);
 
       if (!sqlStatement) {
         throw {
