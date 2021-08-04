@@ -57,7 +57,10 @@ const SearchActivityListItem: React.FC<ISearchActivityListItem> = (props) => {
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={1}>
-        <Box overflow="hidden" textOverflow="ellipsis" title={props.activity.short_id || getShortActivityID(props.activity) || props.activity._id}>
+        <Box
+          overflow="hidden"
+          textOverflow="ellipsis"
+          title={props.activity.short_id || getShortActivityID(props.activity) || props.activity._id}>
           <Typography className={classes.activitiyListItem_Typography}>ID</Typography>
           {props.activity.short_id || getShortActivityID(props.activity) || props.activity._id}
         </Box>

@@ -37,12 +37,11 @@ const mapKeys = (source, mappingFunction) => {
 };
 
 export const getShortActivityID = (activity) => {
-  const record : any = mapKeys(activity, snakeCase);
-  if (!record?.activity_subtype || ! record?.activity_id || !record?.date_created)
-    return;
-  const shortYear = moment(record.date_created).format().substr(2,2);
-  return shortYear + ActivityLetter[record.activity_subtype] + record.activity_id.substr(0,4).toUpperCase();
-}
+  const record: any = mapKeys(activity, snakeCase);
+  if (!record?.activity_subtype || !record?.activity_id || !record?.date_created) return;
+  const shortYear = moment(record.date_created).format().substr(2, 2);
+  return shortYear + ActivityLetter[record.activity_subtype] + record.activity_id.substr(0, 4).toUpperCase();
+};
 
 export const activityDefaults = {
   doc_type: DocType.ACTIVITY,
@@ -109,7 +108,10 @@ export const sanitizeRecord = (input: any) => {
       }
     }
 
-    if (flattened.doc_type === DocType.POINT_OF_INTEREST || flattened.doc_type === DocType.REFERENCE_POINT_OF_INTEREST) {
+    if (
+      flattened.doc_type === DocType.POINT_OF_INTEREST ||
+      flattened.doc_type === DocType.REFERENCE_POINT_OF_INTEREST
+    ) {
       if (flattened._id) flattened.point_of_interest_id = flattened._id;
       // TODO else generate id
     }
@@ -287,7 +289,7 @@ export function generateActivityPayload(
   activitySubtype: ActivitySubtype
 ): IActivity {
   const id = uuidv4();
-  const short_id : string = getShortActivityID({
+  const short_id: string = getShortActivityID({
     activity_subtype: activitySubtype,
     activity_id: id,
     date_created: new Date()
@@ -324,7 +326,7 @@ export function generateDBActivityPayload(
 ) {
   const id = uuidv4();
   const time = moment(new Date()).format();
-  const short_id : string = getShortActivityID({
+  const short_id: string = getShortActivityID({
     activity_subtype: activitySubtype,
     activity_id: id,
     date_created: time

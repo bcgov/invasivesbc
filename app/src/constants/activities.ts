@@ -106,7 +106,7 @@ export enum ActivityLetter {
 
   // Collections:
   Activity_Collection_Biocontrol = 'B'
-};
+}
 
 export enum ActivityStatus {
   NEW = 'New',

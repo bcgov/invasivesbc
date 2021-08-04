@@ -784,7 +784,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
           {
             id: 'activity_id',
             title: 'Full ID'
-          },
+          }
         ]}
         dropdown={(row) => (
           <ActivitiesTable
@@ -1086,7 +1086,7 @@ export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (
           {
             id: 'activity_id',
             title: 'Full ID'
-          },
+          }
         ]}
         dropdown={(row) => (
           <ActivitiesTable
