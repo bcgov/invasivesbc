@@ -111,13 +111,18 @@ export const useInvasivesApi = () => {
     /**
      * Hijacking this function to test out the GeoJSON output API
      */
-    const geojson = await Http.request({
+    const geojsonData = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/points-of-interest-lean/`,
       data: pointsOfInterestSearchCriteria
     });
 
+    const features = geojsonData.data.rows.map((d) => d.geojson);
+    const geojson = {
+      type: 'FeatureCollection',
+      features: features
+    };
     console.log('Activites as geojson', geojson);
 
     return data;

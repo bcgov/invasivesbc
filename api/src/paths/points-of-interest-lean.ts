@@ -145,11 +145,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      // TODO: Need a new function for producing GeoJSON
-      // const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
       const sqlStatement: SQLStatement = getPointsOfInterestLeanSQL(sanitizedSearchCriteria);
-      console.log(sqlStatement);
-      defaultLog.info('GeoJSON statement', sqlStatement);
 
       if (!sqlStatement) {
         throw {
@@ -160,17 +156,11 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      console.log('db response', response);
-
       // parse the rows from the response
       const rows = { rows: (response && response.rows) || [] };
 
-      // console.log('rows', rows);
-
       // parse the count from the response
       const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-
-      console.log('Number of rows returned', count);
 
       return res.status(200).json({ ...rows, ...count });
     } catch (error) {
