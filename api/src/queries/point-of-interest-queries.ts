@@ -156,32 +156,16 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
   —where ot.iapp_type = ‘survey’ and ot.survey_date > ‘inputdate1’ and ot.survey_date < ‘input_date2’
   */
 
-  // if (searchCriteria.column_names && searchCriteria.column_names.length) {
-  //   // do not include the `SQL` template string prefix, as column names can not be parameterized
-  //   sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
-  // } else {
-  //   // if no column_names specified, select all
-  //   sqlStatement.append(SQL` *`);
-  // }
-
-  /**
-   * TODO: Add list of attributes and geometries here
-   */
-  sqlStatement.append(` 
-    jsonb_build_object(
-      'type', 'Feature',
-      'properties', json_build_object(
-        COUNT(*) OVER() AS total_rows_count,
-        'activity_id', activity_id,
-        'activity_type', activity_type,
-        'activity_subtype', activity_subtype
-     ),
-     'geometry', puplic.st_asGeoJSON(geog)::jsonb
-    ) as "geojson"
-  `);
+  if (searchCriteria.column_names && searchCriteria.column_names.length) {
+    // do not include the `SQL` template string prefix, as column names can not be parameterized
+    sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
+  } else {
+    // if no column_names specified, select all
+    sqlStatement.append(SQL` *`);
+  }
 
   // include the total count of results that would be returned if the limit and offset constraints weren't applied
-  sqlStatement.append(SQL`, `);
+  sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
 
   if (searchCriteria.iappType) {
     sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary ON
@@ -251,7 +235,6 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
     `);
   }
 
-  // TBD: This may conflict with the json building function
   if (searchCriteria.order?.length) {
     sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
   }
@@ -279,13 +262,6 @@ export const getPointOfInterestSQL = (point_of_interestId: number): SQLStatement
   return SQL`SELECT * FROM point_of_interest_incoming_data where point_of_interest_incoming_data_id = ${point_of_interestId}`;
 };
 
-/**
- * SQL query to fetch point_of_interest records based on search criteria. Formatted to GeoJSON
- *
- * @param {PointOfInterestSearchCriteria} searchCriteria
- * @returns {SQLStatement} sql query object
- */
-//NOSONAR
 export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
@@ -296,16 +272,28 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
   —where ot.iapp_type = ‘survey’ and ot.survey_date > ‘inputdate1’ and ot.survey_date < ‘input_date2’
   */
 
-  if (searchCriteria.column_names && searchCriteria.column_names.length) {
-    // do not include the `SQL` template string prefix, as column names can not be parameterized
-    sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
-  } else {
-    // if no column_names specified, select all
-    sqlStatement.append(SQL` *`);
-  }
+  // if (searchCriteria.column_names && searchCriteria.column_names.length) {
+  //   // do not include the `SQL` template string prefix, as column names can not be parameterized
+  //   sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
+  // } else {
+  //   // if no column_names specified, select all
+  //   sqlStatement.append(SQL` *`);
+  // }
 
   // include the total count of results that would be returned if the limit and offset constraints weren't applied
-  sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
+  // sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
+  sqlStatement.append(SQL`
+    jsonb_build_object (
+      'type', 'Feature',
+      'properties', json_build_object(
+        'activity_id', activity_id,
+        'activity_type', activity_type,
+        'activity_subtype', activity_subtype
+      ),
+      'geometry', public.st_asGeoJSON(geog)::jsonb
+    ) as "geojson",
+    COUNT(*) OVER() AS "total_rows_count"
+  `);
 
   if (searchCriteria.iappType) {
     sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary ON

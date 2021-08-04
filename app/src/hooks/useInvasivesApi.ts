@@ -118,6 +118,8 @@ export const useInvasivesApi = () => {
       data: pointsOfInterestSearchCriteria
     });
 
+    console.log('Activites as geojson', geojson);
+
     return data;
   };
 

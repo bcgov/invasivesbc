@@ -165,7 +165,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       // parse the rows from the response
       const rows = { rows: (response && response.rows) || [] };
 
-      console.log('rows', rows);
+      // console.log('rows', rows);
 
       // parse the count from the response
       const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
