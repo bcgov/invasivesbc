@@ -21,6 +21,8 @@ const API_URL =
     ? `http://` + (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST
     : 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
+console.log('API_URL', API_URL);
+
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
  *
@@ -109,14 +111,15 @@ export const useInvasivesApi = () => {
     /**
      * Hijacking this function to test out the GeoJSON output API
      */
-    const geojson = await Http.request({
-      method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
-      url: options.baseUrl + `/api/points-of-interest-lean/`,
-      data: pointsOfInterestSearchCriteria
-    });
+    console.log(options.baseUrl + `/api/points-of-interest-lean/`);
+    // const geojson = await Http.request({
+    //   method: 'POST',
+    //   headers: { ...options.headers, 'Content-Type': 'application/json' },
+    //   url: options.baseUrl + `/api/points-of-interest-lean/`,
+    //   data: pointsOfInterestSearchCriteria
+    // });
 
-    console.log('Activites as geojson', geojson);
+    // console.log('Activites as geojson', geojson);
 
     return data;
   };

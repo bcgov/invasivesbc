@@ -145,6 +145,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
+      defaultLog.info('Old sql statement', sqlStatement);
 
       if (!sqlStatement) {
         throw {
