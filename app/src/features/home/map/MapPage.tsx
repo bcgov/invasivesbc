@@ -10,6 +10,7 @@ import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Feature } from 'geojson';
+import { getShortActivityID } from 'utils/addActivity';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 
@@ -215,6 +216,8 @@ const MapPage: React.FC<IMapProps> = (props) => {
         return;
       }
 
+      row.short_id = getShortActivityID(row);
+
       // geos.push(row.geometry[0]); // deprecated(?): points only need to be interactive geos now
 
       let coordinatesString = 'Polygon';
@@ -244,7 +247,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
           interactiveGeos.push({
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Uploaded spatial content:\n ' + row._id + '\n' + coordinatesString,
+            description: 'Uploaded spatial content:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
             geometry: row.geometry,
             color: 'orange',
             onClickCallback: () => {
@@ -258,7 +261,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'New Point of Interest:\n ' + row._id + '\n' + coordinatesString,
+            description: 'New Point of Interest:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry,
@@ -288,7 +291,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Past Activity:\n ' + row._id + '\n' + coordinatesString,
+            description: 'Past Activity:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -309,7 +312,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Activity:\n ' + row._id + '\n' + coordinatesString,
+            description: 'Activity:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
@@ -339,7 +342,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
             //mapContext: MapContext.MAIN_MAP,
             recordDocID: row._id,
             recordDocType: row.docType,
-            description: 'Point of Interest:\n ' + row._id + '\n' + coordinatesString,
+            description: 'Point of Interest:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
 
             // basic display:
             geometry: row.geometry[0],
