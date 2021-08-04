@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useMapEvent, GeoJSON, Popup, Marker, useMapEvents } from 'react-leaflet';
 import { IconButton, Button, makeStyles, Popover, Typography } from '@material-ui/core';
+import turf, { polygon, area } from '@turf/turf';
 import L from 'leaflet';
 import dotMarker from './Icons/dotMarker.png';
 import ruler from './Icons/ruler.png';
@@ -55,12 +56,11 @@ const MeasureTool = (props) => {
   const classes = useStyles();
   const [isMeasuringDistance, setIsMeasuringDistance] = useState(false);
   const [isMeasuringArea, setIsMeasuringArea] = useState(false);
+  const [polyArea, setPolyArea] = useState(0);
   const [aGeoJSON, setGeoJSON] = useState([]);
-  var polyJSON = {};
   const [aKey, setKey] = useState(1);
   const [totalDistance, setTotalDistance] = useState(0);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
   const [locArray, setLocArray] = useState([]);
 
   const markerIcon = L.icon({
@@ -144,7 +144,31 @@ const MeasureTool = (props) => {
   const toggleMeasureArea = () => {
     setIsMeasuringDistance(false);
     setIsMeasuringArea(!isMeasuringArea);
-  }
+  };
+  const finishPolygon = () => {
+    const tempArr = [];
+    for (var i = 0; i < locArray.length; i++) {
+      tempArr[i] = [locArray[i].lng, locArray[i].lat];
+      if (i === 0) {
+        tempArr[locArray.length] = [locArray[i].lng, locArray[i].lat];
+      }
+    };
+    var obj = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          tempArr
+        ]
+      },
+      properties: {
+        name: 'Dinagat Islands'
+      }
+    };
+    setGeoJSON([...aGeoJSON, obj]);
+    var tempPolygon = polygon([tempArr]);
+    setPolyArea(area(tempPolygon));
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -184,30 +208,7 @@ const MeasureTool = (props) => {
             ? (<Typography>Enabled</Typography>)
             : (<Typography>Disabled</Typography>)}
         </Button>
-        {isMeasuringArea ? <Button onClick={() => {
-          const tempArr = [];
-          for (var i = 0; i < locArray.length; i++) {
-            tempArr[i] = [locArray[i].lng, locArray[i].lat];
-            if (i === 0) {
-              tempArr[locArray.length] = [locArray[i].lng, locArray[i].lat];
-            }
-          };
-          console.log(tempArr);
-          var obj = {
-            type: 'Feature',
-            geometry: {
-              type: 'Polygon',
-              coordinates: [
-                tempArr
-              ]
-            },
-            properties: {
-              name: 'Dinagat Islands'
-            }
-          };
-          console.log(JSON.stringify(obj));
-          setGeoJSON([...aGeoJSON, obj]);
-        }}>Finish Polymeasure</Button> : null}
+        {isMeasuringArea ? <Button onClick={finishPolygon}>Finish Polymeasure</Button> : null}
         <br />
         <Button onClick={() => {
           setGeoJSON([]);
@@ -215,7 +216,10 @@ const MeasureTool = (props) => {
         }}>Clear Measurements</Button>
       </Popover>
       <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle}>
-        <Popup>{totalDistance.toFixed(1)} meters</Popup>
+        {isMeasuringDistance ? <Popup>{totalDistance.toFixed(1)} meters</Popup>
+          : null}
+        {isMeasuringArea ? <Popup>{polyArea.toFixed(2)} meters&#178;</Popup>
+          : null}
       </GeoJSON>
 
       {locArray.map((item: { lat: any; lng: any }) => (
