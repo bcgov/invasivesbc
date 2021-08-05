@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "p-queue": "^7.1.0",
+    "pqueue": "^0.3.1"
+  }
+}

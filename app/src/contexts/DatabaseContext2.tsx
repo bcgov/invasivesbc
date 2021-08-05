@@ -3,6 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { GeoJSONObject } from '@turf/turf';
 import { DocType } from 'constants/database';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import PQueue from 'p-queue/dist';
 import { useSQLite } from 'react-sqlite-hook/dist';
 // Singleton SQLite Hook
 export let sqlite: any;
@@ -11,27 +12,48 @@ export let existingConn: any;
 // Is Json Listeners used
 export let isJsonListeners: any;
 
-export const DatabaseContext2 = React.createContext({ sqliteDB: null });
+export interface DBRequest {
+  sql: string;
+  asyncTask: () => Promise<any>;
+}
+
+export const DatabaseContext2 = React.createContext({
+  sqliteDB: null,
+  asyncQueue: async (request: DBRequest) => {
+    let x: unknown;
+    return x;
+  }
+});
 
 export const DatabaseContext2Provider = (props) => {
   alert('provider render');
   const message = useRef('');
   const [databaseIsSetup, setDatabaseIsSetup] = useState(false);
-  const [dbRequestQueue, setdbRequestQueue] = useState<Object[]>([]);
+  const dbRequestQueue = new PQueue({ concurrency: 1 });
   const [db, setDB] = useState(null);
   const [isModal, setIsModal] = useState(false);
+
+  const processRequest = async (dbRequest: DBRequest) => {
+    const returnPromise = dbRequestQueue.add(dbRequest.asyncTask);
+    console.log('pushing to queue');
+    console.log('queue length: ' + dbRequestQueue.size);
+    return returnPromise;
+  };
+
   const onProgressImport = async (progress: string) => {
     if (isJsonListeners.jsonListeners) {
       if (!isModal) setIsModal(true);
       message.current = message.current.concat(`${progress}\n`);
     }
   };
+
   const onProgressExport = async (progress: string) => {
     if (isJsonListeners.jsonListeners) {
       if (!isModal) setIsModal(true);
       message.current = message.current.concat(`${progress}\n`);
     }
   };
+
   const {
     echo,
     getPlatform,
@@ -175,14 +197,18 @@ export const DatabaseContext2Provider = (props) => {
   try {
     //if web just be a null context and return children
     if (!['ios', 'android', 'electron'].includes(Capacitor.getPlatform())) {
-      return <DatabaseContext2.Provider value={{ sqliteDB: null }}>{props.children}</DatabaseContext2.Provider>;
+      return (
+        <DatabaseContext2.Provider value={{ sqliteDB: null, asyncQueue: processRequest }}>
+          {props.children}
+        </DatabaseContext2.Provider>
+      );
     }
 
     //while (!databaseIsSetup) {}
 
     return (
       <>
-        <DatabaseContext2.Provider value={{ sqliteDB: db }}>
+        <DatabaseContext2.Provider value={{ sqliteDB: db, asyncQueue: processRequest }}>
           {databaseIsSetup ? props.children : null}
         </DatabaseContext2.Provider>
       </>
