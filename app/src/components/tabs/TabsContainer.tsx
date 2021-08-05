@@ -30,7 +30,6 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import React, { useCallback, useLayoutEffect, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import sunriseLogo from '../../bcGovSunriseLogo.png';
 import invbclogo from '../../InvasivesBC_Icon.svg';
 import MenuIcon from '@material-ui/icons/Menu';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
@@ -287,17 +286,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 onClick={() => history.push('/')}
               />
               <b>InvasivesBC</b>
-            </Grid>
-            <Grid container justify="center" alignItems="center" xs={6} md={1} item>
-              <img
-                alt="bcLogo"
-                className={classes.pointer}
-                src={sunriseLogo}
-                width="130"
-                style={{ objectFit: 'cover' }}
-                height="50"
-                onClick={() => history.push('/')}
-              />
             </Grid>
             <Hidden smDown>
               <Grid xs={11} item>
