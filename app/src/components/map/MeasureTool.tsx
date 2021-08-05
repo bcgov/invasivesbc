@@ -25,9 +25,15 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   typography: {
-    padding: theme.spacing(2),
-    fontSize: 8
+    paddingLeft: theme.spacing(2),
+    fontSize: 16,
+    width: 150
   },
+  button: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    width: 150
+  }
 }));
 
 const interactiveGeometryStyle = () => {
@@ -138,6 +144,7 @@ const MeasureTool = (props) => {
   }, [locArray]);
 
   function clearMeasure() {
+    setPolyArea(0);
     setTotalDistance(0);
     setGeoJSON([]);
     setLocArray([]);
@@ -206,7 +213,7 @@ const MeasureTool = (props) => {
         <Grid container direction='column'>
 
           <Grid item xs={3}>
-            <Button size='small' onClick={toggleMeasureDistance}>
+            <Button className={classes.button} onClick={toggleMeasureDistance}>
               {isMeasuringDistance
                 ? (<RadioButtonCheckedIcon />)
                 : (<RadioButtonUncheckedIcon />)}
@@ -215,7 +222,12 @@ const MeasureTool = (props) => {
           </Grid>
 
           <Grid item xs={3}>
-            <Button size='small' onClick={toggleMeasureArea}>
+            {totalDistance !== 0 ?
+              <Typography className={classes.typography}>{totalDistance.toFixed(2)} m</Typography> : null}
+          </Grid>
+
+          <Grid item xs={3}>
+            <Button className={classes.button} onClick={toggleMeasureArea}>
               {isMeasuringArea
                 ? (<RadioButtonCheckedIcon />)
                 : (<RadioButtonUncheckedIcon />)}
@@ -224,11 +236,16 @@ const MeasureTool = (props) => {
           </Grid>
 
           <Grid item xs={3}>
-            {isMeasuringArea ? <Button onClick={finishPolygon}>Finish Draw</Button> : null}
+            {polyArea !== 0 ?
+              <Typography className={classes.typography}>{polyArea.toFixed(2)}m&#178;</Typography> : null}
           </Grid>
 
           <Grid item xs={3}>
-            <Button size='small' onClick={() => clearMeasure()}>Clear</Button>
+            {isMeasuringArea ? <Button className={classes.button} onClick={finishPolygon}>Finish Draw</Button> : null}
+          </Grid>
+
+          <Grid item xs={3}>
+            <Button className={classes.button} onClick={() => clearMeasure()}>Clear</Button>
           </Grid>
 
         </Grid>
