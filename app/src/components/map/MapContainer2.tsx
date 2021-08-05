@@ -36,7 +36,7 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { useDataAccess } from 'hooks/useDataAccess';
 import TempPOILoader from './LayerLoaderHelpers/TempPOILoader';
-import { Box, Button, Grid, IconButton } from '@material-ui/core';
+import { Theme, makeStyles } from '@material-ui/core';
 
 // Layer Picker
 import LayersIcon from '@material-ui/icons/Layers';
@@ -125,6 +125,16 @@ const interactiveGeometryStyle = () => {
     strokeWidth: 10
   };
 };
+
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    position: 'relative',
+    height: '100%', width: '100%',
+    [theme.breakpoints.up('md')]: {
+      position: 'absolute'
+    }
+  }
+}))
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
@@ -454,13 +464,14 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     return null;
   };
 
+  const classes = useStyles();
   const [map, setMap] = useState<any>(null);
 
   return (
     <MapContainer
+      className={classes.root}
       center={[55, -128]}
       zoom={5}
-      style={{ height: '100%', width: '100%' }}
       zoomControl={false}
       whenCreated={setMap}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
@@ -472,7 +483,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           flexFlow: 'column wrap',
           height: '45vh'
         }}>
-        
+
         <LayerPicker data={data} />
         <DisplayPosition map={map} />
         <MeasureTool />
@@ -498,7 +509,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         </LayersControl.BaseLayer>
         <LayersControl.Overlay checked name="Activities">
           {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
-          {/* this line below works - its what you need for geosjon}
+      {/* this line below works - its what you need for geosjon}
           <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
           {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> }
         </LayersControl.Overlay>
