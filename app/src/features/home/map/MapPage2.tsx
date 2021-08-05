@@ -181,10 +181,10 @@ const MapPage2: React.FC<IMapProps> = (props) => {
     updateComponent();
   }, [databaseChangesContext, showPopOut, getEverythingWithAGeo]);
 
-  useEffect(() => {
-    console.log('chosen geo');
-    console.dir(selectedInteractiveGeometry);
-  }, [selectedInteractiveGeometry]);
+  // useEffect(() => {
+  //   console.log('chosen geo');
+  //   console.dir(selectedInteractiveGeometry);
+  // }, [selectedInteractiveGeometry]);
 
   useEffect(() => {
     getActivityData();

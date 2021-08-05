@@ -45,6 +45,9 @@ import { LayerPicker } from './LayerPicker/SortableHelper';
 import data from './LayerPicker/GEO_DATA.json';
 import { DomEvent } from 'leaflet';
 import DisplayPosition from './DisplayPosition';
+import { debounced } from 'utils/FunctionUtils';
+import { createPolygonFromBounds } from './LayerLoaderHelpers/LtlngBoundsToPoly';
+import { MapRequestContextProvider, MapRequestContext } from 'contexts/MapRequestsContext';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -96,6 +99,14 @@ export const getZIndex = (doc) => {
   }
   return zIndex;
 };
+
+export const async = require('async');
+export const q = async.queue(function (task, callback) {
+  setTimeout(() => {
+    console.log('Working on task: ' + JSON.stringify(task));
+    callback();
+  }, 2000);
+}, 1);
 
 export interface IMapContainerProps {
   classes?: any;
@@ -448,6 +459,45 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     return null;
   };
 
+  const AsyncExtent = () => {
+    const mapRequestContext = useContext(MapRequestContext);
+    const { layersSelected } = mapRequestContext;
+    const [lastRequestPushed, setLastRequestPushed] = useState(null);
+
+    const map = useMapEvent('moveend', () => {
+      let newArray = [];
+      layersSelected.forEach((layer) => {
+        if (layer.enabled) newArray.push(layer.id);
+      });
+
+      q.remove((worker) => {
+        if (worker.data && lastRequestPushed?.extent) {
+          if (
+            !turf.booleanWithin(worker.data.extent, lastRequestPushed.extent) &&
+            !turf.booleanOverlap(worker.data.extent, lastRequestPushed.extent)
+          ) {
+            console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
+            return true;
+          }
+          if (!newArray.includes(worker.data.layer)) {
+            console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
+            return true;
+          }
+        }
+        return false;
+      });
+
+      if (newArray.length > 0) {
+        newArray.forEach((layer) => {
+          q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
+          setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
+        });
+      }
+    });
+
+    return null;
+  };
+
   const [map, setMap] = useState<any>(null);
 
   return (
@@ -458,72 +508,75 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       zoomControl={false}
       whenCreated={setMap}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'flex-end',
-          flexFlow: 'column wrap',
-          height: '70vh'
-        }}>
-        <IconButton
-          style={{
-            margin: '5px',
-            background: 'white',
-            zIndex: 500,
-            borderRadius: '15%',
-            border: '1px solid black'
-          }}
-          onClick={() => {
-            setMenuState(!menuState);
-          }}>
-          <LayersIcon />
-        </IconButton>
-        {menuState ? (
-          <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
-            <LayerPicker data={data} />
-          </div>
-        ) : (
-          <></>
-        )}
-
+      <MapRequestContextProvider>
         <div
           style={{
-            margin: '5px',
-            zIndex: 1500,
-            background: 'white',
-            borderRadius: '15%',
-            border: '1px solid black'
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end',
+            flexFlow: 'column wrap',
+            height: '70vh'
           }}>
-          {map ? <DisplayPosition map={map} /> : null}
+          <IconButton
+            style={{
+              margin: '5px',
+              background: 'white',
+              zIndex: 500,
+              borderRadius: '15%',
+              border: '1px solid black'
+            }}
+            onClick={(e) => {
+              setMenuState(!menuState);
+            }}>
+            <LayersIcon />
+          </IconButton>
+          {menuState ? (
+            <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
+              <LayerPicker data={data} />
+            </div>
+          ) : (
+            <></>
+          )}
+
+          <div
+            style={{
+              margin: '5px',
+              zIndex: 1500,
+              background: 'white',
+              borderRadius: '15%',
+              border: '1px solid black'
+            }}>
+            {map ? <DisplayPosition map={map} /> : null}
+          </div>
         </div>
-      </div>
 
-      {/* Here is the offline component */}
-      <Offline />
+        {/* Here is the offline component */}
+        <Offline />
 
-      <ZoomControl position="bottomleft" />
+        <ZoomControl position="bottomleft" />
 
-      {/* Here are the editing tools */}
-      {props.showDrawControls && (
-        <FeatureGroup>
-          <EditTools />
-        </FeatureGroup>
-      )}
+        {/* Here are the editing tools */}
+        {props.showDrawControls && (
+          <FeatureGroup>
+            <EditTools />
+          </FeatureGroup>
+        )}
 
-      <MapResizer />
+        <MapResizer />
+        <AsyncExtent />
 
-      <LayersControl position="topright">
-        <LayersControl.BaseLayer checked name="Regular Layer">
-          <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-        </LayersControl.BaseLayer>
-        <LayersControl.Overlay checked name="Activities">
-          {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
-          {/* this line below works - its what you need for geosjon*/}
-          <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
-          {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
-        </LayersControl.Overlay>
-      </LayersControl>
+        <LayersControl position="topright">
+          <LayersControl.BaseLayer checked name="Regular Layer">
+            <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+          </LayersControl.BaseLayer>
+          <LayersControl.Overlay checked name="Activities">
+            {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
+            {/* this line below works - its what you need for geosjon*/}
+            <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
+            {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
+          </LayersControl.Overlay>
+        </LayersControl>
+      </MapRequestContextProvider>
     </MapContainer>
   );
 };

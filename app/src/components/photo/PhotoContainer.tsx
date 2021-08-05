@@ -108,7 +108,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       {!props.isDisabled && (
         <Box>
           <Grid container>
-            <Grid container item spacing={3} justify="center">
+            <Grid container item spacing={3} justifyContent="center">
               <Grid item>
                 <Button variant="contained" color="primary" startIcon={<AddAPhoto />} onClick={() => takePhoto()}>
                   Add A Photo

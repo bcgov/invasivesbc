@@ -499,7 +499,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           expandIcon={<ExpandMore fontSize="large" />}
           aria-controls="panel-geo-record-picker-content"
           id="panel-geo-record-picker-header">
-          <Grid alignContent="flex-start" justify="space-between" container>
+          <Grid alignContent="flex-start" justifyContent="space-between" container>
             <Grid xs={2} className={classes.tripAccordionGridItem} item>
               <Tooltip color="primary" title={props.helpText} arrow>
                 <HelpIcon fontSize="large" />
