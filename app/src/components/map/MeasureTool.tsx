@@ -3,6 +3,7 @@ import { useMapEvent, GeoJSON, Popup, Marker, useMapEvents } from 'react-leaflet
 import { IconButton, Button, makeStyles, Popover, Grid, Typography } from '@material-ui/core';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
+import utm_zone from './DisplayPosition';
 import turf, { polygon, area } from '@turf/turf';
 import L from 'leaflet';
 import dotMarker from './Icons/dotMarker.png';
@@ -241,10 +242,13 @@ const MeasureTool = (props) => {
           : null}
       </GeoJSON>
 
-      {locArray.map((item: { lat: any; lng: any }) => (
-        <Marker position={[item.lat, item.lng]} icon={markerIcon}></Marker>
-      ))}
-
+      {isMeasuringArea ?
+        <>
+          {locArray.map((item: { lat: any; lng: any }) => (
+            <Marker position={[item.lat, item.lng]} icon={markerIcon}></Marker>
+          ))}
+        </>
+        : null}
     </>
   );
 };
