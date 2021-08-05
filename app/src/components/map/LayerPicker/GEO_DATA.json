@@ -18,7 +18,7 @@
         "colorCode": "#000",
         "order": 0,
         "loaded": 70,
-        "enabled": true
+        "enabled": false
       },
       {
         "id": "waterStreams",
@@ -28,7 +28,7 @@
         "colorCode": "#000",
         "order": 1,
         "loaded": 70,
-        "enabled": true
+        "enabled": false
       },
       {
         "id": "waterBeds",
@@ -38,7 +38,7 @@
         "colorCode": "#000",
         "order": 2,
         "loaded": 70,
-        "enabled": true
+        "enabled": false
       }
     ]
   },
@@ -49,9 +49,9 @@
     "type": "null",
     "colorCode": "#000",
     "order": 1,
-    "loaded": 70,
+    "loaded": 100,
     "expanded": false,
-    "enabled": true,
+    "enabled": false,
     "children": [
       {
         "id": "forest",
@@ -71,7 +71,7 @@
         "colorCode": "#000",
         "order": 1,
         "loaded": 70,
-        "enabled": true
+        "enabled": false
       },
       {
         "id": "grassland",
@@ -81,7 +81,7 @@
         "colorCode": "#000",
         "order": 2,
         "loaded": 70,
-        "enabled": true
+        "enabled": false
       }
     ]
   },
@@ -104,7 +104,7 @@
         "colorCode": "#000",
         "order": 0,
         "loaded": 70,
-        "enabled": true
+        "enabled": false
       }
     ]
   },
@@ -127,7 +127,7 @@
         "colorCode": "#000",
         "order": 0,
         "loaded": 70,
-        "enabled": true
+        "enabled": false
       },
       {
         "id": "waterStreams",
@@ -137,7 +137,7 @@
         "colorCode": "#000",
         "order": 1,
         "loaded": 70,
-        "enabled": true
+        "enabled": false
       },
       {
         "id": "waterBeds",
@@ -147,7 +147,7 @@
         "colorCode": "#000",
         "order": 2,
         "loaded": 70,
-        "enabled": true
+        "enabled": false
       }
     ]
   }

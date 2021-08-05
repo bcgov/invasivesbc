@@ -1,6 +1,8 @@
 import { AppBar, Toolbar, Tabs, Tab } from '@material-ui/core';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import sunriseLogo from '../../bcGovSunriseLogo.png';
 
 interface IFooterProps {
   classes?: any;
@@ -8,6 +10,7 @@ interface IFooterProps {
 
 const Footer: React.FC<IFooterProps> = () => {
   const networkContext = useContext(NetworkContext);
+  const history = useHistory();
 
   const defaultConnectionStatusString = (!window['cordova'] && 'Online') || '';
 
@@ -35,6 +38,14 @@ const Footer: React.FC<IFooterProps> = () => {
   return (
     <AppBar position="static">
       <Toolbar style={{ justifyContent: 'flex-end' }}>
+        <img
+          alt="bcLogo"
+          src={sunriseLogo}
+          width="130"
+          style={{ objectFit: 'cover', cursor: 'pointer' }}
+          height="50"
+          onClick={() => history.push('/')}
+        />
         <Tabs value={false} variant="scrollable" scrollButtons="on">
           {tabs.map((tab) => (
             <Tab label={tab.label} key={tab.label} onClick={() => window.open(tab.url)} />
