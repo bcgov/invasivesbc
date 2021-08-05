@@ -143,12 +143,10 @@ const MeasureTool = (props) => {
     setLocArray([]);
   };
   const toggleMeasureDistance = () => {
-    clearMeasure();
     setIsMeasuringArea(false);
     setIsMeasuringDistance(!isMeasuringDistance);
   };
   const toggleMeasureArea = () => {
-    clearMeasure();
     setIsMeasuringDistance(false);
     setIsMeasuringArea(!isMeasuringArea);
   };
