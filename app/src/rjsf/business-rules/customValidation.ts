@@ -345,12 +345,38 @@ export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
   };
 }
 /*
+  Function to validate that the person field does not contain any numbers
+*/
+export function getPersonNameNoNumbersValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData ||
+      !formData.activity_type_data ||
+      !formData.activity_type_data.observation_persons ||
+      !formData.activity_type_data.observation_persons ||
+      formData.activity_type_data.observation_persons.length < 1
+    ) {
+      return errors;
+    }
+    let index = 0;
+    formData.activity_type_data.observation_persons.forEach((person) => {
+      if (person?.person_name)
+        if (person.person_name.match(/\d+/g) != null) {
+          errors['activity_type_data']['observation_persons'][index]['person_name'].addError(
+            'Name field must not contain any numbers'
+          );
+        }
+      index++;
+    });
+    return errors;
+  };
+}
+/*
   Function to validate that if the herbicide mix is set to true,
   there must be 2 or more herbicides chosen
 */
 export function getHerbicideMixValidation(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    console.log(formData);
     if (
       !formData ||
       !formData.activity_subtype_data ||
