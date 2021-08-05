@@ -4,6 +4,7 @@ import { DatabaseContext, query, QueryType } from 'contexts/DatabaseContext';
 import { useContext } from 'react';
 import { DocType } from 'constants/database';
 import { Capacitor } from '@capacitor/core';
+import { DBRequest } from 'contexts/DatabaseContext2';
 
 /**
  * Returns a set of supported api methods.
@@ -23,6 +24,10 @@ export const useDataAccess = () => {
    */
   const getPointsOfInterest = async (
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
+    context: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    },
     isOnline?: boolean
   ): Promise<any> => {
     if (pointsOfInterestSearchCriteria.online) {
@@ -46,13 +51,26 @@ export const useDataAccess = () => {
    * @param {string} activityId
    * @return {*}  {Promise<any>}
    */
-  const getActivityById = async (activityId: string, isOnline?: boolean): Promise<any> => {
+  const getActivityById = async (
+    activityId: string,
+    context: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    },
+    isOnline?: boolean
+  ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       return api.getActivityById(activityId);
     } else {
-      //TODO: Implement for mobile
-      console.log('not implemented yet');
-      return;
+      // get access to queue:
+      const dbcontext = context;
+
+      //push to queue
+      const asyncReturnVal = await dbcontext.asyncQueue({
+        asyncTask: asyncDBAction,
+        sql: 'banana'
+      });
+      return asyncReturnVal;
     }
   };
 
@@ -62,7 +80,14 @@ export const useDataAccess = () => {
    * @param {ICreateOrUpdateActivity} activity
    * @return {*}  {Promise<any>}
    */
-  const updateActivity = async (activity: ICreateOrUpdateActivity, isOnline?: boolean): Promise<any> => {
+  const updateActivity = async (
+    activity: ICreateOrUpdateActivity,
+    context: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    },
+    isOnline?: boolean
+  ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       return api.updateActivity(activity);
     } else {
