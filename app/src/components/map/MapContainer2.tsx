@@ -130,9 +130,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: 'relative',
     height: '100%', width: '100%',
-    [theme.breakpoints.up('md')]: {
-      position: 'absolute'
-    }
   }
 }))
 
