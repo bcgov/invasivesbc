@@ -192,6 +192,8 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
       'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
       'Activity_Monitoring_BiologicalTerrestrialPlant',
       'Activity_Dispersal_BiologicalDispersal',
+      'Activity_AnimalActivity_AnimalTerrestrial',
+      'Activity_AnimalActivity_AnimalAquatic',
       'Activity_Transect_FireMonitoring',
       'Activity_Transect_Vegetation',
       'Activity_Transect_BiocontrolEfficacy',
