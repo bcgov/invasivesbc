@@ -355,21 +355,6 @@ export async function up(knex: Knex): Promise<void> {
         from form_a_obj,
           jsonb_to_recordset(form_a_obj.my_array) as form_a(plot_identification_trees jsonb)
       ),
-      tree_comments_obj as (
-        select form_a_obj.activity_id,
-          form_a_obj.activity_incoming_data_id,
-          row_number() over (
-            order by activity_incoming_data_id
-          ),
-          form_a.tree_comments
-        from form_a_obj,
-          jsonb_to_recordset(form_a_obj.my_array) as form_a(tree_comments jsonb)
-      ),
-      tree_comments_query as (
-        select CONCAT(activity_id, '-a-', row_number) as form_a_id,
-          tree_comments
-        from tree_comments_obj
-      ),
       plot_information_fields_query as (
         select CONCAT(activity_id, '-a-', row_number) as form_a_id,
           activity_id,
@@ -417,7 +402,8 @@ export async function up(knex: Knex): Promise<void> {
           plot_identification_trees_fields.baf,
           plot_identification_trees_fields.fixed_area,
           plot_identification_trees_fields.trees_exist,
-          plot_identification_trees_fields.full_count_area
+          plot_identification_trees_fields.full_count_area,
+          tree_comments
         from plot_identification_trees_obj,
           jsonb_to_record(
             plot_identification_trees_obj.plot_identification_trees
@@ -425,7 +411,8 @@ export async function up(knex: Knex): Promise<void> {
             baf text,
             fixed_area integer,
             trees_exist text,
-            full_count_area integer
+            full_count_area integer,
+            tree_comments text
           )
       )
       select plot_information_fields_query.form_a_id,
@@ -448,11 +435,10 @@ export async function up(knex: Knex): Promise<void> {
         plot_identification_trees_fields_query.fixed_area,
         plot_identification_trees_fields_query.trees_exist,
         plot_identification_trees_fields_query.full_count_area,
-        tree_comments_query.tree_comments
+        plot_identification_trees_fields_query.tree_comments
       from plot_information_fields_query
         inner join plot_identification_fields_query on plot_information_fields_query.form_a_id = plot_identification_fields_query.form_a_id
         inner join plot_identification_trees_fields_query on plot_information_fields_query.form_a_id = plot_identification_trees_fields_query.form_a_id
-        inner join tree_comments_query on plot_information_fields_query.form_a_id = tree_comments_query.form_a_id
     );
   set search_path = invasivesbc;
   drop VIEW if exists invasivesbc.FREP_Log cascade;
