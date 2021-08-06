@@ -744,8 +744,7 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Tree Species"
+            }
           },
           "decay_class": {
             "type": "string",
@@ -756,8 +755,7 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Decay Class"
+            }
           },
           "diameter": {
             "type": "number",
@@ -786,8 +784,7 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Tree Species"
+            }
           },
           "wt_class": {
             "type": "string",
@@ -798,8 +795,7 @@
               "x-enum-code-name": "code_name",
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Wildlife Tree Class"
+            }
           },
           "dbh": {
             "type": "number",
@@ -845,8 +841,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "UTM Zone"
+                }
               },
               "easting": {
                 "type": "number",
@@ -857,14 +852,7 @@
                 "title": "Northing"
               }
             },
-            "required": [
-              "opening_id",
-              "assessed_by",
-              "plot_number",
-              "utm_zone",
-              "easting",
-              "northing"
-            ]
+            "required": ["opening_id", "assessed_by", "plot_number", "utm_zone", "easting", "northing"]
           },
           "plot_identification_trees": {
             "type": "object",
@@ -880,8 +868,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Trees exist"
+                }
               }
             },
             "dependencies": {
@@ -901,8 +888,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Basal Area Factor"
+                        }
                       },
                       "fixed_area": {
                         "type": "number",
@@ -911,6 +897,10 @@
                       "full_count_area": {
                         "type": "number",
                         "title": "Full Count Area (ha)"
+                      },
+                      "tree_comments": {
+                        "type": "string",
+                        "title": "Comments (tree)"
                       }
                     }
                   },
@@ -930,12 +920,7 @@
             "title": "Stand Table",
             "items": {
               "$ref": "#/components/schemas/FREP_Stand_Table"
-            },
-            "x-tooltip-text": "Stand Table"
-          },
-          "tree_comments": {
-            "type": "string",
-            "title": "Comments (tree)"
+            }
           },
           "plot_information": {
             "type": "object",
@@ -951,8 +936,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "CWD In Transect?"
+                }
               }
             },
             "dependencies": {
@@ -980,8 +964,7 @@
                         "title": "Logs",
                         "items": {
                           "$ref": "#/components/schemas/FREP_Log"
-                        },
-                        "x-tooltip-text": "Logs"
+                        }
                       },
                       "log_comments": {
                         "type": "string",
@@ -1032,8 +1015,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Stratum ID"
+                }
               },
               "stratum_number": {
                 "type": "string",
@@ -1044,8 +1026,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Stratum number"
+                }
               },
               "stratum_type": {
                 "type": "string",
@@ -1056,8 +1037,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Stratum Type"
+                }
               },
               "num_plots_stratum": {
                 "type": "number",
@@ -1076,8 +1056,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "BEC Zone"
+                }
               },
               "subzone": {
                 "type": "string",
@@ -1088,8 +1067,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "BEC Subzone"
+                }
               },
               "variant": {
                 "type": "string",
@@ -1100,8 +1078,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "BEC Variant"
+                }
               },
               "site_series": {
                 "type": "string",
@@ -1112,8 +1089,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Site Series"
+                }
               },
               "stratum_location_consistent": {
                 "type": "string",
@@ -1125,8 +1101,7 @@
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
                 },
-                "default": "Yes",
-                "x-tooltip-text": "Stratum location and size consistent with map"
+                "default": "Yes"
               }
             },
             "required": [
@@ -1187,8 +1162,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "patch location"
+                }
               },
               "percent_trees_windthrown": {
                 "type": "string",
@@ -1199,8 +1173,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Percent of trees windthrown"
+                }
               },
               "windthrow_distribution": {
                 "type": "string",
@@ -1211,8 +1184,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Windthrow distribution"
+                }
               },
               "windthrow_treatment": {
                 "type": "string",
@@ -1223,8 +1195,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Windthrow treatment"
+                }
               }
             },
             "required": [
@@ -1250,8 +1221,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Yes/No"
+                }
               }
             },
             "dependencies": {
@@ -1271,8 +1241,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Wetsite"
+                        }
                       },
                       "rmz": {
                         "type": "string",
@@ -1283,8 +1252,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "RMZ"
+                        }
                       },
                       "rrz": {
                         "type": "string",
@@ -1295,8 +1263,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "RRZ"
+                        }
                       },
                       "rock_outcrop": {
                         "type": "string",
@@ -1307,8 +1274,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Rock Outcrop"
+                        }
                       },
                       "noncommercial_brush": {
                         "type": "string",
@@ -1319,8 +1285,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Non-Commercial Brush"
+                        }
                       },
                       "low_mercantile_timber": {
                         "type": "string",
@@ -1331,8 +1296,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Low Mercantile Timber"
+                        }
                       },
                       "sensitive_terrain": {
                         "type": "string",
@@ -1343,8 +1307,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Sensitive terrain"
+                        }
                       },
                       "uwr_wha_whf": {
                         "type": "string",
@@ -1355,8 +1318,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Wildlife designation"
+                        }
                       },
                       "ogma": {
                         "type": "string",
@@ -1367,8 +1329,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "OGMA"
+                        }
                       },
                       "visuals": {
                         "type": "string",
@@ -1379,8 +1340,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Visuals"
+                        }
                       },
                       "cultural_heritage_feature": {
                         "type": "string",
@@ -1391,8 +1351,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Cultural Heritage Feature"
+                        }
                       },
                       "recreation_feature": {
                         "type": "string",
@@ -1403,8 +1362,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Recreation Feature"
+                        }
                       },
                       "reserve_constraints_other": {
                         "type": "string",
@@ -1456,8 +1414,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Yes/No"
+                }
               }
             },
             "dependencies": {
@@ -1485,8 +1442,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "District"
+                        }
                       },
                       "mineral_lick": {
                         "type": "number",
@@ -1517,8 +1473,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Karst Feature"
+                        }
                       },
                       "large_tree_for_site": {
                         "type": "string",
@@ -1529,8 +1484,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Large trees"
+                        }
                       },
                       "cwd_heavy_concentration": {
                         "type": "string",
@@ -1541,8 +1495,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "CWD Concentration"
+                        }
                       },
                       "active_wildlife_trails": {
                         "type": "string",
@@ -1553,8 +1506,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Active Trails"
+                        }
                       },
                       "active_wlt_cwd_feeding": {
                         "type": "string",
@@ -1565,8 +1517,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Active Feeding"
+                        }
                       },
                       "uncommon_tree_species": {
                         "type": "string",
@@ -1577,8 +1528,7 @@
                           "x-enum-code-name": "code_name",
                           "x-enum-code-text": "code_description",
                           "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "District"
+                        }
                       },
                       "ecological_anchors_other": {
                         "type": "string",
@@ -1622,8 +1572,7 @@
             "title": "Form A",
             "items": {
               "$ref": "#/components/schemas/FREP_FormA"
-            },
-            "x-tooltip-text": "Form A"
+            }
           }
         }
       },
@@ -1637,33 +1586,27 @@
             "properties": {
               "opening_number": {
                 "type": "string",
-                "title": "Opening #",
-                "x-tooltip-text": "The opening number"
+                "title": "Opening #"
               },
               "opening_id": {
                 "type": "string",
-                "title": "Opening ID",
-                "x-tooltip-text": "The opening ID"
+                "title": "Opening ID"
               },
               "license_number": {
                 "type": "string",
-                "title": "License #",
-                "x-tooltip-text": "The license number"
+                "title": "License #"
               },
               "cp_number": {
                 "type": "string",
-                "title": "CP#",
-                "x-tooltip-text": "CP Number"
+                "title": "CP#"
               },
               "block": {
                 "type": "string",
-                "title": "Block",
-                "x-tooltip-text": "Block"
+                "title": "Block"
               },
               "licensee": {
                 "type": "string",
-                "title": "Licensee",
-                "x-tooltip-text": "Licensee"
+                "title": "Licensee"
               },
               "district_code": {
                 "type": "string",
@@ -1674,23 +1617,19 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "District"
+                }
               },
               "location_description": {
                 "type": "string",
-                "title": "Location description",
-                "x-tooltip-text": "Location description"
+                "title": "Location description"
               },
               "nar": {
                 "type": "number",
-                "title": "NAR (ha)",
-                "x-tooltip-text": "NAR (ha)"
+                "title": "NAR (ha)"
               },
               "gross_area": {
                 "type": "number",
-                "title": "Gross area (ha)",
-                "x-tooltip-text": "Block"
+                "title": "Gross area (ha)"
               },
               "override_code": {
                 "type": "string",
@@ -1701,8 +1640,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Override"
+                }
               }
             },
             "required": [
@@ -1724,8 +1662,7 @@
             "properties": {
               "innovative_practices": {
                 "type": "string",
-                "title": "Were any innovative and/or unique forest practices used on the block?",
-                "x-tooltip-text": "Innovative practices"
+                "title": "Were any innovative and/or unique forest practices used on the block?"
               }
             },
             "required": ["innovative_practices"]
@@ -1743,8 +1680,7 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Explain"
+                }
               }
             },
             "required": ["invasive_code"]
@@ -1762,13 +1698,11 @@
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
-                },
-                "x-tooltip-text": "Explain"
+                }
               },
               "rationale": {
                 "type": "string",
-                "title": "Rationale",
-                "x-tooltip-text": "Explain"
+                "title": "Rationale"
               }
             },
             "required": ["evaluator_opinion_code"]
@@ -1778,8 +1712,7 @@
             "title": "Form B",
             "items": {
               "$ref": "#/components/schemas/FREP_FormB"
-            },
-            "x-tooltip-text": "Form B"
+            }
           }
         }
       },
