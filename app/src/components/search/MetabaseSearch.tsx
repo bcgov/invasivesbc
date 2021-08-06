@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Button, Grid, List, ListItem, makeStyles, MenuItem, Paper, Select, TextField } from '@material-ui/core';
 import { Add, DeleteForever, SettingsBrightnessSharp } from '@material-ui/icons';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { DocType } from 'constants/database';
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const MetabaseSearch: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
   const [metabaseChoices, setMetabaseChoices] = useState([]);
   const [metabaseOptions, setMetabaseOptions] = useState([]);
   const [trip, setTrip] = useState(null);

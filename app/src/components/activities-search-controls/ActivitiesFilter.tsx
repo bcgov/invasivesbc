@@ -17,7 +17,7 @@ import { Add, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 
 interface IActivityChoices {
@@ -41,33 +41,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const ActivityDataFilter: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
   const [activityChoices, setActivityChoices] = useState([]);
 
   const getActivityChoicesFromTrip = useCallback(async () => {
-    // legacy pouch offline:
-    if (Capacitor.getPlatform() == 'web') {
-      let docs = await databaseContext.database.find({
-        selector: {
-          _id: props.trip_ID
-        }
-      });
-      if (docs.docs.length > 0) {
-        let tripDoc = docs.docs[0];
-        if (tripDoc.activityChoices) {
-          setActivityChoices([...tripDoc.activityChoices]);
-        }
-      }
-      //sqlite mobile:
-    } else {
-      let queryResults = await query(
-        { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
-        databaseContext
-      );
-      const choices = JSON.parse(queryResults[0].json).activityChoices;
-      if (choices) {
-        setActivityChoices([...choices]);
-      }
+    let queryResults = await query(
+      { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
+      databaseContext
+    );
+    const choices = JSON.parse(queryResults[0].json).activityChoices;
+    if (choices) {
+      setActivityChoices([...choices]);
     }
   }, []);
 
@@ -80,27 +64,18 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
 
   const saveChoices = async (newActivityChoices) => {
     console.log('updating trip ' + props.trip_ID + ' activity filters');
-    //legacy pouch
-    if (Capacitor.getPlatform() == 'web') {
-      await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-        return { ...tripDoc, activityChoices: newActivityChoices };
-      });
-    }
-    //sqlite
-    else {
-      const tripID: string = props.trip_ID;
-      let result = await upsert(
-        [
-          {
-            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-            ID: tripID,
-            docType: DocType.TRIP,
-            json: { activityChoices: newActivityChoices }
-          }
-        ],
-        databaseContext
-      );
-    }
+    const tripID: string = props.trip_ID;
+    let result = await upsert(
+      [
+        {
+          type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+          ID: tripID,
+          docType: DocType.TRIP,
+          json: { activityChoices: newActivityChoices }
+        }
+      ],
+      databaseContext
+    );
     setActivityChoices([...newActivityChoices]);
   };
 

@@ -21,7 +21,7 @@ import { Add, ContactlessOutlined, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import React, { useContext, useEffect, useState } from 'react';
 
 interface IPointOfInterestChoices {
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
   const [iappSelected, setIappSelected] = useState(false);
 

@@ -3,7 +3,7 @@ import { Button, makeStyles } from '@material-ui/core';
 import Spinner from 'components/spinner/Spinner';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import {
   IActivitySearchCriteria,
@@ -32,44 +32,44 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const invasivesApi = useInvasivesApi();
 
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [trip, setTrip] = useState(null);
   const [fetching, setFetching] = useState(false);
 
-  const bulkUpsert = async (upserts) => {
-    let allDocsFetch = await databaseContext.database.allDocs({ include_docs: true });
-    let allDocs = allDocsFetch?.rows ? allDocsFetch.rows : [];
+  // const bulkUpsert = async (upserts) => {
+  //   let allDocsFetch = await databaseContext.database.allDocs({ include_docs: true });
+  //   let allDocs = allDocsFetch?.rows ? allDocsFetch.rows : [];
 
-    const newUpserts = { ...upserts };
+  //   const newUpserts = { ...upserts };
 
-    // go through all docs, flagging those already existing:
-    const modifiedDocs = allDocs
-      .filter((doc) => {
-        const id = doc.doc?._id;
-        newUpserts[id] = undefined; // remove found docs*/ // does this not block updates?
-        return upserts[id];
-      })
-      .map((doc) => {
-        return upserts[doc.id](doc.doc);
-      });
+  //   // go through all docs, flagging those already existing:
+  //   const modifiedDocs = allDocs
+  //     .filter((doc) => {
+  //       const id = doc.doc?._id;
+  //       newUpserts[id] = undefined; // remove found docs*/ // does this not block updates?
+  //       return upserts[id];
+  //     })
+  //     .map((doc) => {
+  //       return upserts[doc.id](doc.doc);
+  //     });
 
-    const newDocs = Object.keys(newUpserts)
-      .filter((id) => newUpserts[id] !== undefined)
-      .map((id) => upserts[id]());
+  //   const newDocs = Object.keys(newUpserts)
+  //     .filter((id) => newUpserts[id] !== undefined)
+  //     .map((id) => upserts[id]());
 
-    const resultDocs = [...modifiedDocs, ...newDocs];
-    resultDocs.sort((a, b) => {
-      if (a.id < b.id) return -1;
-      if (a.id > b.id) return 1;
-      return 0;
-    });
+  //   const resultDocs = [...modifiedDocs, ...newDocs];
+  //   resultDocs.sort((a, b) => {
+  //     if (a.id < b.id) return -1;
+  //     if (a.id > b.id) return 1;
+  //     return 0;
+  //   });
 
-    await databaseContext.database.bulkDocs(resultDocs);
+  //   await databaseContext.database.bulkDocs(resultDocs);
 
-    return Object.keys(upserts).length;
-  };
+  //   return Object.keys(upserts).length;
+  // };
 
   const getPhotos = async (row) => {
     const photos = [];
@@ -90,28 +90,12 @@ export const TripDataControls: React.FC<any> = (props) => {
   };
 
   const getTrip = useCallback(async () => {
-    //legacy pouch:
-    if (Capacitor.getPlatform() == 'web') {
-      let docs = await databaseContext.database.find({
-        selector: {
-          _id: props.trip_ID,
-          docType: DocType.TRIP
-        }
-      });
-
-      if (!docs || !docs.docs || !docs.docs.length) return;
-
-      setTrip(docs.docs[0]);
-    }
-    //sqlite mobile
-    else {
-      let queryResults = await query(
-        { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
-        databaseContext
-      );
-      setTrip(JSON.parse(queryResults[0].json));
-    }
-  }, [databaseContext.database]);
+    let queryResults = await query(
+      { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
+      databaseContext
+    );
+    setTrip(JSON.parse(queryResults[0].json));
+  }, [databaseContext]);
 
   useEffect(() => {
     const updateComponent = () => {
@@ -185,7 +169,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
       try {
         if (Capacitor.getPlatform() == 'web') {
-          numberActivitiesFetched += await bulkUpsert(upserts);
+          //numberActivitiesFetched += await bulkUpsert(upserts);
         } else {
           numberActivitiesFetched += await upsert(upserts, databaseContext);
           alert('Cached ' + numberActivitiesFetched + ' activities.');
@@ -307,13 +291,22 @@ export const TripDataControls: React.FC<any> = (props) => {
 
       let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
 
-      await databaseContext.database.upsert(props.trip_ID, (tripDoc) => ({
-        ...tripDoc,
-        metabaseQueryNames: {
-          ...trip.metabaseQueryNames,
-          [setOfChoices.metabaseQueryId]: response.name
-        }
-      }));
+      await upsert(
+        [
+          {
+            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+            docType: DocType.TRIP,
+            ID: props.trip_ID,
+            json: {
+              metabaseQueryNames: {
+                ...trip.metabaseQueryNames,
+                [setOfChoices.metabaseQueryId]: response.name
+              }
+            }
+          }
+        ],
+        databaseContext
+      );
 
       let responseRows = [];
       if (response?.activities?.length) responseRows = response.activities;
@@ -365,7 +358,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         }
       }
       try {
-        await bulkUpsert(upserts);
+        //  await bulkUpsert(upserts);
       } catch (error) {
         //notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
         alert('Error with inserting Metabase results into database: ' + error);
