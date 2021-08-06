@@ -773,7 +773,7 @@
         "properties": {
           "tree_num": {
             "type": "number",
-            "title": "Tree Number"
+            "title": "Tree #"
           },
           "species": {
             "type": "string",
