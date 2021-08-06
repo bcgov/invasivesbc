@@ -409,7 +409,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   return (
     <>
       <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
-        {fetching ? <Spinner /> : 'Cache Trip For Offline'}
+        {'Cache Trip For Offline'}
       </Button>
       {fetching && (
         <>
