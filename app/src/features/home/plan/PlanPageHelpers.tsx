@@ -1,5 +1,5 @@
 import { DocType } from 'constants/database';
-import { query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import { upsert, UpsertType } from 'contexts/DatabaseContext2';
 import { notifyError, notifySuccess } from 'utils/NotificationUtils';
 
 export const confirmDeleteTrip = (trip_ID, tripName) => {

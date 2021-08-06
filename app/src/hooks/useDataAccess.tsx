@@ -1,6 +1,6 @@
 import { ICreateOrUpdateActivity, IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { useInvasivesApi } from './useInvasivesApi';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import { useContext } from 'react';
 import { DocType } from 'constants/database';
 import { Capacitor } from '@capacitor/core';
@@ -14,7 +14,7 @@ import { DBRequest } from 'contexts/DatabaseContext2';
  */
 export const useDataAccess = () => {
   const api = useInvasivesApi();
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
 
   /**
    * Fetch points of interest by search criteria.
@@ -128,5 +128,40 @@ export const useDataAccess = () => {
     }
   };
 
-  return { getPointsOfInterest, getActivityById, updateActivity };
+  /**
+   * Get all the trip records
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getTrips = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
+    const dbcontext = context;
+    console.log('here');
+    const asyncReturnVal = await dbcontext.asyncQueue({
+      asyncTask: () => {
+        return query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, dbcontext);
+      }
+    });
+    return asyncReturnVal;
+  };
+
+  /**
+   * Add new trip object record
+   *
+   * @param {any} newTripObj
+   * @return {*}  {Promise<any>}
+   */
+  const addTrip = async (
+    newTripObj: any,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ) => {
+    const dbcontext = context;
+    const asyncReturnVal = await dbcontext.asyncQueue({
+      asyncTask: () => {
+        return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], dbcontext);
+      }
+    });
+    return asyncReturnVal;
+  };
+
+  return { getPointsOfInterest, getActivityById, updateActivity, getTrips, addTrip };
 };
