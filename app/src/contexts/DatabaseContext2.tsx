@@ -105,61 +105,62 @@ export const DatabaseContext2Provider = (props) => {
   const createSqliteTables = async (sqliteDB) => {
     // initialize the connection
     let db = await getConnection();
+    if (db) {
+      await db.open();
+      const isitopen = await db.isDBOpen();
+      console.log('db open on create table? : ' + JSON.stringify(isitopen));
 
-    await db.open();
-    const isitopen = await db.isDBOpen();
-    console.log('db open on create table? : ' + JSON.stringify(isitopen));
+      const name = await db.getConnectionDBName();
 
-    const name = await db.getConnectionDBName();
+      let ret;
 
-    let ret;
-
-    let setupSQL = ``;
-    for (const value of enumKeys(DocType)) {
-      switch (value) {
-        case 'REFERENCE_ACTIVITY':
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+      let setupSQL = ``;
+      for (const value of enumKeys(DocType)) {
+        switch (value) {
+          case 'REFERENCE_ACTIVITY':
+            setupSQL +=
+              'create table if not exists ' +
+              DocType[value] +
+              ` (
               id TEXT PRIMARY KEY,
               json TEXT
             );\n`;
-          break;
-        case 'REFERENCE_POINT_OF_INTEREST':
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+            break;
+          case 'REFERENCE_POINT_OF_INTEREST':
+            setupSQL +=
+              'create table if not exists ' +
+              DocType[value] +
+              ` (
               id TEXT PRIMARY KEY,
               json TEXT
             );\n`;
-          break;
-        default:
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+            break;
+          default:
+            setupSQL +=
+              'create table if not exists ' +
+              DocType[value] +
+              ` (
               id INTEGER PRIMARY KEY,
               json TEXT
             );\n`;
+        }
       }
-    }
 
-    const isopen = await db.isDBOpen();
-    ret = await db.execute(setupSQL);
-    setDatabaseIsSetup(true);
-    const resul = JSON.stringify(ret.values);
+      const isopen = await db.isDBOpen();
+      ret = await db.execute(setupSQL);
+      setDatabaseIsSetup(true);
+      const resul = JSON.stringify(ret.values);
 
-    setDB(db);
-    if (!ret.result) {
-      //console.log('closing database - no result');
-      //db.close();
-      return false;
-    } else {
-      //console.log('closing database with result');
-      //db.close();
-      return true;
+      setDB(db);
+      if (!ret.result) {
+        //console.log('closing database - no result');
+        //db.close();
+        return false;
+      } else {
+        //console.log('closing database with result');
+        //db.close();
+        return true;
+      }
     }
   };
 
