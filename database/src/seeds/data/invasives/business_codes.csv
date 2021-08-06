@@ -1261,11 +1261,11 @@ override_code,N,No,2
 invasive_code,Y,Yes,1
 invasive_code,N,No,2
 invasive_code,Don't Know,Don't Know,3
-evaluator_opionion_code,Poorly,Poorly,1
-evaluator_opionion_code,Moderately,Moderately,2
-evaluator_opionion_code,Well,Well,3
-evaluator_opionion_code,Very Well,Very Well,4
-evaluator_opionion_code,Don't Know,Don't Know,5
+evaluator_opinion_code,Poorly,Poorly,1
+evaluator_opinion_code,Moderately,Moderately,2
+evaluator_opinion_code,Well,Well,3
+evaluator_opinion_code,Very Well,Very Well,4
+evaluator_opinion_code,Don't Know,Don't Know,5
 stratum_id_code,RES,Reserve,1
 stratum_id_code,NAR,Net area to be reforested,2
 stratum_number_code,1,,1
