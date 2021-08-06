@@ -58,9 +58,10 @@ let DefaultIcon = L.icon({
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: 'relative',
-    height: '100%', width: '100%',
+    height: '100%',
+    width: '100%'
   }
-}))
+}));
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -557,10 +558,10 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           </LayersControl.BaseLayer>
           <LayersControl.Overlay checked name="Activities">
             {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
-            {/* this line below works - its what you need for geosjon*/}
-            {/*<GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
+        {/* this line below works - its what you need for geosjon*/}
+        {/*<GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
-          {/*</LayersControl.Overlay>
+        {/*</LayersControl.Overlay>
         </LayersControl>*/}
       </MapRequestContextProvider>
     </MapContainer>

@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { Button, makeStyles } from '@material-ui/core';
+import { Box, Button, LinearProgress, makeStyles, Typography } from '@material-ui/core';
 import Spinner from 'components/spinner/Spinner';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
@@ -37,6 +37,9 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const [trip, setTrip] = useState(null);
   const [fetching, setFetching] = useState(false);
+  const [cancelFetching, setCancelFetching] = useState(false);
+  const [totalRecordsToFetche, setTotalRecordsToFetche] = useState(0);
+  const [totalRecordsFetched, setTotalRecordsFetched] = useState(0);
 
   // const bulkUpsert = async (upserts) => {
   //   let allDocsFetch = await databaseContext.database.allDocs({ include_docs: true });
@@ -224,8 +227,11 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
 
       let total_to_fetch = response.count;
+      setTotalRecordsToFetche(total_to_fetch);
       console.log('*** total points of interest to get:  ' + response.count);
       while (numberPointsOfInterestFetched !== total_to_fetch) {
+        if (cancelFetching) return;
+        console.log(cancelFetching);
         if (pointOfInterestSearchCriteria.page !== 0) {
           try {
             response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
@@ -257,6 +263,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         }
         console.log('');
         numberPointsOfInterestFetched += response.rows.length;
+        setTotalRecordsFetched(numberPointsOfInterestFetched);
         console.log('*** total points of interest fetched:  ' + numberPointsOfInterestFetched);
         console.log('*** total points of interest to get:  ' + total_to_fetch);
         pointOfInterestSearchCriteria.page += 1;
@@ -387,7 +394,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     const deleteOldTrip = () => {};
     //todo:
     deleteOldTrip();
-
+    setCancelFetching(false);
     //fetch what is selected here:
     await setFetching(true);
     console.log('about to fetch stuf');
@@ -404,6 +411,29 @@ export const TripDataControls: React.FC<any> = (props) => {
       <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
         {fetching ? <Spinner /> : 'Cache Trip For Offline'}
       </Button>
+      {fetching && (
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              console.log('setting to true');
+              setCancelFetching(true);
+            }}>
+            {'Cancel fetching data'}
+          </Button>
+          <Box paddingTop="10px" display="flex" alignItems="center">
+            <Box width="100%" mr={1}>
+              <LinearProgress variant="determinate" value={totalRecordsFetched / totalRecordsToFetche} />
+            </Box>
+            <Box minWidth={35}>
+              <Typography variant="body2" color="textSecondary">
+                {totalRecordsFetched} out of {totalRecordsToFetche} fetched.
+              </Typography>
+            </Box>
+          </Box>
+        </>
+      )}
     </>
   );
 };
