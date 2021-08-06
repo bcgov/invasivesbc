@@ -36,7 +36,6 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { useDataAccess } from 'hooks/useDataAccess';
 import TempPOILoader from './LayerLoaderHelpers/TempPOILoader';
-import { Box, Grid, IconButton } from '@material-ui/core';
 
 // Layer Picker
 import LayersIcon from '@material-ui/icons/Layers';
@@ -48,11 +47,20 @@ import DisplayPosition from './DisplayPosition';
 import { debounced } from 'utils/FunctionUtils';
 import { createPolygonFromBounds } from './LayerLoaderHelpers/LtlngBoundsToPoly';
 import { MapRequestContextProvider, MapRequestContext } from 'contexts/MapRequestsContext';
+import MeasureTool from './MeasureTool';
+import { makeStyles, Theme } from '@material-ui/core';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow
 });
+
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    position: 'relative',
+    height: '100%', width: '100%',
+  }
+}))
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -515,39 +523,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
             justifyContent: 'flex-end',
             alignItems: 'flex-end',
             flexFlow: 'column wrap',
-            height: '70vh'
+            height: '45vh'
           }}>
-          <IconButton
-            style={{
-              margin: '5px',
-              background: 'white',
-              zIndex: 500,
-              borderRadius: '15%',
-              border: '1px solid black'
-            }}
-            onClick={(e) => {
-              setMenuState(!menuState);
-            }}>
-            <LayersIcon />
-          </IconButton>
-          {menuState ? (
-            <div style={{ background: 'white', zIndex: 500, width: '400px' }}>
-              <LayerPicker data={data} />
-            </div>
-          ) : (
-            <></>
-          )}
-
-          <div
-            style={{
-              margin: '5px',
-              zIndex: 1500,
-              background: 'white',
-              borderRadius: '15%',
-              border: '1px solid black'
-            }}>
-            {map ? <DisplayPosition map={map} /> : null}
-          </div>
+          <LayerPicker data={data} />
+          <DisplayPosition map={map} />
+          <MeasureTool />
         </div>
 
         {/* Here is the offline component */}
@@ -565,17 +545,17 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         <MapResizer />
         <AsyncExtent />
 
-        <LayersControl position="topright">
+        {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
             <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
           </LayersControl.BaseLayer>
           <LayersControl.Overlay checked name="Activities">
             {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
             {/* this line below works - its what you need for geosjon*/}
-            <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
+            {/*<GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
-          </LayersControl.Overlay>
-        </LayersControl>
+          {/*</LayersControl.Overlay>
+        </LayersControl>*/}
       </MapRequestContextProvider>
     </MapContainer>
   );
