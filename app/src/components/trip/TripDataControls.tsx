@@ -424,7 +424,7 @@ export const TripDataControls: React.FC<any> = (props) => {
           </Button>
           <Box paddingTop="10px" display="flex" alignItems="center">
             <Box width="100%" mr={1}>
-              <LinearProgress variant="determinate" value={totalRecordsFetched / totalRecordsToFetche} />
+              <LinearProgress variant="determinate" value={(totalRecordsFetched / totalRecordsToFetche) * 100} />
             </Box>
             <Box minWidth={35}>
               <Typography variant="body2" color="textSecondary">
