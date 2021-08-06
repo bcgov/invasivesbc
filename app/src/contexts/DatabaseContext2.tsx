@@ -13,7 +13,6 @@ export let existingConn: any;
 export let isJsonListeners: any;
 
 export interface DBRequest {
-  sql: string;
   asyncTask: () => Promise<any>;
 }
 
