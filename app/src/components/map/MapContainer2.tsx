@@ -379,7 +379,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       setDrawnItems(drawnItems);
 
       // Update the map with the new drawn feaures
-      map = map.addLayer(drawnItems);
+
+      //map = map.addLayer(drawnItems);
     };
 
     // When the dom is rendered listen for added features
@@ -387,6 +388,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       map.on('draw:created', onDrawCreate);
       // map.on('draw:editstop', onDrawEditStop);
       // map.on('draw:deleted', onDrawDeleted);
+      console.log('draw created');
     }, []);
 
     useEffect(() => {
