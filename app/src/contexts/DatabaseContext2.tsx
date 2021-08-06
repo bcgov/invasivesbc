@@ -385,15 +385,7 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
 
     let ret;
     //open db
-    let db;
-    if (databaseContext.sqliteDB) {
-      db = databaseContext.sqliteDB;
-    } else {
-      await setTimeout(() => {
-        console.log('waiting to slow upsert');
-      }, 1000);
-      //  db = await openConnection(databaseContext);
-    }
+    let db = await getConnection();
 
     //build the query to get old records
     const idsJSON = JSON.stringify(slowPatchOldIDS);
