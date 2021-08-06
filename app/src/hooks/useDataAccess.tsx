@@ -1,6 +1,6 @@
 import { ICreateOrUpdateActivity, IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { useInvasivesApi } from './useInvasivesApi';
-import { DatabaseContext, query, QueryType } from 'contexts/DatabaseContext';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import { useContext } from 'react';
 import { DocType } from 'constants/database';
 import { Capacitor } from '@capacitor/core';
@@ -24,7 +24,7 @@ export const useDataAccess = () => {
    */
   const getPointsOfInterest = async (
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
-    context: {
+    context?: {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
     },
@@ -33,15 +33,23 @@ export const useDataAccess = () => {
     if (pointsOfInterestSearchCriteria.online) {
       return api.getPointsOfInterest(pointsOfInterestSearchCriteria);
     } else {
-      return query(
-        {
-          type: QueryType.DOC_TYPE,
-          docType: DocType.REFERENCE_POINT_OF_INTEREST,
-          limit: pointsOfInterestSearchCriteria.limit,
-          offset: pointsOfInterestSearchCriteria.page
-        },
-        databaseContext
-      );
+      if (isOnline === false) {
+        const dbcontext = context;
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.DOC_TYPE,
+                docType: DocType.REFERENCE_POINT_OF_INTEREST,
+                limit: pointsOfInterestSearchCriteria.limit,
+                offset: pointsOfInterestSearchCriteria.page
+              },
+              databaseContext
+            );
+          }
+        });
+        return asyncReturnVal;
+      }
     }
   };
 
@@ -53,7 +61,7 @@ export const useDataAccess = () => {
    */
   const getActivityById = async (
     activityId: string,
-    context: {
+    context?: {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
     },
@@ -62,15 +70,22 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() === 'web') {
       return api.getActivityById(activityId);
     } else {
-      // get access to queue:
-      const dbcontext = context;
-
-      //push to queue
-      const asyncReturnVal = await dbcontext.asyncQueue({
-        asyncTask: asyncDBAction,
-        sql: 'banana'
-      });
-      return asyncReturnVal;
+      if (isOnline === false) {
+        const dbcontext = context;
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.DOC_TYPE_AND_ID,
+                docType: DocType.ACTIVITY,
+                ID: activityId
+              },
+              dbcontext
+            );
+          }
+        });
+        return asyncReturnVal;
+      }
     }
   };
 
@@ -82,7 +97,7 @@ export const useDataAccess = () => {
    */
   const updateActivity = async (
     activity: ICreateOrUpdateActivity,
-    context: {
+    context?: {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
     },
@@ -91,8 +106,25 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() === 'web') {
       return api.updateActivity(activity);
     } else {
-      //TODO: Implement for mobile
-      console.log('not implemented yet');
+      if (isOnline === false) {
+        const dbcontext = context;
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return upsert(
+              [
+                {
+                  type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                  docType: DocType.ACTIVITY,
+                  json: activity,
+                  ID: activity.activity_id
+                }
+              ],
+              dbcontext
+            );
+          }
+        });
+        return asyncReturnVal;
+      }
     }
   };
 
