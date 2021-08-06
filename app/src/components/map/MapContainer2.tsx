@@ -69,7 +69,8 @@ export type MapControl = (map: any, ...args: any) => void;
 // Style the image inside the download button
 const iconStyle = {
   transform: 'scale(0.7)',
-  opacity: '0.7'
+  opacity: '0.7',
+  width: 32, height: 32
 };
 
 const storeLayersStyle = {
@@ -412,12 +413,15 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
      * See: https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html
      */
     const options = {
+      draw: {
+        circlemarker: false,
+      },
       edit: {
         featureGroup: context.layerContainer,
         edit: true
-      }
+      },
     };
-
+    
     // Create drawing tool control
     drawRef.current = new (L.Control as any).Draw(options);
 
