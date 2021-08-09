@@ -1,6 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { useKeycloak } from '@react-keycloak/web';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import {
   IActivitySearchCriteria,
   ICreateOrUpdateActivity,

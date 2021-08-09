@@ -2,7 +2,7 @@ import { Input, makeStyles } from '@material-ui/core';
 import Spinner from 'components/spinner/Spinner';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import React, { useContext, useEffect, useState } from 'react';
 import { useCallback } from 'react';
 
@@ -15,7 +15,7 @@ export interface ITripNamer {
 }
 
 export const TripNamer: React.FC<ITripNamer> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
   const [name, setName] = useState(null);
 
   const getNameFromTrip = useCallback(async () => {
@@ -28,7 +28,7 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
     if (aName) {
       setName(aName);
     }
-  }, [databaseContext.database]);
+  }, [databaseContext]);
 
   const saveInput = async (newName) => {
     const tripID: string = props.trip_ID;

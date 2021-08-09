@@ -7,6 +7,7 @@ import {
   Container,
   Grid,
   IconButton,
+  LinearProgress,
   makeStyles,
   Paper,
   Tooltip,
@@ -19,7 +20,6 @@ import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import MapContainer2 from 'components/map/MapContainer2';
 import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
 import TripDataControls from 'components/trip/TripDataControls';
-import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
@@ -34,6 +34,8 @@ import Spinner from 'components/spinner/Spinner';
 import { confirmDeleteTrip, deleteTripRecords } from './PlanPageHelpers';
 import { Capacitor } from '@capacitor/core';
 import { useMap } from 'react-leaflet';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 
 interface IPlanPageProps {
   classes?: any;
@@ -97,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
 const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const classes = useStyles();
 
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
   // const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
@@ -133,7 +135,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   //     setExtent(docs[0].extent);
   //   }
   // };
-
+  const dataAccess = useDataAccess();
   const getTrips = async () => {
     if (!databaseContext) {
     }
@@ -145,7 +147,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     let results: any; //sqlite db response
 
     if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
-      results = await query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, databaseContext);
+      results = await dataAccess.getTrips(databaseContext);
     } else {
       return;
     }
@@ -213,14 +215,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!databaseContext) {
       return;
     }
-    // pouch :
-    if (Capacitor.getPlatform() == 'web') {
-      return;
-    } else {
-      const sql = 'select max(id) as id from trip;';
-      const results = await query({ type: QueryType.RAW_SQL, sql }, databaseContext);
-      return results.length > 0 ? results[0].id : 0;
-    }
+
+    const sql = 'select max(id) as id from trip;';
+    const results = await query({ type: QueryType.RAW_SQL, sql }, databaseContext);
+    return results.length > 0 ? results[0].id : 0;
   };
 
   // initial fetch
@@ -240,22 +238,23 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     if (!workingTripID) {
       return;
     }
-    if (geometry) {
-      databaseContext.database.upsert(workingTripID, (tripDoc) => {
-        return { ...tripDoc, geometry: geometry, persistenceStep: 'update geo' };
-      });
-    }
-  }, [geometry, tripsLoaded, databaseContext.database]);
+    // if (geometry) {
+
+    //   databaseContext.database.upsert(workingTripID, (tripDoc) => {
+    //     return { ...tripDoc, geometry: geometry, persistenceStep: 'update geo' };
+    //   });
+    // }
+  }, [geometry, tripsLoaded]);
 
   // persist extent changes
-  useEffect(() => {
-    if (!tripsLoaded || !extent) {
-      return;
-    }
-    databaseContext.database.upsert('planPageExtent', (planPageExtentDoc) => {
-      return { ...planPageExtentDoc, docType: DocType.PLAN_PAGE_EXTENT, extent: extent };
-    });
-  }, [extent, tripsLoaded]);
+  // useEffect(() => {
+  //   if (!tripsLoaded || !extent) {
+  //     return;
+  //   }
+  //   databaseContext.upsert('planPageExtent', (planPageExtentDoc) => {
+  //     return { ...planPageExtentDoc, docType: DocType.PLAN_PAGE_EXTENT, extent: extent };
+  //   });
+  // }, [extent, tripsLoaded]);
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
@@ -276,62 +275,38 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         { status: TripStatusCode.initial, expanded: false }
       ]
     };
-
-    if (Capacitor.getPlatform() == 'web') {
-      databaseContext.database.upsert(newID.toString(), (doc) => {
-        return {
-          ...doc,
-          ...newTripObj
-        };
-      });
-    } else {
-      //android & iOS
-      const results = await upsert(
-        [{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }],
-        databaseContext
-      );
-    }
+    const results = dataAccess.addTrip(newTripObj, databaseContext);
 
     setNewTripID(newID);
   };
 
   const SingleTrip: React.FC<any> = (props) => {
     //todo: add trip_id to props and let trip manage db itself
-    const databaseContext = useContext(DatabaseContext);
+    const databaseContext = useContext(DatabaseContext2);
     const [stepState, setStepState] = useState(null);
     const getStateFromTrip = useCallback(async () => {
-      if (Capacitor.getPlatform() == 'web') {
-        return;
-      } //android and ios
-      else {
-        const results = await query(
-          { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
-          databaseContext
-        );
-        setStepState(JSON.parse(results[0].json).stepState);
-      }
-    }, [databaseContext.database]);
+      const results = await query(
+        { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
+        databaseContext
+      );
+      setStepState(JSON.parse(results[0].json).stepState);
+    }, [databaseContext]);
 
     const saveState = async (newState) => {
       setStepState(newState);
-      if (Capacitor.getPlatform() == 'web') {
-        await databaseContext.database.upsert(props.trip_ID, (tripDoc) => {
-          return { ...tripDoc, docType: DocType.TRIP, stepState: newState, persistenceStep: 'updating state' };
-        });
-      } else {
-        // only overwrite newstate property of db record:
-        await upsert(
-          [
-            {
-              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-              ID: props.trip_ID,
-              docType: DocType.TRIP,
-              json: { stepState: newState }
-            }
-          ],
-          databaseContext
-        );
-      }
+
+      // only overwrite newstate property of db record:
+      await upsert(
+        [
+          {
+            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+            ID: props.trip_ID,
+            docType: DocType.TRIP,
+            json: { stepState: newState }
+          }
+        ],
+        databaseContext
+      );
     };
 
     // initial fetch
@@ -451,7 +426,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 doneButtonCallBack={() => {
                   helperStepDoneOrSkip(5);
                 }}>
-                <MetabaseSearch trip_ID={props.trip_ID} />
+                {/*}  <MetabaseSearch trip_ID={props.trip_ID} /> */}
               </TripStep>
               <TripStep
                 title="Last Step: Cache, Refresh, or Delete data for Trip "

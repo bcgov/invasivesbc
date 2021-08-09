@@ -3,6 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { GeoJSONObject } from '@turf/turf';
 import { DocType } from 'constants/database';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import PQueue from 'p-queue/dist';
 import { useSQLite } from 'react-sqlite-hook/dist';
 // Singleton SQLite Hook
 export let sqlite: any;
@@ -11,27 +12,47 @@ export let existingConn: any;
 // Is Json Listeners used
 export let isJsonListeners: any;
 
-export const DatabaseContext2 = React.createContext({ sqliteDB: null });
+export interface DBRequest {
+  asyncTask: () => Promise<any>;
+}
+
+export const DatabaseContext2 = React.createContext({
+  sqliteDB: null,
+  asyncQueue: async (request: DBRequest) => {
+    let x: any;
+    return x;
+  },
+  ready: false
+});
 
 export const DatabaseContext2Provider = (props) => {
-  alert('provider render');
   const message = useRef('');
   const [databaseIsSetup, setDatabaseIsSetup] = useState(false);
-  const [dbRequestQueue, setdbRequestQueue] = useState<Object[]>([]);
+  const dbRequestQueue = new PQueue({ concurrency: 1 });
   const [db, setDB] = useState(null);
   const [isModal, setIsModal] = useState(false);
+
+  const processRequest = async (dbRequest: DBRequest) => {
+    const returnPromise = dbRequestQueue.add(dbRequest.asyncTask);
+    console.log('pushing to queue');
+    console.log('queue length: ' + dbRequestQueue.size);
+    return returnPromise;
+  };
+
   const onProgressImport = async (progress: string) => {
     if (isJsonListeners.jsonListeners) {
       if (!isModal) setIsModal(true);
       message.current = message.current.concat(`${progress}\n`);
     }
   };
+
   const onProgressExport = async (progress: string) => {
     if (isJsonListeners.jsonListeners) {
       if (!isModal) setIsModal(true);
       message.current = message.current.concat(`${progress}\n`);
     }
   };
+
   const {
     echo,
     getPlatform,
@@ -56,7 +77,6 @@ export const DatabaseContext2Provider = (props) => {
     onProgressExport
   });
   useEffect(() => {
-    alert('use effect - happen 1 time');
     sqlite = {
       echo: echo,
       getPlatform: getPlatform,
@@ -84,85 +104,65 @@ export const DatabaseContext2Provider = (props) => {
   }, []);
   const createSqliteTables = async (sqliteDB) => {
     // initialize the connection
-    const dbname = 'localInvasivesBC';
-    let db: SQLiteDBConnection;
-    try {
-      if ((await sqlite.isConnection(dbname)).result) {
-        db = await sqlite.retrieveConnection(dbname);
-      } else {
-        db = await sqlite.createConnection(dbname, false, 'no-encryption', 1);
-      }
-    } catch (e) {
-      alert('error making connection');
-    }
-    await db.open();
-    const isitopen = await db.isDBOpen();
+    let db = await getConnection();
+    if (db) {
+      await db.open();
+      const isitopen = await db.isDBOpen();
+      console.log('db open on create table? : ' + JSON.stringify(isitopen));
 
-    const name = await db.getConnectionDBName();
+      const name = await db.getConnectionDBName();
 
-    let ret;
+      let ret;
 
-    let setupSQL = ``;
-    for (const value of enumKeys(DocType)) {
-      switch (value) {
-        case 'REFERENCE_ACTIVITY':
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+      let setupSQL = ``;
+      for (const value of enumKeys(DocType)) {
+        switch (value) {
+          case 'REFERENCE_ACTIVITY':
+            setupSQL +=
+              'create table if not exists ' +
+              DocType[value] +
+              ` (
               id TEXT PRIMARY KEY,
               json TEXT
             );\n`;
-          break;
-        case 'REFERENCE_POINT_OF_INTEREST':
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+            break;
+          case 'REFERENCE_POINT_OF_INTEREST':
+            setupSQL +=
+              'create table if not exists ' +
+              DocType[value] +
+              ` (
               id TEXT PRIMARY KEY,
               json TEXT
             );\n`;
-          break;
-        default:
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+            break;
+          default:
+            setupSQL +=
+              'create table if not exists ' +
+              DocType[value] +
+              ` (
               id INTEGER PRIMARY KEY,
               json TEXT
             );\n`;
+        }
+      }
+
+      const isopen = await db.isDBOpen();
+      ret = await db.execute(setupSQL);
+      setDatabaseIsSetup(true);
+      const resul = JSON.stringify(ret.values);
+
+      setDB(db);
+      if (!ret.result) {
+        //console.log('closing database - no result');
+        //db.close();
+        return false;
+      } else {
+        //console.log('closing database with result');
+        //db.close();
+        return true;
       }
     }
-
-    setupSQL += 'delete from trip;\n';
-    setupSQL += "insert into trip (id, json) values (5, 'banana');\n";
-    const isopen = await db.isDBOpen();
-    ret = await db.execute(setupSQL);
-    ret = await db.query('select * from trip;');
-    const resul = JSON.stringify(ret.values);
-    alert(resul);
-
-    setDB(db);
-    if (!ret.result) {
-      //console.log('closing database - no result');
-      //db.close();
-      return false;
-    } else {
-      //console.log('closing database with result');
-      //db.close();
-      return true;
-    }
   };
-
-  // sets when other components will use the db
-  useEffect(() => {
-    if (databaseIsSetup) {
-      return;
-    }
-    if (db?.isDBOpen()) {
-      setDatabaseIsSetup(true);
-    }
-  }, [db]);
 
   // some usestate stuff copied in the big copy paste from capacitor-community/sqlite react template:  will remove when i know i can
   // .   i suspect can trash these:
@@ -174,19 +174,23 @@ export const DatabaseContext2Provider = (props) => {
 
   try {
     //if web just be a null context and return children
-    if (!['ios', 'android', 'electron'].includes(Capacitor.getPlatform())) {
-      return <DatabaseContext2.Provider value={{ sqliteDB: null }}>{props.children}</DatabaseContext2.Provider>;
+    if (['ios', 'android', 'electron'].includes(Capacitor.getPlatform())) {
+      return (
+        <>
+          {databaseIsSetup ? (
+            <DatabaseContext2.Provider value={{ sqliteDB: sqlite, asyncQueue: processRequest, ready: true }}>
+              {props.children}
+            </DatabaseContext2.Provider>
+          ) : (
+            <></>
+          )}
+        </>
+      );
     }
 
     //while (!databaseIsSetup) {}
 
-    return (
-      <>
-        <DatabaseContext2.Provider value={{ sqliteDB: db }}>
-          {databaseIsSetup ? props.children : null}
-        </DatabaseContext2.Provider>
-      </>
-    );
+    return <>{props.children}</>;
   } catch (e) {
     alert('provider crashed');
     const error = JSON.stringify(e);
@@ -194,19 +198,324 @@ export const DatabaseContext2Provider = (props) => {
   return null;
 };
 
-/*const openConnection = async (sqlite) => {
-  // initialize the connection
-  try {
-    let db: SQLiteDBConnection;
-    db = await sqlite.createConnection('localInvasivesBC');
-    let ret: any;
-    return await db.open();
-  } catch (e) {
-    alert('error opening db');
-    throw e;
-  }
-};*/
-
 function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
   return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
 }
+
+/* db query wrapper interface to hide db implementation */
+export enum UpsertType {
+  DOC_TYPE_AND_ID = 'docType and ID',
+  DOC_TYPE_AND_ID_FAST_JSON_PATCH = 'docType and ID - FAST JSON PATCH', // uses sqlitejson1 extension when I get it working
+  DOC_TYPE_AND_ID_SLOW_JSON_PATCH = 'docType and ID - SLOW JSON PATCH', // workaround, all of these need to have same doctype
+  DOC_TYPE = 'docType',
+  RAW_SQL = 'raw sql'
+}
+export interface IUpsert {
+  type?: UpsertType; // placeholder - might use to dictate what db
+  ID?: string;
+  docType?: DocType;
+  sql?: string;
+  json?: Object;
+  geo?: GeoJSONObject; //todo - give geo it's own column so we can fetch many geos locally fast
+  trip_ID?: number; //todo - give a trip number for handling cache management
+}
+
+const getConnection = async (databaseName?: string) => {
+  const dbname = 'localInvasivesBC';
+  let db: SQLiteDBConnection;
+  let oldConnection;
+  let newConnection;
+
+  try {
+    oldConnection = await sqlite.retrieveConnection(dbname);
+    return oldConnection;
+  } catch (e) {
+    console.log('error retrieving existing connection');
+  }
+
+  try {
+    newConnection = await sqlite.createConnection(dbname, false, 'no-encryption', 1);
+    return newConnection;
+  } catch (e) {
+    console.log('error making new connection');
+  }
+};
+
+// v1: assumes all upsertconfigs are the same, will allow for multiple in v2
+export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
+  let batchUpdate = '';
+  let db = await getConnection();
+  await db.open();
+
+  let totalRecordsChanged = 0;
+
+  let ret: any;
+
+  // workaround until we get json1 extension working:
+  //TODO: change to return a count and share db like the other ones:
+  const patchSlowUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH);
+  processSlowUpserts(patchSlowUpserts, databaseContext);
+
+  const docTypeAndIDUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID);
+  if (docTypeAndIDUpserts.length >= 1) {
+    batchUpdate = buildSQLStringDOC_TYPE_AND_ID(docTypeAndIDUpserts);
+    ret = await handleExecute(batchUpdate, db);
+    if (ret != false) {
+      totalRecordsChanged += ret;
+    } else {
+      console.log('problem executing DOC_TYPE_AND_ID upserts:');
+      console.log('db failed upsert @' + totalRecordsChanged + ' records');
+    }
+  }
+
+  batchUpdate = '';
+  const everythingElse = await upsertConfigs.filter((e) => e.type != UpsertType.DOC_TYPE_AND_ID);
+  for (const upsertConfig of everythingElse) {
+    if (Capacitor.getPlatform() != 'web') {
+      // initialize the connection
+      // ret = db.execute(`select load_extension('json1');`); // not yet working
+
+      switch (upsertConfig.type) {
+        // full override update/upsert - json is replaced with new json
+        /*   case UpsertType.DOC_TYPE_AND_ID:
+          //the linter formatted this not me
+          batchUpdate +=
+            `insert into ` +
+            upsertConfig.docType +
+            ` (id,json) values ('` +
+            upsertConfig.ID +
+            `','` +
+            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+            //JSON.stringify(upsertConfig.json) +
+            `') on conflict(id) do update set json=excluded.json;\n`;
+          break;
+          */
+        // json patch upsert:
+        case UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH:
+          break;
+        case UpsertType.DOC_TYPE_AND_ID_FAST_JSON_PATCH:
+          batchUpdate +=
+            `insert into ` +
+            upsertConfig.docType +
+            ` (id,json) values ('` +
+            upsertConfig.ID +
+            `','` +
+            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+            //JSON.stringify(upsertConfig.json) +
+            `') on conflict(id) do update set json_patch(json,excluded.json);\n`;
+          break;
+        // no ID present therefore these are inserts
+        case UpsertType.DOC_TYPE:
+          batchUpdate +=
+            `insert into ` +
+            upsertConfig.docType +
+            ` (json) values ('` +
+            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+            `')\n;`;
+          break;
+        // raw sql.
+        case UpsertType.RAW_SQL:
+          batchUpdate += upsertConfig.sql;
+          break;
+        default:
+          alert(
+            'Your sqlite query needs a UpsertType and corresponding parameters.  What you provided:  ' +
+              JSON.stringify(upsertConfig)
+          );
+      }
+    }
+  }
+  ret = await handleExecute(batchUpdate, db);
+  if (ret !== false) {
+    totalRecordsChanged += ret;
+  } else {
+    console.log('problem executing other upserts:');
+    console.log('db failed upsert @' + totalRecordsChanged + ' records');
+  }
+
+  return totalRecordsChanged;
+};
+
+const handleExecute = async (input: string, db: any) => {
+  let ret: any;
+  let batchUpdate = input;
+  if (batchUpdate !== '') {
+    ret = await db.execute(batchUpdate);
+    if (!ret.changes) {
+      //db.close();
+      return false;
+    } else {
+      //db.close();
+      return ret.changes.changes;
+    }
+  } else {
+    return 0;
+  }
+};
+//limit to all being the same type for now:
+const buildSQLStringDOC_TYPE_AND_ID = (upsertConfigs: Array<IUpsert>) => {
+  let batchUpdate = '';
+  if (upsertConfigs.length > 0) {
+    batchUpdate += `insert into ` + upsertConfigs[0].docType + ` (id,json) values `;
+    let rowCounter = 0;
+    for (const upsertConfig of upsertConfigs) {
+      batchUpdate += `('` + upsertConfig.ID + `','` + JSON.stringify(upsertConfig.json).split(`'`).join(`''`) + `')`;
+      if (rowCounter != upsertConfigs.length - 1) {
+        batchUpdate += ',';
+      }
+      rowCounter += 1;
+    }
+    batchUpdate += ` on conflict(id) do update set json=excluded.json;\n`;
+  }
+  return batchUpdate;
+};
+
+//limit to all being the same type for now:
+const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
+  if (upsertConfigs.length > 0) {
+    // get a list of the IDs and snag a doctype from one of them (THEY WILL ALL BE TREATED AS SAME TYPE)
+    let slowPatchOldIDS = [];
+    let slowPatchDocType;
+
+    for (const upsertConfig of upsertConfigs.filter((e) => {
+      return e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH;
+    })) {
+      slowPatchOldIDS.push(upsertConfig.ID);
+      slowPatchDocType = upsertConfig.docType;
+    }
+
+    let ret;
+    //open db
+    let db = await getConnection();
+
+    //build the query to get old records
+    const idsJSON = JSON.stringify(slowPatchOldIDS);
+    const idsString = idsJSON.substring(1, idsJSON.length - 1);
+    ret = await db.query('select * from ' + slowPatchDocType + ' where id in (' + idsString + ');');
+    const slowPatchOld = ret.values;
+
+    //patch them in memory
+    let batchUpdate = '';
+    console.log('*** building sql ***');
+
+    for (const upsertConfig of upsertConfigs) {
+      const old = JSON.parse(
+        slowPatchOld.filter((e) => {
+          return (e.id = upsertConfig.ID);
+        })[0].json
+      );
+      const patched =
+        `'` +
+        JSON.stringify({ ...old, ...upsertConfig.json })
+          .split(`'`)
+          .join(`''`) +
+        `'`;
+      batchUpdate +=
+        'insert into ' +
+        upsertConfig.docType +
+        ' (id, json) values (' +
+        upsertConfig.ID +
+        ',' +
+        patched +
+        ') on conflict (id) do update set json=excluded.json;';
+    }
+
+    //finally update them all:
+    console.log('*** executing sql ***');
+    if (batchUpdate != '') {
+      ret = db.execute(batchUpdate);
+    }
+    console.log('*** done sql ***');
+    //db.close();
+  }
+};
+
+/* db query wrapper interface to hide db implementation */
+export enum QueryType {
+  DOC_TYPE_AND_ID = 'docType and ID',
+  DOC_TYPE = 'docType',
+  DOC_TYPE_AND_TRIP_ID = 'docType and trip_ID', //todo
+  DOC_TYPE_AND_BOUNDING_POLY = 'docType and bounding poly',
+  RAW_SQL = 'raw sql'
+}
+
+export interface IQuery {
+  type?: QueryType; // placeholder - might use to dictate what db
+  ID?: string;
+  docType?: DocType;
+  sql?: string;
+  boundingPoly?: GeoJSONObject;
+  geosOnly?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+const getByDocTypeAndBoudingPoly = async (queryConfig: IQuery, db: any) => {
+  return false;
+};
+
+export const query = async (queryConfig: IQuery, databaseContext: any) => {
+  /*  while (!databaseContext.sqliteDB) {
+    await setTimeout(() => {
+      alert('...waiting');
+    }, 3000);
+  }*/
+  try {
+    if (!databaseContext.sqliteDB) {
+      alert('db unavailable from context');
+      return;
+    }
+  } catch (e) {
+    alert('crashing checking if db in context');
+    alert(JSON.stringify(e));
+  }
+  //alert(JSON.stringify(databaseContext));
+  if (Capacitor.getPlatform() != 'web') {
+    // alert('made it here');
+    console.log('typeof input');
+    console.log(typeof databaseContext);
+    let ret;
+    let db = await getConnection();
+    await db.open();
+
+    switch (queryConfig.type) {
+      case QueryType.DOC_TYPE_AND_ID:
+        ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
+        if (!ret.values) {
+          //  db.close();
+          return false;
+        } else {
+          //  db.close();
+          return ret.values;
+        }
+      case QueryType.DOC_TYPE:
+        ret = await db.query(
+          'select * from ' + queryConfig.docType + (queryConfig.limit > 0 ? ' limit ' + queryConfig.limit + ';' : ';')
+        );
+        if (!ret.values) {
+          // db.close();
+          return false;
+        } else {
+          //db.close();
+          return ret.values;
+        }
+      case QueryType.RAW_SQL:
+        ret = await db.query(queryConfig.sql);
+        if (!ret.values) {
+          //db.close();
+          return false;
+        } else {
+          // db.close();
+          return ret.values;
+        }
+        break;
+      case QueryType.DOC_TYPE_AND_BOUNDING_POLY:
+        return await getByDocTypeAndBoudingPoly(queryConfig, db);
+      default:
+        alert(
+          'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
+            JSON.stringify(queryConfig)
+        );
+    }
+  }
+};

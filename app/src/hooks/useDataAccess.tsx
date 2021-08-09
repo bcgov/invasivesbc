@@ -1,9 +1,10 @@
 import { ICreateOrUpdateActivity, IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { useInvasivesApi } from './useInvasivesApi';
-import { DatabaseContext, query, QueryType } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import { useContext } from 'react';
 import { DocType } from 'constants/database';
 import { Capacitor } from '@capacitor/core';
+import { DBRequest } from 'contexts/DatabaseContext2';
 
 /**
  * Returns a set of supported api methods.
@@ -13,7 +14,7 @@ import { Capacitor } from '@capacitor/core';
  */
 export const useDataAccess = () => {
   const api = useInvasivesApi();
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
 
   /**
    * Fetch points of interest by search criteria.
@@ -23,20 +24,32 @@ export const useDataAccess = () => {
    */
   const getPointsOfInterest = async (
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
+    context?: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    },
     isOnline?: boolean
   ): Promise<any> => {
     if (pointsOfInterestSearchCriteria.online) {
       return api.getPointsOfInterest(pointsOfInterestSearchCriteria);
     } else {
-      return query(
-        {
-          type: QueryType.DOC_TYPE,
-          docType: DocType.REFERENCE_POINT_OF_INTEREST,
-          limit: pointsOfInterestSearchCriteria.limit,
-          offset: pointsOfInterestSearchCriteria.page
-        },
-        databaseContext
-      );
+      if (isOnline === false) {
+        const dbcontext = context;
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.DOC_TYPE,
+                docType: DocType.REFERENCE_POINT_OF_INTEREST,
+                limit: pointsOfInterestSearchCriteria.limit,
+                offset: pointsOfInterestSearchCriteria.page
+              },
+              databaseContext
+            );
+          }
+        });
+        return asyncReturnVal;
+      }
     }
   };
 
@@ -46,13 +59,33 @@ export const useDataAccess = () => {
    * @param {string} activityId
    * @return {*}  {Promise<any>}
    */
-  const getActivityById = async (activityId: string, isOnline?: boolean): Promise<any> => {
+  const getActivityById = async (
+    activityId: string,
+    context?: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    },
+    isOnline?: boolean
+  ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       return api.getActivityById(activityId);
     } else {
-      //TODO: Implement for mobile
-      console.log('not implemented yet');
-      return;
+      if (isOnline === false) {
+        const dbcontext = context;
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.DOC_TYPE_AND_ID,
+                docType: DocType.ACTIVITY,
+                ID: activityId
+              },
+              dbcontext
+            );
+          }
+        });
+        return asyncReturnVal;
+      }
     }
   };
 
@@ -62,14 +95,73 @@ export const useDataAccess = () => {
    * @param {ICreateOrUpdateActivity} activity
    * @return {*}  {Promise<any>}
    */
-  const updateActivity = async (activity: ICreateOrUpdateActivity, isOnline?: boolean): Promise<any> => {
+  const updateActivity = async (
+    activity: ICreateOrUpdateActivity,
+    context?: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    },
+    isOnline?: boolean
+  ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       return api.updateActivity(activity);
     } else {
-      //TODO: Implement for mobile
-      console.log('not implemented yet');
+      if (isOnline === false) {
+        const dbcontext = context;
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return upsert(
+              [
+                {
+                  type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                  docType: DocType.ACTIVITY,
+                  json: activity,
+                  ID: activity.activity_id
+                }
+              ],
+              dbcontext
+            );
+          }
+        });
+        return asyncReturnVal;
+      }
     }
   };
 
-  return { getPointsOfInterest, getActivityById, updateActivity };
+  /**
+   * Get all the trip records
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getTrips = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
+    const dbcontext = context;
+    console.log('here');
+    const asyncReturnVal = await dbcontext.asyncQueue({
+      asyncTask: () => {
+        return query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, dbcontext);
+      }
+    });
+    return asyncReturnVal;
+  };
+
+  /**
+   * Add new trip object record
+   *
+   * @param {any} newTripObj
+   * @return {*}  {Promise<any>}
+   */
+  const addTrip = async (
+    newTripObj: any,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ) => {
+    const dbcontext = context;
+    const asyncReturnVal = await dbcontext.asyncQueue({
+      asyncTask: () => {
+        return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], dbcontext);
+      }
+    });
+    return asyncReturnVal;
+  };
+
+  return { getPointsOfInterest, getActivityById, updateActivity, getTrips, addTrip };
 };
