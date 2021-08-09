@@ -32,6 +32,7 @@ import {
   getHerbicideMixValidation,
   getVegTransectPointsPercentCoverValidator,
   getDurationCountAndPlantCountValidation,
+  getPersonNameNoNumbersValidator,
   getJurisdictionPercentValidator,
   getSlopeAspectBothFlatValidator,
   getInvasivePlantsValidator,
@@ -549,6 +550,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             getHerbicideMixValidation(),
             getVegTransectPointsPercentCoverValidator(),
             getDurationCountAndPlantCountValidation(),
+            getPersonNameNoNumbersValidator(),
             getJurisdictionPercentValidator(),
             getInvasivePlantsValidator(linkedActivity)
           ])}
