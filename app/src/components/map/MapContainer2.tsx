@@ -368,6 +368,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
             drawnItems.removeLayer(layer);
           });
           delete newGeoKeys[key];
+          setDrawnItems(drawnItems.clearLayers());
           return;
         }
         // reset updated status for next refresh:
@@ -382,7 +383,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
       // Update the map with the new drawn feaures
 
-      //map = map.addLayer(drawnItems);
+      map = map.addLayer(drawnItems);
+      setDrawnItems(drawnItems.clearLayers());
     };
 
     // When the dom is rendered listen for added features
