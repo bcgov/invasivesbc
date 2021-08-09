@@ -636,7 +636,7 @@
         }
       },
       "Observation_PlantTerrestrial": {
-        "title": "Terrestrial Plant Information",
+        "title": " ",
         "type": "object",
         "required": ["observation_plant_terrestrial_data", "invasive_plants"],
         "properties": {
@@ -657,7 +657,7 @@
         }
       },
       "Observation_PlantAquatic": {
-        "title": "Aquatic Plant Information",
+        "title": "‎‎‎‏‏‎ ‎",
         "type": "object",
         "required": ["waterbody_data", "invasive_plants"],
         "properties": {
