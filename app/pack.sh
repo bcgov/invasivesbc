@@ -2,4 +2,4 @@ rm -rf ~/Downloads/unsigned-signed.zip
 cd buildArchive
 cp -a ../options.plist .
 sudo zip -r unsigned.zip options.plist App.xcarchive
-
+open https://mss.developer.gov.bc.ca/
