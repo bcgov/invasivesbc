@@ -3206,7 +3206,7 @@
       },
       "TransectData": {
         "type": "object",
-        "title": "Transect Information",
+        "title": " ",
         "required": [
           "utm_zone",
           "transect_start_date_time",
