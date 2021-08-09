@@ -214,10 +214,10 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     };
 
     // Grab the map object
-    let map = useMapEvent('moveend', () => {
-      map.on('draw:created',onDrawCreate)
-      console.log('draw created')
-    })
+    let map = useMapEvent('draw:created' as any, () => {
+      map.on('draw:created', onDrawCreate);
+      console.log('draw created');
+    });
 
     const convertLineStringToPoly = (aGeo: any) => {
       if (aGeo.geometry.type === 'LineString') {
@@ -387,7 +387,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
       // Update the map with the new drawn feaures
 
-      //map = map.addLayer(drawnItems);
+      map = map.addLayer(drawnItems);
       setDrawnItems(drawnItems.clearLayers());
     };
 
