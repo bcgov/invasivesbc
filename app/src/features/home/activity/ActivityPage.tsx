@@ -281,9 +281,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     Function to pull activity results from the DB given an activityId if present
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
-    console.log("ACTIVITY ID 3: ", activityId)
     const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
-    console.log("### APP STATE RESULTS: ", appStateResults)
 
     if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
       return;
@@ -292,7 +290,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const activityResults = await databaseContext.database.find({
       selector: { _id: activityId || appStateResults.docs[0].activeActivity }
     });
-    console.log("### ACTIVITY RESULTS: ", activityResults)
 
 
     return activityResults;
@@ -373,9 +370,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
       setDoc(updatedDoc);
-      console.log("UPDATED DOC: ", updatedDoc)
-      console.log("ACTIVITY ID X: ", props.activityId)
-
       setIsLoading(false);
     };
 
