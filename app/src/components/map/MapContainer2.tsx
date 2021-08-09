@@ -69,7 +69,8 @@ export type MapControl = (map: any, ...args: any) => void;
 // Style the image inside the download button
 const iconStyle = {
   transform: 'scale(0.7)',
-  opacity: '0.7'
+  opacity: '0.7',
+  width: 32, height: 32
 };
 
 const storeLayersStyle = {
@@ -379,7 +380,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       setDrawnItems(drawnItems);
 
       // Update the map with the new drawn feaures
-      map = map.addLayer(drawnItems);
+
+      //map = map.addLayer(drawnItems);
     };
 
     // When the dom is rendered listen for added features
@@ -387,6 +389,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       map.on('draw:created', onDrawCreate);
       // map.on('draw:editstop', onDrawEditStop);
       // map.on('draw:deleted', onDrawDeleted);
+      console.log('draw created');
     }, []);
 
     useEffect(() => {
@@ -410,12 +413,15 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
      * See: https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html
      */
     const options = {
+      draw: {
+        circlemarker: false,
+      },
       edit: {
         featureGroup: context.layerContainer,
         edit: true
-      }
+      },
     };
-
+    
     // Create drawing tool control
     drawRef.current = new (L.Control as any).Draw(options);
 
