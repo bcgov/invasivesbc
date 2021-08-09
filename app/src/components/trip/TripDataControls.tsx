@@ -37,8 +37,8 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const [trip, setTrip] = useState(null);
   const [fetching, setFetching] = useState(false);
-  const [cancelFetching, setCancelFetching] = useState(false);
-  const [totalRecordsToFetche, setTotalRecordsToFetche] = useState(0);
+  const [fetch, setFetch] = useState(false);
+  const [totalRecordsToFetch, setTotalRecordsToFetch] = useState(0);
   const [totalRecordsFetched, setTotalRecordsFetched] = useState(0);
 
   // const bulkUpsert = async (upserts) => {
@@ -108,327 +108,340 @@ export const TripDataControls: React.FC<any> = (props) => {
     updateComponent();
   }, [databaseChangesContext, getTrip]);
 
-  const fetchActivities = async () => {
-    if (!trip || !trip.activityChoices || !trip.activityChoices.length) {
-      return;
-    }
+  useEffect(() => {
+    const fetchActivities = async () => {
+      if (!trip || !trip.activityChoices || !trip.activityChoices.length) {
+        return;
+      }
 
-    let numberActivitiesFetched = 0;
+      let numberActivitiesFetched = 0;
 
-    for (const setOfChoices of trip.activityChoices) {
-      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
+      for (const setOfChoices of trip.activityChoices) {
+        const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
 
-      // a comment would be great here
-      const activitySearchCriteria: IActivitySearchCriteria = {
-        ...((setOfChoices.activityType && { activity_type: [setOfChoices.activityType] }) || []),
-        ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
-        ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
-        ...((geometry && { search_feature: geometry }) || {})
-      };
+        // a comment would be great here
+        const activitySearchCriteria: IActivitySearchCriteria = {
+          ...((setOfChoices.activityType && { activity_type: [setOfChoices.activityType] }) || []),
+          ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
+          ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
+          ...((geometry && { search_feature: geometry }) || {})
+        };
 
-      let response = await invasivesApi.getActivities(activitySearchCriteria);
+        let response = await invasivesApi.getActivities(activitySearchCriteria);
 
-      let upserts = [];
+        let upserts = [];
 
-      for (const row of response.rows) {
-        let photos = [];
-        if (setOfChoices.includePhotos) photos = await getPhotos(row);
+        for (const row of response.rows) {
+          let photos = [];
+          if (setOfChoices.includePhotos) photos = await getPhotos(row);
 
-        if (Capacitor.getPlatform() == 'web') {
-          upserts = {
-            ...upserts,
-            [row.activity_id]: (existingDoc: any) => ({
-              ...existingDoc,
-              _id: row.activity_id,
+          if (Capacitor.getPlatform() == 'web') {
+            upserts = {
+              ...upserts,
+              [row.activity_id]: (existingDoc: any) => ({
+                ...existingDoc,
+                _id: row.activity_id,
+                docType: DocType.REFERENCE_ACTIVITY,
+                trip_IDs: existingDoc?.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
+                ...row,
+                formData: row.activity_payload.form_data,
+                activityType: row.activity_type,
+                activitySubtype: row.activity_subtype,
+                geometry: row.activity_payload.geometry,
+                photos: photos
+              })
+            };
+          } else {
+            let jsonObj = {
+              id: row.activity_id,
               docType: DocType.REFERENCE_ACTIVITY,
-              trip_IDs: existingDoc?.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
               ...row,
               formData: row.activity_payload.form_data,
               activityType: row.activity_type,
               activitySubtype: row.activity_subtype,
               geometry: row.activity_payload.geometry,
               photos: photos
-            })
-          };
-        } else {
-          let jsonObj = {
-            id: row.activity_id,
-            docType: DocType.REFERENCE_ACTIVITY,
-            ...row,
-            formData: row.activity_payload.form_data,
-            activityType: row.activity_type,
-            activitySubtype: row.activity_subtype,
-            geometry: row.activity_payload.geometry,
-            photos: photos
-          };
+            };
 
-          upserts.push({
-            docType: DocType.REFERENCE_ACTIVITY,
-            ID: row.activity_id,
-            type: UpsertType.DOC_TYPE_AND_ID,
-            json: jsonObj
-          });
-        }
-      }
-      try {
-        if (Capacitor.getPlatform() == 'web') {
-          //numberActivitiesFetched += await bulkUpsert(upserts);
-        } else {
-          numberActivitiesFetched += await upsert(upserts, databaseContext);
-          alert('Cached ' + numberActivitiesFetched + ' activities.');
-        }
-      } catch (error) {
-        alert('There was an error: ' + error);
-        // notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
-      }
-    }
-    alert('Fetched ' + numberActivitiesFetched + ' activities.');
-    // notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
-  };
-
-  const fetchPointsOfInterest = async () => {
-    console.log('input valid');
-    if (!trip || !trip.pointOfInterestChoices || !trip.pointOfInterestChoices.length) {
-      return;
-    }
-    console.log('made it past input valid');
-
-    let numberPointsOfInterestFetched = 0;
-
-    for (const setOfChoices of trip.pointOfInterestChoices) {
-      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
-
-      let pointOfInterestSearchCriteria: IPointOfInterestSearchCriteria = {
-        ...((setOfChoices.pointOfInterestType && { point_of_interest_type: setOfChoices.pointOfInterestType }) || {}),
-        ...((setOfChoices.iappType && { iappType: setOfChoices.iappType }) || {}),
-        ...((setOfChoices.iappSiteID && { iappSiteID: setOfChoices.iappSiteID }) || {}),
-        ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
-        ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
-        ...((geometry && { search_feature: geometry }) || {}),
-        limit: 1000,
-        page: 0
-      };
-      console.log('checking...');
-      console.log(pointOfInterestSearchCriteria);
-      let response: any;
-      console.log('*** fetching points of interest ***');
-      try {
-        response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
-      } catch (e) {
-        console.log('crashed on fetching points of interest');
-        console.log(e);
-      }
-      console.log('response.count: ' + response.count);
-      console.log('response.rows.length: ' + response.rows.length);
-      console.log('*** building upsert configs ***');
-
-      if (response == undefined) {
-        console.log('response is undefined');
-      }
-
-      let total_to_fetch = response.count;
-      setTotalRecordsToFetche(total_to_fetch);
-      console.log('*** total points of interest to get:  ' + response.count);
-      while (numberPointsOfInterestFetched !== total_to_fetch) {
-        if (cancelFetching) return;
-        console.log(cancelFetching);
-        if (pointOfInterestSearchCriteria.page !== 0) {
-          try {
-            response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
-          } catch (e) {
-            console.log('crashed on fetching points of interest');
-            console.log(e);
+            upserts.push({
+              docType: DocType.REFERENCE_ACTIVITY,
+              ID: row.activity_id,
+              type: UpsertType.DOC_TYPE_AND_ID,
+              json: jsonObj
+            });
           }
         }
-        let upserts = [];
-        for (const row of response.rows) {
-          let photos = [];
-          if (setOfChoices.includePhotos) photos = await getPhotos(row);
-          let jsonObj = {
-            _id: row.point_of_interest_id,
-            docType: DocType.REFERENCE_POINT_OF_INTEREST,
-            ...row,
-            formData: row.point_of_interest_payload.form_data,
-            pointOfInterestType: row.point_of_interest_type,
-            pointOfInterestSubtype: row.point_of_interest_subtype,
-            geometry: [...row.point_of_interest_payload.geometry],
-            photos: photos
-          };
-          upserts.push({
-            docType: DocType.REFERENCE_POINT_OF_INTEREST,
-            ID: row.point_of_interest_id,
-            type: UpsertType.DOC_TYPE_AND_ID,
-            json: jsonObj
-          });
+        try {
+          if (Capacitor.getPlatform() == 'web') {
+            //numberActivitiesFetched += await bulkUpsert(upserts);
+          } else {
+            numberActivitiesFetched += await upsert(upserts, databaseContext);
+            alert('Cached ' + numberActivitiesFetched + ' activities.');
+          }
+        } catch (error) {
+          alert('There was an error: ' + error);
+          // notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
         }
-        console.log('');
-        numberPointsOfInterestFetched += response.rows.length;
-        setTotalRecordsFetched(numberPointsOfInterestFetched);
-        console.log('*** total points of interest fetched:  ' + numberPointsOfInterestFetched);
-        console.log('*** total points of interest to get:  ' + total_to_fetch);
-        pointOfInterestSearchCriteria.page += 1;
-        console.log(pointOfInterestSearchCriteria);
       }
-    }
-    alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
-    //notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
-  };
+      alert('Fetched ' + numberActivitiesFetched + ' activities.');
+      // notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
+    };
 
-  const fetchMetabaseQueries = async () => {
-    if (!trip || !trip.metabaseChoices || !trip.metabaseChoices.length) {
-      return;
-    }
-
-    let countActivities = 0;
-    let countPois = 0;
-
-    for (const setOfChoices of trip.metabaseChoices) {
-      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
-
-      const querySearchCriteria: IMetabaseQuerySearchCriteria = {
-        ...((setOfChoices.metabaseQueryId && { metabaseQueryId: setOfChoices.metabaseQueryId }) || {}),
-        ...((geometry && { search_feature: geometry }) || {})
-      };
-
-      if (!setOfChoices.metabaseQueryId) {
-        //notifyError(databaseContext, 'Metabase Query ID cannot be blank, please select a query');
-        alert('Metabase Query ID cannot be blank, please select a query');
+    const fetchPointsOfInterest = async () => {
+      console.log('input valid');
+      if (!trip || !trip.pointOfInterestChoices || !trip.pointOfInterestChoices.length) {
         return;
       }
+      console.log('made it past input valid');
 
-      let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
+      let numberPointsOfInterestFetched = 0;
 
-      await upsert(
-        [
-          {
-            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-            docType: DocType.TRIP,
-            ID: props.trip_ID,
-            json: {
-              metabaseQueryNames: {
-                ...trip.metabaseQueryNames,
-                [setOfChoices.metabaseQueryId]: response.name
-              }
-            }
-          }
-        ],
-        databaseContext
-      );
+      for (const setOfChoices of trip.pointOfInterestChoices) {
+        if (!fetch) return;
+        const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
 
-      let responseRows = [];
-      if (response?.activities?.length) responseRows = response.activities;
-      if (response?.points_of_interest?.length) responseRows = [responseRows, ...response.points_of_interest];
+        let pointOfInterestSearchCriteria: IPointOfInterestSearchCriteria = {
+          ...((setOfChoices.pointOfInterestType && { point_of_interest_type: setOfChoices.pointOfInterestType }) || {}),
+          ...((setOfChoices.iappType && { iappType: setOfChoices.iappType }) || {}),
+          ...((setOfChoices.iappSiteID && { iappSiteID: setOfChoices.iappSiteID }) || {}),
+          ...((setOfChoices.startDate && { date_range_start: setOfChoices.startDate }) || {}),
+          ...((setOfChoices.endDate && { date_range_end: setOfChoices.endDate }) || {}),
+          ...((geometry && { search_feature: geometry }) || {}),
+          limit: 1000,
+          page: 0
+        };
+        console.log('checking...');
+        console.log(pointOfInterestSearchCriteria);
+        let response: any;
+        console.log('*** fetching points of interest ***');
+        try {
+          response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
+        } catch (e) {
+          console.log('crashed on fetching points of interest');
+          console.log(e);
+        }
+        console.log('response.count: ' + response.count);
+        console.log('response.rows.length: ' + response.rows.length);
+        console.log('*** building upsert configs ***');
 
-      let upserts = {};
-      for (const row of responseRows) {
-        let photos = [];
-        if (setOfChoices.includePhotos) photos = await getPhotos(row);
-
-        if (row.activity_id) {
-          upserts = {
-            ...upserts,
-            [row.activity_id]: (existingDoc: any) => ({
-              ...existingDoc,
-              _id: row.activity_id,
-              docType: DocType.REFERENCE_ACTIVITY,
-              trip_IDs:
-                existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
-              ...row,
-              formData: row.activity_payload.form_data,
-              activityType: row.activity_type,
-              activitySubtype: row.activity_subtype,
-              geometry: row.activity_payload.geometry,
-              photos
-            })
-          };
-          countActivities++;
+        if (response == undefined) {
+          console.log('response is undefined');
         }
 
-        if (row.point_of_interest_id) {
-          upserts = {
-            ...upserts,
-            ['POI' + row.point_of_interest_id]: (existingDoc: any) => ({
-              ...existingDoc,
-              _id: 'POI' + row.point_of_interest_id,
+        let total_to_fetch = response.count;
+        setTotalRecordsToFetch(total_to_fetch);
+        console.log('*** total points of interest to get:  ' + response.count);
+        while (numberPointsOfInterestFetched !== total_to_fetch) {
+          if (!fetch) return;
+          if (pointOfInterestSearchCriteria.page !== 0) {
+            try {
+              response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
+            } catch (e) {
+              console.log('crashed on fetching points of interest');
+              console.log(e);
+            }
+          }
+          let upserts = [];
+          for (const row of response.rows) {
+            let photos = [];
+            if (setOfChoices.includePhotos) photos = await getPhotos(row);
+            let jsonObj = {
+              _id: row.point_of_interest_id,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,
-              trip_IDs:
-                existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
               ...row,
               formData: row.point_of_interest_payload.form_data,
               pointOfInterestType: row.point_of_interest_type,
               pointOfInterestSubtype: row.point_of_interest_subtype,
               geometry: [...row.point_of_interest_payload.geometry],
-              photos
-            })
-          };
-          countPois++;
+              photos: photos
+            };
+            upserts.push({
+              docType: DocType.REFERENCE_POINT_OF_INTEREST,
+              ID: row.point_of_interest_id,
+              type: UpsertType.DOC_TYPE_AND_ID,
+              json: jsonObj
+            });
+          }
+          console.log('');
+          numberPointsOfInterestFetched += response.rows.length;
+          setTotalRecordsFetched(numberPointsOfInterestFetched);
+          console.log('*** total points of interest fetched:  ' + numberPointsOfInterestFetched);
+          console.log('*** total points of interest to get:  ' + total_to_fetch);
+          pointOfInterestSearchCriteria.page += 1;
+          console.log(pointOfInterestSearchCriteria);
         }
       }
-      try {
-        //  await bulkUpsert(upserts);
-      } catch (error) {
-        //notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
-        alert('Error with inserting Metabase results into database: ' + error);
-      }
-    }
-    alert(
-      'Cached ' +
-        (countActivities ? countActivities + ' activities' : '') +
-        (countActivities && countPois ? ' and ' : '') +
-        (countPois ? countPois + ' points of interest' : '') +
-        (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
-    );
-    // notifySuccess(
-    //   databaseContext,
-    //   'Cached ' +
-    //     (countActivities ? countActivities + ' activities' : '') +
-    //     (countActivities && countPois ? ' and ' : '') +
-    //     (countPois ? countPois + ' points of interest' : '') +
-    //     (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
-    // );
-  };
+      alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
+      //notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
+    };
 
-  const deleteTripAndFetch = async () => {
-    //get the trip again cause it prob changed
-    await getTrip();
-    const deleteOldTrip = () => {};
-    //todo:
-    deleteOldTrip();
-    setCancelFetching(false);
-    //fetch what is selected here:
-    await setFetching(true);
-    console.log('about to fetch stuf');
-    Promise.all([fetchActivities(), fetchPointsOfInterest(), fetchMetabaseQueries()])
-      .finally(() => setFetching(false))
-      .catch((error) => {
-        setFetching(false);
-        //notifyError(databaseContext, 'Error when fetching from network: ' + error);
-      });
-  };
+    const fetchMetabaseQueries = async () => {
+      if (!trip || !trip.metabaseChoices || !trip.metabaseChoices.length) {
+        return;
+      }
+
+      let countActivities = 0;
+      let countPois = 0;
+
+      for (const setOfChoices of trip.metabaseChoices) {
+        const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
+
+        const querySearchCriteria: IMetabaseQuerySearchCriteria = {
+          ...((setOfChoices.metabaseQueryId && { metabaseQueryId: setOfChoices.metabaseQueryId }) || {}),
+          ...((geometry && { search_feature: geometry }) || {})
+        };
+
+        if (!setOfChoices.metabaseQueryId) {
+          //notifyError(databaseContext, 'Metabase Query ID cannot be blank, please select a query');
+          alert('Metabase Query ID cannot be blank, please select a query');
+          return;
+        }
+
+        let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
+
+        await upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+              docType: DocType.TRIP,
+              ID: props.trip_ID,
+              json: {
+                metabaseQueryNames: {
+                  ...trip.metabaseQueryNames,
+                  [setOfChoices.metabaseQueryId]: response.name
+                }
+              }
+            }
+          ],
+          databaseContext
+        );
+
+        let responseRows = [];
+        if (response?.activities?.length) responseRows = response.activities;
+        if (response?.points_of_interest?.length) responseRows = [responseRows, ...response.points_of_interest];
+
+        let upserts = {};
+        for (const row of responseRows) {
+          let photos = [];
+          if (setOfChoices.includePhotos) photos = await getPhotos(row);
+
+          if (row.activity_id) {
+            upserts = {
+              ...upserts,
+              [row.activity_id]: (existingDoc: any) => ({
+                ...existingDoc,
+                _id: row.activity_id,
+                docType: DocType.REFERENCE_ACTIVITY,
+                trip_IDs:
+                  existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
+                ...row,
+                formData: row.activity_payload.form_data,
+                activityType: row.activity_type,
+                activitySubtype: row.activity_subtype,
+                geometry: row.activity_payload.geometry,
+                photos
+              })
+            };
+            countActivities++;
+          }
+
+          if (row.point_of_interest_id) {
+            upserts = {
+              ...upserts,
+              ['POI' + row.point_of_interest_id]: (existingDoc: any) => ({
+                ...existingDoc,
+                _id: 'POI' + row.point_of_interest_id,
+                docType: DocType.REFERENCE_POINT_OF_INTEREST,
+                trip_IDs:
+                  existingDoc && existingDoc.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
+                ...row,
+                formData: row.point_of_interest_payload.form_data,
+                pointOfInterestType: row.point_of_interest_type,
+                pointOfInterestSubtype: row.point_of_interest_subtype,
+                geometry: [...row.point_of_interest_payload.geometry],
+                photos
+              })
+            };
+            countPois++;
+          }
+        }
+        try {
+          //  await bulkUpsert(upserts);
+        } catch (error) {
+          //notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
+          alert('Error with inserting Metabase results into database: ' + error);
+        }
+      }
+      alert(
+        'Cached ' +
+          (countActivities ? countActivities + ' activities' : '') +
+          (countActivities && countPois ? ' and ' : '') +
+          (countPois ? countPois + ' points of interest' : '') +
+          (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
+      );
+      // notifySuccess(
+      //   databaseContext,
+      //   'Cached ' +
+      //     (countActivities ? countActivities + ' activities' : '') +
+      //     (countActivities && countPois ? ' and ' : '') +
+      //     (countPois ? countPois + ' points of interest' : '') +
+      //     (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
+      // );
+    };
+
+    const deleteTripAndFetch = async () => {
+      //get the trip again cause it prob changed
+      await getTrip();
+      const deleteOldTrip = () => {};
+      //todo:
+      deleteOldTrip();
+      //fetch what is selected here:
+      await setFetching(true);
+      console.log('about to fetch stuf');
+      Promise.all([fetchActivities(), fetchPointsOfInterest(), fetchMetabaseQueries()])
+        .finally(() => setFetching(false))
+        .catch((error) => {
+          setFetching(false);
+          setFetch(false);
+          //notifyError(databaseContext, 'Error when fetching from network: ' + error);
+        });
+    };
+    if (fetch) deleteTripAndFetch();
+  }, [fetch]);
 
   return (
     <>
-      <Button variant="contained" color="primary" disabled={fetching} onClick={deleteTripAndFetch}>
+      <Button
+        variant="contained"
+        color="primary"
+        disabled={fetching}
+        onClick={() => {
+          setFetch(true);
+        }}>
         {'Cache Trip For Offline'}
       </Button>
       {fetching && (
         <>
-          <Button
+          <Box width="100%" paddingTop="10px">
+            <Typography align="center" variant="h4" component="h3">
+              To cancell fetching, exit this page.
+            </Typography>
+          </Box>
+          {/* <Button
             variant="contained"
             color="primary"
             onClick={() => {
-              console.log('setting to true');
-              setCancelFetching(true);
+              setFetch(false);
             }}>
             {'Cancel fetching data'}
-          </Button>
+          </Button> */}
           <Box paddingTop="10px" display="flex" alignItems="center">
             <Box width="100%" mr={1}>
-              <LinearProgress variant="determinate" value={(totalRecordsFetched / totalRecordsToFetche) * 100} />
+              <LinearProgress variant="determinate" value={(totalRecordsFetched / totalRecordsToFetch) * 100} />
             </Box>
             <Box minWidth={35}>
               <Typography variant="body2" color="textSecondary">
-                {totalRecordsFetched} out of {totalRecordsToFetche} fetched.
+                {totalRecordsFetched} out of {totalRecordsToFetch} fetched.
               </Typography>
             </Box>
           </Box>
