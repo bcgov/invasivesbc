@@ -198,8 +198,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     // This should get the 'FeatureGroup' connected to the tools
     const context = useLeafletContext() as LeafletContextInterface;
     const [geoKeys, setGeoKeys] = useState({});
-    // Grab the map object
-    let map = useMap();
 
     // Put new feature into the FeatureGroup
     const onDrawCreate = (e: any) => {
@@ -214,6 +212,12 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       // Drawing one geo wipes all others
       props.geometryState.setGeometry([aGeo]);
     };
+
+    // Grab the map object
+    let map = useMapEvent('moveend', () => {
+      map.on('draw:created',onDrawCreate)
+      console.log('draw created')
+    })
 
     const convertLineStringToPoly = (aGeo: any) => {
       if (aGeo.geometry.type === 'LineString') {
@@ -383,17 +387,17 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
       // Update the map with the new drawn feaures
 
-      map = map.addLayer(drawnItems);
+      //map = map.addLayer(drawnItems);
       setDrawnItems(drawnItems.clearLayers());
     };
 
     // When the dom is rendered listen for added features
-    useEffect(() => {
+    /*useEffect(() => {
       map.on('draw:created', onDrawCreate);
       // map.on('draw:editstop', onDrawEditStop);
       // map.on('draw:deleted', onDrawDeleted);
       console.log('draw created');
-    }, []);
+    }, []);*/
 
     useEffect(() => {
       if (!map) {
