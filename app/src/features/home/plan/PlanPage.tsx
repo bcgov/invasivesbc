@@ -525,8 +525,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     // await databaseContext.database.get(trip_ID.toString()).then((doc) => {
     //   return databaseContext.database.remove(doc);
     // });
-    // NOSONAR
-    setNewTripID(Math.random());
+
+    setNewTripID(Math.random()); //NOSONAR
   };
 
   return (
