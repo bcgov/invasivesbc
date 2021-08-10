@@ -6,8 +6,8 @@ import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import utm_zone from './DisplayPosition';
 import turf, { polygon, area } from '@turf/turf';
 import L from 'leaflet';
-import dotMarker from './Icons/dotMarker.png';
-import ruler from './Icons/ruler.png';
+import dotMarker from '../Icons/dotMarker.png';
+import ruler from '../Icons/ruler.png';
 
 const useStyles = makeStyles((theme) => ({
   image: {
