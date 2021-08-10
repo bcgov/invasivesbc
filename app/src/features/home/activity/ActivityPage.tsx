@@ -95,7 +95,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
 
   const [doc, setDoc] = useState(null);
-  const docId = doc && doc.id;
+  const docId = doc && doc._id;
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
@@ -118,14 +118,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     // console.log("updating doc ", updatedDoc);
-    if (!updatedDoc.id) {
+    if (!updatedDoc._id) {
       return false;
     }
     setDoc(updatedDoc);
     try {
       const dbUpdates = debounced(1000, async (updated) => {
         // TODO use an api endpoint to do this merge logic instead
-        const oldActivity = await dataAccess.getActivityById(updated.id);
+        const oldActivity = await dataAccess.getActivityById(updated._id);
         const newActivity = {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
@@ -370,8 +370,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     const activityResults = await dataAccess.getActivityById(activityId || appStateResults.docs[0].activeActivity);
-    console.log(activityResults);
-    console.log('hint');
     return mapDBActivityToDoc(activityResults);
   };
 
@@ -380,7 +378,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const setActiveActivity = async (activeActivity: any) => {
     await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-      const updatedActivity = { ...appStateDoc, activeActivity: activeActivity.id };
+      const updatedActivity = { ...appStateDoc, activeActivity: activeActivity._id };
 
       setIsCloned(true);
 
@@ -576,7 +574,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           onFormSubmitSuccess={onFormSubmitSuccess}
           onFormSubmitError={onFormSubmitError}
           photoState={{ photos, setPhotos }}
-          mapId={doc.id}
+          mapId={doc._id}
           geometryState={{ geometry, setGeometry }}
           //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
           extentState={{ extent, setExtent }}

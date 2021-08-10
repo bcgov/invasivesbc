@@ -231,13 +231,9 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
-    // const { data } = await Http.request({
-    //   headers: { ...options.headers },
-    //   method: 'GET',
-    //   url: options.baseUrl + `/api/activity?id=` + activity.activity_id
-    // });
+    const oldActivity = getActivityById(activity.activity_id);
 
-    // console.log(data);
+    console.log(oldActivity);
 
     const { data } = await Http.request({
       method: 'PUT',
