@@ -9,7 +9,6 @@ const EditTools = (props) => {
     // This should get the 'FeatureGroup' connected to the tools
     const context = useLeafletContext() as LeafletContextInterface;
     const [geoKeys, setGeoKeys] = useState({});
-    const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
     const drawRef = useRef();
 
     // Put new feature into the FeatureGroup
@@ -24,15 +23,17 @@ const EditTools = (props) => {
         aGeo = convertLineStringToPoly(aGeo);
         // Drawing one geo wipes all others
         props.geometryState.setGeometry([...props.geometryState.geometry ,aGeo]);
-        console.dir(aGeo);
+        (context.layerContainer as any).clearLayers();
     };
 
     // Grab the map object
     let map = useMapEvent('draw:created' as any, onDrawCreate);
 
-    let map2 = useMapEvent('draw:drawstart' as any, () => {
-        // drawnItems.clearLayers();
+    let mapDrawStart = useMapEvent('draw:drawstart' as any, () => {
         (context.layerContainer as any).clearLayers();
+    });
+    let mapDrawDeleted = useMapEvent('draw:deleted' as any, () => {
+        props.geometryState.setGeometry([]);
     });
 
     const convertLineStringToPoly = (aGeo: any) => {
@@ -96,7 +97,6 @@ const EditTools = (props) => {
                     },
                     onEachFeature: (feature: any, layer: any) => {
                         context.layerContainer.addLayer(layer);
-                        //drawnItems.addLayer(layer);
                     }
                 });
             });
@@ -182,7 +182,6 @@ const EditTools = (props) => {
                 // draw layers to map
                 Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
                     context.layerContainer.addLayer(layer);
-                    //drawnItems.addLayer(layer);
                 });
             } else if (newGeoKeys[key].updated === false) {
                 return;
@@ -190,11 +189,8 @@ const EditTools = (props) => {
                 // remove old keys (delete step)
                 Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
                     context.layerContainer.removeLayer(layer);
-                    //            drawnItems.removeLayer(layer);
                 });
                 delete newGeoKeys[key];
-                props.geometryState.setGeometryState({});
-                //setDrawnItems(drawnItems.clearLayers());
                 return;
             }
             // reset updated status for next refresh:
@@ -203,25 +199,7 @@ const EditTools = (props) => {
 
         // update stored geos, mapped by key
         setGeoKeys(newGeoKeys);
-
-        // Update the drawn featres
-        // setDrawnItems(drawnItems);
-
-        // Update the map with the new drawn feaures
-
-        //console.dir(props);
-        //console.dir(map);
-        console.dir(props.geometryState.geometry);
-        //setDrawnItems(drawnItems.clearLayers());
     };
-
-    // When the dom is rendered listen for added features
-    /*useEffect(() => {
-      map.on('draw:created', onDrawCreate);
-      // map.on('draw:editstop', onDrawEditStop);
-      // map.on('draw:deleted', onDrawDeleted);
-      console.log('draw created');
-    }, []);*/
 
     useEffect(() => {
         if (!map) {

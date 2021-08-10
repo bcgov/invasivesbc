@@ -475,8 +475,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    //console.log('in hook');
-
     saveGeometry(geometry);
   }, [geometry, isLoading, saveGeometry]);
 
