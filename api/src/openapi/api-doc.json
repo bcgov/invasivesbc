@@ -2216,7 +2216,7 @@
           },
           "collection_persons": {
             "type": "array",
-            "title": "Names of Collectors",
+            "title": "Name(s) of Person(s) doing the collection",
             "items": {
               "$ref": "#/components/schemas/Persons"
             },
@@ -2230,7 +2230,7 @@
         "required": ["collections"],
         "properties": {
           "collections": {
-            "title": "Collections",
+            "title": " ",
             "type": "array",
             "minimum": 1,
             "items": {
@@ -2246,6 +2246,38 @@
                 "actual_quantity_and_life_stage_of_agent_collected",
                 "estimated_quantity_and_life_stage_of_agent_collected"
               ],
+              "dependencies": {
+                "collection_method": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "collection_method": {
+                          "enum": ["Cs"]
+                        },
+                        "num_of_sweeps": {
+                          "type": "number",
+                          "title": "Number of sweeps",
+                          "minimum": 1
+                        }
+                      },
+                      "required": ["num_of_sweeps"]
+                    },
+                    {
+                      "properties": {
+                        "collection_method": {
+                          "enum": ["Cl"]
+                        },
+                        "num_of_plants": {
+                          "type": "number",
+                          "title": "Number of plants collected",
+                          "minimum": 1
+                        }
+                      },
+                      "required": ["num_of_plants"]
+                    }
+                  ]
+                }
+              },
               "properties": {
                 "invasive_plant_code": {
                   "type": "string",
@@ -2289,13 +2321,14 @@
                   }
                 },
                 "start_time": {
-                  "type": "number",
+                  "type": "string",
+                  "format": "time",
                   "minimum": 1,
                   "title": "Start time collecting (mins)"
                 },
                 "stop_time": {
-                  "type": "number",
-                  "minimum": 1,
+                  "type": "string",
+                  "format": "time",
                   "title": "Stop time collecting (mins)"
                 },
                 "total_time": {

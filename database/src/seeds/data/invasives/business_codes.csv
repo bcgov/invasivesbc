@@ -1234,13 +1234,13 @@ frame_size_code,NA,Unknown or indeterminant,1
 frame_size_code,L,1.0 sq metre,2
 frame_size_code,M,0.75 sq metre,3
 frame_size_code,S,0.1 sq metre,4
-biocontrol_collection_code,As,Aspirate*,1
-biocontrol_collection_code,Hp,Hand pick*,2
-biocontrol_collection_code,Cl,Clipping**,3
-biocontrol_collection_code,Cs,Sweep (counted)**,4
-biocontrol_collection_code,Sw,Sweep (timed)*,5
-biocontrol_collection_code,Tt,Tap and tray*,6
-biocontrol_collection_code,Tp,Transplant**,7
+biocontrol_collection_code,As,Aspirate,1
+biocontrol_collection_code,Hp,Hand pick,2
+biocontrol_collection_code,Cl,Clipping,3
+biocontrol_collection_code,Cs,Sweep (counted),4
+biocontrol_collection_code,Sw,Sweep (timed),5
+biocontrol_collection_code,Tt,Tap and tray,6
+biocontrol_collection_code,Tp,Transplant,7
 invasive_plant_code_withbiocontrol,BL,Black knapweed (CENT NIG Centaurea nigra),1
 invasive_plant_code_withbiocontrol,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),2
 invasive_plant_code_withbiocontrol,BK,Brown knapweed (CENT JAC Centaurea jacea),3
