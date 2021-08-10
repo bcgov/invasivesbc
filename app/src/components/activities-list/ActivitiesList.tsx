@@ -52,6 +52,7 @@ import {
   MyAdditionalBiocontrolActivitiesTable,
   MyPastActivitiesTable
 } from 'components/common/RecordTables';
+import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -313,13 +314,18 @@ const ActivitiesList: React.FC = () => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
-
+  const databaseContext2 = useContext(DatabaseContext2);
   const invasivesApi = useInvasivesApi();
   const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
-  const userId = userInfo?.preferred_username;
-
-  if (!userId) throw "Keycloak error: can not get current user's username";
+  useEffect(() => {
+    const userId = async () => {
+      const userInfo: any = keycloak
+        ? keycloak?.userInfo
+        : await query({ type: QueryType.DOC_TYPE_AND_ID, docType: DocType.KEYCLOAK, ID: '1' }, databaseContext2);
+      return userInfo?.preferred_username;
+    };
+    if (!userId) throw "Keycloak error: can not get current user's username";
+  }, []);
 
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);

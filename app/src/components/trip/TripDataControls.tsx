@@ -135,49 +135,27 @@ export const TripDataControls: React.FC<any> = (props) => {
           let photos = [];
           if (setOfChoices.includePhotos) photos = await getPhotos(row);
 
-          if (Capacitor.getPlatform() == 'web') {
-            upserts = {
-              ...upserts,
-              [row.activity_id]: (existingDoc: any) => ({
-                ...existingDoc,
-                _id: row.activity_id,
-                docType: DocType.REFERENCE_ACTIVITY,
-                trip_IDs: existingDoc?.trip_IDs ? [...existingDoc.trip_IDs, props.trip_ID] : [props.trip_ID],
-                ...row,
-                formData: row.activity_payload.form_data,
-                activityType: row.activity_type,
-                activitySubtype: row.activity_subtype,
-                geometry: row.activity_payload.geometry,
-                photos: photos
-              })
-            };
-          } else {
-            let jsonObj = {
-              id: row.activity_id,
-              docType: DocType.REFERENCE_ACTIVITY,
-              ...row,
-              formData: row.activity_payload.form_data,
-              activityType: row.activity_type,
-              activitySubtype: row.activity_subtype,
-              geometry: row.activity_payload.geometry,
-              photos: photos
-            };
+          let jsonObj = {
+            id: row.activity_id,
+            docType: DocType.REFERENCE_ACTIVITY,
+            ...row,
+            formData: row.activity_payload.form_data,
+            activityType: row.activity_type,
+            activitySubtype: row.activity_subtype,
+            geometry: row.activity_payload.geometry,
+            photos: photos
+          };
 
-            upserts.push({
-              docType: DocType.REFERENCE_ACTIVITY,
-              ID: row.activity_id,
-              type: UpsertType.DOC_TYPE_AND_ID,
-              json: jsonObj
-            });
-          }
+          upserts.push({
+            docType: DocType.REFERENCE_ACTIVITY,
+            ID: row.activity_id,
+            type: UpsertType.DOC_TYPE_AND_ID,
+            json: jsonObj
+          });
         }
         try {
-          if (Capacitor.getPlatform() == 'web') {
-            //numberActivitiesFetched += await bulkUpsert(upserts);
-          } else {
-            numberActivitiesFetched += await upsert(upserts, databaseContext);
-            alert('Cached ' + numberActivitiesFetched + ' activities.');
-          }
+          numberActivitiesFetched += await upsert(upserts, databaseContext);
+          alert('Cached ' + numberActivitiesFetched + ' activities.');
         } catch (error) {
           alert('There was an error: ' + error);
           // notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);

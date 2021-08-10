@@ -25,6 +25,8 @@ import {
 } from 'utils/addActivity';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { notifyError, notifySuccess } from 'utils/NotificationUtils';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -171,37 +173,34 @@ const arrayWrap = (value) => {
   return Array.isArray(value) ? value : [value];
 };
 
-export const defaultActivitiesFetch = ({
-  invasivesApi,
-  activitySubtypes,
-  created_by = undefined,
-  review_status = []
-}) => async ({ page, rowsPerPage, order }) => {
-  // Fetches fresh from the API (web).  TODO fetch from SQLite
-  let dbPageSize = DEFAULT_PAGE_SIZE;
-  if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
-    // if page is right near the db page limit
-    dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
+export const defaultActivitiesFetch =
+  ({ invasivesApi, activitySubtypes, created_by = undefined, review_status = [] }) =>
+  async ({ page, rowsPerPage, order }) => {
+    // Fetches fresh from the API (web).  TODO fetch from SQLite
+    let dbPageSize = DEFAULT_PAGE_SIZE;
+    if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
+      // if page is right near the db page limit
+      dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
 
-  const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
+    const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
 
-  const result = await invasivesApi.getActivities({
-    page: Math.floor((page * rowsPerPage) / dbPageSize),
-    limit: dbPageSize,
-    order: order,
-    // search_feature: geometry TODO
-    activity_type: arrayWrap(types),
-    activity_subtype: arrayWrap(activitySubtypes),
-    // startDate, endDate will be filters
-    created_by: created_by, // my_keycloak_id
-    review_status: review_status
-  });
-  // console.log('defaultActivitiesFetch: ', result);
-  return {
-    rows: result.rows.map(activityStandardMapping),
-    count: result.count
+    const result = await invasivesApi.getActivities({
+      page: Math.floor((page * rowsPerPage) / dbPageSize),
+      limit: dbPageSize,
+      order: order,
+      // search_feature: geometry TODO
+      activity_type: arrayWrap(types),
+      activity_subtype: arrayWrap(activitySubtypes),
+      // startDate, endDate will be filters
+      created_by: created_by, // my_keycloak_id
+      review_status: review_status
+    });
+    // console.log('defaultActivitiesFetch: ', result);
+    return {
+      rows: result.rows.map(activityStandardMapping),
+      count: result.count
+    };
   };
-};
 
 export interface IActivitiesTable extends IRecordTable {
   workflow?: string;
@@ -265,8 +264,8 @@ const activitesDefaultHeaders = [
 
 export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
-  const invasivesApi = useInvasivesApi();
-  const databaseContext = useContext(DatabaseContext);
+  const invasivesApi = useDataAccess();
+  const databaseContext = useContext(DatabaseContext2);
   const { keycloak } = useKeycloak();
   const userInfo: any = keycloak?.userInfo;
 
@@ -344,9 +343,17 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
               if (selectedIds.length === 1) {
                 // TODO switch by activity type, I guess...
-                await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-                  return { ...appStateDoc, activeActivity: selectedIds[0] };
-                });
+                // await upsert(
+                //   [
+                //     {
+                //       type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                //       docType: DocType.APPSTATE,
+                //       ID: '1',
+                //       json: { activeActivity: selectedIds[0] }
+                //     }
+                //   ],
+                //   databaseContext
+                // );
                 history.push({ pathname: `/home/activity` });
               } else {
                 history.push({
@@ -419,10 +426,10 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     })
                   );
                   const typename = activity.activity_subtype?.split('_')[2];
-                  notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
+                  // notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
                 });
               } catch (error) {
-                notifyError(databaseContext, JSON.stringify(error));
+                // notifyError(databaseContext, JSON.stringify(error));
               }
             },
             icon: <Sync />,
@@ -466,10 +473,10 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     })
                   );
                   const typename = activity.activity_subtype?.split('_')[2];
-                  notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
+                  //notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
                 });
               } catch (error) {
-                notifyError(databaseContext, JSON.stringify(error));
+                // notifyError(databaseContext, JSON.stringify(error));
               }
             },
             icon: <FindInPage />,
@@ -515,10 +522,10 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     })
                   );
                   const typename = activity.activity_subtype?.split('_')[2];
-                  notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
+                  // notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
                 });
               } catch (error) {
-                notifyError(databaseContext, JSON.stringify(error));
+                // notifyError(databaseContext, JSON.stringify(error));
               }
             },
             icon: <Check />,
@@ -564,10 +571,10 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     })
                   );
                   const typename = activity.activity_subtype?.split('_')[2];
-                  notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
+                  // notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
                 });
               } catch (error) {
-                notifyError(databaseContext, JSON.stringify(error));
+                // notifyError(databaseContext, JSON.stringify(error));
               }
             },
             icon: <Clear />,
@@ -733,7 +740,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
 
 export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
   const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -842,9 +849,18 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
                 calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
                 activity
               );
-              await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-                return { ...appStateDoc, activeActivity: addedActivity._id };
-              });
+
+              // await upsert(
+              //   [
+              //     {
+              //       type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+              //       docType: DocType.APPSTATE,
+              //       ID: '1',
+              //       json: { activeActivity: addedActivity._id }
+              //     }
+              //   ],
+              //   databaseContext
+              // );
 
               history.push(`/home/activity`);
             },
@@ -1044,7 +1060,7 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
 
 export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
   const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1607,7 +1623,7 @@ export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (
 
 export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { rows, headers = [], ...otherProps } = props;
-  const invasivesApi = useInvasivesApi();
+  const invasivesApi = useDataAccess();
   return useMemo(() => {
     return (
       <ActivitiesTable

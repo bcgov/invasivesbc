@@ -426,7 +426,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 doneButtonCallBack={() => {
                   helperStepDoneOrSkip(5);
                 }}>
-                {/*}  <MetabaseSearch trip_ID={props.trip_ID} /> */}
+                <MetabaseSearch trip_ID={props.trip_ID} />
               </TripStep>
               <TripStep
                 title="Last Step: Cache, Refresh, or Delete data for Trip "

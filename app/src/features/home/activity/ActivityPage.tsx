@@ -95,7 +95,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
 
   const [doc, setDoc] = useState(null);
-  const docId = doc && doc._id;
+  const docId = doc && doc.id;
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
@@ -118,14 +118,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
 
     // console.log("updating doc ", updatedDoc);
-    if (!updatedDoc._id) {
+    if (!updatedDoc.id) {
       return false;
     }
     setDoc(updatedDoc);
     try {
       const dbUpdates = debounced(1000, async (updated) => {
         // TODO use an api endpoint to do this merge logic instead
-        const oldActivity = await dataAccess.getActivityById(updated._id);
+        const oldActivity = await dataAccess.getActivityById(updated.id);
         const newActivity = {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
@@ -177,7 +177,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
           proj4.defs([
             ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
-            ['EPSG:AUTO', `+proj=utm +zone=${utm_zone} +datum=WGS84 +units=m +no_defs`]
+            ['EPSG:AUTO', `+proj=utm +zone= ${utm_zone} +datum=WGS84 +units=m +no_defs`]
           ]);
           const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
           utm_easting = Number(en_m[0].toFixed(4));
@@ -356,11 +356,22 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
     const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
+    // const appStateResults = await query(
+    //   {
+    //     type: QueryType.DOC_TYPE_AND_ID,
+    //     docType: DocType.APPSTATE,
+    //     ID: '1'
+    //   },
+    //   databaseContext
+    // );
+
     if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
       return;
     }
 
     const activityResults = await dataAccess.getActivityById(activityId || appStateResults.docs[0].activeActivity);
+    console.log(activityResults);
+    console.log('hint');
     return mapDBActivityToDoc(activityResults);
   };
 
@@ -369,7 +380,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const setActiveActivity = async (activeActivity: any) => {
     await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-      const updatedActivity = { ...appStateDoc, activeActivity: activeActivity._id };
+      const updatedActivity = { ...appStateDoc, activeActivity: activeActivity.id };
 
       setIsCloned(true);
 
@@ -565,7 +576,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           onFormSubmitSuccess={onFormSubmitSuccess}
           onFormSubmitError={onFormSubmitError}
           photoState={{ photos, setPhotos }}
-          mapId={doc._id}
+          mapId={doc.id}
           geometryState={{ geometry, setGeometry }}
           //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
           extentState={{ extent, setExtent }}

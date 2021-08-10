@@ -1,6 +1,9 @@
 import * as React from 'react';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { DatabaseContext2, upsert, UpsertType } from './DatabaseContext2';
+import { DocType } from 'constants/database';
+import { Capacitor } from '@capacitor/core';
 
 export interface IAuthState {
   ready?: boolean;
@@ -15,14 +18,25 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const invasivesApi = useInvasivesApi();
 
   const [userInfo, setUserInfo] = React.useState<any>(null);
-
+  const databaseContext = React.useContext(DatabaseContext2);
   React.useEffect(() => {
     const loadUserInfo = async () => {
       console.log(keycloak.obj + 'keycloak is here');
       const user = await keycloak.obj?.loadUserInfo();
       setUserInfo(user);
     };
-
+    if (Capacitor.getPlatform() != 'web' && databaseContext.ready)
+      upsert(
+        [
+          {
+            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+            docType: DocType.KEYCLOAK,
+            ID: '1',
+            json: userInfo
+          }
+        ],
+        databaseContext
+      );
     loadUserInfo();
   }, [keycloak.obj]);
 
