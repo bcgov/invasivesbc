@@ -71,7 +71,8 @@ export type MapControl = (map: any, ...args: any) => void;
 const iconStyle = {
   transform: 'scale(0.7)',
   opacity: '0.7',
-  width: 32, height: 32
+  width: 32,
+  height: 32
 };
 
 const storeLayersStyle = {
@@ -216,6 +217,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     // Grab the map object
     let map = useMapEvent('draw:created' as any, onDrawCreate);
 
+    let map2 = useMapEvent('draw:drawstart' as any, () => {
+      // drawnItems.clearLayers();
+      (context.layerContainer as any).clearLayers();
+    });
+
     const convertLineStringToPoly = (aGeo: any) => {
       if (aGeo.geometry.type === 'LineString') {
         const buffer = prompt('Enter buffer width (total) in meters', '1');
@@ -248,7 +254,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
     const updateMapOnGeometryChange = () => {
       // upload from geometrystate props
-      console.log('in here')
+      console.log('in here');
       // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
       const newGeoKeys = { ...geoKeys };
       console.dir(props.geometryState);
@@ -283,7 +289,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
               console.log(layer);
               console.log(feature);
               console.dir(collection);
-              drawnItems.addLayer(layer);
+              context.layerContainer.addLayer(layer);
+              //              drawnItems.addLayer(layer);
               console.dir(drawnItems);
             }
           });
@@ -370,14 +377,16 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         if (newGeoKeys[key].updated === true) {
           // draw layers to map
           Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
-            drawnItems.addLayer(layer);
+            context.layerContainer.addLayer(layer);
+            //drawnItems.addLayer(layer);
           });
         } else if (newGeoKeys[key].updated === false) {
           return;
         } else {
           // remove old keys (delete step)
           Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
-            drawnItems.removeLayer(layer);
+            context.layerContainer.removeLayer(layer);
+            //            drawnItems.removeLayer(layer);
           });
           delete newGeoKeys[key];
           //setDrawnItems(drawnItems.clearLayers());
@@ -391,14 +400,14 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       setGeoKeys(newGeoKeys);
 
       // Update the drawn featres
-      setDrawnItems(drawnItems);
+      // setDrawnItems(drawnItems);
 
       // Update the map with the new drawn feaures
 
-      map = map.addLayer(drawnItems);
+      // map = map.addLayer(drawnItems);
       console.dir(props);
       console.dir(map);
-      setDrawnItems(drawnItems.clearLayers());
+      //setDrawnItems(drawnItems.clearLayers());
     };
 
     // When the dom is rendered listen for added features
@@ -431,14 +440,14 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
      */
     const options = {
       draw: {
-        circlemarker: false,
+        circlemarker: false
       },
       edit: {
         featureGroup: context.layerContainer,
         edit: true
-      },
+      }
     };
-    
+
     // Create drawing tool control
     drawRef.current = new (L.Control as any).Draw(options);
 
