@@ -8,7 +8,6 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer2.css';
 import * as turf from '@turf/turf';
-import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
 import {
   GeoJSON,
   MapContainer,
@@ -43,12 +42,13 @@ import LayersIcon from '@material-ui/icons/Layers';
 import { LayerPicker } from './LayerPicker/SortableHelper';
 import data from './LayerPicker/GEO_DATA.json';
 import { DomEvent } from 'leaflet';
-import DisplayPosition from './DisplayPosition';
+import DisplayPosition from './Tools/DisplayPosition';
 import { debounced } from 'utils/FunctionUtils';
 import { createPolygonFromBounds } from './LayerLoaderHelpers/LtlngBoundsToPoly';
 import { MapRequestContextProvider, MapRequestContext } from 'contexts/MapRequestsContext';
-import MeasureTool from './MeasureTool';
+import MeasureTool from './Tools/MeasureTool';
 import { makeStyles, Theme } from '@material-ui/core';
+import EditTools from './Tools/EditTools';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -71,7 +71,8 @@ export type MapControl = (map: any, ...args: any) => void;
 const iconStyle = {
   transform: 'scale(0.7)',
   opacity: '0.7',
-  width: 32, height: 32
+  width: 32,
+  height: 32
 };
 
 const storeLayersStyle = {
@@ -145,9 +146,7 @@ const interactiveGeometryStyle = () => {
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  const drawRef = useRef();
   const [menuState, setMenuState] = useState(false);
-  const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
 
   const Offline = () => {
     const map = useMap();
@@ -192,244 +191,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         {offlineing ? <Spinner></Spinner> : <img src="/assets/icon/download.svg" style={iconStyle}></img>}
       </div>
     );
-  };
-
-  const EditTools = () => {
-    // This should get the 'FeatureGroup' connected to the tools
-    const context = useLeafletContext() as LeafletContextInterface;
-    const [geoKeys, setGeoKeys] = useState({});
-    // Grab the map object
-    let map = useMap();
-
-    // Put new feature into the FeatureGroup
-    const onDrawCreate = (e: any) => {
-      context.layerContainer.addLayer(e.layer);
-      let aGeo = e.layer.toGeoJSON();
-      if (e.layerType === 'circle') {
-        aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: e.layer.getRadius() } };
-      } else if (e.layerType === 'rectangle') {
-        aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
-      }
-      aGeo = convertLineStringToPoly(aGeo);
-      // Drawing one geo wipes all others
-      props.geometryState.setGeometry([aGeo]);
-    };
-
-    const convertLineStringToPoly = (aGeo: any) => {
-      if (aGeo.geometry.type === 'LineString') {
-        const buffer = prompt('Enter buffer width (total) in meters', '1');
-        const buffered = turf.buffer(aGeo.geometry, parseInt(buffer, 10) / 1000, { units: 'kilometers', steps: 1 });
-        const result = turf.featureCollection([buffered, aGeo.geometry]);
-
-        return { ...aGeo, geometry: result.features[0].geometry };
-      }
-
-      return aGeo;
-    };
-
-    const setGeometryMapBounds = () => {
-      if (
-        props.geometryState?.geometry?.length &&
-        !(props.geometryState?.geometry[0].geometry.type === 'Point' && !props.geometryState?.geometry[0].radius)
-      ) {
-        const allGeosFeatureCollection = {
-          type: 'FeatureCollection',
-          features: [...props.geometryState.geometry]
-        };
-        const bboxCoords = turf.bbox(allGeosFeatureCollection);
-
-        map.fitBounds([
-          [bboxCoords[1], bboxCoords[0]],
-          [bboxCoords[3], bboxCoords[2]]
-        ]);
-      }
-    };
-
-    const updateMapOnGeometryChange = () => {
-      // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
-      const newGeoKeys = { ...geoKeys };
-
-      if (props.geometryState) {
-        // For each geometry, add a new layer to the drawn features
-        props.geometryState.geometry.forEach((collection) => {
-          const style = {
-            weight: 4,
-            opacity: 0.65
-          };
-
-          const markerStyle = {
-            radius: 10,
-            weight: 4,
-            stroke: true
-          };
-
-          L.geoJSON(collection, {
-            style,
-            pointToLayer: (feature: any, latLng: any) => {
-              if (feature.properties.radius) {
-                return L.circle(latLng, { radius: feature.properties.radius });
-              } else {
-                return L.circleMarker(latLng, markerStyle);
-              }
-            },
-            onEachFeature: (feature: any, layer: any) => {
-              drawnItems.addLayer(layer);
-            }
-          });
-        });
-      }
-      if (props.interactiveGeometryState?.interactiveGeometry) {
-        props.interactiveGeometryState.interactiveGeometry.forEach((interactObj) => {
-          const key = interactObj.recordDocID || interactObj._id;
-          if (newGeoKeys[key] && newGeoKeys[key].hash === JSON.stringify(interactObj) && newGeoKeys[key] !== true) {
-            // old unchanged geo, no need to redraw
-            newGeoKeys[key] = {
-              ...newGeoKeys[key],
-              updated: false
-            };
-            return;
-          }
-
-          // else prepare new Geo for drawing:
-          const style = {
-            color: interactObj.color,
-            weight: 4,
-            opacity: 0.65
-          };
-
-          const markerStyle = {
-            radius: 10,
-            weight: 4,
-            stroke: true
-          };
-
-          const geo = L.geoJSON(interactObj.geometry, {
-            // Note: the result of this isn't actually used, it seems?
-            style,
-            pointToLayer: (feature: any, latLng: any) => {
-              if (feature.properties.radius) {
-                return L.circle(latLng, { radius: feature.properties.radius });
-              } else {
-                return L.circleMarker(latLng, markerStyle);
-              }
-            },
-            onEachFeature: (feature: any, layer: any) => {
-              const content = interactObj.popUpComponent(interactObj.description);
-              layer.on('click', () => {
-                // Fires on click of single feature
-
-                // Formulate a table containing all attributes
-                let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
-                Object.keys(feature.properties).forEach((f) => {
-                  if (f !== 'uploadedSpatial') {
-                    table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
-                  }
-                });
-                table += '</table>';
-
-                const loc = turf.centroid(feature);
-                const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
-
-                if (feature.properties.uploadedSpatial) {
-                  L.popup()
-                    .setLatLng(center as L.LatLngExpression)
-                    .setContent(table)
-                    .openOn(map);
-                } else {
-                  L.popup()
-                    .setLatLng(center as L.LatLngExpression)
-                    .setContent(content)
-                    .openOn(map);
-                }
-
-                interactObj.onClickCallback();
-              });
-            }
-          });
-          newGeoKeys[key] = {
-            hash: JSON.stringify(interactObj),
-            geo: geo,
-            updated: true
-          };
-        });
-      }
-      // Drawing step:
-      Object.keys(newGeoKeys).forEach((key: any) => {
-        if (newGeoKeys[key].updated === true) {
-          // draw layers to map
-          Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
-            drawnItems.addLayer(layer);
-          });
-        } else if (newGeoKeys[key].updated === false) {
-          return;
-        } else {
-          // remove old keys (delete step)
-          Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
-            drawnItems.removeLayer(layer);
-          });
-          delete newGeoKeys[key];
-          return;
-        }
-        // reset updated status for next refresh:
-        delete newGeoKeys[key].updated;
-      });
-
-      // update stored geos, mapped by key
-      setGeoKeys(newGeoKeys);
-
-      // Update the drawn featres
-      setDrawnItems(drawnItems);
-
-      // Update the map with the new drawn feaures
-
-      //map = map.addLayer(drawnItems);
-    };
-
-    // When the dom is rendered listen for added features
-    useEffect(() => {
-      map.on('draw:created', onDrawCreate);
-      // map.on('draw:editstop', onDrawEditStop);
-      // map.on('draw:deleted', onDrawDeleted);
-      console.log('draw created');
-    }, []);
-
-    useEffect(() => {
-      if (!map) {
-        return;
-      }
-
-      if (!props.geometryState?.geometry) {
-        return;
-      }
-
-      setGeometryMapBounds();
-      updateMapOnGeometryChange();
-    }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
-
-    // Get out if the tools are already defined.
-    if (drawRef.current) return null;
-
-    /**
-     * This is where all the editing tool options are defined.
-     * See: https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html
-     */
-    const options = {
-      draw: {
-        circlemarker: false,
-      },
-      edit: {
-        featureGroup: context.layerContainer,
-        edit: true
-      },
-    };
-    
-    // Create drawing tool control
-    drawRef.current = new (L.Control as any).Draw(options);
-
-    // Add drawing tools to the map
-    map.addControl(drawRef.current);
-
-    return <div></div>;
   };
 
   const vanIsland: FeatureCollection = {
@@ -545,7 +306,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         {/* Here are the editing tools */}
         {props.showDrawControls && (
           <FeatureGroup>
-            <EditTools />
+            <EditTools geometryState={props.geometryState} />
           </FeatureGroup>
         )}
 
