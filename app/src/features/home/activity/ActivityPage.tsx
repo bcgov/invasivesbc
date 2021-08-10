@@ -330,64 +330,22 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   };
 
   const autoFillTreeNumbers = (activitySubtypeData: any) => {
-    console.log(activitySubtypeData);
-    if (activitySubtypeData.form_b) {
-      for (let form_b_index = 0; form_b_index < activitySubtypeData.form_b.length; form_b_index++) {
-        if (activitySubtypeData.form_b[form_b_index].form_a) {
-          for (
-            let form_a_index = 0;
-            form_a_index < activitySubtypeData.form_b[form_b_index].form_a.length;
-            form_a_index++
-          ) {
-            if (activitySubtypeData.form_b[form_b_index].form_a[form_a_index].stand_table) {
-              for (
-                let stand_table_index = 0;
-                stand_table_index < activitySubtypeData.form_b[form_b_index].form_a[form_a_index].stand_table.length;
-                stand_table_index++
-              ) {
-                console.log('Updating tree index at index ' + stand_table_index);
-                activitySubtypeData.form_b[form_b_index].form_a[form_a_index].stand_table[stand_table_index].tree_num =
-                  stand_table_index + 1;
-              }
-            }
-            if (
-              activitySubtypeData.form_b[form_b_index].form_a[form_a_index].plot_information &&
-              activitySubtypeData.form_b[form_b_index].form_a[form_a_index].plot_information.log
-            ) {
-              for (
-                let log_index = 0;
-                log_index < activitySubtypeData.form_b[form_b_index].form_a[form_a_index].plot_information.log.length;
-                log_index++
-              ) {
-                console.log('Updating log index at index ' + log_index);
-                activitySubtypeData.form_b[form_b_index].form_a[form_a_index].plot_information.log[log_index].log_num =
-                  log_index + 1;
-              }
+    activitySubtypeData.form_b.forEach((FormB: any) => {
+      if (FormB.form_a) {
+        FormB.form_a.forEach((FormA: any) => {
+          if (FormA.stand_table) {
+            for (let tree_index = 0; tree_index < FormA.stand_table.length; tree_index++) {
+              FormA.stand_table[tree_index].tree_num = tree_index + 1;
             }
           }
-        }
+          if (FormA.plot_information && FormA.plot_information.log) {
+            for (let log_index = 0; log_index < FormA.plot_information.log.length; log_index++) {
+              FormA.plot_information.log[log_index].log_num = log_index + 1;
+            }
+          }
+        });
       }
-    }
-    // activitySubtypeData.form_b.forEach((FormB: any) => {
-    //   if (FormB.form_a) {
-    //     FormB.form_a.forEach((FormA: any) => {
-    //       if (FormA.stand_table) {
-    //         for (let tree_index = 0; tree_index < FormA.stand_table.length; tree_index++) {
-    //           console.log('Updating tree index at index ' + tree_index);
-    //           FormA.stand_table[tree_index].tree_num = tree_index + 1;
-    //         }
-    //       }
-    //       if (FormA.plot_information && FormA.plot_information.log) {
-    //         for (let log_index = 0; log_index < FormA.plot_information.log.length; log_index++) {
-    //           console.log('Updating log index at index ' + log_index);
-    //           FormA.plot_information.log[log_index].log_num = log_index + 1;
-    //         }
-    //       }
-    //     });
-    //   }
-    // });
-
-    console.log('SUBTYPE DATA: ', activitySubtypeData);
+    });
     return activitySubtypeData;
   };
 
