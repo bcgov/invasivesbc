@@ -96,12 +96,13 @@ const MeasureTool = (props) => {
     }
     if (isMeasuringArea) {
       setLocArray([...locArray, loc]);
-      return
+      return;
     }
   });
 
   useEffect(() => {
     // need for geoJSON
+    // NOSONAR
     setKey(Math.random());
   }, [aGeoJSON]);
 
