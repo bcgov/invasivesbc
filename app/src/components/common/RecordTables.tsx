@@ -265,6 +265,7 @@ const activitesDefaultHeaders = [
 export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const invasivesApi = useDataAccess();
+  const databaseContextOld = useContext(DatabaseContext);
   const databaseContext = useContext(DatabaseContext2);
   const { keycloak } = useKeycloak();
   const userInfo: any = keycloak?.userInfo;
@@ -342,6 +343,10 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
               if (selectedIds.length === 1) {
+                await databaseContextOld.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+                  return { ...appStateDoc, activeActivity: selectedIds[0] };
+                });
+
                 // TODO switch by activity type, I guess...
                 // await upsert(
                 //   [
