@@ -23,7 +23,8 @@ const EditTools = (props) => {
         }
         aGeo = convertLineStringToPoly(aGeo);
         // Drawing one geo wipes all others
-        props.geometryState.setGeometry([aGeo]);
+        props.geometryState.setGeometry([...props.geometryState.geometry ,aGeo]);
+        console.dir(aGeo);
     };
 
     // Grab the map object
@@ -66,7 +67,6 @@ const EditTools = (props) => {
 
     const updateMapOnGeometryChange = () => {
         // upload from geometrystate props
-        console.log('in here');
         // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
         const newGeoKeys = { ...geoKeys };
         console.dir(props.geometryState);
@@ -78,7 +78,6 @@ const EditTools = (props) => {
                     weight: 4,
                     opacity: 0.65
                 };
-                console.dir(collection);
 
                 const markerStyle = {
                     radius: 10,
@@ -90,23 +89,16 @@ const EditTools = (props) => {
                     style,
                     pointToLayer: (feature: any, latLng: any) => {
                         if (feature.properties.radius) {
-                            console.dir(latLng);
                             return L.circle(latLng, { radius: feature.properties.radius });
                         } else {
-                            console.dir(latLng);
                             return L.circleMarker(latLng, markerStyle);
                         }
                     },
                     onEachFeature: (feature: any, layer: any) => {
-                        console.log(layer);
-                        console.log(feature);
-                        console.dir(collection);
                         context.layerContainer.addLayer(layer);
-                        //              drawnItems.addLayer(layer);
-                        console.dir(drawnItems);
+                        //drawnItems.addLayer(layer);
                     }
                 });
-                console.log(collection);
             });
         }
         if (props.interactiveGeometryState?.interactiveGeometry) {
@@ -201,6 +193,7 @@ const EditTools = (props) => {
                     //            drawnItems.removeLayer(layer);
                 });
                 delete newGeoKeys[key];
+                props.geometryState.setGeometryState({});
                 //setDrawnItems(drawnItems.clearLayers());
                 return;
             }
@@ -216,9 +209,9 @@ const EditTools = (props) => {
 
         // Update the map with the new drawn feaures
 
-        // map = map.addLayer(drawnItems);
-        console.dir(props);
-        console.dir(map);
+        //console.dir(props);
+        //console.dir(map);
+        console.dir(props.geometryState.geometry);
         //setDrawnItems(drawnItems.clearLayers());
     };
 
