@@ -194,7 +194,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
-  const EditTools = () => {
+  const EditTools = (props) => {
     // This should get the 'FeatureGroup' connected to the tools
     const context = useLeafletContext() as LeafletContextInterface;
     const [geoKeys, setGeoKeys] = useState({});
@@ -214,10 +214,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     };
 
     // Grab the map object
-    let map = useMapEvent('draw:created' as any, () => {
-      map.on('draw:created', onDrawCreate);
-      console.log('draw created');
-    });
+    let map = useMapEvent('draw:created' as any, onDrawCreate);
 
     const convertLineStringToPoly = (aGeo: any) => {
       if (aGeo.geometry.type === 'LineString') {
@@ -250,8 +247,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     };
 
     const updateMapOnGeometryChange = () => {
+      // upload from geometrystate props
+      console.log('in here')
       // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
       const newGeoKeys = { ...geoKeys };
+      console.dir(props.geometryState);
 
       if (props.geometryState) {
         // For each geometry, add a new layer to the drawn features
@@ -260,6 +260,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
             weight: 4,
             opacity: 0.65
           };
+          console.dir(collection);
 
           const markerStyle = {
             radius: 10,
@@ -271,15 +272,22 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
             style,
             pointToLayer: (feature: any, latLng: any) => {
               if (feature.properties.radius) {
+                console.dir(latLng);
                 return L.circle(latLng, { radius: feature.properties.radius });
               } else {
+                console.dir(latLng);
                 return L.circleMarker(latLng, markerStyle);
               }
             },
             onEachFeature: (feature: any, layer: any) => {
+              console.log(layer);
+              console.log(feature);
+              console.dir(collection);
               drawnItems.addLayer(layer);
+              console.dir(drawnItems);
             }
           });
+          console.log(collection);
         });
       }
       if (props.interactiveGeometryState?.interactiveGeometry) {
@@ -372,7 +380,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
             drawnItems.removeLayer(layer);
           });
           delete newGeoKeys[key];
-          setDrawnItems(drawnItems.clearLayers());
+          //setDrawnItems(drawnItems.clearLayers());
           return;
         }
         // reset updated status for next refresh:
@@ -388,6 +396,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       // Update the map with the new drawn feaures
 
       map = map.addLayer(drawnItems);
+      console.dir(props);
+      console.dir(map);
       setDrawnItems(drawnItems.clearLayers());
     };
 
@@ -551,7 +561,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         {/* Here are the editing tools */}
         {props.showDrawControls && (
           <FeatureGroup>
-            <EditTools />
+            <EditTools geometryState={props.geometryState} />
           </FeatureGroup>
         )}
 
