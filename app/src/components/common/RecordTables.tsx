@@ -174,7 +174,7 @@ const arrayWrap = (value) => {
 };
 
 export const defaultActivitiesFetch =
-  ({ invasivesApi, activitySubtypes, created_by = undefined, review_status = [] }) =>
+  ({ invasivesApi, activitySubtypes, created_by = undefined, review_status = [] }, databaseContext) =>
   async ({ page, rowsPerPage, order }) => {
     // Fetches fresh from the API (web).  TODO fetch from SQLite
     let dbPageSize = DEFAULT_PAGE_SIZE;
@@ -184,17 +184,21 @@ export const defaultActivitiesFetch =
 
     const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
 
-    const result = await invasivesApi.getActivities({
-      page: Math.floor((page * rowsPerPage) / dbPageSize),
-      limit: dbPageSize,
-      order: order,
-      // search_feature: geometry TODO
-      activity_type: arrayWrap(types),
-      activity_subtype: arrayWrap(activitySubtypes),
-      // startDate, endDate will be filters
-      created_by: created_by, // my_keycloak_id
-      review_status: review_status
-    });
+    const result = await invasivesApi.getActivities(
+      {
+        page: Math.floor((page * rowsPerPage) / dbPageSize),
+        limit: dbPageSize,
+        order: order,
+        // search_feature: geometry TODO
+        activity_type: arrayWrap(types),
+        activity_subtype: arrayWrap(activitySubtypes),
+        // startDate, endDate will be filters
+        created_by: created_by, // my_keycloak_id
+        review_status: review_status
+      },
+      databaseContext
+    );
+    alert(result);
     // console.log('defaultActivitiesFetch: ', result);
     return {
       rows: result.rows.map(activityStandardMapping),
@@ -314,12 +318,15 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   let rows = props.rows;
   if (Array.isArray(rows)) rows = rows.map(activityStandardMapping);
   if (typeof rows === 'undefined')
-    rows = defaultActivitiesFetch({
-      invasivesApi,
-      activitySubtypes: arrayWrap(activitySubtypes),
-      created_by,
-      review_status: review_status
-    });
+    rows = defaultActivitiesFetch(
+      {
+        invasivesApi,
+        activitySubtypes: arrayWrap(activitySubtypes),
+        created_by,
+        review_status: review_status
+      },
+      databaseContext
+    );
 
   return useMemo(
     () => (
@@ -1629,6 +1636,7 @@ export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (
 export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { rows, headers = [], ...otherProps } = props;
   const invasivesApi = useDataAccess();
+  const databaseContext = useContext(DatabaseContext2);
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -1650,11 +1658,14 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         ]}
         rows={
           rows ||
-          defaultActivitiesFetch({
-            invasivesApi,
-            activitySubtypes: Object.values(ActivitySubtype),
-            review_status: [ReviewStatus.UNDER_REVIEW]
-          })
+          defaultActivitiesFetch(
+            {
+              invasivesApi,
+              activitySubtypes: Object.values(ActivitySubtype),
+              review_status: [ReviewStatus.UNDER_REVIEW]
+            },
+            databaseContext
+          )
         }
         {...otherProps}
       />

@@ -13,6 +13,7 @@ import { Capacitor } from '@capacitor/core';
 import { DBRequest } from 'contexts/DatabaseContext2';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { Network } from '@capacitor/network';
+import { setMonth } from 'date-fns';
 
 /**
  * Returns a set of supported api methods.
