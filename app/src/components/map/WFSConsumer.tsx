@@ -1,15 +1,13 @@
-import axios from 'axios';
 import reproject from 'reproject';
 import proj4 from 'proj4';
 import '@capacitor-community/http';
-import { Plugins } from '@capacitor/core';
+import { Http } from '@capacitor-community/http';
 const { stringify } = require('wkt');
 
 const getHTTP = async (url) => {
   // Example of a GET request
   // Destructure as close to usage as possible for web plugin to work correctly
   // when running in the browser
-  const { Http } = Plugins;
   let ret;
   console.log('attempting http: ' + url);
   try {
