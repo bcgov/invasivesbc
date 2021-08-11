@@ -29,7 +29,6 @@ export const DatabaseContext2Provider = (props) => {
   const message = useRef('');
   const [databaseIsSetup, setDatabaseIsSetup] = useState(false);
   const dbRequestQueue = new PQueue({ concurrency: 1 });
-  const [db, setDB] = useState(null);
   const [isModal, setIsModal] = useState(false);
 
   const processRequest = async (dbRequest: DBRequest) => {
@@ -105,62 +104,59 @@ export const DatabaseContext2Provider = (props) => {
   const createSqliteTables = async (sqliteDB) => {
     // initialize the connection
     let db = await getConnection();
-    if (db) {
-      await db.open();
-      const isitopen = await db.isDBOpen();
-      console.log('db open on create table? : ' + JSON.stringify(isitopen));
+    await db.open();
+    const isitopen = await db.isDBOpen();
+    console.log('db open on create table? : ' + JSON.stringify(isitopen));
 
-      const name = await db.getConnectionDBName();
+    const name = await db.getConnectionDBName();
 
-      let ret;
+    let ret;
 
-      let setupSQL = ``;
-      for (const value of enumKeys(DocType)) {
-        switch (value) {
-          case 'REFERENCE_ACTIVITY':
-            setupSQL +=
-              'create table if not exists ' +
-              DocType[value] +
-              ` (
+    let setupSQL = ``;
+    for (const value of enumKeys(DocType)) {
+      switch (value) {
+        case 'REFERENCE_ACTIVITY':
+          setupSQL +=
+            'create table if not exists ' +
+            DocType[value] +
+            ` (
               id TEXT PRIMARY KEY,
               json TEXT
             );\n`;
-            break;
-          case 'REFERENCE_POINT_OF_INTEREST':
-            setupSQL +=
-              'create table if not exists ' +
-              DocType[value] +
-              ` (
+          break;
+        case 'REFERENCE_POINT_OF_INTEREST':
+          setupSQL +=
+            'create table if not exists ' +
+            DocType[value] +
+            ` (
               id TEXT PRIMARY KEY,
               json TEXT
             );\n`;
-            break;
-          default:
-            setupSQL +=
-              'create table if not exists ' +
-              DocType[value] +
-              ` (
+          break;
+        default:
+          setupSQL +=
+            'create table if not exists ' +
+            DocType[value] +
+            ` (
               id INTEGER PRIMARY KEY,
               json TEXT
             );\n`;
-        }
       }
+    }
 
-      const isopen = await db.isDBOpen();
-      ret = await db.execute(setupSQL);
-      setDatabaseIsSetup(true);
-      const resul = JSON.stringify(ret.values);
+    const isopen = await db.isDBOpen();
+    ret = await db.execute(setupSQL);
+    setDatabaseIsSetup(true);
+    const result = JSON.stringify(ret.changes);
 
-      setDB(db);
-      if (!ret.result) {
-        //console.log('closing database - no result');
-        //db.close();
-        return false;
-      } else {
-        //console.log('closing database with result');
-        //db.close();
-        return true;
-      }
+    if (!ret.changes) {
+      //console.log('closing database - no result');
+      //db.close();
+      return false;
+    } else {
+      //console.log('closing database with result');
+      //db.close();
+      return true;
     }
   };
 
@@ -239,6 +235,8 @@ const getConnection = async (databaseName?: string) => {
   } catch (e) {
     console.log('error making new connection');
   }
+
+  throw 'unable to get connection';
 };
 
 // v1: assumes all upsertconfigs are the same, will allow for multiple in v2
@@ -370,6 +368,7 @@ const buildSQLStringDOC_TYPE_AND_ID = (upsertConfigs: Array<IUpsert>) => {
   return batchUpdate;
 };
 
+//only works for 1 record right now
 //limit to all being the same type for now:
 const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
   if (upsertConfigs.length > 0) {
@@ -392,18 +391,26 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
     const idsJSON = JSON.stringify(slowPatchOldIDS);
     const idsString = idsJSON.substring(1, idsJSON.length - 1);
     ret = await db.query('select * from ' + slowPatchDocType + ' where id in (' + idsString + ');');
+
     const slowPatchOld = ret.values;
+    alert('old ones: ' + JSON.stringify(slowPatchOld));
 
     //patch them in memory
     let batchUpdate = '';
     console.log('*** building sql ***');
 
+    // breaks if you are calling json slow patch on a record that doesnt exist and doesnt have a json prop
     for (const upsertConfig of upsertConfigs) {
-      const old = JSON.parse(
-        slowPatchOld.filter((e) => {
-          return (e.id = upsertConfig.ID);
-        })[0].json
-      );
+      let old;
+      if (slowPatchOld.length === 0) {
+        old = {};
+      } else {
+        old = JSON.parse(
+          slowPatchOld.filter((e) => {
+            return (e.id = upsertConfig.ID);
+          })[0].json
+        );
+      }
       const patched =
         `'` +
         JSON.stringify({ ...old, ...upsertConfig.json })
