@@ -349,25 +349,35 @@ export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
 */
 export function getPersonNameNoNumbersValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    if (
-      !formData ||
-      !formData.activity_type_data ||
-      !formData.activity_type_data.observation_persons ||
-      !formData.activity_type_data.observation_persons ||
-      formData.activity_type_data.observation_persons.length < 1
-    ) {
+    if (!formData || !formData.activity_type_data) {
       return errors;
     }
-    let index = 0;
-    formData.activity_type_data.observation_persons.forEach((person) => {
-      if (person?.person_name)
-        if (person.person_name.match(/\d+/g) != null) {
-          errors['activity_type_data']['observation_persons'][index]['person_name'].addError(
-            'Name field must not contain any numbers'
-          );
-        }
-      index++;
-    });
+    if (formData.activity_type_data.observation_persons && formData.activity_type_data.observation_persons.length > 0) {
+      let index = 0;
+      formData.activity_type_data.observation_persons.forEach((person) => {
+        if (person?.person_name)
+          if (person.person_name.match(/\d+/g) != null) {
+            errors['activity_type_data']['observation_persons'][index]['person_name'].addError(
+              'Name field must not contain any numbers'
+            );
+          }
+        index++;
+      });
+    } else if (
+      formData.activity_type_data.treatment_persons &&
+      formData.activity_type_data.treatment_persons.length > 0
+    ) {
+      let index = 0;
+      formData.activity_type_data.treatment_persons.forEach((person) => {
+        if (person?.person_name)
+          if (person.person_name.match(/\d+/g) != null) {
+            errors['activity_type_data']['treatment_persons'][index]['person_name'].addError(
+              'Name field must not contain any numbers'
+            );
+          }
+        index++;
+      });
+    }
     return errors;
   };
 }

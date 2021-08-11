@@ -236,38 +236,55 @@ efficacy_code,8,20% - 29%,8
 efficacy_code,9,10% - 19%,9
 efficacy_code,10,0% - 9%,10
 invasive_plant_aquatic_code,AB,American beachgrass (AMMO BRE Ammophila breviligulata),1
-invasive_plant_aquatic_code,ED,Brazilian waterweed (EGER DEN Egeria densa),2
-invasive_plant_aquatic_code,CM,Cabomba (CABO CAR Cabomba caroliniana),3
-invasive_plant_aquatic_code,FC,Common frogbit (HYDR MOR Hydrocharis morsus-range),4
-invasive_plant_aquatic_code,UP,Curly leaf pondweed (POTA CRI Potamogeton crispus),5
-invasive_plant_aquatic_code,DC,Dense-flowered cordgrass (SPAR DEN Spartina densiflora),6
-invasive_plant_aquatic_code,EC,English cordgrass (SPAR ANG Spartina anglica),7
-invasive_plant_aquatic_code,EW,Eurasian watermilfoil (MYRI SPI Myriophyllum spicatum),8
-invasive_plant_aquatic_code,EB,European beachgrass (AMMO ARE Ammophila arenaria),9
-invasive_plant_aquatic_code,MQ,European water clover (MARS QUA Marsilea quadrifolia),10
-invasive_plant_aquatic_code,WE,European waterlily (NYMP ALB Nymphaea alba),11
-invasive_plant_aquatic_code,FW,Fanwort (CABO CAR Cabomba caroliniana),12
-invasive_plant_aquatic_code,FM,Feathered mosquito-fern (AZOL PIN Azolla pinnata),13
-invasive_plant_aquatic_code,FR,Flowering rush (BUTO UMB Butomus umbellatus),14
-invasive_plant_aquatic_code,FL,Fragrant water lily (NYMP ODO Nymphaea odorata subsp. odorata),15
-invasive_plant_aquatic_code,SV,Giant salvinia (SALV MOL Salvinia molesta),16
-invasive_plant_aquatic_code,HY,Hydrilla (HYDR VER Hydrilla verticillata),17
-invasive_plant_aquatic_code,OW,Major oxygen weed (LAGA ROS Lagarosiphon),18
-invasive_plant_aquatic_code,PF,Parrot feather (MYRI AQU Myriophyllum aquaticum),19
-invasive_plant_aquatic_code,SN,Salt-meadow cordgrass (SPAR PAT Spartina patens),20
-invasive_plant_aquatic_code,SA,Smooth cordgrass (SPAR ALT Spartina alterniflora),21
-invasive_plant_aquatic_code,LM,Variable leaf milfoil (MYRI HET Myriophyllum heterophyllum),22
-invasive_plant_aquatic_code,TN,Water chestnut (TRAP NAT Trapa natans),23
-invasive_plant_aquatic_code,WH,Water hyacinth (EICH CRA Eichhornia crassipes),24
-invasive_plant_aquatic_code,LW,Water lettuce (PIST STR Pistia stratiotes),25
-invasive_plant_aquatic_code,AQ,Water soldier (STRA ALO Stratiotes aloides),26
-invasive_plant_aquatic_code,NO,Watercress (NAST OFF Nasturtium officinale),27
-invasive_plant_aquatic_code,YI,Yellow flag iris (IRIS PSE Iris pseudachorus),28
-invasive_plant_aquatic_code,YF,Yellow floating heart (NYMP PEL Nymphoides peltata),29
+invasive_plant_aquatic_code,YC,Amphibious yellow cress (RORI AMP Rorippa amphibian),2
+invasive_plant_aquatic_code,RI,Bog bulrush / ricefield bulrush (SCHO MUC Schoenoplectus mucronatus),3
+invasive_plant_aquatic_code,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),4
+invasive_plant_aquatic_code,ED,Brazilian waterweed (EGER DEN Egeria densa),5
+invasive_plant_aquatic_code,CM,Cabomba (CABO CAR Cabomba caroliniana),6
+invasive_plant_aquatic_code,FC,Common frogbit (HYDR MOR Hydrocharis morsus-range),7
+invasive_plant_aquatic_code,UP,Curly leaf pondweed (POTA CRI Potamogeton crispus),8
+invasive_plant_aquatic_code,DC,Dense-flowered cordgrass (SPAR DEN Spartina densiflora),9
+invasive_plant_aquatic_code,DO,Dodder (CUSC SPP Cuscuta spp.),10
+invasive_plant_aquatic_code,EC,English cordgrass (SPAR ANG Spartina anglica),11
+invasive_plant_aquatic_code,EW,Eurasian watermilfoil (MYRI SPI Myriophyllum spicatum),12
+invasive_plant_aquatic_code,EB,European beachgrass (AMMO ARE Ammophila arenaria),13
+invasive_plant_aquatic_code,RC,European Common Reed / Common reed (PHRA AUS Phragmites australis subsp. australis),14
+invasive_plant_aquatic_code,MQ,European water clover (MARS QUA Marsilea quadrifolia),15
+invasive_plant_aquatic_code,WE,European waterlily (NYMP ALB Nymphaea alba),16
+invasive_plant_aquatic_code,FW,Fanwort (CABO CAR Cabomba caroliniana),17
+invasive_plant_aquatic_code,FM,Feathered mosquito-fern (AZOL PIN Azolla pinnata),18
+invasive_plant_aquatic_code,FR,Flowering rush (BUTO UMB Butomus umbellatus),19
+invasive_plant_aquatic_code,FL,Fragrant water lily (NYMP ODO Nymphaea odorata subsp. odorata),20
+invasive_plant_aquatic_code,GL,Garden yellow loosestrife (LYSI VUL Lysimachia vulgaris),21
+invasive_plant_aquatic_code,GK,Giant knotweed (FALL SAC Fallopia sachalinensis),22
+invasive_plant_aquatic_code,SW,Giant mannagrass / reed sweetgrass (GLYC MAX Glyceria maxima),23
+invasive_plant_aquatic_code,AD,Giant reed / giant cane (ARUN DON Arundo donax),24
+invasive_plant_aquatic_code,SV,Giant salvinia (SALV MOL Salvinia molesta),25
+invasive_plant_aquatic_code,PO,Himalayan knotweed (POLY POL Polygonum polystachyum),26
+invasive_plant_aquatic_code,HY,Hydrilla (HYDR VER Hydrilla verticillata),27
+invasive_plant_aquatic_code,JK,Japanese knotweed (FALL JAP Fallopia japonica),28
+invasive_plant_aquatic_code,GJ,Johnsongrass (SORG HAL Sorghum halepense),29
+invasive_plant_aquatic_code,LL,Large yellow / spotted loosestrife (LYSI PUN Lysimachia punctata),30
+invasive_plant_aquatic_code,OW,Major oxygen weed (LAGA ROS Lagarosiphon),31
+invasive_plant_aquatic_code,PF,Parrot feather (MYRI AQU Myriophyllum aquaticum),32
+invasive_plant_aquatic_code,IM,Policeman's helmet / himalayan balsam (IMPA GLA Impatiens glandulifera),33
+invasive_plant_aquatic_code,PL,Purple loosestrife (LYTH SAL Lythrum salicaria),34
+invasive_plant_aquatic_code,RE,Reed Canary Grass (PHAL ARU Phalaris arundinacea),35
+invasive_plant_aquatic_code,SN,Salt-meadow cordgrass (SPAR PAT Spartina patens),36
+invasive_plant_aquatic_code,SA,Smooth cordgrass (SPAR ALT Spartina alterniflora),37
+invasive_plant_aquatic_code,LM,Variable leaf milfoil (MYRI HET Myriophyllum heterophyllum),38
+invasive_plant_aquatic_code,WL,Wand loosestrife (LYTH VIR Lythrum virgatum),39
+invasive_plant_aquatic_code,TN,Water chestnut (TRAP NAT Trapa natans),40
+invasive_plant_aquatic_code,NO,Watercress (NAST OFF Nasturtium officinale),41
+invasive_plant_aquatic_code,WH,Water hyacinth (EICH CRA Eichhornia crassipes),42
+invasive_plant_aquatic_code,LW,Water lettuce (PIST STR Pistia stratiotes),43
+invasive_plant_aquatic_code,AQ,Water soldier (STRA ALO Stratiotes aloides),44
+invasive_plant_aquatic_code,YI,Yellow flag iris (IRIS PSE Iris pseudachorus),45
+invasive_plant_aquatic_code,YF,Yellow floating heart (NYMP PEL Nymphoides peltata),46
 invasive_plant_code,AR,African rue / harmal (PEGA HAR Peganum harmala),1
-invasive_plant_code,YC,Amphibious yellow cress (RORI AMP Rorippa amphibian),2
-invasive_plant_code,HB,Annual hawksbeard (CREP TEC Crepis tectorum),3
-invasive_plant_code,AS,Annual sow thistle (SONC OLE Sonchus oleraceus),4
+invasive_plant_code,HB,Annual hawksbeard (CREP TEC Crepis tectorum),2
+invasive_plant_code,AS,Annual sow thistle (SONC OLE Sonchus oleraceus),3
+invasive_plant_code,BN,American black nightshade (SOLA AME Solanum americanum),4
 invasive_plant_code,BY,Baby's breath (GYPS PAN Gypsophila paniculata),5
 invasive_plant_code,BB,Bachelor's button (CENT CYA Centaurea cyanus),6
 invasive_plant_code,BA,Barnyard grass (ECHI CRU Echinochloa crusgalli),7
@@ -278,196 +295,190 @@ invasive_plant_code,BL,Black knapweed (CENT NIG Centaurea nigra),11
 invasive_plant_code,RB,Black locust (ROBI PSE Robinia pseudoacacia),12
 invasive_plant_code,BC,Bladder campion (SILE VUL Silene vulgaris),13
 invasive_plant_code,BW,Blueweed (ECHI VUL Echium vulgare),14
-invasive_plant_code,RI,Bog bulrush / ricefield bulrush (SCHO MUC Schoenoplectus mucronatus),15
-invasive_plant_code,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),16
-invasive_plant_code,RA,Bristly locust / rose acacia (ROBI HIS Robinia hispida),17
-invasive_plant_code,BK,Brown knapweed (CENT JAC Centaurea jacea),18
-invasive_plant_code,BT,Bull thistle (CIRS VUL Cirsium vulgare),19
-invasive_plant_code,CB,Bur chervil (ANTH CAU Anthriscus caucalis),20
-invasive_plant_code,BU,Burdock species (ARCT SPP Arctium spp),21
-invasive_plant_code,BD,Butterfly bush (BUDD DAV Buddleja davidii),22
-invasive_plant_code,AM,Camel thorn (ALHA MAU Alhagi maurorum),23
-invasive_plant_code,CT,Canada thistle (CIRS ARV Cirsium arvense),24
-invasive_plant_code,CA,Caraway (CARU CAR Carum carvi),25
-invasive_plant_code,CG,Carpet burweed (SOLI SES Soliva sessilis),26
-invasive_plant_code,DB,Cheatgrass / downy brome (BROM TEC Bromus tectorum),27
-invasive_plant_code,LC,Cherry laurel (PRUN LAU Prunus laurocerasus),28
-invasive_plant_code,CY,Chicory (CICH INT Cichorium intybus),29
-invasive_plant_code,CH,Chilean tarweed (MADI SAT Madia sativa),30
-invasive_plant_code,CE,Clary sage (SALV SCL Salvia sclarea),31
-invasive_plant_code,CF,Coltsfoot (TUSS FAR Tussilago farfara),32
-invasive_plant_code,AO,Common bugloss (ANCH OFF Anchusa officinalis),33
-invasive_plant_code,CO,Common comfrey (SYMP OFF Symphytum officinale),34
-invasive_plant_code,CC,Common crupina (CRUP VUL Crupina vulgaris),35
-invasive_plant_code,CX,Common hawkweed (HIER VUL Hieracium lanchenalii),36
-invasive_plant_code,CP,Common periwinkle (VINC MIN Vinca minor),37
-invasive_plant_code,RC,Common reed (PHRA AUS Phragmites australis subsp. australis),38
-invasive_plant_code,TC,Common tansy (TANA VUL Tanacetum vulgare),39
-invasive_plant_code,CR,Creeping buttercup (RANU REP Ranunculus repens),40
-invasive_plant_code,CU,Cudweed (GNAP ULI Gnaphalium uliginosum),41
-invasive_plant_code,CD,Curled dock (RUME CRI Rumex crispus),42
-invasive_plant_code,CL,Cutleaf blackberry (RUBU LAC Rubus laciniatus),43
-invasive_plant_code,CS,Cypress spurge (EUPH CYP Euphorbia cyparissias),44
-invasive_plant_code,DT,Dalmatian toadflax (LINA DAL Linaria dalmatica),45
-invasive_plant_code,DR,Dame's rocket (HESP MAT Hesperis matronalis),46
-invasive_plant_code,SL,Daphne / spurge laurel (DAPH LAU Daphne laureola),47
-invasive_plant_code,DC,Dense-flowered cordgrass (SPAR DEN Spartina densiflora),48
-invasive_plant_code,DI,Didymo (DIDY GEM Didymosphenia geminata),49
-invasive_plant_code,DK,Diffuse knapweed (CENT DIF Centaurea diffusa),50
-invasive_plant_code,DO,Dodder (CUSC SPP Cuscuta spp.),51
-invasive_plant_code,DE,Dwarf eelgrass (ZOST JAP Zostera japonica),52
-invasive_plant_code,DW,Dyer's woad (ISAT TIN Isatis tinctoria),53
-invasive_plant_code,ES,Eggleaf spurge (EUPH OBL Euphorbia oblongata),54
-invasive_plant_code,EC,English cordgrass (SPAR ANG Spartina anglica),55
-invasive_plant_code,HO,English holly (ILEX AQU Ilex aquifolium),56
-invasive_plant_code,EI,English ivy (HEDE HEL Hedera helix),57
-invasive_plant_code,EB,European beachgrass (AMMO ARE Ammophila arenaria),58
-invasive_plant_code,EH,European hawkweed (HIER SAB Hieracium sabaudum),59
-invasive_plant_code,EL,European lake sedge (CARE ACU Carex acutiformis),60
-invasive_plant_code,EY,Eyebright (EUPH NEM Euphrasia nemorosa),61
-invasive_plant_code,BF,False brome (BRAC SYL Brachypodium sylvaticum),62
-invasive_plant_code,FB,Field bindweed (CONV ARV Convolvulus arvensis),63
-invasive_plant_code,FS,Field scabious (KNAU ARV Knautia arvensis),64
-invasive_plant_code,FP,Flat pea / flat peavine (LATH SYL Lathyrus sylvestris),65
-invasive_plant_code,GM,French broom (GENI MON Genista monspessulana),66
-invasive_plant_code,GL,Garden yellow loosestrife (LYSI VUL Lysimachia vulgaris),67
-invasive_plant_code,AP,Garlic mustard (ALLI PET Alliaria petiolata),68
-invasive_plant_code,MA,Giant chickweed (MYOS AQU Myosoton aquaticum),69
-invasive_plant_code,GH,Giant hogweed (HERA MAN Heracleum mantegazzianum),70
-invasive_plant_code,GK,Giant knotweed (FALL SAC Fallopia sachalinensis),71
-invasive_plant_code,SW,Giant mannagrass / reed sweetgrass (GLYC MAX Glyceria maxima),72
-invasive_plant_code,AD,Giant reed / giant cane (ARUN DON Arundo donax),73
-invasive_plant_code,RG,Goat's rue / french lilac (GALE OFF Galega officinalis),74
-invasive_plant_code,GO,Gorse (ULEX EUR Ulex europaeus),75
-invasive_plant_code,GW,Goutweed / bishop's weed (AEGO POD Aegopodium podagraria),76
-invasive_plant_code,GC,Greater celandine (CHEL MAJ Chelidonium majus),77
-invasive_plant_code,GN,Greater knapweed (CENT SCA Centaurea scabiosa),78
-invasive_plant_code,GF,Green foxtail / green bristlegrass (SETA VIR Setaria viridis),79
-invasive_plant_code,GS,Groundsel (SENE VUL Senecio vulgaris),80
-invasive_plant_code,HR,Hairy cat's-ear (HYPO RAD Hypochaeris radicata),81
-invasive_plant_code,HS,Hawkweed species (HIER SPP Hieracium spp),82
-invasive_plant_code,BI,Hedge false bindweed (CALY SEP Calystegia sepium),83
-invasive_plant_code,HD,Hedgehog dogtail (CYNO ECH Cynosurus echinatus),84
-invasive_plant_code,GR,Herb robert (GERA ROB Geranium robertianum),85
-invasive_plant_code,HI,Himalayan blackberry (RUBU ARM Rubus armeniacus),86
-invasive_plant_code,PO,Himalayan knotweed (POLY POL Polygonum polystachyum),87
-invasive_plant_code,HA,Hoary alyssum (BERT INC Berteroa incana),88
-invasive_plant_code,HC,Hoary cress (CARD DRA Cardaria draba),89
-invasive_plant_code,HT,Hound's-tongue (CYNO OFF Cynoglossum officinale),90
-invasive_plant_code,IS,Iberian starthistle (CENT IBE Centaurea iberica),91
-invasive_plant_code,IT,Italian plumeless thistle (CARD PYC Carduus pycnocephalus),92
-invasive_plant_code,JK,Japanese knotweed (FALL JAP Fallopia japonica),93
-invasive_plant_code,JW,Japanese wireweed (SARG MUT Sargassum muticum),94
-invasive_plant_code,GJ,Johnsongrass (SORG HAL Sorghum halepense),95
-invasive_plant_code,JG,Jointed goatgrass (AEGI CYL Aegilops cylindrica),96
-invasive_plant_code,KH,King devil hawkweed (HIER FLO Hieracium floribundum),97
-invasive_plant_code,KS,Knapweed species (CENT SPP Centaurea spp.),98
-invasive_plant_code,KO,Kochia (KOCH SCO Kochia scoparia),99
-invasive_plant_code,KU,Kudzu (PUER MON Pueraria montana),100
-invasive_plant_code,LT,Lady's-thumb (POLY PER Polygonum persicaria),101
-invasive_plant_code,LL,Large yellow / spotted loosestrife (LYSI PUN Lysimachia punctata),102
-invasive_plant_code,LS,Leafy spurge (EUPH ESU Euphorbia esula),103
-invasive_plant_code,RF,Lesser celandine / fig buttercup (RANU FIC Ranunculus ficaria),104
-invasive_plant_code,LO,Longspine sandbur (CENC LON Cenchrus longispinus),105
-invasive_plant_code,MX,Maltese star thistle (CENT MEL Centaurea melitensis),106
-invasive_plant_code,MT,Marsh plume thistle/Marsh thistle (CIRS PAL Cirsium palustre),107
-invasive_plant_code,MB,Meadow buttercup (RANU ACR Ranunculus acris),108
-invasive_plant_code,MC,Meadow clary (SALV PRA Salvia pratensis),109
-invasive_plant_code,MG,Meadow goats-beard (TRAG PRA Tragopogon pratensis),110
-invasive_plant_code,MH,Meadow hawkweed (HIER CAE Hieracium caespitosum),111
-invasive_plant_code,MK,Meadow knapweed (CENT DEB Centaurea debeauxii),112
-invasive_plant_code,MS,Mediterranean sage (SALV AET Salvia aethiopsis),113
-invasive_plant_code,TM,Medusahead (TAEN CAP Taeniatherum caput-medusae),114
-invasive_plant_code,MI,Milk thistle (SILY MAR Silybum marianum),115
-invasive_plant_code,MO,Mountain bluet (CENT MON Centaurea montana),116
-invasive_plant_code,ME,Mouse ear hawkweed (HIER PIL Hieracium pilosella),117
-invasive_plant_code,MU,Mullein (VERB THA Verbascum thapsis),118
-invasive_plant_code,NC,Night-flowering catchfly (SILE NOC Silene noctiflora),119
-invasive_plant_code,NI,Nightshade (SOLA SPP Solanum spp),120
-invasive_plant_code,NT,Nodding thistle (CARD NUT Carduus nutans),121
-invasive_plant_code,NA,North africa grass (VENT DUB Ventenata dubia),122
-invasive_plant_code,OM,Old man's beard / traveller's joy (CLEM VIT Clematis vitalba),123
-invasive_plant_code,OH,Orange hawkweed (HIER AUR Hieracium aurantiacum),124
-invasive_plant_code,OD,Oxeye daisy (LEUC VUL Leucanthemum vulgare),125
-invasive_plant_code,PP,Perennial pepperweed (LEPI LAT Lepidium latifolium),126
-invasive_plant_code,PS,Perennial sow thistle (SONC ARV Sonchus arvensis),127
-invasive_plant_code,PT,Plumeless thistle (CARD ACA Carduus acanthoides),128
-invasive_plant_code,PH,Poison hemlock (CONI MAC Conium maculatum),129
-invasive_plant_code,PA,Polar hawkweed (HIER ATR Hieracium atratum),130
-invasive_plant_code,IM,Policeman's helmet / himalayan balsam (IMPA GLA Impatiens glandulifera),131
-invasive_plant_code,LP,Portugese laurel (PRUN LUS Prunus lusitanica),132
-invasive_plant_code,PR,Portuguese broom (CYTI STR Cytisus striatus),133
-invasive_plant_code,PC,Prickly comfrey (SYMP ASP Symphytum asperum),134
-invasive_plant_code,PV,Puncturevine (TRIB TER Tribulus terrestris),135
-invasive_plant_code,PD,Purple deadnettle (LAMI PUR Lamium purpureum),136
-invasive_plant_code,PL,Purple loosestrife (LYTH SAL Lythrum salicaria),137
-invasive_plant_code,PN,Purple nutsedge (CYPE ROT Cyperus rotundus),138
-invasive_plant_code,PU,Purple starthistle (CENT CAL Centaurea calcitrapa),139
-invasive_plant_code,QA,Queen anne's lace / wild carrot (DAUC CAR Daucus carota),140
-invasive_plant_code,QH,Queen devil hawkweed (HIER PRE Hieracium praealtum),141
-invasive_plant_code,BR,Red bartsia (ODON SER Odontites serotina),142
-invasive_plant_code,RP,Redroot amaranth / rough pigweed (AMAR RET Amaranthus retroflexus),143
-invasive_plant_code,RS,Rush skeletonweed (CHON JUN Chondrilla juncea),144
-invasive_plant_code,RK,Russian knapweed (ACRO REP Acroptilon repens),145
-invasive_plant_code,RO,Russian olive (ELAE ANG Elaeagnus angustifolia),146
-invasive_plant_code,RT,Russian thistle (SALS KAL Salsola kali),147
-invasive_plant_code,TA,Saltcedar / tamarisk (TAMA RAM Tamarix ramosissima),148
-invasive_plant_code,AH,Saltlover / halogeton (HALO GLO Halogeton glomeratus),149
-invasive_plant_code,SN,Salt-meadow cordgrass (SPAR PAT Spartina patens),150
-invasive_plant_code,SH,Scentless chamomile (MATR PER Matricaria perforata),151
-invasive_plant_code,SB,Scotch broom (CYTI SCO Cytisus scoparius),152
-invasive_plant_code,ST,Scotch thistle (ONOP ACA Onopordum acanthium),153
-invasive_plant_code,SS,Sheep sorrel (RUME ACE Rumex acetosella),154
-invasive_plant_code,SP,Shepherd's-purse (CAPS BUR Capsella bursa-pastoris),155
-invasive_plant_code,SG,Shiny geranium (GERA LUC Geranium lucidum),156
-invasive_plant_code,CN,Short-fringed knapweed (CENT NIR Centaurea nigrescens),157
-invasive_plant_code,SE,Siberian elm (ULMU PUM Ulmus pumila),158
-invasive_plant_code,NS,Silverleaf nightshade (SOLA ELA Solanum elaeagnifolium),159
-invasive_plant_code,FT,Slender meadow foxtail (ALOP MYO Alopecurus myosuroides),160
-invasive_plant_code,HG,Smooth cat's ear (HYPO GLA Hypochaeris glabra),161
-invasive_plant_code,SA,Smooth cordgrass (SPAR ALT Spartina alterniflora),162
-invasive_plant_code,SM,Smooth hawkweed (HIER LAE Hieracium laevigatum),163
-invasive_plant_code,SO,Sowthistle species (SONC SPP Sonchus species),164
-invasive_plant_code,BS,Spanish bluebells (HYAC HIS Hyacinthoides hispanica),165
-invasive_plant_code,SI,Spanish broom (SPAR JUN Spartium junceum),166
-invasive_plant_code,SX,Spotted hawkweed (HIER MAC Hieracium maculatum),167
-invasive_plant_code,SK,Spotted knapweed (CENT BIE Centaurea biebersteinii),168
-invasive_plant_code,MV,Spring millet grass (MILI VER Milium vernale),169
-invasive_plant_code,TP,Spurge flax (THYM PAS Thymelaea passerina),170
-invasive_plant_code,CV,Squarrose knapweed (CENT VIR Centaurea virgata ssp. squarrosa),171
-invasive_plant_code,SJ,St. John's wort/Saint John's wort/ Goatweed (HYPE PER Hypericum perforatum),172
-invasive_plant_code,SC,Sulphur cinquefoil (POTE REC Potentilla recta),173
-invasive_plant_code,SF,Sweet fennel (FOEN VUL Foeniculum vulgare),174
-invasive_plant_code,SY,Syrian bean-caper (ZYGO FAB Zygophyllum fabago),175
-invasive_plant_code,TH,Tall hawkweed (HIER OID Hieracium piloselloides),176
-invasive_plant_code,TR,Tansy ragwort (SENE JAC Senecio jacobaea),177
-invasive_plant_code,TB,Tartary buckwheat (FAGO TAT Fagopyrum tataricum),178
-invasive_plant_code,TS,Teasel (DIPS FUL Dipsacus fullonum),179
-invasive_plant_code,TX,Texas blueweed (HELI CIL Helianthus ciliaris),180
-invasive_plant_code,AA,Tree of heaven (AILA ALT Ailanthus altissima),181
-invasive_plant_code,VL,Velvet leaf (ABUT THE Abutilon theophrasti),182
-invasive_plant_code,WA,Wall hawkweed (HIER MUR Hieracium murorum),183
-invasive_plant_code,WL,Wand loosestrife (LYTH VIR Lythrum virgatum),184
-invasive_plant_code,NO,Watercress (NAST OFF Nasturtium officinale),185
-invasive_plant_code,WG,Western goat's-beard (TRAG DUB Tragopogon dubius),186
-invasive_plant_code,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),187
-invasive_plant_code,WC,White cockle (LYCH ALB Lychnis alba),188
-invasive_plant_code,WB,Wild buckwheat (POLY CON Polygonum convolvulus),189
-invasive_plant_code,WI,Wild chervil (ANTH SYL Anthriscus sylvestris),190
-invasive_plant_code,WF,Wild four o'clock (MIRA NYC Mirabilis nyctaginea),191
-invasive_plant_code,WM,Wild mustard (SINA ARV Sinapis arvensis),192
-invasive_plant_code,WO,Wild oats (AVEN FAT Avena fatua),193
-invasive_plant_code,PW,Wild parsnip (PAST SAT Pastinaca sativa),194
-invasive_plant_code,WT,Winged thistle / slender-flowered thistle (CARD TEN Carduus tenuiflorus),195
-invasive_plant_code,WS,Wood sage (SALV NEM Salvia nemorsa),196
-invasive_plant_code,WW,Wormwood (ARTE ABS Artemisia absinthium),197
-invasive_plant_code,YA,Yellow archangel (LAMI GAL Lamiastrum galeobdolon),198
-invasive_plant_code,YD,Yellow devil hawkweed (HIER GLO Hieracium glomeratum),199
-invasive_plant_code,YI,Yellow flag iris (IRIS PSE Iris pseudachorus),200
-invasive_plant_code,YH,Yellow hawkweed (HIER PRA Hieracium pratense),201
-invasive_plant_code,YN,Yellow nutsedge (CYPE ESC Cyperus esculentus),202
-invasive_plant_code,YS,Yellow starthistle (CENT SOL Centaurea solstitialis),203
-invasive_plant_code,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),204
+invasive_plant_code,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),15
+invasive_plant_code,RA,Bristly locust / rose acacia (ROBI HIS Robinia hispida),16
+invasive_plant_code,BK,Brown knapweed (CENT JAC Centaurea jacea),17
+invasive_plant_code,BT,Bull thistle (CIRS VUL Cirsium vulgare),18
+invasive_plant_code,CB,"Bur chervil (ANTH CAU Anthriscus caucalis),20",19
+invasive_plant_code,UR,Bur buttercup (CERA TES Ceratocephala testiculata),20
+invasive_plant_code,BU,Common burdock (ARCT MIN  Arctium minus),21
+invasive_plant_code,GB,Great burdock (ARCT LAP Arctium lappa),22
+invasive_plant_code,BD,Butterfly bush (BUDD DAV Buddleja davidii),23
+invasive_plant_code,FF,Buffalo-bur (SOLA ROS Solanum rostratum),24
+invasive_plant_code,AM,Camel thorn (ALHA MAU Alhagi maurorum),25
+invasive_plant_code,CT,Canada thistle (CIRS ARV Cirsium arvense),26
+invasive_plant_code,CA,Caraway (CARU CAR Carum carvi),27
+invasive_plant_code,CG,Carpet burweed (SOLI SES Soliva sessilis),28
+invasive_plant_code,DB,Cheatgrass / downy brome (BROM TEC Bromus tectorum),29
+invasive_plant_code,LC,Cherry laurel (PRUN LAU Prunus laurocerasus),30
+invasive_plant_code,CY,Chicory (CICH INT Cichorium intybus),31
+invasive_plant_code,CH,Chilean tarweed (MADI SAT Madia sativa),32
+invasive_plant_code,CE,Clary sage (SALV SCL Salvia sclarea),33
+invasive_plant_code,CF,Coltsfoot (TUSS FAR Tussilago farfara),34
+invasive_plant_code,AO,Common bugloss (ANCH OFF Anchusa officinalis),35
+invasive_plant_code,CO,Common comfrey (SYMP OFF Symphytum officinale),36
+invasive_plant_code,CC,Common crupina (CRUP VUL Crupina vulgaris),37
+invasive_plant_code,CX,Common hawkweed (PILO VUL Pilosella / Hieracium lanchenalii),38
+invasive_plant_code,CP,Common periwinkle (VINC MIN Vinca minor),39
+invasive_plant_code,TC,Common tansy (TANA VUL Tanacetum vulgare),40
+invasive_plant_code,CR,Creeping buttercup (RANU REP Ranunculus repens),41
+invasive_plant_code,CU,Cudweed (GNAP ULI Gnaphalium uliginosum),42
+invasive_plant_code,CD,Curled dock (RUME CRI Rumex crispus),43
+invasive_plant_code,CL,Cutleaf blackberry (RUBU LAC Rubus laciniatus),44
+invasive_plant_code,CS,Cypress spurge (EUPH CYP Euphorbia cyparissias),45
+invasive_plant_code,DT,Dalmatian toadflax (LINA DAL Linaria dalmatica),46
+invasive_plant_code,DR,Dame's rocket (HESP MAT Hesperis matronalis),47
+invasive_plant_code,SL,Daphne / spurge laurel (DAPH LAU Daphne laureola),48
+invasive_plant_code,DK,Diffuse knapweed (CENT DIF Centaurea diffusa),49
+invasive_plant_code,DO,Dodder (CUSC SPP Cuscuta spp.),50
+invasive_plant_code,DE,Dwarf eelgrass (ZOST JAP Zostera japonica),51
+invasive_plant_code,DW,Dyer's woad (ISAT TIN Isatis tinctoria),52
+invasive_plant_code,ES,Eggleaf spurge (EUPH OBL Euphorbia oblongata),53
+invasive_plant_code,HO,English holly (ILEX AQU Ilex aquifolium),54
+invasive_plant_code,EI,English ivy (HEDE HEL Hedera helix),55
+invasive_plant_code,EU,European bittersweet / climbing nightshade (SOLA DUL Solanum dulcamara),56
+invasive_plant_code,RC,European Common Reed / Common reed (PHRA AUS Phragmites australis subsp. australis),57
+invasive_plant_code,EH,European hawkweed (PILO SAB Pilosella / Hieracium sabaudum),58
+invasive_plant_code,EY,Eyebright (EUPH NEM Euphrasia nemorosa),59
+invasive_plant_code,FB,Field bindweed (CONV ARV Convolvulus arvensis),60
+invasive_plant_code,FS,Field scabious (KNAU ARV Knautia arvensis),61
+invasive_plant_code,FP,Flat pea / flat peavine (LATH SYL Lathyrus sylvestris),62
+invasive_plant_code,GM,French broom (GENI MON Genista monspessulana),63
+invasive_plant_code,AP,Garlic mustard (ALLI PET Alliaria petiolata),64
+invasive_plant_code,MA,Giant chickweed (MYOS AQU Myosoton aquaticum),65
+invasive_plant_code,GH,Giant hogweed (HERA MAN Heracleum mantegazzianum),66
+invasive_plant_code,GK,Giant knotweed (FALL SAC Fallopia sachalinensis),67
+invasive_plant_code,SW,Giant mannagrass / reed sweetgrass (GLYC MAX Glyceria maxima),68
+invasive_plant_code,AD,Giant reed / giant cane (ARUN DON Arundo donax),69
+invasive_plant_code,GP,Globe-pod hoary cress (LEPI APP Lepidium appelianum ),70
+invasive_plant_code,RG,Goat's rue / french lilac (GALE OFF Galega officinalis),71
+invasive_plant_code,GO,Gorse (ULEX EUR Ulex europaeus),72
+invasive_plant_code,GW,Goutweed / bishop's weed (AEGO POD Aegopodium podagraria),73
+invasive_plant_code,GC,Greater celandine (CHEL MAJ Chelidonium majus),74
+invasive_plant_code,GN,Greater knapweed (CENT SCA Centaurea scabiosa),75
+invasive_plant_code,GF,Green foxtail / green bristlegrass (SETA VIR Setaria viridis),76
+invasive_plant_code,GS,Groundsel (SENE VUL Senecio vulgaris),77
+invasive_plant_code,HR,Hairy cat's-ear (HYPO RAD Hypochaeris radicata),78
+invasive_plant_code,HC,Heart-podded hoary cress / Hoary cress (CARD DRA Cardaria draba),79
+invasive_plant_code,BI,Hedge false bindweed (CALY SEP Calystegia sepium),80
+invasive_plant_code,HD,Hedgehog dogtail (CYNO ECH Cynosurus echinatus),81
+invasive_plant_code,GR,Herb robert (GERA ROB Geranium robertianum),82
+invasive_plant_code,HI,Himalayan blackberry (RUBU ARM Rubus armeniacus),83
+invasive_plant_code,PO,Himalayan knotweed (POLY POL Polygonum polystachyum),84
+invasive_plant_code,HA,Hoary alyssum (BERT INC Berteroa incana),85
+invasive_plant_code,HT,Hound's-tongue (CYNO OFF Cynoglossum officinale),86
+invasive_plant_code,IS,Iberian starthistle (CENT IBE Centaurea iberica),87
+invasive_plant_code,IT,Italian plumeless thistle (CARD PYC Carduus pycnocephalus),88
+invasive_plant_code,JP,Japanese butterbur (PETA JAP Petasites japonicus),89
+invasive_plant_code,JK,Japanese knotweed (FALL JAP Fallopia japonica),90
+invasive_plant_code,JW,Japanese wireweed (SARG MUT Sargassum muticum),91
+invasive_plant_code,GJ,Johnsongrass (SORG HAL Sorghum halepense),92
+invasive_plant_code,JG,Jointed goatgrass (AEGI CYL Aegilops cylindrica),93
+invasive_plant_code,KH,Kingdevil hawkweed (HIER FLO Hieracium floribundum),94
+invasive_plant_code,KO,Kochia (KOCH SCO Kochia scoparia),95
+invasive_plant_code,KU,Kudzu (PUER MON Pueraria montana),96
+invasive_plant_code,LT,Lady's-thumb (POLY PER Polygonum persicaria),97
+invasive_plant_code,LS,Leafy spurge (EUPH ESU Euphorbia esula),98
+invasive_plant_code,LH,Lens-pod hoary cress  (LEPI CHA Lepidium chalepense),99
+invasive_plant_code,RF,Lesser celandine / fig buttercup (RANU FIC Ranunculus ficaria),100
+invasive_plant_code,LO,Longspine sandbur (CENC LON Cenchrus longispinus),101
+invasive_plant_code,MX,Maltese star thistle (CENT MEL Centaurea melitensis),102
+invasive_plant_code,MT,Marsh plume thistle / Marsh thistle (CIRS PAL Cirsium palustre),103
+invasive_plant_code,MB,Meadow buttercup (RANU ACR Ranunculus acris),104
+invasive_plant_code,MC,Meadow clary (SALV PRA Salvia pratensis),105
+invasive_plant_code,MG,Meadow goats-beard (TRAG PRA Tragopogon pratensis),106
+invasive_plant_code,MH,Meadow hawkweed (HIER CAE Hieracium caespitosum),107
+invasive_plant_code,MK,Meadow knapweed (CENT DEB Centaurea debeauxii),108
+invasive_plant_code,MS,Mediterranean sage (SALV AET Salvia aethiopsis),109
+invasive_plant_code,TM,Medusahead (TAEN CAP Taeniatherum caput-medusae),110
+invasive_plant_code,MI,Milk thistle (SILY MAR Silybum marianum),111
+invasive_plant_code,MO,Mountain bluet (CENT MON Centaurea montana),112
+invasive_plant_code,ME,Mouse ear hawkweed (HIER PIL Hieracium pilosella),113
+invasive_plant_code,MU,Mullein (VERB THA Verbascum thapsis),114
+invasive_plant_code,EM,Myrtle spurge (EUPH MYR Euphorbia myrsinites),115
+invasive_plant_code,NC,Night-flowering catchfly (SILE NOC Silene noctiflora),116
+invasive_plant_code,NT,Nodding thistle (CARD NUT Carduus nutans),117
+invasive_plant_code,NA,North africa grass (VENT DUB Ventenata dubia),118
+invasive_plant_code,OM,Old man's beard / traveller's joy (CLEM VIT Clematis vitalba),119
+invasive_plant_code,OH,Orange hawkweed (HIER AUR Hieracium aurantiacum),120
+invasive_plant_code,OD,Oxeye daisy (LEUC VUL Leucanthemum vulgare),121
+invasive_plant_code,EP,Paterson's Curse (ECHI PLA Echium plantagineum),122
+invasive_plant_code,PP,Perennial pepperweed (LEPI LAT Lepidium latifolium),123
+invasive_plant_code,PS,Perennial sow thistle (SONC ARV Sonchus arvensis),124
+invasive_plant_code,PT,Plumeless thistle (CARD ACA Carduus acanthoides),125
+invasive_plant_code,PH,Poison hemlock (CONI MAC Conium maculatum),126
+invasive_plant_code,PA,Polar hawkweed (PILO ATR Pilosella / Hieracium atratum),127
+invasive_plant_code,IM,Policeman's helmet / himalayan balsam (IMPA GLA Impatiens glandulifera),128
+invasive_plant_code,PR,Portuguese broom (CYTI STR Cytisus striatus),129
+invasive_plant_code,LP,Portugese laurel (PRUN LUS Prunus lusitanica),130
+invasive_plant_code,PC,Prickly comfrey (SYMP ASP Symphytum asperum),131
+invasive_plant_code,PV,Puncturevine (TRIB TER Tribulus terrestris),132
+invasive_plant_code,PD,Purple deadnettle (LAMI PUR Lamium purpureum),133
+invasive_plant_code,PN,Purple nutsedge (CYPE ROT Cyperus rotundus),134
+invasive_plant_code,PU,Purple starthistle (CENT CAL Centaurea calcitrapa),135
+invasive_plant_code,QA,Queen anne's lace / wild carrot (DAUC CAR Daucus carota),136
+invasive_plant_code,QH,Queendevil hawkweed (HIER PRE Hieracium praealtum),137
+invasive_plant_code,BR,Red bartsia (ODON SER Odontites serotina),138
+invasive_plant_code,RP,Redroot amaranth / rough pigweed (AMAR RET Amaranthus retroflexus),139
+invasive_plant_code,RE,Reed Canary Grass (PHAL ARU Phalaris arundinacea),140
+invasive_plant_code,RS,Rush skeletonweed (CHON JUN Chondrilla juncea),141
+invasive_plant_code,RK,Russian knapweed (ACRO REP Acroptilon repens),142
+invasive_plant_code,RO,Russian olive (ELAE ANG Elaeagnus angustifolia),143
+invasive_plant_code,RT,Russian thistle (SALS KAL Salsola kali),144
+invasive_plant_code,TA,Saltcedar / tamarisk (TAMA RAM Tamarix ramosissima),145
+invasive_plant_code,AH,Saltlover / halogeton (HALO GLO Halogeton glomeratus),146
+invasive_plant_code,SH,Scentless chamomile (MATR PER Matricaria perforata),147
+invasive_plant_code,SB,Scotch broom (CYTI SCO Cytisus scoparius),148
+invasive_plant_code,ST,Scotch thistle (ONOP ACA Onopordum acanthium),149
+invasive_plant_code,SS,Sheep sorrel (RUME ACE Rumex acetosella),150
+invasive_plant_code,SP,Shepherd's-purse (CAPS BUR Capsella bursa-pastoris),151
+invasive_plant_code,SG,Shiny geranium (GERA LUC Geranium lucidum),152
+invasive_plant_code,CN,Short-fringed knapweed (CENT NIR Centaurea nigrescens),153
+invasive_plant_code,SE,Siberian elm (ULMU PUM Ulmus pumila),154
+invasive_plant_code,NS,Silverleaf nightshade (SOLA ELA Solanum elaeagnifolium),155
+invasive_plant_code,FT,Slender meadow foxtail (ALOP MYO Alopecurus myosuroides),156
+invasive_plant_code,BF,Slender false brome / false brome (BRAC SYL Brachypodium sylvaticum),157
+invasive_plant_code,HG,Smooth cat's ear (HYPO GLA Hypochaeris glabra),158
+invasive_plant_code,SM,Smooth hawkweed (PILO LAE Pilosella / Hieracium laevigatum),159
+invasive_plant_code,BS,Spanish bluebells (HYAC HIS Hyacinthoides hispanica),160
+invasive_plant_code,SI,Spanish broom (SPAR JUN Spartium junceum),161
+invasive_plant_code,SX,Spotted hawkweed (PILO MAC Pilosella / Hieracium maculatum),162
+invasive_plant_code,SK,Spotted knapweed (CENT BIE Centaurea biebersteinii),163
+invasive_plant_code,MV,Spring millet grass (MILI VER Milium vernale),164
+invasive_plant_code,TP,Spurge flax (THYM PAS Thymelaea passerina),165
+invasive_plant_code,CV,Squarrose knapweed (CENT VIR Centaurea virgata ssp. squarrosa),166
+invasive_plant_code,SJ,St. John's wort/Saint John's wort/ Goatweed (HYPE PER Hypericum perforatum),167
+invasive_plant_code,SC,Sulphur cinquefoil (POTE REC Potentilla recta),168
+invasive_plant_code,SF,Sweet fennel (FOEN VUL Foeniculum vulgare),169
+invasive_plant_code,SY,Syrian bean-caper (ZYGO FAB Zygophyllum fabago),170
+invasive_plant_code,TH,Tall hawkweed (HIER OID Hieracium piloselloides),171
+invasive_plant_code,TR,Tansy ragwort (SENE JAC Senecio jacobaea),172
+invasive_plant_code,TB,Tartary buckwheat (FAGO TAT Fagopyrum tataricum),173
+invasive_plant_code,TS,Teasel (DIPS FUL Dipsacus fullonum),174
+invasive_plant_code,TX,Texas blueweed (HELI CIL Helianthus ciliaris),175
+invasive_plant_code,AA,Tree of heaven (AILA ALT Ailanthus altissima),176
+invasive_plant_code,VL,Velvet leaf (ABUT THE Abutilon theophrasti),177
+invasive_plant_code,WA,Wall hawkweed (PILO MUR Pilosella / Hieracium murorum),178
+invasive_plant_code,WG,Western goat's-beard (TRAG DUB Tragopogon dubius),179
+invasive_plant_code,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),180
+invasive_plant_code,WC,White cockle (LYCH ALB Lychnis alba),181
+invasive_plant_code,SR,White spanish broom (CYTI MUL Cytisus multiflorus),182
+invasive_plant_code,WB,Wild buckwheat (POLY CON Polygonum convolvulus),183
+invasive_plant_code,WI,Wild chervil (ANTH SYL Anthriscus sylvestris),184
+invasive_plant_code,WF,Wild four o'clock (MIRA NYC Mirabilis nyctaginea),185
+invasive_plant_code,WM,Wild mustard (SINA ARV Sinapis arvensis),186
+invasive_plant_code,WO,Wild oats (AVEN FAT Avena fatua),187
+invasive_plant_code,PW,Wild parsnip (PAST SAT Pastinaca sativa),188
+invasive_plant_code,WT,Winged thistle / slender-flowered thistle (CARD TEN Carduus tenuiflorus),189
+invasive_plant_code,WS,Wood sage (SALV NEM Salvia nemorsa),190
+invasive_plant_code,WW,Wormwood (ARTE ABS Artemisia absinthium),191
+invasive_plant_code,YA,Yellow archangel (LAMI GAL Lamiastrum galeobdolon),192
+invasive_plant_code,YD,Yellowdevil hawkweed (HIER GLO Hieracium glomeratum),193
+invasive_plant_code,YH,Yellow hawkweed (HIER PRA Hieracium pratense),194
+invasive_plant_code,HS,Yellow hawkweed species (HIER PILO SPP Hieracium / Pilosella spp.),195
+invasive_plant_code,YN,Yellow nutsedge (CYPE ESC Cyperus esculentus),196
+invasive_plant_code,YS,Yellow starthistle (CENT SOL Centaurea solstitialis),197
+invasive_plant_code,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),198
 invasive_animal_code,ABD,American black duck [Anas rubripes],1
 invasive_animal_code,ABF,American bullfrog [Lithobates catesbeiana],2
 invasive_animal_code,ASD,American shad [Alosa sapidissima],3

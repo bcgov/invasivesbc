@@ -271,9 +271,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     formData.activity_subtype_data.collections.forEach((collection) => {
       if (collection.start_time && collection.stop_time) {
-        const start = Number(collection.start_time);
-        const stop = Number(collection.stop_time);
-        const total = stop - start;
+        const arrStart = collection.start_time.split(':');
+        const arrStop = collection.stop_time.split(':');
+        const minutesStart = +arrStart[0] * 60 + +arrStart[1];
+        const minutesStop = +arrStop[0] * 60 + +arrStop[1];
+
+        const total = minutesStop - minutesStart;
         collection.total_time = total;
       }
     });
@@ -458,8 +461,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       await handleRecordLinking(updatedDoc);
 
-      //console.log('here');
-      //console.dir(updatedDoc.geometry)
+
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
