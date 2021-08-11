@@ -286,7 +286,7 @@ export const useInvasivesApi = () => {
 
       return data;
     } catch (error) {
-      data = await databaseContext.database.get('ApiSpec');
+      // data = await databaseContext.database.get('ApiSpec');
 
       data = await query(
         {

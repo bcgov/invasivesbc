@@ -24,18 +24,18 @@ export const AuthStateContextProvider: React.FC = (props) => {
     const loadUserInfo = async () => {
       console.log(keycloak.obj + 'keycloak is here');
       const user = await keycloak.obj?.loadUserInfo();
-      if (Capacitor.getPlatform() !== 'web' && databaseContext.ready) alert(JSON.stringify(databaseContext));
-      await upsert(
-        [
-          {
-            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-            docType: DocType.KEYCLOAK,
-            ID: '1',
-            json: user
-          }
-        ],
-        databaseContext
-      );
+      if (Capacitor.getPlatform() !== 'web' && databaseContext.ready)
+        await upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+              docType: DocType.KEYCLOAK,
+              ID: '1',
+              json: user
+            }
+          ],
+          databaseContext
+        );
       setUserInfo(user);
     };
 

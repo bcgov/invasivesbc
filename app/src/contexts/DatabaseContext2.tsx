@@ -121,7 +121,18 @@ export const DatabaseContext2Provider = (props) => {
             DocType[value] +
             ` (
               id TEXT PRIMARY KEY,
-              json TEXT
+              json TEXT,
+              activity_subtype TEXT
+            );\n`;
+          break;
+        case 'ACTIVITY':
+          setupSQL +=
+            'create table if not exists ' +
+            DocType[value] +
+            ` (
+              id TEXT PRIMARY KEY,
+              json TEXT,
+              activity_subtype TEXT
             );\n`;
           break;
         case 'REFERENCE_POINT_OF_INTEREST':
@@ -355,6 +366,7 @@ const buildSQLStringDOC_TYPE_AND_ID = (upsertConfigs: Array<IUpsert>) => {
   let batchUpdate = '';
   if (upsertConfigs.length > 0) {
     batchUpdate += `insert into ` + upsertConfigs[0].docType + ` (id,json) values `;
+
     let rowCounter = 0;
     for (const upsertConfig of upsertConfigs) {
       batchUpdate += `('` + upsertConfig.ID + `','` + JSON.stringify(upsertConfig.json).split(`'`).join(`''`) + `')`;
@@ -393,7 +405,6 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
     ret = await db.query('select * from ' + slowPatchDocType + ' where id in (' + idsString + ');');
 
     const slowPatchOld = ret.values;
-    alert('old ones: ' + JSON.stringify(slowPatchOld));
 
     //patch them in memory
     let batchUpdate = '';

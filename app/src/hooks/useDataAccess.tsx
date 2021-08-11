@@ -205,8 +205,14 @@ export const useDataAccess = () => {
             );
           }
         });
-        return asyncReturnVal;
+        return {
+          rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
+          count: asyncReturnVal.length
+        };
       } else {
+        const res = await api.getActivities(activitiesSearchCriteria);
+        // console.log('DATA HERE');
+        // console.log(JSON.stringify(res));
         return api.getActivities(activitiesSearchCriteria);
       }
     }
@@ -231,9 +237,9 @@ export const useDataAccess = () => {
           return upsert(
             [
               {
-                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                type: UpsertType.DOC_TYPE_AND_ID,
                 docType: DocType.ACTIVITY,
-                ID: '1',
+                ID: activity.activity_id,
                 json: activity
               }
             ],

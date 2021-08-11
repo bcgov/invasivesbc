@@ -196,9 +196,9 @@ export const defaultActivitiesFetch =
         created_by: created_by, // my_keycloak_id
         review_status: review_status
       },
-      databaseContext
+      databaseContext,
+      false
     );
-    alert(result);
     // console.log('defaultActivitiesFetch: ', result);
     return {
       rows: result.rows.map(activityStandardMapping),
@@ -291,7 +291,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
       dbActivity.created_by = userInfo?.preferred_username;
-      await invasivesApi.createActivity(dbActivity);
+      await invasivesApi.createActivity(dbActivity, databaseContext);
     },
     icon: <Add />,
     label: ActivitySubtypeShortLabels[subtype],
@@ -327,7 +327,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       },
       databaseContext
     );
-
   return useMemo(
     () => (
       <RecordTable
@@ -435,7 +434,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     sanitizeRecord({
                       ...dbActivity,
                       sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL
-                    })
+                    }),
+                    databaseContext
                   );
                   const typename = activity.activity_subtype?.split('_')[2];
                   // notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
@@ -482,7 +482,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     sanitizeRecord({
                       ...dbActivity,
                       review_status: ReviewStatus.UNDER_REVIEW
-                    })
+                    }),
+                    databaseContext
                   );
                   const typename = activity.activity_subtype?.split('_')[2];
                   //notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
@@ -531,7 +532,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                       review_status: ReviewStatus.APPROVED,
                       reviewed_by: userInfo.preferred_username, // latest reviewer
                       reviewed_at: moment(new Date()).format()
-                    })
+                    }),
+                    databaseContext
                   );
                   const typename = activity.activity_subtype?.split('_')[2];
                   // notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
@@ -580,7 +582,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                       review_status: ReviewStatus.DISAPPROVED,
                       reviewed_by: userInfo.preferred_username, // latest reviewer
                       reviewed_at: moment(new Date()).format()
-                    })
+                    }),
+                    databaseContext
                   );
                   const typename = activity.activity_subtype?.split('_')[2];
                   // notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
@@ -1180,7 +1183,7 @@ export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> =
 
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
   const { tableSchemaType, actions, ...otherProps } = props;
-  const invasivesApi = useInvasivesApi();
+  const invasivesApi = useDataAccess();
   return useMemo(() => {
     return (
       <RecordTable

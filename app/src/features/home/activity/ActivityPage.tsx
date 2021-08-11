@@ -468,7 +468,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
 
-      await handleRecordLinking(updatedDoc);
+      // await handleRecordLinking(updatedDoc);
 
 
       setGeometry(updatedDoc.geometry);
