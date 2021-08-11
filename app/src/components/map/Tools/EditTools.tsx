@@ -9,30 +9,58 @@ const EditTools = (props) => {
     // This should get the 'FeatureGroup' connected to the tools
     const context = useLeafletContext() as LeafletContextInterface;
     const [geoKeys, setGeoKeys] = useState({});
-    const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
+    const [currentEditingLayer, setCurrentEditingLayer] = useState(null);
     const drawRef = useRef();
+    console.dir(props.geometryState.geometry);
 
     // Put new feature into the FeatureGroup
     const onDrawCreate = (e: any) => {
         context.layerContainer.addLayer(e.layer);
+        //console.log(context.map)
         let aGeo = e.layer.toGeoJSON();
         if (e.layerType === 'circle') {
             aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: e.layer.getRadius() } };
-        } else if (e.layerType === 'rectangle') {
-            aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
         }
+
         aGeo = convertLineStringToPoly(aGeo);
         // Drawing one geo wipes all others
-        props.geometryState.setGeometry([aGeo]);
+        props.geometryState.setGeometry([...props.geometryState.geometry, aGeo]);
+        (context.layerContainer as any).clearLayers();
+        console.dir(aGeo);
     };
+    const onEditStop = (e: any) => {
+        //console.log(e);
+        //console.dir((context.layerContainer as any).toGeoJSON());
+        //console.dir((context.layerContainer as any).getLayers());
+
+        let updatedGeoJSON = [];
+        (context.layerContainer as any).eachLayer((layer) => {
+            console.dir(layer)
+            let aGeo = layer.toGeoJSON();
+            if (layer.feature.properties.radius) {
+                aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer._mRadius } };
+            } else if (e.layerType === 'rectangle') {
+                //aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
+            }
+            aGeo = convertLineStringToPoly(aGeo);
+
+            updatedGeoJSON.push(aGeo);
+        });
+
+        console.dir(updatedGeoJSON);
+        //console.dir(e.layer.getRadius());
+    }
 
     // Grab the map object
     let map = useMapEvent('draw:created' as any, onDrawCreate);
 
-    let map2 = useMapEvent('draw:drawstart' as any, () => {
-        // drawnItems.clearLayers();
+    let mapDrawStart = useMapEvent('draw:drawstart' as any, () => {
         (context.layerContainer as any).clearLayers();
     });
+    let mapDrawDeleted = useMapEvent('draw:deleted' as any, () => {
+        props.geometryState.setGeometry([]);
+    });
+    let mapEditSave = useMapEvent('draw:edited' as any, onEditStop);
 
     const convertLineStringToPoly = (aGeo: any) => {
         if (aGeo.geometry.type === 'LineString') {
@@ -66,10 +94,9 @@ const EditTools = (props) => {
 
     const updateMapOnGeometryChange = () => {
         // upload from geometrystate props
-        console.log('in here');
         // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
         const newGeoKeys = { ...geoKeys };
-        console.dir(props.geometryState);
+        //console.dir(props.geometryState);
 
         if (props.geometryState) {
             // For each geometry, add a new layer to the drawn features
@@ -78,7 +105,6 @@ const EditTools = (props) => {
                     weight: 4,
                     opacity: 0.65
                 };
-                console.dir(collection);
 
                 const markerStyle = {
                     radius: 10,
@@ -90,23 +116,15 @@ const EditTools = (props) => {
                     style,
                     pointToLayer: (feature: any, latLng: any) => {
                         if (feature.properties.radius) {
-                            console.dir(latLng);
                             return L.circle(latLng, { radius: feature.properties.radius });
                         } else {
-                            console.dir(latLng);
                             return L.circleMarker(latLng, markerStyle);
                         }
                     },
                     onEachFeature: (feature: any, layer: any) => {
-                        console.log(layer);
-                        console.log(feature);
-                        console.dir(collection);
                         context.layerContainer.addLayer(layer);
-                        //              drawnItems.addLayer(layer);
-                        console.dir(drawnItems);
                     }
                 });
-                console.log(collection);
             });
         }
         if (props.interactiveGeometryState?.interactiveGeometry) {
@@ -190,7 +208,6 @@ const EditTools = (props) => {
                 // draw layers to map
                 Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
                     context.layerContainer.addLayer(layer);
-                    //drawnItems.addLayer(layer);
                 });
             } else if (newGeoKeys[key].updated === false) {
                 return;
@@ -198,10 +215,8 @@ const EditTools = (props) => {
                 // remove old keys (delete step)
                 Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
                     context.layerContainer.removeLayer(layer);
-                    //            drawnItems.removeLayer(layer);
                 });
                 delete newGeoKeys[key];
-                //setDrawnItems(drawnItems.clearLayers());
                 return;
             }
             // reset updated status for next refresh:
@@ -210,25 +225,7 @@ const EditTools = (props) => {
 
         // update stored geos, mapped by key
         setGeoKeys(newGeoKeys);
-
-        // Update the drawn featres
-        // setDrawnItems(drawnItems);
-
-        // Update the map with the new drawn feaures
-
-        // map = map.addLayer(drawnItems);
-        console.dir(props);
-        console.dir(map);
-        //setDrawnItems(drawnItems.clearLayers());
     };
-
-    // When the dom is rendered listen for added features
-    /*useEffect(() => {
-      map.on('draw:created', onDrawCreate);
-      // map.on('draw:editstop', onDrawEditStop);
-      // map.on('draw:deleted', onDrawDeleted);
-      console.log('draw created');
-    }, []);*/
 
     useEffect(() => {
         if (!map) {

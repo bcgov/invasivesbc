@@ -461,8 +461,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       await handleRecordLinking(updatedDoc);
 
-      console.log('here');
-      console.dir(updatedDoc.geometry);
+
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
@@ -478,8 +477,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    console.log('in hook');
-
     saveGeometry(geometry);
   }, [geometry, isLoading, saveGeometry]);
 
