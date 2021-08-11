@@ -49,6 +49,7 @@ import { MapRequestContextProvider, MapRequestContext } from 'contexts/MapReques
 import MeasureTool from './Tools/MeasureTool';
 import { makeStyles, Theme } from '@material-ui/core';
 import EditTools from './Tools/EditTools';
+import { RenderKeyFeaturesNearFeature } from 'features/home/map/Layers/Wells';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -310,7 +311,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           </FeatureGroup>
         )}
 
-        <MapResizer />
+        {/*} <MapResizer />*/}
         <AsyncExtent />
 
         {/*<LayersControl position="topright">
@@ -325,6 +326,26 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         {/*</LayersControl.Overlay>
         </LayersControl>*/}
       </MapRequestContextProvider>
+      <RenderKeyFeaturesNearFeature
+        inputGeo={{
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-124.20867919921875, 48.32703913063476],
+                [-123.12652587890624, 48.32703913063476],
+                [-123.12652587890624, 48.743512093586844],
+                [-124.20867919921875, 48.743512093586844],
+                [-124.20867919921875, 48.32703913063476]
+              ]
+            ]
+          }
+        }}
+        dataBCLayerName="WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW"
+        proximityInMeters={50}
+      />
     </MapContainer>
   );
 };

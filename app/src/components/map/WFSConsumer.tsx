@@ -86,6 +86,7 @@ export const getDataFromDataBC: any = async (
   if (!pageSize && !startIndex) {
     console.log('no page provided');
     return returnVal;
+    /*
   } else {
     const subsequentFetches = async (startIndex: number) => {
       URL = buildURLForDataBC(layerName, geoJSON, pageSize, startIndex);
@@ -106,6 +107,7 @@ export const getDataFromDataBC: any = async (
       console.log(e);
     }
     return [];
+    */
   }
   /*
 
