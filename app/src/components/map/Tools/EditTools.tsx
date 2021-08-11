@@ -9,11 +9,14 @@ const EditTools = (props) => {
     // This should get the 'FeatureGroup' connected to the tools
     const context = useLeafletContext() as LeafletContextInterface;
     const [geoKeys, setGeoKeys] = useState({});
+    const [currentEditingLayer, setCurrentEditingLayer] = useState(null);
     const drawRef = useRef();
+    console.dir(props.geometryState.geometry);
 
     // Put new feature into the FeatureGroup
     const onDrawCreate = (e: any) => {
         context.layerContainer.addLayer(e.layer);
+        //console.log(context.map)
         let aGeo = e.layer.toGeoJSON();
         if (e.layerType === 'circle') {
             aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: e.layer.getRadius() } };
@@ -22,9 +25,32 @@ const EditTools = (props) => {
         }
         aGeo = convertLineStringToPoly(aGeo);
         // Drawing one geo wipes all others
-        props.geometryState.setGeometry([...props.geometryState.geometry ,aGeo]);
+        props.geometryState.setGeometry([...props.geometryState.geometry, aGeo]);
         (context.layerContainer as any).clearLayers();
+        console.dir(aGeo);
     };
+    const onEditStop = (e: any) => {
+        //console.log(e);
+        //console.dir((context.layerContainer as any).toGeoJSON());
+        //console.dir((context.layerContainer as any).getLayers());
+
+        let updatedGeoJSON = [];
+        (context.layerContainer as any).eachLayer((layer) => {
+            console.dir(layer)
+            let aGeo = layer.toGeoJSON();
+            if (layer.layerType === 'circle') {
+                aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer.getRadius() } };
+            } else if (e.layerType === 'rectangle') {
+                aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
+            }
+            aGeo = convertLineStringToPoly(aGeo);
+
+            updatedGeoJSON.push(aGeo);
+        });
+
+        console.dir(updatedGeoJSON);
+        //console.dir(e.layer.getRadius());
+    }
 
     // Grab the map object
     let map = useMapEvent('draw:created' as any, onDrawCreate);
@@ -35,6 +61,7 @@ const EditTools = (props) => {
     let mapDrawDeleted = useMapEvent('draw:deleted' as any, () => {
         props.geometryState.setGeometry([]);
     });
+    let mapEditSave = useMapEvent('draw:edited' as any, onEditStop);
 
     const convertLineStringToPoly = (aGeo: any) => {
         if (aGeo.geometry.type === 'LineString') {
@@ -70,7 +97,7 @@ const EditTools = (props) => {
         // upload from geometrystate props
         // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
         const newGeoKeys = { ...geoKeys };
-        console.dir(props.geometryState);
+        //console.dir(props.geometryState);
 
         if (props.geometryState) {
             // For each geometry, add a new layer to the drawn features
