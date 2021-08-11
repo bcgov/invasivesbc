@@ -20,9 +20,8 @@ const EditTools = (props) => {
         let aGeo = e.layer.toGeoJSON();
         if (e.layerType === 'circle') {
             aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: e.layer.getRadius() } };
-        } else if (e.layerType === 'rectangle') {
-            aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
         }
+
         aGeo = convertLineStringToPoly(aGeo);
         // Drawing one geo wipes all others
         props.geometryState.setGeometry([...props.geometryState.geometry, aGeo]);
@@ -38,10 +37,10 @@ const EditTools = (props) => {
         (context.layerContainer as any).eachLayer((layer) => {
             console.dir(layer)
             let aGeo = layer.toGeoJSON();
-            if (layer.layerType === 'circle') {
-                aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer.getRadius() } };
+            if (layer.feature.properties.radius) {
+                aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer._mRadius } };
             } else if (e.layerType === 'rectangle') {
-                aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
+                //aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
             }
             aGeo = convertLineStringToPoly(aGeo);
 
