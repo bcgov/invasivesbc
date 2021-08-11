@@ -195,10 +195,13 @@ DELETE.apiDoc = {
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
+    defaultLog.debug({
+      label: 'activity',
+      message: 'getActivitiesBySearchFilterCriteria',
+      body: req.body
+    });
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
-
     const connection = await getDBConnection();
 
     if (!connection) {
@@ -209,6 +212,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
+      // TODO: This needs to call a new 'getActivitiesLeanSQL' function
       const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria);
 
       if (!sqlStatement) {
