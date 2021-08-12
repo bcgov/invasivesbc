@@ -1,57 +1,98 @@
+import { IconButton, makeStyles, Typography } from '@material-ui/core';
 import { useEffect, useRef, useState } from 'react';
 import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
-import { useMapEvent } from 'react-leaflet';
+import { MapContainer, useMapEvent } from 'react-leaflet';
 import * as turf from '@turf/turf';
 import L from 'leaflet';
 import React from 'react';
 
-const EditTools = (props) => {
-  // This should get the 'FeatureGroup' connected to the tools
-  const context = useLeafletContext() as LeafletContextInterface;
-  const [geoKeys, setGeoKeys] = useState({});
-  const [currentEditingLayer, setCurrentEditingLayer] = useState(null);
-  const drawRef = useRef();
-  console.dir(props.geometryState.geometry);
-
-  // Put new feature into the FeatureGroup
-  const onDrawCreate = (e: any) => {
-    context.layerContainer.addLayer(e.layer);
-    //console.log(context.map)
-    let aGeo = e.layer.toGeoJSON();
-    if (e.layerType === 'circle') {
-      aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: e.layer.getRadius() } };
+const useStyles = makeStyles((theme) => ({
+    image: {
+        height: 24,
+        width: 24
+    },
+    toolButton: {
+        margin: '5px',
+        background: 'white',
+        zIndex: 999,
+        height: '48px',
+        width: '48PX',
+        borderRadius: '4px',
+        '&:hover': {
+            background: 'white'
+        }
+    },
+    typography: {
+        paddingLeft: theme.spacing(2),
+        fontSize: 16,
+        width: 150
+    },
+    button: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        width: 150
     }
+}));
 
-    aGeo = convertLineStringToPoly(aGeo);
-    // Drawing one geo wipes all others
-    let newState = [];
-    newState = props.geometryState.geometry ? [...props.geometryState.geometry] : newState;
-    newState = aGeo ? [...newState, aGeo] : newState;
-    props.geometryState.setGeometry([...newState]);
-    (context.layerContainer as any).clearLayers();
-  };
-  const onEditStop = (e: any) => {
-    //console.log(e);
-    //console.dir((context.layerContainer as any).toGeoJSON());
-    //console.dir((context.layerContainer as any).getLayers());
+const EditTools = (props) => 
+    const classes = useStyles();
+    // This should get the 'FeatureGroup' connected to the tools
+    const [multiMode, setMultiMode] = useState(false);
+    const toggleMode = () => {
+        setMultiMode(!multiMode);
+        var len = props.geometryState.geometry.length;
+        var temp = props.geometryState.geometry[len - 1];
+        props.geometryState.setGeometry([]);
+        props.geometryState.setGeometry([temp]);
+    };
+    const divRef = useRef();
+    useEffect(() => {
+        L.DomEvent.disableClickPropagation(divRef?.current);
+        L.DomEvent.disableScrollPropagation(divRef?.current);
+    })
+    const context = useLeafletContext() as LeafletContextInterface;
+    const [geoKeys, setGeoKeys] = useState({});
+    const [currentEditingLayer, setCurrentEditingLayer] = useState(null);
+    const drawRef = useRef();
+    //console.dir(props.geometryState.geometry);
 
-    let updatedGeoJSON = [];
-    (context.layerContainer as any).eachLayer((layer) => {
-      console.dir(layer);
-      let aGeo = layer.toGeoJSON();
-      if (layer.feature.properties.radius) {
-        aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer._mRadius } };
-      } else if (e.layerType === 'rectangle') {
-        //aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
-      }
-      aGeo = convertLineStringToPoly(aGeo);
+    // Put new feature into the FeatureGroup
+    const onDrawCreate = (e: any) => {
+        var newLayer = e.layer;
+        context.layerContainer.addLayer(e.layer);
 
-      updatedGeoJSON.push(aGeo);
-    });
+        let aGeo = newLayer.toGeoJSON();
+        if (e.layerType === 'circle') {
+            aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: e.layer.getRadius() } };
+        }
 
-    console.dir(updatedGeoJSON);
-    //console.dir(e.layer.getRadius());
-  };
+        aGeo = convertLineStringToPoly(aGeo);
+        // Drawing one geo wipes all others
+        if (multiMode) {
+          let newState = [];
+          newState = props.geometryState.geometry ? [...props.geometryState.geometry] : newState;
+          newState = aGeo ? [...newState, aGeo] : newState;
+          props.geometryState.setGeometry([...newState])
+        } else {
+            props.geometryState.setGeometry([aGeo])
+        }
+        (context.layerContainer as any).clearLayers();
+    };
+    const onEditStop = (e: any) => {
+        let updatedGeoJSON = [];
+        (context.layerContainer as any).eachLayer((layer) => {
+            console.dir(layer)
+            let aGeo = layer.toGeoJSON();
+            if (layer.feature.properties.radius) {
+                aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer._mRadius } };
+            } else if (e.layerType === 'rectangle') {
+                //aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
+            }
+            aGeo = convertLineStringToPoly(aGeo);
+
+            updatedGeoJSON.push(aGeo);
+        });
+    }
 
   // Grab the map object
   let map = useMapEvent('draw:created' as any, onDrawCreate);
@@ -238,34 +279,41 @@ const EditTools = (props) => {
       return;
     }
 
-    setGeometryMapBounds();
-    updateMapOnGeometryChange();
-  }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
+        setGeometryMapBounds();
+        updateMapOnGeometryChange();
+    }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
 
-  // Get out if the tools are already defined.
-  if (drawRef.current) return null;
+    // Get out if the tools are already defined.
+    if (!(drawRef?.current as any)?._map) {
+        /**
+         * This is where all the editing tool options are defined.
+         * See: https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html
+         */
+        const options = {
+            draw: {
+                circlemarker: false
+            },
+            edit: {
+                featureGroup: context.layerContainer,
+                edit: true
+            }
+        };
 
-  /**
-   * This is where all the editing tool options are defined.
-   * See: https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html
-   */
-  const options = {
-    draw: {
-      circlemarker: false
-    },
-    edit: {
-      featureGroup: context.layerContainer,
-      edit: true
+        // Create drawing tool control
+        drawRef.current = new (L.Control as any).Draw(options);
+
+        // Add drawing tools to the map
+        map.addControl(drawRef.current);
     }
-  };
 
-  // Create drawing tool control
-  drawRef.current = new (L.Control as any).Draw(options);
+    return (
+        <IconButton ref={divRef} className={classes.toolButton} onClick={toggleMode}>
+            {multiMode ?
+                <Typography>On</Typography> :
+                <Typography>Off</Typography>}
+        </IconButton>
+    )
 
-  // Add drawing tools to the map
-  map.addControl(drawRef.current);
-
-  return <div></div>;
-};
+}
 
 export default EditTools;
