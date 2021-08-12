@@ -295,7 +295,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
       dbActivity.created_by = userInfo?.preferred_username;
-      await invasivesApi.createActivity(dbActivity, databaseContext);
+      const res = await invasivesApi.createActivity(dbActivity, databaseContext);
+      console.dir(res);
     },
     icon: <Add />,
     label: ActivitySubtypeShortLabels[subtype],
