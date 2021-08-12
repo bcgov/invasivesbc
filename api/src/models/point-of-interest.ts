@@ -17,7 +17,6 @@ export class PointOfInterestPostRequestBody {
   pointOfInterest_data: object;
   pointOfInterest_type_data: object;
   pointOfInterest_subtype_data: object;
-  pointOfInterest_ids: string[];
 
   received_timestamp: string;
 
@@ -46,19 +45,18 @@ export class PointOfInterestPostRequestBody {
         []
     };
 
-    this.pointOfInterest_type = (obj && obj.pointOfInterest_type) || null;
-    this.pointOfInterest_subtype = (obj && obj.pointOfInterest_subtype) || null;
+    this.pointOfInterest_type = obj?.pointOfInterest_type || obj?.point_of_interest_type || null;
+    this.pointOfInterest_subtype = obj?.pointOfInterest_subtype || obj?.point_of_interest_subtype || null;
 
-    this.pointOfInterest_data = (obj && obj.form_data && obj.form_data.pointOfInterest_data) || null;
-    this.pointOfInterest_type_data = (obj && obj.form_data && obj.form_data.pointOfInterest_type_data) || null;
-    this.pointOfInterest_subtype_data = (obj && obj.form_data && obj.form_data.pointOfInterest_subtype_data) || null;
-    this.pointOfInterest_ids = (obj && obj.form_data && obj.form_data.pointOfInterest_ids) || [];
-
+    this.pointOfInterest_data = obj?.form_data?.pointOfInterest_data || obj?.form_data?.point_of_interest_data || null;
+    this.pointOfInterest_type_data = obj?.form_data?.pointOfInterest_type_data || obj?.form_data?.point_of_interest_type_data || null;
+    this.pointOfInterest_subtype_data = obj?.form_data?.pointOfInterest_subtype_data || obj?.form_data?.point_of_interest_subtype_data || null;
+    
     this.received_timestamp = new Date().toISOString();
 
-    this.geoJSONFeature = (obj && obj.geometry) || [];
+    this.geoJSONFeature = obj?.geometry || [];
 
-    this.mediaKeys = (obj && obj.mediaKeys) || null;
+    this.mediaKeys = obj?.mediaKeys || null;
   }
 }
 

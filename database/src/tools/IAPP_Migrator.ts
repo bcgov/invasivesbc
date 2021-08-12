@@ -154,6 +154,17 @@ const observationTypes = {
   // add more as they show up in CSV
 };
 
+const specificUseMap = (use) => {
+  switch (use) {
+    // legacy code renaming:
+    case 'GR': return 'GP';
+    case 'WP': return 'PF';
+    case 'RT': return 'RS';
+    case 'YW': return 'YD';
+    default: return use;
+  }
+}
+
 const mechMethodCodes = {
   Digging: 'DIG',
   Bury: 'BRY',
@@ -510,6 +521,12 @@ const main = async () => {
       const surveyAgencyCodes = surveys.map((survey) => survey.SurveyAgency).filter((agency) => agency);
       const surveySpecies = surveys.map((survey) => survey.Species).filter((agency) => agency);
 
+      const now = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+      const yyyy = today.getFullYear();
+      const today = yyyy + '-' + mm + '-' + dd;
+
       const requestBody: any = {
         point_of_interest_type: 'IAPP Site',
         point_of_interest_subtype: 'First Load',
@@ -532,8 +549,9 @@ const main = async () => {
             general_comment: siteRecord.Comments,
             access_description: siteRecord.AccessDescription,
             media_indicator: false,
-            created_date_on_device: formatDateToISO(siteRecord.CreateDate),
-            updated_date_on_device: formatDateToISO(siteRecord.CreateDate),
+            date_created: formatDateToISO(siteRecord.CreateDate),
+            created_date_on_device: today,
+            updated_date_on_device: today,
             project_code: [
               {
                 description: siteRecord.PaperFile
@@ -545,8 +563,8 @@ const main = async () => {
             site_id: siteRecordID,
             original_bec_id: siteRecord.BEC_ID,
             map_sheet: siteRecord.MapSheet,
-            soil_texture_code: siteRecord.SoilTexture || 'X',
-            specific_use_code: siteRecord.SpecificUse || 'X', // note: these dont map to our code table correctly - something is wrong
+            soil_texture_code: siteRecord.SoilTexture || 'NA',
+            specific_use_code: specificUseMap(siteRecord.SpecificUse) || 'NA', // note: these dont map to our code table correctly - something is wrong
             slope_code: mapSlope(siteRecord.Slope),
             slope: siteRecord.Slope,
             aspect_code: mapAspect(siteRecord.Aspect),
