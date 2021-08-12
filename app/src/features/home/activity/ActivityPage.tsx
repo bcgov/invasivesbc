@@ -49,6 +49,7 @@ import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from 'utils/addActivity';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+import { Capacitor } from '@capacitor/core';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -360,15 +361,27 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     const appStateResults = await dataAccess.getAppState(databaseContext);
 
-    console.log(JSON.stringify(appStateResults));
-    if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
-      return;
-    }
+    alert('getActivityResultsFromDB -> appStateResults here::::');
+    alert(JSON.stringify(appStateResults));
+    let activityResults;
+    if (Capacitor.getPlatform() === 'web') {
+      if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
+        return;
+      }
 
-    const activityResults = await dataAccess.getActivityById(
-      activityId || appStateResults.docs[0].activeActivity,
-      databaseContext
-    );
+      activityResults = await dataAccess.getActivityById(
+        activityId || appStateResults.docs[0].activeActivity,
+        databaseContext
+      );
+    } else {
+      activityResults = await dataAccess.getActivityById(
+        activityId || (appStateResults.activeActivity as string),
+        databaseContext,
+        true
+      );
+    }
+    alert('getActivityResultsFromDB -> getActivityById RESULT here::::');
+    alert(activityResults);
     return mapDBActivityToDoc(activityResults);
   };
 
@@ -377,7 +390,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const setActiveActivity = async (activeActivity: any) => {
     setIsCloned(true);
-    await dataAccess.setAppState(activeActivity, databaseContext);
+    await dataAccess.setAppState({ activeActivity: activeActivity }, databaseContext);
   };
 
   /*
@@ -454,6 +467,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   useEffect(() => {
     const getActivityData = async () => {
+      alert('ID FROM PROPS');
+      alert(props.activityId);
       const activityResult = await getActivityResultsFromDB(props.activityId || null);
 
       if (!activityResult) {

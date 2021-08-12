@@ -202,123 +202,124 @@ interface IActivityList {
 }
 
 // TODO change any to a type that defines the overall items being displayed
-const ActivityList: React.FC<IActivityList> = (props) => {
-  const classes = useStyles();
+// const ActivityList: React.FC<IActivityList> = (props) => {
+//   const classes = useStyles();
 
-  const history = useHistory();
+//   const history = useHistory();
 
-  const databaseContext = useContext(DatabaseContext);
-  const databaseContext2 = useContext(DatabaseContext2);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
-  const dataAccess = useDataAccess();
-  const [docs, setDocs] = useState<any[]>([]);
-  const [docToDelete, setDocToDelete] = useState(null);
-  const [isWarningDialogOpen, setIsWarningDialogOpen] = useState(false);
+//   const databaseContext = useContext(DatabaseContext);
+//   const databaseContext2 = useContext(DatabaseContext2);
+//   const databaseChangesContext = useContext(DatabaseChangesContext);
+//   const dataAccess = useDataAccess();
+//   const [docs, setDocs] = useState<any[]>([]);
+//   const [docToDelete, setDocToDelete] = useState(null);
+//   const [isWarningDialogOpen, setIsWarningDialogOpen] = useState(false);
 
-  const updateActivityList = useCallback(async () => {
-    if (Capacitor.getPlatform() === 'web') {
-      const activityResult = await databaseContext.database.find({
-        selector: { docType: DocType.ACTIVITY, activityType: props.activityType },
-        use_index: 'activitiesIndex'
-      });
-      setDocs([...activityResult.docs]);
-    } else {
-      const activityResult = dataAccess.getActivities({}, databaseContext2, true);
-      console.dir(activityResult);
-    }
-  }, [databaseContext.database, databaseContext2, props.activityType]);
+//   const updateActivityList = useCallback(async () => {
+//     if (Capacitor.getPlatform() === 'web') {
+//       const activityResult = await databaseContext.database.find({
+//         selector: { docType: DocType.ACTIVITY, activityType: props.activityType },
+//         use_index: 'activitiesIndex'
+//       });
+//       setDocs([...activityResult.docs]);
+//     } else {
+//       const activityResult = dataAccess.getActivities({}, databaseContext2, true);
+//       console.dir(activityResult);
+//     }
+//   }, [databaseContext.database, databaseContext2, props.activityType]);
 
-  useEffect(() => {
-    const updateComponent = () => {
-      updateActivityList();
-    };
+//   useEffect(() => {
+//     const updateComponent = () => {
+//       updateActivityList();
+//     };
 
-    updateComponent();
-  }, [databaseChangesContext, updateActivityList]);
+//     updateComponent();
+//   }, [databaseChangesContext, updateActivityList]);
 
-  const removeActivity = async (activity: PouchDB.Core.RemoveDocument) => {
-    databaseContext.database.remove(activity);
-  };
+//   const removeActivity = async (activity: PouchDB.Core.RemoveDocument) => {
+//     databaseContext.database.remove(activity);
+//   };
 
-  const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
-    /*j await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-      return { ...appStateDoc, activeActivity: doc._id };
-    });*/
+//   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
+//     /*j await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+//       return { ...appStateDoc, activeActivity: doc._id };
+//     });*/
+//     console.log('PRINTING doc');
+//     console.log(JSON.stringify(doc));
+//     await dataAccess.setAppState({ activeActivity: doc._id }, databaseContext2);
+//     alert(JSON.stringify(doc));
+//     if (doc.activityType === 'Observation') {
+//       history.push({
+//         pathname: `/home/activity`,
+//         search: '?observation=' + doc._id,
+//         state: { observation: doc._id }
+//       });
+//     } else {
+//       history.push('/home/activity');
+//     }
+//   };
 
-    await dataAccess.setAppState(doc._id, databaseContext2);
+//   // Sort activities to show most recently updated activities at top of list
+//   const sortedActivities = docs.sort((a, b): any => {
+//     return new Date(b.dateUpdated).valueOf() - new Date(a.dateUpdated).valueOf();
+//   });
 
-    if (doc.activityType === 'Observation') {
-      history.push({
-        pathname: `/home/activity`,
-        search: '?observation=' + doc._id,
-        state: { observation: doc._id }
-      });
-    } else {
-      history.push('/home/activity');
-    }
-  };
+//   return (
+//     <List>
+//       {sortedActivities.map((doc) => {
+//         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL;
 
-  // Sort activities to show most recently updated activities at top of list
-  const sortedActivities = docs.sort((a, b): any => {
-    return new Date(b.dateUpdated).valueOf() - new Date(a.dateUpdated).valueOf();
-  });
+//         if (
+//           !doc.activitySubtype.includes(props.workflowFunction) &&
+//           !['Transect', 'Dispersal', 'Collection'].includes(doc.activityType)
+//         ) {
+//           return null;
+//         }
 
-  return (
-    <List>
-      {sortedActivities.map((doc) => {
-        const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL;
-
-        if (
-          !doc.activitySubtype.includes(props.workflowFunction) &&
-          !['Transect', 'Dispersal', 'Collection'].includes(doc.activityType)
-        ) {
-          return null;
-        }
-
-        return (
-          <Paper key={doc._id}>
-            <ListItem
-              button
-              className={classes.activitiyListItem}
-              onClick={() => setActiveActivityAndNavigateToActivityPage(doc)}>
-              <ListItemIcon>
-                <SvgIcon
-                  fontSize="large"
-                  className={clsx(
-                    (doc.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL && classes.syncSuccessful) ||
-                      (doc.sync.status === ActivitySyncStatus.SAVE_FAILED && classes.syncFailed)
-                  )}
-                  component={ActivityTypeIcon[props.activityType]}
-                />
-              </ListItemIcon>
-              <ActivityListItem isDisabled={props.isDisabled} activity={doc} />
-              <ListItemSecondaryAction>
-                <IconButton
-                  disabled={isDisabled}
-                  onClick={() => {
-                    setDocToDelete(doc);
-                    setIsWarningDialogOpen(true);
-                  }}>
-                  <DeleteForever />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-            <WarningDialog
-              isOpen={isWarningDialogOpen}
-              handleDisagree={() => setIsWarningDialogOpen(false)}
-              handleAgree={async () => {
-                await removeActivity(docToDelete);
-                setIsWarningDialogOpen(false);
-              }}
-              heading="Delete Activity?"
-              message="Are you sure you would like to delete this activity? Once deleted, this activity cannot be recovered"
-            />
-          </Paper>
-        );
-      })}
-    </List>
-  );
-};
+//         return (
+//           <Paper key={doc._id}>
+//             <ListItem
+//               button
+//               className={classes.activitiyListItem}
+//               onClick={() => setActiveActivityAndNavigateToActivityPage(doc)}>
+//               <ListItemIcon>
+//                 <SvgIcon
+//                   fontSize="large"
+//                   className={clsx(
+//                     (doc.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL && classes.syncSuccessful) ||
+//                       (doc.sync.status === ActivitySyncStatus.SAVE_FAILED && classes.syncFailed)
+//                   )}
+//                   component={ActivityTypeIcon[props.activityType]}
+//                 />
+//               </ListItemIcon>
+//               <ActivityListItem isDisabled={props.isDisabled} activity={doc} />
+//               <ListItemSecondaryAction>
+//                 <IconButton
+//                   disabled={isDisabled}
+//                   onClick={() => {
+//                     setDocToDelete(doc);
+//                     setIsWarningDialogOpen(true);
+//                   }}>
+//                   <DeleteForever />
+//                 </IconButton>
+//               </ListItemSecondaryAction>
+//             </ListItem>
+//             <WarningDialog
+//               isOpen={isWarningDialogOpen}
+//               handleDisagree={() => setIsWarningDialogOpen(false)}
+//               handleAgree={async () => {
+//                 await removeActivity(docToDelete);
+//                 setIsWarningDialogOpen(false);
+//               }}
+//               heading="Delete Activity?"
+//               message="Are you sure you would like to delete this activity? Once deleted, this activity cannot be recovered"
+//             />
+//           </Paper>
+//         );
+//       })}
+//     </List>
+//   );
+// };
 
 const ActivitiesList: React.FC = () => {
   const classes = useStyles();
@@ -341,71 +342,71 @@ const ActivitiesList: React.FC = () => {
   const [isDisabled, setIsDisable] = useState(false);
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
 
-  const syncActivities = async () => {
-    setIsDisable(true);
-    setSyncing(true);
+  // const syncActivities = async () => {
+  //   setIsDisable(true);
+  //   setSyncing(true);
 
-    // fetch all activity documents that are ready to sync
-    const activityResult = await databaseContext.database.find({
-      selector: {
-        docType: DocType.ACTIVITY,
-        formStatus: FormValidationStatus.VALID,
-        'sync.ready': true,
-        'sync.status': { $ne: ActivitySyncStatus.SAVE_SUCCESSFUL }
-      },
-      use_index: 'formStatusIndex'
-    });
+  //   // fetch all activity documents that are ready to sync
+  //   const activityResult = await databaseContext.database.find({
+  //     selector: {
+  //       docType: DocType.ACTIVITY,
+  //       formStatus: FormValidationStatus.VALID,
+  //       'sync.ready': true,
+  //       'sync.status': { $ne: ActivitySyncStatus.SAVE_SUCCESSFUL }
+  //     },
+  //     use_index: 'formStatusIndex'
+  //   });
 
-    let errorMessages = [];
+  //   let errorMessages = [];
 
-    // sync each activity one-by-one
-    for (const activity of activityResult.docs) {
-      try {
-        await invasivesApi.createActivity({
-          activity_id: activity.activityId,
-          created_timestamp: activity.dateCreated,
-          activity_type: activity.activityType,
-          activity_subtype: activity.activitySubtype,
-          geometry: activity.geometry,
-          media:
-            activity.photos &&
-            activity.photos.map((photo) => {
-              return { file_name: photo.filepath, encoded_file: photo.dataUrl, description: photo.description };
-            }),
-          form_data: activity.formData
-        });
+  //   // sync each activity one-by-one
+  //   for (const activity of activityResult.docs) {
+  //     try {
+  //       await invasivesApi.createActivity({
+  //         activity_id: activity.activityId,
+  //         created_timestamp: activity.dateCreated,
+  //         activity_type: activity.activityType,
+  //         activity_subtype: activity.activitySubtype,
+  //         geometry: activity.geometry,
+  //         media:
+  //           activity.photos &&
+  //           activity.photos.map((photo) => {
+  //             return { file_name: photo.filepath, encoded_file: photo.dataUrl, description: photo.description };
+  //           }),
+  //         form_data: activity.formData
+  //       });
 
-        notifySuccess(databaseContext, `Syncing ${activity.activitySubtype.split('_')[2]} activity has succeeded.`);
+  //       notifySuccess(databaseContext, `Syncing ${activity.activitySubtype.split('_')[2]} activity has succeeded.`);
 
-        await databaseContext.database.upsert(activity._id, (activityDoc) => {
-          return {
-            ...activityDoc,
-            sync: { ...activityDoc.sync, status: ActivitySyncStatus.SAVE_SUCCESSFUL, error: null }
-          };
-        });
-      } catch (error) {
-        notifyError(databaseContext, JSON.stringify(error));
-        alert(JSON.stringify(error));
-        const errorMessage = getErrorMessages(error.response.status, 'formSync');
+  //       await databaseContext.database.upsert(activity._id, (activityDoc) => {
+  //         return {
+  //           ...activityDoc,
+  //           sync: { ...activityDoc.sync, status: ActivitySyncStatus.SAVE_SUCCESSFUL, error: null }
+  //         };
+  //       });
+  //     } catch (error) {
+  //       notifyError(databaseContext, JSON.stringify(error));
+  //       alert(JSON.stringify(error));
+  //       const errorMessage = getErrorMessages(error.response.status, 'formSync');
 
-        errorMessages.push(`Syncing ${activity.activitySubtype.split('_')[2]} activity has failed: ${errorMessage}`);
+  //       errorMessages.push(`Syncing ${activity.activitySubtype.split('_')[2]} activity has failed: ${errorMessage}`);
 
-        await databaseContext.database.upsert(activity._id, (activityDoc) => {
-          return {
-            ...activityDoc,
-            sync: { ...activityDoc.sync, status: ActivitySyncStatus.SAVE_FAILED, error: error.message }
-          };
-        });
-      }
-    }
+  //       await databaseContext.database.upsert(activity._id, (activityDoc) => {
+  //         return {
+  //           ...activityDoc,
+  //           sync: { ...activityDoc.sync, status: ActivitySyncStatus.SAVE_FAILED, error: error.message }
+  //         };
+  //       });
+  //     }
+  //   }
 
-    errorMessages.forEach((err: string) => {
-      notifyError(databaseContext, err);
-    });
+  //   errorMessages.forEach((err: string) => {
+  //     notifyError(databaseContext, err);
+  //   });
 
-    setSyncing(false);
-    setIsDisable(false);
-  };
+  //   setSyncing(false);
+  //   setIsDisable(false);
+  // };
 
   const handleWorkflowFunctionChange = (event: any) => {
     setWorkflowFunction(event.target.value);
@@ -429,10 +430,10 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Plant' && (
             <Box>
               <MyObservationsTable />
-              {/*  <MyTreatmentsTable />
+              {/* <MyTreatmentsTable />
               <MyMonitoringTable />
               <MyTransectsTable />
-            <MyAdditionalBiocontrolActivitiesTable /> */}
+              <MyAdditionalBiocontrolActivitiesTable /> */}
             </Box>
           )}
           {workflowFunction === 'Animal' && (

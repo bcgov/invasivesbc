@@ -86,11 +86,13 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() == 'web') {
       return api.getActivityById(activityId);
     } else {
+      alert('ACtVITY ID RECEIVED:');
+      alert(activityId);
       if (forceCache === true || !networkStatus.connected) {
         const dbcontext = context;
         const asyncReturnVal = await dbcontext.asyncQueue({
-          asyncTask: () => {
-            return query(
+          asyncTask: async () => {
+            const res = await query(
               {
                 type: QueryType.DOC_TYPE_AND_ID,
                 docType: DocType.ACTIVITY,
@@ -98,6 +100,8 @@ export const useDataAccess = () => {
               },
               dbcontext
             );
+            alert(JSON.parse(res[0].json));
+            return JSON.parse(res[0].json);
           }
         });
         return asyncReturnVal;
@@ -126,6 +130,7 @@ export const useDataAccess = () => {
       return api.updateActivity(activity);
     } else {
       const dbcontext = context;
+      alert(dbcontext);
       const asyncReturnVal = await dbcontext.asyncQueue({
         asyncTask: () => {
           return upsert(
@@ -294,11 +299,10 @@ export const useDataAccess = () => {
       const appStateResults = await databaseContextPouch.database.find({ selector: { _id: DocType.APPSTATE } });
       return appStateResults;
     } else {
-      alert('getting app state');
       const dbcontext = context;
       const asyncReturnVal = await dbcontext.asyncQueue({
-        asyncTask: () => {
-          return query(
+        asyncTask: async () => {
+          let res = await query(
             {
               type: QueryType.DOC_TYPE_AND_ID,
               docType: DocType.APPSTATE,
@@ -306,9 +310,10 @@ export const useDataAccess = () => {
             },
             dbcontext
           );
+          res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+          return res;
         }
       });
-      alert('got app state');
       return asyncReturnVal;
     }
   };
@@ -330,18 +335,9 @@ export const useDataAccess = () => {
       });
       return res;
     } else {
-      alert('setting appstate');
       const dbcontext = context;
 
       let appStateDoc = await getAppState(dbcontext);
-
-      if (appStateDoc?.length > 0) {
-        appStateDoc = JSON.parse(appStateDoc[0].json);
-      } else {
-        appStateDoc = {};
-      }
-      alert('HERE IS APPSTATE');
-      alert(JSON.stringify(appStateDoc));
 
       const asyncReturnVal = await dbcontext.asyncQueue({
         asyncTask: () => {
@@ -358,7 +354,6 @@ export const useDataAccess = () => {
           );
         }
       });
-      alert('appstate has been set');
       return asyncReturnVal;
     }
   };

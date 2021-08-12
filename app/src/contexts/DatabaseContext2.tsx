@@ -184,7 +184,7 @@ export const DatabaseContext2Provider = (props) => {
     if (['ios', 'android', 'electron'].includes(Capacitor.getPlatform())) {
       return (
         <>
-          {databaseIsSetup ? (
+          {databaseIsSetup && sqlite ? (
             <DatabaseContext2.Provider value={{ sqliteDB: sqlite, asyncQueue: processRequest, ready: true }}>
               {props.children}
             </DatabaseContext2.Provider>
@@ -498,7 +498,14 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
 
     switch (queryConfig.type) {
       case QueryType.DOC_TYPE_AND_ID:
-        ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
+        if ([DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY].includes(queryConfig.docType)) {
+          //if ID is string
+          ret = await db.query('select * from ' + queryConfig.docType + " where id = '" + queryConfig.ID + "';\n");
+        } else {
+          //if ID is number
+          ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
+        }
+
         if (!ret.values) {
           //  db.close();
           return false;
