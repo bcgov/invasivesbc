@@ -311,7 +311,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           </FeatureGroup>
         )}
 
-        {/*} <MapResizer />*/}
+        <MapResizer />
         <AsyncExtent />
 
         {/*<LayersControl position="topright">

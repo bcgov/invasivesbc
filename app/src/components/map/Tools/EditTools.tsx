@@ -27,9 +27,8 @@ const EditTools = (props) => {
     let newState = [];
     newState = props.geometryState.geometry ? [...props.geometryState.geometry] : newState;
     newState = aGeo ? [...newState, aGeo] : newState;
-    props.geometryState.setGeometry([...props.geometryState.geometry, aGeo]);
+    props.geometryState.setGeometry([...newState]);
     (context.layerContainer as any).clearLayers();
-    console.dir(aGeo);
   };
   const onEditStop = (e: any) => {
     //console.log(e);
