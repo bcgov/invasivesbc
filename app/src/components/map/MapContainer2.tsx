@@ -49,6 +49,7 @@ import { MapRequestContextProvider, MapRequestContext } from 'contexts/MapReques
 import MeasureTool from './Tools/MeasureTool';
 import { makeStyles, Theme } from '@material-ui/core';
 import EditTools from './Tools/EditTools';
+import { RenderKeyFeaturesNearFeature } from './LayerLoaderHelpers/DataBCRenderFeaturesNearFeature';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -325,6 +326,15 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         {/*</LayersControl.Overlay>
         </LayersControl>*/}
       </MapRequestContextProvider>
+      {props.geometryState.geometry ? (
+        <RenderKeyFeaturesNearFeature
+          inputGeo={props.geometryState?.geometry[0]}
+          dataBCLayerName="WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW"
+          proximityInMeters={550}
+        />
+      ) : (
+        <></>
+      )}
     </MapContainer>
   );
 };
