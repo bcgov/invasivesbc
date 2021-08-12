@@ -53,6 +53,8 @@ import {
   MyPastActivitiesTable
 } from 'components/common/RecordTables';
 import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { Capacitor } from '@capacitor/core';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -206,19 +208,25 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   const history = useHistory();
 
   const databaseContext = useContext(DatabaseContext);
+  const databaseContext2 = useContext(DatabaseContext2);
   const databaseChangesContext = useContext(DatabaseChangesContext);
-
+  const dataAccess = useDataAccess();
   const [docs, setDocs] = useState<any[]>([]);
   const [docToDelete, setDocToDelete] = useState(null);
   const [isWarningDialogOpen, setIsWarningDialogOpen] = useState(false);
 
   const updateActivityList = useCallback(async () => {
-    const activityResult = await databaseContext.database.find({
-      selector: { docType: DocType.ACTIVITY, activityType: props.activityType },
-      use_index: 'activitiesIndex'
-    });
-    setDocs([...activityResult.docs]);
-  }, [databaseContext.database, props.activityType]);
+    if (Capacitor.getPlatform() === 'web') {
+      const activityResult = await databaseContext.database.find({
+        selector: { docType: DocType.ACTIVITY, activityType: props.activityType },
+        use_index: 'activitiesIndex'
+      });
+      setDocs([...activityResult.docs]);
+    } else {
+      const activityResult = dataAccess.getActivities({}, databaseContext2, true);
+      console.dir(activityResult);
+    }
+  }, [databaseContext.database, databaseContext2, props.activityType]);
 
   useEffect(() => {
     const updateComponent = () => {
@@ -233,9 +241,11 @@ const ActivityList: React.FC<IActivityList> = (props) => {
   };
 
   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
-    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+    /*j await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
       return { ...appStateDoc, activeActivity: doc._id };
-    });
+    });*/
+
+    await dataAccess.setAppState(doc._id, databaseContext2);
 
     if (doc.activityType === 'Observation') {
       history.push({
@@ -419,10 +429,10 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Plant' && (
             <Box>
               <MyObservationsTable />
-              <MyTreatmentsTable />
+              {/*  <MyTreatmentsTable />
               <MyMonitoringTable />
               <MyTransectsTable />
-              <MyAdditionalBiocontrolActivitiesTable />
+            <MyAdditionalBiocontrolActivitiesTable /> */}
             </Box>
           )}
           {workflowFunction === 'Animal' && (

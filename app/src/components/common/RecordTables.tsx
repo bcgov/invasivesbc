@@ -197,8 +197,11 @@ export const defaultActivitiesFetch =
         review_status: review_status
       },
       databaseContext,
-      false
+      true
     );
+    alert(JSON.stringify(result));
+    console.log('RESULT IS HERE');
+    console.log(result);
     // console.log('defaultActivitiesFetch: ', result);
     return {
       rows: result.rows.map(activityStandardMapping),
@@ -271,6 +274,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const invasivesApi = useDataAccess();
   const databaseContextOld = useContext(DatabaseContext);
   const databaseContext = useContext(DatabaseContext2);
+  const dataAccess = useDataAccess();
   const { keycloak } = useKeycloak();
   const userInfo: any = keycloak?.userInfo;
 
@@ -349,9 +353,11 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
               if (selectedIds.length === 1) {
-                await databaseContextOld.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-                  return { ...appStateDoc, activeActivity: selectedIds[0] };
-                });
+                // await databaseContextOld.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+                //   return { ...appStateDoc, activeActivity: selectedIds[0] };
+                // });
+
+                await dataAccess.setAppState(selectedIds[0], databaseContext);
 
                 // TODO switch by activity type, I guess...
                 // await upsert(
@@ -391,7 +397,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             enabled: enableSelection !== false,
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
-              if (selectedIds.length) await invasivesApi.deleteActivities(selectedIds);
+              if (selectedIds.length) await invasivesApi.deleteActivities(selectedIds, databaseContext);
             },
             label: 'Delete',
             icon: <Delete />,
@@ -429,7 +435,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id, databaseContext);
                   await invasivesApi.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
@@ -477,7 +483,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.review_status === ReviewStatus.UNDER_REVIEW
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id, databaseContext);
                   await invasivesApi.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
@@ -525,7 +531,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.review_status !== ReviewStatus.UNDER_REVIEW
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id, databaseContext);
                   await invasivesApi.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
@@ -575,7 +581,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.review_status !== ReviewStatus.UNDER_REVIEW
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id);
+                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id, databaseContext);
                   await invasivesApi.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
@@ -1184,6 +1190,7 @@ export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> =
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
   const { tableSchemaType, actions, ...otherProps } = props;
   const invasivesApi = useDataAccess();
+  const databaseContext = useContext(DatabaseContext2);
   return useMemo(() => {
     return (
       <RecordTable
@@ -1222,11 +1229,14 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
             // if page is right near the db page limit
             dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
-          const result = await invasivesApi.getPointsOfInterest({
-            page: Math.floor((page * rowsPerPage) / dbPageSize),
-            limit: dbPageSize,
-            order: order
-          });
+          const result = await invasivesApi.getPointsOfInterest(
+            {
+              page: Math.floor((page * rowsPerPage) / dbPageSize),
+              limit: dbPageSize,
+              order: order
+            },
+            databaseContext
+          );
           return {
             rows: result.rows.map(poiStandardDBMapping),
             count: result.count

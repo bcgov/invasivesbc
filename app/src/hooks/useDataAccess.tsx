@@ -14,6 +14,7 @@ import { DBRequest } from 'contexts/DatabaseContext2';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { Network } from '@capacitor/network';
 import { setMonth } from 'date-fns';
+import { DatabaseContext } from 'contexts/DatabaseContext';
 
 /**
  * Returns a set of supported api methods.
@@ -24,6 +25,7 @@ import { setMonth } from 'date-fns';
 export const useDataAccess = () => {
   const api = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext2);
+  const databaseContextPouch = useContext(DatabaseContext);
   const networkContext = useContext(NetworkContext);
   const platform = Capacitor.getPlatform();
   /** //---------------COMPLETED
@@ -192,7 +194,7 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() === 'web') {
       return api.getActivities(activitiesSearchCriteria);
     } else {
-      if (forceCache === false || !networkStatus.connected) {
+      if (forceCache === true || !networkStatus.connected) {
         const dbcontext = context;
         const asyncReturnVal = await dbcontext.asyncQueue({
           asyncTask: () => {
@@ -210,9 +212,6 @@ export const useDataAccess = () => {
           count: asyncReturnVal.length
         };
       } else {
-        const res = await api.getActivities(activitiesSearchCriteria);
-        // console.log('DATA HERE');
-        // console.log(JSON.stringify(res));
         return api.getActivities(activitiesSearchCriteria);
       }
     }
@@ -281,6 +280,81 @@ export const useDataAccess = () => {
     }
   };
 
+  /**
+   * Get appState
+   *
+   * @param {any} selector
+   * @return {*}  {Promise<any>}
+   */
+  const getAppState = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    if (Capacitor.getPlatform() === 'web') {
+      const appStateResults = await databaseContextPouch.database.find({ selector: { _id: DocType.APPSTATE } });
+      return appStateResults;
+    } else {
+      alert('getting app state');
+      const dbcontext = context;
+      const asyncReturnVal = await dbcontext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.DOC_TYPE_AND_ID,
+              docType: DocType.APPSTATE,
+              ID: '1'
+            },
+            dbcontext
+          );
+        }
+      });
+      alert('got app state');
+      return asyncReturnVal;
+    }
+  };
+
+  /**
+   * Get appState
+   *
+   * @param {any} activeActivity
+   * @return {*}  {Promise<any>}
+   */
+  const setAppState = async (
+    activeActivity: any,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ): Promise<any> => {
+    if (Capacitor.getPlatform() === 'web') {
+      const res = await databaseContextPouch.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+        const updatedActivity = { ...appStateDoc, activeActivity: activeActivity._id };
+        return updatedActivity;
+      });
+      return res;
+    } else {
+      alert('setting appstate');
+      const dbcontext = context;
+
+      const appStateDoc = getAppState(dbcontext);
+
+      const asyncReturnVal = await dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                docType: DocType.APPSTATE,
+                ID: '1',
+                json: { ...appStateDoc, activeActivity: activeActivity._id }
+              }
+            ],
+            dbcontext
+          );
+        }
+      });
+      alert('appstate has been set');
+      return asyncReturnVal;
+    }
+  };
+
   return {
     getPointsOfInterest,
     getActivityById,
@@ -289,6 +363,8 @@ export const useDataAccess = () => {
     addTrip,
     getActivities,
     createActivity,
-    deleteActivities
+    deleteActivities,
+    getAppState,
+    setAppState
   };
 };

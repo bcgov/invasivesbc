@@ -170,6 +170,7 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
     to the treatment activity page
   */
   const setActiveActivityAndNavigate = async (doc: any) => {
+    alert("we shouldn't be here");
     await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
       return { ...appStateDoc, activeActivity: doc._id };
     });
