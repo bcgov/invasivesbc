@@ -296,6 +296,12 @@ export const useInvasivesApi = () => {
         },
         databaseContext
       );
+
+      if (data?.length > 0) {
+        data = JSON.parse(data[0].json);
+      } else {
+        data = {};
+      }
       return data;
     }
   };

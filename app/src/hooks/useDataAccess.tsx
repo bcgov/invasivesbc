@@ -320,12 +320,12 @@ export const useDataAccess = () => {
    * @return {*}  {Promise<any>}
    */
   const setAppState = async (
-    activeActivity: any,
+    newState: any,
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       const res = await databaseContextPouch.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-        const updatedActivity = { ...appStateDoc, activeActivity: activeActivity._id };
+        const updatedActivity = { ...appStateDoc, ...newState };
         return updatedActivity;
       });
       return res;
@@ -333,7 +333,15 @@ export const useDataAccess = () => {
       alert('setting appstate');
       const dbcontext = context;
 
-      const appStateDoc = getAppState(dbcontext);
+      let appStateDoc = await getAppState(dbcontext);
+
+      if (appStateDoc?.length > 0) {
+        appStateDoc = JSON.parse(appStateDoc[0].json);
+      } else {
+        appStateDoc = {};
+      }
+      alert('HERE IS APPSTATE');
+      alert(JSON.stringify(appStateDoc));
 
       const asyncReturnVal = await dbcontext.asyncQueue({
         asyncTask: () => {
@@ -343,7 +351,7 @@ export const useDataAccess = () => {
                 type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
                 docType: DocType.APPSTATE,
                 ID: '1',
-                json: { ...appStateDoc, activeActivity: activeActivity._id }
+                json: { ...appStateDoc, ...newState }
               }
             ],
             dbcontext

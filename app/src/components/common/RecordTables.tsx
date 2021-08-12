@@ -199,7 +199,7 @@ export const defaultActivitiesFetch =
       databaseContext,
       true
     );
-    alert(JSON.stringify(result));
+    // alert(JSON.stringify(result));
     console.log('RESULT IS HERE');
     console.log(result);
     // console.log('defaultActivitiesFetch: ', result);
@@ -295,8 +295,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
       dbActivity.created_by = userInfo?.preferred_username;
-      const res = await invasivesApi.createActivity(dbActivity, databaseContext);
-      console.dir(res);
+      await invasivesApi.createActivity(dbActivity, databaseContext);
     },
     icon: <Add />,
     label: ActivitySubtypeShortLabels[subtype],
@@ -357,8 +356,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                 // await databaseContextOld.database.upsert(DocType.APPSTATE, (appStateDoc) => {
                 //   return { ...appStateDoc, activeActivity: selectedIds[0] };
                 // });
-
-                await dataAccess.setAppState(selectedIds[0], databaseContext);
+                alert(selectedIds[0]);
+                await dataAccess.setAppState({ activeActivity: selectedIds[0] }, databaseContext);
 
                 // TODO switch by activity type, I guess...
                 // await upsert(
