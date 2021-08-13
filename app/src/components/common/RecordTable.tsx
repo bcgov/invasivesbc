@@ -856,12 +856,12 @@ const RecordTableToolbar = (props) => {
         {numSelected > 0 && actionError}
       </Toolbar>
       {enableFiltering && !numSelected && (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="filter list">
-              <FilterList />
-            </IconButton>
-          </Tooltip>
-        )}
+        <Tooltip title="Filter list">
+          <IconButton aria-label="filter list">
+            <FilterList />
+          </IconButton>
+        </Tooltip>
+      )}
       <Box>{globalActions}</Box>
     </AccordionSummary>
   );

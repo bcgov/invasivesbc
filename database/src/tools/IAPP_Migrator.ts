@@ -157,13 +157,18 @@ const observationTypes = {
 const specificUseMap = (use) => {
   switch (use) {
     // legacy code renaming:
-    case 'GR': return 'GP';
-    case 'WP': return 'PF';
-    case 'RT': return 'RS';
-    case 'YW': return 'YD';
-    default: return use;
+    case 'GR':
+      return 'GP';
+    case 'WP':
+      return 'PF';
+    case 'RT':
+      return 'RS';
+    case 'YW':
+      return 'YD';
+    default:
+      return use;
   }
-}
+};
 
 const mechMethodCodes = {
   Digging: 'DIG',
