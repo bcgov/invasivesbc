@@ -119,7 +119,7 @@ function createPointOfInterest(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = (response && response.rows && response.rows[0]) || null;
+      const result = response?.rows?.[0] || null;
 
       return res.status(200).json(result);
     } catch (error) {
