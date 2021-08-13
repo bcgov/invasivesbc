@@ -1166,10 +1166,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
             id: 'site_id',
             type: 'number'
           },
-          {
-            id: 'created_date_on_device',
-            title: 'Created Date'
-          },
+          'date_created',
           'jurisdiction_code',
           'site_elevation',
           'slope_code',
