@@ -49,9 +49,11 @@ export class PointOfInterestPostRequestBody {
     this.pointOfInterest_subtype = obj?.pointOfInterest_subtype || obj?.point_of_interest_subtype || null;
 
     this.pointOfInterest_data = obj?.form_data?.pointOfInterest_data || obj?.form_data?.point_of_interest_data || null;
-    this.pointOfInterest_type_data = obj?.form_data?.pointOfInterest_type_data || obj?.form_data?.point_of_interest_type_data || null;
-    this.pointOfInterest_subtype_data = obj?.form_data?.pointOfInterest_subtype_data || obj?.form_data?.point_of_interest_subtype_data || null;
-    
+    this.pointOfInterest_type_data =
+      obj?.form_data?.pointOfInterest_type_data || obj?.form_data?.point_of_interest_type_data || null;
+    this.pointOfInterest_subtype_data =
+      obj?.form_data?.pointOfInterest_subtype_data || obj?.form_data?.point_of_interest_subtype_data || null;
+
     this.received_timestamp = new Date().toISOString();
 
     this.geoJSONFeature = obj?.geometry || [];
