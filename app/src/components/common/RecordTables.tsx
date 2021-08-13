@@ -44,7 +44,7 @@ export const activityStandardMapping = (doc) => {
       ],
       []
     ),
-    date_created: flattened.created_timestamp?.substring(0, 10) + ' ' + flattened.date_created?.substring(11, 16),
+    date_created: flattened.created_timestamp?.substring(0, 10) + ' ' + flattened.date_created?.substring(11, 19),
     latitude: flattened.latitude && parseFloat(flattened.latitude).toFixed(6),
     longitude: flattened.longitude && parseFloat(flattened.longitude).toFixed(6),
     review_status_rendered:
