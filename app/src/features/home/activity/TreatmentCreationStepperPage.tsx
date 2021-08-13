@@ -3,7 +3,7 @@ import { Container, Box, MenuItem, Button, FormControl, InputLabel, Select, make
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useQuery } from 'hooks/useQuery';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
-import { generateActivityPayload, addClonedActivityToDB, addLinkedActivityToDB } from 'utils/addActivity';
+import { generateActivityPayload, cloneDBRecord, createLinkedActivity, sanitizeRecord, mapDBActivityToDoc } from 'utils/addActivity';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import StepperComponent from 'components/activity/StepperComponent';
@@ -12,6 +12,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import moment from 'moment';
 import { DocType } from 'constants/database';
 import { useHistory } from 'react-router-dom';
+import { useDataAccess } from 'hooks/useDataAccess';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -60,6 +61,7 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
   const history = useHistory();
   const invasivesApi = useInvasivesApi();
   const databaseContext = useContext(DatabaseContext);
+  const dataAccess = useDataAccess();
 
   /*
     This is temporarily defaulted to a plant treatment type because animal forms are not yet complete
@@ -97,11 +99,12 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
     const getGeometriesOfSelectedObservations = async () => {
       await Promise.all(
         selectedObservationIds.map(async (oId: any) => {
-          const activity = await getActivityByIdFromApi(invasivesApi, oId);
 
-          if (selectedObservationIds.length === 1) {
+          let activity = await getActivityByIdFromApi(invasivesApi, oId);
+          activity = mapDBActivityToDoc(activity);
+
+          if (selectedObservationIds.length === 1)
             setObservation(activity);
-          }
 
           setObservationSubtype(activity.activitySubtype);
           setObservationGeos((obsGeos: any) => obsGeos.concat(activity.geometry[activity.geometry.length - 1]));
@@ -121,28 +124,16 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
   */
   useEffect(() => {
     const createNewObservation = async () => {
-      const formData = {
+      const activity = cloneDBRecord({
+        activity_type: ActivityType.Observation,
+        activity_subtype: observationSubtype,
         activity_data: {
           activity_date_time: moment(new Date()).format()
-        }
-      };
-
-      const activityPayload = generateActivityPayload(
-        formData,
-        observationGeos,
-        ActivityType.Observation,
-        observationSubtype
-      );
-
-      /*
-        Using the clone activity functionality to create a brand new activity
-        with geometry information prepopulated. Generate the payload above
-        and then just create a new activity
-        (even though it is not actually cloning an existing activity record)
-      */
-      const activity = await addClonedActivityToDB(databaseContext, activityPayload);
-
-      setObservation(activity);
+        },
+        geometry: observationGeos
+      });
+      await dataAccess.createActivity(activity);
+      setObservation(mapDBActivityToDoc(activity));
     };
 
     if (activeStep === 3 && !observation) {
@@ -183,10 +174,8 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
     Typically used when user navigates away from the create observation step of the workflow
     (in order to not create unused activity records)
   */
-  const removeActivity = async (activity: PouchDB.Core.RemoveDocument) => {
-    const dbDoc = await databaseContext.database.get(activity._id);
-    await databaseContext.database.remove(dbDoc);
-
+  const removeActivity = async (activity) => {
+    await dataAccess.deleteActivities([activity.activity_id]);
     setObservation(null);
   };
 
@@ -350,13 +339,13 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
               variant="contained"
               color="primary"
               onClick={async () => {
-                const addedActivity = await addLinkedActivityToDB(
-                  databaseContext,
+                const linkedActivity = await createLinkedActivity(
                   ActivityType.Treatment,
                   treatmentSubtypeToCreate,
                   observation
                 );
-                setActiveActivityAndNavigate(addedActivity);
+                await dataAccess.createActivity(sanitizeRecord(linkedActivity));
+                setActiveActivityAndNavigate(linkedActivity);
               }}>
               Create Treatment
             </Button>
