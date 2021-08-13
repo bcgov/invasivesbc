@@ -575,7 +575,7 @@ const MonitoringActivity = {
   ...Activity,
   'access_description': {
     ...Activity.access_description,
-    'ui:readonly': true
+    // 'ui:readonly': true
   },
   'jurisdiction_code': {
     'ui:disabled': true
@@ -601,11 +601,18 @@ const MonitoringActivity = {
     'jurisdiction_code']
 };
 
+const Monitoring = {
+  activity_id: { // treatment id
+    'ui:widget': 'single-select-autocomplete'
+  }
+}
+
 const UISchemaComponents = {
   Treatment_ChemicalPlant,
   Treatment_ChemicalPlantAquatic,
   Activity,
   MonitoringActivity,
+  Monitoring,
   Activity_BulkEdit,
   Treatment_ChemicalPlant_BulkEdit
 };

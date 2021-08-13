@@ -2,13 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Container, Box, MenuItem, Button, FormControl, InputLabel, Select, makeStyles } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useQuery } from 'hooks/useQuery';
-import { addLinkedActivityToDB } from 'utils/addActivity';
+import { createLinkedActivity, mapDBActivityToDoc, sanitizeRecord } from 'utils/addActivity';
 import { ActivityType, ActivitySubtype } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import StepperComponent from 'components/activity/StepperComponent';
 import { DocType } from 'constants/database';
 import { useHistory } from 'react-router-dom';
+import { useDataAccess } from 'hooks/useDataAccess';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -47,6 +48,7 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   const queryParams = useQuery();
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
+  const dataAccess = useDataAccess();
 
   /*
     This is temporarily defaulted to a plant treatment type because animal forms are not yet complete
@@ -69,7 +71,9 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   */
   useEffect(() => {
     const getObservation = async () => {
-      const activity = await databaseContext.database.get(selectedObservationId);
+      let activity = await dataAccess.getActivityById(selectedObservationId);
+      activity = mapDBActivityToDoc(activity);
+      // const activity = await databaseContext.database.get(selectedObservationId);
 
       setObservationSubtype(activity.activitySubtype);
       setObservation(activity);
@@ -183,13 +187,13 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
                 variant="contained"
                 color="primary"
                 onClick={async () => {
-                  const addedActivity = await addLinkedActivityToDB(
-                    databaseContext,
+                  const linkedActivity = await createLinkedActivity(
                     ActivityType.Treatment,
                     treatmentSubtypeToCreate,
                     observation
                   );
-                  setActiveActivityAndNavigate(addedActivity);
+                  await dataAccess.createActivity(sanitizeRecord(linkedActivity));
+                  setActiveActivityAndNavigate(linkedActivity);
                 }}>
                 Create Associated Treatment
               </Button>

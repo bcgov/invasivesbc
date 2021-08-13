@@ -14,8 +14,11 @@ import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   addLinkedActivityToDB,
+  sanitizeRecord,
+  createLinkedActivity,
+  addNewActivityToDB,
   generateDBActivityPayload,
-  getShortActivityID, sanitizeRecord
+  getShortActivityID
 } from 'utils/addActivity';
 
 export const activityStandardMapping = (doc) => {
@@ -41,7 +44,7 @@ export const activityStandardMapping = (doc) => {
       ],
       []
     ),
-    created_timestamp: flattened.created_timestamp?.substring(0, 10),
+    date_created: flattened.created_timestamp?.substring(0, 10) + ' ' + flattened.date_created?.substring(11, 16),
     latitude: flattened.latitude && parseFloat(flattened.latitude).toFixed(6),
     longitude: flattened.longitude && parseFloat(flattened.longitude).toFixed(6),
     review_status_rendered:
@@ -132,9 +135,7 @@ export const defaultActivitiesFetch =
     if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
       // if page is right near the db page limit
       dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
-
     const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
-
     const result = await dataAccess.getActivities(
       {
         page: Math.floor((page * rowsPerPage) / dbPageSize),
@@ -151,10 +152,10 @@ export const defaultActivitiesFetch =
       true
     );
     return {
-      rows: result.rows.map(activityStandardMapping),
-      count: result.count
+      rows: result?.rows?.map(activityStandardMapping) || [],
+      count: result?.count || 0
     };
-  };
+};
 
 export interface IActivitiesTable extends IRecordTable {
   workflow?: string;
@@ -176,10 +177,8 @@ const activitesDefaultHeaders = [
       Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
     }
   },
-  {
-    id: 'created_timestamp',
-    title: 'Created Date'
-  },
+  'date_created',
+  /* 
   'biogeoclimatic_zones',
   {
     id: 'elevation',
@@ -191,6 +190,7 @@ const activitesDefaultHeaders = [
   },
   'ownership',
   'regional_districts',
+  */
   'invasive_species_agency_code',
   'jurisdiction_code',
   {
@@ -328,9 +328,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             enabled: enableSelection !== false,
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
-              if (selectedIds.length) {
+              if (selectedIds.length)
                 await dataAccess.deleteActivities(selectedIds, databaseContext);
-              }
             },
             label: 'Delete',
             icon: <Delete />,
@@ -366,9 +365,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   if (
                     activity.form_status !== FormValidationStatus.VALID ||
                     activity.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
-                  ) {
+                  )
                     return;
-                  }
                   const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
                   await dataAccess.updateActivity(
                     sanitizeRecord({
@@ -549,7 +547,7 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <ActivitiesTable
-        startingOrderBy="created_timestamp"
+        startingOrderBy="date_created"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -629,7 +627,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
           ...actions,
           create_treatment: {
             key: 'create_treatment',
-            enabled: true,
+            enabled: false,
             action: (selectedRows) => {
               const ids = selectedRows.map((row: any) => row['activity_id']);
               history.push({
@@ -669,7 +667,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <ObservationsTable
-        startingOrderBy="created_timestamp"
+        startingOrderBy="date_created"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -694,6 +692,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
 export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext2);
+  const dataAccess = useDataAccess();
   const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -724,10 +723,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
               Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
             }
           },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
+          'date_created',
           'invasive_plant_code',
           'invasive_species_agency_code',
           'chemical_method_code',
@@ -766,13 +762,13 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
             enableSelection={false}
             headers={[
               'jurisdiction_code',
-              'biogeoclimatic_zones',
+              /* 'biogeoclimatic_zones',
               {
                 id: 'flnro_districts',
                 title: 'FLNRO Districts'
               },
               'ownership',
-              'regional_districts',
+              'regional_districts', */
               'access_description',
               'general_comment'
             ]}
@@ -802,8 +798,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
                 return;
               const activity = selectedRows[0];
 
-              await addLinkedActivityToDB(
-                databaseContext,
+              const linkedActivity = await createLinkedActivity(
                 ActivityType.Monitoring,
                 calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
                 activity
@@ -820,6 +815,11 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
               //   ],
               //   databaseContext
               // );
+              await dataAccess.createActivity(sanitizeRecord(linkedActivity), databaseContext);
+
+              await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
+                return { ...appStateDoc, activeActivity: linkedActivity._id };
+              });
 
               history.push(`/home/activity`);
             },
@@ -839,7 +839,7 @@ export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <TreatmentsTable
-        startingOrderBy="created_timestamp"
+        startingOrderBy="date_created"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -892,10 +892,7 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
               Activity_Observation_PlantTerrestial: 'Terrestrial Plant' // TODO remove when our data isn't awful
             }
           },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
+          'date_created',
           'invasive_plant_code',
           'invasive_species_agency_code',
           {
@@ -931,7 +928,7 @@ export const MyMonitoringTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <MonitoringTable
-        startingOrderBy="created_timestamp"
+        startingOrderBy="date_created"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -995,7 +992,7 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <TransectsTable
-        startingOrderBy="created_timestamp"
+        startingOrderBy="date_created"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -1038,10 +1035,7 @@ export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (
               Activity_Collection_Biocontrol: 'Biocontrol Collection' // TODO remove when our data isn't awful
             }
           },
-          {
-            id: 'created_timestamp',
-            title: 'Created Date'
-          },
+          'date_created',
           {
             id: 'reported_area',
             title: 'Area (m\u00B2)'
@@ -1069,13 +1063,13 @@ export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (
             enableSelection={false}
             headers={[
               'jurisdiction_code',
-              'biogeoclimatic_zones',
+              /* 'biogeoclimatic_zones',
               {
                 id: 'flnro_districts',
                 title: 'FLNRO Districts'
               },
               'ownership',
-              'regional_districts',
+              'regional_districts', */
               'access_description',
               'general_comment'
             ]}
@@ -1101,7 +1095,7 @@ export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> =
   return useMemo(() => {
     return (
       <AdditionalBiocontrolActivitiesTable
-        startingOrderBy="created_timestamp"
+        startingOrderBy="date_created"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -1590,7 +1584,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     return (
       <ActivitiesTable
         tableName="Under Review"
-        startingOrderBy="created_timestamp"
+        startingOrderBy="date_created"
         startingOrder="asc"
         headers={[
           ...headers,

@@ -207,6 +207,7 @@ export const sanitizeRecord = (input: any) => {
         }
       },
       */
+      _id: activity_id,
       activity_payload: {
         ...activity_payload,
         geom: geom || flattened.geometry || activity_payload?.geometry,
@@ -215,7 +216,7 @@ export const sanitizeRecord = (input: any) => {
           ...activity_payload?.form_data,
           activity_data: {
             ...activity_payload?.form_data?.activity_data,
-            activity_date_time: now
+            activity_date_time: flattened.date_created || now
           }
         }
       },
@@ -223,7 +224,7 @@ export const sanitizeRecord = (input: any) => {
       // legacy: dont actually care about these:
       status: flattened.status || ActivityStatus.NEW,
       date_created: flattened.date_created || now,
-      date_updated: flattened.date_updated || null,
+      date_updated: flattened.date_updated || flattened.date_created || null,
       media: flattened.photos?.map((photo) => ({
         file_name: photo.filepath,
         encoded_file: photo.dataUrl
@@ -243,6 +244,7 @@ export const sanitizeRecord = (input: any) => {
 */
 export const mapDocToDBActivity = (doc: any) => ({
   ...mapKeys(doc, snakeCase),
+  _id: doc._id || doc.activity_id,
   sync_status: doc.sync?.status,
   media: doc.photos?.map((photo) => ({
     file_name: photo.filepath,
@@ -326,12 +328,14 @@ export function generateDBActivityPayload(
 ) {
   const id = uuidv4();
   const time = moment(new Date()).format();
+  console.log(time, new Date());
   const short_id: string = getShortActivityID({
     activity_subtype: activitySubtype,
     activity_id: id,
     date_created: time
   });
   return {
+    _id: id,
     short_id: short_id,
     activity_id: id,
     activity_type: activityType,
@@ -357,6 +361,21 @@ export function generateDBActivityPayload(
   };
 }
 
+export function cloneDBRecord(dbRecord) {
+  const id = uuidv4();
+  const time = moment(new Date()).format();
+  const clonedRecord = {
+    ...dbRecord,
+    _id: id,
+    date_created: time,
+    date_updated: null,
+    status: ActivityStatus.NEW,
+    activity_id: id
+  };
+  clonedRecord.short_id = getShortActivityID(clonedRecord);
+  return clonedRecord;
+}
+
 /*
   Function to create a brand new activity and save it to the DB
 */
@@ -376,10 +395,7 @@ export async function addNewActivityToDB(
   return doc;
 }
 
-/*
-  Function to create a cloned activity and save it to DB
-*/
-export async function addClonedActivityToDB(databaseContext: any, clonedRecord: any) {
+export async function cloneActivity(clonedRecord: any) {
   const id = uuidv4();
 
   // Used to avoid pouch DB conflict
@@ -394,18 +410,18 @@ export async function addClonedActivityToDB(databaseContext: any, clonedRecord: 
     activityId: id
   };
 
-  await databaseContext.database.put(doc);
+  return doc;
 
-  return await databaseContext.database.get(doc._id);
+  // await databaseContext.database.put(doc);
+  //return await databaseContext.database.get(doc._id);
 }
 
 /*
-  Function to create a linked activity and save it to DB
+  Function to format a linked activity object
   The activity_id field which is present in the form data is populated to reference the linked activity record's id
   Also, the activity_data is populated based on business logic rules which specify which fields to copy
 */
-export async function addLinkedActivityToDB(
-  databaseContext: any,
+export async function createLinkedActivity(
   activityType: ActivityType,
   activitySubtype: ActivitySubtype,
   linkedRecord: any
@@ -442,7 +458,7 @@ export async function addLinkedActivityToDB(
 
   const doc: IActivity = generateActivityPayload(formData, geometry, activityType, activitySubtype);
 
-  await databaseContext.database.put(doc);
+  // await databaseContext.database.put(doc);
 
   return doc;
 }
