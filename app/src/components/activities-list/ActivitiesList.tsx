@@ -19,7 +19,7 @@ import {
   FormControl,
   InputLabel
 } from '@material-ui/core';
-import { Add, DeleteForever, Sync } from '@material-ui/icons';
+import {Add, DeleteForever, Sync} from '@material-ui/icons';
 import clsx from 'clsx';
 import {
   ActivitySubtype,
@@ -29,18 +29,18 @@ import {
   FormValidationStatus,
   ActivitySubtypeShortLabels
 } from 'constants/activities';
-import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { useKeycloak } from '@react-keycloak/web';
-import { useHistory } from 'react-router-dom';
+import {DocType} from 'constants/database';
+import {DatabaseChangesContext} from 'contexts/DatabaseChangesContext';
+import {DatabaseContext} from 'contexts/DatabaseContext';
+import {useInvasivesApi} from 'hooks/useInvasivesApi';
+import React, {useContext, useEffect, useState, useCallback} from 'react';
+import {useKeycloak} from '@react-keycloak/web';
+import {useHistory} from 'react-router-dom';
 import 'styles/spinners.scss';
-import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
+import {notifyError, notifySuccess, notifyWarning} from 'utils/NotificationUtils';
 import ActivityListDate from './ActivityListDate';
-import { getErrorMessages } from 'utils/errorHandling';
-import { addNewActivityToDB } from 'utils/addActivity';
+import {getErrorMessages} from 'utils/errorHandling';
+import {addNewActivityToDB} from 'utils/addActivity';
 import WarningDialog from 'components/common/WarningDialog';
 import {
   MyObservationsTable,
@@ -55,6 +55,7 @@ import {
 import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { Capacitor } from '@capacitor/core';
+import BatchUpload from 'components/batch-upload/BatchUpload';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -141,7 +142,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
     const isChecked = event.target.checked;
 
     databaseContext.database.upsert(props.activity._id, (activity) => {
-      return { ...activity, sync: { ...activity.sync, ready: isChecked } };
+      return {...activity, sync: {...activity.sync, ready: isChecked}};
     });
   };
 
@@ -423,6 +424,7 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Animal">Animal</MenuItem>
               <MenuItem value="Review">Review</MenuItem>
               <MenuItem value="Past Activities">Past Activities</MenuItem>
+              <MenuItem value="Batch Upload">Batch Upload</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -449,6 +451,11 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Past Activities' && (
             <Box>
               <MyPastActivitiesTable />
+            </Box>
+          )}
+          {workflowFunction === 'Batch Upload' && (
+            <Box>
+              <BatchUpload />
             </Box>
           )}
         </Box>

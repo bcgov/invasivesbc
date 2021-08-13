@@ -13,6 +13,7 @@ import qs from 'qs';
 import { Http } from '@capacitor-community/http';
 import { useContext, useMemo } from 'react';
 import { DocType } from 'constants/database';
+import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { contextMenuType } from 'features/home/map/MapContextMenu';
 
@@ -334,6 +335,41 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  /**
+   * Create a new batch upload
+   *
+   // * @param {IBatchUploadRequest} uploadRequest
+   * @return {*}  {Promise<any>}
+   */
+  const postBatchUpload = async (uploadRequest: IBatchUploadRequest): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: uploadRequest,
+      url: `${options.baseUrl}/api/batch/upload`
+    });
+    return data;
+  };
+
+  const getBatchUploads = async (): Promise<any> => {
+    console.dir(options.headers);
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers },
+      url: `${options.baseUrl}/api/batch/upload`
+    });
+    return data;
+  };
+
+  const downloadTemplate = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers },
+      url: options.baseUrl + '/api/batch/template'
+    });
+    return data;
+  };
+
   return {
     getMedia,
     getSpeciesDetails,
@@ -348,6 +384,9 @@ export const useInvasivesApi = () => {
     getPointsOfInterest,
     getMetabaseQueryResults,
     getMetabaseQueryOptions,
-    createMetabaseQuery
+    createMetabaseQuery,
+    getBatchUploads,
+    postBatchUpload,
+    downloadTemplate
   };
 };
