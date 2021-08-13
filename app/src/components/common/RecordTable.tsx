@@ -32,6 +32,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import Spinner from 'components/spinner/Spinner';
 import clsx from 'clsx';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 const ACTION_TIMEOUT = 1500; // 1.5s
 const ACTION_ERROR_TIMEOUT = 15000; // 15s
@@ -393,10 +394,11 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [selected, setSelected] = useState(props.selected || []);
   const dataAccess = useDataAccess();
   const selectedHash = JSON.stringify(selected);
+  const networkContext = useContext(NetworkContext);
 
   const getApiSpec = useCallback(
     async (tableSchemaInput) => {
-      const apiSpecResponse = await invasivesApi.getCachedApiSpec();
+      const apiSpecResponse = await invasivesApi.getCachedApiSpec(networkContext.connected);
       const schemaTypeList = typeof tableSchemaInput === 'string' ? [tableSchemaInput] : tableSchemaInput || [];
 
       await setSchemas({

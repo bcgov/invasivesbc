@@ -275,7 +275,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         { status: TripStatusCode.initial, expanded: false }
       ]
     };
-    const results = dataAccess.addTrip(newTripObj, databaseContext);
+    await dataAccess.addTrip(newTripObj, databaseContext);
 
     setNewTripID(newID);
   };

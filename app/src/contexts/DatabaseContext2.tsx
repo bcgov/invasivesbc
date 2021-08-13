@@ -428,14 +428,30 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
           .split(`'`)
           .join(`''`) +
         `'`;
-      batchUpdate +=
-        'insert into ' +
-        upsertConfig.docType +
-        ' (id, json) values (' +
-        upsertConfig.ID +
-        ',' +
-        patched +
-        ') on conflict (id) do update set json=excluded.json;';
+
+      if (
+        [DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY, DocType.REFERENCE_POINT_OF_INTEREST].includes(
+          upsertConfig.docType
+        )
+      ) {
+        batchUpdate +=
+          'insert into ' +
+          upsertConfig.docType +
+          ` (id, json) values ('` +
+          upsertConfig.ID +
+          `',` +
+          patched +
+          ') on conflict (id) do update set json=excluded.json;';
+      } else {
+        batchUpdate +=
+          'insert into ' +
+          upsertConfig.docType +
+          ' (id, json) values (' +
+          upsertConfig.ID +
+          ',' +
+          patched +
+          ') on conflict (id) do update set json=excluded.json;';
+      }
     }
 
     //finally update them all:
@@ -498,7 +514,11 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
 
     switch (queryConfig.type) {
       case QueryType.DOC_TYPE_AND_ID:
-        if ([DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY].includes(queryConfig.docType)) {
+        if (
+          [DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY, DocType.REFERENCE_POINT_OF_INTEREST].includes(
+            queryConfig.docType
+          )
+        ) {
           //if ID is string
           ret = await db.query('select * from ' + queryConfig.docType + " where id = '" + queryConfig.ID + "';\n");
         } else {

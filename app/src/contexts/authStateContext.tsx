@@ -4,6 +4,8 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { DatabaseContext2, upsert, UpsertType } from './DatabaseContext2';
 import { DocType } from 'constants/database';
 import { Capacitor } from '@capacitor/core';
+import { NetworkContext } from './NetworkContext';
+import { useContext } from 'react';
 
 export interface IAuthState {
   ready?: boolean;
@@ -41,10 +43,11 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
     loadUserInfo();
   }, [keycloak.obj]);
+  const networkContext = useContext(NetworkContext);
 
   React.useEffect(() => {
     const getApiSpec = async () => {
-      await invasivesApi.getCachedApiSpec();
+      await invasivesApi.getCachedApiSpec(networkContext.connected);
     };
 
     getApiSpec();

@@ -84,10 +84,8 @@ export const useDataAccess = () => {
   ): Promise<any> => {
     const networkStatus = await Network.getStatus();
     if (Capacitor.getPlatform() == 'web') {
-      return api.getActivityById(activityId);
+      return await api.getActivityById(activityId);
     } else {
-      alert('ACtVITY ID RECEIVED:');
-      alert(activityId);
       if (forceCache === true || !networkStatus.connected) {
         const dbcontext = context;
         const asyncReturnVal = await dbcontext.asyncQueue({
@@ -100,13 +98,12 @@ export const useDataAccess = () => {
               },
               dbcontext
             );
-            alert(JSON.parse(res[0].json));
             return JSON.parse(res[0].json);
           }
         });
         return asyncReturnVal;
       } else {
-        return api.getActivityById(activityId);
+        return await api.getActivityById(activityId);
       }
     }
   };
@@ -130,7 +127,6 @@ export const useDataAccess = () => {
       return api.updateActivity(activity);
     } else {
       const dbcontext = context;
-      alert(dbcontext);
       const asyncReturnVal = await dbcontext.asyncQueue({
         asyncTask: () => {
           return upsert(

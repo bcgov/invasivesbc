@@ -321,7 +321,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   let rows = props.rows;
   if (Array.isArray(rows)) rows = rows.map(activityStandardMapping);
   if (typeof rows === 'undefined') {
-    alert('there were no rows');
     rows = defaultActivitiesFetch(
       {
         invasivesApi,
@@ -357,7 +356,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                 // await databaseContextOld.database.upsert(DocType.APPSTATE, (appStateDoc) => {
                 //   return { ...appStateDoc, activeActivity: selectedIds[0] };
                 // });
-                alert('ID IS: ' + selectedIds[0]);
                 await dataAccess.setAppState({ activeActivity: selectedIds[0] }, databaseContext);
 
                 // TODO switch by activity type, I guess...

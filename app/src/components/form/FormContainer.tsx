@@ -15,6 +15,7 @@ import {
 import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { ActivitySyncStatus } from 'constants/activities';
+import { NetworkContext } from 'contexts/NetworkContext';
 import { SelectAutoCompleteContextProvider } from 'contexts/SelectAutoCompleteContext';
 import { ThemeContext } from 'contexts/themeContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -215,9 +216,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     }
   };
 
+  const networkContext = useContext(NetworkContext);
+
   useEffect(() => {
     const getApiSpec = async () => {
-      const response = await invasivesApi.getCachedApiSpec();
+      const response = await invasivesApi.getCachedApiSpec(networkContext.connected);
       setSchemas({
         schema: { ...response.components.schemas[props.activity.activitySubtype], components: response.components },
         uiSchema: RootUISchemas[props.activity.activitySubtype]

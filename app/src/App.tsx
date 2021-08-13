@@ -66,7 +66,7 @@ const App: React.FC<IAppProps> = (props) => {
                           </DatabaseChangesContextProvider>
                         );
                       }
-                      if (databaseContext.database || databaseContext.sqliteDB) {
+                      if (databaseContext.database) {
                         // database not ready, delay loading app
                         return (
                           <DatabaseChangesContextProvider>

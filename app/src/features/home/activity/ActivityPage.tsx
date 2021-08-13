@@ -128,12 +128,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     try {
       const dbUpdates = debounced(1000, async (updated) => {
         // TODO use an api endpoint to do this merge logic instead
-        const oldActivity = await dataAccess.getActivityById(updated._id, databaseContext);
+        const oldActivity = await dataAccess.getActivityById(updated._id, databaseContext, true);
         const newActivity = {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
-        const res = await dataAccess.updateActivity(newActivity);
+        const res = await dataAccess.updateActivity(newActivity, databaseContext);
       });
       await dbUpdates(updatedDoc);
       // console.log("updated doc ", updatedDoc);
@@ -211,7 +211,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         return activityDoc;
       });
     },
-    [databaseContextPouch.database]
+    // [databaseContextPouch.database]
+    []
   );
 
   /**
@@ -361,8 +362,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     const appStateResults = await dataAccess.getAppState(databaseContext);
 
-    alert('getActivityResultsFromDB -> appStateResults here::::');
-    alert(JSON.stringify(appStateResults));
     let activityResults;
     if (Capacitor.getPlatform() === 'web') {
       if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
@@ -380,8 +379,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         true
       );
     }
-    alert('getActivityResultsFromDB -> getActivityById RESULT here::::');
-    alert(activityResults);
     return mapDBActivityToDoc(activityResults);
   };
 
@@ -467,8 +464,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   useEffect(() => {
     const getActivityData = async () => {
-      alert('ID FROM PROPS');
-      alert(props.activityId);
       const activityResult = await getActivityResultsFromDB(props.activityId || null);
 
       if (!activityResult) {
