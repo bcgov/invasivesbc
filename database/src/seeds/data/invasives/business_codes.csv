@@ -479,6 +479,7 @@ invasive_plant_code,HS,Yellow hawkweed species (HIER PILO SPP Hieracium / Pilose
 invasive_plant_code,YN,Yellow nutsedge (CYPE ESC Cyperus esculentus),196
 invasive_plant_code,YS,Yellow starthistle (CENT SOL Centaurea solstitialis),197
 invasive_plant_code,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),198
+invasive_plant_code,FU,Death cap fungus [Amanita phalloides],199
 invasive_animal_code,ABD,American black duck [Anas rubripes],1
 invasive_animal_code,ABF,American bullfrog [Lithobates catesbeiana],2
 invasive_animal_code,ASD,American shad [Alosa sapidissima],3
