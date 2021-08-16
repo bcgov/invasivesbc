@@ -32,6 +32,7 @@ import {
   getHerbicideMixValidation,
   getVegTransectPointsPercentCoverValidator,
   getDurationCountAndPlantCountValidation,
+  getPersonNameNoNumbersValidator,
   getJurisdictionPercentValidator,
   getSlopeAspectBothFlatValidator,
   getInvasivePlantsValidator,
@@ -270,9 +271,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     formData.activity_subtype_data.collections.forEach((collection) => {
       if (collection.start_time && collection.stop_time) {
-        const start = Number(collection.start_time);
-        const stop = Number(collection.stop_time);
-        const total = stop - start;
+        const arrStart = collection.start_time.split(':');
+        const arrStop = collection.stop_time.split(':');
+        const minutesStart = +arrStart[0] * 60 + +arrStart[1];
+        const minutesStop = +arrStop[0] * 60 + +arrStop[1];
+
+        const total = minutesStop - minutesStart;
         collection.total_time = total;
       }
     });
@@ -457,6 +461,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
       await handleRecordLinking(updatedDoc);
 
+
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
@@ -472,7 +477,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-
     saveGeometry(geometry);
   }, [geometry, isLoading, saveGeometry]);
 
@@ -549,6 +553,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             getHerbicideMixValidation(),
             getVegTransectPointsPercentCoverValidator(),
             getDurationCountAndPlantCountValidation(),
+            getPersonNameNoNumbersValidator(),
             getJurisdictionPercentValidator(),
             getInvasivePlantsValidator(linkedActivity)
           ])}
