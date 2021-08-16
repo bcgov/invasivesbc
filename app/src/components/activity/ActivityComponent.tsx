@@ -27,13 +27,13 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
-  const { getPosition } = useCurrentPosition();
+  // const { getPosition } = useCurrentPosition();
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
 
   useEffect(() => {
     try {
-      getPosition();
+      // getPosition();
     } catch (e) {
       console.log('unable to get position');
     }

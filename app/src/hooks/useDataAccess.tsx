@@ -270,7 +270,9 @@ export const useDataAccess = () => {
             [
               {
                 type: UpsertType.RAW_SQL,
-                sql: `DELETE * FROM Activity WHERE id IN ${JSON.stringify(activityIds)}`
+                sql: `DELETE FROM Activity WHERE id IN ${
+                  '(' + JSON.stringify(activityIds).replace(/[\[\]']+/g, '') + ')'
+                }`
               }
             ],
             dbcontext
