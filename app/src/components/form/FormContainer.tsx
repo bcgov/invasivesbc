@@ -2,7 +2,7 @@ import {
   Box,
   Button,
   CircularProgress,
-  createMuiTheme,
+  createTheme,
   Dialog,
   DialogActions,
   DialogContent,
@@ -70,11 +70,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
-  const rjsfThemeDark = createMuiTheme({
+  const rjsfThemeDark = createTheme({
     ...rjsfTheme,
     palette: { ...rjsfTheme.palette, type: 'dark' }
   } as ThemeOptions);
-  const rjsfThemeLight = createMuiTheme(rjsfTheme as ThemeOptions);
+  const rjsfThemeLight = createTheme(rjsfTheme as ThemeOptions);
 
   //open dialog window (visual)
   const openDialog = () => {

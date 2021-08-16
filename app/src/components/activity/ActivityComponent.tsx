@@ -178,7 +178,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Map</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Grid xs={12} alignItems="flex-start" container>
+          <Grid alignItems="flex-start" container>
             <Grid xs={2} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record a Polygon!

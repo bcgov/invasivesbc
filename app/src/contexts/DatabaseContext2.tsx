@@ -98,7 +98,7 @@ export const DatabaseContext2Provider = (props) => {
     };
     isJsonListeners = { jsonListeners: jsonListeners, setJsonListeners: setJsonListeners };
     // open connnection, make tables, set db in context
-    createSqliteTables(sqlite);
+    if (Capacitor.getPlatform() !== 'web') createSqliteTables(sqlite);
     // a bunch of one time stuff
   }, []);
   const createSqliteTables = async (sqliteDB) => {
