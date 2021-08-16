@@ -6,7 +6,8 @@ import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoCont
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { notifySuccess } from 'utils/NotificationUtils';
-import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
+import { Geolocation } from '@capacitor/geolocation';
+//import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
 import { Feature } from 'geojson';
 import MapContainer2 from 'components/map/MapContainer2';
@@ -26,10 +27,17 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 }
 
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
-  const { currentPosition: watchPosition, startWatch, clearWatch } = useWatchPosition();
-  // const { getPosition } = useCurrentPosition();
+  const [currentPosition, setCurrentPosition] = useState(null);
+  const watchPosition = Geolocation.watchPosition;
+  const startWatch = watchPosition;
+  const clearWatch = Geolocation.clearWatch;
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext);
+
+  const getLocation = async () => {
+    const position = await Geolocation.getCurrentPosition();
+    setCurrentPosition(position);
+  };
 
   useEffect(() => {
     try {
@@ -54,7 +62,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
 
   const startTrack = async () => {
     try {
-      startWatch({ enableHighAccuracy: true });
+      //  startWatch({ enableHighAccuracy: true });
     } catch (e) {
       console.log('unable to start watch');
     }
@@ -70,15 +78,15 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         if (window.confirm('Convert track to polygon?')) {
           props.geometryState.setGeometry([polygon as any]);
           notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  '));
-          clearWatch();
+          // clearWatch();
         } else {
           notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  '));
-          clearWatch();
+          /// clearWatch();
         }
       } else {
         if (window.confirm("Sure you're done walkin'?  Didn't collect 4 points.")) {
           alert('Cancelled track.');
-          clearWatch();
+          //  clearWatch();
         }
       }
     } catch (e) {
@@ -86,6 +94,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     }
   };
 
+  /*
   useEffect(() => {
     if (watchPosition) {
       if (workingPolyline.length == 0) {
@@ -143,6 +152,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       }
     }
   }, [watchPosition]);
+  */
 
   const history = useHistory();
   return (
