@@ -31,6 +31,8 @@ import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import Spinner from 'components/spinner/Spinner';
 import clsx from 'clsx';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 const ACTION_TIMEOUT = 1500; // 1.5s
 const ACTION_ERROR_TIMEOUT = 15000; // 15s
@@ -390,12 +392,13 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
 
   const [expandedRows, setExpandedRows] = useState([]);
   const [selected, setSelected] = useState(props.selected || []);
-
+  const dataAccess = useDataAccess();
   const selectedHash = JSON.stringify(selected);
+  const networkContext = useContext(NetworkContext);
 
   const getApiSpec = useCallback(
     async (tableSchemaInput) => {
-      const apiSpecResponse = await invasivesApi.getCachedApiSpec();
+      const apiSpecResponse = await invasivesApi.getCachedApiSpec(networkContext.connected);
       const schemaTypeList = typeof tableSchemaInput === 'string' ? [tableSchemaInput] : tableSchemaInput || [];
 
       await setSchemas({
@@ -455,10 +458,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     );
   }, [rows.length, orderHeader, order, page, rowsPerPage]);
   // render all dropdowns on page
-  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
-    pageRows,
-    dropdown
-  ]);
+  const renderedDropdowns = useMemo(
+    () => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)),
+    [pageRows, dropdown]
+  );
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
   const verboseOverflows = useMemo(

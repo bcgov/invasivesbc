@@ -13,6 +13,8 @@ import qs from 'qs';
 import { Http } from '@capacitor-community/http';
 import { useContext, useMemo } from 'react';
 import { DocType } from 'constants/database';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { contextMenuType } from 'features/home/map/MapContextMenu';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
@@ -231,6 +233,10 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
+    // const oldActivity = await getActivityById(activity.activity_id);
+
+    // console.log(oldActivity);
+
     const { data } = await Http.request({
       method: 'PUT',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -260,14 +266,40 @@ export const useInvasivesApi = () => {
    *
    * @return {*}  {Promise<any>}
    */
-  const getCachedApiSpec = async (): Promise<any> => {
+  const getCachedApiSpec = async (isConnected: boolean): Promise<any> => {
     let data;
     try {
-      data = await getApiSpec();
+      //browser without internet:   just throw error
+      if (!isConnected && Capacitor.getPlatform() === 'web') {
+        alert('no internet, no forms');
+        // mobile and no internet, try the cache
+      } else if (Capacitor.getPlatform() !== 'web' && !isConnected) {
+        data = await query(
+          {
+            type: QueryType.DOC_TYPE_AND_ID,
+            docType: DocType.API_SPEC,
+            ID: '1'
+          },
+          databaseContext
+        );
+
+        if (data?.length > 0) {
+          data = JSON.parse(data[0].json);
+          return data;
+        } else {
+          alert('no cached api spec somehow');
+        }
+      } else {
+        data = await getApiSpec();
+      }
+
+      if (Capacitor.getPlatform() === 'web') {
+        return data;
+      }
       // await databaseContext.database.upsert('ApiSpec', () => {
       //   return data;
       // });
-      if (Capacitor.getPlatform() !== 'web')
+      else
         await upsert(
           [
             {
@@ -282,17 +314,7 @@ export const useInvasivesApi = () => {
 
       return data;
     } catch (error) {
-      data = await databaseContext.database.get('ApiSpec');
-
-      data = await query(
-        {
-          type: QueryType.DOC_TYPE_AND_ID,
-          docType: DocType.API_SPEC,
-          ID: '1'
-        },
-        databaseContext
-      );
-      return data;
+      alert('error getting api spec');
     }
   };
 

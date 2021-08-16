@@ -48,6 +48,8 @@ import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRe
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import { addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from 'utils/addActivity';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+import { Capacitor } from '@capacitor/core';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -77,7 +79,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
 
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContextPouch = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
 
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
@@ -125,12 +128,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     try {
       const dbUpdates = debounced(1000, async (updated) => {
         // TODO use an api endpoint to do this merge logic instead
-        const oldActivity = await dataAccess.getActivityById(updated._id);
+        const oldActivity = await dataAccess.getActivityById(updated._id, databaseContext, true);
         const newActivity = {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
-        const res = await dataAccess.updateActivity(newActivity);
+        const res = await dataAccess.updateActivity(newActivity, databaseContext);
       });
       await dbUpdates(updatedDoc);
       // console.log("updated doc ", updatedDoc);
@@ -177,7 +180,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
           proj4.defs([
             ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
-            ['EPSG:AUTO', `+proj=utm +zone=${utm_zone} +datum=WGS84 +units=m +no_defs`]
+            ['EPSG:AUTO', `+proj=utm +zone= ${utm_zone} +datum=WGS84 +units=m +no_defs`]
           ]);
           const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
           utm_easting = Number(en_m[0].toFixed(4));
@@ -208,7 +211,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         return activityDoc;
       });
     },
-    [databaseContext.database]
+    // [databaseContextPouch.database]
+    []
   );
 
   /**
@@ -234,7 +238,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const onFormSubmitError = () => {
     notifyError(
-      databaseContext,
+      databaseContextPouch,
       'There are errors in your form. Please make sure your form contains no errors and try again.'
     );
 
@@ -347,20 +351,34 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const { formData, activitySubtype } = doc;
 
     saveFormDataToSession(formData, activitySubtype);
-    notifySuccess(databaseContext, 'Successfully copied form data.');
+    notifySuccess(databaseContextPouch, 'Successfully copied form data.');
   };
 
   /*
     Function to pull activity results from the DB given an activityId if present
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
-    const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
+    // const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
-    if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
-      return;
+    const appStateResults = await dataAccess.getAppState(databaseContext);
+
+    let activityResults;
+    if (Capacitor.getPlatform() === 'web') {
+      if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
+        return;
+      }
+
+      activityResults = await dataAccess.getActivityById(
+        activityId || appStateResults.docs[0].activeActivity,
+        databaseContext
+      );
+    } else {
+      activityResults = await dataAccess.getActivityById(
+        activityId || (appStateResults.activeActivity as string),
+        databaseContext,
+        true
+      );
     }
-
-    const activityResults = await dataAccess.getActivityById(activityId || appStateResults.docs[0].activeActivity);
     return mapDBActivityToDoc(activityResults);
   };
 
@@ -368,13 +386,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     Function to set the active activity in the DB context and the current activity view
   */
   const setActiveActivity = async (activeActivity: any) => {
-    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-      const updatedActivity = { ...appStateDoc, activeActivity: activeActivity._id };
-
-      setIsCloned(true);
-
-      return updatedActivity;
-    });
+    setIsCloned(true);
+    await dataAccess.setAppState({ activeActivity: activeActivity }, databaseContext);
   };
 
   /*
@@ -389,9 +402,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             color="primary"
             startIcon={<FileCopy />}
             onClick={async () => {
-              const addedActivity = await addClonedActivityToDB(databaseContext, doc);
+              const addedActivity = await addClonedActivityToDB(databaseContextPouch, doc);
               setActiveActivity(addedActivity);
-              notifySuccess(databaseContext, 'Successfully cloned activity. You are now viewing the cloned activity.');
+              notifySuccess(
+                databaseContextPouch,
+                'Successfully cloned activity. You are now viewing the cloned activity.'
+              );
             }}>
             Clone Activity
           </Button>
@@ -459,7 +475,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
 
-      await handleRecordLinking(updatedDoc);
+      // await handleRecordLinking(updatedDoc);
 
 
       setGeometry(updatedDoc.geometry);

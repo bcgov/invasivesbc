@@ -1,11 +1,11 @@
-import { createMuiTheme, ThemeOptions, ThemeProvider } from '@material-ui/core';
+import { createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core';
 import { ThemeContext } from 'contexts/themeContext';
 import React, { useContext } from 'react';
 import appTheme from 'themes/appTheme';
 
 const CustomThemeProvider: React.FC = (props) => {
-  const muiThemeDark = createMuiTheme({ ...appTheme, palette: { ...appTheme.palette, type: 'dark' } } as ThemeOptions);
-  const muiThemeLight = createMuiTheme(appTheme as ThemeOptions);
+  const muiThemeDark = createTheme({ ...appTheme, palette: { ...appTheme.palette, type: 'dark' } } as ThemeOptions);
+  const muiThemeLight = createTheme(appTheme as ThemeOptions);
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
 

@@ -2,7 +2,7 @@ import {
   Box,
   Button,
   CircularProgress,
-  createMuiTheme,
+  createTheme,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,6 +15,7 @@ import {
 import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { ActivitySyncStatus } from 'constants/activities';
+import { NetworkContext } from 'contexts/NetworkContext';
 import { SelectAutoCompleteContextProvider } from 'contexts/SelectAutoCompleteContext';
 import { ThemeContext } from 'contexts/themeContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -69,11 +70,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
-  const rjsfThemeDark = createMuiTheme({
+  const rjsfThemeDark = createTheme({
     ...rjsfTheme,
     palette: { ...rjsfTheme.palette, type: 'dark' }
   } as ThemeOptions);
-  const rjsfThemeLight = createMuiTheme(rjsfTheme as ThemeOptions);
+  const rjsfThemeLight = createTheme(rjsfTheme as ThemeOptions);
 
   //open dialog window (visual)
   const openDialog = () => {
@@ -215,9 +216,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     }
   };
 
+  const networkContext = useContext(NetworkContext);
+
   useEffect(() => {
     const getApiSpec = async () => {
-      const response = await invasivesApi.getCachedApiSpec();
+      const response = await invasivesApi.getCachedApiSpec(networkContext.connected);
       setSchemas({
         schema: { ...response.components.schemas[props.activity.activitySubtype], components: response.components },
         uiSchema: RootUISchemas[props.activity.activitySubtype]

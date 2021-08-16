@@ -29,7 +29,6 @@ export const DatabaseContext2Provider = (props) => {
   const message = useRef('');
   const [databaseIsSetup, setDatabaseIsSetup] = useState(false);
   const dbRequestQueue = new PQueue({ concurrency: 1 });
-  const [db, setDB] = useState(null);
   const [isModal, setIsModal] = useState(false);
 
   const processRequest = async (dbRequest: DBRequest) => {
@@ -99,68 +98,76 @@ export const DatabaseContext2Provider = (props) => {
     };
     isJsonListeners = { jsonListeners: jsonListeners, setJsonListeners: setJsonListeners };
     // open connnection, make tables, set db in context
-    createSqliteTables(sqlite);
+    if (Capacitor.getPlatform() !== 'web') createSqliteTables(sqlite);
     // a bunch of one time stuff
   }, []);
   const createSqliteTables = async (sqliteDB) => {
     // initialize the connection
     let db = await getConnection();
-    if (db) {
-      await db.open();
-      const isitopen = await db.isDBOpen();
-      console.log('db open on create table? : ' + JSON.stringify(isitopen));
+    await db.open();
+    const isitopen = await db.isDBOpen();
+    console.log('db open on create table? : ' + JSON.stringify(isitopen));
 
-      const name = await db.getConnectionDBName();
+    const name = await db.getConnectionDBName();
 
-      let ret;
+    let ret;
 
-      let setupSQL = ``;
-      for (const value of enumKeys(DocType)) {
-        switch (value) {
-          case 'REFERENCE_ACTIVITY':
-            setupSQL +=
-              'create table if not exists ' +
-              DocType[value] +
-              ` (
+    let setupSQL = ``;
+    for (const value of enumKeys(DocType)) {
+      switch (value) {
+        case 'REFERENCE_ACTIVITY':
+          setupSQL +=
+            'create table if not exists ' +
+            DocType[value] +
+            ` (
+              id TEXT PRIMARY KEY,
+              json TEXT,
+              activity_subtype TEXT
+            );\n`;
+          break;
+        case 'ACTIVITY':
+          setupSQL +=
+            'create table if not exists ' +
+            DocType[value] +
+            ` (
+              id TEXT PRIMARY KEY,
+              json TEXT,
+              activity_subtype TEXT
+            );\n`;
+          break;
+        case 'REFERENCE_POINT_OF_INTEREST':
+          setupSQL +=
+            'create table if not exists ' +
+            DocType[value] +
+            ` (
               id TEXT PRIMARY KEY,
               json TEXT
             );\n`;
-            break;
-          case 'REFERENCE_POINT_OF_INTEREST':
-            setupSQL +=
-              'create table if not exists ' +
-              DocType[value] +
-              ` (
-              id TEXT PRIMARY KEY,
-              json TEXT
-            );\n`;
-            break;
-          default:
-            setupSQL +=
-              'create table if not exists ' +
-              DocType[value] +
-              ` (
+          break;
+        default:
+          setupSQL +=
+            'create table if not exists ' +
+            DocType[value] +
+            ` (
               id INTEGER PRIMARY KEY,
               json TEXT
             );\n`;
-        }
       }
+    }
 
-      const isopen = await db.isDBOpen();
-      ret = await db.execute(setupSQL);
-      setDatabaseIsSetup(true);
-      const resul = JSON.stringify(ret.values);
+    const isopen = await db.isDBOpen();
+    ret = await db.execute(setupSQL);
+    setDatabaseIsSetup(true);
+    const result = JSON.stringify(ret.changes);
 
-      setDB(db);
-      if (!ret.result) {
-        //console.log('closing database - no result');
-        //db.close();
-        return false;
-      } else {
-        //console.log('closing database with result');
-        //db.close();
-        return true;
-      }
+    if (!ret.changes) {
+      //console.log('closing database - no result');
+      //db.close();
+      return false;
+    } else {
+      //console.log('closing database with result');
+      //db.close();
+      return true;
     }
   };
 
@@ -177,7 +184,7 @@ export const DatabaseContext2Provider = (props) => {
     if (['ios', 'android', 'electron'].includes(Capacitor.getPlatform())) {
       return (
         <>
-          {databaseIsSetup ? (
+          {databaseIsSetup && sqlite ? (
             <DatabaseContext2.Provider value={{ sqliteDB: sqlite, asyncQueue: processRequest, ready: true }}>
               {props.children}
             </DatabaseContext2.Provider>
@@ -239,6 +246,8 @@ const getConnection = async (databaseName?: string) => {
   } catch (e) {
     console.log('error making new connection');
   }
+
+  throw 'unable to get connection';
 };
 
 // v1: assumes all upsertconfigs are the same, will allow for multiple in v2
@@ -357,6 +366,7 @@ const buildSQLStringDOC_TYPE_AND_ID = (upsertConfigs: Array<IUpsert>) => {
   let batchUpdate = '';
   if (upsertConfigs.length > 0) {
     batchUpdate += `insert into ` + upsertConfigs[0].docType + ` (id,json) values `;
+
     let rowCounter = 0;
     for (const upsertConfig of upsertConfigs) {
       batchUpdate += `('` + upsertConfig.ID + `','` + JSON.stringify(upsertConfig.json).split(`'`).join(`''`) + `')`;
@@ -370,6 +380,7 @@ const buildSQLStringDOC_TYPE_AND_ID = (upsertConfigs: Array<IUpsert>) => {
   return batchUpdate;
 };
 
+//only works for 1 record right now
 //limit to all being the same type for now:
 const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
   if (upsertConfigs.length > 0) {
@@ -392,32 +403,55 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
     const idsJSON = JSON.stringify(slowPatchOldIDS);
     const idsString = idsJSON.substring(1, idsJSON.length - 1);
     ret = await db.query('select * from ' + slowPatchDocType + ' where id in (' + idsString + ');');
+
     const slowPatchOld = ret.values;
 
     //patch them in memory
     let batchUpdate = '';
     console.log('*** building sql ***');
 
+    // breaks if you are calling json slow patch on a record that doesnt exist and doesnt have a json prop
     for (const upsertConfig of upsertConfigs) {
-      const old = JSON.parse(
-        slowPatchOld.filter((e) => {
-          return (e.id = upsertConfig.ID);
-        })[0].json
-      );
+      let old;
+      if (slowPatchOld.length === 0) {
+        old = {};
+      } else {
+        old = JSON.parse(
+          slowPatchOld.filter((e) => {
+            return (e.id = upsertConfig.ID);
+          })[0].json
+        );
+      }
       const patched =
         `'` +
         JSON.stringify({ ...old, ...upsertConfig.json })
           .split(`'`)
           .join(`''`) +
         `'`;
-      batchUpdate +=
-        'insert into ' +
-        upsertConfig.docType +
-        ' (id, json) values (' +
-        upsertConfig.ID +
-        ',' +
-        patched +
-        ') on conflict (id) do update set json=excluded.json;';
+
+      if (
+        [DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY, DocType.REFERENCE_POINT_OF_INTEREST].includes(
+          upsertConfig.docType
+        )
+      ) {
+        batchUpdate +=
+          'insert into ' +
+          upsertConfig.docType +
+          ` (id, json) values ('` +
+          upsertConfig.ID +
+          `',` +
+          patched +
+          ') on conflict (id) do update set json=excluded.json;';
+      } else {
+        batchUpdate +=
+          'insert into ' +
+          upsertConfig.docType +
+          ' (id, json) values (' +
+          upsertConfig.ID +
+          ',' +
+          patched +
+          ') on conflict (id) do update set json=excluded.json;';
+      }
     }
 
     //finally update them all:
@@ -480,7 +514,18 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
 
     switch (queryConfig.type) {
       case QueryType.DOC_TYPE_AND_ID:
-        ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
+        if (
+          [DocType.ACTIVITY, DocType.REFERENCE_ACTIVITY, DocType.REFERENCE_POINT_OF_INTEREST].includes(
+            queryConfig.docType
+          )
+        ) {
+          //if ID is string
+          ret = await db.query('select * from ' + queryConfig.docType + " where id = '" + queryConfig.ID + "';\n");
+        } else {
+          //if ID is number
+          ret = await db.query('select * from ' + queryConfig.docType + ' where id = ' + queryConfig.ID + ';\n');
+        }
+
         if (!ret.values) {
           //  db.close();
           return false;

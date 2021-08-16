@@ -2,7 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { Device, DeviceInfo } from '@capacitor/device';
 
 import { IonReactRouter } from '@ionic/react-router';
-import { Box, CircularProgress, createMuiTheme, ThemeOptions, ThemeProvider } from '@material-ui/core';
+import { Box, CircularProgress, createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { DatabaseChangesContextProvider } from 'contexts/DatabaseChangesContext';
@@ -66,7 +66,7 @@ const App: React.FC<IAppProps> = (props) => {
                           </DatabaseChangesContextProvider>
                         );
                       }
-                      if (databaseContext.database || databaseContext.sqliteDB) {
+                      if (databaseContext.database) {
                         // database not ready, delay loading app
                         return (
                           <DatabaseChangesContextProvider>
