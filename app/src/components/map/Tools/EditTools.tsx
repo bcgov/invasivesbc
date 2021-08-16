@@ -7,6 +7,7 @@ import L from 'leaflet';
 import React from 'react';
 import single from '../Icons/square.png';
 import multi from '../Icons/trim.png';
+import { async } from 'q';
 
 const useStyles = makeStyles((theme) => ({
     image: {
@@ -37,15 +38,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditTools = (props) => {
+    //console.dir(props.geometryState.geometry);
     const classes = useStyles();
     // This should get the 'FeatureGroup' connected to the tools
     const [multiMode, setMultiMode] = useState(false);
     const toggleMode = () => {
         setMultiMode(!multiMode);
         var len = props.geometryState.geometry.length;
-        var temp = props.geometryState.geometry[len - 1];
-        props.geometryState.setGeometry([]);
-        props.geometryState.setGeometry([temp]);
+        if (!multiMode && len > 0) {
+            var temp = props.geometryState.geometry[len - 1];
+            props.geometryState.setGeometry([temp]);
+        }
     };
     const divRef = useRef();
     useEffect(() => {
@@ -65,31 +68,37 @@ const EditTools = (props) => {
 
         let aGeo = newLayer.toGeoJSON();
         if (e.layerType === 'circle') {
-            aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: e.layer.getRadius() } };
+            aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: newLayer.getRadius() } };
         }
-
+        //console.log('Pre setters');
+        //console.dir(aGeo);
         aGeo = convertLineStringToPoly(aGeo);
         // Drawing one geo wipes all others
+
+        //const funcy = () => {
         if (multiMode) {
             let newState = [];
             newState = props.geometryState.geometry ? [...props.geometryState.geometry] : newState;
             newState = aGeo ? [...newState, aGeo] : newState;
-            props.geometryState.setGeometry([...newState])
+            props.geometryState.setGeometry([...newState]);
         } else {
-            props.geometryState.setGeometry([aGeo])
+            props.geometryState.setGeometry([aGeo]);
         }
+        //};
+        //const a = await funcy();
+        //console.log(a);
         (context.layerContainer as any).clearLayers();
     };
     const onEditStop = (e: any) => {
         let updatedGeoJSON = [];
         (context.layerContainer as any).eachLayer((layer) => {
-            console.dir(layer)
+            //console.dir(layer)
             let aGeo = layer.toGeoJSON();
             if (layer.feature.properties.radius) {
                 aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer._mRadius } };
-            } else if (e.layerType === 'rectangle') {
-                //aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
-            }
+            } //else if (e.layerType === 'rectangle') {
+            //aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
+            //}
             aGeo = convertLineStringToPoly(aGeo);
 
             updatedGeoJSON.push(aGeo);
