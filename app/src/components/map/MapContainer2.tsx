@@ -292,6 +292,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           <LayerPicker data={data} />
           <DisplayPosition map={map} />
           <MeasureTool />
+          {props.showDrawControls && (
+            <FeatureGroup>
+              <EditTools geometryState={props.geometryState} />
+            </FeatureGroup>
+          )}
         </div>
 
         {/* Here is the offline component */}
@@ -300,11 +305,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         <ZoomControl position="bottomleft" />
 
         {/* Here are the editing tools */}
-        {props.showDrawControls && (
-          <FeatureGroup>
-            <EditTools geometryState={props.geometryState} />
-          </FeatureGroup>
-        )}
 
         <MapResizer />
         <AsyncExtent />
