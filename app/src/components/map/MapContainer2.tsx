@@ -21,8 +21,6 @@ import {
   ZoomControl
 } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import marker from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { interactiveGeoInputData } from './GeoMeta';
 import Spinner from 'components/spinner/Spinner';
 
@@ -37,11 +35,8 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import TempPOILoader from './LayerLoaderHelpers/TempPOILoader';
 
 // Layer Picker
-import LayersIcon from '@material-ui/icons/Layers';
-
 import { LayerPicker } from './LayerPicker/SortableHelper';
 import data from './LayerPicker/GEO_DATA.json';
-import { DomEvent } from 'leaflet';
 import DisplayPosition from './Tools/DisplayPosition';
 import { debounced } from 'utils/FunctionUtils';
 import { createPolygonFromBounds } from './LayerLoaderHelpers/LtlngBoundsToPoly';
