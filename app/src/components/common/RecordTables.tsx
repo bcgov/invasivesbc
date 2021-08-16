@@ -14,7 +14,6 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { Add, DeleteForever, Sync, Edit, Delete, FindInPage, Check, Clear } from '@material-ui/icons';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useKeycloak } from '@react-keycloak/web';
 import {
   sanitizeRecord,
@@ -24,7 +23,6 @@ import {
   getShortActivityID
 } from 'utils/addActivity';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
-import { notifyError, notifySuccess } from 'utils/NotificationUtils';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 
@@ -199,9 +197,6 @@ export const defaultActivitiesFetch =
       databaseContext,
       true
     );
-    console.log('RESULT IS HERE');
-    console.log(result);
-    // console.log('defaultActivitiesFetch: ', result);
     return {
       rows: result.rows.map(activityStandardMapping),
       count: result.count
@@ -353,9 +348,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
               if (selectedIds.length === 1) {
-                // await databaseContextOld.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-                //   return { ...appStateDoc, activeActivity: selectedIds[0] };
-                // });
                 await dataAccess.setAppState({ activeActivity: selectedIds[0] }, databaseContext);
 
                 // TODO switch by activity type, I guess...
