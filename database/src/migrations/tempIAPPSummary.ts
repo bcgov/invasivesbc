@@ -5,7 +5,7 @@ import * as Knex from 'knex';
 //      Deploying plant views then becomes a process of manually pasting the sql to the db.
 //      Having one consolidated file allows for quick troubleshooting and deployments.
 export async function up(knex: Knex): Promise<void> {
-  knex.raw(`
+  await knex.raw(`
   set search_path=invasivesbc;
 
 set search_path='invasivesbc';
@@ -162,7 +162,7 @@ create materialized view iapp_site_summary as select * from iapp_site_summary_sl
 }
 
 export async function down(knex: Knex): Promise<void> {
-  knex.raw(`
+  await knex.raw(`
   set search_path=invasivesbc;
 drop index if exists point_of_interest_survey_date_idx;
 drop index if exists point_of_interest_chemical_treatment_date_idx;
@@ -174,5 +174,5 @@ drop index if exists point_of_interest_mechanical_treatment_date_idx;
 drop index if exists point_of_interest_mechanical_treatment_monitoring_date_idx;
 drop view if exists IAPP_SITE_SUMMARY_slow cascade;
 drop materialized view if exists iapp_site_summary;
-}`);
+`);
 }

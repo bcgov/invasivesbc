@@ -5,9 +5,25 @@ import * as Knex from 'knex';
 //      Deploying plant views then becomes a process of manually pasting the sql to the db.
 //      Having one consolidated file allows for quick troubleshooting and deployments.
 export async function up(knex: Knex): Promise<void> {
-  knex.raw(`
+  await knex.raw(`
   set search_path=invasivesbc;
   drop VIEW if exists invasivesbc.Observation_Summary cascade;
+  drop view if exists invasivesbc.Observation_AquaticPlant_Summary cascade;
+  drop view if exists invasivesbc.Treatment_Biological_TerrestrialPlant_Summary cascade;
+  drop  view if exists invasivesbc.Activity_Observation_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Activity_Observation_AquaticPlant_with_codes cascade;
+  drop  view if exists invasivesbc.Activity_Observation_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Activity_Monitoring_Biological_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Activity_Observation_TerrestrialPlant cascade;
+  drop view if exists invasivesbc.Observation_TerrestrialPlant cascade;
+  drop view if exists invasivesbc.Activity_Treatment_Chemical_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Treatment_Chemical_TerrestrialPlant cascade;
+  drop view if exists invasivesbc.Activity_Treatment_Biological_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Treatment_Biological_TerrestrialPlant cascade;
+  drop view if exists invasivesbc.Activity_Treatment_Mechanical_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Treatment_Mechanical_TerrestrialPlant cascade;
+  drop VIEW if exists Treatment_Summary cascade;
+
   CREATE OR REPLACE VIEW invasivesbc.Observation_Summary as (
     select
     activity_id,
@@ -64,7 +80,6 @@ export async function up(knex: Knex): Promise<void> {
 
 
 
-   drop  view if exists invasivesbc.Activity_Observation_TerrestrialPlant_with_codes cascade;
   CREATE OR REPLACE VIEW Activity_Observation_TerrestrialPlant_with_codes as (
       select
       activity_id as activity_id,
@@ -100,7 +115,6 @@ export async function up(knex: Knex): Promise<void> {
 
 
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Observation_AquaticPlant_with_codes cascade;
   CREATE OR REPLACE VIEW Activity_Observation_AquaticPlant_with_codes as (
       select
       activity_id as activity_id,
@@ -134,7 +148,6 @@ export async function up(knex: Knex): Promise<void> {
 
 
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Observation_AquaticPlant_Summary cascade;
   CREATE OR REPLACE VIEW Observation_AquaticPlant_Summary as (
         select
     record.activity_id,
@@ -221,8 +234,6 @@ export async function up(knex: Knex): Promise<void> {
 
 
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Observation_TerrestrialPlant cascade;
-  drop view if exists invasivesbc.Observation_TerrestrialPlant cascade;
   CREATE OR REPLACE VIEW Observation_TerrestrialPlant as (
         select
     record.activity_id,
@@ -348,7 +359,7 @@ and record.plant_seed_stage_code = aspect_codes.code_name
 
 
 
-  drop VIEW if exists Treatment_Summary cascade;
+ 
   CREATE OR REPLACE VIEW Treatment_Summary as (
     select
     activity_id,
@@ -405,7 +416,6 @@ and record.plant_seed_stage_code = aspect_codes.code_name
 
 
   set search_path=invasivesbc;
-  drop view if exists invasivesbc.Activity_Treatment_Chemical_TerrestrialPlant_with_codes cascade;
   CREATE OR REPLACE VIEW Activity_Treatment_Chemical_TerrestrialPlant_with_codes as (
       select
       activity_id,
@@ -437,7 +447,6 @@ and record.plant_seed_stage_code = aspect_codes.code_name
 
 
     set search_path=invasivesbc;
-  drop view if exists invasivesbc.Treatment_Chemical_TerrestrialPlant ;
   CREATE OR REPLACE VIEW Treatment_Chemical_TerrestrialPlant as (
         select
     record.activity_id,
@@ -523,7 +532,6 @@ and record.wind_direction_code = wind_direction_codes.code_name
 
 
 set search_path=invasivesbc;
-drop view if exists invasivesbc.Activity_Treatment_Biological_TerrestrialPlant_with_codes;
 CREATE OR REPLACE VIEW Activity_Treatment_Biological_TerrestrialPlant_with_codes as (
     select
     activity_id,
@@ -545,8 +553,6 @@ CREATE OR REPLACE VIEW Activity_Treatment_Biological_TerrestrialPlant_with_codes
 
 
      set search_path=invasivesbc;
-  drop view if exists invasivesbc.Treatment_Biological_TerrestrialPlant_Summary ;
-  drop view if exists invasivesbc.Treatment_Biological_TerrestrialPlant ;
   CREATE OR REPLACE VIEW Treatment_Biological_TerrestrialPlant as (
         select
     record.activity_id,
@@ -625,7 +631,6 @@ and record.bioagent_maturity_status_code = bioagent_maturity_status_codes.code_n
 
 
 set search_path=invasivesbc;
-drop view if exists invasivesbc.Activity_Treatment_Mechanical_TerrestrialPlant_with_codes;
 CREATE OR REPLACE VIEW Activity_Treatment_Mechanical_TerrestrialPlant_with_codes as (
     select
     activity_id,
@@ -645,7 +650,6 @@ CREATE OR REPLACE VIEW Activity_Treatment_Mechanical_TerrestrialPlant_with_codes
 
 
     set search_path=invasivesbc;
-  drop view if exists invasivesbc.Treatment_Mechanical_TerrestrialPlant ;
   CREATE OR REPLACE VIEW Treatment_Mechanical_TerrestrialPlant as (
         select
     record.activity_id,
@@ -780,7 +784,6 @@ and record.soil_disturbance_code = soil_disturbance_codes.code_name
 
 
 set search_path=invasivesbc;
-drop view if exists invasivesbc.Activity_Monitoring_Biological_TerrestrialPlant_with_codes;
 CREATE OR REPLACE VIEW Activity_Monitoring_Biological_TerrestrialPlant_with_codes as (
     select
     activity_id,
@@ -804,5 +807,21 @@ CREATE OR REPLACE VIEW Activity_Monitoring_Biological_TerrestrialPlant_with_code
 }
 
 export async function down(knex: Knex): Promise<void> {
-  knex.raw(`drop view if exists Treatment_Summary cascade`);
+  await knex.raw(`  set search_path=invasivesbc;
+  drop VIEW if exists invasivesbc.Observation_Summary cascade;
+  drop  view if exists invasivesbc.Activity_Observation_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Activity_Observation_AquaticPlant_with_codes cascade;
+  drop  view if exists invasivesbc.Activity_Observation_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Activity_Monitoring_Biological_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Observation_AquaticPlant_Summary cascade;
+  drop view if exists invasivesbc.Activity_Observation_TerrestrialPlant cascade;
+  drop view if exists invasivesbc.Observation_TerrestrialPlant cascade;
+  drop view if exists invasivesbc.Activity_Treatment_Chemical_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Treatment_Chemical_TerrestrialPlant cascade;
+  drop view if exists invasivesbc.Activity_Treatment_Biological_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Treatment_Biological_TerrestrialPlant_Summary cascade;
+  drop view if exists invasivesbc.Treatment_Biological_TerrestrialPlant cascade;
+  drop view if exists invasivesbc.Activity_Treatment_Mechanical_TerrestrialPlant_with_codes cascade;
+  drop view if exists invasivesbc.Treatment_Mechanical_TerrestrialPlant cascade;
+  drop VIEW if exists Treatment_Summary cascade;`);
 }
