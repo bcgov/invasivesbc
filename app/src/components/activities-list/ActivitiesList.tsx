@@ -407,10 +407,10 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Plant' && (
             <Box>
               <MyObservationsTable />
-              <MyTreatmentsTable />
+              {/*  <MyTreatmentsTable />
               <MyMonitoringTable />
               <MyTransectsTable />
-              <MyAdditionalBiocontrolActivitiesTable />
+            <MyAdditionalBiocontrolActivitiesTable /> */}
             </Box>
           )}
           {workflowFunction === 'Animal' && (

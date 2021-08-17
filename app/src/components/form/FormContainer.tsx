@@ -238,84 +238,75 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   return (
     <Box width="100%">
-      {/* <Box mb={3}>
-        <FormControlsComponent
-          onSubmit={() => formRef.submit()}
-          isDisabled={isDisabled}
-          onCopy={props.copyFormData ? () => props.copyFormData() : null}
-          onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
-          activitySubtype={props.activity.activitySubtype}
-          hideCheckFormForErrors={props.hideCheckFormForErrors}
-        />
-      </Box> */}
-
       <ThemeProvider theme={themeType ? rjsfThemeDark : rjsfThemeLight}>
         <SelectAutoCompleteContextProvider>
-          <Form
-            ObjectFieldTemplate={ObjectFieldTemplate}
-            FieldTemplate={FieldTemplate}
-            ArrayFieldTemplate={ArrayFieldTemplate}
-            widgets={{
-              'multi-select-autocomplete': MultiSelectAutoComplete,
-              'single-select-autocomplete': SingleSelectAutoComplete
-            }}
-            key={props.activity?._id}
-            disabled={isDisabled}
-            formData={props.activity?.formData || null}
-            schema={schemas.schema}
-            onFocus={focusHandler}
-            onBlur={blurHandler}
-            uiSchema={schemas.uiSchema}
-            liveValidate={true}
-            showErrorList={true}
-            validate={props.customValidation}
-            transformErrors={props.customErrorTransformer}
-            autoComplete="off"
-            ErrorList={() => {
-              return (
-                <div>
-                  <Typography color="error" variant="h5">
-                    The form contains one or more errors!
-                  </Typography>
-                  <Typography color="error" variant="h6">
-                    Incorrect fields are highlighted below.
-                  </Typography>
-                </div>
-              );
-            }}
-            onChange={(event) => {
-              if (!props.onFormChange) {
-                return;
-              }
-              props.onFormChange(event, formRef, focusedFieldArgs);
-            }}
-            onError={(error) => {
-              if (!props.onFormSubmitError) {
-                return;
-              }
+          <>
+            <Form
+              ObjectFieldTemplate={ObjectFieldTemplate}
+              FieldTemplate={FieldTemplate}
+              ArrayFieldTemplate={ArrayFieldTemplate}
+              widgets={{
+                'multi-select-autocomplete': MultiSelectAutoComplete,
+                'single-select-autocomplete': SingleSelectAutoComplete
+              }}
+              key={props.activity?._id}
+              disabled={isDisabled}
+              formData={props.activity?.formData || null}
+              schema={schemas.schema}
+              onFocus={focusHandler}
+              onBlur={blurHandler}
+              uiSchema={schemas.uiSchema}
+              liveValidate={true}
+              showErrorList={true}
+              validate={props.customValidation}
+              transformErrors={props.customErrorTransformer}
+              autoComplete="off"
+              ErrorList={() => {
+                return (
+                  <div>
+                    <Typography color="error" variant="h5">
+                      The form contains one or more errors!
+                    </Typography>
+                    <Typography color="error" variant="h6">
+                      Incorrect fields are highlighted below.
+                    </Typography>
+                  </div>
+                );
+              }}
+              onChange={(event) => {
+                if (!props.onFormChange) {
+                  return;
+                }
+                props.onFormChange(event, formRef, focusedFieldArgs);
+              }}
+              onError={(error) => {
+                if (!props.onFormSubmitError) {
+                  return;
+                }
 
-              props.onFormSubmitError(error, formRef);
-            }}
-            onSubmit={(event) => {
-              if (!props.onFormSubmitSuccess) {
-                return;
-              }
+                props.onFormSubmitError(error, formRef);
+              }}
+              onSubmit={(event) => {
+                if (!props.onFormSubmitSuccess) {
+                  return;
+                }
 
-              props.onFormSubmitSuccess(event, formRef);
-            }}
-            // `ref` does exist, but currently is missing from the `index.d.ts` types file.
-            // @ts-ignore: No overload matches this call ts(2769)
-            ref={(form) => {
-              if (!form) {
-                return;
-              }
-              if (props.setParentFormRef) {
-                props.setParentFormRef(form);
-              }
-              setFormRef(form);
-            }}>
-            <React.Fragment />
-          </Form>
+                props.onFormSubmitSuccess(event, formRef);
+              }}
+              // `ref` does exist, but currently is missing from the `index.d.ts` types file.
+              // @ts-ignore: No overload matches this call ts(2769)
+              ref={(form) => {
+                if (!form) {
+                  return;
+                }
+                if (props.setParentFormRef) {
+                  props.setParentFormRef(form);
+                }
+                setFormRef(form);
+              }}>
+              <React.Fragment />
+            </Form>
+          </>
         </SelectAutoCompleteContextProvider>
       </ThemeProvider>
 

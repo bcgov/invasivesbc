@@ -662,7 +662,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
-                onChangeRowsPerPage={handleChangeRowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
               />
             )}
           </AccordionDetails>

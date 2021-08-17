@@ -19,7 +19,7 @@ const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
 const API_URL =
   API_HOST && API_PORT
-    ? `http://` + (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST
+    ? `http://` + (API_PORT && `${API_HOST}:${API_PORT}`)
     : 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
 /**
@@ -266,39 +266,49 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const getCachedApiSpec = async (isConnected: boolean): Promise<any> => {
-    let data;
     try {
-      //browser without internet:   just throw error
-      if (!isConnected && Capacitor.getPlatform() === 'web') {
-        alert('no internet, no forms');
-        // mobile and no internet, try the cache
-      } else if (Capacitor.getPlatform() !== 'web' && !isConnected) {
-        data = await query(
-          {
-            type: QueryType.DOC_TYPE_AND_ID,
-            docType: DocType.API_SPEC,
-            ID: '1'
-          },
-          databaseContext
-        );
-
-        if (data?.length > 0) {
-          data = JSON.parse(data[0].json);
-          return data;
+      // on mobile - think there is internet:
+      if (Capacitor.getPlatform() !== 'web') {
+        if (isConnected) {
+          // try to cache spec, then return it:
+          if (await cacheSpec(databaseContext)) return getApiSpec();
+          // network call failed, get from cache:
+          if (!(await cacheSpec(databaseContext))) return getSpecFromCache(databaseContext);
         } else {
-          alert('no cached api spec somehow');
+          // on mobile - think there is no internet:
+          return await getSpecFromCache(databaseContext);
         }
       } else {
-        data = await getApiSpec();
+        // must be web, try online:
+        return await getApiSpec();
       }
+    } catch (e) {
+      alert('Unable to get api spec');
+      alert(JSON.stringify(e));
+    }
+  };
 
-      if (Capacitor.getPlatform() === 'web') {
-        return data;
-      }
-      // await databaseContext.database.upsert('ApiSpec', () => {
-      //   return data;
-      // });
-      else
+  const getSpecFromCache = async (databaseContext) => {
+    let data = await query(
+      {
+        type: QueryType.DOC_TYPE_AND_ID,
+        docType: DocType.API_SPEC,
+        ID: '1'
+      },
+      databaseContext
+    );
+
+    if (data?.length > 0) {
+      data = JSON.parse(data[0].json);
+      return data;
+    }
+  };
+
+  const cacheSpec = async (databaseContext) => {
+    const data = await getApiSpec();
+    if (data.components) {
+      //cache if on mobile
+      try {
         await upsert(
           [
             {
@@ -310,11 +320,12 @@ export const useInvasivesApi = () => {
           ],
           databaseContext
         );
-
-      return data;
-    } catch (error) {
-      alert('error getting api spec');
+        return true;
+      } catch (e) {
+        alert('unable to cache api spec');
+      }
     }
+    return false;
   };
 
   /**
