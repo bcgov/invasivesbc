@@ -1,7 +1,7 @@
-import { IconButton, makeStyles, Typography } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
 import { useEffect, useRef, useState } from 'react';
 import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
-import { MapContainer, useMapEvent } from 'react-leaflet';
+import { useMapEvent } from 'react-leaflet';
 import * as turf from '@turf/turf';
 import L from 'leaflet';
 import React from 'react';
@@ -114,6 +114,19 @@ const EditTools = (props) => {
   });
   let mapDrawDeleted = useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
+  });
+  let mapDrawDeleteStart = useMapEvent('draw:deletestart' as any, () => {
+    //console.dir(context.layerContainer);
+  });
+  let mapDrawDeleteStop = useMapEvent('draw:deletestop' as any, () => {
+    let updatedGeoJSON = [];
+    (context.layerContainer as any).eachLayer((layer) => {
+      let aGeo = layer.toGeoJSON();
+      aGeo = convertLineStringToPoly(aGeo);
+      updatedGeoJSON.push(aGeo);
+    });
+    (context.layerContainer as any).clearLayers();
+    props.geometryState.setGeometry(updatedGeoJSON);
   });
   let mapEditSave = useMapEvent('draw:edited' as any, onEditStop);
 
