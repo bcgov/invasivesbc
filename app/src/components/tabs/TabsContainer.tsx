@@ -331,8 +331,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               [classes.drawerClose]: !open
             })
           }}
-          style={{ paddingTop: '100px' }}
           variant="permanent">
+          _{/* removed style component with paddingTop */}
           <div className={classes.toolbar}>
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />
@@ -347,7 +347,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               </ListItem>
             ))}
           </List>
-
           <Divider />
           <Grid container justifyContent="center" alignItems="center">
             <FormControlLabel
