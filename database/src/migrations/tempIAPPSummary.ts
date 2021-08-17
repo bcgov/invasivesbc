@@ -6,9 +6,8 @@ import * as Knex from 'knex';
 //      Having one consolidated file allows for quick troubleshooting and deployments.
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
-  set search_path=invasivesbc;
+  set search_path=invasivesbc,public;
 
-set search_path='invasivesbc';
 -- While we could wait a long time for the materialized view to update - this is also practice for what we'll be dealing with later with activities.
 
 --create a version of to_date that is usable in index.  if a backup is restored to a server with different local there will be issues, but that's unlikely.
@@ -163,7 +162,7 @@ create materialized view iapp_site_summary as select * from iapp_site_summary_sl
 
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
-  set search_path=invasivesbc;
+  set search_path=invasivesbc,public;
 drop index if exists point_of_interest_survey_date_idx;
 drop index if exists point_of_interest_chemical_treatment_date_idx;
 drop index if exists point_of_interest_chemical_monitoring_date_idx;
