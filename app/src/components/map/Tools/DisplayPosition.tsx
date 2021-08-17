@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Marker, Popup, useMapEvents } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { IconButton } from '@material-ui/core';
+import { CircularProgress, IconButton } from '@material-ui/core';
 import proj4 from 'proj4';
 import L from 'leaflet';
 
@@ -55,7 +55,23 @@ export default function DisplayPosition({ map }) {
   const [isLocating, setIsLocating] = useState(false);
   const [newPosition, setNewPosition] = useState(null);
 
+  const [initialTime, setInitialTime] = useState(0);
+  const [startTimer, setStartTimer] = useState(false);
+
+  useEffect(() => {
+    if (initialTime > 0) {
+      setTimeout(() => {
+        setInitialTime(initialTime - 1);
+      }, 1000);
+    }
+    if (initialTime === 0 && startTimer) {
+      setStartTimer(false);
+    }
+  }, [initialTime, startTimer]);
+
   const getLocation = async () => {
+    setInitialTime(5);
+    setStartTimer(true);
     const position = await Geolocation.getCurrentPosition();
     //const coords = position.coords;
     setNewPosition(position);
@@ -81,13 +97,17 @@ export default function DisplayPosition({ map }) {
       <IconButton
         ref={divRef}
         style={{
+          width: 48,
+          height: 48,
           margin: '5px',
           zIndex: 1500,
           background: 'white',
           borderRadius: '15%'
         }}
-        aria-label="my position" onClick={getLocation}>
-        <LocationOnIcon />
+        disabled={startTimer}
+        aria-label="my position"
+        onClick={getLocation}>
+        {initialTime > 0 ? <CircularProgress size={24} /> : <LocationOnIcon />}
       </IconButton>
     </div>
   );
