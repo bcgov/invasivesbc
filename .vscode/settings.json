@@ -1,5 +1,16 @@
 {
     "git.ignoreLimitWarning": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#0A3427",
+        "titleBar.activeBackground": "#0E4937",
+        "titleBar.activeForeground": "#F3FDFA"
+    },
+        "sonarlint.connectedMode.connections.sonarcloud": [
+            { "organizationKey": "myOrgOnSonarCloud", "token": "<generated from https://sonarcloud.io/account/security/>" }
+        ]
+        "sonarlint.connectedMode.project": {
+            "projectKey": "the-project-key"
+        }
 }

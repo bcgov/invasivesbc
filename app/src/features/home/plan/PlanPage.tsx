@@ -285,7 +285,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                   <Typography variant="body1">
                     Draw a polygon or square on the map, or upload a KML containing 1 shape.
                   </Typography>
-                  {/* <KMLUpload /> */}
+                  <KMLUpload />
                 </Paper>
               </TripStep>
               <TripStep
