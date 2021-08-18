@@ -23,7 +23,7 @@ export async function up(knex: Knex): Promise<void> {
 
 
     create table ${DB_SCHEMA}.batch_uploads (
-      id integer primary key not null generated always as identity,
+      id serial,
       csv_data text not null,
       status ${DB_SCHEMA}.batch_upload_status not null default 'NEW',
       validation_status ${DB_SCHEMA}.validation_status null,
