@@ -197,11 +197,6 @@ export const useDataAccess = () => {
     } else {
       if (forceCache === true || !networkStatus.connected) {
         const dbcontext = context;
-        alert(
-          `select * from activity WHERE json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
-            activitiesSearchCriteria.activity_subtype
-          ).replace(/[\[\]']+/g, '')})`
-        );
 
         const asyncReturnVal = await dbcontext.asyncQueue({
           asyncTask: () => {

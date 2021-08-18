@@ -130,6 +130,7 @@ export interface IMapContainerProps {
     state: MapContextMenuData;
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;
   };
+  setWellIdandProximity?: (wellIdandProximity: any) => {};
 }
 
 const interactiveGeometryStyle = () => {
@@ -326,6 +327,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           inputGeo={props.geometryState?.geometry[0]}
           dataBCLayerName="WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW"
           proximityInMeters={550}
+          setWellIdandProximity={props.setWellIdandProximity}
         />
       ) : (
         <></>

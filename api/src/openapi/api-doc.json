@@ -386,7 +386,9 @@
           "utm_easting",
           "utm_northing",
           "reported_area",
-          "location_description"
+          "location_description",
+          "well_id",
+          "well_proximity"
         ],
         "properties": {
           "activity_date_time": {
@@ -425,6 +427,17 @@
             "title": "Area (m\u00B2)",
             "minimum": 1,
             "x-tooltip-text": "Area of the activity automatically created from the geometry in square metres"
+          },
+          "well_id": {
+            "type": "string",
+            "title": "Well ID",
+            "x-tooltip-text": "ID of the closest well"
+          },
+          "well_proximity": {
+            "type": "number",
+            "title": "Well Proximity(m)",
+            "minimum": 1,
+            "x-tooltip-text": "Proximity of the closest well"
           },
           "employer_code": {
             "type": "string",

@@ -72,6 +72,7 @@ interface IActivityPageProps {
   setObservation?: Function;
   setFormHasErrors?: Function;
   setParentFormRef?: Function;
+  setWellIdandProximity?: Function;
 }
 
 //why does this page think I need a map context menu ?
@@ -462,6 +463,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return formData;
   };
 
+  const setWellIdandProximity = async (wellIdandProximity) => {
+    if (!wellIdandProximity) {
+      return;
+    } else {
+      const activityResult = await getActivityResultsFromDB(props.activityId || null);
+      let formData = { formData: getDefaultFormDataValues(activityResult) };
+      formData['formData']['activity_data']['well_id'] = wellIdandProximity.id.split(
+        'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW.fid--'
+      )[1];
+      formData['formData']['activity_data']['well_proximity'] = Number(wellIdandProximity.proximity.toFixed(0));
+      onFormChange(formData);
+      return;
+    }
+  };
+
   useEffect(() => {
     const getActivityData = async () => {
       const activityResult = await getActivityResultsFromDB(props.activityId || null);
@@ -476,7 +492,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const updatedDoc = { ...activityResult, formData: updatedFormData };
 
       // await handleRecordLinking(updatedDoc);
-
 
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
@@ -591,6 +606,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           //cloneActivityButton={generateCloneActivityButton}
           setParentFormRef={props.setParentFormRef}
           showDrawControls={true}
+          setWellIdandProximity={setWellIdandProximity}
         />
       )}
     </Container>

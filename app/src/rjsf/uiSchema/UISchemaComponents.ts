@@ -99,6 +99,12 @@ const Activity = {
   reported_area: {
     'ui:readonly': true
   },
+  well_id: {
+    'ui:readonly': true
+  },
+  well_proximity: {
+    'ui:readonly': true
+  },
   employer_code: {
     'ui:widget': 'single-select-autocomplete'
   },
