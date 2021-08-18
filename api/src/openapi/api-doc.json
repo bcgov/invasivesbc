@@ -389,9 +389,7 @@
           "utm_easting",
           "utm_northing",
           "reported_area",
-          "location_description",
-          "well_id",
-          "well_proximity"
+          "location_description"
         ],
         "properties": {
           "activity_date_time": {
