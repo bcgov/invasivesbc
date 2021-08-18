@@ -1,60 +1,36 @@
 import {
   Box,
-  Button,
   Checkbox,
   Divider,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  makeStyles,
-  Paper,
-  SvgIcon,
-  Theme,
-  Typography,
-  Select,
-  MenuItem,
   FormControl,
-  InputLabel
+  Grid,
+  InputLabel,
+  makeStyles,
+  MenuItem,
+  Select,
+  Theme,
+  Typography
 } from '@material-ui/core';
-import { Add, DeleteForever, Sync } from '@material-ui/icons';
-import clsx from 'clsx';
-import {
-  ActivitySubtype,
-  ActivitySyncStatus,
-  ActivityType,
-  ActivityTypeIcon,
-  FormValidationStatus,
-  ActivitySubtypeShortLabels
-} from 'constants/activities';
+import { ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
-import { useHistory } from 'react-router-dom';
 import 'styles/spinners.scss';
-import { notifyError, notifySuccess, notifyWarning } from 'utils/NotificationUtils';
 import ActivityListDate from './ActivityListDate';
-import { getErrorMessages } from 'utils/errorHandling';
-import { addNewActivityToDB } from 'utils/addActivity';
-import WarningDialog from 'components/common/WarningDialog';
 import {
-  MyObservationsTable,
-  MyTreatmentsTable,
-  MyMonitoringTable,
-  MyAnimalActivitiesTable,
-  MyTransectsTable,
-  ReviewActivitiesTable,
   MyAdditionalBiocontrolActivitiesTable,
-  MyPastActivitiesTable
+  MyAnimalActivitiesTable,
+  MyMonitoringTable,
+  MyObservationsTable,
+  MyPastActivitiesTable,
+  MyTransectsTable,
+  MyTreatmentsTable,
+  ReviewActivitiesTable
 } from 'components/common/RecordTables';
 import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { Capacitor } from '@capacitor/core';
+import BatchUpload from 'components/batch-upload/BatchUpload';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -423,6 +399,7 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Animal">Animal</MenuItem>
               <MenuItem value="Review">Review</MenuItem>
               <MenuItem value="Past Activities">Past Activities</MenuItem>
+              <MenuItem value="Batch Upload">Batch Upload</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -449,6 +426,11 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Past Activities' && (
             <Box>
               <MyPastActivitiesTable />
+            </Box>
+          )}
+          {workflowFunction === 'Batch Upload' && (
+            <Box>
+              <BatchUpload />
             </Box>
           )}
         </Box>

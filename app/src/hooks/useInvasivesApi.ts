@@ -4,17 +4,16 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import {
   IActivitySearchCriteria,
+  ICreateMetabaseQuery,
   ICreateOrUpdateActivity,
   IMetabaseQuerySearchCriteria,
-  ICreateMetabaseQuery
+  IPointOfInterestSearchCriteria
 } from 'interfaces/useInvasivesApi-interfaces';
-import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
 import { Http } from '@capacitor-community/http';
 import { useContext, useMemo } from 'react';
 import { DocType } from 'constants/database';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { contextMenuType } from 'features/home/map/MapContextMenu';
+import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
@@ -50,8 +49,8 @@ export const useInvasivesApi = () => {
   const databaseContext = useContext(DatabaseContext);
   /**
    * Fetch*
- activities by search criteria.
-      * @param {activitiesSearchCriteria} activitiesSearchCriteria
+   activities by search criteria.
+   * @param {activitiesSearchCriteria} activitiesSearchCriteria
    * @return {*}  {Promise<any>}
    */
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
@@ -334,6 +333,41 @@ export const useInvasivesApi = () => {
     return data;
   };
 
+  /**
+   * Create a new batch upload
+   *
+   // * @param {IBatchUploadRequest} uploadRequest
+   * @return {*}  {Promise<any>}
+   */
+  const postBatchUpload = async (uploadRequest: IBatchUploadRequest): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      data: uploadRequest,
+      url: `${options.baseUrl}/api/batch/upload`
+    });
+    return data;
+  };
+
+  const getBatchUploads = async (): Promise<any> => {
+    console.dir(options.headers);
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers },
+      url: `${options.baseUrl}/api/batch/upload`
+    });
+    return data;
+  };
+
+  const downloadTemplate = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers },
+      url: options.baseUrl + '/api/batch/template'
+    });
+    return data;
+  };
+
   return {
     getMedia,
     getSpeciesDetails,
@@ -348,6 +382,9 @@ export const useInvasivesApi = () => {
     getPointsOfInterest,
     getMetabaseQueryResults,
     getMetabaseQueryOptions,
-    createMetabaseQuery
+    createMetabaseQuery,
+    getBatchUploads,
+    postBatchUpload,
+    downloadTemplate
   };
 };
