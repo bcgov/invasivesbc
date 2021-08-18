@@ -7,7 +7,12 @@ import {
   Typography,
   Zoom,
   Tooltip,
-  Paper
+  Paper,
+  DialogContent,
+  Dialog,
+  DialogActions,
+  DialogContentText,
+  DialogTitle
 } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
@@ -50,6 +55,7 @@ import { addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from 'u
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
+import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -463,17 +469,75 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return formData;
   };
 
+  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogContentText: null
+  });
+
   const setWellIdandProximity = async (wellIdandProximity) => {
-    if (!wellIdandProximity) {
+    if (!wellIdandProximity || !wellIdandProximity.id || !wellIdandProximity.proximity) {
       return;
     } else {
+      alert('there is id and proximity');
       const activityResult = await getActivityResultsFromDB(props.activityId || null);
-      let formData = { formData: getDefaultFormDataValues(activityResult) };
-      formData['formData']['activity_data']['well_id'] = wellIdandProximity.id.split(
-        'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW.fid--'
+      let oldFormData = { formData: getDefaultFormDataValues(activityResult) };
+      let newFormData = oldFormData;
+      newFormData['formData']['activity_data']['well_id'] = wellIdandProximity.id.split(
+        'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW.fid'
       )[1];
-      formData['formData']['activity_data']['well_proximity'] = Number(wellIdandProximity.proximity.toFixed(0));
-      onFormChange(formData);
+      newFormData['formData']['activity_data']['well_proximity'] = Number(wellIdandProximity.proximity.toFixed(0));
+      if (
+        activityResult.activitySubtype.includes('Chemical') &&
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside)
+      ) {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Warning!',
+          dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
+          dialogActions: [
+            {
+              actionName: 'No',
+              actionOnClick: () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+                // saveGeometry([]);
+                onFormChange(oldFormData);
+              }
+            },
+            {
+              actionName: 'Yes',
+              actionOnClick: () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+                onFormChange(newFormData);
+              },
+              autoFocus: true
+            }
+          ]
+        });
+      } else if (
+        activityResult.activitySubtype.includes('Observation') &&
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside)
+      ) {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Warning!',
+          dialogContentText: 'There are wells that either inside your area or too close to it.',
+          dialogActions: [
+            {
+              actionName: 'Ok',
+              actionOnClick: () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+                onFormChange(newFormData);
+              },
+              autoFocus: true
+            }
+          ]
+        });
+      } else {
+        onFormChange(newFormData);
+      }
+
       return;
     }
   };
@@ -609,6 +673,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           setWellIdandProximity={setWellIdandProximity}
         />
       )}
+      <WarningDialog
+        dialogOpen={warningDialog.dialogOpen}
+        dialogTitle={warningDialog.dialogTitle}
+        dialogActions={warningDialog.dialogActions}
+        dialogContentText={warningDialog.dialogContentText}
+      />
     </Container>
   );
 };
