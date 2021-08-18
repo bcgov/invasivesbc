@@ -124,7 +124,7 @@ function uploadBatch(): RequestHandler {
 
           const updatedStatus = {
             status: csvOutcome.success ? 'SUCCESS' : 'ERROR',
-            validationStatus: csvOutcome.validationMessages.length == 0 ? 'VALID' : 'INVALID',
+            validationStatus: csvOutcome.validationMessages.length === 0 ? 'VALID' : 'INVALID',
             validationMessages: csvOutcome.validationMessages
           };
 

@@ -134,7 +134,7 @@ const processRow = async (connection, created_by, row, skip_insert = false): Pro
 };
 
 function processCSVData(connection, created_by, data): Promise<ProcessingOutcome> {
-  const p = new Promise<ProcessingOutcome>((resolve, reject) => {
+  return new Promise<ProcessingOutcome>((resolve, reject) => {
     let errorEncountered = false;
     const validationMessages: RowValidationMessage[] = [];
 
@@ -149,11 +149,12 @@ function processCSVData(connection, created_by, data): Promise<ProcessingOutcome
       .on('data', async (row) => {
         i++;
         const messages = await processRow(connection, created_by, row, validationMessages.length > 0);
-        if (messages.length > 0)
+        if (messages.length > 0) {
           validationMessages.push({
             row: i,
             messages
           });
+        }
       })
       .on('error', (err) => {
         errorEncountered = true;
@@ -169,13 +170,11 @@ function processCSVData(connection, created_by, data): Promise<ProcessingOutcome
       })
       .on('end', () => {
         resolve({
-          success: !errorEncountered && validationMessages.length == 0,
+          success: !errorEncountered && validationMessages.length === 0,
           validationMessages
         });
       });
   });
-
-  return p;
 }
 
 export { processCSVData };
