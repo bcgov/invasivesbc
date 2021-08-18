@@ -49,7 +49,7 @@ interface IRenderKeyFeaturesNearFeature {
   featureType?: string;
   memoHash?: string;
   customOnEachFeature?: any;
-  setWellIdandProximity: (wellIdandProximity: any) => void;
+  setWellIdandProximity?: (wellIdandProximity: any) => Object;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -117,7 +117,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const [wellIdandProximity, setWellIdandProximity] = useState(null);
 
   useEffect(() => {
-    props.setWellIdandProximity(wellIdandProximity);
+    //props.setWellIdandProximity(wellIdandProximity);
   }, [wellIdandProximity]);
 
   let minDistanceKm = null;
@@ -130,7 +130,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       const distanceKm = pointToLineDistance(point, polygonToLine(turfPolygon));
       if (!!!minDistanceKm || minDistanceKm > distanceKm) {
         minDistanceKm = distanceKm;
-        setWellIdandProximity({ id: arrayOfPoints[index].id, proximity: minDistanceKm * 1000 });
+        // setWellIdandProximity({ id: arrayOfPoints[index].id, proximity: minDistanceKm * 1000 });
         nearestPoint = nearestPointOnLine((polygonToLine(turfPolygon) as any).geometry, point);
         nearestPointIndex = index;
       }
