@@ -60,6 +60,24 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/activities/`,
       data: activitiesSearchCriteria
     });
+
+    /**
+     * Hijacking this function to test out the GeoJSON output API
+     */
+    const geojsonData = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/activities-lean/`,
+      data: activitiesSearchCriteria
+    });
+
+    const features = geojsonData.data.rows.map((d) => d.geojson);
+    const geojson = {
+      type: 'FeatureCollection',
+      features: features
+    };
+    console.log('Activities as geojson', geojson);
+
     return data;
   };
 
