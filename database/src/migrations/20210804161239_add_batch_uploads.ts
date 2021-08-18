@@ -1,4 +1,4 @@
-import * as Knex from "knex";
+import * as Knex from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
 
