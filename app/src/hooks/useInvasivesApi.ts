@@ -4,18 +4,16 @@ import { DatabaseContext } from 'contexts/DatabaseContext';
 import { query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import {
   IActivitySearchCriteria,
+  ICreateMetabaseQuery,
   ICreateOrUpdateActivity,
   IMetabaseQuerySearchCriteria,
-  ICreateMetabaseQuery
+  IPointOfInterestSearchCriteria
 } from 'interfaces/useInvasivesApi-interfaces';
-import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
 import { Http } from '@capacitor-community/http';
 import { useContext, useMemo } from 'react';
 import { DocType } from 'constants/database';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { contextMenuType } from 'features/home/map/MapContextMenu';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
@@ -51,8 +49,8 @@ export const useInvasivesApi = () => {
   const databaseContext = useContext(DatabaseContext);
   /**
    * Fetch*
- activities by search criteria.
-      * @param {activitiesSearchCriteria} activitiesSearchCriteria
+   activities by search criteria.
+   * @param {activitiesSearchCriteria} activitiesSearchCriteria
    * @return {*}  {Promise<any>}
    */
   const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
