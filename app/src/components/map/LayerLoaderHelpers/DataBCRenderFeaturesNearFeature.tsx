@@ -49,7 +49,7 @@ interface IRenderKeyFeaturesNearFeature {
   featureType?: string;
   memoHash?: string;
   customOnEachFeature?: any;
-  customStyleOnEachFeature?: Object; //TODO
+  setWellIdandProximity: (wellIdandProximity: any) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -114,20 +114,15 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const [geosWithClosest, setGeosWithClosest] = useState(null);
   const [keyval, setKeyval] = useState(0);
 
-  let nearestPoint = null;
-  let minDistanceKm = null;
+  const [wellIdandProximity, setWellIdandProximity] = useState(null);
 
+  useEffect(() => {
+    props.setWellIdandProximity(wellIdandProximity);
+  }, [wellIdandProximity]);
+
+  let minDistanceKm = null;
+  let nearestPoint = null;
   const getClosestPointToPolygon = (arrayOfPoints) => {
-    // arrayOfPoints.map((point) => {
-    //   //3 violet polygons mentioned above
-    //   const turfPolygon = polygon((props.inputGeo.geometry as any).coordinates);
-    //   const distanceKm = pointToLineDistance(point, polygonToLine(turfPolygon));
-    //   if (!!!minDistanceKm || minDistanceKm > distanceKm) {
-    //     minDistanceKm = distanceKm;
-    //     nearestPoint = nearestPointOnLine((polygonToLine(turfPolygon) as any).geometry, point);
-    //   }
-    // });
-    // return nearestPoint;
     let index = 0;
     let nearestPointIndex = null;
     arrayOfPoints.forEach((point) => {
@@ -135,6 +130,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       const distanceKm = pointToLineDistance(point, polygonToLine(turfPolygon));
       if (!!!minDistanceKm || minDistanceKm > distanceKm) {
         minDistanceKm = distanceKm;
+        setWellIdandProximity({ id: arrayOfPoints[index].id, proximity: minDistanceKm * 1000 });
         nearestPoint = nearestPointOnLine((polygonToLine(turfPolygon) as any).geometry, point);
         nearestPointIndex = index;
       }
@@ -196,12 +192,3 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     </>
   );
 };
-
-// {
-//               fillColor: '#FF0000',
-//               weight: 0.3,
-//               opacity: 1,
-//               color: '#FF0000',
-//               dashArray: '3',
-//               fillOpacity: 0.5
-//             };
