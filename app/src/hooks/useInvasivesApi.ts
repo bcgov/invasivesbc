@@ -61,8 +61,11 @@ export const useInvasivesApi = () => {
       data: activitiesSearchCriteria
     });
 
+    /****************Begining of GeoJSON*****************/
     /**
-     * Hijacking this function to test out the GeoJSON output API
+     * This logic has optimized the data output into the essentials
+     * for Leaflet to consume. Will hopefully replace the default
+     * output data.
      */
     const geojsonData = await Http.request({
       method: 'POST',
@@ -77,6 +80,7 @@ export const useInvasivesApi = () => {
       features: features
     };
     console.log('Activities as geojson', geojson);
+    /******************End of GeoJSON*******************/
 
     return data;
   };
@@ -126,8 +130,11 @@ export const useInvasivesApi = () => {
       data: pointsOfInterestSearchCriteria
     });
 
+    /****************Begining of GeoJSON*****************/
     /**
-     * Hijacking this function to test out the GeoJSON output API
+     * This logic has optimized the data output into the essentials
+     * for Leaflet to consume. Will hopefully replace the default
+     * output data.
      */
     const geojsonData = await Http.request({
       method: 'POST',
@@ -142,6 +149,7 @@ export const useInvasivesApi = () => {
       features: features
     };
     console.log('Observations as geojson', geojson);
+    /******************End of GeoJSON*******************/
 
     return data;
   };

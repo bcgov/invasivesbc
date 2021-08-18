@@ -148,7 +148,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getPointsOfInterestLeanSQL(sanitizedSearchCriteria);
-      console.log(sqlStatement);
 
       if (!sqlStatement) {
         throw {
