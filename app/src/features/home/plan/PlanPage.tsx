@@ -7,35 +7,29 @@ import {
   Container,
   Grid,
   IconButton,
-  LinearProgress,
   makeStyles,
   Paper,
   Tooltip,
   Typography
 } from '@material-ui/core';
-import { DeleteForever, ExpandMore, Rowing } from '@material-ui/icons';
-import ActivityDataFilter from 'components/activities-search-controls/ActivitiesFilter';
-import MetabaseSearch from 'components/search/MetabaseSearch';
-import KMLUpload from 'components/map-buddy-components/KMLUpload';
-import MapContainer2 from 'components/map/MapContainer2';
-import PointOfInterestDataFilter from 'components/point-of-interest-search/PointOfInterestFilter';
-import TripDataControls from 'components/trip/TripDataControls';
+import { DeleteForever, ExpandMore } from '@material-ui/icons';
+import ActivityDataFilter from '../../../components/activities-search-controls/ActivitiesFilter';
+import MetabaseSearch from '../../../components/search/MetabaseSearch';
+import KMLUpload from '../../../components/map-buddy-components/KMLUpload';
+import MapContainer2 from '../../../components/map/MapContainer2';
+import PointOfInterestDataFilter from '../../../components/point-of-interest-search/PointOfInterestFilter';
+import TripDataControls from '../../../components/trip/TripDataControls';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import HelpIcon from '@material-ui/icons/Help';
-import TripStepStatus, { ITripStepStatus, TripStatusCode } from 'components/trip/TripStepStatus';
-import RecordTable from 'components/common/RecordTable';
+import TripStepStatus, { TripStatusCode } from '../../../components/trip/TripStepStatus';
+import RecordTable from '../../../components/common/RecordTable';
 import { DocType } from 'constants/database';
-import { interactiveGeoInputData } from 'components/map/GeoMeta';
-import TripNamer from 'components/trip/TripNamer';
-import { useCallback } from 'react';
-import Spinner from 'components/spinner/Spinner';
-import { confirmDeleteTrip, deleteTripRecords } from './PlanPageHelpers';
+import TripNamer from '../../../components/trip/TripNamer';
 import { Capacitor } from '@capacitor/core';
-import { useMap } from 'react-leaflet';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
+import { useDataAccess } from '../../../hooks/useDataAccess';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext2';
 
 interface IPlanPageProps {
   classes?: any;
@@ -102,11 +96,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
-  // const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
   const [extent, setExtent] = useState(null);
 
-  const [workingTripID, setWorkingTripID] = useState(null);
   const [newTripID, setNewTripID] = useState(null);
   const [trips, setTrips] = useState(null);
   const [tripsLoaded, setTripsLoaded] = useState(null);
@@ -114,95 +106,37 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
-  /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
-  const handleContextMenuClose = () => {
-    setContextMenuState({ ...contextMenuState, isOpen: false });
-  };
-  */
-
-  // const getExtent = async () => {
-  //   let docs = await databaseContext.database.find({
-  //     selector: { docType: DocType.PLAN_PAGE_EXTENT },
-  //     use_index: 'docTypeIndex'
-  //   });
-  //   if (!docs || !docs.docs || !docs.docs.length) {
-  //     return;
-  //   }
-  //   if (!docs[0]) {
-  //     return;
-  //   }
-  //   if (docs[0].extent) {
-  //     setExtent(docs[0].extent);
-  //   }
-  // };
   const dataAccess = useDataAccess();
   const getTrips = async () => {
-    if (!databaseContext) {
-    }
-
-    let trips = [];
-    let geos = [];
+    const newTrips = [];
+    const newGeos = [];
     //todo:  try to wrap this all in db context so we don't need to reference both dbs here
     let docs: any; //pouch db response
     let results: any; //sqlite db response
 
-    if (Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') {
+    if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
       results = await dataAccess.getTrips(databaseContext);
     } else {
       return;
     }
 
-    // stop loading spinner on trip db load
-    if (Capacitor.getPlatform() == 'web' && docs?.docs?.length === 0) {
-      setTripsLoaded(true);
-      docs?.docs?.map((doc) => {
-        trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
-        if (doc.geometry) {
-          geos.push({
-            recordDocID: doc._id,
-            recordDocType: doc.docType,
-            description: 'Uploaded spatial content:\n ' + doc._id + '\n',
-            geometry: doc.geometry,
-            color: 'orange',
-            onClickCallback: () => {},
-            popUpComponent: null
-          });
-        }
-      });
-    }
-    if ((Capacitor.getPlatform() == 'ios' || Capacitor.getPlatform() == 'android') && results) {
+    if ((Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') && results) {
       console.log('results length' + results.length);
 
       results.map((adoc) => {
         try {
-          let doc = JSON.parse(adoc.json);
-          trips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
+          const doc = JSON.parse(adoc.json);
+          newTrips.push({ trip_ID: doc.trip_ID, trip_name: doc.name, num_activities: 5, num_POI: 4 });
         } catch (e) {
           console.log('error pushign to trips');
           console.log(e);
           console.log(adoc);
         }
-        /*
-        if (doc.geometry) {
-          geos.push({
-            recordDocID: doc._id,
-            recordDocType: doc.docType,
-            description: 'Uploaded spatial content:\n ' + doc._id + '\n',
-            geometry: doc.geometry,
-            color: 'orange',
-            onClickCallback: () => {},
-            popUpComponent: null
-          });
-        }
-        */
       });
     }
 
-    if (geos.length > 0) {
-      //  setInteractiveGeometry(geos);
-    }
-    setTrips([...trips]);
-    console.log('set trips to ' + trips.length);
+    setTrips([...newTrips]);
+    console.log('set trips to ' + newTrips.length);
   };
 
   useEffect(() => {
@@ -213,7 +147,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
   const helperGetMaxTripID = async () => {
     if (!databaseContext) {
-      return;
+      return 0;
     }
 
     const sql = 'select max(id) as id from trip;';
@@ -225,40 +159,13 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   useEffect(() => {
     const initialLoad = async () => {
       await getTrips();
-      //await getExtent();
     };
     initialLoad();
   }, [newTripID, tripsLoaded]);
 
-  // persist geometry changes
-  useEffect(() => {
-    if (!tripsLoaded) {
-      return;
-    }
-    if (!workingTripID) {
-      return;
-    }
-    // if (geometry) {
-
-    //   databaseContext.database.upsert(workingTripID, (tripDoc) => {
-    //     return { ...tripDoc, geometry: geometry, persistenceStep: 'update geo' };
-    //   });
-    // }
-  }, [geometry, tripsLoaded]);
-
-  // persist extent changes
-  // useEffect(() => {
-  //   if (!tripsLoaded || !extent) {
-  //     return;
-  //   }
-  //   databaseContext.upsert('planPageExtent', (planPageExtentDoc) => {
-  //     return { ...planPageExtentDoc, docType: DocType.PLAN_PAGE_EXTENT, extent: extent };
-  //   });
-  // }, [extent, tripsLoaded]);
-
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
-    newID = newID != 'NULL' ? newID + 1 : 1;
+    newID = newID !== 'NULL' ? newID + 1 : 1;
     const newTripObj = {
       trip_ID: newID,
       trip_name: 'New Unnamed Trip',
@@ -281,8 +188,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   };
 
   const SingleTrip: React.FC<any> = (props) => {
-    //todo: add trip_id to props and let trip manage db itself
-    const databaseContext = useContext(DatabaseContext2);
     const [stepState, setStepState] = useState(null);
     const getStateFromTrip = useCallback(async () => {
       const results = await query(
@@ -323,9 +228,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     };
 
     const helperCloseOtherAccordions = (expanded, stepNumber) => {
-      let newState: any = [...stepState];
+      const newState: any = [...stepState];
       for (let i = 1; i < stepState.length; i++) {
-        let expanded2 = i == stepNumber && expanded ? true : false;
+        const expanded2 = i === stepNumber && expanded ? true : false;
         newState[i] = { ...newState[i], expanded: expanded2 };
       }
       saveState([...newState]);
@@ -333,10 +238,10 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
     //generic helper to mark step as done if there isn't a special purpose check
     const helperStepDoneOrSkip = (stepNumber) => {
-      let newState: any = [...stepState];
+      const newState: any = [...stepState];
       for (let i = 1; i < stepState.length; i++) {
         newState[i] = { ...newState[i], expanded: false };
-        if (i == stepNumber && i != 2) {
+        if (i === stepNumber && i !== 2) {
           newState[i] = { ...newState[i], status: TripStatusCode.ready };
         }
       }
@@ -385,7 +290,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               </TripStep>
               <TripStep
                 title="Step 3: Choose past field activity data."
-                helpText="This is where you can cache past activities (observations etc.) to the app.  If you want to search for records in a particular area, draw a polygon on the map."
+                helpText={`This is where you can cache past activities (observations etc.) to the app.  
+                If you want to search for records in a particular area, draw a polygon on the map.`}
                 additionalText="other"
                 expanded={stepState[3].expanded}
                 tripStepDetailsClassName={classes.activityRecordList}
@@ -400,7 +306,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               </TripStep>
               <TripStep
                 title="Step 4: Choose data from other systems, (IAPP)"
-                helpText="This is where you can cache IAPP sites, and later other points of interest.  If you want to search for records in a particular area, draw a polygon on the map."
+                helpText={`This is where you can cache IAPP sites, and later other points of interest.  
+                If you want to search for records in a particular area, draw a polygon on the map.`}
                 additionalText="other"
                 expanded={stepState[4].expanded}
                 tripStepDetailsClassName={classes.pointOfInterestList}
@@ -519,13 +426,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   }, [geometry, interactiveGeometry, tripsLoaded]);
 
   const trashTrip = async (trip_ID, tripName) => {
-    // if (confirmDeleteTrip(trip_ID, tripName)) {
-    //   await deleteTripRecords(databaseContext, trip_ID);
-    // }
-    // await databaseContext.database.get(trip_ID.toString()).then((doc) => {
-    //   return databaseContext.database.remove(doc);
-    // });
-
     setNewTripID(Math.random()); //NOSONAR
   };
 
@@ -588,12 +488,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           dropdown={(row) => {
             return <SingleTrip trip_ID={row.trip_ID} />;
           }}
-
-          // expandable: defaults true
-          // startExpanded: default true
-          // startingOrder: default asc
-          // startingRowsPerPage: default 10;
-          // rowsPerPageOptions: default false (turns off the [5,10,15] per page select thing)
         />
       )}
     </Container>
