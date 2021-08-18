@@ -3,10 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
 import { HEADERS } from '../../utils/csv-intake-processor';
-
-const defaultLog = getLogger('batch');
 
 export const GET: Operation = [getTemplate()];
 

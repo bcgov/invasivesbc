@@ -106,8 +106,6 @@ function uploadBatch(): RequestHandler {
     let createdId;
 
     try {
-      const createResponse: QueryResult = null;
-
       try {
         // Perform both get and create operations as a single transaction
         await connection.query('BEGIN');
@@ -122,7 +120,7 @@ function uploadBatch(): RequestHandler {
         createdId = response.rows[0]['id'];
 
         try {
-          const csvOutcome = await processCSVData(connection,  req['auth_payload'].preferred_username, decoded);
+          const csvOutcome = await processCSVData(connection, req['auth_payload'].preferred_username, decoded);
 
           const updatedStatus = {
             status: csvOutcome.success ? 'SUCCESS' : 'ERROR',
@@ -142,7 +140,6 @@ function uploadBatch(): RequestHandler {
         } catch (e) {
           await connection.query(`update batch_uploads set status = 'ERROR' where id = $1`, [createdId]);
         }
-
 
         await connection.query('COMMIT');
       } catch (error) {
@@ -176,8 +173,6 @@ function listBatches(): RequestHandler {
     }
 
     try {
-      const queryResult: QueryResult = null;
-
       try {
         // Perform both get and create operations as a single transaction
         await connection.query('BEGIN');

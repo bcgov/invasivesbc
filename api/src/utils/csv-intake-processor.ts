@@ -2,10 +2,7 @@
 
 import csvParser from 'csv-parser';
 
-import { getLogger } from './logger';
 import { Readable } from 'stream';
-
-const defaultLog = getLogger('batch');
 
 interface RowValidationMessage {
   messages: any[];
@@ -29,6 +26,7 @@ class ValidatorMapping {
     this.databaseColumn = databaseColumn;
     this.validate = validate;
     this.payloadProperty = payloadProperty;
+    this.required = required;
   }
 
   isValid(data) {
@@ -119,13 +117,12 @@ const processRow = async (connection, created_by, row, skip_insert = false): Pro
     .join(', ')}) returning activity_incoming_data_id as id`;
 
   try {
-    const result = await connection.query(
+    await connection.query(
       q,
       insert_columns.map((c) => c.data)
     );
 
-    //@todo send this back to the client for insertion into created_object_details
-    const created_id = result.rows[0]['id'];
+    //@todo send result back to the client for insertion into created_object_details
   } catch (err) {
     messages.push({
       column: null,
@@ -142,7 +139,7 @@ function processCSVData(connection, created_by, data): Promise<ProcessingOutcome
     const validationMessages: RowValidationMessage[] = [];
 
     const parser = csvParser({
-      mapHeaders: ({ header, index }) => header.trim()
+      mapHeaders: ({ header }) => header.trim()
     });
 
     let i = 0;
@@ -176,7 +173,6 @@ function processCSVData(connection, created_by, data): Promise<ProcessingOutcome
           validationMessages
         });
       });
-
   });
 
   return p;
