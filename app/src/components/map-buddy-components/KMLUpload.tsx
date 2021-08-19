@@ -61,7 +61,7 @@ export const KMLUpload: React.FC<any> = (props) => {
   };
 
   useEffect(() => {
-    if (aFile /*&& Capacitor.getPlatform() !== 'web'*/) {
+    if (aFile && Capacitor.getPlatform() !== 'web') {
       // check if kmz or kml
       //if kml:
       saveKML(aFile);
@@ -70,10 +70,12 @@ export const KMLUpload: React.FC<any> = (props) => {
       //saveKml(converted)
     } else {
       //fart around in web
-      //if kml:
+      if (KMZ_OR_KML(aFile) === 'KML') {
+        saveKML(aFile);
+      } else if (KMZ_OR_KML(aFile) === 'KMZ') {
+        //var newFile = KMZ_TO_KML(aFile);
+      }
       // validate that we have geojson in console
-      // if kmz
-      // convert to kml
       // validate that we have geojson in console
     }
   }, [aFile]);
@@ -84,7 +86,7 @@ export const KMLUpload: React.FC<any> = (props) => {
       onChange={(e) => {
         setAFile(e[0]);
         e.forEach((file) => {
-          console.log(toString(file.stream));
+          console.log(KMZ_OR_KML(file));
         });
       }}
     />
