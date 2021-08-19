@@ -67,7 +67,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
 
   //when there is new wellId and proximity, send info to ActivityPage
   useEffect(() => {
-    props.setWellIdandProximity(wellIdandProximity);
+    if (props.setWellIdandProximity) props.setWellIdandProximity(wellIdandProximity);
   }, [wellIdandProximity]);
 
   /*
