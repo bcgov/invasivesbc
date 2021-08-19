@@ -296,6 +296,12 @@ const EditTools = (props) => {
   };
 
   useEffect(() => {
+    if (props.geometryState.geometry === null) {
+      (context.layerContainer as any).clearLayers();
+    }
+  }, [props.geometryState]);
+
+  useEffect(() => {
     if (!map) {
       return;
     }

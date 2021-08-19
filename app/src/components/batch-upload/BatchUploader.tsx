@@ -1,10 +1,10 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Box, Button, Paper, Typography} from '@material-ui/core';
-import {useInvasivesApi} from "../../hooks/useInvasivesApi";
-import {useDropzone} from 'react-dropzone'
+import React, { useCallback, useEffect, useState } from 'react';
+import { Box, Button, Paper, Typography } from '@material-ui/core';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import { useDropzone } from 'react-dropzone';
 
 export interface IBatchUploadRequest {
-  data: string,
+  data: string;
 }
 
 const dropzoneStyle = {
@@ -17,7 +17,7 @@ const dropzoneStyle = {
 } as React.CSSProperties;
 
 type BatchUploaderProps = {
-  onUploadComplete: (() => void);
+  onUploadComplete: () => void;
 };
 
 const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
@@ -26,10 +26,10 @@ const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
   const [statusMessage, setStatusMessage] = useState(null);
 
   const [uploadRequest, setUploadRequest] = useState({
-    data: null,
+    data: null
   });
 
-  const onDrop = useCallback(acceptedFiles => {
+  const onDrop = useCallback((acceptedFiles) => {
     // Do something with the files
 
     acceptedFiles.forEach((file) => {
@@ -41,7 +41,6 @@ const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
       reader.onload = () => {
         const encodedString = btoa(reader.result as string);
 
-
         setUploadRequest({
           ...uploadRequest,
           data: encodedString
@@ -52,7 +51,6 @@ const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
       setFilename(file.name);
       reader.readAsText(file, 'utf-8');
     });
-
   }, []);
 
   const fileValidator = (file) => {
@@ -66,10 +64,8 @@ const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
     };
   };
 
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({
-    onDrop,
-    maxFiles: 1,
-    validator: fileValidator
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop
   });
 
   const api = useInvasivesApi();
@@ -91,36 +87,34 @@ const BatchUploader: React.FC<BatchUploaderProps> = ({ onUploadComplete }) => {
   };
 
   return (
-
     <Paper>
       <Box mx={3} my={3} py={3}>
-        <Typography variant={"h4"}>Batch Upload</Typography>
+        <Typography variant={'h4'}>Batch Upload</Typography>
         {uploadRequest.data != null && <span>{filename} ready to upload</span>}
-        {uploadRequest.data == null &&
-        <div style={dropzoneStyle} {...getRootProps()}>
-          <input {...getInputProps()} />
-          {
-            isDragActive ?
-              <p>Drop here</p> :
-              <p>Click to select a file to upload</p>
-          }
-        </div>}
-        {statusMessage != null &&
-        <p>{statusMessage}</p>
-        }
+        {uploadRequest.data == null && (
+          <div style={dropzoneStyle} {...getRootProps()}>
+            <input {...getInputProps()} />
+            {isDragActive ? <p>Drop here</p> : <p>Click to select a file to upload</p>}
+          </div>
+        )}
+        {statusMessage != null && <p>{statusMessage}</p>}
         <div>
-        <Button variant={"contained"} disabled={uploadRequest.data == null || uploading}
-                onClick={() => doUpload()}>Upload</Button>
-        <Button variant={"outlined"} disabled={uploadRequest.data == null}
-                onClick={() => {
-                  setUploadRequest({data: null});
-                  setFilename(null);
-                  setStatusMessage(null);
-                }}>Clear</Button>
+          <Button variant={'contained'} disabled={uploadRequest.data == null || uploading} onClick={() => doUpload()}>
+            Upload
+          </Button>
+          <Button
+            variant={'outlined'}
+            disabled={uploadRequest.data == null}
+            onClick={() => {
+              setUploadRequest({ data: null });
+              setFilename(null);
+              setStatusMessage(null);
+            }}>
+            Clear
+          </Button>
         </div>
       </Box>
     </Paper>
-
   );
 };
 

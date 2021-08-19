@@ -13,7 +13,6 @@ import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
-import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import proj4 from 'proj4';
 import { Feature } from 'geojson';
@@ -50,6 +49,7 @@ import { addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from 'u
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
+import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -99,7 +99,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
 
   const [doc, setDoc] = useState(null);
-  const docId = doc && doc._id;
+  // const docId = doc && doc._id;
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
@@ -134,7 +134,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
-        const res = await dataAccess.updateActivity(newActivity, databaseContext);
+        await dataAccess.updateActivity(newActivity, databaseContext);
       });
       await dbUpdates(updatedDoc);
       // console.log("updated doc ", updatedDoc);
@@ -463,18 +463,109 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     return formData;
   };
 
-  const setWellIdandProximity = async (wellIdandProximity) => {
+  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogContentText: null
+  });
+
+  //sets well id and proximity if there are any
+  const setWellIdandProximity = async (wellIdandProximity: any) => {
+    //if nothing is received, don't do anything
+    const activityResult = await getActivityResultsFromDB(props.activityId || null);
+
     if (!wellIdandProximity) {
       return;
     } else {
-      const activityResult = await getActivityResultsFromDB(props.activityId || null);
-      let formData = { formData: getDefaultFormDataValues(activityResult) };
-      formData['formData']['activity_data']['well_id'] = wellIdandProximity.id.split(
-        'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW.fid--'
-      )[1];
-      formData['formData']['activity_data']['well_proximity'] = Number(wellIdandProximity.proximity.toFixed(0));
-      onFormChange(formData);
-      return;
+      let newFormData = doc;
+
+      //set well_id and well_proximity fields
+      newFormData['formData']['activity_data']['well_id'] = wellIdandProximity.id ? wellIdandProximity.id : undefined;
+      newFormData['formData']['activity_data']['well_proximity'] = wellIdandProximity.proximity
+        ? Number(wellIdandProximity.proximity.toFixed(0))
+        : undefined;
+
+      const newValuesAreSame: boolean =
+        newFormData['formData']['activity_data']['well_id'] ===
+          activityResult['formData']['activity_data']['well_id'] &&
+        newFormData['formData']['activity_data']['well_proximity'] ===
+          activityResult['formData']['activity_data']['well_proximity'];
+
+      //if it is a Chemical treatment and there are wells too close, display warning dialog
+      if (
+        doc.activitySubtype.includes('Treatment_ChemicalPlant') &&
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
+        !newValuesAreSame
+      ) {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Warning!',
+          dialogContentText: 'There are wells that either inside your area or too close to it. Do you wish to proceed?',
+          dialogActions: [
+            {
+              actionName: 'No',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+                setGeometry(null);
+
+                await updateDoc({
+                  ...doc,
+                  formData: {
+                    ...doc.formData,
+                    activity_data: {
+                      ...doc.formData.activity_data,
+                      latitude: undefined,
+                      longitude: undefined,
+                      utm_zone: undefined,
+                      utm_northing: undefined,
+                      utm_easting: undefined,
+                      well_id: undefined,
+                      well_proximity: undefined,
+                      reported_area: undefined
+                    }
+                  }
+                });
+              }
+            },
+            {
+              actionName: 'Yes',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+
+                await updateDoc({ formData: newFormData['formData'] });
+              },
+              autoFocus: true
+            }
+          ]
+        });
+      }
+      //if it is a Observation and there are wells too close, display warning dialog
+      else if (
+        doc.activitySubtype.includes('Observation') &&
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
+        !newValuesAreSame
+      ) {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Warning!',
+          dialogContentText: 'There are wells that either inside your area or too close to it.',
+          dialogActions: [
+            {
+              actionName: 'Ok',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+                await updateDoc({ formData: newFormData['formData'] });
+              },
+              autoFocus: true
+            }
+          ]
+        });
+      }
+      //If not in Observation nor in Chemical Treatment, just make changes to fields
+      else {
+        await updateDoc({ formData: newFormData['formData'] });
+      }
     }
   };
 
@@ -609,6 +700,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           setWellIdandProximity={setWellIdandProximity}
         />
       )}
+      <WarningDialog
+        dialogOpen={warningDialog.dialogOpen}
+        dialogTitle={warningDialog.dialogTitle}
+        dialogActions={warningDialog.dialogActions}
+        dialogContentText={warningDialog.dialogContentText}
+      />
     </Container>
   );
 };
