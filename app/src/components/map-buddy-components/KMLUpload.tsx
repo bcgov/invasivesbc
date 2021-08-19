@@ -8,6 +8,9 @@ import { Capacitor } from '@capacitor/core';
 import unzipper from 'unzipper';
 // node doesn't have xml parsing or a dom. use xmldom
 import * as pako from 'pako';
+import { Base64 } from 'js-base64';
+import { css } from '@material-ui/system';
+const { deflate, unzip } = require('zlib');
 
 const DOMParser = require('xmldom').DOMParser;
 //var toString = require('stream-to-string');
@@ -42,18 +45,37 @@ const KMZ_OR_KML = (input: File) => {
 const KMZ_TO_KML = async (input: File) => {
   try {
     //  const transform: <ReadableWriteablePair> = { ReadableStream(), WritableStream() }
-    const encodedText = await input
-      .stream()
-      .getReader()
-      .read()
-      .then((value) => {
-        console.log(typeof value.value);
-        return value.value;
-      });
-    const decodedText = new TextDecoder('utf-8').decode(encodedText);
+    const rawText = await input.text().then((returnVal) => {
+      return returnVal;
+    });
+
+    const { deflate, unzip } = require('zlib');
+    console.log(rawText);
+
+    const buffer = Buffer.from(rawText);
+    unzip(buffer, (err, buffer) => {
+      if (err) {
+        console.error('An error occurred:', err);
+        process.exitCode = 1;
+      }
+      console.log(buffer.toString());
+    });
 
     // Decode base64 (convert ascii to binary)
-    var strData = atob(decodedText);
+    //var strData = atob(encodedText);
+    //    console.log('raw text');
+    //   console.log(rawText);
+    /*
+    var encoded;
+    try {
+      encoded = await Base64.encode(rawText);
+      console.log('yay');
+    } catch (e) {
+      console.log('oh no');
+    }
+    console.log('encoded text');
+    console.log(encoded);
+    var strData = atob(encoded);
 
     // Convert binary string to character-number array
     var charData = strData.split('').map(function (x) {
@@ -63,16 +85,19 @@ const KMZ_TO_KML = async (input: File) => {
     // Turn number array into byte-array
     var binData = new Uint8Array(charData);
 
+    console.log(binData);
     // Pako magic
-    var data = pako.inflate(binData);
+    var data = pako.inflate(atob(strData), { to: 'string' });
 
     // Convert gunzipped byteArray back to ascii string:
-    var ascii = String.fromCharCode.apply(null, new Uint16Array(data));
+    // var ascii = String.fromCharCode.apply(null, new Uint16Array(data));
 
-    console.log(ascii);
+    console.log(data);
 
     console.log('unzipped');
-    return ascii;
+    return data;
+    */
+    return '';
   } catch (e) {
     console.dir(e);
   }
