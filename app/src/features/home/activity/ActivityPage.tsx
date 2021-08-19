@@ -7,18 +7,12 @@ import {
   Typography,
   Zoom,
   Tooltip,
-  Paper,
-  DialogContent,
-  Dialog,
-  DialogActions,
-  DialogContentText,
-  DialogTitle
+  Paper
 } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from 'components/activity/ActivityComponent';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
-import { DocType } from 'constants/database';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import proj4 from 'proj4';
 import { Feature } from 'geojson';
@@ -105,7 +99,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
 
   const [doc, setDoc] = useState(null);
-  const docId = doc && doc._id;
+  // const docId = doc && doc._id;
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
@@ -140,7 +134,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
-        const res = await dataAccess.updateActivity(newActivity, databaseContext);
+        await dataAccess.updateActivity(newActivity, databaseContext);
       });
       await dbUpdates(updatedDoc);
       // console.log("updated doc ", updatedDoc);
@@ -476,21 +470,33 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     dialogContentText: null
   });
 
-  const setWellIdandProximity = async (wellIdandProximity) => {
-    if (!wellIdandProximity || !wellIdandProximity.id || !wellIdandProximity.proximity) {
+  const setWellIdandProximity = (wellIdandProximity: any) => {
+    //if nothing is received, don't do anything
+    if (!wellIdandProximity) {
       return;
     } else {
-      alert('there is id and proximity');
-      const activityResult = await getActivityResultsFromDB(props.activityId || null);
-      let oldFormData = { formData: getDefaultFormDataValues(activityResult) };
-      let newFormData = oldFormData;
-      newFormData['formData']['activity_data']['well_id'] = wellIdandProximity.id.split(
-        'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW.fid'
-      )[1];
-      newFormData['formData']['activity_data']['well_proximity'] = Number(wellIdandProximity.proximity.toFixed(0));
+      let newFormData = doc;
+
+      //set well_id and well_proximity fields
+      newFormData['formData']['activity_data']['well_id'] = wellIdandProximity.id
+        ? wellIdandProximity.id.split('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW.fid')[1]
+        : undefined;
+      newFormData['formData']['activity_data']['well_proximity'] = wellIdandProximity.proximity
+        ? Number(wellIdandProximity.proximity.toFixed(0))
+        : undefined;
+
+      const newValuesAreSame: boolean =
+        newFormData['formData']['activity_data']['well_id'] === doc['formData']['activity_data']['well_id'] &&
+        newFormData['formData']['activity_data']['well_proximity'] ===
+          doc['formData']['activity_data']['well_proximity'];
+
+      alert(doc['formData']['activity_data']['well_id']);
+      alert(newFormData['formData']['activity_data']['well_id']);
+      //if it is a Chemical treatment and there are wells too close, display warning dialog
       if (
-        activityResult.activitySubtype.includes('Chemical') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside)
+        doc.activitySubtype.includes('Chemical') &&
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
+        !newValuesAreSame
       ) {
         setWarningDialog({
           dialogOpen: true,
@@ -501,8 +507,24 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               actionName: 'No',
               actionOnClick: () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
-                // saveGeometry([]);
-                onFormChange(oldFormData);
+                setGeometry([]);
+                onFormChange({
+                  ...doc,
+                  formData: {
+                    ...doc.formData,
+                    activity_data: {
+                      ...doc.formData.activity_data,
+                      latitude: undefined,
+                      longitude: undefined,
+                      utm_zone: undefined,
+                      utm_northing: undefined,
+                      utm_easting: undefined,
+                      well_id: undefined,
+                      well_proximity: undefined,
+                      reported_area: undefined
+                    }
+                  }
+                });
               }
             },
             {
@@ -515,9 +537,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             }
           ]
         });
-      } else if (
-        activityResult.activitySubtype.includes('Observation') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside)
+      }
+      //if it is a Observation and there are wells too close, display warning dialog
+      else if (
+        doc.activitySubtype.includes('Observation') &&
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
+        !newValuesAreSame
       ) {
         setWarningDialog({
           dialogOpen: true,
@@ -534,11 +559,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             }
           ]
         });
-      } else {
+      }
+      //If not in Observation nor in Chemical Treatment, just make changes to fields
+      else {
         onFormChange(newFormData);
       }
-
-      return;
     }
   };
 

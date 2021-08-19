@@ -130,7 +130,7 @@ export interface IMapContainerProps {
     state: MapContextMenuData;
     setContextMenuState: (contextMenuState: MapContextMenuData) => void;
   };
-  setWellIdandProximity?: (wellIdandProximity: any) => {};
+  setWellIdandProximity?: (wellIdandProximity: any) => void;
 }
 
 const interactiveGeometryStyle = () => {

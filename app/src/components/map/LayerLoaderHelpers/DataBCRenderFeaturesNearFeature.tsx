@@ -1,19 +1,14 @@
 import buffer from '@turf/buffer';
 import { getDataFromDataBC } from 'components/map/WFSConsumer';
-import React, { useState, useEffect, useMemo } from 'react';
-import { GeoJSON, Marker, Popup } from 'react-leaflet';
-import { Feature, Geometry } from 'geojson';
-import ReactDOMServer from 'react-dom/server';
-import { Layer } from 'leaflet';
+import React, { useState, useEffect } from 'react';
+import { Marker, Popup } from 'react-leaflet';
+import { Feature } from 'geojson';
 import { Divider, makeStyles, Theme } from '@material-ui/core';
 import proj4 from 'proj4';
-import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
 import * as turf from '@turf/turf';
-import { AllGeoJSON, MultiLineString } from '@turf/turf';
-import nearestPointOnLine from '@turf/nearest-point-on-line';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
-import { polygon, point, lineString, LineString } from '@turf/helpers';
+import { polygon } from '@turf/helpers';
 import L from 'leaflet';
 import WellIconStandard from '../Icons/well-dark.svg';
 import WellIconClosest from '../Icons/well-closest.svg';
@@ -62,7 +57,7 @@ interface IRenderKeyFeaturesNearFeature {
   featureType?: string;
   memoHash?: string;
   customOnEachFeature?: any;
-  setWellIdandProximity?: (wellIdandProximity: any) => Object;
+  setWellIdandProximity?: (wellIdandProximity: any) => void;
 }
 
 export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeature) => {
@@ -70,34 +65,38 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const [keyval, setKeyval] = useState(0);
   const [wellIdandProximity, setWellIdandProximity] = useState(null);
 
+  //when there is new wellId and proximity, send info to ActivityPage
   useEffect(() => {
     props.setWellIdandProximity(wellIdandProximity);
   }, [wellIdandProximity]);
 
+  /*
+   * Function for going through array and labeling 1 closest well and wells inside the polygon
+   */
   const getClosestPointToPolygon = (arrayOfPoints) => {
     let index = 0;
     let nearestPointIndex = null;
     let minDistanceKm = null;
     let wellInside = false;
-    let nearestPoint;
 
     arrayOfPoints.forEach((point) => {
       const turfPolygon = polygon((props.inputGeo.geometry as any).coordinates);
       const distanceKm = pointToLineDistance(point, polygonToLine(turfPolygon));
-      if (!!!minDistanceKm || minDistanceKm > distanceKm) {
-        minDistanceKm = distanceKm;
-        // nearestPoint = nearestPointOnLine((polygonToLine(turfPolygon) as any).geometry, point);
-        if (!arrayOfPoints[index].inside) nearestPointIndex = index;
-      }
+      //label points that are inside the polygon
       if (turf.inside(point, turfPolygon)) {
         arrayOfPoints[index] = { ...arrayOfPoints[index], inside: true, closest: false };
         wellInside = true;
       }
+      //set index of the closest well yet
+      if (!!!minDistanceKm || minDistanceKm > distanceKm) {
+        minDistanceKm = distanceKm;
+        if (!arrayOfPoints[index].inside) nearestPointIndex = index;
+      }
       index++;
     });
-
+    //label closest well
     arrayOfPoints[nearestPointIndex] = { ...arrayOfPoints[nearestPointIndex], closest: true };
-
+    //set new data to send to ActivityPage
     setWellIdandProximity({
       id: arrayOfPoints[nearestPointIndex].id,
       proximity: minDistanceKm * 1000,
@@ -106,6 +105,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     return arrayOfPoints;
   };
 
+  //when new geos received, get well data and run labeling function
   useEffect(() => {
     if (props.inputGeo) {
       const bufferedGeo = buffer(props.inputGeo, props.proximityInMeters / 1000);
@@ -126,11 +126,11 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
                 position={[feature.geometry.coordinates[1], feature.geometry.coordinates[0]]}
                 icon={feature.inside ? wellIconInside : feature.closest ? wellIconClosest : wellIconSandard}>
                 <Popup>
-                  <CustomPopup feature={feature} />
+                  <CustomWellPopup feature={feature} />
                 </Popup>
               </Marker>
             );
-          }
+          } else return null;
         })
       ) : (
         <></>
@@ -140,18 +140,20 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   );
 };
 
-const CustomPopup = ({ feature }) => {
+const CustomWellPopup = ({ feature }) => {
   const classes = useStyles();
-
   let popupContent;
+
+  //just checking if feature has properties we want
   if (feature.properties && feature.properties.popupContent) {
     popupContent = feature.properties.popupContent;
   }
 
+  //shorten the id
   let featureId = feature.id as String;
-
   featureId = featureId.split('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW.fid')[1];
 
+  //Calculate utm_zone, northing and easting
   const latitude = feature.geometry.coordinates[0] || null;
   const longitude = feature.geometry.coordinates[1] || null;
   let utm_easting, utm_northing, utm_zone;
