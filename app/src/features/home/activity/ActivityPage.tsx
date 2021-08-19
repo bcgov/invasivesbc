@@ -470,6 +470,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     dialogContentText: null
   });
 
+  //sets well id and proximity if there are any
   const setWellIdandProximity = (wellIdandProximity: any) => {
     //if nothing is received, don't do anything
     if (!wellIdandProximity) {
@@ -485,18 +486,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         ? Number(wellIdandProximity.proximity.toFixed(0))
         : undefined;
 
-      const newValuesAreSame: boolean =
-        newFormData['formData']['activity_data']['well_id'] === doc['formData']['activity_data']['well_id'] &&
-        newFormData['formData']['activity_data']['well_proximity'] ===
-          doc['formData']['activity_data']['well_proximity'];
+      // const newValuesAreSame: boolean =
+      //   newFormData['formData']['activity_data']['well_id'] === doc['formData']['activity_data']['well_id'] &&
+      //   newFormData['formData']['activity_data']['well_proximity'] ===
+      //     doc['formData']['activity_data']['well_proximity'];
 
-      alert(doc['formData']['activity_data']['well_id']);
-      alert(newFormData['formData']['activity_data']['well_id']);
+      // alert(doc['formData']['activity_data']['well_id']);
+      // alert(newFormData['formData']['activity_data']['well_id']);
+
       //if it is a Chemical treatment and there are wells too close, display warning dialog
       if (
         doc.activitySubtype.includes('Chemical') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
-        !newValuesAreSame
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside)
       ) {
         setWarningDialog({
           dialogOpen: true,
@@ -507,7 +508,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               actionName: 'No',
               actionOnClick: () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
-                setGeometry([]);
+                setGeometry(null);
                 onFormChange({
                   ...doc,
                   formData: {
@@ -541,8 +542,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       //if it is a Observation and there are wells too close, display warning dialog
       else if (
         doc.activitySubtype.includes('Observation') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
-        !newValuesAreSame
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside)
       ) {
         setWarningDialog({
           dialogOpen: true,

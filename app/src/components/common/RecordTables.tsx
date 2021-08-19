@@ -10,60 +10,19 @@ import {
   ReviewStatus
 } from 'constants/activities';
 import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import { Add, DeleteForever, Sync, Edit, Delete, FindInPage, Check, Clear } from '@material-ui/icons';
+import { Add, Sync, Edit, Delete, FindInPage, Check, Clear } from '@material-ui/icons';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import {
   sanitizeRecord,
   addLinkedActivityToDB,
-  addNewActivityToDB,
   generateDBActivityPayload,
   getShortActivityID
 } from 'utils/addActivity';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext2 } from 'contexts/DatabaseContext2';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  activitiesContent: {},
-  activityList: {},
-  activitiyListItem: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: '0.5rem',
-    marginBottom: '0.5rem',
-    border: '1px solid',
-    borderColor: theme.palette.grey[300],
-    borderRadius: '6px'
-  },
-  activityListItem_Grid: {
-    flexWrap: 'nowrap',
-    flexDirection: 'row',
-    [theme.breakpoints.down('sm')]: {
-      flexDirection: 'column'
-    }
-  },
-  activitiyListItem_Typography: {
-    [theme.breakpoints.down('sm')]: {
-      display: 'inline',
-      marginRight: '1rem'
-    }
-  },
-  formControl: {
-    minWidth: 180
-  },
-  map: {
-    height: 500,
-    width: '100%',
-    zIndex: 0
-  },
-  metabaseAddButton: {
-    marginLeft: 10,
-    marginRight: 10
-  }
-}));
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);
@@ -172,7 +131,7 @@ const arrayWrap = (value) => {
 };
 
 export const defaultActivitiesFetch =
-  ({ invasivesApi, activitySubtypes, created_by = undefined, review_status = [] }, databaseContext) =>
+  ({ dataAccess, activitySubtypes, created_by = undefined, review_status = [] }, databaseContext) =>
   async ({ page, rowsPerPage, order }) => {
     // Fetches fresh from the API (web).  TODO fetch from SQLite
     let dbPageSize = DEFAULT_PAGE_SIZE;
@@ -182,7 +141,7 @@ export const defaultActivitiesFetch =
 
     const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
 
-    const result = await invasivesApi.getActivities(
+    const result = await dataAccess.getActivities(
       {
         page: Math.floor((page * rowsPerPage) / dbPageSize),
         limit: dbPageSize,
@@ -265,10 +224,8 @@ const activitesDefaultHeaders = [
 
 export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
-  const invasivesApi = useDataAccess();
-  const databaseContextOld = useContext(DatabaseContext);
-  const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();
+  const databaseContext = useContext(DatabaseContext2);
   const { keycloak } = useKeycloak();
   const userInfo: any = keycloak?.userInfo;
 
@@ -289,7 +246,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
       dbActivity.created_by = userInfo?.preferred_username;
-      await invasivesApi.createActivity(dbActivity, databaseContext);
+      await dataAccess.createActivity(dbActivity, databaseContext);
     },
     icon: <Add />,
     label: ActivitySubtypeShortLabels[subtype],
@@ -318,7 +275,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   if (typeof rows === 'undefined') {
     rows = defaultActivitiesFetch(
       {
-        invasivesApi,
+        dataAccess,
         activitySubtypes: arrayWrap(activitySubtypes),
         created_by,
         review_status: review_status
@@ -377,7 +334,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             enabled: enableSelection !== false,
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
-              if (selectedIds.length) await invasivesApi.deleteActivities(selectedIds, databaseContext);
+              if (selectedIds.length) await dataAccess.deleteActivities(selectedIds, databaseContext);
             },
             label: 'Delete',
             icon: <Delete />,
@@ -415,15 +372,15 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id, databaseContext);
-                  await invasivesApi.updateActivity(
+                  const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+                  await dataAccess.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
                       sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL
                     }),
                     databaseContext
                   );
-                  const typename = activity.activity_subtype?.split('_')[2];
+                  // const typename = activity.activity_subtype?.split('_')[2];
                   // notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
                 });
               } catch (error) {
@@ -463,15 +420,15 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.review_status === ReviewStatus.UNDER_REVIEW
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id, databaseContext);
-                  await invasivesApi.updateActivity(
+                  const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+                  await dataAccess.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
                       review_status: ReviewStatus.UNDER_REVIEW
                     }),
                     databaseContext
                   );
-                  const typename = activity.activity_subtype?.split('_')[2];
+                  // const typename = activity.activity_subtype?.split('_')[2];
                   //notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
                 });
               } catch (error) {
@@ -511,8 +468,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.review_status !== ReviewStatus.UNDER_REVIEW
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id, databaseContext);
-                  await invasivesApi.updateActivity(
+                  const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+                  await dataAccess.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
                       review_status: ReviewStatus.APPROVED,
@@ -521,7 +478,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     }),
                     databaseContext
                   );
-                  const typename = activity.activity_subtype?.split('_')[2];
+                  // const typename = activity.activity_subtype?.split('_')[2];
                   // notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
                 });
               } catch (error) {
@@ -561,8 +518,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     activity.review_status !== ReviewStatus.UNDER_REVIEW
                   )
                     return;
-                  const dbActivity: any = await invasivesApi.getActivityById(activity.activity_id, databaseContext);
-                  await invasivesApi.updateActivity(
+                  const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+                  await dataAccess.updateActivity(
                     sanitizeRecord({
                       ...dbActivity,
                       review_status: ReviewStatus.DISAPPROVED,
@@ -571,7 +528,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     }),
                     databaseContext
                   );
-                  const typename = activity.activity_subtype?.split('_')[2];
+                  // const typename = activity.activity_subtype?.split('_')[2];
                   // notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
                 });
               } catch (error) {
@@ -844,7 +801,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
                 return;
               const activity = selectedRows[0];
 
-              const addedActivity = await addLinkedActivityToDB(
+              await addLinkedActivityToDB(
                 databaseContext,
                 ActivityType.Monitoring,
                 calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
@@ -1060,8 +1017,6 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const history = useHistory();
-  const databaseContext = useContext(DatabaseContext2);
   const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1169,7 +1124,7 @@ export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> =
 
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
   const { tableSchemaType, actions, ...otherProps } = props;
-  const invasivesApi = useDataAccess();
+  const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext2);
   return useMemo(() => {
     return (
@@ -1209,7 +1164,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
             // if page is right near the db page limit
             dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
-          const result = await invasivesApi.getPointsOfInterest(
+          const result = await dataAccess.getPointsOfInterest(
             {
               page: Math.floor((page * rowsPerPage) / dbPageSize),
               limit: dbPageSize,
@@ -1628,7 +1583,7 @@ export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (
 
 export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { rows, headers = [], ...otherProps } = props;
-  const invasivesApi = useDataAccess();
+  const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext2);
   return useMemo(() => {
     return (
@@ -1653,7 +1608,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
           rows ||
           defaultActivitiesFetch(
             {
-              invasivesApi,
+              dataAccess,
               activitySubtypes: Object.values(ActivitySubtype),
               review_status: [ReviewStatus.UNDER_REVIEW]
             },
