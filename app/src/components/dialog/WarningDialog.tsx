@@ -1,5 +1,4 @@
-import { Button, Color, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
-import { StringifyOptions } from 'querystring';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import React from 'react';
 
 export interface IWarningDialog {
@@ -22,9 +21,6 @@ export const WarningDialog = (props: IWarningDialog) => {
     setOpen(props.dialogOpen);
   }, [props.dialogOpen]);
 
-  const handleCloseWarningDialog = () => {
-    setOpen(false);
-  };
   return (
     <Dialog open={open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
       <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>

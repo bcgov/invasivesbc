@@ -10,9 +10,10 @@ import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import { polygon } from '@turf/helpers';
 import L from 'leaflet';
-import WellIconStandard from '../Icons/well-dark.svg';
+
 import WellIconClosest from '../Icons/well-closest.svg';
 import WellIconInside from '../Icons/well-inside.svg';
+import WellIconStandard from '../Icons/well-standard.svg';
 
 const wellIconSandard = new L.Icon({
   iconUrl: WellIconStandard,
