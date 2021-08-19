@@ -5,8 +5,29 @@ import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
 import { upsert, UpsertType } from 'contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
+import unzipper from 'unzipper';
 // node doesn't have xml parsing or a dom. use xmldom
 const DOMParser = require('xmldom').DOMParser;
+var toString = require('stream-to-string');
+//const unzipper = require('unzipper');
+
+const KMZ_OR_KML = (input: File) => {
+  var extension = input.name.split('.').pop();
+  if (extension === 'kml') {
+    return 'KML';
+  } else if (extension === 'kmz') {
+    return 'KMZ';
+  } else return 'NEITHER';
+};
+
+const KMZ_TO_KML = async (input: File) => {
+  var extension = input.name.split('.').pop();
+  if (extension === 'kml') {
+    return input;
+  } else if (extension === 'kmz') {
+    return;
+  } else return null;
+};
 
 export const KMLUpload: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
@@ -40,7 +61,7 @@ export const KMLUpload: React.FC<any> = (props) => {
   };
 
   useEffect(() => {
-    if (aFile && Capacitor.getPlatform() !== 'web') {
+    if (aFile /*&& Capacitor.getPlatform() !== 'web'*/) {
       // check if kmz or kml
       //if kml:
       saveKML(aFile);
@@ -62,6 +83,9 @@ export const KMLUpload: React.FC<any> = (props) => {
       dropzoneText="Upload KML here"
       onChange={(e) => {
         setAFile(e[0]);
+        e.forEach((file) => {
+          console.log(toString(file.stream));
+        });
       }}
     />
   );
