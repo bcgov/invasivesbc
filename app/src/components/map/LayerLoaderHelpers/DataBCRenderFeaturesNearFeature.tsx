@@ -97,11 +97,12 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     //label closest well
     arrayOfPoints[nearestPointIndex] = { ...arrayOfPoints[nearestPointIndex], closest: true };
     //set new data to send to ActivityPage
-    setWellIdandProximity({
-      id: arrayOfPoints[nearestPointIndex].id,
-      proximity: minDistanceKm * 1000,
-      wellInside: wellInside
-    });
+    if (arrayOfPoints[nearestPointIndex].properties)
+      setWellIdandProximity({
+        id: arrayOfPoints[nearestPointIndex].properties.GW_WW_SYSID.toString(),
+        proximity: minDistanceKm * 1000,
+        wellInside: wellInside
+      });
     return arrayOfPoints;
   };
 
@@ -148,10 +149,8 @@ const CustomWellPopup = ({ feature }) => {
   if (feature.properties && feature.properties.popupContent) {
     popupContent = feature.properties.popupContent;
   }
-
   //shorten the id
-  let featureId = feature.id as String;
-  featureId = featureId.split('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW.fid')[1];
+  let featureId = feature.properties.GW_WW_SYSID as String;
 
   //Calculate utm_zone, northing and easting
   const latitude = feature.geometry.coordinates[0] || null;

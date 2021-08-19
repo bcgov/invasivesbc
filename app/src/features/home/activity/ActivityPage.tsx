@@ -471,33 +471,32 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   });
 
   //sets well id and proximity if there are any
-  const setWellIdandProximity = (wellIdandProximity: any) => {
+  const setWellIdandProximity = async (wellIdandProximity: any) => {
     //if nothing is received, don't do anything
+    const activityResult = await getActivityResultsFromDB(props.activityId || null);
+
     if (!wellIdandProximity) {
       return;
     } else {
       let newFormData = doc;
 
       //set well_id and well_proximity fields
-      newFormData['formData']['activity_data']['well_id'] = wellIdandProximity.id
-        ? wellIdandProximity.id.split('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW.fid')[1]
-        : undefined;
+      newFormData['formData']['activity_data']['well_id'] = wellIdandProximity.id ? wellIdandProximity.id : undefined;
       newFormData['formData']['activity_data']['well_proximity'] = wellIdandProximity.proximity
         ? Number(wellIdandProximity.proximity.toFixed(0))
         : undefined;
 
-      // const newValuesAreSame: boolean =
-      //   newFormData['formData']['activity_data']['well_id'] === doc['formData']['activity_data']['well_id'] &&
-      //   newFormData['formData']['activity_data']['well_proximity'] ===
-      //     doc['formData']['activity_data']['well_proximity'];
-
-      // alert(doc['formData']['activity_data']['well_id']);
-      // alert(newFormData['formData']['activity_data']['well_id']);
+      const newValuesAreSame: boolean =
+        newFormData['formData']['activity_data']['well_id'] ===
+          activityResult['formData']['activity_data']['well_id'] &&
+        newFormData['formData']['activity_data']['well_proximity'] ===
+          activityResult['formData']['activity_data']['well_proximity'];
 
       //if it is a Chemical treatment and there are wells too close, display warning dialog
       if (
-        doc.activitySubtype.includes('Chemical') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside)
+        doc.activitySubtype.includes('Treatment_ChemicalPlant') &&
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
+        !newValuesAreSame
       ) {
         setWarningDialog({
           dialogOpen: true,
@@ -506,10 +505,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           dialogActions: [
             {
               actionName: 'No',
-              actionOnClick: () => {
+              actionOnClick: async () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
                 setGeometry(null);
-                onFormChange({
+
+                await updateDoc({
                   ...doc,
                   formData: {
                     ...doc.formData,
@@ -530,9 +530,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             },
             {
               actionName: 'Yes',
-              actionOnClick: () => {
+              actionOnClick: async () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
-                onFormChange(newFormData);
+
+                await updateDoc({ formData: newFormData['formData'] });
               },
               autoFocus: true
             }
@@ -542,7 +543,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       //if it is a Observation and there are wells too close, display warning dialog
       else if (
         doc.activitySubtype.includes('Observation') &&
-        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside)
+        (wellIdandProximity.proximity < 50 || wellIdandProximity.wellInside) &&
+        !newValuesAreSame
       ) {
         setWarningDialog({
           dialogOpen: true,
@@ -551,9 +553,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           dialogActions: [
             {
               actionName: 'Ok',
-              actionOnClick: () => {
+              actionOnClick: async () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
-                onFormChange(newFormData);
+                await updateDoc({ formData: newFormData['formData'] });
               },
               autoFocus: true
             }
@@ -562,7 +564,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
       //If not in Observation nor in Chemical Treatment, just make changes to fields
       else {
-        onFormChange(newFormData);
+        await updateDoc({ formData: newFormData['formData'] });
       }
     }
   };
