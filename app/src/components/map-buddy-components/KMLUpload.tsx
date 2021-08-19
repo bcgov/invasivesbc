@@ -9,18 +9,58 @@ import unzipper from 'unzipper';
 // node doesn't have xml parsing or a dom. use xmldom
 const DOMParser = require('xmldom').DOMParser;
 var toString = require('stream-to-string');
-//const unzipper = require('unzipper');
 
-const KMZ_OR_KML = (input: File) => {
-  var extension = input.name.split('.').pop();
-  if (extension === 'kml') {
-    return 'KML';
-  } else if (extension === 'kmz') {
-    return 'KMZ';
-  } else return 'NEITHER';
+export const KML_TYPES = {
+  KML: 'kml',
+  KMZ: 'kmz',
+  OTHER: 'other'
 };
 
-const KMZ_TO_KML = async (input: File) => {};
+const KMZ_OR_KML = (input: File) => {
+  var extension = input?.name?.split('.').pop();
+  switch (extension) {
+    case 'kml':
+      return KML_TYPES.KML;
+    case 'kmz':
+      return KML_TYPES.KMZ;
+    default:
+      break;
+  }
+  return KML_TYPES.OTHER;
+};
+
+const KMZ_TO_KML = async (input: File) => {
+  //  const transform: <ReadableWriteablePair> = { ReadableStream(), WritableStream() }
+  const stream = input.stream().pipeTo(unzipper.Parse().stream());
+};
+
+const KMLStringToGeojson = (input: string) => {
+  try {
+    const DOMFromXML = new DOMParser().parseFromString(input);
+    const geoFromDOM = kml(DOMFromXML);
+    return geoFromDOM;
+  } catch (e) {
+    console.log('error converting kml xml string to geojson', e);
+  }
+};
+
+const get_KMZ_Or_KML_AsString = async (input: File) => {
+  let KMLString;
+  //get kml as string
+  switch (KMZ_OR_KML(input)) {
+    case KML_TYPES.KML: {
+      KMLString = await input.text().then((xmlString) => {
+        return xmlString;
+      });
+      break;
+    }
+    case KML_TYPES.KMZ: {
+      KMLString = KMZ_TO_KML(input);
+      break;
+    }
+  }
+  return KMLString;
+};
 
 export const KMLUpload: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
@@ -29,27 +69,26 @@ export const KMLUpload: React.FC<any> = (props) => {
   const [aFile, setAFile] = useState(null);
 
   const saveKML = async (input: File) => {
-    const fileAsString = await input.text().then((xmlString) => {
-      return xmlString;
-    });
-    const DOMFromXML = new DOMParser().parseFromString(fileAsString);
-    const geoFromDOM = kml(DOMFromXML);
-    console.log('geo');
+    const KMLString = await get_KMZ_Or_KML_AsString(input);
+    const geosFromString = KMLStringToGeojson(KMLString);
 
-    if (geoFromDOM) {
+    if (geosFromString) {
       console.log('saving geo feat collection');
+      console.dir(geosFromString);
 
+      /*
       await upsert(
         [
           {
             type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
             ID: props.trip_ID,
             docType: DocType.TRIP,
-            json: { geometry: geoFromDOM.features }
+            json: { geometry: geosFromString.features }
           }
         ],
         databaseContext
       );
+    }*/
     }
   };
 
@@ -57,7 +96,9 @@ export const KMLUpload: React.FC<any> = (props) => {
     if (aFile /*&& Capacitor.getPlatform() !== 'web'*/) {
       // check if kmz or kml
       //if kml:
-      saveKML(aFile);
+      if (KMZ_OR_KML(aFile) !== KML_TYPES.OTHER) {
+        saveKML(aFile);
+      }
       //else
       //convert to kml
       //saveKml(converted)
