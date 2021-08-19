@@ -20,14 +20,7 @@ const KMZ_OR_KML = (input: File) => {
   } else return 'NEITHER';
 };
 
-const KMZ_TO_KML = async (input: File) => {
-  var extension = input.name.split('.').pop();
-  if (extension === 'kml') {
-    return input;
-  } else if (extension === 'kmz') {
-    return;
-  } else return null;
-};
+const KMZ_TO_KML = async (input: File) => {};
 
 export const KMLUpload: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
@@ -61,7 +54,7 @@ export const KMLUpload: React.FC<any> = (props) => {
   };
 
   useEffect(() => {
-    if (aFile && Capacitor.getPlatform() !== 'web') {
+    if (aFile /*&& Capacitor.getPlatform() !== 'web'*/) {
       // check if kmz or kml
       //if kml:
       saveKML(aFile);
@@ -70,12 +63,10 @@ export const KMLUpload: React.FC<any> = (props) => {
       //saveKml(converted)
     } else {
       //fart around in web
-      if (KMZ_OR_KML(aFile) === 'KML') {
-        saveKML(aFile);
-      } else if (KMZ_OR_KML(aFile) === 'KMZ') {
-        //var newFile = KMZ_TO_KML(aFile);
-      }
+      //if kml:
       // validate that we have geojson in console
+      // if kmz
+      // convert to kml
       // validate that we have geojson in console
     }
   }, [aFile]);
