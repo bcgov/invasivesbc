@@ -115,14 +115,18 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   //helper function to get field name from args
   const getFieldNameFromArgs = (args): string => {
     let argumentFieldName = '';
-    if (args[0].includes('root_activity_subtype_data_herbicide_0_')) {
-      argumentFieldName = 'root_activity_subtype_data_herbicide_0_';
-    } else if (args[0].includes('root_activity_subtype_data_')) {
-      argumentFieldName = 'root_activity_subtype_data_';
+    if (args[0].includes('root_activity_subtype_data_treatment_information_herbicide_0_')) {
+      argumentFieldName = 'root_activity_subtype_data_treatment_information_herbicide_0_';
+    } else if (args[0].includes('root_activity_subtype_data_treatment_chemicalplant_information_')) {
+      argumentFieldName = 'root_activity_subtype_data_treatment_chemicalplant_information_';
     } else if (args[0].includes('root_activity_data_')) {
       argumentFieldName = 'root_activity_data_';
     }
+    if (args[0].includes('herbicide_information_application_rate')) {
+      argumentFieldName = 'application_rate';
+    }
     let fieldName = argumentFieldName ? args[0].substr(argumentFieldName.length) : args[0]; // else use the full arg name
+
     return fieldName;
   };
 

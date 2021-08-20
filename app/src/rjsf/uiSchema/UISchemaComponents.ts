@@ -13,44 +13,57 @@
 import BaseUISchemaComponents from 'rjsf/uiSchema/BaseUISchemaComponents';
 
 const Treatment_ChemicalPlant = {
-  activity_id: {
-    'ui:readonly': true
+  treatment_chemicalplant_information: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    applicator1_name: {},
+    applicator1_license: {},
+    applicator2_name: {},
+    applicator2_license: {},
+    pesticide_employer_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    pesticide_user_license_number: {},
+    chemical_method_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    temperature: {
+      validateOnBlur: true
+    },
+    humidity: {},
+    pest_management_plan: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    invasive_plant_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    herbicide: {
+      items: {
+        ...BaseUISchemaComponents.Herbicide
+      }
+    },
+    wind_speed: {
+      validateOnBlur: true
+    },
+    wind_direction_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    pesticide_use_permit_PUP: {},
+    signage_on_site: {}
   },
-  treatment_organization: {},
-  applicator1_name: {},
-  applicator1_license: {},
-  applicator2_name: {},
-  applicator2_license: {},
-  pesticide_employer_code: {
-    'ui:widget': 'single-select-autocomplete'
-  },
-  pesticide_user_license_number: {},
-  chemical_method_code: {
-    'ui:widget': 'single-select-autocomplete'
-  },
-  temperature: {
-    validateOnBlur: true
-  },
-  humidity: {},
-  pest_management_plan: {
-    'ui:widget': 'single-select-autocomplete'
-  },
-  invasive_plant_code: {
-    'ui:widget': 'single-select-autocomplete'
-  },
-  herbicide: {
-    items: {
-      ...BaseUISchemaComponents.Herbicide
+  treatment_information: {
+    invasive_plants_information: {
+      items: {
+        herbicide: {
+          items: {
+            herbicide_type: { 'ui:widget': 'single-select-autocomplete' },
+            herbicide_information: {
+              ...BaseUISchemaComponents.TwoColumnStyle
+            }
+          }
+        }
+      }
     }
-  },
-  wind_speed: {
-    validateOnBlur: true
-  },
-  wind_direction_code: {
-    'ui:widget': 'single-select-autocomplete'
-  },
-  pesticide_use_permit_PUP: {},
-  signage_on_site: {}
+  }
 };
 
 const Treatment_ChemicalPlant_BulkEdit = {

@@ -264,16 +264,18 @@ export function getTemperatureValidator(activitySubtype: string): rjsfValidator 
     }
     // validate temperature
 
-    errors.activity_subtype_data['temperature'].__errors = [];
-    const { temperature } = formData.activity_subtype_data;
+    errors.activity_subtype_data['treatment_chemicalplant_information']['temperature'].__errors = [];
+    const { temperature } = formData.activity_subtype_data['treatment_chemicalplant_information'];
 
     //if themperature is out of normal range, display an error
     if (temperature < 15 || temperature > 22) {
-      errors.activity_subtype_data['temperature'].addError('Temperature should ideally be between 15 and 22 degrees');
+      errors.activity_subtype_data['treatment_chemicalplant_information']['temperature'].addError(
+        'Temperature should ideally be between 15 and 22 degrees'
+      );
     }
     //if user clicked proceed in the warning dialog, remove the erro
     if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('temperature')) {
-      errors.activity_subtype_data['temperature'].__errors.pop();
+      errors.activity_subtype_data['treatment_chemicalplant_information']['temperature'].__errors.pop();
       return errors;
     }
     return errors;
@@ -293,28 +295,30 @@ export function getWindValidator(activitySubtype: string): rjsfValidator {
     }
 
     // validate wind speed with wind direction
-    errors.activity_subtype_data['wind_direction_code'].__errors = [];
-    const { wind_speed, wind_direction_code } = formData.activity_subtype_data;
+    errors.activity_subtype_data['treatment_chemicalplant_information']['wind_direction_code'].__errors = [];
+    const { wind_speed, wind_direction_code } = formData.activity_subtype_data['treatment_chemicalplant_information'];
 
     if (wind_speed > 0 && wind_direction_code === 'No Wind') {
-      errors.activity_subtype_data['wind_direction_code'].addError(
+      errors.activity_subtype_data['treatment_chemicalplant_information']['wind_direction_code'].addError(
         'Must specify a wind direction when wind speed is > 0'
       );
     }
 
     if (wind_speed === 0 && wind_direction_code !== 'No Wind') {
-      errors.activity_subtype_data['wind_direction_code'].addError(
+      errors.activity_subtype_data['treatment_chemicalplant_information']['wind_direction_code'].addError(
         'Cannot specify a wind direction when wind speed is 0'
       );
     }
 
     //if wind is more than 50km/h, display an error
     if (wind_speed > 50) {
-      errors.activity_subtype_data['wind_speed'].addError('Wind should ideally be less or equal to 50km/h');
+      errors.activity_subtype_data['treatment_chemicalplant_information']['wind_speed'].addError(
+        'Wind should ideally be less or equal to 50km/h'
+      );
     }
     //if user clicked proceed in the warning dialog, remove the error
     if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('wind_speed')) {
-      errors.activity_subtype_data['wind_speed'].__errors.pop();
+      errors.activity_subtype_data['treatment_chemicalplant_information']['wind_speed'].__errors.pop();
       return errors;
     }
 
@@ -398,12 +402,13 @@ export function getHerbicideMixValidation(): rjsfValidator {
     }
     let index = 0;
     formData.activity_subtype_data.treatment_information.invasive_plants_information.forEach((treatment_info_item) => {
-      if (treatment_info_item.herbicide)
+      if (treatment_info_item.herbicide) {
         if (treatment_info_item.tank_mix && treatment_info_item.herbicide.length < 2) {
           errors.activity_subtype_data['treatment_information']['invasive_plants_information'][index].addError(
             'There must be 2 or more herbicides added if the tank mix field is checked'
           );
         }
+      }
       index++;
     });
 
@@ -420,43 +425,40 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
     if (
       !formData ||
       !formData.activity_subtype_data ||
-      !formData.activity_subtype_data.herbicide ||
-      !formData.activity_subtype_data.herbicide.length
+      !formData.activity_subtype_data.treatment_information ||
+      !formData.activity_subtype_data.treatment_information.invasive_plants_information ||
+      formData.activity_subtype_data.treatment_information.invasive_plants_information.length < 1
     ) {
       return errors;
     }
+    let invPlantIndex = 0;
+    formData.activity_subtype_data.treatment_information.invasive_plants_information.forEach((invPlant: any) => {
+      let herbicideIndex = 0;
+      invPlant.herbicide?.forEach((herbicide: any) => {
+        if (!herbicide.herbicide_information?.application_rate || !herbicide.herbicide_code) {
+          console.log('no herbicide information found');
+        } else if (
+          herbicide.herbicide_information.application_rate &&
+          herbicide.herbicide_information.application_rate > HerbicideApplicationRates[herbicide.herbicide_code]
+        ) {
+          errors.activity_subtype_data['treatment_information']['invasive_plants_information'][invPlantIndex][
+            'herbicide'
+          ][herbicideIndex]['herbicide_information']['application_rate'].addError(
+            `Application rate exceeds maximum applicable rate of ${
+              HerbicideApplicationRates[herbicide.herbicide_code]
+            } L/ha for this herbicide`
+          );
+        }
+        //if user clicked proceed in the warning dialog, remove the error
+        if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('application_rate')) {
+          errors.activity_subtype_data['treatment_information']['invasive_plants_information'][invPlantIndex][
+            'herbicide'
+          ][herbicideIndex]['herbicide_information']['application_rate'].__errors.pop();
+        }
 
-    const herbicides = formData.activity_subtype_data.herbicide;
-
-    herbicides.forEach((herbicide: any, index: number) => {
-      if (
-        !errors ||
-        !errors.activity_subtype_data ||
-        !errors.activity_subtype_data['herbicide'] ||
-        !errors.activity_subtype_data['herbicide'][index] ||
-        !errors.activity_subtype_data['herbicide'][index]['application_rate']
-      ) {
-        return errors;
-      }
-
-      // validate herbicide application rate maximums
-      errors.activity_subtype_data['herbicide'][index]['application_rate'].__errors = [];
-
-      if (
-        herbicide.application_rate &&
-        herbicide.application_rate > HerbicideApplicationRates[herbicide.liquid_herbicide_code]
-      ) {
-        errors.activity_subtype_data['herbicide'][index]['application_rate'].addError(
-          `Application rate exceeds maximum applicable rate of ${
-            HerbicideApplicationRates[herbicide.liquid_herbicide_code]
-          } L/ha for this herbicide`
-        );
-      }
-      //if user clicked proceed in the warning dialog, remove the error
-      if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('application_rate')) {
-        errors.activity_subtype_data['herbicide'][0]['application_rate'].__errors.pop();
-        return errors;
-      }
+        herbicideIndex++;
+      });
+      invPlantIndex++;
     });
 
     return errors;

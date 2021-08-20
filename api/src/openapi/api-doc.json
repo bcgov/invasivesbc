@@ -1543,130 +1543,119 @@
         }
       },
       "Treatment_ChemicalPlant": {
-        "title": "Chemical Treatment Information",
+        "title": " ",
         "type": "object",
-        "required": [
-          "treatment_organization",
-          "applicator1_name",
-          "applicator1_license",
-          "pesticide_employer_code",
-          "pesticide_user_license_number",
-          "chemical_method_code",
-          "temperature",
-          "humidity",
-          "treatment_information",
-          "wind_speed",
-          "wind_direction_code",
-          "signage_on_site"
-        ],
+        "required": ["treatment_chemicalplant_information", "treatment_information"],
         "properties": {
-          "activity_id": {
-            "type": "string",
-            "title": "Observation Id",
-            "x-tooltip-text": "Identifier of linked observation record"
-          },
-          "treatment_organization": {
-            "type": "string",
-            "title": "Treatment Organization",
-            "x-tooltip-text": "Name of the Treatment Organization"
-          },
-          "applicator1_name": {
-            "type": "string",
-            "title": "Primary Applicator",
-            "x-tooltip-text": "Name of primary applicator"
-          },
-          "applicator1_license": {
-            "type": "string",
-            "title": "Primary Pesticide Applicator Certificate Number",
-            "x-tooltip-text": "Valid pesticide applicator certificate number"
-          },
-          "applicator2_name": {
-            "type": "string",
-            "title": "Secondary Applicator",
-            "x-tooltip-text": "Name of secondary applicator"
-          },
-          "applicator2_license": {
-            "type": "string",
-            "title": "Secondary Pesticide Applicator Certificate Number",
-            "x-tooltip-text": "Valid secondary pesticide applicator certificate number"
-          },
-          "pesticide_employer_code": {
-            "type": "string",
-            "title": "Service License Number and Company Name",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "service_license_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Select from current/valid employer/organization names"
-          },
-          "pesticide_user_license_number": {
-            "type": "string",
-            "title": "Pesticide User License Number",
-            "x-tooltip-text": "Enter valid pesticide-user license number"
-          },
-          "pesticide_use_permit_PUP": {
-            "type": "string",
-            "title": "Pesticide Use Permit",
-            "default": "none",
-            "x-tooltip-text": "Enter applicable number if treatment is being completed under pesticide use permit"
-          },
-          "pest_management_plan": {
-            "type": "string",
-            "title": "Pest Management Plan",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "pest_management_plan",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Enter applicable number if treatment is being completed under a pest management plan"
-          },
-          "chemical_method_code": {
-            "type": "string",
-            "title": "Chemical Treatment Method",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "chemical_method_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Choose treatment application method"
-          },
-          "temperature": {
-            "type": "number",
-            "title": "Temperature (C)",
-            "x-tooltip-text": "Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)"
-          },
-          "wind_speed": {
-            "type": "number",
-            "title": "Wind Speed (km/h)",
-            "minimum": 0,
-            "default": 0,
-            "x-tooltip-text": "Wind speed in km/hr at time of treatment"
-          },
-          "wind_direction_code": {
-            "type": "string",
-            "title": "Wind Direction",
-            "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"],
-            "x-tooltip-text": "Cardinal wind direction at time of treatment"
-          },
-          "humidity": {
-            "type": "number",
-            "title": "Humidity",
-            "enum": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-            "x-tooltip-text": "Relative humidity expressed as a percentage"
-          },
-          "signage_on_site": {
-            "type": "string",
-            "title": "Treatment Notice Signs",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Treatment notice sign placed at site prior to treatment"
+          "treatment_chemicalplant_information": {
+            "type": "object",
+            "title": "Chemical Treatment Information",
+            "required": [
+              "applicator1_name",
+              "applicator1_license",
+              "pesticide_employer_code",
+              "chemical_method_code",
+              "temperature",
+              "humidity",
+              "wind_speed",
+              "wind_direction_code",
+              "signage_on_site"
+            ],
+            "properties": {
+              "applicator1_name": {
+                "type": "string",
+                "title": "Primary Applicator",
+                "x-tooltip-text": "Name of primary applicator"
+              },
+              "applicator1_license": {
+                "type": "string",
+                "title": "Primary Pesticide Applicator Certificate Number",
+                "x-tooltip-text": "Valid pesticide applicator certificate number"
+              },
+              "applicator2_name": {
+                "type": "string",
+                "title": "Secondary Applicator",
+                "x-tooltip-text": "Name of secondary applicator"
+              },
+              "applicator2_license": {
+                "type": "string",
+                "title": "Secondary Pesticide Applicator Certificate Number",
+                "x-tooltip-text": "Valid secondary pesticide applicator certificate number"
+              },
+              "pesticide_employer_code": {
+                "type": "string",
+                "title": "Service License Number and Company Name",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "service_license_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Select from current/valid employer/organization names"
+              },
+              "pesticide_use_permit_PUP": {
+                "type": "string",
+                "title": "Pesticide Use Permit",
+                "default": "none",
+                "x-tooltip-text": "Enter applicable number if treatment is being completed under pesticide use permit"
+              },
+              "pest_management_plan": {
+                "type": "string",
+                "title": "Pest Management Plan",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "pest_management_plan",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Enter applicable number if treatment is being completed under a pest management plan"
+              },
+              "chemical_method_code": {
+                "type": "string",
+                "title": "Chemical Treatment Method",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "chemical_method_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Choose treatment application method"
+              },
+              "temperature": {
+                "type": "number",
+                "title": "Temperature (C)",
+                "x-tooltip-text": "Measured in degrees celcius at time of treatment (ideally between 15 and 22 degrees)"
+              },
+              "wind_speed": {
+                "type": "number",
+                "title": "Wind Speed (km/h)",
+                "minimum": 0,
+                "default": 0,
+                "x-tooltip-text": "Wind speed in km/hr at time of treatment"
+              },
+              "wind_direction_code": {
+                "type": "string",
+                "title": "Wind Direction",
+                "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+                "x-tooltip-text": "Cardinal wind direction at time of treatment"
+              },
+              "humidity": {
+                "type": "number",
+                "title": "Humidity",
+                "enum": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+                "x-tooltip-text": "Relative humidity expressed as a percentage"
+              },
+              "signage_on_site": {
+                "type": "string",
+                "title": "Treatment Notice Signs",
+                "enum": ["Yes", "No", "Unknown"],
+                "default": "No",
+                "x-tooltip-text": "Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not"
+              }
+            }
           },
           "treatment_information": {
             "title": "Treatment Information",
@@ -3088,20 +3077,12 @@
           }
         }
       },
-      "Herbicide": {
+      "Herbicide_Liquid_Object": {
         "type": "object",
-        "required": ["liquid_herbicide_code", "application_rate", "herbicide_amount", "mix_delivery_rate"],
         "properties": {
-          "liquid_herbicide_code": {
+          "area_treated": {
             "type": "string",
-            "title": "Liquid Herbicide",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "liquid_herbicide_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
+            "title": "Area Treated (Ha)"
           },
           "application_rate": {
             "type": "number",
@@ -3124,11 +3105,48 @@
             "minimum": 0,
             "x-tooltip-text": "Calibrated delivery rate of the device used to apply herbicide in L/ha"
           },
+          "dilution": {
+            "type": "number",
+            "title": "Dilution %",
+            "minimum": 0,
+            "x-tooltip-text": "Percent (%) of product in the mix"
+          },
           "specific_treatment_area": {
             "type": "number",
             "title": "Specific Treatment Area (ha)",
             "minimum": 0,
             "x-tooltip-text": "Area of the chemical treatment (ha) automatically calculated from the application and delivery rates used during chemical treatment"
+          }
+        },
+        "required": ["application_rate", "herbicide_amount", "mix_delivery_rate"]
+      },
+      "Herbicide_Granular_Object": {
+        "type": "object",
+        "properties": {
+          "area_treated": {
+            "type": "string",
+            "title": "Area Treated (Ha)"
+          },
+          "application_rate": {
+            "type": "number",
+            "title": "Application Rate (g/ha)",
+            "format": "float",
+            "minimum": 0,
+            "x-tooltip-text": "Recommended label rate for herbicide (G/ha) used for this treatment"
+          },
+          "herbicide_amount": {
+            "type": "number",
+            "title": "Amount of Mix Used (g)",
+            "format": "float",
+            "minimum": 0,
+            "x-tooltip-text": "Volume in granules (ie 5.1 g) of herbicide and water mix"
+          },
+          "mix_delivery_rate": {
+            "type": "number",
+            "title": "Delivery Rate of Mix (g/ha)",
+            "format": "float",
+            "minimum": 0,
+            "x-tooltip-text": "Calibrated delivery rate of the device used to apply herbicide in g/ha"
           },
           "dilution": {
             "type": "number",
@@ -3136,9 +3154,65 @@
             "minimum": 0,
             "x-tooltip-text": "Percent (%) of product in the mix"
           },
-          "area_treated": {
+          "specific_treatment_area": {
+            "type": "number",
+            "title": "Specific Treatment Area (ha)",
+            "minimum": 0,
+            "x-tooltip-text": "Area of the chemical treatment (ha) automatically calculated from the application and delivery rates used during chemical treatment"
+          }
+        },
+        "required": ["application_rate", "herbicide_amount", "mix_delivery_rate"]
+      },
+      "Herbicide": {
+        "type": "object",
+        "required": ["herbicide_code", "herbicide_type"],
+        "properties": {
+          "herbicide_code": {
             "type": "string",
-            "title": "Area Treated"
+            "title": "Herbicide",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "liquid_herbicide_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "herbicide_type": {
+            "title": "Herbicide Type",
+            "type": "string",
+            "enum": ["liquid", "granular"],
+            "x-tooltip-text": "Choose whether the herbicide being used is liquid or granular"
+          }
+        },
+        "dependencies": {
+          "herbicide_type": {
+            "oneOf": [
+              {
+                "properties": {
+                  "herbicide_type": {
+                    "enum": ["liquid"]
+                  },
+                  "herbicide_information": {
+                    "title": " ",
+                    "$ref": "#/components/schemas/Herbicide_Liquid_Object"
+                  }
+                },
+                "required": ["herbicide_information"]
+              },
+              {
+                "properties": {
+                  "herbicide_type": {
+                    "enum": ["granular"]
+                  },
+                  "herbicide_information": {
+                    "title": " ",
+                    "$ref": "#/components/schemas/Herbicide_Granular_Object"
+                  }
+                },
+                "required": ["herbicide_information"]
+              }
+            ]
           }
         }
       },

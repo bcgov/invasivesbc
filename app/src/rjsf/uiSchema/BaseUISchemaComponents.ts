@@ -30,6 +30,12 @@ const TwoColumnStyle = {
   'ui:column-lg': 6
 };
 
+const OneColumnStyle = {
+  'ui:column-xs': 12,
+  'ui:column-md': 12,
+  'ui:column-lg': 12
+};
+
 const Persons = {
   person_name: {}
 };
@@ -1230,6 +1236,7 @@ const BaseUISchemaComponents = {
   Herbicide,
   FourColumnStyle,
   ThreeColumnStyle,
+  OneColumnStyle,
   TwoColumnStyle,
   Jurisdictions,
   Weather_Conditions
