@@ -332,23 +332,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       ) : (
         <></>
       )}
-<<<<<<< HEAD
-=======
-
-      <MapResizer />
-
-      <LayersControl position="topright">
-        <LayersControl.BaseLayer checked name="Regular Layer">
-          <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-        </LayersControl.BaseLayer>
-        <LayersControl.Overlay checked name="Activities">
-          <TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>
-          {/* this line below works - its what you need for geosjon*/}
-          <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
-          {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
-        </LayersControl.Overlay>
-      </LayersControl>
->>>>>>> 0bcc5cf (Showing points... Fixed icon bug)
     </MapContainer>
   );
 };
