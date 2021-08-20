@@ -110,7 +110,6 @@ const Activity_Treatment_ChemicalPlant = {
     ...UISchemaComponents.Activity
   },
   activity_subtype_data: {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Treatment_ChemicalPlant
   }
 };
