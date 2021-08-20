@@ -12,20 +12,11 @@ import JSZip, { forEach } from 'jszip';
 import { ESLint } from 'eslint';
 
 const DOMParser = require('xmldom').DOMParser;
-//var toString = require('stream-to-string');
 
 export const KML_TYPES = {
   KML: 'kml',
   KMZ: 'kmz',
   OTHER: 'other'
-};
-const streamToString = (stream) => {
-  const chunks = [];
-  return new Promise((resolve, reject) => {
-    stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
-    stream.on('error', (err) => reject(err));
-    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
-  });
 };
 
 const KMZ_OR_KML = (input: File) => {
@@ -43,14 +34,11 @@ const KMZ_OR_KML = (input: File) => {
 
 const KMZ_TO_KML = async (input: File) => {
   const kmlStringArray = [];
-  //try {
   const zip = new JSZip();
   const unzipped = await zip.loadAsync(input);
-  //console.log(unzipped);
 
   const keys = Object.keys(unzipped.files);
   const numKeys = keys.length;
-  //console.log(keys);
 
   for (var i = 0; i < numKeys; i++) {
     const file = unzipped.file(keys[i]);
@@ -60,15 +48,13 @@ const KMZ_TO_KML = async (input: File) => {
     }
   }
 
-  //console.log(fileArr[0]);
   return kmlStringArray;
 };
 
 const KMLStringToGeojson = (input: string) => {
   try {
     const DOMFromXML = new DOMParser().parseFromString(input);
-    const geoFromDOM = kml(DOMFromXML);
-    return geoFromDOM;
+    return kml(DOMFromXML);
   } catch (e) {
     console.log('error converting kml xml string to geojson', e);
   }
@@ -76,17 +62,16 @@ const KMLStringToGeojson = (input: string) => {
 
 const get_KMZ_Or_KML_AsStringArray = async (input: File) => {
   let KMLString;
-  //console.log(input);
   //get kml as string
   switch (KMZ_OR_KML(input)) {
     case KML_TYPES.KML: {
       KMLString = await input.text().then((xmlString) => {
         return [xmlString];
       });
-      break;
+      return KMLString;
     }
     case KML_TYPES.KMZ: {
-      return await KMZ_TO_KML(input);
+      return KMZ_TO_KML(input);
     }
   }
 };
@@ -100,15 +85,14 @@ export const KMLUpload: React.FC<any> = (props) => {
 
   const saveKML = async (input: File) => {
     const KMLStringArray = await get_KMZ_Or_KML_AsStringArray(input);
-    //console.log(KMLString);
 
     let allGeos;
     for (let KMLString of KMLStringArray) {
-      const geos = KMLStringToGeojson(KMLString);
+      const uploadedGeos = KMLStringToGeojson(KMLString);
       if (!allGeos?.features) {
-        allGeos = geos;
+        allGeos = uploadedGeos;
       } else {
-        allGeos.features = [...allGeos.features, ...geos.features];
+        allGeos.features = [...allGeos.features, ...uploadedGeos.features];
       }
     }
 
@@ -154,9 +138,6 @@ export const KMLUpload: React.FC<any> = (props) => {
       dropzoneText="Upload KML here"
       onChange={(e) => {
         setAFile(e[0]);
-        e.forEach((file) => {
-          //console.log(KMZ_OR_KML(file));
-        });
       }}
     />
   );
