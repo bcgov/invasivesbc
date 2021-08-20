@@ -8,7 +8,8 @@ import { Capacitor } from '@capacitor/core';
 import unzipper from 'unzipper';
 // node doesn't have xml parsing or a dom. use xmldom
 import { css } from '@material-ui/system';
-import JSZip from 'jszip';
+import JSZip, { forEach } from 'jszip';
+import { ESLint } from 'eslint';
 
 const DOMParser = require('xmldom').DOMParser;
 //var toString = require('stream-to-string');
@@ -41,7 +42,7 @@ const KMZ_OR_KML = (input: File) => {
 };
 
 const KMZ_TO_KML = async (input: File) => {
-  const fileArr = [];
+  const kmlStringArray = [];
   //try {
   const zip = new JSZip();
   const unzipped = await zip.loadAsync(input);
@@ -54,14 +55,13 @@ const KMZ_TO_KML = async (input: File) => {
   for (var i = 0; i < numKeys; i++) {
     const file = unzipped.file(keys[i]);
     if (KMZ_OR_KML(file as any) === KML_TYPES.KML) {
-      fileArr.push(file);
-      //console.log(file);
+      const stringVal = await file.async('string');
+      kmlStringArray.push(stringVal);
     }
-    console.log(file);
   }
 
   //console.log(fileArr[0]);
-  return fileArr;
+  return kmlStringArray;
 };
 
 const KMLStringToGeojson = (input: string) => {
@@ -74,31 +74,21 @@ const KMLStringToGeojson = (input: string) => {
   }
 };
 
-const get_KMZ_Or_KML_AsString = async (input: File) => {
+const get_KMZ_Or_KML_AsStringArray = async (input: File) => {
   let KMLString;
   //console.log(input);
   //get kml as string
   switch (KMZ_OR_KML(input)) {
     case KML_TYPES.KML: {
       KMLString = await input.text().then((xmlString) => {
-        return xmlString;
+        return [xmlString];
       });
       break;
     }
     case KML_TYPES.KMZ: {
-      let KMLarr = [KMZ_TO_KML(input)];
-      var len = KMLarr.length;
-      //console.log(len);
-      for (var i = 0; i < len; i++) {
-        //console.log(KMLarr[i]);
-        KMLString = await input.text().then((xmlString) => {
-          return xmlString;
-        });
-      }
-      break;
+      return await KMZ_TO_KML(input);
     }
   }
-  return KMLString;
 };
 
 export const KMLUpload: React.FC<any> = (props) => {
@@ -106,17 +96,25 @@ export const KMLUpload: React.FC<any> = (props) => {
 
   // Raw file kept in useState var and converted to Geo before hitting db:
   const [aFile, setAFile] = useState(null);
+  const [geos, setGeos] = useState(null);
 
   const saveKML = async (input: File) => {
-    const KMLString = await get_KMZ_Or_KML_AsString(input);
+    const KMLStringArray = await get_KMZ_Or_KML_AsStringArray(input);
     //console.log(KMLString);
-    const geosFromString = KMLStringToGeojson(KMLString);
 
-    if (geosFromString) {
-      console.log('saving geo feat collection');
-      console.dir(geosFromString);
+    let allGeos;
+    for (let KMLString of KMLStringArray) {
+      const geos = KMLStringToGeojson(KMLString);
+      if (!allGeos?.features) {
+        allGeos = geos;
+      } else {
+        allGeos.features = [...allGeos.features, ...geos.features];
+      }
+    }
 
-      /*
+    console.dir(allGeos);
+
+    /*
       await upsert(
         [
           {
@@ -129,7 +127,6 @@ export const KMLUpload: React.FC<any> = (props) => {
         databaseContext
       );
     }*/
-    }
   };
 
   useEffect(() => {
