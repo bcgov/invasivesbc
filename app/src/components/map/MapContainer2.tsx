@@ -315,7 +315,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
             <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
           </LayersControl.BaseLayer>
           <LayersControl.Overlay checked name="Activities">
-            <TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>
+            {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
             {/* this line below works - its what you need for geosjon*/}
             <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
