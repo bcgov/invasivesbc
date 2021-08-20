@@ -1,14 +1,13 @@
 import { Capacitor } from '@capacitor/core';
 import { CircularProgress } from '@material-ui/core';
-import { NetworkContext } from 'contexts/NetworkContext';
-import HomeRouter from 'features/home/HomeRouter';
-import AuthLayout from 'layouts/AuthLayout';
-import PublicLayout from 'layouts/PublicLayout';
-import AccessDenied from 'pages/misc/AccessDenied';
-import { NotFoundPage } from 'pages/misc/NotFoundPage';
-import React, { useContext, useEffect, useState } from 'react';
+import HomeRouter from './features/home/HomeRouter';
+import AuthLayout from './layouts/AuthLayout';
+import PublicLayout from './layouts/PublicLayout';
+import AccessDenied from './pages/misc/AccessDenied';
+import { NotFoundPage } from './pages/misc/NotFoundPage';
+import React, { useEffect, useState } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
-import AppRoute from 'utils/AppRoute';
+import AppRoute from './utils/AppRoute';
 
 interface IAppRouterProps {
   deviceInfo: any;
@@ -17,8 +16,6 @@ interface IAppRouterProps {
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
-  const networkContext = useContext(NetworkContext);
-
   const [layout, setLayout] = useState<React.FC<any>>(null);
   const [isMobileNoNetwork, setIsMobileNoNetwork] = useState(false);
 
@@ -28,13 +25,14 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
 
   useEffect(() => {
     // If on mobile and have no internet connection, then bypass keycloak
-    if (Capacitor.getPlatform() == 'ios' && !networkContext?.connected) {
+    // removed network check for now - can't use current version of capactior network as context
+    if (Capacitor.getPlatform() === 'ios') {
       setLayout(() => PublicLayout);
       setIsMobileNoNetwork(true);
     } else {
       setLayout(() => AuthLayout);
     }
-  }, [networkContext]);
+  });
 
   if (!layout) {
     return <CircularProgress />;

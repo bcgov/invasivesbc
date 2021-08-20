@@ -1,6 +1,6 @@
 import { Container } from '@material-ui/core';
 import React, { useEffect } from 'react';
-import ActivitiesList from 'components/activities-list/ActivitiesList';
+import ActivitiesList from '../../../components/activities-list/ActivitiesList';
 
 interface IStatusPageProps {
   classes?: any;

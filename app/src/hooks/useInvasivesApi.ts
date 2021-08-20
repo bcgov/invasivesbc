@@ -1,18 +1,17 @@
 import { Capacitor } from '@capacitor/core';
 import { useKeycloak } from '@react-keycloak/web';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import { query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext2';
 import {
   IActivitySearchCriteria,
   ICreateMetabaseQuery,
   ICreateOrUpdateActivity,
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria
-} from 'interfaces/useInvasivesApi-interfaces';
+} from '../interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
 import { Http } from '@capacitor-community/http';
 import { useContext, useMemo } from 'react';
-import { DocType } from 'constants/database';
+import { DocType } from '../constants/database';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
@@ -30,11 +29,10 @@ const API_URL =
 const useRequestOptions = () => {
   const { keycloak } = useKeycloak();
   const instance = useMemo(() => {
-    const options = {
+    return {
       baseUrl: API_URL,
       headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.token}` }
     };
-    return options;
   }, [keycloak]);
 
   return instance;
@@ -46,7 +44,7 @@ const useRequestOptions = () => {
  */
 export const useInvasivesApi = () => {
   const options = useRequestOptions();
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
   /**
    * Fetch*
    activities by search criteria.
@@ -125,16 +123,18 @@ export const useInvasivesApi = () => {
         method: 'GET',
         url: options.baseUrl + `/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`
       });
-      if (data?.activity_ids?.length)
+      if (data?.activity_ids?.length) {
         activities = await getActivities({
           activity_ids: data.activity_ids,
           search_feature: metabaseQueriesSearchCriteria.search_feature
         });
-      if (data?.point_of_interest_ids?.length)
+      }
+      if (data?.point_of_interest_ids?.length) {
         points_of_interest = await getPointsOfInterest({
           point_of_interest_ids: data.point_of_interest_ids,
           search_feature: metabaseQueriesSearchCriteria.search_feature
         });
+      }
     } catch {
       console.log('Metabase API call failed.');
     }
@@ -265,18 +265,18 @@ export const useInvasivesApi = () => {
    *
    * @return {*}  {Promise<any>}
    */
-  const getCachedApiSpec = async (isConnected: boolean): Promise<any> => {
+  const getCachedApiSpec = async (): Promise<any> => {
     try {
       // on mobile - think there is internet:
       if (Capacitor.getPlatform() !== 'web') {
-        if (isConnected) {
-          // try to cache spec, then return it:
-          if (await cacheSpec(databaseContext)) return getApiSpec();
-          // network call failed, get from cache:
-          if (!(await cacheSpec(databaseContext))) return getSpecFromCache(databaseContext);
-        } else {
-          // on mobile - think there is no internet:
-          return await getSpecFromCache(databaseContext);
+        // try to cache spec, then return it:
+        try {
+          const webResponse = await getApiSpec();
+          cacheSpec(webResponse);
+          return webResponse;
+        } catch (e) {
+          console.dir(e);
+          return await getSpecFromCache();
         }
       } else {
         // must be web, try online:
@@ -288,7 +288,7 @@ export const useInvasivesApi = () => {
     }
   };
 
-  const getSpecFromCache = async (databaseContext) => {
+  const getSpecFromCache = async () => {
     let data = await query(
       {
         type: QueryType.DOC_TYPE_AND_ID,
@@ -304,9 +304,9 @@ export const useInvasivesApi = () => {
     }
   };
 
-  const cacheSpec = async (databaseContext) => {
-    const data = await getApiSpec();
+  const cacheSpec = async (data) => {
     if (data.components) {
+      console.log('caching spec');
       //cache if on mobile
       try {
         await upsert(

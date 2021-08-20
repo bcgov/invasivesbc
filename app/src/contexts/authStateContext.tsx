@@ -1,11 +1,9 @@
 import * as React from 'react';
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import useKeycloakWrapper from '../hooks/useKeycloakWrapper';
+import { useInvasivesApi } from '../hooks/useInvasivesApi';
 import { DatabaseContext2, upsert, UpsertType } from './DatabaseContext2';
-import { DocType } from 'constants/database';
+import { DocType } from '../constants/database';
 import { Capacitor } from '@capacitor/core';
-import { NetworkContext } from './NetworkContext';
-import { useContext } from 'react';
 
 export interface IAuthState {
   ready?: boolean;
@@ -26,7 +24,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
     const loadUserInfo = async () => {
       console.log(keycloak.obj + 'keycloak is here');
       const user = await keycloak.obj?.loadUserInfo();
-      if (Capacitor.getPlatform() !== 'web' && databaseContext.ready)
+      if (Capacitor.getPlatform() !== 'web' && databaseContext.ready) {
         await upsert(
           [
             {
@@ -38,16 +36,16 @@ export const AuthStateContextProvider: React.FC = (props) => {
           ],
           databaseContext
         );
+      }
       setUserInfo(user);
     };
 
     loadUserInfo();
   }, [keycloak.obj]);
-  const networkContext = useContext(NetworkContext);
 
   React.useEffect(() => {
     const getApiSpec = async () => {
-      await invasivesApi.getCachedApiSpec(networkContext.connected);
+      await invasivesApi.getCachedApiSpec();
     };
 
     getApiSpec();

@@ -1,18 +1,17 @@
 import { Capacitor } from '@capacitor/core';
-import { Device, DeviceInfo } from '@capacitor/device';
+import { DeviceInfo } from '@capacitor/device';
 
 import { IonReactRouter } from '@ionic/react-router';
-import { Box, CircularProgress, createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core';
+import { Box, CircularProgress } from '@material-ui/core';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
-import { DatabaseChangesContextProvider } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext, DatabaseContextProvider, IDatabaseContext } from 'contexts/DatabaseContext';
-import { DatabaseContext2, DatabaseContext2Provider } from 'contexts/DatabaseContext2';
-import { NetworkContextProvider } from 'contexts/NetworkContext';
-import { ThemeContextProvider } from 'contexts/themeContext';
+import { DatabaseChangesContextProvider } from './contexts/DatabaseChangesContext';
+import { DatabaseContext, DatabaseContextProvider, IDatabaseContext } from './contexts/DatabaseContext';
+import { DatabaseContext2Provider } from './contexts/DatabaseContext2';
+import { ThemeContextProvider } from './contexts/themeContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
-import CustomThemeProvider from 'utils/CustomThemeProvider';
+import CustomThemeProvider from './utils/CustomThemeProvider';
 
 import AppRouter from './AppRouter';
 
@@ -54,32 +53,30 @@ const App: React.FC<IAppProps> = (props) => {
       <ThemeContextProvider>
         <CustomThemeProvider>
           <IonReactRouter>
-            <NetworkContextProvider>
-              <DatabaseContext2Provider>
-                <DatabaseContextProvider>
-                  <DatabaseContext.Consumer>
-                    {(databaseContext: IDatabaseContext) => {
-                      if (Capacitor.getPlatform() === 'ios') {
-                        return (
-                          <DatabaseChangesContextProvider>
-                            <AppRouter {...appRouterProps} />
-                          </DatabaseChangesContextProvider>
-                        );
-                      }
-                      if (databaseContext.database) {
-                        // database not ready, delay loading app
-                        return (
-                          <DatabaseChangesContextProvider>
-                            <AppRouter {...appRouterProps} />
-                          </DatabaseChangesContextProvider>
-                        );
-                      }
-                      return <CircularProgress />;
-                    }}
-                  </DatabaseContext.Consumer>
-                </DatabaseContextProvider>
-              </DatabaseContext2Provider>
-            </NetworkContextProvider>
+            <DatabaseContext2Provider>
+              <DatabaseContextProvider>
+                <DatabaseContext.Consumer>
+                  {(databaseContext: IDatabaseContext) => {
+                    if (Capacitor.getPlatform() === 'ios') {
+                      return (
+                        <DatabaseChangesContextProvider>
+                          <AppRouter {...appRouterProps} />
+                        </DatabaseChangesContextProvider>
+                      );
+                    }
+                    if (databaseContext.database) {
+                      // database not ready, delay loading app
+                      return (
+                        <DatabaseChangesContextProvider>
+                          <AppRouter {...appRouterProps} />
+                        </DatabaseChangesContextProvider>
+                      );
+                    }
+                    return <CircularProgress />;
+                  }}
+                </DatabaseContext.Consumer>
+              </DatabaseContextProvider>
+            </DatabaseContext2Provider>
           </IonReactRouter>
         </CustomThemeProvider>
       </ThemeContextProvider>

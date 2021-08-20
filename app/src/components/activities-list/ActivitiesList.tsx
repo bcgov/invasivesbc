@@ -13,11 +13,11 @@ import {
 } from '@material-ui/core';
 import { ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { DatabaseContext } from '../../contexts/DatabaseContext';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
-import 'styles/spinners.scss';
+import '../../styles/spinners.scss';
 import ActivityListDate from './ActivityListDate';
 import {
   MyAdditionalBiocontrolActivitiesTable,
@@ -28,9 +28,9 @@ import {
   MyTransectsTable,
   MyTreatmentsTable,
   ReviewActivitiesTable
-} from 'components/common/RecordTables';
-import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
-import BatchUpload from 'components/batch-upload/BatchUpload';
+} from '../../components/common/RecordTables';
+import { DatabaseContext2, query, QueryType } from '../../contexts/DatabaseContext2';
+import BatchUpload from '../../components/batch-upload/BatchUpload';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -177,138 +177,16 @@ interface IActivityList {
   workflowFunction: string;
 }
 
-// TODO change any to a type that defines the overall items being displayed
-// const ActivityList: React.FC<IActivityList> = (props) => {
-//   const classes = useStyles();
-
-//   const history = useHistory();
-
-//   const databaseContext = useContext(DatabaseContext);
-//   const databaseContext2 = useContext(DatabaseContext2);
-//   const databaseChangesContext = useContext(DatabaseChangesContext);
-//   const dataAccess = useDataAccess();
-//   const [docs, setDocs] = useState<any[]>([]);
-//   const [docToDelete, setDocToDelete] = useState(null);
-//   const [isWarningDialogOpen, setIsWarningDialogOpen] = useState(false);
-
-//   const updateActivityList = useCallback(async () => {
-//     if (Capacitor.getPlatform() === 'web') {
-//       const activityResult = await databaseContext.database.find({
-//         selector: { docType: DocType.ACTIVITY, activityType: props.activityType },
-//         use_index: 'activitiesIndex'
-//       });
-//       setDocs([...activityResult.docs]);
-//     } else {
-//       const activityResult = dataAccess.getActivities({}, databaseContext2, true);
-//       console.dir(activityResult);
-//     }
-//   }, [databaseContext.database, databaseContext2, props.activityType]);
-
-//   useEffect(() => {
-//     const updateComponent = () => {
-//       updateActivityList();
-//     };
-
-//     updateComponent();
-//   }, [databaseChangesContext, updateActivityList]);
-
-//   const removeActivity = async (activity: PouchDB.Core.RemoveDocument) => {
-//     databaseContext.database.remove(activity);
-//   };
-
-//   const setActiveActivityAndNavigateToActivityPage = async (doc: any) => {
-//     /*j await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-//       return { ...appStateDoc, activeActivity: doc._id };
-//     });*/
-//     console.log('PRINTING doc');
-//     console.log(JSON.stringify(doc));
-//     await dataAccess.setAppState({ activeActivity: doc._id }, databaseContext2);
-//     alert(JSON.stringify(doc));
-//     if (doc.activityType === 'Observation') {
-//       history.push({
-//         pathname: `/home/activity`,
-//         search: '?observation=' + doc._id,
-//         state: { observation: doc._id }
-//       });
-//     } else {
-//       history.push('/home/activity');
-//     }
-//   };
-
-//   // Sort activities to show most recently updated activities at top of list
-//   const sortedActivities = docs.sort((a, b): any => {
-//     return new Date(b.dateUpdated).valueOf() - new Date(a.dateUpdated).valueOf();
-//   });
-
-//   return (
-//     <List>
-//       {sortedActivities.map((doc) => {
-//         const isDisabled = props.isDisabled || doc.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL;
-
-//         if (
-//           !doc.activitySubtype.includes(props.workflowFunction) &&
-//           !['Transect', 'Dispersal', 'Collection'].includes(doc.activityType)
-//         ) {
-//           return null;
-//         }
-
-//         return (
-//           <Paper key={doc._id}>
-//             <ListItem
-//               button
-//               className={classes.activitiyListItem}
-//               onClick={() => setActiveActivityAndNavigateToActivityPage(doc)}>
-//               <ListItemIcon>
-//                 <SvgIcon
-//                   fontSize="large"
-//                   className={clsx(
-//                     (doc.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL && classes.syncSuccessful) ||
-//                       (doc.sync.status === ActivitySyncStatus.SAVE_FAILED && classes.syncFailed)
-//                   )}
-//                   component={ActivityTypeIcon[props.activityType]}
-//                 />
-//               </ListItemIcon>
-//               <ActivityListItem isDisabled={props.isDisabled} activity={doc} />
-//               <ListItemSecondaryAction>
-//                 <IconButton
-//                   disabled={isDisabled}
-//                   onClick={() => {
-//                     setDocToDelete(doc);
-//                     setIsWarningDialogOpen(true);
-//                   }}>
-//                   <DeleteForever />
-//                 </IconButton>
-//               </ListItemSecondaryAction>
-//             </ListItem>
-//             <WarningDialog
-//               isOpen={isWarningDialogOpen}
-//               handleDisagree={() => setIsWarningDialogOpen(false)}
-//               handleAgree={async () => {
-//                 await removeActivity(docToDelete);
-//                 setIsWarningDialogOpen(false);
-//               }}
-//               heading="Delete Activity?"
-//               message="Are you sure you would like to delete this activity? Once deleted, this activity cannot be recovered"
-//             />
-//           </Paper>
-//         );
-//       })}
-//     </List>
-//   );
-// };
-
 const ActivitiesList: React.FC = () => {
   const classes = useStyles();
 
-  const databaseContext = useContext(DatabaseContext);
-  const databaseContext2 = useContext(DatabaseContext2);
-  const invasivesApi = useInvasivesApi();
+  const databaseContext = useContext(DatabaseContext2);
   const { keycloak } = useKeycloak();
   useEffect(() => {
     const userId = async () => {
       const userInfo: any = keycloak
         ? keycloak?.userInfo
-        : await query({ type: QueryType.DOC_TYPE_AND_ID, docType: DocType.KEYCLOAK, ID: '1' }, databaseContext2);
+        : await query({ type: QueryType.DOC_TYPE_AND_ID, docType: DocType.KEYCLOAK, ID: '1' }, databaseContext);
       return userInfo?.preferred_username;
     };
     if (!userId) throw "Keycloak error: can not get current user's username";
