@@ -454,7 +454,6 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
           errors.activity_subtype_data['treatment_information']['invasive_plants_information'][invPlantIndex][
             'herbicide'
           ][herbicideIndex]['herbicide_information']['application_rate'].__errors.pop();
-          return errors;
         }
 
         herbicideIndex++;
