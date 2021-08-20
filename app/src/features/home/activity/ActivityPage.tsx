@@ -10,14 +10,14 @@ import {
   Paper
 } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
-import ActivityComponent from 'components/activity/ActivityComponent';
-import { IPhoto } from 'components/photo/PhotoContainer';
+import ActivityComponent from '../../../components/activity/ActivityComponent';
+import { IPhoto } from '../../../components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext } from '../../../contexts/DatabaseContext';
 import proj4 from 'proj4';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { debounced } from 'utils/FunctionUtils';
+import { debounced } from '../../../utils/FunctionUtils';
 import { MapContextMenuData } from '../map/MapContextMenu';
 import './scrollbar.css';
 import {
@@ -36,20 +36,20 @@ import {
   getSlopeAspectBothFlatValidator,
   getInvasivePlantsValidator,
   getDuplicateInvasivePlantsValidator
-} from 'rjsf/business-rules/customValidation';
-import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
+} from '../../../rjsf/business-rules/customValidation';
+import { getCustomErrorTransformer } from '../../../rjsf/business-rules/customErrorTransformer';
 import {
   populateHerbicideDilutionAndArea,
   populateTransectLineAndPointData
-} from 'rjsf/business-rules/populateCalculatedFields';
-import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import { retrieveFormDataFromSession, saveFormDataToSession } from 'utils/saveRetrieveFormData';
-import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
-import { addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from 'utils/addActivity';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+} from '../../../rjsf/business-rules/populateCalculatedFields';
+import { notifySuccess, notifyError } from '../../../utils/NotificationUtils';
+import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
+import { calculateLatLng, calculateGeometryArea } from '../../../utils/geometryHelpers';
+import { addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from '../../../utils/addActivity';
+import { useDataAccess } from '../../../hooks/useDataAccess';
+import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
-import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
+import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -99,7 +99,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
 
   const [doc, setDoc] = useState(null);
-  // const docId = doc && doc._id;
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
 
@@ -117,14 +116,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const hashedNewDoc = JSON.stringify(updatedDoc);
     const hashedDoc = JSON.stringify(doc);
     if (!updatedDoc || hashedDoc === hashedNewDoc) {
-      // console.log("attempting doc update but not different ", updatedDoc);
       return false;
     }
 
-    // console.log("updating doc ", updatedDoc);
     if (!updatedDoc._id) {
       return false;
     }
+
     setDoc(updatedDoc);
     try {
       const dbUpdates = debounced(1000, async (updated) => {
@@ -137,10 +135,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         await dataAccess.updateActivity(newActivity, databaseContext);
       });
       await dbUpdates(updatedDoc);
-      // console.log("updated doc ", updatedDoc);
       return true;
     } catch (e) {
-      // console.log("error updating doc ", updatedDoc, e);
       return false;
     }
   };
@@ -167,54 +163,45 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    *
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
-  const saveGeometry = useCallback(
-    (geom: Feature[]) => {
-      setDoc(async (activity: any) => {
-        const { latitude, longitude } = calculateLatLng(geom) || {};
+  const saveGeometry = useCallback((geom: Feature[]) => {
+    setDoc(async (activity: any) => {
+      const { latitude, longitude } = calculateLatLng(geom) || {};
 
-        /**
-         * latlong to utms / utm zone conversion
-         */
-        let utm_easting, utm_northing, utm_zone;
-        //if statement prevents errors on page load, as lat/long isn't defined
-        if (longitude !== undefined && latitude !== undefined) {
-          utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
-          proj4.defs([
-            ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
-            ['EPSG:AUTO', `+proj=utm +zone= ${utm_zone} +datum=WGS84 +units=m +no_defs`]
-          ]);
-          const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
-          utm_easting = Number(en_m[0].toFixed(4));
-          utm_northing = Number(en_m[1].toFixed(4));
-        }
-
-        const activityDoc = {
-          ...activity,
-          formData: {
-            ...activity.formData,
-            activity_data: {
-              ...activity.formData.activity_data,
-              latitude,
-              longitude,
-              utm_easting,
-              utm_northing,
-              utm_zone,
-              reported_area: calculateGeometryArea(geom)
-            }
-          },
-          geometry: geom,
-          status: ActivityStatus.EDITED,
-          dateUpdated: new Date()
-        };
-
-        await updateDoc(activityDoc);
-
-        return activityDoc;
-      });
-    },
-    // [databaseContextPouch.database]
-    []
-  );
+      //latlong to utms / utm zone conversion
+      let utm_easting, utm_northing, utm_zone;
+      //if statement prevents errors on page load, as lat/long isn't defined
+      if (longitude !== undefined && latitude !== undefined) {
+        utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
+        proj4.defs([
+          ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
+          ['EPSG:AUTO', `+proj=utm +zone= ${utm_zone} +datum=WGS84 +units=m +no_defs`]
+        ]);
+        const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
+        utm_easting = Number(en_m[0].toFixed(4));
+        utm_northing = Number(en_m[1].toFixed(4));
+      }
+      const activityDoc = {
+        ...activity,
+        formData: {
+          ...activity.formData,
+          activity_data: {
+            ...activity.formData.activity_data,
+            latitude,
+            longitude,
+            utm_easting,
+            utm_northing,
+            utm_zone,
+            reported_area: calculateGeometryArea(geom)
+          }
+        },
+        geometry: geom,
+        status: ActivityStatus.EDITED,
+        dateUpdated: new Date()
+      };
+      await updateDoc(activityDoc);
+      return activityDoc;
+    });
+  }, []);
 
   /**
    * Save the map Extent within the database
@@ -238,11 +225,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     Function that runs if the form submit fails and has errors
   */
   const onFormSubmitError = () => {
-    notifyError(
-      databaseContextPouch,
-      'There are errors in your form. Please make sure your form contains no errors and try again.'
-    );
-
+    alert('There are errors in your form. Please make sure your form contains no errors and try again.');
     updateDoc({
       formStatus: FormValidationStatus.INVALID
     });
@@ -272,7 +255,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     });
   };
   const autoFillTotalCollectionTime = (formData: any) => {
-    if (!formData.activity_subtype_data.collections) return formData;
+    if (!formData.activity_subtype_data.collections) {
+      return formData;
+    }
 
     formData.activity_subtype_data.collections.forEach((collection) => {
       if (collection.start_time && collection.stop_time) {
@@ -359,8 +344,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     Function to pull activity results from the DB given an activityId if present
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
-    // const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
-
     const appStateResults = await dataAccess.getAppState(databaseContext);
 
     let activityResults;
@@ -472,14 +455,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   //sets well id and proximity if there are any
   const setWellIdandProximity = async (wellIdandProximity: any) => {
-    //if nothing is received, don't do anything
     const activityResult = await getActivityResultsFromDB(props.activityId || null);
-
+    //if nothing is received, don't do anything
     if (!wellIdandProximity) {
       return;
     } else {
-      let newFormData = doc;
-
+      const newFormData = doc;
       //set well_id and well_proximity fields
       newFormData['formData']['activity_data']['well_id'] = wellIdandProximity.id ? wellIdandProximity.id : undefined;
       newFormData['formData']['activity_data']['well_proximity'] = wellIdandProximity.proximity

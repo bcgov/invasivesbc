@@ -90,6 +90,66 @@ const Treatment_ChemicalPlant_BulkEdit = {
   }
 };
 
+const Treatment_ChemicalPlantAquatic = {
+  treatment_chemicalplant_information: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    applicator1_name: {},
+    applicator1_license: {},
+    applicator2_name: {},
+    applicator2_license: {},
+    pesticide_employer_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    pesticide_user_license_number: {},
+    chemical_method_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    temperature: {
+      validateOnBlur: true
+    },
+    humidity: {},
+    pest_management_plan: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    invasive_plant_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    herbicide: {
+      items: {
+        ...BaseUISchemaComponents.Herbicide
+      }
+    },
+    wind_speed: {
+      validateOnBlur: true
+    },
+    wind_direction_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    pesticide_use_permit_PUP: {},
+    signage_on_site: {}
+  },
+  waterbody_data: {
+    ...BaseUISchemaComponents.TwoColumnStyle
+  },
+  water_quality: {
+    ...BaseUISchemaComponents.TwoColumnStyle
+  },
+  treatment_information: {
+    invasive_plants_information: {
+      items: {
+        herbicide: {
+          items: {
+            herbicide_type: { 'ui:widget': 'single-select-autocomplete' },
+            herbicide_information: {
+              ...BaseUISchemaComponents.TwoColumnStyle
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 const Activity = {
   activity_date_time: {
     'ui:widget': 'datetime'
@@ -475,6 +535,7 @@ const MonitoringActivity = {
 
 const UISchemaComponents = {
   Treatment_ChemicalPlant,
+  Treatment_ChemicalPlantAquatic,
   Activity,
   MonitoringActivity,
   Activity_BulkEdit,
