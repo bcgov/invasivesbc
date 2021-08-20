@@ -76,7 +76,7 @@ export const useDataAccess = () => {
     forceCache?: boolean
   ): Promise<any> => {
     const networkStatus = await Network.getStatus();
-    if (Capacitor.getPlatform() == 'web') {
+    if (Capacitor.getPlatform() === 'web') {
       return api.getActivityById(activityId);
     } else {
       if (forceCache === true || !networkStatus.connected) {

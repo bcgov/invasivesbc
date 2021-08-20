@@ -1,4 +1,5 @@
 import { Capacitor } from '@capacitor/core';
+import { Network } from '@capacitor/network';
 import { useKeycloak } from '@react-keycloak/web';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
@@ -124,16 +125,18 @@ export const useInvasivesApi = () => {
         method: 'GET',
         url: options.baseUrl + `/api/metabase-query/${metabaseQueriesSearchCriteria.metabaseQueryId}`
       });
-      if (data?.activity_ids?.length)
+      if (data?.activity_ids?.length) {
         activities = await getActivities({
           activity_ids: data.activity_ids,
           search_feature: metabaseQueriesSearchCriteria.search_feature
         });
-      if (data?.point_of_interest_ids?.length)
+      }
+      if (data?.point_of_interest_ids?.length) {
         points_of_interest = await getPointsOfInterest({
           point_of_interest_ids: data.point_of_interest_ids,
           search_feature: metabaseQueriesSearchCriteria.search_feature
         });
+      }
     } catch {
       console.log('Metabase API call failed.');
     }
@@ -268,11 +271,16 @@ export const useInvasivesApi = () => {
     try {
       // on mobile - think there is internet:
       if (Capacitor.getPlatform() !== 'web') {
-        if (isConnected) {
+        const networkStatus = await Network.getStatus();
+        if (networkStatus.connected) {
           // try to cache spec, then return it:
-          if (await cacheSpec(databaseContext)) return getApiSpec();
+          if (await cacheSpec(databaseContext)) {
+            return getApiSpec();
+          }
           // network call failed, get from cache:
-          if (!(await cacheSpec(databaseContext))) return getSpecFromCache(databaseContext);
+          if (!(await cacheSpec(databaseContext))) {
+            return getSpecFromCache(databaseContext);
+          }
         } else {
           // on mobile - think there is no internet:
           return await getSpecFromCache(databaseContext);
