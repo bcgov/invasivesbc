@@ -14,9 +14,14 @@ import { useContext, useMemo } from 'react';
 import { DocType } from '../constants/database';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 
-const API_HOST = process.env.REACT_APP_API_HOST;
-const API_PORT = process.env.REACT_APP_API_PORT;
-const API_URL = 'http://localhost:7080';
+const API_HOST = process.env.REACT_APP_API_HOST || 'localhost';
+const API_PORT = process.env.REACT_APP_API_PORT || 3002;
+const API_URL =
+  API_HOST && API_PORT
+    ? `http://` + (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST
+    : 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
+
+console.log('API_URL', API_URL);
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
@@ -55,6 +60,28 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/activities/`,
       data: activitiesSearchCriteria
     });
+
+    /****************Begining of GeoJSON*****************/
+    /**
+     * This logic has optimized the data output into the essentials
+     * for Leaflet to consume. Will hopefully replace the default
+     * output data.
+     */
+    const geojsonData = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/activities-lean/`,
+      data: activitiesSearchCriteria
+    });
+
+    const features = geojsonData.data.rows.map((d) => d.geojson);
+    const geojson = {
+      type: 'FeatureCollection',
+      features: features
+    };
+    console.log('Activities as geojson', geojson);
+    /******************End of GeoJSON*******************/
+
     return data;
   };
 
@@ -102,6 +129,27 @@ export const useInvasivesApi = () => {
       url: options.baseUrl + `/api/points-of-interest/`,
       data: pointsOfInterestSearchCriteria
     });
+
+    /****************Begining of GeoJSON*****************/
+    /**
+     * This logic has optimized the data output into the essentials
+     * for Leaflet to consume. Will hopefully replace the default
+     * output data.
+     */
+    const geojsonData = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/points-of-interest-lean/`,
+      data: pointsOfInterestSearchCriteria
+    });
+
+    const features = geojsonData.data.rows.map((d) => d.geojson);
+    const geojson = {
+      type: 'FeatureCollection',
+      features: features
+    };
+    console.log('Observations as geojson', geojson);
+    /******************End of GeoJSON*******************/
 
     return data;
   };

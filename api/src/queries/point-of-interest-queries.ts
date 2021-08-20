@@ -261,3 +261,111 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
 export const getPointOfInterestSQL = (point_of_interestId: number): SQLStatement => {
   return SQL`SELECT * FROM point_of_interest_incoming_data where point_of_interest_incoming_data_id = ${point_of_interestId}`;
 };
+
+/**
+ * ## getPointsOfInterestLeanSQL
+ * Get Points of interest based on search criteria.
+ * The output is formatted to the GeoJSON specification.
+ * @param searchCriteria Extent, type ext...
+ * @returns Postgres data object
+ */
+export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
+  const sqlStatement: SQLStatement = SQL`SELECT`;
+
+  sqlStatement.append(SQL`
+    jsonb_build_object (
+      'type', 'Feature',
+      'properties', json_build_object(
+        'point_of_interest_id', point_of_interest_id,
+        'point_of_interest_type', point_of_interest_type,
+        'point_of_interest_subtype', point_of_interest_subtype
+      ),
+      'geometry', public.st_asGeoJSON(geog)::jsonb
+    ) as "geojson",
+    COUNT(*) OVER() AS "total_rows_count"
+  `);
+
+  if (searchCriteria.iappType) {
+    sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary ON
+    point_of_interest_incoming_data.point_of_interest_incoming_data_id = iapp_site_summary.id WHERE 1 = 1
+    `);
+  } else {
+    sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1`);
+  }
+
+  if (searchCriteria.pointOfInterest_type) {
+    sqlStatement.append(SQL` AND point_of_interest_type = ${searchCriteria.pointOfInterest_type}`);
+  }
+
+  if (searchCriteria.pointOfInterest_subtype) {
+    sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);
+  }
+
+  if (searchCriteria.iappType) {
+    if (searchCriteria.iappSiteID) {
+      sqlStatement.append(SQL` AND iapp_site_summary.id = ${searchCriteria.iappSiteID}`);
+    }
+    if (searchCriteria.date_range_start) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const format = require('pg-format');
+      const noTime = searchCriteria.date_range_start.toString().substr(0, 10);
+      const sql = format(" AND iapp_site_summary.%I >= '%s'::DATE", 'min_' + searchCriteria.iappType, noTime);
+      sqlStatement.append(sql);
+    }
+    if (searchCriteria.date_range_end) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const format = require('pg-format');
+      const noTime = searchCriteria.date_range_end.toString().substr(0, 10);
+      const sql = format(" AND iapp_site_summary.%I <= '%s'::DATE", 'max_' + searchCriteria.iappType, noTime);
+      sqlStatement.append(sql);
+    }
+  } else {
+    if (searchCriteria.date_range_start) {
+      sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
+    }
+    if (searchCriteria.date_range_end) {
+      sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
+    }
+  }
+
+  if (searchCriteria.pointOfInterest_ids && searchCriteria.pointOfInterest_ids.length) {
+    sqlStatement.append(SQL` AND point_of_interest_id IN (`);
+    sqlStatement.append(SQL`${searchCriteria.pointOfInterest_ids[0]}`);
+    for (let idx = 1; idx < searchCriteria.pointOfInterest_ids.length; idx++) {
+      sqlStatement.append(SQL`, ${searchCriteria.pointOfInterest_ids[idx]}`);
+    }
+    sqlStatement.append(SQL`)`);
+  }
+
+  if (searchCriteria.search_feature) {
+    sqlStatement.append(SQL`
+      AND public.ST_INTERSECTS(
+        geog,
+        public.geography(
+          public.ST_Force2D(
+            public.ST_SetSRID(
+              public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
+              4326
+            )
+          )
+        )
+      )
+    `);
+  }
+
+  if (searchCriteria.order?.length) {
+    sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
+  }
+
+  if (searchCriteria.limit) {
+    sqlStatement.append(SQL` LIMIT ${searchCriteria.limit}`);
+  }
+
+  if (searchCriteria.page && searchCriteria.limit) {
+    sqlStatement.append(SQL` OFFSET ${searchCriteria.page * searchCriteria.limit}`);
+  }
+
+  sqlStatement.append(SQL`;`);
+
+  return sqlStatement;
+};

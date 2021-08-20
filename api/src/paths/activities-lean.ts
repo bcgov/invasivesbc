@@ -7,7 +7,7 @@ import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/
 import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
+import { getActivitiesLeanSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('activity');
@@ -195,10 +195,13 @@ DELETE.apiDoc = {
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: req.body });
+    defaultLog.debug({
+      label: 'activity',
+      message: 'getActivitiesBySearchFilterCriteria',
+      body: req.body
+    });
 
     const sanitizedSearchCriteria = new ActivitySearchCriteria(req.body);
-
     const connection = await getDBConnection();
 
     if (!connection) {
@@ -209,7 +212,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria);
+      const sqlStatement: SQLStatement = getActivitiesLeanSQL(sanitizedSearchCriteria);
 
       if (!sqlStatement) {
         throw {
