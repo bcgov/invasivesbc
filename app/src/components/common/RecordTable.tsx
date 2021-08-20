@@ -22,17 +22,16 @@ import {
 } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
-import { Edit, Delete, KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
-import { notifyError } from 'utils/NotificationUtils';
+import { DEFAULT_PAGE_SIZE } from 'constants/database';
+import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
+import { notifyError } from '../../utils/NotificationUtils';
 import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import Spinner from 'components/spinner/Spinner';
+import { DatabaseContext } from '../../contexts/DatabaseContext';
+import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import Spinner from '../../components/spinner/Spinner';
 import clsx from 'clsx';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { NetworkContext } from 'contexts/NetworkContext';
+import { useDataAccess } from '../../hooks/useDataAccess';
 
 const ACTION_TIMEOUT = 1500; // 1.5s
 const ACTION_ERROR_TIMEOUT = 15000; // 15s

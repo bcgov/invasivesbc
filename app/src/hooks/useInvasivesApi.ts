@@ -1,19 +1,17 @@
 import { Capacitor } from '@capacitor/core';
-import { Network } from '@capacitor/network';
 import { useKeycloak } from '@react-keycloak/web';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
-import { query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext2';
 import {
   IActivitySearchCriteria,
   ICreateMetabaseQuery,
   ICreateOrUpdateActivity,
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria
-} from 'interfaces/useInvasivesApi-interfaces';
+} from '../interfaces/useInvasivesApi-interfaces';
 import qs from 'qs';
 import { Http } from '@capacitor-community/http';
 import { useContext, useMemo } from 'react';
-import { DocType } from 'constants/database';
+import { DocType } from '../constants/database';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
@@ -278,8 +276,7 @@ export const useInvasivesApi = () => {
           return webResponse;
         } catch (e) {
           console.dir(e);
-          const returnVal = await getSpecFromCache();
-          return returnVal;
+          return await getSpecFromCache();
         }
       } else {
         // must be web, try online:
