@@ -43,11 +43,10 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
     loadUserInfo();
   }, [keycloak.obj]);
-  const networkContext = useContext(NetworkContext);
 
   React.useEffect(() => {
     const getApiSpec = async () => {
-      await invasivesApi.getCachedApiSpec(networkContext.connected);
+      await invasivesApi.getCachedApiSpec();
     };
 
     getApiSpec();

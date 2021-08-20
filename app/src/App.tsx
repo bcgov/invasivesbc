@@ -54,32 +54,30 @@ const App: React.FC<IAppProps> = (props) => {
       <ThemeContextProvider>
         <CustomThemeProvider>
           <IonReactRouter>
-            <NetworkContextProvider>
-              <DatabaseContext2Provider>
-                <DatabaseContextProvider>
-                  <DatabaseContext.Consumer>
-                    {(databaseContext: IDatabaseContext) => {
-                      if (Capacitor.getPlatform() === 'ios') {
-                        return (
-                          <DatabaseChangesContextProvider>
-                            <AppRouter {...appRouterProps} />
-                          </DatabaseChangesContextProvider>
-                        );
-                      }
-                      if (databaseContext.database) {
-                        // database not ready, delay loading app
-                        return (
-                          <DatabaseChangesContextProvider>
-                            <AppRouter {...appRouterProps} />
-                          </DatabaseChangesContextProvider>
-                        );
-                      }
-                      return <CircularProgress />;
-                    }}
-                  </DatabaseContext.Consumer>
-                </DatabaseContextProvider>
-              </DatabaseContext2Provider>
-            </NetworkContextProvider>
+            <DatabaseContext2Provider>
+              <DatabaseContextProvider>
+                <DatabaseContext.Consumer>
+                  {(databaseContext: IDatabaseContext) => {
+                    if (Capacitor.getPlatform() === 'ios') {
+                      return (
+                        <DatabaseChangesContextProvider>
+                          <AppRouter {...appRouterProps} />
+                        </DatabaseChangesContextProvider>
+                      );
+                    }
+                    if (databaseContext.database) {
+                      // database not ready, delay loading app
+                      return (
+                        <DatabaseChangesContextProvider>
+                          <AppRouter {...appRouterProps} />
+                        </DatabaseChangesContextProvider>
+                      );
+                    }
+                    return <CircularProgress />;
+                  }}
+                </DatabaseContext.Consumer>
+              </DatabaseContextProvider>
+            </DatabaseContext2Provider>
           </IonReactRouter>
         </CustomThemeProvider>
       </ThemeContextProvider>

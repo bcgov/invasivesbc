@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { Network } from '@capacitor/network';
 import { useKeycloak } from '@react-keycloak/web';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 import { query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import {
   IActivitySearchCriteria,
@@ -46,7 +46,7 @@ const useRequestOptions = () => {
  */
 export const useInvasivesApi = () => {
   const options = useRequestOptions();
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
   /**
    * Fetch*
    activities by search criteria.
@@ -267,23 +267,24 @@ export const useInvasivesApi = () => {
    *
    * @return {*}  {Promise<any>}
    */
-  const getCachedApiSpec = async (isConnected: boolean): Promise<any> => {
+  const getCachedApiSpec = async (): Promise<any> => {
     try {
       // on mobile - think there is internet:
       if (Capacitor.getPlatform() !== 'web') {
-        const networkStatus = await Network.getStatus();
-        if (networkStatus.connected) {
-          // try to cache spec, then return it:
-          if (await cacheSpec(databaseContext)) {
-            return getApiSpec();
-          }
-          // network call failed, get from cache:
-          if (!(await cacheSpec(databaseContext))) {
-            return getSpecFromCache(databaseContext);
-          }
-        } else {
-          // on mobile - think there is no internet:
-          return await getSpecFromCache(databaseContext);
+        // try to cache spec, then return it:
+        try {
+          const webResponse = await getApiSpec();
+          console.log('web api spec');
+          console.dir(webResponse);
+          cacheSpec(webResponse);
+          return webResponse;
+        } catch (e) {
+          console.log('error from web call');
+          console.dir(e);
+          const returnVal = await getSpecFromCache();
+          console.log('cache response');
+          console.dir(returnVal);
+          return returnVal;
         }
       } else {
         // must be web, try online:
@@ -295,7 +296,7 @@ export const useInvasivesApi = () => {
     }
   };
 
-  const getSpecFromCache = async (databaseContext) => {
+  const getSpecFromCache = async () => {
     let data = await query(
       {
         type: QueryType.DOC_TYPE_AND_ID,
@@ -306,14 +307,18 @@ export const useInvasivesApi = () => {
     );
 
     if (data?.length > 0) {
+      console.log('there is data');
+      console.dir(data);
       data = JSON.parse(data[0].json);
+      console.log('cached api spec contents:');
+      console.dir(data);
       return data;
     }
   };
 
-  const cacheSpec = async (databaseContext) => {
-    const data = await getApiSpec();
+  const cacheSpec = async (data) => {
     if (data.components) {
+      console.log('caching spec');
       //cache if on mobile
       try {
         await upsert(

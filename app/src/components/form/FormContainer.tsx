@@ -12,21 +12,20 @@ import {
   ThemeProvider,
   Typography
 } from '@material-ui/core';
-import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
+import { ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
-import { ActivitySyncStatus } from 'constants/activities';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { SelectAutoCompleteContextProvider } from 'contexts/SelectAutoCompleteContext';
-import { ThemeContext } from 'contexts/themeContext';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { ActivitySyncStatus } from '../../constants/activities';
+import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
+import { ThemeContext } from '../../contexts/themeContext';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
-import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
-import FieldTemplate from 'rjsf/templates/FieldTemplate';
-import ObjectFieldTemplate from 'rjsf/templates/ObjectFieldTemplate';
-import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
-import MultiSelectAutoComplete from 'rjsf/widgets/MultiSelectAutoComplete';
-import SingleSelectAutoComplete from 'rjsf/widgets/SingleSelectAutoComplete';
-import rjsfTheme from 'themes/rjsfTheme';
+import ArrayFieldTemplate from '../../rjsf/templates/ArrayFieldTemplate';
+import FieldTemplate from '../../rjsf/templates/FieldTemplate';
+import ObjectFieldTemplate from '../../rjsf/templates/ObjectFieldTemplate';
+import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
+import MultiSelectAutoComplete from '../../rjsf/widgets/MultiSelectAutoComplete';
+import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplete';
+import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 
 export interface IFormContainerProps extends IFormControlsComponentProps {
@@ -216,11 +215,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     }
   };
 
-  const networkContext = useContext(NetworkContext);
-
   useEffect(() => {
     const getApiSpec = async () => {
-      const response = await invasivesApi.getCachedApiSpec(networkContext.connected);
+      const response = await invasivesApi.getCachedApiSpec();
+      console.log('form container = api spec');
+      console.dir(response);
       setSchemas({
         schema: { ...response.components.schemas[props.activity.activitySubtype], components: response.components },
         uiSchema: RootUISchemas[props.activity.activitySubtype]

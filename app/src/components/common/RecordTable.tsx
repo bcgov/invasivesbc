@@ -394,11 +394,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [selected, setSelected] = useState(props.selected || []);
   const dataAccess = useDataAccess();
   const selectedHash = JSON.stringify(selected);
-  const networkContext = useContext(NetworkContext);
 
   const getApiSpec = useCallback(
     async (tableSchemaInput) => {
-      const apiSpecResponse = await invasivesApi.getCachedApiSpec(networkContext.connected);
+      const apiSpecResponse = await invasivesApi.getCachedApiSpec();
       const schemaTypeList = typeof tableSchemaInput === 'string' ? [tableSchemaInput] : tableSchemaInput || [];
 
       await setSchemas({

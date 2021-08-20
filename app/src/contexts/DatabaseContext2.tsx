@@ -408,7 +408,6 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
 
     //patch them in memory
     let batchUpdate = '';
-    console.log('*** building sql ***');
 
     // breaks if you are calling json slow patch on a record that doesnt exist and doesnt have a json prop
     for (const upsertConfig of upsertConfigs) {
@@ -455,11 +454,9 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
     }
 
     //finally update them all:
-    console.log('*** executing sql ***');
     if (batchUpdate != '') {
       ret = db.execute(batchUpdate);
     }
-    console.log('*** done sql ***');
     //db.close();
   }
 };
@@ -496,7 +493,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
   }*/
   try {
     if (!databaseContext.sqliteDB) {
-      alert('db unavailable from context');
+      //alert('db unavailable from context');
       return;
     }
   } catch (e) {
@@ -506,8 +503,6 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
   //alert(JSON.stringify(databaseContext));
   if (Capacitor.getPlatform() != 'web') {
     // alert('made it here');
-    console.log('typeof input');
-    console.log(typeof databaseContext);
     let ret;
     let db = await getConnection();
     await db.open();
