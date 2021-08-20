@@ -7,10 +7,8 @@ import { upsert, UpsertType } from 'contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
 import unzipper from 'unzipper';
 // node doesn't have xml parsing or a dom. use xmldom
-import * as pako from 'pako';
-import { Base64 } from 'js-base64';
 import { css } from '@material-ui/system';
-const { deflate, unzip } = require('zlib');
+import JSZip from 'jszip';
 
 const DOMParser = require('xmldom').DOMParser;
 //var toString = require('stream-to-string');
@@ -43,65 +41,27 @@ const KMZ_OR_KML = (input: File) => {
 };
 
 const KMZ_TO_KML = async (input: File) => {
-  try {
-    //  const transform: <ReadableWriteablePair> = { ReadableStream(), WritableStream() }
-    const rawText = await input.text().then((returnVal) => {
-      return returnVal;
-    });
+  const fileArr = [];
+  //try {
+  const zip = new JSZip();
+  const unzipped = await zip.loadAsync(input);
+  //console.log(unzipped);
 
-    const { deflate, unzip } = require('zlib');
-    console.log(rawText);
+  const keys = Object.keys(unzipped.files);
+  const numKeys = keys.length;
+  //console.log(keys);
 
-    const buffer = Buffer.from(rawText);
-    unzip(buffer, (err, buffer) => {
-      if (err) {
-        console.error('An error occurred:', err);
-        process.exitCode = 1;
-      }
-      console.log(buffer.toString());
-    });
-
-    // Decode base64 (convert ascii to binary)
-    //var strData = atob(encodedText);
-    //    console.log('raw text');
-    //   console.log(rawText);
-    /*
-    var encoded;
-    try {
-      encoded = await Base64.encode(rawText);
-      console.log('yay');
-    } catch (e) {
-      console.log('oh no');
+  for (var i = 0; i < numKeys; i++) {
+    const file = unzipped.file(keys[i]);
+    if (KMZ_OR_KML(file as any) === KML_TYPES.KML) {
+      fileArr.push(file);
+      //console.log(file);
     }
-    console.log('encoded text');
-    console.log(encoded);
-    var strData = atob(encoded);
-
-    // Convert binary string to character-number array
-    var charData = strData.split('').map(function (x) {
-      return x.charCodeAt(0);
-    });
-
-    // Turn number array into byte-array
-    var binData = new Uint8Array(charData);
-
-    console.log(binData);
-    // Pako magic
-    var data = pako.inflate(atob(strData), { to: 'string' });
-
-    // Convert gunzipped byteArray back to ascii string:
-    // var ascii = String.fromCharCode.apply(null, new Uint16Array(data));
-
-    console.log(data);
-
-    console.log('unzipped');
-    return data;
-    */
-    return '';
-  } catch (e) {
-    console.dir(e);
+    console.log(file);
   }
-  //  unzipper.unzip(stream, () => {})
+
+  //console.log(fileArr[0]);
+  return fileArr;
 };
 
 const KMLStringToGeojson = (input: string) => {
@@ -116,6 +76,7 @@ const KMLStringToGeojson = (input: string) => {
 
 const get_KMZ_Or_KML_AsString = async (input: File) => {
   let KMLString;
+  //console.log(input);
   //get kml as string
   switch (KMZ_OR_KML(input)) {
     case KML_TYPES.KML: {
@@ -125,7 +86,15 @@ const get_KMZ_Or_KML_AsString = async (input: File) => {
       break;
     }
     case KML_TYPES.KMZ: {
-      KMLString = KMZ_TO_KML(input);
+      let KMLarr = [KMZ_TO_KML(input)];
+      var len = KMLarr.length;
+      //console.log(len);
+      for (var i = 0; i < len; i++) {
+        //console.log(KMLarr[i]);
+        KMLString = await input.text().then((xmlString) => {
+          return xmlString;
+        });
+      }
       break;
     }
   }
@@ -140,7 +109,7 @@ export const KMLUpload: React.FC<any> = (props) => {
 
   const saveKML = async (input: File) => {
     const KMLString = await get_KMZ_Or_KML_AsString(input);
-    console.log(KMLString);
+    //console.log(KMLString);
     const geosFromString = KMLStringToGeojson(KMLString);
 
     if (geosFromString) {
@@ -189,7 +158,7 @@ export const KMLUpload: React.FC<any> = (props) => {
       onChange={(e) => {
         setAFile(e[0]);
         e.forEach((file) => {
-          console.log(KMZ_OR_KML(file));
+          //console.log(KMZ_OR_KML(file));
         });
       }}
     />
