@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useMapEvent, GeoJSON, Popup, Marker, useMapEvents } from 'react-leaflet';
 import { IconButton, Button, makeStyles, Popover, Grid, Typography } from '@material-ui/core';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
@@ -8,6 +8,7 @@ import turf, { polygon, area } from '@turf/turf';
 import L from 'leaflet';
 import dotMarker from '../Icons/dotMarker.png';
 import ruler from '../Icons/ruler.png';
+import { ThemeContext } from 'contexts/themeContext';
 
 const useStyles = makeStyles((theme) => ({
   image: {
@@ -23,6 +24,17 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '4px',
     '&:hover': {
       background: 'white'
+    }
+  },
+  rulerButtonDark: {
+    margin: '5px',
+    background: '#424242',
+    zIndex: 1500,
+    height: '48px',
+    width: '48px',
+    borderRadius: '4px',
+    '&:hover': {
+      background: '#424242'
     }
   },
   typography: {
@@ -62,6 +74,7 @@ const calc_distance = (lat1: number, lat2: number, lng1: number, lng2: number) =
 
 const MeasureTool = (props) => {
   const classes = useStyles();
+  const themeContext = useContext(ThemeContext);
   const [isMeasuringDistance, setIsMeasuringDistance] = useState(false);
   const [isMeasuringArea, setIsMeasuringArea] = useState(false);
   const [polyArea, setPolyArea] = useState(0);
@@ -200,7 +213,10 @@ const MeasureTool = (props) => {
 
   return (
     <>
-      <IconButton ref={divRef} className={classes.rulerButton} onClick={handleClick}>
+      <IconButton
+        ref={divRef}
+        className={themeContext.themeType ? classes.rulerButtonDark : classes.rulerButton}
+        onClick={handleClick}>
         <img className={classes.image} src={ruler} />
       </IconButton>
       <Popover

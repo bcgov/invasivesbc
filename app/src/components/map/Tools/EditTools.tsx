@@ -1,5 +1,5 @@
 import { IconButton, makeStyles } from '@material-ui/core';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
 import { useMapEvent } from 'react-leaflet';
 import * as turf from '@turf/turf';
@@ -8,6 +8,7 @@ import React from 'react';
 import single from '../Icons/square.png';
 import multi from '../Icons/trim.png';
 import { async } from 'q';
+import { ThemeContext } from 'contexts/themeContext';
 
 const useStyles = makeStyles((theme) => ({
   image: {
@@ -25,6 +26,17 @@ const useStyles = makeStyles((theme) => ({
       background: 'white'
     }
   },
+  toolButtonDark: {
+    margin: '5px',
+    background: '#424242',
+    zIndex: 999,
+    height: '48px',
+    width: '48PX',
+    borderRadius: '4px',
+    '&:hover': {
+      background: '#424242'
+    }
+  },
   typography: {
     paddingLeft: theme.spacing(2),
     fontSize: 16,
@@ -40,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 const EditTools = (props) => {
   //console.dir(props.geometryState.geometry);
   const classes = useStyles();
+  const themeContext = useContext(ThemeContext);
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
   const toggleMode = () => {
@@ -338,7 +351,10 @@ const EditTools = (props) => {
   }
 
   return (
-    <IconButton ref={divRef} className={classes.toolButton} onClick={toggleMode}>
+    <IconButton
+      ref={divRef}
+      className={themeContext.themeType ? classes.toolButtonDark : classes.toolButton}
+      onClick={toggleMode}>
       {multiMode ? (
         <img src={multi} style={{ width: 32, height: 32 }} />
       ) : (
