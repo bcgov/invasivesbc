@@ -44,6 +44,7 @@ import IMapContainerProps from '../MapContainer2';
 import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
 import { GeoJSON } from 'react-leaflet';
 import TempPOILoader from '../LayerLoaderHelpers/TempPOILoader';
+import { ThemeContext } from 'contexts/themeContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,7 +54,8 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     zIndex: 1500,
     borderRadius: '4px',
-    right: 60, top: 20,
+    right: 60,
+    top: 20,
     ['@media (max-width:800px)']: {
       top: 100
     }
@@ -80,7 +82,19 @@ const useStyles = makeStyles((theme) => ({
     margin: '5px',
     background: 'white',
     borderRadius: '4px',
-    position: 'relative'
+    position: 'relative',
+    '&:hover': {
+      background: 'white'
+    }
+  },
+  iconButtonDark: {
+    margin: '5px',
+    background: '#424242',
+    borderRadius: '4px',
+    position: 'relative',
+    '&:hover': {
+      background: '#424242'
+    }
   }
 }));
 
@@ -145,7 +159,7 @@ export function LayerPicker(props: any) {
       }
     });
     return seconds;
-  };
+  }
   const seconds = WithCounter();
 
   const SortableParentLayer = SortableElement(({ parent }: any) => {
@@ -183,15 +197,17 @@ export function LayerPicker(props: any) {
                 />
               </Grid>
               <Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
-                {parent.loaded === 100 ?
-                  <DoneIcon /> :
+                {parent.loaded === 100 ? (
+                  <DoneIcon />
+                ) : (
                   <div>
-                    {seconds === 0 ?
-                      <ErrorOutlineIcon /> :
-                      <CircularProgress variant='determinate' value={parent.loaded} />
-                    }
+                    {seconds === 0 ? (
+                      <ErrorOutlineIcon />
+                    ) : (
+                      <CircularProgress variant="determinate" value={parent.loaded} />
+                    )}
                   </div>
-                }
+                )}
               </Grid>
             </Grid>
             {parent.children.map((child: any) => (
@@ -212,15 +228,17 @@ export function LayerPicker(props: any) {
                   {child.id}
                 </Grid>
                 <Grid item xs={2} style={{ position: 'relative' }}>
-                  {child.loaded === 100 ?
-                    <DoneIcon /> :
+                  {child.loaded === 100 ? (
+                    <DoneIcon />
+                  ) : (
                     <div>
-                      {seconds === 0 ?
-                        <ErrorOutlineIcon /> :
-                        <CircularProgress variant='determinate' value={child.loaded} />
-                      }
+                      {seconds === 0 ? (
+                        <ErrorOutlineIcon />
+                      ) : (
+                        <CircularProgress variant="determinate" value={child.loaded} />
+                      )}
                     </div>
-                  }
+                  )}
                 </Grid>
               </Grid>
             ))}
@@ -257,17 +275,19 @@ export function LayerPicker(props: any) {
   const handleRadioChange = (event) => {
     setRadio(event.target.value);
   };
+  const toggleMenu = (event) => {
+    event.preventDefault();
+    setMenuState(!menuState);
+  };
+  const themeContext = useContext(ThemeContext);
+  console.dir(menuState);
 
   return (
     <div style={{ zIndex: 1000 }}>
-      <IconButton
-        className={classes.iconButton}
-        onClick={() =>
-          setMenuState(!menuState)
-        }>
+      <IconButton className={themeContext.themeType ? classes.iconButtonDark : classes.iconButton} onClick={toggleMenu}>
         <LayersIcon />
       </IconButton>
-      {menuState ?
+      {menuState ? (
         <div
           className={classes.root}
           onTouchStart={() => {
@@ -300,12 +320,12 @@ export function LayerPicker(props: any) {
               marginLeft: '10px'
             }}>
             <RadioGroup row value={radio} onChange={handleRadioChange}>
-              <FormControlLabel value='default' control={<Radio />} label='default' />
-              {radio === 'default' ?
-                <TileLayer url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' /> : null}
-              <FormControlLabel value='other' control={<Radio />} label='other' />
-              {radio === 'other' ?
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null}
+              <FormControlLabel value="default" control={<Radio />} label="default" />
+              {radio === 'default' ? (
+                <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+              ) : null}
+              <FormControlLabel value="other" control={<Radio />} label="other" />
+              {radio === 'other' ? <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null}
             </RadioGroup>
           </FormControl>
           <FormControl
@@ -315,21 +335,24 @@ export function LayerPicker(props: any) {
             }}>
             <FormControlLabel
               control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
-              label='Activities' />
+              label="Activities"
+            />
           </FormControl>
           <SortableListContainer
             items={sortArray(objectState)}
             onSortEnd={onSortEnd}
             useDragHandle={true}
-            lockAxis='y' />
-        </div> : null}
-      {checked ?
+            lockAxis="y"
+          />
+        </div>
+      ) : null}
+      {checked ? (
         <>
           {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>*/}
           {/*<GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} />*/}
           {/*<GeoJSON data={vanIsland} onEachFeature={setupFeature} />*/}
-        </> : null}
+        </>
+      ) : null}
     </div>
-
   );
 }

@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Marker, Popup, useMapEvents } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, IconButton } from '@material-ui/core';
+import { CircularProgress, IconButton, makeStyles } from '@material-ui/core';
 import proj4 from 'proj4';
 import L from 'leaflet';
+import { ThemeContext } from 'contexts/themeContext';
 
 export const utm_zone = (longitude: any, latitude: any) => {
   let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
@@ -18,9 +19,34 @@ export const utm_zone = (longitude: any, latitude: any) => {
   return 'UTM  Zone:' + utmZone + ' UTM Easting:' + utmEasting + ' UTM Northing:' + utmNorthing;
 };
 
-export default function DisplayPosition({ map }) {
-  //const [position, setPosition] = useState(map.getCenter());
+const useStyles = makeStyles((theme) => ({
+  iconButton: {
+    width: 48,
+    height: 48,
+    margin: '5px',
+    zIndex: 1500,
+    background: 'white',
+    borderRadius: '15%',
+    '&:hover': {
+      background: 'white'
+    }
+  },
+  iconButtonDark: {
+    width: 48,
+    height: 48,
+    margin: '5px',
+    zIndex: 1500,
+    background: '#424242',
+    borderRadius: '15%',
+    '&:hover': {
+      background: '#424242'
+    }
+  }
+}));
 
+export default function DisplayPosition({ map }) {
+  const classes = useStyles();
+  const themeContext = useContext(ThemeContext);
   //updated for capacitor 3
   const watchPosition = Geolocation.watchPosition;
   const startWatch = watchPosition;
@@ -96,14 +122,7 @@ export default function DisplayPosition({ map }) {
       ) : null}
       <IconButton
         ref={divRef}
-        style={{
-          width: 48,
-          height: 48,
-          margin: '5px',
-          zIndex: 1500,
-          background: 'white',
-          borderRadius: '15%'
-        }}
+        className={themeContext.themeType ? classes.iconButtonDark : classes.iconButton}
         disabled={startTimer}
         aria-label="my position"
         onClick={getLocation}>
