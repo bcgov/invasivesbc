@@ -180,6 +180,17 @@
           }
         }
       },
+      "Activity_Treatment_ChemicalPlantAquatic": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_ChemicalPlantAquatic"
+          }
+        }
+      },
       "Activity_AnimalActivity_AnimalTerrestrial": {
         "type": "object",
         "properties": {
@@ -1539,6 +1550,245 @@
               "$ref": "#/components/schemas/Persons"
             },
             "x-tooltip-text": "Name of person(s) doing treatment"
+          }
+        }
+      },
+      "Treatment_ChemicalPlantAquatic": {
+        "title": " ",
+        "type": "object",
+        "properties": {
+          "waterbody_data": {
+            "type": "object",
+            "title": "Waterbody Data",
+            "allOf": [
+              { "$ref": "#/components/schemas/WaterbodyData" },
+              {
+                "properties": {
+                  "water_level_management": {
+                    "type": "string",
+                    "title": "Water Level Management",
+                    "enum": ["None", "Weir", "Pump Station", "Dam", "Other"],
+                    "x-tooltip-text": "Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field"
+                  },
+                  "substrate_type": {
+                    "type": "string",
+                    "title": "Substrate Type",
+                    "enum": ["Silt/Organic", "Clay", "Sand", "Gravel", "Cobble", "Rip-rap"],
+                    "x-tooltip-text": "Select the most prevalent substrate composition"
+                  },
+                  "tidal_influence": {
+                    "type": "string",
+                    "title": "Tidal Influence",
+                    "enum": ["Yes", "No", "Unknown"],
+                    "x-tooltip-text": "Indicate if the water level at the observation point is influenced by tides"
+                  },
+                  "inflow_permanent": {
+                    "type": "string",
+                    "title": "Inflow (Permanent)",
+                    "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
+                  },
+                  "inflow_other": {
+                    "type": "string",
+                    "title": "Inflow (Temp. or seasonal)",
+                    "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
+                  },
+                  "outflow": {
+                    "type": "string",
+                    "title": "Outflow",
+                    "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
+                  },
+                  "shoreline_types": {
+                    "type": "array",
+                    "title": "Shoreline Types",
+                    "items": {
+                      "$ref": "#/components/schemas/ShorelineTypes"
+                    },
+                    "x-tooltip-text": "Specify shoreline types with their respective percentages"
+                  }
+                },
+                "required": ["substrate_type", "tidal_influence"]
+              }
+            ]
+          },
+          "water_quality": {
+            "type": "object",
+            "title": "Water Quality",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WaterQuality"
+              },
+              {
+                "properties": {
+                  "water_flow_rate": {
+                    "type": "number",
+                    "title": "Water flow rate (m/sec)",
+                    "minimum": 0,
+                    "x-tooltip-text": " Indicates average rate of water flow across treatment area, this affects herbicide dispersion and efficacy."
+                  }
+                },
+                "required": ["water_flow_rate"]
+              }
+            ]
+          },
+          "treatment_chemicalplant_information": {
+            "type": "object",
+            "title": "Chemical Treatment Information",
+            "required": [
+              "applicator1_name",
+              "applicator1_license",
+              "pesticide_employer_code",
+              "water_temperature",
+              "air_temperature",
+              "humidity",
+              "wind_speed",
+              "wind_direction_code",
+              "signage_on_site"
+            ],
+            "properties": {
+              "applicator1_name": {
+                "type": "string",
+                "title": "Primary Applicator",
+                "x-tooltip-text": "Name of primary applicator"
+              },
+              "applicator1_license": {
+                "type": "string",
+                "title": "Primary Pesticide Applicator Certificate Number",
+                "x-tooltip-text": "Valid pesticide applicator certificate number"
+              },
+              "applicator2_name": {
+                "type": "string",
+                "title": "Secondary Applicator",
+                "x-tooltip-text": "Name of secondary applicator"
+              },
+              "applicator2_license": {
+                "type": "string",
+                "title": "Secondary Pesticide Applicator Certificate Number",
+                "x-tooltip-text": "Valid secondary pesticide applicator certificate number"
+              },
+              "pesticide_employer_code": {
+                "type": "string",
+                "title": "Service License Number and Company Name",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "service_license_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Select from current/valid employer/organization names"
+              },
+              "pesticide_use_permit_PUP": {
+                "type": "string",
+                "title": "Pesticide Use Permit",
+                "default": "none",
+                "x-tooltip-text": "Enter applicable number if treatment is being completed under pesticide use permit"
+              },
+              "pest_management_plan": {
+                "type": "string",
+                "title": "Pest Management Plan",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "pest_management_plan",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Enter applicable number if treatment is being completed under a pest management plan"
+              },
+              "additional_auth_information": {
+                "type": "string",
+                "title": "Additional authorization information",
+                "x-tooltip-text": "Description of authorization permit for in-stream work (e.g. In-stream Notification, private landowner authorization in private pond, etc)."
+              },
+              "chemical_method_code": {
+                "type": "string",
+                "title": "Chemical Treatment Method",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "chemical_method_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Choose treatment application method"
+              },
+              "water_temperature": {
+                "type": "number",
+                "title": "Water Temperature (C)",
+                "x-tooltip-text": "Measured in degrees celsius at time of treatment"
+              },
+              "air_temperature": {
+                "type": "number",
+                "title": "Air Temperature (C)",
+                "x-tooltip-text": "Measured in degrees celsius at time of treatment"
+              },
+              "wind_speed": {
+                "type": "number",
+                "title": "Wind Speed (km/h)",
+                "minimum": 0,
+                "default": 0,
+                "x-tooltip-text": "Wind speed in km/hr at time of treatment"
+              },
+              "wind_direction_code": {
+                "type": "string",
+                "title": "Wind Direction",
+                "enum": ["No Wind", "N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+                "x-tooltip-text": "Cardinal wind direction at time of treatment"
+              },
+              "signage_on_site": {
+                "type": "string",
+                "title": "Treatment Notice Signs",
+                "enum": ["Yes", "No", "Unknown"],
+                "default": "No",
+                "x-tooltip-text": "Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not"
+              }
+            }
+          },
+          "treatment_information": {
+            "title": "Treatment Information",
+            "type": "object",
+            "properties": {
+              "application_start_time": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Application Start Time"
+              },
+              "invasive_plants_information": {
+                "title": "Invasive Plants",
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "invasive_plant_code": {
+                      "type": "string",
+                      "title": "Invasive Plant",
+                      "x-enum-code": {
+                        "x-enum-code-category-name": "invasives",
+                        "x-enum-code-header-name": "invasive_plant_code",
+                        "x-enum-code-name": "code_name",
+                        "x-enum-code-text": "code_description",
+                        "x-enum-code-sort-order": "code_sort_order"
+                      },
+                      "x-tooltip-text": "Target invasive plant species being treated at this location"
+                    },
+                    "tank_mix": {
+                      "type": "boolean",
+                      "title": "Tank Mix",
+                      "x-tooltip-text": "Check if there is a mix of herbicides in the tank"
+                    },
+                    "herbicide": {
+                      "type": "array",
+                      "title": "Herbicide",
+                      "items": {
+                        "$ref": "#/components/schemas/Herbicide"
+                      },
+                      "x-tooltip-text": "Herbicide information for the treatment"
+                    }
+                  },
+                  "required": ["invasive_plant_code"]
+                }
+              }
+            },
+            "required": ["invasive_plants_information", "application_start_time"]
           }
         }
       },
@@ -3118,7 +3368,7 @@
             "x-tooltip-text": "Area of the chemical treatment (ha) automatically calculated from the application and delivery rates used during chemical treatment"
           }
         },
-        "required": ["application_rate", "herbicide_amount", "mix_delivery_rate"]
+        "required": ["area_treated", "application_rate", "herbicide_amount", "mix_delivery_rate"]
       },
       "Herbicide_Granular_Object": {
         "type": "object",
@@ -3161,7 +3411,7 @@
             "x-tooltip-text": "Area of the chemical treatment (ha) automatically calculated from the application and delivery rates used during chemical treatment"
           }
         },
-        "required": ["application_rate", "herbicide_amount", "mix_delivery_rate"]
+        "required": ["application_rate", "herbicide_amount", "mix_delivery_rate", "area_treated"]
       },
       "Herbicide": {
         "type": "object",
@@ -3183,6 +3433,11 @@
             "type": "string",
             "enum": ["liquid", "granular"],
             "x-tooltip-text": "Choose whether the herbicide being used is liquid or granular"
+          },
+          "tank_volume": {
+            "title": "Tank Volume (L)",
+            "type": "number",
+            "x-tooltip-text": "Capacity of tank measured in litres"
           }
         },
         "dependencies": {
@@ -3197,8 +3452,7 @@
                     "title": " ",
                     "$ref": "#/components/schemas/Herbicide_Liquid_Object"
                   }
-                },
-                "required": ["herbicide_information"]
+                }
               },
               {
                 "properties": {
@@ -3209,8 +3463,7 @@
                     "title": " ",
                     "$ref": "#/components/schemas/Herbicide_Granular_Object"
                   }
-                },
-                "required": ["herbicide_information"]
+                }
               }
             ]
           }
@@ -4922,6 +5175,11 @@
             "type": "string",
             "title": "Waterbody Name (Local)",
             "x-tooltip-text": "Locally referred to name of waterbody"
+          },
+          "waterbody_access": {
+            "type": "string",
+            "title": "Waterbody Access",
+            "x-tooltip-text": "Waterbody access options, public access options preferred."
           },
           "waterbody_use": {
             "type": "string",

@@ -334,7 +334,9 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             enabled: enableSelection !== false,
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
-              if (selectedIds.length) await dataAccess.deleteActivities(selectedIds, databaseContext);
+              if (selectedIds.length) {
+                await dataAccess.deleteActivities(selectedIds, databaseContext);
+              }
             },
             label: 'Delete',
             icon: <Delete />,
@@ -370,8 +372,9 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                   if (
                     activity.form_status !== FormValidationStatus.VALID ||
                     activity.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
-                  )
+                  ) {
                     return;
+                  }
                   const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
                   await dataAccess.updateActivity(
                     sanitizeRecord({
@@ -380,11 +383,9 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     }),
                     databaseContext
                   );
-                  // const typename = activity.activity_subtype?.split('_')[2];
-                  // notifySuccess(databaseContext, `${typename} activity has been saved to database.`);
                 });
               } catch (error) {
-                // notifyError(databaseContext, JSON.stringify(error));
+                console.log(error);
               }
             },
             icon: <Sync />,
@@ -704,10 +705,15 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
     return (
       <ActivitiesTable
         tableName="Treatments"
-        activitySubtypes={[ActivitySubtype.Treatment_ChemicalPlant, ActivitySubtype.Treatment_MechanicalPlant]}
+        activitySubtypes={[
+          ActivitySubtype.Treatment_ChemicalPlant,
+          ActivitySubtype.Treatment_ChemicalPlantAquatic,
+          ActivitySubtype.Treatment_MechanicalPlant
+        ]}
         tableSchemaType={[
           'Treatment',
           'Treatment_ChemicalPlant',
+          'Treatment_ChemicalPlantAquatic',
           'Treatment_MechanicalPlant',
           ...arrayWrap(tableSchemaType)
         ]}
@@ -758,6 +764,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
             tableSchemaType={[
               'Treatment',
               'Treatment_ChemicalPlant',
+              'Treatment_ChemicalPlantAquatic',
               'Treatment_MechanicalPlant',
               'Treatment_BiologicalPlant',
               ...arrayWrap(tableSchemaType)

@@ -14,6 +14,7 @@ import { useContext, useMemo } from 'react';
 import { DocType } from '../constants/database';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 
+
 const API_HOST = process.env.REACT_APP_API_HOST || 'localhost';
 const API_PORT = process.env.REACT_APP_API_PORT || 3002;
 const API_URL =
@@ -22,6 +23,7 @@ const API_URL =
     : 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
 console.log('API_URL', API_URL);
+
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.

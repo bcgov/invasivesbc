@@ -125,6 +125,16 @@ const Activity_Treatment_ChemicalPlant_BulkEdit = {
   }
 };
 
+const Activity_Treatment_ChemicalPlantAquatic = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_subtype_data: {
+    ...UISchemaComponents.Treatment_ChemicalPlantAquatic
+  }
+};
+
 const Activity_Treatment_MechanicalPlant = {
   activity_data: {
     ...BaseUISchemaComponents.ThreeColumnStyle,
@@ -240,6 +250,7 @@ const RootUISchemas = {
   Activity_Dispersal_BiologicalDispersal,
   Activity_Treatment_ChemicalPlant,
   Activity_Treatment_ChemicalPlant_BulkEdit,
+  Activity_Treatment_ChemicalPlantAquatic,
   Activity_Treatment_MechanicalPlant,
   Activity_Treatment_MechanicalPlant_BulkEdit,
   Activity_Treatment_BiologicalPlant,
