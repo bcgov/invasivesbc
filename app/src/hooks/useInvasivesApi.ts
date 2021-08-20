@@ -274,16 +274,11 @@ export const useInvasivesApi = () => {
         // try to cache spec, then return it:
         try {
           const webResponse = await getApiSpec();
-          console.log('web api spec');
-          console.dir(webResponse);
           cacheSpec(webResponse);
           return webResponse;
         } catch (e) {
-          console.log('error from web call');
           console.dir(e);
           const returnVal = await getSpecFromCache();
-          console.log('cache response');
-          console.dir(returnVal);
           return returnVal;
         }
       } else {
@@ -307,11 +302,7 @@ export const useInvasivesApi = () => {
     );
 
     if (data?.length > 0) {
-      console.log('there is data');
-      console.dir(data);
       data = JSON.parse(data[0].json);
-      console.log('cached api spec contents:');
-      console.dir(data);
       return data;
     }
   };
