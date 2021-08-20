@@ -30,11 +30,10 @@ const API_URL =
 const useRequestOptions = () => {
   const { keycloak } = useKeycloak();
   const instance = useMemo(() => {
-    const options = {
+    return {
       baseUrl: API_URL,
       headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.token}` }
     };
-    return options;
   }, [keycloak]);
 
   return instance;
