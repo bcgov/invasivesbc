@@ -1,35 +1,135 @@
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
 import React, { useContext, useEffect, useState } from 'react';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { kml } from '@tmcw/togeojson';
+import { DocType } from 'constants/database';
+import { upsert, UpsertType } from 'contexts/DatabaseContext2';
+import { Capacitor } from '@capacitor/core';
+import unzipper from 'unzipper';
 // node doesn't have xml parsing or a dom. use xmldom
+import { css } from '@material-ui/system';
+import JSZip, { forEach } from 'jszip';
+import { ESLint } from 'eslint';
+
 const DOMParser = require('xmldom').DOMParser;
 
+export const KML_TYPES = {
+  KML: 'kml',
+  KMZ: 'kmz',
+  OTHER: 'other'
+};
+
+const KMZ_OR_KML = (input: File) => {
+  var extension = input?.name?.split('.').pop();
+  switch (extension) {
+    case 'kml':
+      return KML_TYPES.KML;
+    case 'kmz':
+      return KML_TYPES.KMZ;
+    default:
+      break;
+  }
+  return KML_TYPES.OTHER;
+};
+
+const KMZ_TO_KML = async (input: File) => {
+  const kmlStringArray = [];
+  const zip = new JSZip();
+  const unzipped = await zip.loadAsync(input);
+
+  const keys = Object.keys(unzipped.files);
+  const numKeys = keys.length;
+
+  for (var i = 0; i < numKeys; i++) {
+    const file = unzipped.file(keys[i]);
+    if (KMZ_OR_KML(file as any) === KML_TYPES.KML) {
+      const stringVal = await file.async('string');
+      kmlStringArray.push(stringVal);
+    }
+  }
+
+  return kmlStringArray;
+};
+
+const KMLStringToGeojson = (input: string) => {
+  try {
+    const DOMFromXML = new DOMParser().parseFromString(input);
+    return kml(DOMFromXML);
+  } catch (e) {
+    console.log('error converting kml xml string to geojson', e);
+  }
+};
+
+const get_KMZ_Or_KML_AsStringArray = async (input: File) => {
+  let KMLString;
+  //get kml as string
+  switch (KMZ_OR_KML(input)) {
+    case KML_TYPES.KML: {
+      KMLString = await input.text().then((xmlString) => {
+        return [xmlString];
+      });
+      return KMLString;
+    }
+    case KML_TYPES.KMZ: {
+      return KMZ_TO_KML(input);
+    }
+  }
+};
+
 export const KMLUpload: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext2);
 
   // Raw file kept in useState var and converted to Geo before hitting db:
   const [aFile, setAFile] = useState(null);
+  const [geos, setGeos] = useState(null);
 
   const saveKML = async (input: File) => {
-    const fileAsString = await input.text().then((xmlString) => {
-      return xmlString;
-    });
-    const DOMFromXML = new DOMParser().parseFromString(fileAsString);
-    const geoFromDOM = kml(DOMFromXML);
-    console.log('geo');
+    const KMLStringArray = await get_KMZ_Or_KML_AsStringArray(input);
 
-    if (geoFromDOM) {
-      console.log('saving geo feat collection');
-      await databaseContext.database.upsert('trip', (tripDoc) => {
-        return { ...tripDoc, geometry: geoFromDOM.features };
-      });
+    let allGeos;
+    for (let KMLString of KMLStringArray) {
+      const uploadedGeos = KMLStringToGeojson(KMLString);
+      if (!allGeos?.features) {
+        allGeos = uploadedGeos;
+      } else {
+        allGeos.features = [...allGeos.features, ...uploadedGeos.features];
+      }
     }
+
+    console.dir(allGeos);
+
+    /*
+      await upsert(
+        [
+          {
+            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+            ID: props.trip_ID,
+            docType: DocType.TRIP,
+            json: { geometry: geosFromString.features }
+          }
+        ],
+        databaseContext
+      );
+    }*/
   };
 
   useEffect(() => {
-    if (aFile) {
-      saveKML(aFile);
+    if (aFile /*&& Capacitor.getPlatform() !== 'web'*/) {
+      // check if kmz or kml
+      //if kml:
+      if (KMZ_OR_KML(aFile) !== KML_TYPES.OTHER) {
+        saveKML(aFile);
+      }
+      //else
+      //convert to kml
+      //saveKml(converted)
+    } else {
+      //fart around in web
+      //if kml:
+      // validate that we have geojson in console
+      // if kmz
+      // convert to kml
+      // validate that we have geojson in console
     }
   }, [aFile]);
 

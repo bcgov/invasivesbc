@@ -12,6 +12,7 @@ import * as turf from '@turf/turf';
 import { Feature } from 'geojson';
 import MapContainer2 from 'components/map/MapContainer2';
 import { useHistory } from 'react-router-dom';
+import KMLUpload from 'components/map-buddy-components/KMLUpload';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -206,6 +207,14 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
             </Grid>
             <Grid xs={12} className={props.classes.mapContainer} item>
               <MapContainer2 {...props} />
+            </Grid>
+            <Grid xs={12} item>
+              <Accordion>
+                <AccordionSummary>KML Upload</AccordionSummary>
+                <AccordionDetails>
+                  <KMLUpload />
+                </AccordionDetails>
+              </Accordion>
             </Grid>
           </Grid>
         </AccordionDetails>

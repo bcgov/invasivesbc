@@ -62,6 +62,7 @@
     "geojson-vt": "^3.2.1",
     "ionicons": "^5.5.1",
     "js-yaml": "~3.14.0",
+    "jszip": "^3.7.1",
     "keycloak-js": "^9.0.2",
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
@@ -73,8 +74,8 @@
     "material-ui-dropzone": "^3.5.0",
     "moment": "^2.29.0",
     "node-sass": "~4.14.1",
-    "pouchdb": "^7.2.2",
     "p-queue": "^7.1.0",
+    "pouchdb": "^7.2.2",
     "pouchdb-adapter-cordova-sqlite": "^2.0.8",
     "pouchdb-adapter-idb": "~7.2.2",
     "pouchdb-core": "~7.2.2",
@@ -94,10 +95,13 @@
     "reproject": "^1.2.6",
     "rxjs": "^6.6.7",
     "sass": "^1.32.13",
+    "stream-to-string": "^1.2.0",
     "typescript": "3.8.3",
+    "unzipper": "^0.10.11",
     "uuid": "^8.3.0",
     "wkt": "^0.1.1",
-    "xmldom": "^0.6.0"
+    "xmldom": "^0.6.0",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "@capacitor/cli": "^3.0.0",
