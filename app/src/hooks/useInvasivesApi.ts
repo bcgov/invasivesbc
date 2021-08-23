@@ -16,17 +16,14 @@ import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
-console.log('react app host & port: ', REACT_APP_API_HOST, REACT_APP_API_PORT);
 
-const API_HOST = REACT_APP_API_HOST || 'localhost';
-const API_PORT = REACT_APP_API_PORT || 7080;
-const API_URL = API_PORT
-  ? `http://` + (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST
+const API_HOST = REACT_APP_API_HOST;
+const API_PORT = REACT_APP_API_PORT;
+const API_URL = REACT_APP_API_HOST
+  ? `http://${API_HOST}:${API_PORT}`
   : 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
 console.log('API_URL', API_URL);
-console.log('API_HOST', API_HOST);
-console.log('API_PORT', API_PORT);
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
