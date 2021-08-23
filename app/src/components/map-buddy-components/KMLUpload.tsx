@@ -10,6 +10,7 @@ import unzipper from 'unzipper';
 import { css } from '@material-ui/system';
 import JSZip, { forEach } from 'jszip';
 import { ESLint } from 'eslint';
+import { GeoJSON, MapContainer } from 'react-leaflet';
 
 const DOMParser = require('xmldom').DOMParser;
 
@@ -17,6 +18,13 @@ export const KML_TYPES = {
   KML: 'kml',
   KMZ: 'kmz',
   OTHER: 'other'
+};
+const interactiveGeometryStyle = () => {
+  return {
+    color: '#ff7800',
+    weight: 5,
+    opacity: 0.65
+  };
 };
 
 const KMZ_OR_KML = (input: File) => {
@@ -81,7 +89,8 @@ export const KMLUpload: React.FC<any> = (props) => {
 
   // Raw file kept in useState var and converted to Geo before hitting db:
   const [aFile, setAFile] = useState(null);
-  const [geos, setGeos] = useState(null);
+  const [geos, setGeos] = useState<any>();
+  var geodude;
 
   const saveKML = async (input: File) => {
     const KMLStringArray = await get_KMZ_Or_KML_AsStringArray(input);
@@ -95,7 +104,8 @@ export const KMLUpload: React.FC<any> = (props) => {
         allGeos.features = [...allGeos.features, ...uploadedGeos.features];
       }
     }
-
+    geodude = allGeos;
+    setGeos(allGeos);
     console.dir(allGeos);
 
     /*
@@ -119,6 +129,9 @@ export const KMLUpload: React.FC<any> = (props) => {
       //if kml:
       if (KMZ_OR_KML(aFile) !== KML_TYPES.OTHER) {
         saveKML(aFile);
+        console.log('here');
+        console.log(geos);
+        console.log(geodude);
       }
       //else
       //convert to kml
@@ -134,12 +147,14 @@ export const KMLUpload: React.FC<any> = (props) => {
   }, [aFile]);
 
   return (
-    <DropzoneArea
-      dropzoneText="Upload KML here"
-      onChange={(e) => {
-        setAFile(e[0]);
-      }}
-    />
+    <>
+      <DropzoneArea
+        dropzoneText="Upload KML here"
+        onChange={(e) => {
+          setAFile(e[0]);
+        }}
+      />
+    </>
   );
 };
 
