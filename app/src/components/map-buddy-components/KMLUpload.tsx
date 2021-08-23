@@ -104,6 +104,7 @@ export const KMLUpload: React.FC<any> = (props) => {
         allGeos.features = [...allGeos.features, ...uploadedGeos.features];
       }
     }
+
     setGeos(allGeos);
 
     /*
@@ -121,14 +122,18 @@ export const KMLUpload: React.FC<any> = (props) => {
     }*/
   };
 
+  const santizedGeos = geos?.map((geo) => {
+    const newGeo = { ...geo };
+    newGeo.coordinates.pop();
+    return newGeo;
+  });
+
   useEffect(() => {
     if (aFile /*&& Capacitor.getPlatform() !== 'web'*/) {
       // check if kmz or kml
       //if kml:
       if (KMZ_OR_KML(aFile) !== KML_TYPES.OTHER) {
         saveKML(aFile);
-        console.log('here');
-        console.log(geos);
       }
       //else
       //convert to kml
@@ -155,6 +160,11 @@ export const KMLUpload: React.FC<any> = (props) => {
           setAFile(e[0]);
         }}
       />
+      {geos !== null ? (
+        <MapContainer>
+          <GeoJSON data={santizedGeos} style={interactiveGeometryStyle} />
+        </MapContainer>
+      ) : null}
     </>
   );
 };
