@@ -17,6 +17,7 @@ import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
 console.log('react app host & port: ', REACT_APP_API_HOST, REACT_APP_API_PORT);
+console.dir(process.env);
 
 const API_HOST = REACT_APP_API_HOST || 'localhost';
 const API_PORT = REACT_APP_API_PORT || 7080;
