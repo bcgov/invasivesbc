@@ -105,7 +105,9 @@ export const KMLUpload: React.FC<any> = (props) => {
       }
     }
 
+    //console.log(allGeos);
     const newGeos = sanitizedGeos(allGeos);
+    //console.log(newGeos);
     setGeos(newGeos);
 
     /*
@@ -125,15 +127,25 @@ export const KMLUpload: React.FC<any> = (props) => {
 
   // some kmls have points with 3 coordinates, this is no good
   const sanitizedGeos = (inputGeos) => {
-    console.dir(inputGeos);
     const newFeatures = inputGeos?.features?.map((geo) => {
+      const newGeo = { ...geo };
       if (geo.geometry?.type === 'Point' && geo.geometry.coordinates?.length > 2) {
-        const newGeo = { ...geo };
         newGeo.geometry.coordinates.pop();
-        return newGeo;
-      } else if (geo.geometry?.type !== 'Point' && geo.geometry?.coordinates.length > 0) {
-        return geo;
+      } else if (geo.geometry?.type === 'Polygon') {
+        var len = geo.geometry.coordinates.length;
+        for (var i = 0; i < len; i++) {
+          var iLen = newGeo.geometry.coordinates[i].length;
+          for (var j = 0; j < iLen; j++) {
+            newGeo.geometry.coordinates[i][j].pop();
+          }
+        }
+      } else if (geo.geometry?.type === 'LineString') {
+        var len = geo.geometry.coordinates.length;
+        for (var i = 0; i < len; i++) {
+          newGeo.geometry.coordinates[i].pop();
+        }
       }
+      return newGeo;
     });
     return { ...inputGeos, features: [...newFeatures] };
   };
@@ -159,7 +171,7 @@ export const KMLUpload: React.FC<any> = (props) => {
   }, [aFile]);
 
   useEffect(() => {
-    console.log(geos);
+    //console.log(geos);
   }, [geos]);
 
   return (
