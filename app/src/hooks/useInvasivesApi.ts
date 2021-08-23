@@ -21,6 +21,8 @@ const API_URL = API_PORT
   : 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
 console.log('API_URL', API_URL);
+console.log('API_HOST', API_HOST);
+console.log('API_PORT', API_PORT);
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
