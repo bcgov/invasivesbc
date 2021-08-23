@@ -14,7 +14,8 @@ import { useContext, useMemo } from 'react';
 import { DocType } from '../constants/database';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 
-const { REACT_APP_API_HOST, REACT_APP_API_PORT } = process.env;
+const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
+const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
 console.log('react app host & port: ', REACT_APP_API_HOST, REACT_APP_API_PORT);
 
 const API_HOST = REACT_APP_API_HOST || 'localhost';
