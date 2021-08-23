@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditTools = (props) => {
-  //console.dir(props.geometryState.geometry);
   const classes = useStyles();
   const themeContext = useContext(ThemeContext);
   // This should get the 'FeatureGroup' connected to the tools
@@ -68,11 +67,9 @@ const EditTools = (props) => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   });
-  const context = useLeafletContext() as LeafletContextInterface;
+  const context = useLeafletContext();
   const [geoKeys, setGeoKeys] = useState({});
-  const [currentEditingLayer, setCurrentEditingLayer] = useState(null);
   const drawRef = useRef();
-  //console.dir(props.geometryState.geometry);
 
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
@@ -83,12 +80,8 @@ const EditTools = (props) => {
     if (e.layerType === 'circle') {
       aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: newLayer.getRadius() } };
     }
-    //console.log('Pre setters');
-    //console.dir(aGeo);
     aGeo = convertLineStringToPoly(aGeo);
-    // Drawing one geo wipes all others
 
-    //const funcy = () => {
     if (multiMode) {
       let newState = [];
       newState = props.geometryState.geometry ? [...props.geometryState.geometry] : newState;
@@ -97,9 +90,6 @@ const EditTools = (props) => {
     } else {
       props.geometryState.setGeometry([aGeo]);
     }
-    //};
-    //const a = await funcy();
-    //console.log(a);
     (context.layerContainer as any).clearLayers();
   };
   const onEditStop = (e: any) => {
@@ -122,16 +112,13 @@ const EditTools = (props) => {
   // Grab the map object
   let map = useMapEvent('draw:created' as any, onDrawCreate);
 
-  let mapDrawStart = useMapEvent('draw:drawstart' as any, () => {
+  useMapEvent('draw:drawstart' as any, () => {
     (context.layerContainer as any).clearLayers();
   });
-  let mapDrawDeleted = useMapEvent('draw:deleted' as any, () => {
+  useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
   });
-  let mapDrawDeleteStart = useMapEvent('draw:deletestart' as any, () => {
-    //console.dir(context.layerContainer);
-  });
-  let mapDrawDeleteStop = useMapEvent('draw:deletestop' as any, () => {
+  useMapEvent('draw:deletestop' as any, () => {
     let updatedGeoJSON = [];
     (context.layerContainer as any).eachLayer((layer) => {
       let aGeo = layer.toGeoJSON();
@@ -141,7 +128,7 @@ const EditTools = (props) => {
     (context.layerContainer as any).clearLayers();
     props.geometryState.setGeometry(updatedGeoJSON);
   });
-  let mapEditSave = useMapEvent('draw:edited' as any, onEditStop);
+  useMapEvent('draw:edited' as any, onEditStop);
 
   const convertLineStringToPoly = (aGeo: any) => {
     if (aGeo.geometry.type === 'LineString') {
@@ -177,7 +164,6 @@ const EditTools = (props) => {
     // upload from geometrystate props
     // updates drawnItems with the latest geo changes, attempting to only draw new geos and delete no-longer-present ones
     const newGeoKeys = { ...geoKeys };
-    //console.dir(props.geometryState);
 
     if (props.geometryState) {
       // For each geometry, add a new layer to the drawn features
