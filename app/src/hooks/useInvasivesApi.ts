@@ -18,7 +18,7 @@ const { REACT_APP_API_HOST, REACT_APP_API_PORT } = process.env;
 console.log('react app host & port: ', REACT_APP_API_HOST, REACT_APP_API_PORT);
 
 const API_HOST = REACT_APP_API_HOST || 'localhost';
-const API_PORT = REACT_APP_API_PORT || 3002;
+const API_PORT = REACT_APP_API_PORT || 7080;
 const API_URL = API_PORT
   ? `http://` + (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST
   : 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
