@@ -90,13 +90,13 @@ export const KMLUpload: React.FC<any> = (props) => {
   // Raw file kept in useState var and converted to Geo before hitting db:
   const [aFile, setAFile] = useState(null);
   const [geos, setGeos] = useState<any>();
-  var geodude;
 
   const saveKML = async (input: File) => {
     const KMLStringArray = await get_KMZ_Or_KML_AsStringArray(input);
 
+    //this will append all the features in KMLS in a KMZ into one feature collection:
     let allGeos;
-    for (let KMLString of KMLStringArray) {
+    for (const KMLString of KMLStringArray) {
       const uploadedGeos = KMLStringToGeojson(KMLString);
       if (!allGeos?.features) {
         allGeos = uploadedGeos;
@@ -104,9 +104,7 @@ export const KMLUpload: React.FC<any> = (props) => {
         allGeos.features = [...allGeos.features, ...uploadedGeos.features];
       }
     }
-    geodude = allGeos;
     setGeos(allGeos);
-    console.dir(allGeos);
 
     /*
       await upsert(
@@ -131,7 +129,6 @@ export const KMLUpload: React.FC<any> = (props) => {
         saveKML(aFile);
         console.log('here');
         console.log(geos);
-        console.log(geodude);
       }
       //else
       //convert to kml
@@ -145,6 +142,10 @@ export const KMLUpload: React.FC<any> = (props) => {
       // validate that we have geojson in console
     }
   }, [aFile]);
+
+  useEffect(() => {
+    console.log(geos);
+  }, [geos]);
 
   return (
     <>
