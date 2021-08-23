@@ -105,7 +105,8 @@ export const KMLUpload: React.FC<any> = (props) => {
       }
     }
 
-    setGeos(allGeos);
+    const newGeos = sanitizedGeos(allGeos);
+    setGeos(newGeos);
 
     /*
       await upsert(
@@ -122,11 +123,20 @@ export const KMLUpload: React.FC<any> = (props) => {
     }*/
   };
 
-  const santizedGeos = geos?.map((geo) => {
-    const newGeo = { ...geo };
-    newGeo.coordinates.pop();
-    return newGeo;
-  });
+  // some kmls have points with 3 coordinates, this is no good
+  const sanitizedGeos = (inputGeos) => {
+    console.dir(inputGeos);
+    const newFeatures = inputGeos?.features?.map((geo) => {
+      if (geo.geometry?.type === 'Point' && geo.geometry.coordinates?.length > 2) {
+        const newGeo = { ...geo };
+        newGeo.geometry.coordinates.pop();
+        return newGeo;
+      } else if (geo.geometry?.type !== 'Point' && geo.geometry?.coordinates.length > 0) {
+        return geo;
+      }
+    });
+    return { ...inputGeos, features: [...newFeatures] };
+  };
 
   useEffect(() => {
     if (aFile /*&& Capacitor.getPlatform() !== 'web'*/) {
@@ -162,7 +172,7 @@ export const KMLUpload: React.FC<any> = (props) => {
       />
       {geos !== null ? (
         <MapContainer>
-          <GeoJSON data={santizedGeos} style={interactiveGeometryStyle} />
+          <GeoJSON data={geos} style={interactiveGeometryStyle} />
         </MapContainer>
       ) : null}
     </>
