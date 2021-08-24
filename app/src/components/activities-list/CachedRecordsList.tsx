@@ -16,6 +16,8 @@ import {
   PointsOfInterestTable
 } from 'components/common/RecordTables';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
+import { DocType } from 'constants/database';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -67,6 +69,7 @@ const geoColors = {
 const CachedRecordsList: React.FC = (props) => {
   const classes = useStyles();
   const databaseContext = useContext(DatabaseContext);
+  const databaseContext2 = useContext(DatabaseContext2);
   // data access WIP
   const invasivesApi = useInvasivesApi();
   const dataAccess = useDataAccess();
@@ -77,6 +80,7 @@ const CachedRecordsList: React.FC = (props) => {
   const [stateDocs, setDocs] = useState<any[]>([]);
   const docs = useMemo(() => stateDocs, [stateDocs?.length]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null);
   const [metabaseQuerySubmitted, setMetabaseQuerySubmitted] = useState(false);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
@@ -117,44 +121,56 @@ const CachedRecordsList: React.FC = (props) => {
   */
   const updateRecordList = useCallback(async () => {
     setLoading(true);
-    const result = await databaseContext.database.allDocs({ include_docs: true });
-    let pois = await getPointsOfInterest();
-    setPointsOfInterest(pois);
-
-    const newDocs = result?.rows
-      ?.map((doc) => doc.doc)
-      .filter(
-        (doc) => (doc.point_of_interest_id || doc.activity_id) && !doc.deleted_timestamp // reduncancy for safety
+    try {
+      const records = await dataAccess.getActivities(
+        { activity_type: ['Observation', 'Treatment', 'Monitoring'] },
+        databaseContext2,
+        true, //force cache
+        true //read reference_activity table instead of activity
       );
-    setDocs([...newDocs]);
-    const mapGeos = [];
-    newDocs.forEach((doc: any) => {
-      /*
+      //const result = await databaseContext.database.allDocs({ include_docs: true });
+      let pois = await getPointsOfInterest();
+      setPointsOfInterest(pois);
+
+      const newDocs = records?.rows
+        ?.map((doc) => doc.doc)
+        .filter(
+          (doc) => (doc.point_of_interest_id || doc.activity_id) && !doc.deleted_timestamp // reduncancy for safety
+        );
+      setDocs([...newDocs]);
+      const mapGeos = [];
+      newDocs.forEach((doc: any) => {
+        /*
         What is displayed in the popup on click of a geo on the map
       */
-      const ActivityPopup = (name: string) => {
-        return '<div>' + name + '</div>';
-      };
-      const description =
-        doc.docType === 'reference_point_of_interest'
-          ? `IAPP Point of Interest: ${doc.point_of_interest_id}`
-          : `${doc.activityType}: ${doc._id}}`;
-      mapGeos.push({
-        _id: doc._id,
-        recordDocID: doc._id,
-        recordType: doc.activityType || doc.docType,
-        recordSubtype: doc.activitySubtype,
-        geometry: doc.geometry,
-        color: geoColors[doc.activityType || doc.docType],
-        description: description,
-        popUpComponent: ActivityPopup,
-        zIndex: getZIndex(doc),
-        onClickCallback: () => {
-          toggleDocSelected(doc);
-        }
+        const ActivityPopup = (name: string) => {
+          return '<div>' + name + '</div>';
+        };
+        const description =
+          doc.docType === 'reference_point_of_interest'
+            ? `IAPP Point of Interest: ${doc.point_of_interest_id}`
+            : `${doc.activityType}: ${doc._id}}`;
+        mapGeos.push({
+          _id: doc._id,
+          recordDocID: doc._id,
+          recordType: doc.activityType || doc.docType,
+          recordSubtype: doc.activitySubtype,
+          geometry: doc.geometry,
+          color: geoColors[doc.activityType || doc.docType],
+          description: description,
+          popUpComponent: ActivityPopup,
+          zIndex: getZIndex(doc),
+          onClickCallback: () => {
+            toggleDocSelected(doc);
+          }
+        });
       });
-    });
-    setInteractiveGeometry([...mapGeos]);
+      setInteractiveGeometry([...mapGeos]);
+    } catch (e) {
+      const errorString = JSON.stringify(e);
+      setErrorMsg(errorString);
+      console.log('error getting data');
+    }
     setLoading(false);
   }, [toggleDocSelected]);
 
@@ -189,20 +205,20 @@ const CachedRecordsList: React.FC = (props) => {
   const [selectedMonitorings, setSelectedMonitorings] = useState([]);
 
   const getPointsOfInterest = async () => {
-    return await dataAccess.getPointsOfInterest({ page: 1, limit: 1000, online: true });
+    return dataAccess.getPointsOfInterest({ page: 1, limit: 1000, online: true });
   };
 
   const [pointsOfInterest, setPointsOfInterest] = useState([]);
   const [selectedPOIs, setSelectedPOIs] = useState([]);
 
   const createMetabaseQuery = async (event, selectedActivities, selectedPoints) => {
-    await setMetabaseQuerySubmitted(true);
+    setMetabaseQuerySubmitted(true);
     const queryCreate: ICreateMetabaseQuery = {
       activity_ids: selectedActivities,
       point_of_interest_ids: selectedPoints
     };
     try {
-      let response = await invasivesApi.createMetabaseQuery(queryCreate);
+      const response = await invasivesApi.createMetabaseQuery(queryCreate);
       if (response?.activity_query_id && response?.activity_query_name)
         notifySuccess(
           databaseContext,
@@ -278,11 +294,12 @@ const CachedRecordsList: React.FC = (props) => {
         </Paper>
       )}
       {loading && <Typography>Loading...</Typography>}
-      {!loading && !interactiveGeometry?.length && (
+      {!loading && !interactiveGeometry?.length && !errorMsg !== null ? (
         <Typography>
           No cached records to display. Widen your selected area or fetch more on the Plan My Trip page.
         </Typography>
-      )}
+      ) : null}
+      {!loading && errorMsg ? <Typography>Error getting cached data: {errorMsg}</Typography> : null}
       <br />
       {interactiveGeometry.length > 0 && !loading && (
         <List className={classes.activityList}>

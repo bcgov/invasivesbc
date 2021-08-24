@@ -8,6 +8,7 @@ import { NotFoundPage } from './pages/misc/NotFoundPage';
 import React, { useEffect, useState } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import AppRoute from './utils/AppRoute';
+import { Network } from '@capacitor/network';
 
 interface IAppRouterProps {
   deviceInfo: any;
@@ -23,12 +24,24 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
     return `InvasivesBC - ${page}`;
   };
 
+  const getMobileStatus = async () => {
+    const status = await Network.getStatus();
+    setIsMobileNoNetwork(status.connected);
+  };
+
+  useEffect(() => {
+    getMobileStatus();
+  }, []);
+
   useEffect(() => {
     // If on mobile and have no internet connection, then bypass keycloak
     // removed network check for now - can't use current version of capactior network as context
     if (Capacitor.getPlatform() === 'ios') {
-      setLayout(() => PublicLayout);
-      setIsMobileNoNetwork(true);
+      if (isMobileNoNetwork) {
+        setLayout(() => PublicLayout);
+      } else {
+        setLayout(() => AuthLayout);
+      }
     } else {
       setLayout(() => AuthLayout);
     }
