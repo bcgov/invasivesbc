@@ -229,6 +229,7 @@ export interface IRecordTable {
   expandable?: boolean;
   startExpanded?: boolean;
   keyField?: string;
+  geometry?: any;
   startingOrder?: string;
   startingOrderBy?: string;
   startingRowsPerPage?: number;
@@ -552,7 +553,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
           selectedRows
         );
     },
-    [expandedRows?.length, JSON.stringify(expandedRows), dropdownLimit, selectedRows, pageRows]
+    [expandedRows?.length, JSON.stringify(expandedRows), dropdownLimit, selectedRows, pageRows, props.geometry]
   );
 
   const CachedTableHead = useMemo(
@@ -573,6 +574,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     ),
     [
       selected?.length,
+      props.geometry,
       order,
       orderBy,
       handleSelectAllClick,
@@ -669,6 +671,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     ),
     [
       loading,
+      props.geometry,
       JSON.stringify(pageRows),
       totalRows,
       schemasLoaded,

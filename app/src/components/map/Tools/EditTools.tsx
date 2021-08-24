@@ -68,6 +68,7 @@ const EditTools = (props: any) => {
 
       updatedGeoJSON.push(aGeo);
     });
+
     props.geometryState.setGeometry(updatedGeoJSON);
   };
 

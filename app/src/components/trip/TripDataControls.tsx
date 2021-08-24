@@ -2,7 +2,6 @@ import { Box, Button, LinearProgress, makeStyles, Typography } from '@material-u
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from '../../contexts/DatabaseChangesContext';
 import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext2';
-import { FeatureCollection } from 'geojson';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import * as turf from '@turf/turf';
 import {
@@ -12,7 +11,7 @@ import {
 } from '../../interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AllGeoJSON } from '@turf/turf';
-import { getDataFromDataBC } from 'components/map/WFSConsumer';
+import { getDataFromDataBC } from '../../components/map/WFSConsumer';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -104,7 +103,6 @@ export const TripDataControls: React.FC<any> = (props) => {
     const updateComponent = () => {
       getTrip();
     };
-
     updateComponent();
   }, [databaseChangesContext, getTrip]);
 
@@ -166,11 +164,9 @@ export const TripDataControls: React.FC<any> = (props) => {
     };
 
     const fetchPointsOfInterest = async () => {
-      console.log('input valid');
       if (!trip || !trip.pointOfInterestChoices || !trip.pointOfInterestChoices.length) {
         return;
       }
-      console.log('made it past input valid');
 
       let numberPointsOfInterestFetched = 0;
 
@@ -359,107 +355,42 @@ export const TripDataControls: React.FC<any> = (props) => {
         }
       }
       alert(
-        'Cached ' +
-          (countActivities ? countActivities + ' activities' : '') +
-          (countActivities && countPois ? ' and ' : '') +
-          (countPois ? countPois + ' points of interest' : '') +
-          (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
+        `Cached ${countActivities ? countActivities + ' activities' : ''} 
+          ${countActivities && countPois ? ' and ' : ''} 
+          ${countPois ? countPois + ' points of interest' : ''} 
+          ${countActivities || countPois ? ' from Metabase.' : '0 Metabase results.'}`
       );
     };
 
     const fetchLayerData = async () => {
-      const vanIsland: FeatureCollection = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  [-123.74656677246092, 48.61838518688487],
-                  [-123.37783813476564, 48.61838518688487],
-                  [-123.37783813476564, 48.84076881182656],
-                  [-123.74656677246092, 48.84076881182656],
-                  [-123.74656677246092, 48.61838518688487]
-                ]
-              ]
-            }
-          }
-        ]
-      };
-
-      // try {
-      const options = { units: 'miles' };
-
-      const bbox = turf.bbox(vanIsland as AllGeoJSON);
-
-      const squareGrid = turf.squareGrid(bbox, 5);
-      console.log('squareGrid');
-      console.log(squareGrid.features);
-
-      squareGrid.features.forEach(async (gridItem) => {
-        const bufferedGeo = turf.buffer(gridItem, 550 / 1000);
-        const wellsInside = await getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo);
-        await upsert(
-          [
-            {
-              type: UpsertType.RAW_SQL,
-              sql: `INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES (${gridItem},${wellsInside},well);`
-            }
-          ],
-          databaseContext
-        );
-      });
-      // // const bufferedGeo = turf.buffer(vanIsland.features[0], 550 / 1000);
-      // // let wellArray = await getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo);
-
-      // try {
-      //   squareGrid.features.forEach((gridItem) => {
-      //     // alert(JSON.stringify(feature));
-      //     let wellArrIndex = 0;
-      //     gridItem['pointsInside'] = [];
-      //     wellArray.forEach((well) => {
-      //       // alert('HERE IS WELL');
-      //       // alert(JSON.stringify(well));
-      //       if (turf.inside(well, gridItem)) {
-      //         gridItem['pointsInside'].push(well);
-      //         wellArray.pop(wellArrIndex);
-      //       }
-      //       wellArrIndex++;
-      //     });
-      //   });
-
-      //   let insertValuesString: string = '';
-      //   squareGrid.features.forEach((feature) => {
-      //     insertValuesString = insertValuesString.concat(
-      //       `('${JSON.stringify(feature).split(`'`).join(`''`)}','${JSON.stringify(feature['pointsInside'])
-      //         .split(`'`)
-      //         .join(`''`)}','well') , `
-      //     );
-      //   });
-      //   const replacement = ',';
-      //   insertValuesString = insertValuesString.replace(/_([^_]*)$/, replacement + '$1');
-
-      //   const lastComma = insertValuesString.lastIndexOf(',');
-      //   insertValuesString =
-      //     insertValuesString.substring(0, lastComma) + '' + insertValuesString.substring(lastComma + 1);
-
-      //   console.log(`INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES ${insertValuesString};`);
-
-      //   await upsert(
-      //     [
-      //       {
-      //         type: UpsertType.RAW_SQL,
-      //         sql: `INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES ${insertValuesString};`
-      //       }
-      //     ],
-      //     databaseContext
-      //   );
-      // } catch (e) {
-      //   alert(e);
-      // }
+      try {
+        console.log('starting to fetch layer data...');
+        const bbox = turf.bbox(props.tripGeo as AllGeoJSON);
+        const squareGrid = turf.squareGrid(bbox, 20);
+        console.log('created the grid, upserting grid items to sqllite...');
+        let gridIndex = 0;
+        squareGrid.features.forEach(async (gridItem) => {
+          const bufferedGeo = turf.buffer(gridItem, 550 / 1000);
+          const wellsInside = await getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo);
+          await upsert(
+            [
+              {
+                type: UpsertType.RAW_SQL,
+                sql: `INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES ('${JSON.stringify(
+                  gridItem
+                )
+                  .split(`'`)
+                  .join(`''`)}','${JSON.stringify(wellsInside).split(`'`).join(`''`)}','well');`
+              }
+            ],
+            databaseContext
+          );
+          gridIndex++;
+          console.log(`gridItem #${gridIndex}`);
+        });
+      } catch (e) {
+        console.log('There was an error fetching layer data from the map. Skipping to the next step...');
+      }
     };
 
     const deleteTripAndFetch = async () => {
