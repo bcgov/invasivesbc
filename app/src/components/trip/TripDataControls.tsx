@@ -412,6 +412,54 @@ export const TripDataControls: React.FC<any> = (props) => {
           databaseContext
         );
       });
+      // // const bufferedGeo = turf.buffer(vanIsland.features[0], 550 / 1000);
+      // // let wellArray = await getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo);
+
+      // try {
+      //   squareGrid.features.forEach((gridItem) => {
+      //     // alert(JSON.stringify(feature));
+      //     let wellArrIndex = 0;
+      //     gridItem['pointsInside'] = [];
+      //     wellArray.forEach((well) => {
+      //       // alert('HERE IS WELL');
+      //       // alert(JSON.stringify(well));
+      //       if (turf.inside(well, gridItem)) {
+      //         gridItem['pointsInside'].push(well);
+      //         wellArray.pop(wellArrIndex);
+      //       }
+      //       wellArrIndex++;
+      //     });
+      //   });
+
+      //   let insertValuesString: string = '';
+      //   squareGrid.features.forEach((feature) => {
+      //     insertValuesString = insertValuesString.concat(
+      //       `('${JSON.stringify(feature).split(`'`).join(`''`)}','${JSON.stringify(feature['pointsInside'])
+      //         .split(`'`)
+      //         .join(`''`)}','well') , `
+      //     );
+      //   });
+      //   const replacement = ',';
+      //   insertValuesString = insertValuesString.replace(/_([^_]*)$/, replacement + '$1');
+
+      //   const lastComma = insertValuesString.lastIndexOf(',');
+      //   insertValuesString =
+      //     insertValuesString.substring(0, lastComma) + '' + insertValuesString.substring(lastComma + 1);
+
+      //   console.log(`INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES ${insertValuesString};`);
+
+      //   await upsert(
+      //     [
+      //       {
+      //         type: UpsertType.RAW_SQL,
+      //         sql: `INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES ${insertValuesString};`
+      //       }
+      //     ],
+      //     databaseContext
+      //   );
+      // } catch (e) {
+      //   alert(e);
+      // }
     };
 
     const deleteTripAndFetch = async () => {
