@@ -104,19 +104,20 @@ export const KMLUpload: React.FC<any> = (props) => {
 
     const newGeos = sanitizedGeos(allGeos);
     setGeos(newGeos);
-    /*
+
+    if (props.trip_ID) {
       await upsert(
         [
           {
             type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
             ID: props.trip_ID,
             docType: DocType.TRIP,
-            json: { geometry: geosFromString.features }
+            json: { features: newGeos.features }
           }
         ],
         databaseContext
       );
-    }*/
+    }
   };
 
   // some kmls have points with 3 coordinates, this is no good
