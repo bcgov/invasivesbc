@@ -1,24 +1,22 @@
 import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext } from '../../contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
-import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-//import MapContainer, from 'components/map/MapContainer';
-import MapContainer2, { getZIndex } from 'components/map/MapContainer2';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import { ICreateMetabaseQuery } from '../../interfaces/useInvasivesApi-interfaces';
+import { notifySuccess, notifyError } from '../../utils/NotificationUtils';
+import MapContainer2, { getZIndex } from '../../components/map/MapContainer2';
 import { Feature } from 'geojson';
-import { MapContextMenuData } from 'features/home/map/MapContextMenu';
+import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
 import {
   ObservationsTable,
   TreatmentsTable,
   MonitoringTable,
   PointsOfInterestTable
-} from 'components/common/RecordTables';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
-import { DocType } from 'constants/database';
+} from '../../components/common/RecordTables';
+import { useDataAccess } from '../../hooks/useDataAccess';
+import { DatabaseContext2 } from '../../contexts/DatabaseContext2';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -95,14 +93,18 @@ const CachedRecordsList: React.FC = (props) => {
       const newSelected = wasPrevSelected ? prevSelected.filter((id) => id !== key) : [...prevSelected, key];
       setInteractiveGeometry((prevGeos) => {
         return prevGeos.map((geo) => {
-          if (geo._id === key) geo.color = wasPrevSelected ? geoColors[geo.recordType] : geoColors.selected_record;
+          if (geo._id === key) {
+            geo.color = wasPrevSelected ? geoColors[geo.recordType] : geoColors.selected_record;
+          }
           return geo;
         });
       });
       return newSelected;
     };
 
-    if (doc.docType === 'reference_point_of_interest') setSelectedPOIs(toggleSelectedFunction(doc._id));
+    if (doc.docType === 'reference_point_of_interest') {
+      setSelectedPOIs(toggleSelectedFunction(doc._id));
+    }
     switch (doc.activityType) {
       case 'Observation':
         setSelectedObservations(toggleSelectedFunction(doc._id));
@@ -129,8 +131,7 @@ const CachedRecordsList: React.FC = (props) => {
         true, //force cache
         true //read reference_activity table instead of activity
       );
-      //const result = await databaseContext.database.allDocs({ include_docs: true });
-      let pois = await getPointsOfInterest();
+      const pois = await getPointsOfInterest();
       setPointsOfInterest(pois);
 
       const newDocs = records.rows
@@ -145,7 +146,8 @@ const CachedRecordsList: React.FC = (props) => {
         What is displayed in the popup on click of a geo on the map
       */
         const ActivityPopup = (name: string) => {
-          return '<div>' + name + '</div>';
+          const returnVal = '<div>' + name + '</div>';
+          return returnVal;
         };
         const description =
           doc.docType === 'reference_point_of_interest'
@@ -198,7 +200,6 @@ const CachedRecordsList: React.FC = (props) => {
     }
   }, [geometry?.length]);
 
-  //const observations = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Observation'), [docs]);
   const observations = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Observation'), [docs]);
   const [selectedObservations, setSelectedObservations] = useState([]);
 
@@ -223,18 +224,20 @@ const CachedRecordsList: React.FC = (props) => {
     };
     try {
       const response = await invasivesApi.createMetabaseQuery(queryCreate);
-      if (response?.activity_query_id && response?.activity_query_name)
+      if (response?.activity_query_id && response?.activity_query_name) {
         notifySuccess(
           databaseContext,
           `Created a new Metabase Query, with name "${response.activity_query_name}" and ID ${response.activity_query_id}`
         );
-      else throw response;
+      } else {
+        throw response;
+      }
     } catch (error) {
       notifyError(
         databaseContext,
         'Unable to create new Metabase Query.  There may an issue with your connection to the Metabase API: ' + error
       );
-      await setMetabaseQuerySubmitted(false);
+      setMetabaseQuerySubmitted(false);
     }
   };
 
