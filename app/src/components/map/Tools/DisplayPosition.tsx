@@ -7,7 +7,7 @@ import proj4 from 'proj4';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
 
-export const utm_zone = (longitude: any, latitude: any) => {
+export const utm_zone = (longitude: number, latitude: number) => {
   let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
   proj4.defs([
     ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
@@ -52,6 +52,9 @@ export default function DisplayPosition({ map }) {
   const startWatch = watchPosition;
   const clearWatch = Geolocation.clearWatch;
   const getPosition = Geolocation.getCurrentPosition;
+  const [newPosition, setNewPosition] = useState(null);
+  const [initialTime, setInitialTime] = useState(0);
+  const [startTimer, setStartTimer] = useState(false);
   const divRef = useRef();
 
   useEffect(() => {
@@ -68,22 +71,6 @@ export default function DisplayPosition({ map }) {
     }
   }, []);
 
-  const startThing = async () => {
-    try {
-      // startWatch({ enableHighAccuracy: true });
-    } catch (e) {
-      console.log('error starting track');
-    }
-  };
-
-  const [isWatchingPosition, setIsWatchingPosition] = useState(false);
-  const [lastFlyToTimeStamp, setLastFlyToTimestamp] = useState(null);
-  const [isLocating, setIsLocating] = useState(false);
-  const [newPosition, setNewPosition] = useState(null);
-
-  const [initialTime, setInitialTime] = useState(0);
-  const [startTimer, setStartTimer] = useState(false);
-
   useEffect(() => {
     if (initialTime > 0) {
       setTimeout(() => {
@@ -95,19 +82,18 @@ export default function DisplayPosition({ map }) {
     }
   }, [initialTime, startTimer]);
 
-  const getLocation = async () => {
-    setInitialTime(5);
-    setStartTimer(true);
-    const position = await Geolocation.getCurrentPosition();
-    //const coords = position.coords;
-    setNewPosition(position);
-  };
-
   useEffect(() => {
     if (newPosition) {
       map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
     }
   }, [newPosition]);
+
+  const getLocation = async () => {
+    setInitialTime(5);
+    setStartTimer(true);
+    const position = await Geolocation.getCurrentPosition();
+    setNewPosition(position);
+  };
 
   return (
     <div>
@@ -115,7 +101,6 @@ export default function DisplayPosition({ map }) {
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
           <Popup>
             {/*position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)*/}
-            <br />
             {utm_zone(newPosition.coords.longitude, newPosition.coords.latitude)}
           </Popup>
         </Marker>

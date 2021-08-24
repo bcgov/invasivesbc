@@ -5,10 +5,8 @@ import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
 import { upsert, UpsertType } from 'contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
-import unzipper from 'unzipper';
 // node doesn't have xml parsing or a dom. use xmldom
-import { css } from '@material-ui/system';
-import JSZip, { forEach } from 'jszip';
+import JSZip from 'jszip';
 import { ESLint } from 'eslint';
 import { GeoJSON, MapContainer } from 'react-leaflet';
 
@@ -68,7 +66,7 @@ const KMLStringToGeojson = (input: string) => {
   }
 };
 
-const get_KMZ_Or_KML_AsStringArray = async (input: File) => {
+const get_KMorKML_AsStringArray = async (input: File) => {
   let KMLString;
   //get kml as string
   switch (KMZ_OR_KML(input)) {
@@ -92,10 +90,10 @@ export const KMLUpload: React.FC<any> = (props) => {
   const [geos, setGeos] = useState<any>();
 
   const saveKML = async (input: File) => {
-    const KMLStringArray = await get_KMZ_Or_KML_AsStringArray(input);
+    const KMLStringArray = await get_KMorKML_AsStringArray(input);
 
     //this will append all the features in KMLS in a KMZ into one feature collection:
-    let allGeos;
+    let allGeos: any;
     for (const KMLString of KMLStringArray) {
       const uploadedGeos = KMLStringToGeojson(KMLString);
       if (!allGeos?.features) {
@@ -105,9 +103,7 @@ export const KMLUpload: React.FC<any> = (props) => {
       }
     }
 
-    //console.log(allGeos);
     const newGeos = sanitizedGeos(allGeos);
-    //console.log(newGeos);
     setGeos(newGeos);
 
     /*
@@ -126,13 +122,14 @@ export const KMLUpload: React.FC<any> = (props) => {
   };
 
   // some kmls have points with 3 coordinates, this is no good
-  const sanitizedGeos = (inputGeos) => {
-    const newFeatures = inputGeos?.features?.map((geo) => {
+  const sanitizedGeos = (inputGeos: any) => {
+    const newFeatures = inputGeos?.features?.map((geo: any) => {
       const newGeo = { ...geo };
+      var len: number;
       if (geo.geometry?.type === 'Point' && geo.geometry.coordinates?.length > 2) {
         newGeo.geometry.coordinates.pop();
       } else if (geo.geometry?.type === 'Polygon') {
-        var len = geo.geometry.coordinates.length;
+        len = geo.geometry.coordinates.length;
         for (var i = 0; i < len; i++) {
           var iLen = newGeo.geometry.coordinates[i].length;
           for (var j = 0; j < iLen; j++) {
@@ -140,8 +137,8 @@ export const KMLUpload: React.FC<any> = (props) => {
           }
         }
       } else if (geo.geometry?.type === 'LineString') {
-        var len = geo.geometry.coordinates.length;
-        for (var i = 0; i < len; i++) {
+        len = geo.geometry.coordinates.length;
+        for (var k = 0; k < len; k++) {
           newGeo.geometry.coordinates[i].pop();
         }
       }
@@ -151,15 +148,10 @@ export const KMLUpload: React.FC<any> = (props) => {
   };
 
   useEffect(() => {
-    if (aFile /*&& Capacitor.getPlatform() !== 'web'*/) {
-      // check if kmz or kml
-      //if kml:
+    if (aFile && Capacitor.getPlatform() === 'web') {
       if (KMZ_OR_KML(aFile) !== KML_TYPES.OTHER) {
         saveKML(aFile);
       }
-      //else
-      //convert to kml
-      //saveKml(converted)
     } else {
       //fart around in web
       //if kml:
@@ -169,10 +161,6 @@ export const KMLUpload: React.FC<any> = (props) => {
       // validate that we have geojson in console
     }
   }, [aFile]);
-
-  useEffect(() => {
-    //console.log(geos);
-  }, [geos]);
 
   return (
     <>
