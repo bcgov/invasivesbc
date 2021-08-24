@@ -7,12 +7,8 @@ import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-<<<<<<< HEAD
 import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries';
 
-=======
-import { getPointsOfInterestSQL } from '../queries/point-of-interest-queries';
->>>>>>> 4b560cc (Ready to create GeoJSON)
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('point-of-interest');
@@ -127,24 +123,16 @@ POST.apiDoc = {
 };
 
 /**
-<<<<<<< HEAD
  * Fetches all point-of-interest records based on request search
  * filter criteria. The attributes and geometries are formatted
  * to match the GeoJSON specification.
-=======
- * Fetches all point-of-interest records based on request search filter criteria.
->>>>>>> 4b560cc (Ready to create GeoJSON)
  *
  * @return {RequestHandler}
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-<<<<<<< HEAD
       label: 'point-of-interest-lean',
-=======
-      label: 'point-of-interest',
->>>>>>> 4b560cc (Ready to create GeoJSON)
       message: 'getPointsOfInterestBySearchFilterCriteria',
       body: req.body
     });
@@ -159,13 +147,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
     }
 
     try {
-<<<<<<< HEAD
       const sqlStatement: SQLStatement = getPointsOfInterestLeanSQL(sanitizedSearchCriteria);
-=======
-      // TODO: Need a new function for producing GeoJSON
-      const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
-      console.log(sqlStatement);
->>>>>>> 4b560cc (Ready to create GeoJSON)
 
       if (!sqlStatement) {
         throw {
@@ -176,27 +158,12 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-<<<<<<< HEAD
       // parse the rows from the response
       const rows = { rows: (response && response.rows) || [] };
 
       // parse the count from the response
       const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
 
-=======
-      console.log('db response', response);
-
-      // parse the rows from the response
-      const rows = { rows: (response && response.rows) || [] };
-
-      console.log('rows', rows);
-
-      // parse the count from the response
-      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-
-      console.log('Number of rows returned', count);
-
->>>>>>> 4b560cc (Ready to create GeoJSON)
       return res.status(200).json({ ...rows, ...count });
     } catch (error) {
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
