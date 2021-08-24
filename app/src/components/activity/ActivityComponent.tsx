@@ -212,7 +212,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
               <Accordion>
                 <AccordionSummary>KML Upload</AccordionSummary>
                 <AccordionDetails>
-                  <KMLUpload />
+                  <KMLUpload setGeo={props.geometryState.setGeometry} />
                 </AccordionDetails>
               </Accordion>
             </Grid>

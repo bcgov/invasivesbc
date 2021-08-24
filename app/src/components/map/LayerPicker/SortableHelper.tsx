@@ -280,7 +280,7 @@ export function LayerPicker(props: any) {
     setMenuState(!menuState);
   };
   const themeContext = useContext(ThemeContext);
-  console.dir(menuState);
+  //console.dir(menuState);
 
   return (
     <div style={{ zIndex: 1000 }}>
