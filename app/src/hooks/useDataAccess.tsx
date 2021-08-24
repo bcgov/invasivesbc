@@ -34,7 +34,7 @@ export const useDataAccess = () => {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
     },
-    forceCache?: boolean
+    forceCache = false
   ): Promise<any> => {
     const networkStatus = await Network.getStatus();
     if (platform === 'web') {
@@ -170,7 +170,7 @@ export const useDataAccess = () => {
   };
 
   /** //---------------COMPLETED
-   * Fetch activities by search criteria.
+   * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
    *
    * @param {activitiesSearchCriteria} activitiesSearchCriteria
    * @return {*}  {Promise<any>}
@@ -178,7 +178,8 @@ export const useDataAccess = () => {
   const getActivities = async (
     activitiesSearchCriteria: IActivitySearchCriteria,
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean },
-    forceCache?: boolean
+    forceCache = false,
+    referenceCache = false
   ): Promise<any> => {
     const networkStatus = await Network.getStatus();
     if (Capacitor.getPlatform() === 'web') {
@@ -186,15 +187,26 @@ export const useDataAccess = () => {
     } else {
       if (forceCache === true || !networkStatus.connected) {
         const dbcontext = context;
+        const table = referenceCache ? 'reference_activity' : 'activity';
+        const typeClause = activitiesSearchCriteria.activity_type
+          ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
+              activitiesSearchCriteria.activity_type
+            ).replace(/[\[\]']+/g, '')})`
+          : '';
+        const subTypeClause = activitiesSearchCriteria.activity_subtype
+          ? ` and json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
+              activitiesSearchCriteria.activity_subtype
+            ).replace(/[\[\]']+/g, '')})`
+          : '';
+
+        const sql = `select * from ${table} where 1=1 ${typeClause} ${subTypeClause}`;
 
         const asyncReturnVal = await dbcontext.asyncQueue({
           asyncTask: () => {
             return query(
               {
                 type: QueryType.RAW_SQL,
-                sql: `select * from activity WHERE json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
-                  activitiesSearchCriteria.activity_subtype
-                ).replace(/[\[\]']+/g, '')})`
+                sql: sql
               },
               dbcontext
             );

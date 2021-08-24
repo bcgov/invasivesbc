@@ -69,7 +69,7 @@ export const useInvasivesApi = () => {
      * for Leaflet to consume. Will hopefully replace the default
      * output data.
      */
-    const geojsonData = await Http.request({
+    /*const geojsonData = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/activities-lean/`,
@@ -137,15 +137,15 @@ export const useInvasivesApi = () => {
      * This logic has optimized the data output into the essentials
      * for Leaflet to consume. Will hopefully replace the default
      * output data.
-     */
     const geojsonData = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/points-of-interest-lean/`,
       data: pointsOfInterestSearchCriteria
     });
+     */
 
-    const features = geojsonData.data.rows.map((d) => d.geojson);
+    /*const features = geojsonData.data.rows.map((d) => d.geojson);
     const geojson = {
       type: 'FeatureCollection',
       features: features
