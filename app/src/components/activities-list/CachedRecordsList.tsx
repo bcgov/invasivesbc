@@ -90,7 +90,10 @@ const CachedRecordsList: React.FC = (props) => {
   const toggleDocSelected = useCallback((doc) => {
     const toggleSelectedFunction = (key) => (prevSelected) => {
       const wasPrevSelected = prevSelected.indexOf(key) !== -1;
-      const newSelected = wasPrevSelected ? prevSelected.filter((id) => id !== key) : [...prevSelected, key];
+      const getSelected = (inputPrevSelected, inputKey) => {
+        return inputPrevSelected.filter((id) => id !== inputKey);
+      };
+      const newSelected = wasPrevSelected ? getSelected(prevSelected, key) : [...prevSelected, key];
       setInteractiveGeometry((prevGeos) => {
         return prevGeos.map((geo) => {
           if (geo._id === key) {
@@ -146,8 +149,7 @@ const CachedRecordsList: React.FC = (props) => {
         What is displayed in the popup on click of a geo on the map
       */
         const ActivityPopup = (name: string) => {
-          const returnVal = '<div>' + name + '</div>';
-          return returnVal;
+          return `<div>${name}</div>`;
         };
         const description =
           doc.docType === 'reference_point_of_interest'

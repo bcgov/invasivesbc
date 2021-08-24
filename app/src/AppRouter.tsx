@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { CircularProgress } from '@material-ui/core';
 import HomeRouter from './features/home/HomeRouter';
 import AuthLayout from './layouts/AuthLayout';
@@ -36,16 +35,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
   useEffect(() => {
     // If on mobile and have no internet connection, then bypass keycloak
     // removed network check for now - can't use current version of capactior network as context
-    if (Capacitor.getPlatform() === 'ios') {
-      if (isMobileNoNetwork) {
-        // setLayout(() => PublicLayout);
-        setLayout(() => AuthLayout);
-      } else {
-        setLayout(() => AuthLayout);
-      }
-    } else {
-      setLayout(() => AuthLayout);
-    }
+    setLayout(() => AuthLayout);
   });
 
   if (!layout) {

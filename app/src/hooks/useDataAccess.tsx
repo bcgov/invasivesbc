@@ -34,7 +34,7 @@ export const useDataAccess = () => {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
     },
-    forceCache?: boolean
+    forceCache = false
   ): Promise<any> => {
     const networkStatus = await Network.getStatus();
     if (platform === 'web') {
@@ -137,7 +137,6 @@ export const useDataAccess = () => {
     }
   };
 
-  // TODO: get this to return objects we want and not a sqlite result set obj
   /** //---------------COMPLETED
    * Get all the trip records
    *
@@ -179,8 +178,8 @@ export const useDataAccess = () => {
   const getActivities = async (
     activitiesSearchCriteria: IActivitySearchCriteria,
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean },
-    forceCache?: boolean,
-    referenceCache?: boolean
+    forceCache = false,
+    referenceCache = false
   ): Promise<any> => {
     const networkStatus = await Network.getStatus();
     if (Capacitor.getPlatform() === 'web') {
@@ -317,7 +316,6 @@ export const useDataAccess = () => {
     }
   };
 
-  // TODO: get this to return objects we want and not a sqlite result set obj
   /**
    * Get appState
    *

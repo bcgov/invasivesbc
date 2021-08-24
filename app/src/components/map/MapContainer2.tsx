@@ -96,7 +96,7 @@ export const getZIndex = (doc) => {
   if (!doc.geometry.geometry) {
     return 0;
   }
-  if (!(doc.geometry.geometry.length > 0)) {
+  if (doc.geometry.geometry.length <= 0) {
     return 0;
   }
   const coords = doc.geometry[0]?.geometry.coordinates;
