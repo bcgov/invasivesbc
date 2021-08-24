@@ -38,7 +38,8 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
     // removed network check for now - can't use current version of capactior network as context
     if (Capacitor.getPlatform() === 'ios') {
       if (isMobileNoNetwork) {
-        setLayout(() => PublicLayout);
+        // setLayout(() => PublicLayout);
+        setLayout(() => AuthLayout);
       } else {
         setLayout(() => AuthLayout);
       }

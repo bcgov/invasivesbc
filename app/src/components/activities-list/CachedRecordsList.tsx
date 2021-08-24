@@ -5,7 +5,8 @@ import React, { useContext, useEffect, useState, useCallback, useMemo } from 're
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import MapContainer, { getZIndex } from 'components/map/MapContainer';
+//import MapContainer, from 'components/map/MapContainer';
+import MapContainer2, { getZIndex } from 'components/map/MapContainer2';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
@@ -132,8 +133,8 @@ const CachedRecordsList: React.FC = (props) => {
       let pois = await getPointsOfInterest();
       setPointsOfInterest(pois);
 
-      const newDocs = records?.rows
-        ?.map((doc) => doc.doc)
+      const newDocs = records.rows
+        ?.map((doc) => doc)
         .filter(
           (doc) => (doc.point_of_interest_id || doc.activity_id) && !doc.deleted_timestamp // reduncancy for safety
         );
@@ -155,7 +156,7 @@ const CachedRecordsList: React.FC = (props) => {
           recordDocID: doc._id,
           recordType: doc.activityType || doc.docType,
           recordSubtype: doc.activitySubtype,
-          geometry: doc.geometry,
+          geometry: doc.geometry ? doc.geometry : null,
           color: geoColors[doc.activityType || doc.docType],
           description: description,
           popUpComponent: ActivityPopup,
@@ -167,6 +168,7 @@ const CachedRecordsList: React.FC = (props) => {
       });
       setInteractiveGeometry([...mapGeos]);
     } catch (e) {
+      console.dir(e);
       const errorString = JSON.stringify(e);
       setErrorMsg(errorString);
       console.log('error getting data');
@@ -182,8 +184,10 @@ const CachedRecordsList: React.FC = (props) => {
     const docIdsWithinArea = [];
     if (geometry?.length) {
       interactiveGeometry.forEach((iGeo: any) => {
-        if (booleanIntersects(iGeo.geometry[0], geometry[0])) {
-          docIdsWithinArea.push(iGeo.recordDocID);
+        if (iGeo.geometry !== null) {
+          if (booleanIntersects(iGeo.geometry[0], geometry[0])) {
+            docIdsWithinArea.push(iGeo.recordDocID);
+          }
         }
       });
       // Filter out records within a drawn geometry polygon on the map
@@ -282,11 +286,11 @@ const CachedRecordsList: React.FC = (props) => {
       </Box>
       {docs.length > 0 && !loading && (
         <Paper>
-          <MapContainer
+          <MapContainer2
             classes={classes}
             mapId="references_page_map_container"
             geometryState={{ geometry, setGeometry }}
-            interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+            //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
             extentState={{ extent, setExtent }}
             showDrawControls={true}
             contextMenuState={{ state: contextMenuState, setContextMenuState }}

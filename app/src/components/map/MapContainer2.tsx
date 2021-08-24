@@ -90,6 +90,15 @@ const storeLayersStyle = {
 } as React.CSSProperties;
 
 export const getZIndex = (doc) => {
+  if (!doc.geometry) {
+    return 0;
+  }
+  if (!doc.geometry.geometry) {
+    return 0;
+  }
+  if (!(doc.geometry.geometry.length > 0)) {
+    return 0;
+  }
   const coords = doc.geometry[0]?.geometry.coordinates;
   let zIndex = 100000;
   if (doc.geometry[0].geometry.type === 'Polygon' && coords?.[0]) {
