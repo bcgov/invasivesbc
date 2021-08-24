@@ -9,7 +9,6 @@ import { Capacitor } from '@capacitor/core';
 import JSZip from 'jszip';
 import { ESLint } from 'eslint';
 import { GeoJSON, MapContainer } from 'react-leaflet';
-
 const DOMParser = require('xmldom').DOMParser;
 
 export const KML_TYPES = {
@@ -105,7 +104,6 @@ export const KMLUpload: React.FC<any> = (props) => {
 
     const newGeos = sanitizedGeos(allGeos);
     setGeos(newGeos);
-
     /*
       await upsert(
         [
@@ -162,20 +160,19 @@ export const KMLUpload: React.FC<any> = (props) => {
     }
   }, [aFile]);
 
+  useEffect(() => {
+    if (props?.setGeo && geos) {
+      props.setGeo(geos.features);
+    }
+  }, [geos]);
+
   return (
-    <>
-      <DropzoneArea
-        dropzoneText="Upload KML here"
-        onChange={(e) => {
-          setAFile(e[0]);
-        }}
-      />
-      {geos !== null ? (
-        <MapContainer>
-          <GeoJSON data={geos} style={interactiveGeometryStyle} />
-        </MapContainer>
-      ) : null}
-    </>
+    <DropzoneArea
+      dropzoneText="Upload KML here"
+      onChange={(e) => {
+        setAFile(e[0]);
+      }}
+    />
   );
 };
 
