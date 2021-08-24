@@ -348,7 +348,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 doneButtonCallBack={() => {
                   helperStepDoneOrSkip(6);
                 }}>
-                <TripDataControls trip_ID={props.trip_ID} />
+                <TripDataControls trip_ID={props.trip_ID} geo={geometry} />
               </TripStep>
             </Grid>
           ) : (

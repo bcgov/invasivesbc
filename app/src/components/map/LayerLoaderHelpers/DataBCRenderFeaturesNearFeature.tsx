@@ -68,7 +68,9 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
 
   //when there is new wellId and proximity, send info to ActivityPage
   useEffect(() => {
-    if (props.setWellIdandProximity) props.setWellIdandProximity(wellIdandProximity);
+    if (props.setWellIdandProximity) {
+      props.setWellIdandProximity(wellIdandProximity);
+    }
   }, [wellIdandProximity]);
 
   /*
@@ -91,19 +93,22 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       //set index of the closest well yet
       if (!!!minDistanceKm || minDistanceKm > distanceKm) {
         minDistanceKm = distanceKm;
-        if (!arrayOfPoints[index].inside) nearestPointIndex = index;
+        if (!arrayOfPoints[index].inside) {
+          nearestPointIndex = index;
+        }
       }
       index++;
     });
     //label closest well
     arrayOfPoints[nearestPointIndex] = { ...arrayOfPoints[nearestPointIndex], closest: true };
     //set new data to send to ActivityPage
-    if (arrayOfPoints[nearestPointIndex].properties)
+    if (arrayOfPoints[nearestPointIndex].properties) {
       setWellIdandProximity({
         id: arrayOfPoints[nearestPointIndex].properties.GW_WW_SYSID.toString(),
         proximity: minDistanceKm * 1000,
         wellInside: wellInside
       });
+    }
     return arrayOfPoints;
   };
 
@@ -132,7 +137,9 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
                 </Popup>
               </Marker>
             );
-          } else return null;
+          } else {
+            return null;
+          }
         })
       ) : (
         <></>
