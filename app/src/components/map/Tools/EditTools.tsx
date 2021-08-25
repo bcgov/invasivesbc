@@ -1,4 +1,4 @@
-import { IconButton, makeStyles } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useLeafletContext } from '@react-leaflet/core';
 import { useMapEvent } from 'react-leaflet';
@@ -9,48 +9,10 @@ import single from '../Icons/square.png';
 import multi from '../Icons/trim.png';
 import { async } from 'q';
 import { ThemeContext } from 'contexts/themeContext';
-
-const useStyles = makeStyles((theme) => ({
-  image: {
-    height: 24,
-    width: 24
-  },
-  toolButton: {
-    margin: '5px',
-    background: 'white',
-    zIndex: 999,
-    height: '48px',
-    width: '48PX',
-    borderRadius: '4px',
-    '&:hover': {
-      background: 'white'
-    }
-  },
-  toolButtonDark: {
-    margin: '5px',
-    background: '#424242',
-    zIndex: 999,
-    height: '48px',
-    width: '48PX',
-    borderRadius: '4px',
-    '&:hover': {
-      background: '#424242'
-    }
-  },
-  typography: {
-    paddingLeft: theme.spacing(2),
-    fontSize: 16,
-    width: 150
-  },
-  button: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    width: 150
-  }
-}));
+import { toolStyles } from './ToolBtnStyles';
 
 const EditTools = (props: any) => {
-  const classes = useStyles();
+  const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
@@ -339,7 +301,7 @@ const EditTools = (props: any) => {
   return (
     <IconButton
       ref={divRef}
-      className={themeContext.themeType ? classes.toolButtonDark : classes.toolButton}
+      className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
       onClick={toggleMode}>
       {multiMode ? (
         <img src={multi} style={{ width: 32, height: 32 }} />
