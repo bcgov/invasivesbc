@@ -1,3 +1,19 @@
+select 
+  activity_subtype,
+  -- activity_payload,
+  activity_payload -> 'species_positive' "species",
+  activity_payload -> 'species_negative' "no species"
+from
+  activity_incoming_data
+where
+  activity_type = 'Observation' and
+  deleted_timestamp is null and
+  json_array_length(
+    to_json(activity_payload -> 'species_positive')
+  ) > 0
+;
+
+
 -- activity_observation_aquaticplant_with_codes
 SELECT
   activity_incoming_data.activity_id
