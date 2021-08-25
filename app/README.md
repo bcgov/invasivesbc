@@ -27,9 +27,11 @@ On MacOS, Windows or Linux, in the app directory:
 1. `npm install`
 2. `ionic build`
 3. `ionic cap add android` (Only the first time, does not need to be repeated after)
-4. `ionic cap copy`
-5. `ionic cap sync`
-6. `npx cap open Android`
+5. `ionic cap sync android`
+# to open it in android studio
+6. `npx cap open android`
+# to open it in android studio & trigger build / sim
+6. `npx cap build android`
 
 Android Studio will open and, after a short delay, will allow you to run the application in the simulator.
 
@@ -40,14 +42,21 @@ On MacOS, in the app directory:
 
 First time setup:
 Install Ionic CLI 6.16.1
-1. npm i -g @ionic/cli@6.16.1
-2. from the /app dir of the repo `ionic cap add ios` (Only the first time, does not need to be repeated after)
+1. npm install
+# edit: this should already be done:
+#2. from the /app dir of the repo `ionic cap add ios` (Only the first time, does not need to be repeated after)
 
 To build and open xcode:
 1. ionic capacitor build ios
 2. hit play in xcode to launch sim
 
 xCode will open and, after a short delay, will allow you to run the application in the simulator.
+
+For (mostly) hot reloading:
+1. ionic cap run ios -l --external --dev
+2. Open Safari Technology Preview and hit the Develop menu to connect to debugger for console logs
+3. from the app dir, run `sh ./getSqliteDBeaver.sh` to open & connect dbeaver to simulator app db instance.
+
 
 # React
 
