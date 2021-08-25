@@ -8,7 +8,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
@@ -23,14 +22,11 @@ import {
   getChildIndex,
   getParent,
   getChild,
-  getParentByOrder,
   sortObject
 } from './LayerPickerHelper';
 import Grid from '@material-ui/core/Grid';
 import ColorPicker from 'material-ui-color-picker';
-import * as L from 'leaflet';
-import { DragHandle, Error } from '@material-ui/icons';
-import { TileLayer, LayersControl, useMap, useMapEvent } from 'react-leaflet';
+import { TileLayer, useMap } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 // for confirming loaded layers
@@ -101,15 +97,14 @@ const useStyles = makeStyles((theme) => ({
 export function LayerPicker(props: any) {
   const classes = useStyles();
   const mapLayersContext = useContext(MapRequestContext);
+  const timeLeft = WithCounter();
+  const map = useMap();
+  const themeContext = useContext(ThemeContext);
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
-  // Progress bar
-  // const [progress, setProgress] = useState(props.progress);
-
-  //update context on ObjectState change
-  useEffect(() => {
-    setLayersSelected(objectState);
-  }, [objectState]);
+  const [menuState, setMenuState] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [radio, setRadio] = useState('default');
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
@@ -160,11 +155,29 @@ export function LayerPicker(props: any) {
     });
     return seconds;
   }
-  const seconds = WithCounter();
 
-  const SortableParentLayer = SortableElement(({ parent }: any) => {
+  function getErrorIcon(time: any) {
+    return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
+  }
+
+  function getSateliteMap(radioValue: any) {
+    return radio === 'default' ? (
+      <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+    ) : null;
+  }
+
+  function getOpenStreetMap(radioValue: any) {
+    return radio === 'other' ? <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null;
+  }
+
+  //update context on ObjectState change
+  useEffect(() => {
+    setLayersSelected(objectState);
+  }, [objectState]);
+
+  const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
-      updateParent((parent as any).id, { expanded: expanded });
+      updateParent(parent.id, { expanded: expanded });
     };
     return (
       <ListItem ContainerComponent="div">
@@ -197,17 +210,7 @@ export function LayerPicker(props: any) {
                 />
               </Grid>
               <Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
-                {parent.loaded === 100 ? (
-                  <DoneIcon />
-                ) : (
-                  <div>
-                    {seconds === 0 ? (
-                      <ErrorOutlineIcon />
-                    ) : (
-                      <CircularProgress variant="determinate" value={parent.loaded} />
-                    )}
-                  </div>
-                )}
+                {parent.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
               </Grid>
             </Grid>
             {parent.children.map((child: any) => (
@@ -228,17 +231,7 @@ export function LayerPicker(props: any) {
                   {child.id}
                 </Grid>
                 <Grid item xs={2} style={{ position: 'relative' }}>
-                  {child.loaded === 100 ? (
-                    <DoneIcon />
-                  ) : (
-                    <div>
-                      {seconds === 0 ? (
-                        <ErrorOutlineIcon />
-                      ) : (
-                        <CircularProgress variant="determinate" value={child.loaded} />
-                      )}
-                    </div>
-                  )}
+                  {child.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
                 </Grid>
               </Grid>
             ))}
@@ -264,11 +257,6 @@ export function LayerPicker(props: any) {
     setObjectState(returnVal);
   };
 
-  const map = useMap();
-  const [menuState, setMenuState] = useState(false);
-  const [checked, setChecked] = useState(false);
-  const [radio, setRadio] = useState('default');
-
   const handleCheckboxChange = (event) => {
     setChecked(event.target.checked);
   };
@@ -279,8 +267,6 @@ export function LayerPicker(props: any) {
     event.preventDefault();
     setMenuState(!menuState);
   };
-  const themeContext = useContext(ThemeContext);
-  //console.dir(menuState);
 
   return (
     <div style={{ zIndex: 1000 }}>
@@ -321,11 +307,9 @@ export function LayerPicker(props: any) {
             }}>
             <RadioGroup row value={radio} onChange={handleRadioChange}>
               <FormControlLabel value="default" control={<Radio />} label="default" />
-              {radio === 'default' ? (
-                <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-              ) : null}
+              {getSateliteMap(radio)}
               <FormControlLabel value="other" control={<Radio />} label="other" />
-              {radio === 'other' ? <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null}
+              {getOpenStreetMap(radio)}
             </RadioGroup>
           </FormControl>
           <FormControl

@@ -72,7 +72,77 @@ const calc_distance = (lat1: number, lat2: number, lng1: number, lng2: number) =
   return R * c;
 };
 
-const MeasureTool = (props) => {
+const geoJSON_checkDistance = (geometryObj: any, distanceObj: any, locArray: any, isMeasuringDistance: boolean) => {
+  if (geometryObj.aGeoJSON == null && locArray[0]) {
+    geometryObj.setGeoJSON([
+      ...geometryObj.aGeoJSON,
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [locArray[0].lng, locArray[0].lat]
+        },
+        properties: {
+          name: 'Dinagat Islands'
+        }
+      }
+    ]);
+  } else if (locArray.length > 1) {
+    for (var i = 0; i < locArray.length - 1; i++) {
+      if (isMeasuringDistance) {
+        geometryObj.setGeoJSON([
+          ...geometryObj.aGeoJSON,
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [locArray[i].lng, locArray[i].lat],
+                [locArray[i + 1].lng, locArray[i + 1].lat]
+              ]
+            },
+            properties: {
+              name: 'Dinagat Islands'
+            }
+          }
+        ]);
+        const distance = calc_distance(
+          locArray[i].lat,
+          locArray[i + 1].lat,
+          locArray[i].lng,
+          locArray[i + 1].lng
+        ) as any;
+        console.log('distance between points: ', distance);
+        distanceObj.setTotalDistance(distanceObj.totalDistance + distance);
+      }
+    }
+  }
+};
+
+const finishPolygon = (geometryObj: any, polyObj: any, locArray: any) => {
+  const tempArr = [];
+  for (var i = 0; i < locArray.length; i++) {
+    tempArr[i] = [locArray[i].lng, locArray[i].lat];
+    if (i === 0) {
+      tempArr[locArray.length] = [locArray[i].lng, locArray[i].lat];
+    }
+  }
+  var obj = {
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [tempArr]
+    },
+    properties: {
+      name: 'Dinagat Islands'
+    }
+  };
+  geometryObj.setGeoJSON([...geometryObj.aGeoJSON, obj]);
+  var tempPolygon = polygon([tempArr]);
+  polyObj.setPolyArea(area(tempPolygon));
+};
+
+const MeasureTool = (props: any) => {
   const classes = useStyles();
   const themeContext = useContext(ThemeContext);
   const [isMeasuringDistance, setIsMeasuringDistance] = useState(false);
@@ -83,32 +153,31 @@ const MeasureTool = (props) => {
   const [totalDistance, setTotalDistance] = useState(0);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [locArray, setLocArray] = useState([]);
+  const divRef = useRef(null);
+  const geometry = { aGeoJSON, setGeoJSON };
+  const polyObj = { polyArea, setPolyArea };
+  const distance = { totalDistance, setTotalDistance };
 
   const markerIcon = L.icon({
     iconUrl: dotMarker,
-
     iconSize: [24, 24]
   });
 
-  const divRef = useRef(null);
-
-  useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef.current);
-    L.DomEvent.disableScrollPropagation(divRef.current);
-  });
-
   // get mouse click location on map
-  const map = useMapEvent('click', (e) => {
+  useMapEvent('click', (e) => {
     const loc = e.latlng;
     //if we're measuring
     if (isMeasuringDistance) {
       setLocArray([...locArray, loc]);
-      return;
     }
     if (isMeasuringArea) {
       setLocArray([...locArray, loc]);
-      return;
     }
+  });
+
+  useEffect(() => {
+    L.DomEvent.disableClickPropagation(divRef.current);
+    L.DomEvent.disableScrollPropagation(divRef.current);
   });
 
   useEffect(() => {
@@ -119,50 +188,7 @@ const MeasureTool = (props) => {
   // used for measuring distance
   useEffect(() => {
     // we are dropping first point
-    if (aGeoJSON == null && locArray[0]) {
-      setGeoJSON([
-        ...aGeoJSON,
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [locArray[0].lng, locArray[0].lat]
-          },
-          properties: {
-            name: 'Dinagat Islands'
-          }
-        }
-      ]);
-    } else if (locArray.length > 1) {
-      for (var i = 0; i < locArray.length - 1; i++) {
-        if (isMeasuringDistance) {
-          setGeoJSON([
-            ...aGeoJSON,
-            {
-              type: 'Feature',
-              geometry: {
-                type: 'LineString',
-                coordinates: [
-                  [locArray[i].lng, locArray[i].lat],
-                  [locArray[i + 1].lng, locArray[i + 1].lat]
-                ]
-              },
-              properties: {
-                name: 'Dinagat Islands'
-              }
-            }
-          ]);
-          const distance = calc_distance(
-            locArray[i].lat,
-            locArray[i + 1].lat,
-            locArray[i].lng,
-            locArray[i + 1].lng
-          ) as any;
-          console.log('distance between points: ', distance);
-          setTotalDistance(totalDistance + distance);
-        }
-      }
-    }
+    geoJSON_checkDistance(geometry, distance, locArray, isMeasuringDistance);
   }, [locArray]);
 
   function clearMeasure() {
@@ -178,28 +204,6 @@ const MeasureTool = (props) => {
   const toggleMeasureArea = () => {
     setIsMeasuringDistance(false);
     setIsMeasuringArea(!isMeasuringArea);
-  };
-  const finishPolygon = () => {
-    const tempArr = [];
-    for (var i = 0; i < locArray.length; i++) {
-      tempArr[i] = [locArray[i].lng, locArray[i].lat];
-      if (i === 0) {
-        tempArr[locArray.length] = [locArray[i].lng, locArray[i].lat];
-      }
-    }
-    var obj = {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [tempArr]
-      },
-      properties: {
-        name: 'Dinagat Islands'
-      }
-    };
-    setGeoJSON([...aGeoJSON, obj]);
-    var tempPolygon = polygon([tempArr]);
-    setPolyArea(area(tempPolygon));
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -261,7 +265,7 @@ const MeasureTool = (props) => {
 
           <Grid item xs={3}>
             {isMeasuringArea ? (
-              <Button className={classes.button} onClick={finishPolygon}>
+              <Button className={classes.button} onClick={() => finishPolygon(geometry, polyObj, locArray)}>
                 Finish Draw
               </Button>
             ) : null}
