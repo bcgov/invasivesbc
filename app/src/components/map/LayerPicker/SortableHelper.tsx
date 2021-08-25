@@ -38,7 +38,8 @@ import {
   CircularProgress,
   AccordionSummary,
   Accordion,
-  makeStyles
+  makeStyles,
+  Popover
 } from '@material-ui/core';
 import IMapContainerProps from '../MapContainer2';
 import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
@@ -93,6 +94,9 @@ export function LayerPicker(props: any) {
   const [menuState, setMenuState] = useState(false);
   const [checked, setChecked] = useState(false);
   const [radio, setRadio] = useState('default');
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
@@ -251,21 +255,34 @@ export function LayerPicker(props: any) {
   const handleRadioChange = (event) => {
     setRadio(event.target.value);
   };
-  const toggleMenu = (event) => {
-    event.preventDefault();
-    setMenuState(!menuState);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
     <div style={{ zIndex: 1000 }}>
       <IconButton
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        onClick={toggleMenu}>
+        onClick={handleClick}>
         <LayersIcon />
       </IconButton>
-      {menuState ? (
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}>
         <div
-          className={classes.root}
           onTouchStart={() => {
             map.dragging.disable();
             map.doubleClickZoom.disable();
@@ -319,7 +336,7 @@ export function LayerPicker(props: any) {
             lockAxis="y"
           />
         </div>
-      ) : null}
+      </Popover>
       {checked ? (
         <>
           {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>*/}

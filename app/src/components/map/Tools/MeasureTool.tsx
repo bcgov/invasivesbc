@@ -133,6 +133,8 @@ const MeasureTool = (props: any) => {
   const geometry = { aGeoJSON, setGeoJSON };
   const polyObj = { polyArea, setPolyArea };
   const distance = { totalDistance, setTotalDistance };
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   const markerIcon = L.icon({
     iconUrl: dotMarker,
@@ -188,8 +190,6 @@ const MeasureTool = (props: any) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
 
   return (
     <>
