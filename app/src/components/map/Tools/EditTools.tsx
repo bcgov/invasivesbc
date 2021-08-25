@@ -1,6 +1,6 @@
 import { IconButton, makeStyles } from '@material-ui/core';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
+import { useLeafletContext } from '@react-leaflet/core';
 import { useMapEvent } from 'react-leaflet';
 import * as turf from '@turf/turf';
 import L from 'leaflet';
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const EditTools = (props) => {
+const EditTools = (props: any) => {
   const classes = useStyles();
   const themeContext = useContext(ThemeContext);
   // This should get the 'FeatureGroup' connected to the tools

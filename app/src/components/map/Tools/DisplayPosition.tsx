@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import { Marker, Popup, useMapEvents } from 'react-leaflet';
+import { Marker, Popup } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { CircularProgress, IconButton, makeStyles } from '@material-ui/core';
 import proj4 from 'proj4';
@@ -47,11 +47,6 @@ const useStyles = makeStyles((theme) => ({
 export default function DisplayPosition({ map }) {
   const classes = useStyles();
   const themeContext = useContext(ThemeContext);
-  //updated for capacitor 3
-  const watchPosition = Geolocation.watchPosition;
-  const startWatch = watchPosition;
-  const clearWatch = Geolocation.clearWatch;
-  const getPosition = Geolocation.getCurrentPosition;
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
@@ -61,15 +56,6 @@ export default function DisplayPosition({ map }) {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   });
-
-  useEffect(() => {
-    try {
-      //shouldnt assume the user doenst want to look at something somewhere else
-      //getPosition();
-    } catch (e) {
-      console.log('unable to get position');
-    }
-  }, []);
 
   useEffect(() => {
     if (initialTime > 0) {
