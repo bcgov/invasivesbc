@@ -1,3 +1,21 @@
+/*
+  Unnest all species out of the species arrays.
+  This creates new rows for every instance in the species array.
+*/
+select 
+  activity_subtype,
+  jsonb_array_elements(activity_payload -> 'species_positive') "species"
+  -- unnest(jsonb_array_to_text_array(activity_payload -> 'species_positive')) "species"
+from
+  activity_incoming_data
+where
+  activity_type = 'Observation' and
+  deleted_timestamp is null and
+  json_array_length(
+    to_json(activity_payload -> 'species_positive')
+  ) > 0
+;
+
 -- Select all positive species observations
 select 
   activity_subtype,
