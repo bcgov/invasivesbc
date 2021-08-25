@@ -1,8 +1,7 @@
+-- Select all positive species observations
 select 
   activity_subtype,
-  -- activity_payload,
-  activity_payload -> 'species_positive' "species",
-  activity_payload -> 'species_negative' "no species"
+  activity_payload -> 'species_positive' "species"
 from
   activity_incoming_data
 where
@@ -10,6 +9,20 @@ where
   deleted_timestamp is null and
   json_array_length(
     to_json(activity_payload -> 'species_positive')
+  ) > 0
+;
+
+-- Select all negative species observations
+select 
+  activity_subtype,
+  activity_payload -> 'species_negative' "no species"
+from
+  activity_incoming_data
+where
+  activity_type = 'Observation' and
+  deleted_timestamp is null and
+  json_array_length(
+    to_json(activity_payload -> 'species_negative')
   ) > 0
 ;
 
