@@ -1,8 +1,7 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-//import 'leaflet/dist/leaflet.css';
+import React, { useContext, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -13,10 +12,8 @@ import {
   MapContainer,
   TileLayer,
   LayersControl,
-  Marker,
   useMap,
   FeatureGroup,
-  useMapEvents,
   useMapEvent,
   ZoomControl
 } from 'react-leaflet';
@@ -152,10 +149,10 @@ const interactiveGeometryStyle = () => {
 
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
-  const [menuState, setMenuState] = useState(false);
+  const [map, setMap] = useState<any>(null);
 
   const Offline = () => {
-    const map = useMap();
+    const mapOffline = useMap();
     const offlineLayer = (L.tileLayer as any).offline(
       // 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -168,7 +165,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         crossOrigin: true
       }
     );
-    offlineLayer.addTo(map);
+    offlineLayer.addTo(mapOffline);
 
     let [offlineing, setOfflineing] = useState(false);
 
@@ -179,7 +176,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       }
     });
 
-    saveBasemapControl._map = map;
+    saveBasemapControl._map = mapOffline;
 
     const storeLayers = async () => {
       setOfflineing(true);
@@ -199,43 +196,11 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     );
   };
 
-  const vanIsland: FeatureCollection = {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'Polygon',
-          coordinates: [
-            [
-              [-123.31054687499999, 48.3416461723746],
-              [-122.82714843749999, 48.69096039092549],
-              [-122.6953125, 49.69606181911566],
-              [-125.68359374999999, 50.875311142200765],
-              [-129.0673828125, 51.39920565355378],
-              [-128.1884765625, 49.55372551347579],
-              [-123.31054687499999, 48.3416461723746]
-            ]
-          ]
-        }
-      }
-    ]
-  };
-
-  const setupFeature = (feature, layer) => {
-    let popupContent = 'POP UP STUFFFFFFFFFFFFFFFFFFFFFFFFFF';
-    for (let i = 0; i < 100; i++) {
-      popupContent += '\nFFFFFFFFFFFF';
-    }
-    layer.bindPopup(popupContent);
-  };
-
   // hack to deal with leaflet getting handed the wrong window size before it calls invalidateSize on load
   const MapResizer = () => {
-    const map = useMap();
+    const mapResizer = useMap();
     setTimeout(() => {
-      map.invalidateSize();
+      mapResizer.invalidateSize();
     }, 100);
 
     return null;
@@ -246,13 +211,13 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
     const { layersSelected } = mapRequestContext;
     const [lastRequestPushed, setLastRequestPushed] = useState(null);
 
-    const map = useMapEvent('moveend', () => {
+    useMapEvent('moveend', () => {
       let newArray = [];
-      layersSelected.forEach((layer) => {
+      layersSelected.forEach((layer: any) => {
         if (layer.enabled) newArray.push(layer.id);
       });
 
-      q.remove((worker) => {
+      q.remove((worker: any) => {
         if (worker.data && lastRequestPushed?.extent) {
           if (
             !turf.booleanWithin(worker.data.extent, lastRequestPushed.extent) &&
@@ -279,8 +244,6 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
 
     return null;
   };
-
-  const [map, setMap] = useState<any>(null);
 
   return (
     <MapContainer
