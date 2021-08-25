@@ -175,8 +175,8 @@ export function LayerPicker(props: any) {
     setLayersSelected(objectState);
   }, [objectState]);
 
-  const SortableParentLayer = SortableElement(({ parent }: any) => {
-    const onParentLayerAccordionChange = (expanded: any) => {
+  const SortableParentLayer = SortableElement(({ parent }) => {
+    const onParentLayerAccordionChange = (event: any, expanded: any) => {
       updateParent(parent.id, { expanded: expanded });
     };
     return (
