@@ -24,6 +24,7 @@ export const SingleTrip: React.FC<any> = (props) => {
 
   const saveState = async (newState) => {
     setStepState(newState);
+
     await upsert(
       [
         {
@@ -53,13 +54,36 @@ export const SingleTrip: React.FC<any> = (props) => {
     }
   };
 
-  const helperCloseOtherAccordions = (expanded, stepNumber) => {
+  const helperCloseOtherAccordions = async (expanded, stepNumber) => {
+    await helperMarkTripAsCurrent();
+    props.rerenderFlagSetter(Math.random());
     const newState: any = [...stepState];
     for (let i = 1; i < stepState.length; i++) {
       const expanded2 = i === stepNumber && expanded ? true : false;
       newState[i] = { ...newState[i], expanded: expanded2 };
     }
     saveState([...newState]);
+  };
+
+  const helperMarkTripAsCurrent = async () => {
+    await upsert(
+      [
+        {
+          type: UpsertType.RAW_SQL,
+          sql: 'UPDATE TRIP SET isCurrent = 0;'
+        }
+      ],
+      databaseContext
+    );
+    await upsert(
+      [
+        {
+          type: UpsertType.RAW_SQL,
+          sql: `UPDATE TRIP SET isCurrent = 1 WHERE ID=${props.trip_ID};`
+        }
+      ],
+      databaseContext
+    );
   };
 
   //generic helper to mark step as done if there isn't a special purpose check
@@ -113,7 +137,7 @@ export const SingleTrip: React.FC<any> = (props) => {
                 <Typography variant="body1">
                   Draw a polygon or square on the map, or upload a KML containing 1 shape.
                 </Typography>
-                <KMLUpload />
+                <KMLUpload trip_ID={props.trip_ID} />
               </Paper>
             </TripStep>
             <TripStep
@@ -191,5 +215,5 @@ export const SingleTrip: React.FC<any> = (props) => {
         )}
       </>
     );
-  }, [JSON.stringify(stepState)]);
+  }, [JSON.stringify(stepState), props.geometry]);
 };

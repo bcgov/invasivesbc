@@ -125,6 +125,15 @@ export const DatabaseContext2Provider = (props) => {
               layerName TEXT
             );\n`;
           break;
+        case 'TRIP':
+          setupSQL += `create table if not exists 
+            ${DocType[value]} 
+             (
+              id TEXT PRIMARY KEY,
+              json TEXT,
+              isCurrent INTEGER
+            );\n`;
+          break;
         case 'REFERENCE_ACTIVITY':
           setupSQL += `create table if not exists 
             ${DocType[value]} 

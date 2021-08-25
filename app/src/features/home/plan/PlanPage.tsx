@@ -87,6 +87,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
+  const [rerenderFlag, setRerenderFlag] = useState();
+
   const dataAccess = useDataAccess();
 
   const getTrips = async () => {
@@ -142,7 +144,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       await getTrips();
     };
     initialLoad();
-  }, [newTripID, tripsLoaded]);
+  }, [newTripID, tripsLoaded, rerenderFlag]);
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
@@ -205,7 +207,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         <RecordTable
           className={classes.tripList}
           tableName={'My Trips'}
-          geometry={geometry}
           keyField="trip_ID" // defaults to just use 'id'
           // startingOrder="survey_date"
           // defaults to first table column
@@ -252,7 +253,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 }))
           }
           dropdown={(row) => {
-            return <SingleTrip trip_ID={row.trip_ID} classes={classes} geometry={geometry} />;
+            return <SingleTrip trip_ID={row.trip_ID} rerenderFlagSetter={setRerenderFlag} classes={classes} />;
           }}></RecordTable>
       )}
     </Container>
