@@ -1,7 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
-import MapContainer, { IMapContainerProps } from 'components/map/MapContainer2';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
@@ -10,7 +9,7 @@ import { Geolocation } from '@capacitor/geolocation';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
 import { Feature } from 'geojson';
-import MapContainer2 from 'components/map/MapContainer2';
+import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import { useHistory } from 'react-router-dom';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 
@@ -206,7 +205,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
               </Button>
             </Grid>
             <Grid xs={12} className={props.classes.mapContainer} item>
-              <MapContainer2 {...props} />
+              <MapContainer {...props} />
             </Grid>
             <Grid xs={12} item>
               <Accordion>

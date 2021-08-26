@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Container, IconButton, makeStyles, Paper } from '@material-ui/core';
 import { DeleteForever } from '@material-ui/icons';
-import MapContainer2 from '../../../components/map/MapContainer2';
+import MapContainer from '../../../components/map/MapContainer';
 import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
@@ -266,7 +266,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const mapMemo = useMemo(() => {
     return (
       <Paper className={classes.paper}>
-        <MapContainer2
+        <MapContainer
           {...props}
           classes={classes}
           showDrawControls={true}
