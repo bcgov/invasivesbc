@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState, useCallback, useMemo } from 're
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import { ICreateMetabaseQuery } from '../../interfaces/useInvasivesApi-interfaces';
 import { notifySuccess, notifyError } from '../../utils/NotificationUtils';
-import MapContainer2, { getZIndex } from '../../components/map/MapContainer2';
+import MapContainer, { getZIndex } from '../map/MapContainer';
 import { Feature } from 'geojson';
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
@@ -291,7 +291,7 @@ const CachedRecordsList: React.FC = (props) => {
       </Box>
       {docs.length > 0 && !loading && (
         <Paper>
-          <MapContainer2
+          <MapContainer
             classes={classes}
             mapId="references_page_map_container"
             geometryState={{ geometry, setGeometry }}

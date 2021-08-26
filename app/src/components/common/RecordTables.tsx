@@ -1,28 +1,22 @@
-import { makeStyles, Theme } from '@material-ui/core';
-import clsx from 'clsx';
-import moment from 'moment';
+import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@material-ui/icons';
+import { useKeycloak } from '@react-keycloak/web';
+import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import {
-  ActivitySubtype,
-  ActivityType,
-  ActivitySubtypeShortLabels,
-  ActivitySyncStatus,
-  FormValidationStatus,
+  ActivitySubtype, ActivitySubtypeShortLabels,
+  ActivitySyncStatus, ActivityType, FormValidationStatus,
   ReviewStatus
 } from 'constants/activities';
-import { DocType, DEFAULT_PAGE_SIZE } from 'constants/database';
-import { Add, Sync, Edit, Delete, FindInPage, Check, Clear } from '@material-ui/icons';
+import { DEFAULT_PAGE_SIZE, DocType } from 'constants/database';
+import { DatabaseContext2 } from '../../contexts/DatabaseContext2';
+import { useDataAccess } from 'hooks/useDataAccess';
+import moment from 'moment';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useKeycloak } from '@react-keycloak/web';
 import {
-  sanitizeRecord,
   addLinkedActivityToDB,
   generateDBActivityPayload,
-  getShortActivityID
+  getShortActivityID, sanitizeRecord
 } from 'utils/addActivity';
-import RecordTable, { IRecordTable } from 'components/common/RecordTable';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);

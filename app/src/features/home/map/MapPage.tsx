@@ -3,16 +3,15 @@ import clsx from 'clsx';
 import moment from 'moment';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
-import MapContainer, { getZIndex } from 'components/map/MapContainer';
 import { IAPPSite } from 'components/points-of-interest/IAPP/IAPP-Site';
 import { ActivitiesPOI } from 'components/points-of-interest/ActivitiesPOI/ActivitiesPOI';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { Feature } from 'geojson';
-import { getShortActivityID } from 'utils/addActivity';
+import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
+import MapContainer from 'components/map/MapContainer';
 
 const GEO_UPDATE_MIN_INTERVAL = 60000; // 60s
 
@@ -56,10 +55,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface IMapProps {
   classes?: any;
 }
-
-const PointOfInterestPopUp = (name: string) => {
-  return '<div>' + name + '</div>';
-};
 
 interface popOutComponentProps {
   classes?: any;
@@ -105,7 +100,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
-  const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
+  const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
   const [selectedInteractiveGeometry, setSelectedInteractiveGeometry] = useState<interactiveGeoInputData>(null);
 
   const [isReadyToLoadMap, setIsReadyToLoadMap] = useState(false);
@@ -122,7 +117,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
   // don't load the map until interactive geos ready
   useEffect(() => {
-    const didInteractiveGeosLoad = interactiveGeometry ? true : false;
+    const didInteractiveGeosLoad = true;
     setIsReadyToLoadMap(didInteractiveGeosLoad);
   }, [databaseChangesContext, interactiveGeometry]);
 
@@ -139,19 +134,17 @@ const MapPage: React.FC<IMapProps> = (props) => {
   };
 
   const getActivityData = useCallback(async () => {
-    const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
+    let appStateResults; // = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
     if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
       return;
     }
 
-    const activityResults = await databaseContext.database.find({
-      selector: { _id: appStateResults.docs[0].activeActivity }
-    });
+    const activityResults = null;
 
-    if (activityResults && activityResults.docs[0]) {
-      setFormActivityData(activityResults.docs[0]);
-      setPhotos(activityResults.docs[0].photos || []);
+    if (activityResults && activityResults?.docs[0]) {
+      setFormActivityData(activityResults?.docs[0]);
+      setPhotos(activityResults?.docs[0].photos || []);
     }
   }, [databaseContext.database]);
 
@@ -163,218 +156,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
     setGeoUpdateTimestamp(now);
 
-    let docs = await databaseContext.database.find({
-      selector: {
-        docType: {
-          $in: [
-            DocType.REFERENCE_ACTIVITY,
-            DocType.ACTIVITY,
-            DocType.REFERENCE_POINT_OF_INTEREST,
-            DocType.POINT_OF_INTEREST,
-            DocType.SPATIAL_UPLOADS,
-            DocType.OFFLINE_EXTENT,
-            DocType.OFFLINE_DATA
-          ]
-        }
-        /*
-        // Only needed if memory size from too many points on the map becomes an issue.
-        // currently the main problem is just update frequency
-        // so this isn't needed with a long interval timer.
-        // Leaving this here just in case it's needed:
-        $or: [
-          {
-            $exists: 'lat'
-          },
-          extent
-            ? {
-              lat: {
-                $gte: extent._southWest.lat,
-                $lte: extent._northEast.lat
-              },
-              lon: {
-                $gte: extent._southWest.lng,
-                $lte: extent._northEast.lng
-              }
-            }
-            : {}
-        ]*/
-      },
-      use_index: 'docTypeIndex',
-      // limit to only necessary fields:
-      fields: ['_id', 'docType', 'geometry', 'lat', 'lon']
-    });
-
-    if (!docs || !docs.docs || !docs.docs.length) {
-      return;
-    }
-
-    let geos = [];
-    let interactiveGeos = [];
-
-    docs.docs.forEach((row) => {
-      if (!row.geometry || !row.geometry.length) {
-        return;
-      }
-
-      row.short_id = getShortActivityID(row);
-
-      // geos.push(row.geometry[0]); // deprecated(?): points only need to be interactive geos now
-
-      let coordinatesString = 'Polygon';
-
-      const coords = row.geometry[0]?.geometry.coordinates;
-      const zIndex = getZIndex(row);
-      if (row.geometry[0].geometry.type !== 'Polygon')
-        coordinatesString = `(${Number(coords[1]).toFixed(2)}, ${Number(coords[0]).toFixed(2)})`;
-
-      switch (row.docType) {
-        case DocType.OFFLINE_DATA:
-          interactiveGeos.push({
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Offline Data',
-            geometry: row.geometry,
-            color: 'blue',
-            popUpComponent: PointOfInterestPopUp
-          });
-          break;
-        case DocType.OFFLINE_EXTENT:
-          // TODO push this into the interactiveGeos array
-          // Then in the layer addition logic... handle behaviour
-          // If still downloading display differently
-          break;
-        case DocType.SPATIAL_UPLOADS:
-          interactiveGeos.push({
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Uploaded spatial content:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
-            geometry: row.geometry,
-            color: 'orange',
-            onClickCallback: () => {
-              console.log('uploaded content clicked');
-            },
-            popUpComponent: PointOfInterestPopUp
-          });
-          break;
-        case DocType.POINT_OF_INTEREST:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'New Point of Interest:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry,
-            color: '#99E472',
-            zIndex: zIndex,
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('clicked geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          */
-          /*
-          showPopUp: boolean;})*/
-          break;
-        case DocType.REFERENCE_ACTIVITY:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Past Activity:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#F3C911',
-            zIndex: zIndex,
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          break;
-        case DocType.ACTIVITY:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Activity:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#E044A7',
-            zIndex: zIndex,
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          */
-          /*
-          showPopUp: boolean;})*/
-          break;
-        case DocType.REFERENCE_POINT_OF_INTEREST:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Point of Interest:\n ' + (row.short_id || row._id) + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#FF5733',
-            zIndex: zIndex,
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          */
-          /*
-          showPopUp: boolean;})*/
-          break;
-        default:
-          break;
-      }
-    });
-
-    setGeometry(geos);
-    setInteractiveGeometry(interactiveGeos);
-
     //setIsReadyToLoadMap(true)
   }, [extent]);
 
@@ -385,11 +166,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
     updateComponent();
   }, [databaseChangesContext, showPopOut, getEverythingWithAGeo]);
-
-  useEffect(() => {
-    console.log('chosen geo');
-    console.dir(selectedInteractiveGeometry);
-  }, [selectedInteractiveGeometry]);
 
   useEffect(() => {
     getActivityData();
@@ -415,6 +191,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
                 classes={classes}
                 showDrawControls={false}
                 mapId={'mainMap'}
+                pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
                 geometryState={{ geometry, setGeometry }}
                 interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
                 extentState={{ extent, setExtent }}

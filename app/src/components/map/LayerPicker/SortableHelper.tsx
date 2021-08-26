@@ -41,7 +41,6 @@ import {
   makeStyles,
   Popover
 } from '@material-ui/core';
-import IMapContainerProps from '../MapContainer2';
 import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
 import { GeoJSON } from 'react-leaflet';
 import TempPOILoader from '../LayerLoaderHelpers/TempPOILoader';

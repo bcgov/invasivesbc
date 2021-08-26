@@ -3,7 +3,6 @@ import ActivitiesPage from 'features/home/activities/ActivitiesPage';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import HomeLayout from 'features/home/HomeLayout';
 import MapPage from 'features/home/map/MapPage';
-import MapPage2 from 'features/home/map/MapPage2';
 import PlanPage from 'features/home/plan/PlanPage';
 import ReferencesActivityPage from 'features/home/references/ReferencesActivityPage';
 import ReferencesPage from 'features/home/references/ReferencesPage';
@@ -107,15 +106,6 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
         title={getTitle('Activities')}
         roles={ALL_ROLES}
         component={ActivitiesPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={HomeLayout}
-        path="/home/map2"
-        title={getTitle('Map2')}
-        roles={ALL_ROLES}
-        component={MapPage2}
         componentProps={props}
       />
       <PrivateRoute

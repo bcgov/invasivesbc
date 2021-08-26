@@ -1,37 +1,11 @@
 .leaflet-draw.leaflet-control {
-  transform: scale(1.4) translate(0, 28px);
+  transform: scale(1.4) translate(3.75px, 80px);
 }
 
-.leaflet-draw.leaflet-control .leaflet-draw-section:nth-child(2) {
+/* .leaflet-draw.leaflet-control .leaflet-draw-section:nth-child(2) {
   transform: translate(0, -13px);
-}
+} */
 
-.leaflet-control-layers.leaflet-control {
-  transform: translate(-7px, 20px);
-}
-
-.leaflet-control-zoom.leaflet-control {
-  transform: scale(1.4) translate(0, -5px);
-}
-
-.leaflet-draw-draw-circlemarker {
-  background-image: url(./icons/cross-circle.svg) !important;
-  background-position: center !important;
-  background-size: cover !important;
-}
-
-.leaflet-control-locate.leaflet-control {
-  transform: scale(1.5);
-}
-
-.savetiles.leaflet-control {
-  transform: scale(1.5) translate(0, 9px);
-}
-
-.leaflet-control-locate.leaflet-control .bullseye {
-  background-image: url('InvasivesBC_Icon.svg');
-  background-repeat: no-repeat;
-  width: 60px;
-  height: 60px;
-  transform: translate(-22px, -16px) scale(0.4);
+.greenIconFilter {
+  filter: invert(100%);
 }
