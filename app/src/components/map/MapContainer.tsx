@@ -1,6 +1,5 @@
-import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
-import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
+import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
@@ -17,7 +16,6 @@ import {
   useMapEvent,
   ZoomControl
 } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
 import { interactiveGeoInputData } from './GeoMeta';
 import Spinner from 'components/spinner/Spinner';
 
@@ -35,7 +33,6 @@ import TempPOILoader from './LayerLoaderHelpers/TempPOILoader';
 import { LayerPicker } from './LayerPicker/SortableHelper';
 import data from './LayerPicker/GEO_DATA.json';
 import DisplayPosition from './Tools/DisplayPosition';
-import { debounced } from 'utils/FunctionUtils';
 import { createPolygonFromBounds } from './LayerLoaderHelpers/LtlngBoundsToPoly';
 import { MapRequestContextProvider, MapRequestContext } from 'contexts/MapRequestsContext';
 import MeasureTool from './Tools/MeasureTool';
@@ -141,7 +138,6 @@ const interactiveGeometryStyle = () => {
 };
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
   const [map, setMap] = useState<any>(null);
   const toolClass = toolStyles();
 
@@ -200,6 +196,26 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return null;
   };
 
+  //exclusively used for Async Extent
+  const qRemove = (lastRequestPushed: any, newArray: any) => {
+    q.remove((worker: any) => {
+      if (worker.data && lastRequestPushed?.extent) {
+        if (
+          !turf.booleanWithin(worker.data.extent, lastRequestPushed.extent) &&
+          !turf.booleanOverlap(worker.data.extent, lastRequestPushed.extent)
+        ) {
+          console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
+          return true;
+        }
+        if (!newArray.includes(worker.data.layer)) {
+          console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
+          return true;
+        }
+      }
+      return false;
+    });
+  };
+
   const AsyncExtent = () => {
     const mapRequestContext = useContext(MapRequestContext);
     const { layersSelected } = mapRequestContext;
@@ -211,22 +227,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         if (layer.enabled) newArray.push(layer.id);
       });
 
-      q.remove((worker: any) => {
-        if (worker.data && lastRequestPushed?.extent) {
-          if (
-            !turf.booleanWithin(worker.data.extent, lastRequestPushed.extent) &&
-            !turf.booleanOverlap(worker.data.extent, lastRequestPushed.extent)
-          ) {
-            console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
-            return true;
-          }
-          if (!newArray.includes(worker.data.layer)) {
-            console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
-            return true;
-          }
-        }
-        return false;
-      });
+      qRemove(lastRequestPushed, newArray);
 
       if (newArray.length > 0) {
         newArray.forEach((layer) => {
