@@ -365,8 +365,22 @@ export const TripDataControls: React.FC<any> = (props) => {
     const fetchLayerData = async () => {
       try {
         console.log('starting to fetch layer data...');
-        const bbox = turf.bbox(props.tripGeo as AllGeoJSON);
-        const squareGrid = turf.squareGrid(bbox, 20);
+
+        const res = await query(
+          {
+            type: QueryType.DOC_TYPE_AND_ID,
+            docType: DocType.TRIP,
+            ID: props.trip_ID
+          },
+          databaseContext
+        );
+
+        const tripGeo = {
+          type: 'FeatureCollection',
+          features: JSON.parse(res[0].json).geometry
+        };
+        const bbox = turf.bbox(tripGeo as AllGeoJSON);
+        const squareGrid = turf.squareGrid(bbox, 2);
         console.log('created the grid, upserting grid items to sqllite...');
         let gridIndex = 0;
         squareGrid.features.forEach(async (gridItem) => {
@@ -390,6 +404,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         });
       } catch (e) {
         console.log('There was an error fetching layer data from the map. Skipping to the next step...');
+        console.log(e);
       }
     };
 
