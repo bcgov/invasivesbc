@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'left'
   },
   paper: {
+    height: 600,
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary
@@ -242,7 +243,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       <Paper className={classes.paper}>
         <MapContainer
           {...props}
-          classes={classes}
+          classes={classes.map}
           showDrawControls={true}
           mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
           isPlanPage={true}
