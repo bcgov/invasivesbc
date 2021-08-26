@@ -117,6 +117,7 @@ export interface IMapContainerProps {
   classes?: any;
   mapId: string;
   showDrawControls: boolean;
+  isPlanPage?: boolean;
   pointOfInterestFilter?: IPointOfInterestSearchCriteria;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
   interactiveGeometryState?: {
@@ -253,7 +254,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
           <MeasureTool />
           {props.showDrawControls && (
             <FeatureGroup>
-              <EditTools geometryState={props.geometryState} />
+              <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
             </FeatureGroup>
           )}
         </div>
@@ -281,12 +282,13 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         </LayersControl>
       </MapRequestContextProvider>
       {props.geometryState.geometry ? (
-        <RenderKeyFeaturesNearFeature
-          inputGeo={props.geometryState?.geometry[0]}
-          dataBCLayerName="WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW"
-          proximityInMeters={550}
-          setWellIdandProximity={props.setWellIdandProximity}
-        />
+        // <RenderKeyFeaturesNearFeature
+        //   inputGeo={props.geometryState?.geometry[0]}
+        //   dataBCLayerName="WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW"
+        //   proximityInMeters={550}
+        //   setWellIdandProximity={props.setWellIdandProximity}
+        // />
+        <></>
       ) : (
         <></>
       )}

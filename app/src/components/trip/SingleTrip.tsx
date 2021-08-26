@@ -14,6 +14,7 @@ import KMLUpload from '../../components/map-buddy-components/KMLUpload';
 export const SingleTrip: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
   const [stepState, setStepState] = useState(null);
+
   const getStateFromTrip = useCallback(async () => {
     const results = await query(
       { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
@@ -23,8 +24,6 @@ export const SingleTrip: React.FC<any> = (props) => {
   }, [databaseContext]);
 
   const saveState = async (newState) => {
-    setStepState(newState);
-
     await upsert(
       [
         {
@@ -36,6 +35,8 @@ export const SingleTrip: React.FC<any> = (props) => {
       ],
       databaseContext
     );
+
+    setStepState(newState);
   };
 
   // initial fetch
@@ -44,46 +45,20 @@ export const SingleTrip: React.FC<any> = (props) => {
   }, [databaseContext]);
 
   const helperCheckForGeo = () => {
-    alert(JSON.stringify(props.geometry));
-    if (props.geometry.length > 0) {
-      alert(props.geometry.length);
+    if (props.geometry) {
       return TripStatusCode.ready;
     } else {
-      alert('no geo');
       return stepState[1].status;
     }
   };
 
   const helperCloseOtherAccordions = async (expanded, stepNumber) => {
-    await helperMarkTripAsCurrent();
-    props.rerenderFlagSetter(Math.random());
     const newState: any = [...stepState];
     for (let i = 1; i < stepState.length; i++) {
       const expanded2 = i === stepNumber && expanded ? true : false;
       newState[i] = { ...newState[i], expanded: expanded2 };
     }
     saveState([...newState]);
-  };
-
-  const helperMarkTripAsCurrent = async () => {
-    await upsert(
-      [
-        {
-          type: UpsertType.RAW_SQL,
-          sql: 'UPDATE TRIP SET isCurrent = 0;'
-        }
-      ],
-      databaseContext
-    );
-    await upsert(
-      [
-        {
-          type: UpsertType.RAW_SQL,
-          sql: `UPDATE TRIP SET isCurrent = 1 WHERE ID=${props.trip_ID};`
-        }
-      ],
-      databaseContext
-    );
   };
 
   //generic helper to mark step as done if there isn't a special purpose check

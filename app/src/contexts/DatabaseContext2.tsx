@@ -119,7 +119,7 @@ export const DatabaseContext2Provider = (props) => {
           setupSQL += `create table if not exists  
             ${DocType[value]} 
              (
-              id TEXT PRIMARY KEY,
+              id INTEGER PRIMARY KEY,
               featureArea TEXT,
               featuresInArea TEXT,
               layerName TEXT
@@ -129,7 +129,7 @@ export const DatabaseContext2Provider = (props) => {
           setupSQL += `create table if not exists 
             ${DocType[value]} 
              (
-              id TEXT PRIMARY KEY,
+              id INTEGER PRIMARY KEY,
               json TEXT,
               isCurrent INTEGER
             );\n`;

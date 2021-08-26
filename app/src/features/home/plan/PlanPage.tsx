@@ -8,8 +8,9 @@ import { TripStatusCode } from '../../../components/trip/TripStepStatus';
 import RecordTable from '../../../components/common/RecordTable';
 import { DocType } from 'constants/database';
 import { Capacitor } from '@capacitor/core';
+import * as _ from 'lodash';
 import { useDataAccess } from '../../../hooks/useDataAccess';
-import { DatabaseContext2, query, QueryType } from '../../../contexts/DatabaseContext2';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext2';
 import { SingleTrip } from '../../../components/trip/SingleTrip';
 
 interface IPlanPageProps {
@@ -77,17 +78,17 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
+
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
   const [extent, setExtent] = useState(null);
 
   const [newTripID, setNewTripID] = useState(null);
   const [trips, setTrips] = useState(null);
   const [tripsLoaded, setTripsLoaded] = useState(null);
+  const [currentTripId, setCurrentTripId] = useState(null);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
-
-  const [rerenderFlag, setRerenderFlag] = useState();
 
   const dataAccess = useDataAccess();
 
@@ -103,8 +104,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
 
     if ((Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') && results) {
-      console.log('results length' + results.length);
-
       results.map((adoc) => {
         try {
           const doc = JSON.parse(adoc.json);
@@ -121,6 +120,68 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     setTrips([...newTrips]);
     console.log('set trips to ' + newTrips.length);
   };
+
+  const withAsyncQueue = async (request: any) => {
+    return databaseContext.asyncQueue({
+      asyncTask: () => {
+        return request;
+      }
+    });
+  };
+
+  useEffect(() => {
+    const upsertGeo = async () => {
+      const res = await withAsyncQueue(
+        query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT json FROM TRIP WHERE id=${currentTripId};`
+          },
+          databaseContext
+        )
+      );
+      const geoFromQuery = JSON.parse(res[0].json).geometry;
+      const idFromQuery = JSON.parse(res[0].json).trip_ID;
+      if (!_.isEqual(geoFromQuery, geometry)) {
+        withAsyncQueue(
+          upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                docType: DocType.TRIP,
+                ID: currentTripId,
+                json: { geometry: geometry }
+              }
+            ],
+            databaseContext
+          )
+        );
+      }
+    };
+
+    if (currentTripId) {
+      upsertGeo();
+    }
+  }, [geometry]);
+
+  useEffect(() => {
+    const queryForGeo = async () => {
+      const res = await withAsyncQueue(
+        query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT json FROM TRIP WHERE id=${currentTripId};`
+          },
+          databaseContext
+        )
+      );
+      if (res.length > 0) {
+        const geoFromQuery = JSON.parse(res[0].json).geometry;
+        setGeometry(geoFromQuery);
+      }
+    };
+    queryForGeo();
+  }, [currentTripId]);
 
   useEffect(() => {
     if (trips != null) {
@@ -144,14 +205,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       await getTrips();
     };
     initialLoad();
-  }, [newTripID, tripsLoaded, rerenderFlag]);
+  }, [newTripID, tripsLoaded]);
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
     newID = newID !== 'NULL' ? newID + 1 : 1;
     const newTripObj = {
       trip_ID: newID,
-      geometry: geometry,
+      geometry: [],
       trip_name: 'New Unnamed Trip',
       num_activities: 0,
       num_POI: 0,
@@ -167,12 +228,39 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       ]
     };
     await dataAccess.addTrip(newTripObj, databaseContext);
+    setGeometry([]);
 
     setNewTripID(newID);
   };
 
   const trashTrip = async (trip_ID, tripName) => {
     setNewTripID(Math.random()); //NOSONAR
+  };
+
+  const helperMarkTripAsCurrent = async (trip_ID: any) => {
+    // await withAsyncQueue(
+    //   upsert(
+    //     [
+    //       {
+    //         type: UpsertType.RAW_SQL,
+    //         sql: 'UPDATE TRIP SET isCurrent = 0;'
+    //       }
+    //     ],
+    //     databaseContext
+    //   )
+    // );
+    // await withAsyncQueue(
+    //   upsert(
+    //     [
+    //       {
+    //         type: UpsertType.RAW_SQL,
+    //         sql: `UPDATE TRIP SET isCurrent = 1 WHERE ID=${trip_ID};`
+    //       }
+    //     ],
+    //     databaseContext
+    //   )
+    // );
+    setCurrentTripId(trip_ID);
   };
 
   const mapMemo = useMemo(() => {
@@ -183,6 +271,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           classes={classes}
           showDrawControls={true}
           mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
+          isPlanPage={true}
           geometryState={{ geometry, setGeometry }}
           interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
           extentState={{ extent, setExtent }}
@@ -207,6 +296,9 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         <RecordTable
           className={classes.tripList}
           tableName={'My Trips'}
+          onToggleExpandRow={(row) => {
+            helperMarkTripAsCurrent(row.trip_ID);
+          }}
           keyField="trip_ID" // defaults to just use 'id'
           // startingOrder="survey_date"
           // defaults to first table column
@@ -253,7 +345,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 }))
           }
           dropdown={(row) => {
-            return <SingleTrip trip_ID={row.trip_ID} rerenderFlagSetter={setRerenderFlag} classes={classes} />;
+            return <SingleTrip trip_ID={row.trip_ID} classes={classes} />;
           }}></RecordTable>
       )}
     </Container>
