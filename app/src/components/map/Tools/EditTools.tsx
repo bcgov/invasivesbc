@@ -25,6 +25,17 @@ const EditTools = (props: any) => {
     }
   };
   const divRef = useRef();
+
+  useEffect(() => {
+    if (props.isPlanPage) {
+      (context.layerContainer as any).clearLayers();
+    } else {
+      if (props.geometryState.geometry === null) {
+        (context.layerContainer as any).clearLayers();
+      }
+    }
+  }, [props.geometryState]);
+
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
@@ -36,6 +47,7 @@ const EditTools = (props: any) => {
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
     var newLayer = e.layer;
+
     context.layerContainer.addLayer(newLayer);
 
     let aGeo = newLayer.toGeoJSON();
@@ -45,14 +57,15 @@ const EditTools = (props: any) => {
     aGeo = convertLineStringToPoly(aGeo);
 
     if (multiMode) {
+      (context.layerContainer as any).clearLayers();
       let newState = [];
       newState = props.geometryState.geometry ? [...props.geometryState.geometry] : newState;
       newState = aGeo ? [...newState, aGeo] : newState;
       props.geometryState.setGeometry([...newState]);
     } else {
+      (context.layerContainer as any).clearLayers();
       props.geometryState.setGeometry([aGeo]);
     }
-    (context.layerContainer as any).clearLayers();
   };
   const onEditStop = (e: any) => {
     let updatedGeoJSON = [];
@@ -68,6 +81,7 @@ const EditTools = (props: any) => {
 
       updatedGeoJSON.push(aGeo);
     });
+
     props.geometryState.setGeometry(updatedGeoJSON);
   };
 
@@ -75,7 +89,9 @@ const EditTools = (props: any) => {
   let map = useMapEvent('draw:created' as any, onDrawCreate);
 
   useMapEvent('draw:drawstart' as any, () => {
-    (context.layerContainer as any).clearLayers();
+    if (!multiMode) {
+      (context.layerContainer as any).clearLayers();
+    }
   });
   useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
@@ -255,12 +271,6 @@ const EditTools = (props: any) => {
     // update stored geos, mapped by key
     setGeoKeys(newGeoKeys);
   };
-
-  useEffect(() => {
-    if (props.geometryState.geometry === null) {
-      (context.layerContainer as any).clearLayers();
-    }
-  }, [props.geometryState]);
 
   useEffect(() => {
     if (!map) {

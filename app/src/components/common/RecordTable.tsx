@@ -228,6 +228,7 @@ export interface IRecordTable {
   tableSchemaType?: any;
   expandable?: boolean;
   startExpanded?: boolean;
+  rerenderFlagSetter?: any;
   keyField?: string;
   startingOrder?: string;
   startingOrderBy?: string;
@@ -367,11 +368,15 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
           ...header
         };
       }
-      if (!headerOverrides) throw new Error('Table header not defined correctly - must be a string, number or object');
+      if (!headerOverrides) {
+        throw new Error('Table header not defined correctly - must be a string, number or object');
+      }
       const headerSchema = schemas?.schema?.properties?.[id];
       const valueMap = {};
       schemas?.schema?.properties?.[id]?.anyOf?.forEach((value) => {
-        if (value.enum[0] && value.title) valueMap[value.enum[0]] = value.title;
+        if (value.enum[0] && value.title) {
+          valueMap[value.enum[0]] = value.title;
+        }
       });
 
       return {

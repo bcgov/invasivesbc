@@ -1,17 +1,17 @@
-import { Capacitor } from '@capacitor/core';
 import { Box, Button, LinearProgress, makeStyles, Typography } from '@material-ui/core';
-import Spinner from 'components/spinner/Spinner';
 import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { DatabaseChangesContext } from '../../contexts/DatabaseChangesContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext2';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import * as turf from '@turf/turf';
 import {
   IActivitySearchCriteria,
   IPointOfInterestSearchCriteria,
   IMetabaseQuerySearchCriteria
-} from 'interfaces/useInvasivesApi-interfaces';
+} from '../../interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { notifySuccess, notifyError } from 'utils/NotificationUtils';
+import { AllGeoJSON } from '@turf/turf';
+import { getDataFromDataBC } from '../../components/map/WFSConsumer';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -85,7 +85,6 @@ export const TripDataControls: React.FC<any> = (props) => {
         });
       } catch {
         alert('Could not fetch photos for ' + row._id);
-        //notifyError(databaseContext, 'Could not fetch photos for ' + row._id);
       }
       return photos;
     }
@@ -93,7 +92,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   };
 
   const getTrip = useCallback(async () => {
-    let queryResults = await query(
+    const queryResults = await query(
       { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
       databaseContext
     );
@@ -104,7 +103,6 @@ export const TripDataControls: React.FC<any> = (props) => {
     const updateComponent = () => {
       getTrip();
     };
-
     updateComponent();
   }, [databaseChangesContext, getTrip]);
 
@@ -127,15 +125,17 @@ export const TripDataControls: React.FC<any> = (props) => {
           ...((geometry && { search_feature: geometry }) || {})
         };
 
-        let response = await invasivesApi.getActivities(activitySearchCriteria);
+        const response = await invasivesApi.getActivities(activitySearchCriteria);
 
-        let upserts = [];
+        const upserts = [];
 
         for (const row of response.rows) {
           let photos = [];
-          if (setOfChoices.includePhotos) photos = await getPhotos(row);
+          if (setOfChoices.includePhotos) {
+            photos = await getPhotos(row);
+          }
 
-          let jsonObj = {
+          const jsonObj = {
             id: row.activity_id,
             docType: DocType.REFERENCE_ACTIVITY,
             ...row,
@@ -155,30 +155,28 @@ export const TripDataControls: React.FC<any> = (props) => {
         }
         try {
           numberActivitiesFetched += await upsert(upserts, databaseContext);
-          alert('Cached ' + numberActivitiesFetched + ' activities.');
+          alert(`Cached ${numberActivitiesFetched} activities.`);
         } catch (error) {
-          alert('There was an error: ' + error);
-          // notifyError(databaseContext, 'Error with inserting Activities into database: ' + error);
+          alert('Error with inserting Activities into database: ' + error);
         }
       }
-      alert('Fetched ' + numberActivitiesFetched + ' activities.');
-      // notifySuccess(databaseContext, 'Cached ' + numberActivitiesFetched + ' activities.');
+      alert(`Cached ${numberActivitiesFetched}activities.`);
     };
 
     const fetchPointsOfInterest = async () => {
-      console.log('input valid');
       if (!trip || !trip.pointOfInterestChoices || !trip.pointOfInterestChoices.length) {
         return;
       }
-      console.log('made it past input valid');
 
       let numberPointsOfInterestFetched = 0;
 
       for (const setOfChoices of trip.pointOfInterestChoices) {
-        if (!fetch) return;
+        if (!fetch) {
+          return;
+        }
         const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
 
-        let pointOfInterestSearchCriteria: IPointOfInterestSearchCriteria = {
+        const pointOfInterestSearchCriteria: IPointOfInterestSearchCriteria = {
           ...((setOfChoices.pointOfInterestType && { point_of_interest_type: setOfChoices.pointOfInterestType }) || {}),
           ...((setOfChoices.iappType && { iappType: setOfChoices.iappType }) || {}),
           ...((setOfChoices.iappSiteID && { iappSiteID: setOfChoices.iappSiteID }) || {}),
@@ -206,11 +204,13 @@ export const TripDataControls: React.FC<any> = (props) => {
           console.log('response is undefined');
         }
 
-        let total_to_fetch = response.count;
-        setTotalRecordsToFetch(total_to_fetch);
+        const totalToFetch = response.count;
+        setTotalRecordsToFetch(totalToFetch);
         console.log('*** total points of interest to get:  ' + response.count);
-        while (numberPointsOfInterestFetched !== total_to_fetch) {
-          if (!fetch) return;
+        while (numberPointsOfInterestFetched !== totalToFetch) {
+          if (!fetch) {
+            return;
+          }
           if (pointOfInterestSearchCriteria.page !== 0) {
             try {
               response = await invasivesApi.getPointsOfInterest(pointOfInterestSearchCriteria);
@@ -219,11 +219,13 @@ export const TripDataControls: React.FC<any> = (props) => {
               console.log(e);
             }
           }
-          let upserts = [];
+          const upserts = [];
           for (const row of response.rows) {
             let photos = [];
-            if (setOfChoices.includePhotos) photos = await getPhotos(row);
-            let jsonObj = {
+            if (setOfChoices.includePhotos) {
+              photos = await getPhotos(row);
+            }
+            const jsonObj = {
               _id: row.point_of_interest_id,
               docType: DocType.REFERENCE_POINT_OF_INTEREST,
               ...row,
@@ -240,17 +242,15 @@ export const TripDataControls: React.FC<any> = (props) => {
               json: jsonObj
             });
           }
-          console.log('');
           numberPointsOfInterestFetched += response.rows.length;
           setTotalRecordsFetched(numberPointsOfInterestFetched);
           console.log('*** total points of interest fetched:  ' + numberPointsOfInterestFetched);
-          console.log('*** total points of interest to get:  ' + total_to_fetch);
+          console.log('*** total points of interest to get:  ' + totalToFetch);
           pointOfInterestSearchCriteria.page += 1;
           console.log(pointOfInterestSearchCriteria);
         }
       }
-      alert('Cached ' + numberPointsOfInterestFetched + ' points of interest.');
-      //notifySuccess(databaseContext, 'Cached ' + numberPointsOfInterestFetched + ' points of interest.');
+      alert(`Cached ${numberPointsOfInterestFetched} points of interest.`);
     };
 
     const fetchMetabaseQueries = async () => {
@@ -270,12 +270,11 @@ export const TripDataControls: React.FC<any> = (props) => {
         };
 
         if (!setOfChoices.metabaseQueryId) {
-          //notifyError(databaseContext, 'Metabase Query ID cannot be blank, please select a query');
           alert('Metabase Query ID cannot be blank, please select a query');
           return;
         }
 
-        let response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
+        const response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
 
         await upsert(
           [
@@ -295,13 +294,19 @@ export const TripDataControls: React.FC<any> = (props) => {
         );
 
         let responseRows = [];
-        if (response?.activities?.length) responseRows = response.activities;
-        if (response?.points_of_interest?.length) responseRows = [responseRows, ...response.points_of_interest];
+        if (response?.activities?.length) {
+          responseRows = response.activities;
+        }
+        if (response?.points_of_interest?.length) {
+          responseRows = [responseRows, ...response.points_of_interest];
+        }
 
         let upserts = {};
         for (const row of responseRows) {
           let photos = [];
-          if (setOfChoices.includePhotos) photos = await getPhotos(row);
+          if (setOfChoices.includePhotos) {
+            photos = await getPhotos(row);
+          }
 
           if (row.activity_id) {
             upserts = {
@@ -344,27 +349,48 @@ export const TripDataControls: React.FC<any> = (props) => {
           }
         }
         try {
-          //  await bulkUpsert(upserts);
+          // await bulkUpsert(upserts);
         } catch (error) {
-          //notifyError(databaseContext, 'Error with inserting Metabase results into database: ' + error);
-          alert('Error with inserting Metabase results into database: ' + error);
+          alert(`Error with inserting Metabase results into database: ${error}`);
         }
       }
       alert(
-        'Cached ' +
-          (countActivities ? countActivities + ' activities' : '') +
-          (countActivities && countPois ? ' and ' : '') +
-          (countPois ? countPois + ' points of interest' : '') +
-          (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
+        `Cached ${countActivities ? countActivities + ' activities' : ''} 
+          ${countActivities && countPois ? ' and ' : ''} 
+          ${countPois ? countPois + ' points of interest' : ''} 
+          ${countActivities || countPois ? ' from Metabase.' : '0 Metabase results.'}`
       );
-      // notifySuccess(
-      //   databaseContext,
-      //   'Cached ' +
-      //     (countActivities ? countActivities + ' activities' : '') +
-      //     (countActivities && countPois ? ' and ' : '') +
-      //     (countPois ? countPois + ' points of interest' : '') +
-      //     (countActivities || countPois ? ' from Metabase.' : '0 Metabase results.')
-      // );
+    };
+
+    const fetchLayerData = async () => {
+      try {
+        console.log('starting to fetch layer data...');
+        const bbox = turf.bbox(props.tripGeo as AllGeoJSON);
+        const squareGrid = turf.squareGrid(bbox, 20);
+        console.log('created the grid, upserting grid items to sqllite...');
+        let gridIndex = 0;
+        squareGrid.features.forEach(async (gridItem) => {
+          const bufferedGeo = turf.buffer(gridItem, 550 / 1000);
+          const wellsInside = await getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo);
+          await upsert(
+            [
+              {
+                type: UpsertType.RAW_SQL,
+                sql: `INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES ('${JSON.stringify(
+                  gridItem
+                )
+                  .split(`'`)
+                  .join(`''`)}','${JSON.stringify(wellsInside).split(`'`).join(`''`)}','well');`
+              }
+            ],
+            databaseContext
+          );
+          gridIndex++;
+          console.log(`gridItem #${gridIndex}`);
+        });
+      } catch (e) {
+        console.log('There was an error fetching layer data from the map. Skipping to the next step...');
+      }
     };
 
     const deleteTripAndFetch = async () => {
@@ -374,17 +400,18 @@ export const TripDataControls: React.FC<any> = (props) => {
       //todo:
       deleteOldTrip();
       //fetch what is selected here:
-      await setFetching(true);
-      console.log('about to fetch stuf');
-      Promise.all([fetchActivities(), fetchPointsOfInterest(), fetchMetabaseQueries()])
+      setFetching(true);
+      Promise.all([fetchLayerData(), fetchActivities(), fetchPointsOfInterest(), fetchMetabaseQueries()])
         .finally(() => setFetching(false))
         .catch((error) => {
           setFetching(false);
           setFetch(false);
-          //notifyError(databaseContext, 'Error when fetching from network: ' + error);
+          console.log('Error when fetching from network: ' + error);
         });
     };
-    if (fetch) deleteTripAndFetch();
+    if (fetch) {
+      deleteTripAndFetch();
+    }
   }, [fetch]);
 
   return (

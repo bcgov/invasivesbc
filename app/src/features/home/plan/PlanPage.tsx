@@ -1,35 +1,17 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Container,
-  Grid,
-  IconButton,
-  makeStyles,
-  Paper,
-  Tooltip,
-  Typography
-} from '@material-ui/core';
-import { DeleteForever, ExpandMore } from '@material-ui/icons';
-import ActivityDataFilter from '../../../components/activities-search-controls/ActivitiesFilter';
-import MetabaseSearch from '../../../components/search/MetabaseSearch';
-import KMLUpload from '../../../components/map-buddy-components/KMLUpload';
+import { Button, CircularProgress, Container, IconButton, makeStyles, Paper } from '@material-ui/core';
+import { DeleteForever } from '@material-ui/icons';
 import MapContainer2 from '../../../components/map/MapContainer2';
-import PointOfInterestDataFilter from '../../../components/point-of-interest-search/PointOfInterestFilter';
-import TripDataControls from '../../../components/trip/TripDataControls';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useContext, useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { MapContextMenuData } from '../map/MapContextMenu';
-import HelpIcon from '@material-ui/icons/Help';
-import TripStepStatus, { TripStatusCode } from '../../../components/trip/TripStepStatus';
+import { TripStatusCode } from '../../../components/trip/TripStepStatus';
 import RecordTable from '../../../components/common/RecordTable';
 import { DocType } from 'constants/database';
-import TripNamer from '../../../components/trip/TripNamer';
 import { Capacitor } from '@capacitor/core';
+import * as _ from 'lodash';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext2';
+import { SingleTrip } from '../../../components/trip/SingleTrip';
 
 interface IPlanPageProps {
   classes?: any;
@@ -96,22 +78,23 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
+
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
   const [extent, setExtent] = useState(null);
 
   const [newTripID, setNewTripID] = useState(null);
   const [trips, setTrips] = useState(null);
   const [tripsLoaded, setTripsLoaded] = useState(null);
+  const [currentTripId, setCurrentTripId] = useState(null);
 
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
 
   const dataAccess = useDataAccess();
+
   const getTrips = async () => {
     const newTrips = [];
-    const newGeos = [];
     //todo:  try to wrap this all in db context so we don't need to reference both dbs here
-    let docs: any; //pouch db response
     let results: any; //sqlite db response
 
     if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
@@ -121,8 +104,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
 
     if ((Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') && results) {
-      console.log('results length' + results.length);
-
       results.map((adoc) => {
         try {
           const doc = JSON.parse(adoc.json);
@@ -132,12 +113,75 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           console.log(e);
           console.log(adoc);
         }
+        return null;
       });
     }
 
     setTrips([...newTrips]);
     console.log('set trips to ' + newTrips.length);
   };
+
+  const withAsyncQueue = async (request: any) => {
+    return databaseContext.asyncQueue({
+      asyncTask: () => {
+        return request;
+      }
+    });
+  };
+
+  useEffect(() => {
+    const upsertGeo = async () => {
+      const res = await withAsyncQueue(
+        query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT json FROM TRIP WHERE id=${currentTripId};`
+          },
+          databaseContext
+        )
+      );
+      const geoFromQuery = JSON.parse(res[0].json).geometry;
+      const idFromQuery = JSON.parse(res[0].json).trip_ID;
+      if (!_.isEqual(geoFromQuery, geometry)) {
+        withAsyncQueue(
+          upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                docType: DocType.TRIP,
+                ID: currentTripId,
+                json: { geometry: geometry }
+              }
+            ],
+            databaseContext
+          )
+        );
+      }
+    };
+
+    if (currentTripId) {
+      upsertGeo();
+    }
+  }, [geometry]);
+
+  useEffect(() => {
+    const queryForGeo = async () => {
+      const res = await withAsyncQueue(
+        query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT json FROM TRIP WHERE id=${currentTripId};`
+          },
+          databaseContext
+        )
+      );
+      if (res.length > 0) {
+        const geoFromQuery = JSON.parse(res[0].json).geometry;
+        setGeometry(geoFromQuery);
+      }
+    };
+    queryForGeo();
+  }, [currentTripId]);
 
   useEffect(() => {
     if (trips != null) {
@@ -168,6 +212,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     newID = newID !== 'NULL' ? newID + 1 : 1;
     const newTripObj = {
       trip_ID: newID,
+      geometry: [],
       trip_name: 'New Unnamed Trip',
       num_activities: 0,
       num_POI: 0,
@@ -183,231 +228,41 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       ]
     };
     await dataAccess.addTrip(newTripObj, databaseContext);
+    setGeometry([]);
 
     setNewTripID(newID);
   };
 
-  const SingleTrip: React.FC<any> = (props) => {
-    const [stepState, setStepState] = useState(null);
-    const getStateFromTrip = useCallback(async () => {
-      const results = await query(
-        { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
-        databaseContext
-      );
-      setStepState(JSON.parse(results[0].json).stepState);
-    }, [databaseContext]);
-
-    const saveState = async (newState) => {
-      setStepState(newState);
-
-      // only overwrite newstate property of db record:
-      await upsert(
-        [
-          {
-            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-            ID: props.trip_ID,
-            docType: DocType.TRIP,
-            json: { stepState: newState }
-          }
-        ],
-        databaseContext
-      );
-    };
-
-    // initial fetch
-    useEffect(() => {
-      getStateFromTrip();
-    }, [databaseContext]);
-
-    const helperCheckForGeo = () => {
-      if (geometry) {
-        return TripStatusCode.ready;
-      } else {
-        return stepState[1].status;
-      }
-    };
-
-    const helperCloseOtherAccordions = (expanded, stepNumber) => {
-      const newState: any = [...stepState];
-      for (let i = 1; i < stepState.length; i++) {
-        const expanded2 = i === stepNumber && expanded ? true : false;
-        newState[i] = { ...newState[i], expanded: expanded2 };
-      }
-      saveState([...newState]);
-    };
-
-    //generic helper to mark step as done if there isn't a special purpose check
-    const helperStepDoneOrSkip = (stepNumber) => {
-      const newState: any = [...stepState];
-      for (let i = 1; i < stepState.length; i++) {
-        newState[i] = { ...newState[i], expanded: false };
-        if (i === stepNumber && i !== 2) {
-          newState[i] = { ...newState[i], status: TripStatusCode.ready };
-        }
-      }
-      saveState([...newState]);
-    };
-
-    return useMemo(() => {
-      return (
-        <>
-          {stepState ? (
-            <Grid item md={12}>
-              <TripStep
-                title="Step 1: Name your trip"
-                helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
-                additionalText="other"
-                expanded={stepState[1]?.expanded}
-                tripStepDetailsClassName={classes.activityRecordList}
-                stepStatus={stepState[1]?.status}
-                stepAccordionOnChange={(event, expanded) => {
-                  helperCloseOtherAccordions(expanded, 1);
-                }}
-                doneButtonCallBack={() => {
-                  helperStepDoneOrSkip(1);
-                }}>
-                <TripNamer trip_ID={props.trip_ID} />
-              </TripStep>
-              <TripStep
-                title="Step 2: Add a spatial boundary for your trip."
-                helpText="The 'spatial filter' to your search.  Put bounds around data you need to pack with you."
-                additionalText="other"
-                expanded={stepState[2].expanded}
-                tripStepDetailsClassName={classes.activityRecordList}
-                stepStatus={helperCheckForGeo()}
-                stepAccordionOnChange={(event, expanded) => {
-                  helperCloseOtherAccordions(expanded, 2);
-                }}
-                doneButtonCallBack={() => {
-                  helperStepDoneOrSkip(2);
-                }}>
-                <Paper className={classes.paper}>
-                  <Typography variant="body1">
-                    Draw a polygon or square on the map, or upload a KML containing 1 shape.
-                  </Typography>
-                  <KMLUpload />
-                </Paper>
-              </TripStep>
-              <TripStep
-                title="Step 3: Choose past field activity data."
-                helpText={`This is where you can cache past activities (observations etc.) to the app.  
-                If you want to search for records in a particular area, draw a polygon on the map.`}
-                additionalText="other"
-                expanded={stepState[3].expanded}
-                tripStepDetailsClassName={classes.activityRecordList}
-                stepStatus={stepState[3].status}
-                stepAccordionOnChange={(event, expanded) => {
-                  helperCloseOtherAccordions(expanded, 3);
-                }}
-                doneButtonCallBack={() => {
-                  helperStepDoneOrSkip(3);
-                }}>
-                <ActivityDataFilter trip_ID={props.trip_ID} />
-              </TripStep>
-              <TripStep
-                title="Step 4: Choose data from other systems, (IAPP)"
-                helpText={`This is where you can cache IAPP sites, and later other points of interest.  
-                If you want to search for records in a particular area, draw a polygon on the map.`}
-                additionalText="other"
-                expanded={stepState[4].expanded}
-                tripStepDetailsClassName={classes.pointOfInterestList}
-                stepStatus={stepState[4].status}
-                stepAccordionOnChange={(event, expanded) => {
-                  helperCloseOtherAccordions(expanded, 4);
-                }}
-                doneButtonCallBack={() => {
-                  helperStepDoneOrSkip(4);
-                }}>
-                <PointOfInterestDataFilter trip_ID={props.trip_ID} />
-              </TripStep>
-              <TripStep
-                title="OPTIONAL: Get data from a Metabase Question"
-                helpText="If you have a Metabase question that contains field activity ID's, you can load those records here."
-                additionalText="other"
-                expanded={stepState[5].expanded}
-                tripStepDetailsClassName={classes.pointOfInterestList}
-                stepStatus={stepState[5].status}
-                stepAccordionOnChange={(event, expanded) => {
-                  helperCloseOtherAccordions(expanded, 5);
-                }}
-                doneButtonCallBack={() => {
-                  helperStepDoneOrSkip(5);
-                }}>
-                <MetabaseSearch trip_ID={props.trip_ID} />
-              </TripStep>
-              <TripStep
-                title="Last Step: Cache, Refresh, or Delete data for Trip "
-                helpText="Cache the data and map data for the region you have selected, or refresh it, or delete."
-                additionalText="other"
-                expanded={stepState[6].expanded}
-                tripStepDetailsClassName={classes.pointOfInterestList}
-                stepStatus={stepState[6].status}
-                stepAccordionOnChange={(event, expanded) => {
-                  helperCloseOtherAccordions(expanded, 6);
-                }}
-                doneButtonCallBack={() => {
-                  helperStepDoneOrSkip(6);
-                }}>
-                <TripDataControls trip_ID={props.trip_ID} />
-              </TripStep>
-            </Grid>
-          ) : (
-            <>
-              test
-              {/*  <Spinner /> */}
-            </>
-          )}
-        </>
-      );
-    }, [JSON.stringify(stepState)]);
+  const trashTrip = async (trip_ID, tripName) => {
+    setNewTripID(Math.random()); //NOSONAR
   };
 
-  interface ITripStep {
-    expanded: boolean;
-    title: string;
-    helpText: string;
-    additionalText: string;
-    tripStepDetailsClassName: string;
-    stepStatus: TripStatusCode;
-    stepAccordionOnChange?: (event, expanded) => void;
-    doneButtonCallBack?: () => void;
-  }
-
-  const TripStep: React.FC<ITripStep> = (props) => {
-    return (
-      <Accordion defaultExpanded={props.expanded} expanded={props.expanded} onChange={props.stepAccordionOnChange}>
-        <AccordionSummary
-          className={classes.accordionSummary}
-          expandIcon={<ExpandMore fontSize="large" />}
-          aria-controls="panel-geo-record-picker-content"
-          id="panel-geo-record-picker-header">
-          <Grid alignContent="flex-start" justifyContent="space-between" container>
-            <Grid xs={2} className={classes.tripAccordionGridItem} item>
-              <Tooltip color="primary" title={props.helpText} arrow>
-                <HelpIcon fontSize="large" />
-              </Tooltip>
-            </Grid>
-            <Grid xs={6} item>
-              <Typography align="left" variant="h5">
-                {props.title}
-              </Typography>
-            </Grid>
-            <Grid xs={2} item>
-              <TripStepStatus statusCode={props.stepStatus} />
-            </Grid>
-          </Grid>
-        </AccordionSummary>
-        <AccordionDetails className={props.tripStepDetailsClassName}>
-          {props.children}
-          <Box m={2} alignSelf="center">
-            <Button variant="contained" color="primary" onClick={props.doneButtonCallBack}>
-              I'm done here.
-            </Button>
-          </Box>
-        </AccordionDetails>
-      </Accordion>
-    );
+  const helperMarkTripAsCurrent = async (trip_ID: any) => {
+    // await withAsyncQueue(
+    //   upsert(
+    //     [
+    //       {
+    //         type: UpsertType.RAW_SQL,
+    //         sql: 'UPDATE TRIP SET isCurrent = 0;'
+    //       }
+    //     ],
+    //     databaseContext
+    //   )
+    // );
+    // await withAsyncQueue(
+    //   upsert(
+    //     [
+    //       {
+    //         type: UpsertType.RAW_SQL,
+    //         sql: `UPDATE TRIP SET isCurrent = 1 WHERE ID=${trip_ID};`
+    //       }
+    //     ],
+    //     databaseContext
+    //   )
+    // );
+    setCurrentTripId(trip_ID);
   };
+
   const mapMemo = useMemo(() => {
     return (
       <Paper className={classes.paper}>
@@ -416,6 +271,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           classes={classes}
           showDrawControls={true}
           mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
+          isPlanPage={true}
           geometryState={{ geometry, setGeometry }}
           interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
           extentState={{ extent, setExtent }}
@@ -425,23 +281,27 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     );
   }, [geometry, interactiveGeometry, tripsLoaded]);
 
-  const trashTrip = async (trip_ID, tripName) => {
-    setNewTripID(Math.random()); //NOSONAR
-  };
-
   return (
     <Container className={props.classes.container}>
       {mapMemo}
       <Button onClick={addTrip} color="primary" variant="contained">
         Add Trip
       </Button>
-      {!tripsLoaded && <> spinner {/*<Spinner /> */}</>}
+      {!tripsLoaded && (
+        <>
+          <CircularProgress />
+        </>
+      )}
       {tripsLoaded && (
         <RecordTable
           className={classes.tripList}
           tableName={'My Trips'}
+          onToggleExpandRow={(row) => {
+            helperMarkTripAsCurrent(row.trip_ID);
+          }}
           keyField="trip_ID" // defaults to just use 'id'
-          //       startingOrder="survey_date" // defaults to first table column
+          // startingOrder="survey_date"
+          // defaults to first table column
           headers={[
             // each id is the key it will look for in each data row object
             {
@@ -472,9 +332,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
               : trips.map((row) => ({
                   ...row,
                   // custom map data before it goes to table:
-                  buttons: (
-                    row // can render a custom cell like this, to e.g. render custom buttons.  Will build these controls into the table too though
-                  ) => (
+                  buttons: (row) => (
+                    // can render a custom cell like this, to e.g. render custom buttons.  Will build these controls into the table too though
                     <IconButton>
                       <DeleteForever
                         onClick={() => {
@@ -486,9 +345,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 }))
           }
           dropdown={(row) => {
-            return <SingleTrip trip_ID={row.trip_ID} />;
-          }}
-        />
+            return <SingleTrip trip_ID={row.trip_ID} classes={classes} />;
+          }}></RecordTable>
       )}
     </Container>
   );

@@ -115,40 +115,53 @@ export const DatabaseContext2Provider = (props) => {
     let setupSQL = ``;
     for (const value of enumKeys(DocType)) {
       switch (value) {
+        case 'LAYER_DATA':
+          setupSQL += `create table if not exists  
+            ${DocType[value]} 
+             (
+              id INTEGER PRIMARY KEY,
+              featureArea TEXT,
+              featuresInArea TEXT,
+              layerName TEXT
+            );\n`;
+          break;
+        case 'TRIP':
+          setupSQL += `create table if not exists 
+            ${DocType[value]} 
+             (
+              id INTEGER PRIMARY KEY,
+              json TEXT,
+              isCurrent INTEGER
+            );\n`;
+          break;
         case 'REFERENCE_ACTIVITY':
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+          setupSQL += `create table if not exists 
+            ${DocType[value]} 
+             (
               id TEXT PRIMARY KEY,
               json TEXT,
               activity_subtype TEXT
             );\n`;
           break;
         case 'ACTIVITY':
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+          setupSQL += `create table if not exists  
+            ${DocType[value]}
+             (
               id TEXT PRIMARY KEY,
               json TEXT,
               activity_subtype TEXT
             );\n`;
           break;
         case 'REFERENCE_POINT_OF_INTEREST':
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+          setupSQL += `create table if not exists ${DocType[value]} 
+             (
               id TEXT PRIMARY KEY,
               json TEXT
             );\n`;
           break;
         default:
-          setupSQL +=
-            'create table if not exists ' +
-            DocType[value] +
-            ` (
+          setupSQL += `create table if not exists ${DocType[value]} 
+             (
               id INTEGER PRIMARY KEY,
               json TEXT
             );\n`;
@@ -158,7 +171,8 @@ export const DatabaseContext2Provider = (props) => {
     const isopen = await db.isDBOpen();
     ret = await db.execute(setupSQL);
     setDatabaseIsSetup(true);
-    const result = JSON.stringify(ret.changes);
+    console.log('database is setup...');
+    const result = '****************' + JSON.stringify(ret.changes);
 
     if (!ret.changes) {
       //console.log('closing database - no result');

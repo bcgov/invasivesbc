@@ -11,7 +11,8 @@ export enum DocType {
   SPATIAL_UPLOADS = 'spatial_uploads',
   OFFLINE_EXTENT = 'offline_extent',
   OFFLINE_DATA = 'offline_data',
-  PLAN_PAGE_EXTENT = 'plan_page_extent'
+  PLAN_PAGE_EXTENT = 'plan_page_extent',
+  LAYER_DATA = 'layer_data'
 }
 
 // max and default db page row limit

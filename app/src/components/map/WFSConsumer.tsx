@@ -37,13 +37,14 @@ const layerName = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
 const buildURLForDataBC = (layerName: string, geoJSON: Object, pageSize?: number, startIndex?: number) => {
   let baseURL =
     'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&outputFormat=json&typeName=pub:';
+  const paging = '&startindex=' + startIndex + '&count=' + pageSize;
   const projection = '&SRSNAME=EPSG:3005';
   const reprojected = reproject.reproject(geoJSON, proj4.WGS84, proj4('EPSG:3005'));
   const reprojectedAsWKT = wktConvert(reprojected);
   const customCQL = '&CQL_FILTER=WITHIN(GEOMETRY,' + reprojectedAsWKT + ')';
   const encodedCQL = encodeURI(customCQL);
   //return baseURL + layerName + projection + customCQL;
-  return baseURL + layerName + projection + encodedCQL;
+  return baseURL + layerName + paging + projection + encodedCQL;
 };
 
 /*
@@ -86,7 +87,6 @@ export const getDataFromDataBC: any = async (
   if (!pageSize && !startIndex) {
     console.log('no page provided');
     return returnVal;
-    /*
   } else {
     const subsequentFetches = async (startIndex: number) => {
       URL = buildURLForDataBC(layerName, geoJSON, pageSize, startIndex);
@@ -107,7 +107,6 @@ export const getDataFromDataBC: any = async (
       console.log(e);
     }
     return [];
-    */
   }
   /*
 
