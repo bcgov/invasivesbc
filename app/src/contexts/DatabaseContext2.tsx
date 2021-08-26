@@ -1,8 +1,8 @@
-import { JsonColumn, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { Capacitor } from '@capacitor/core';
 import { GeoJSONObject } from '@turf/turf';
 import { DocType } from 'constants/database';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PQueue from 'p-queue/dist';
 import { useSQLite } from 'react-sqlite-hook/dist';
 // Singleton SQLite Hook
@@ -168,19 +168,14 @@ export const DatabaseContext2Provider = (props) => {
       }
     }
 
-    const isopen = await db.isDBOpen();
+    await db.isDBOpen();
     ret = await db.execute(setupSQL);
     setDatabaseIsSetup(true);
     console.log('database is setup...');
-    const result = '****************' + JSON.stringify(ret.changes);
 
     if (!ret.changes) {
-      //console.log('closing database - no result');
-      //db.close();
       return false;
     } else {
-      //console.log('closing database with result');
-      //db.close();
       return true;
     }
   };
@@ -208,8 +203,6 @@ export const DatabaseContext2Provider = (props) => {
         </>
       );
     }
-
-    //while (!databaseIsSetup) {}
 
     return <>{props.children}</>;
   } catch (e) {
@@ -276,10 +269,10 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
 
   // workaround until we get json1 extension working:
   //TODO: change to return a count and share db like the other ones:
-  const patchSlowUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH);
+  const patchSlowUpserts = upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH);
   processSlowUpserts(patchSlowUpserts, databaseContext);
 
-  const docTypeAndIDUpserts = await upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID);
+  const docTypeAndIDUpserts = upsertConfigs.filter((e) => e.type == UpsertType.DOC_TYPE_AND_ID);
   if (docTypeAndIDUpserts.length >= 1) {
     batchUpdate = buildSQLStringDOC_TYPE_AND_ID(docTypeAndIDUpserts);
     ret = await handleExecute(batchUpdate, db);
@@ -292,7 +285,7 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
   }
 
   batchUpdate = '';
-  const everythingElse = await upsertConfigs.filter((e) => e.type != UpsertType.DOC_TYPE_AND_ID);
+  const everythingElse = upsertConfigs.filter((e) => e.type != UpsertType.DOC_TYPE_AND_ID);
   for (const upsertConfig of everythingElse) {
     if (Capacitor.getPlatform() != 'web') {
       // initialize the connection
@@ -365,10 +358,8 @@ const handleExecute = async (input: string, db: any) => {
   if (batchUpdate !== '') {
     ret = await db.execute(batchUpdate);
     if (!ret.changes) {
-      //db.close();
       return false;
     } else {
-      //db.close();
       return ret.changes.changes;
     }
   } else {
@@ -471,7 +462,6 @@ const processSlowUpserts = async (upsertConfigs: Array<IUpsert>, databaseContext
     if (batchUpdate != '') {
       ret = db.execute(batchUpdate);
     }
-    //db.close();
   }
 };
 
@@ -500,14 +490,8 @@ const getByDocTypeAndBoudingPoly = async (queryConfig: IQuery, db: any) => {
 };
 
 export const query = async (queryConfig: IQuery, databaseContext: any) => {
-  /*  while (!databaseContext.sqliteDB) {
-    await setTimeout(() => {
-      alert('...waiting');
-    }, 3000);
-  }*/
   try {
     if (!databaseContext.sqliteDB) {
-      //alert('db unavailable from context');
       return;
     }
   } catch (e) {
@@ -536,10 +520,8 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
         }
 
         if (!ret.values) {
-          //  db.close();
           return false;
         } else {
-          //  db.close();
           return ret.values;
         }
       case QueryType.DOC_TYPE:
@@ -547,24 +529,19 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
           'select * from ' + queryConfig.docType + (queryConfig.limit > 0 ? ' limit ' + queryConfig.limit + ';' : ';')
         );
         if (!ret.values) {
-          // db.close();
           return false;
         } else {
-          //db.close();
           return ret.values;
         }
       case QueryType.RAW_SQL:
         ret = await db.query(queryConfig.sql);
         if (!ret.values) {
-          //db.close();
           return false;
         } else {
-          // db.close();
           return ret.values;
         }
-        break;
       case QueryType.DOC_TYPE_AND_BOUNDING_POLY:
-        return await getByDocTypeAndBoudingPoly(queryConfig, db);
+        return getByDocTypeAndBoudingPoly(queryConfig, db);
       default:
         alert(
           'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
