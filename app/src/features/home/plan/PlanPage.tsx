@@ -130,7 +130,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   };
 
   useEffect(() => {
-    const upsertGeo = async () => {
+    const upsertCurrentTripGeo = async () => {
       const res = await withAsyncQueue(
         query(
           {
@@ -160,12 +160,12 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     };
 
     if (currentTripId) {
-      upsertGeo();
+      upsertCurrentTripGeo();
     }
   }, [geometry]);
 
   useEffect(() => {
-    const queryForGeo = async () => {
+    const queryForCurrentTripGeo = async () => {
       const res = await withAsyncQueue(
         query(
           {
@@ -180,7 +180,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         setGeometry(geoFromQuery);
       }
     };
-    queryForGeo();
+    queryForCurrentTripGeo();
   }, [currentTripId]);
 
   useEffect(() => {
@@ -237,32 +237,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     setNewTripID(Math.random()); //NOSONAR
   };
 
-  const helperMarkTripAsCurrent = async (trip_ID: any) => {
-    // await withAsyncQueue(
-    //   upsert(
-    //     [
-    //       {
-    //         type: UpsertType.RAW_SQL,
-    //         sql: 'UPDATE TRIP SET isCurrent = 0;'
-    //       }
-    //     ],
-    //     databaseContext
-    //   )
-    // );
-    // await withAsyncQueue(
-    //   upsert(
-    //     [
-    //       {
-    //         type: UpsertType.RAW_SQL,
-    //         sql: `UPDATE TRIP SET isCurrent = 1 WHERE ID=${trip_ID};`
-    //       }
-    //     ],
-    //     databaseContext
-    //   )
-    // );
-    setCurrentTripId(trip_ID);
-  };
-
   const mapMemo = useMemo(() => {
     return (
       <Paper className={classes.paper}>
@@ -297,7 +271,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           className={classes.tripList}
           tableName={'My Trips'}
           onToggleExpandRow={(row) => {
-            helperMarkTripAsCurrent(row.trip_ID);
+            setCurrentTripId(row.trip_ID);
           }}
           keyField="trip_ID" // defaults to just use 'id'
           // startingOrder="survey_date"

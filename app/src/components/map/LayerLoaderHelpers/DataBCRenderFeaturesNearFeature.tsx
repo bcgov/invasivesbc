@@ -1,6 +1,6 @@
 import buffer from '@turf/buffer';
 import { getDataFromDataBC } from 'components/map/WFSConsumer';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import { Feature } from 'geojson';
 import { Divider, makeStyles, Theme } from '@material-ui/core';
@@ -14,6 +14,11 @@ import L from 'leaflet';
 import WellIconClosest from '../Icons/well-closest.svg';
 import WellIconInside from '../Icons/well-inside.svg';
 import WellIconStandard from '../Icons/well-standard.svg';
+import { Capacitor } from '@capacitor/core';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
+import { DocType } from 'constants/database';
+import { forEach } from 'jszip';
 
 const wellIconSandard = new L.Icon({
   iconUrl: WellIconStandard,
@@ -81,7 +86,6 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     let nearestPointIndex = null;
     let minDistanceKm = null;
     let wellInside = false;
-
     arrayOfPoints.forEach((point) => {
       const turfPolygon = polygon((props.inputGeo.geometry as any).coordinates);
       const distanceKm = pointToLineDistance(point, polygonToLine(turfPolygon));
@@ -112,15 +116,42 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     return arrayOfPoints;
   };
 
+  const networkContext = useContext(NetworkContext);
+  const databaseContext = useContext(DatabaseContext2);
+
   //when new geos received, get well data and run labeling function
   useEffect(() => {
-    if (props.inputGeo) {
-      const bufferedGeo = buffer(props.inputGeo, props.proximityInMeters / 1000);
-      getDataFromDataBC(props.dataBCLayerName, bufferedGeo).then((returnVal) => {
-        setGeosWithClosest(getClosestPointToPolygon(returnVal));
-        setKeyval(Math.random()); //NOSONAR
-      }, []);
-    }
+    const getLayerData = async () => {
+      if (props.inputGeo) {
+        const bufferedGeo = buffer(props.inputGeo, props.proximityInMeters / 1000);
+        if (Capacitor.getPlatform() !== 'web' && !networkContext.connected) {
+          const res = await query(
+            {
+              type: QueryType.DOC_TYPE,
+              docType: DocType.LAYER_DATA
+            },
+            databaseContext
+          );
+          let allFeatures = [];
+          res.forEach((row) => {
+            const featureArea = JSON.parse(row.featureArea).geometry;
+            const featuresInArea = JSON.parse(row.featuresInArea);
+
+            if (turf.booleanContains(props.inputGeo, featureArea) || turf.booleanOverlap(props.inputGeo, featureArea)) {
+              allFeatures = allFeatures.concat(featuresInArea);
+            }
+          });
+          setGeosWithClosest(getClosestPointToPolygon(allFeatures));
+          setKeyval(Math.random()); //NOSONAR
+        } else {
+          getDataFromDataBC(props.dataBCLayerName, bufferedGeo).then((returnVal) => {
+            setGeosWithClosest(getClosestPointToPolygon(returnVal));
+            setKeyval(Math.random()); //NOSONAR
+          }, []);
+        }
+      }
+    };
+    getLayerData();
   }, [props.inputGeo]);
 
   return (
