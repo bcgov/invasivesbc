@@ -5,7 +5,6 @@
 select 
   activity_subtype,
   jsonb_array_elements(activity_payload -> 'species_positive') "species"
-  -- unnest(jsonb_array_to_text_array(activity_payload -> 'species_positive')) "species"
 from
   activity_incoming_data
 where
