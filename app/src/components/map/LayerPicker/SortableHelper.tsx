@@ -1,15 +1,6 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
+import React, { useState, useEffect, useContext } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Checkbox from '@material-ui/core/Checkbox';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 /* HelperFiles */
 import {
@@ -24,7 +15,6 @@ import {
   getChild,
   sortObject
 } from './LayerPickerHelper';
-import Grid from '@material-ui/core/Grid';
 import ColorPicker from 'material-ui-color-picker';
 import { TileLayer, useMap } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
@@ -32,15 +22,31 @@ import { MapRequestContext } from 'contexts/MapRequestsContext';
 // for confirming loaded layers
 import DoneIcon from '@material-ui/icons/Done';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import { IconButton } from '@material-ui/core';
 import LayersIcon from '@material-ui/icons/Layers';
-
-import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
+import {
+  Checkbox,
+  IconButton,
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Grid,
+  ListItemSecondaryAction,
+  ListItemIcon,
+  ListItem,
+  List,
+  CircularProgress,
+  AccordionSummary,
+  Accordion,
+  makeStyles,
+  Popover
+} from '@material-ui/core';
 import IMapContainerProps from '../MapContainer2';
 import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
 import { GeoJSON } from 'react-leaflet';
 import TempPOILoader from '../LayerLoaderHelpers/TempPOILoader';
 import { ThemeContext } from 'contexts/themeContext';
+import { toolStyles } from '../Tools/ToolBtnStyles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -73,29 +79,12 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     position: 'relative'
-  },
-  iconButton: {
-    margin: '5px',
-    background: 'white',
-    borderRadius: '4px',
-    position: 'relative',
-    '&:hover': {
-      background: 'white'
-    }
-  },
-  iconButtonDark: {
-    margin: '5px',
-    background: '#424242',
-    borderRadius: '4px',
-    position: 'relative',
-    '&:hover': {
-      background: '#424242'
-    }
   }
 }));
 
 export function LayerPicker(props: any) {
   const classes = useStyles();
+  const toolClass = toolStyles();
   const mapLayersContext = useContext(MapRequestContext);
   const timeLeft = WithCounter();
   const map = useMap();
@@ -105,6 +94,9 @@ export function LayerPicker(props: any) {
   const [menuState, setMenuState] = useState(false);
   const [checked, setChecked] = useState(false);
   const [radio, setRadio] = useState('default');
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
@@ -263,19 +255,34 @@ export function LayerPicker(props: any) {
   const handleRadioChange = (event) => {
     setRadio(event.target.value);
   };
-  const toggleMenu = (event) => {
-    event.preventDefault();
-    setMenuState(!menuState);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
     <div style={{ zIndex: 1000 }}>
-      <IconButton className={themeContext.themeType ? classes.iconButtonDark : classes.iconButton} onClick={toggleMenu}>
+      <IconButton
+        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+        onClick={handleClick}>
         <LayersIcon />
       </IconButton>
-      {menuState ? (
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}>
         <div
-          className={classes.root}
           onTouchStart={() => {
             map.dragging.disable();
             map.doubleClickZoom.disable();
@@ -329,7 +336,7 @@ export function LayerPicker(props: any) {
             lockAxis="y"
           />
         </div>
-      ) : null}
+      </Popover>
       {checked ? (
         <>
           {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>*/}

@@ -39,22 +39,14 @@ import { debounced } from 'utils/FunctionUtils';
 import { createPolygonFromBounds } from './LayerLoaderHelpers/LtlngBoundsToPoly';
 import { MapRequestContextProvider, MapRequestContext } from 'contexts/MapRequestsContext';
 import MeasureTool from './Tools/MeasureTool';
-import { makeStyles, Theme } from '@material-ui/core';
 import EditTools from './Tools/EditTools';
 import { RenderKeyFeaturesNearFeature } from './LayerLoaderHelpers/DataBCRenderFeaturesNearFeature';
+import { toolStyles } from './Tools/ToolBtnStyles';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow
 });
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: 'relative',
-    height: '100%',
-    width: '100%'
-  }
-}));
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -150,6 +142,7 @@ const interactiveGeometryStyle = () => {
 const MapContainer2: React.FC<IMapContainerProps> = (props) => {
   const databaseContext = useContext(DatabaseContext);
   const [map, setMap] = useState<any>(null);
+  const toolClass = toolStyles();
 
   const Offline = () => {
     const mapOffline = useMap();
@@ -254,14 +247,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       whenCreated={setMap}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <MapRequestContextProvider>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'flex-end',
-            flexFlow: 'column wrap',
-            height: '45vh'
-          }}>
+        <div className={toolClass.toolBtnsLoc}>
           <LayerPicker data={data} />
           <DisplayPosition map={map} />
           <MeasureTool />
@@ -275,7 +261,7 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
         {/* Here is the offline component */}
         <Offline />
 
-        <ZoomControl position="bottomleft" />
+        <ZoomControl position="bottomright" />
 
         {/* Here are the editing tools */}
 
