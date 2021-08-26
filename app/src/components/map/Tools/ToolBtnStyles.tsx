@@ -6,7 +6,7 @@ export const toolStyles = makeStyles((theme) => ({
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
     flexFlow: 'column wrap',
-    height: '40vh'
+    height: '35vh'
   },
   toolBtnLight: {
     height: 43,
