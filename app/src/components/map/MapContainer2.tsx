@@ -245,7 +245,8 @@ const MapContainer2: React.FC<IMapContainerProps> = (props) => {
       zoom={5}
       style={{ height: '100%', width: '100%' }}
       zoomControl={false}
-      whenCreated={setMap}>
+      whenCreated={setMap}
+      tap={false}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <MapRequestContextProvider>
         <div className={toolClass.toolBtnsLoc}>

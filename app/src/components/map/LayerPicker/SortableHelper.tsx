@@ -91,7 +91,6 @@ export function LayerPicker(props: any) {
   const themeContext = useContext(ThemeContext);
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
-  const [menuState, setMenuState] = useState(false);
   const [checked, setChecked] = useState(false);
   const [radio, setRadio] = useState('default');
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
