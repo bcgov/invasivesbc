@@ -12,8 +12,6 @@ import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
 import MapContainer from 'components/map/MapContainer';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { FeatureCollection, featureCollection } from '@turf/turf';
 
 const GEO_UPDATE_MIN_INTERVAL = 60000; // 60s
 
@@ -57,10 +55,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface IMapProps {
   classes?: any;
 }
-
-const PointOfInterestPopUp = (name: string) => {
-  return '<div>' + name + '</div>';
-};
 
 interface popOutComponentProps {
   classes?: any;
@@ -123,7 +117,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
   // don't load the map until interactive geos ready
   useEffect(() => {
-    //const didInteractiveGeosLoad = interactiveGeometry ? true : false;
     const didInteractiveGeosLoad = true;
     setIsReadyToLoadMap(didInteractiveGeosLoad);
   }, [databaseChangesContext, interactiveGeometry]);
@@ -141,16 +134,12 @@ const MapPage: React.FC<IMapProps> = (props) => {
   };
 
   const getActivityData = useCallback(async () => {
-    // const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
     let appStateResults; // = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
     if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
       return;
     }
 
-    /*const activityResults = await databaseContext.database.find({
-      selector: { _id: appStateResults.docs[0].activeActivity }
-    });*/
     const activityResults = null;
 
     if (activityResults && activityResults?.docs[0]) {
@@ -159,8 +148,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
     }
   }, [databaseContext.database]);
 
-  const da = useDataAccess();
-  let poiInteractiveGeos;
   const getEverythingWithAGeo = useCallback(async () => {
     const now = moment().valueOf();
     if (geoUpdateTimestamp !== null && now < geoUpdateTimestamp + GEO_UPDATE_MIN_INTERVAL) {
@@ -179,11 +166,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
     updateComponent();
   }, [databaseChangesContext, showPopOut, getEverythingWithAGeo]);
-
-  // useEffect(() => {
-  //   console.log('chosen geo');
-  //   console.dir(selectedInteractiveGeometry);
-  // }, [selectedInteractiveGeometry]);
 
   useEffect(() => {
     getActivityData();
