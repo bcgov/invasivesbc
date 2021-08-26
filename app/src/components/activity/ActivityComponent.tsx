@@ -12,6 +12,7 @@ import { Feature } from 'geojson';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import { useHistory } from 'react-router-dom';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
+import 'gridfix.css';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
