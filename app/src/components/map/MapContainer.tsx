@@ -282,13 +282,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         </LayersControl>
       </MapRequestContextProvider>
       {props.geometryState.geometry ? (
-        // <RenderKeyFeaturesNearFeature
-        //   inputGeo={props.geometryState?.geometry[0]}
-        //   dataBCLayerName="WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW"
-        //   proximityInMeters={550}
-        //   setWellIdandProximity={props.setWellIdandProximity}
-        // />
-        <></>
+        <>
+          <RenderKeyFeaturesNearFeature
+            inputGeo={props.geometryState?.geometry[0]}
+            dataBCLayerName="WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW"
+            proximityInMeters={550}
+            setWellIdandProximity={props.setWellIdandProximity}
+          />
+          <></>
+        </>
       ) : (
         <></>
       )}
