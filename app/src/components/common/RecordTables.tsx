@@ -5,6 +5,10 @@ import {
   ActivitySubtype,
   ActivitySubtypeShortLabels,
   ActivitySyncStatus,
+<<<<<<< HEAD
+=======
+  ActivityType,
+>>>>>>> 2dbf4fc (wip open cached record)
   FormValidationStatus,
   ReviewStatus
 } from 'constants/activities';
@@ -14,7 +18,16 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import moment from 'moment';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
+<<<<<<< HEAD
 import { sanitizeRecord, generateDBActivityPayload, getShortActivityID } from 'utils/addActivity';
+=======
+import {
+  addLinkedActivityToDB,
+  generateDBActivityPayload,
+  getShortActivityID,
+  sanitizeRecord
+} from 'utils/addActivity';
+>>>>>>> 2dbf4fc (wip open cached record)
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);
@@ -293,6 +306,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startExpanded
         headers={activitesDefaultHeaders}
         rows={rows}
+<<<<<<< HEAD
         actions={
           actions === false
             ? false
@@ -307,6 +321,22 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     const selectedIds = allSelectedRows.map((row) => row[keyField]);
                     if (selectedIds.length === 1) {
                       await dataAccess.setAppState({ activeActivity: selectedIds[0] }, databaseContext);
+=======
+        actions={{
+          ...actions,
+          edit: {
+            // NOTE: this might be a good candidate to be broken out to a parent class
+            // since it breaks generality of this multi-purpose table
+            key: 'edit',
+            enabled: enableSelection !== false,
+            action: async (allSelectedRows) => {
+              const selectedIds = allSelectedRows.map((row) => row[keyField]);
+              if (selectedIds.length === 1) {
+                await dataAccess.setAppState(
+                  { activeActivity: selectedIds[0], isReferenceActivity: true },
+                  databaseContext
+                );
+>>>>>>> 2dbf4fc (wip open cached record)
 
                       // TODO switch by activity type, I guess...
                       history.push({ pathname: `/home/activity` });
@@ -580,6 +610,7 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 
 export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
+
   const { tableSchemaType, ...otherProps } = props;
   return (
     <ActivitiesTable

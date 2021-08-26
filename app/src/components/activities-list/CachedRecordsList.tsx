@@ -1,22 +1,22 @@
-import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } from '@material-ui/core';
+import { Box, Button, Container, List, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
-import { DatabaseContext } from '../../contexts/DatabaseContext';
-import React, { useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
-import { ICreateMetabaseQuery } from '../../interfaces/useInvasivesApi-interfaces';
-import { notifySuccess, notifyError } from '../../utils/NotificationUtils';
-import MapContainer, { getZIndex } from '../map/MapContainer';
-import { Feature } from 'geojson';
-import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
 import {
-  ObservationsTable,
-  TreatmentsTable,
   MonitoringTable,
-  PointsOfInterestTable
-} from '../../components/common/RecordTables';
-import { useDataAccess } from '../../hooks/useDataAccess';
-import { DatabaseContext2 } from '../../contexts/DatabaseContext2';
+  ObservationsTable,
+  PointsOfInterestTable,
+  TreatmentsTable
+} from 'components/common/RecordTables';
+import MapContainer, { getZIndex } from 'components/map/MapContainer';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+import { MapContextMenuData } from 'features/home/map/MapContextMenu';
+import { Feature } from 'geojson';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { ICreateMetabaseQuery } from 'interfaces/useInvasivesApi-interfaces';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { notifyError, notifySuccess } from 'utils/NotificationUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},

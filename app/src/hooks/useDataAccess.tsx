@@ -73,7 +73,8 @@ export const useDataAccess = () => {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
     },
-    forceCache?: boolean
+    forceCache?: boolean,
+    referenceActivity = false
   ): Promise<any> => {
     const networkStatus = await Network.getStatus();
     if (Capacitor.getPlatform() === 'web') {
@@ -83,6 +84,8 @@ export const useDataAccess = () => {
         const dbcontext = context;
         return dbcontext.asyncQueue({
           asyncTask: async () => {
+            console.log('is reference activity', referenceActivity);
+            const docType = referenceActivity ? DocType.REFERENCE_ACTIVITY : DocType.ACTIVITY;
             const res = await query(
               {
                 type: QueryType.DOC_TYPE_AND_ID,

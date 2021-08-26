@@ -54,6 +54,7 @@ import { useDataAccess } from '../../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
 import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
+import { DocType } from 'constants/database';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -88,6 +89,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isFromCachedRecordsPage, setIsFromCachedRecordsPage] = useState();
   const [linkedActivity, setLinkedActivity] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
@@ -382,10 +384,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         databaseContext
       );
     } else {
+      console.log('is reference acivity: ', appStateResults.isReferenceActivity);
       activityResults = await dataAccess.getActivityById(
         activityId || (appStateResults.activeActivity as string),
         databaseContext,
-        true
+        true,
+        appStateResults.isReferenceActivity ? true : false
       );
     }
     return mapDBActivityToDoc(activityResults);
@@ -605,7 +609,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    saveGeometry(geometry);
+    if (doc.docType !== DocType.REFERENCE_ACTIVITY) {
+      saveGeometry(geometry);
+    }
   }, [geometry, isLoading, saveGeometry]);
 
   useEffect(() => {
