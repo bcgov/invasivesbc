@@ -34,6 +34,7 @@ import invbclogo from '../../InvasivesBC_Icon.svg';
 import MenuIcon from '@material-ui/icons/Menu';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 const drawerWidth = 240;
 
@@ -182,6 +183,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;
+  const networkContext = useContext(NetworkContext);
+  const { connected, setConnected } = networkContext;
 
   useEffect(() => {
     setActiveTab((activeTabNumber) => getActiveTab(activeTabNumber));
@@ -362,6 +365,26 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               label="Theme Mode"
             />
           </Grid>
+          {Capacitor.getPlatform() !== 'web' ? (
+            <Grid container justifyContent="center" alignItems="center">
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={connected}
+                    checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    onChange={() => {
+                      console.log('on click');
+                      console.dir(connected);
+                      setConnected(!connected);
+                    }}
+                  />
+                }
+                label="Network Mode"
+              />
+            </Grid>
+          ) : (
+            <></>
+          )}
         </Drawer>
       </Hidden>
     </>
