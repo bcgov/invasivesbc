@@ -365,22 +365,26 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               label="Theme Mode"
             />
           </Grid>
-          <Grid container justifyContent="center" alignItems="center">
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={connected}
-                  checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
-                  onChange={() => {
-                    console.log('on click');
-                    console.dir(connected);
-                    setConnected(!connected);
-                  }}
-                />
-              }
-              label="Network Mode"
-            />
-          </Grid>
+          {Capacitor.getPlatform() !== 'web' ? (
+            <Grid container justifyContent="center" alignItems="center">
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={connected}
+                    checkedIcon={connected ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    onChange={() => {
+                      console.log('on click');
+                      console.dir(connected);
+                      setConnected(!connected);
+                    }}
+                  />
+                }
+                label="Network Mode"
+              />
+            </Grid>
+          ) : (
+            <></>
+          )}
         </Drawer>
       </Hidden>
     </>

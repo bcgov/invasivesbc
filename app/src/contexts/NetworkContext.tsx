@@ -10,7 +10,7 @@ export const NetworkContext = React.createContext<INetworkContext>({
 });
 
 export const NetworkContextProvider: React.FC = (props) => {
-  const [connected, setConnected] = React.useState(false);
+  const [connected, setConnected] = React.useState(true);
 
   return <NetworkContext.Provider value={{ connected, setConnected }}>{props.children}</NetworkContext.Provider>;
 };
