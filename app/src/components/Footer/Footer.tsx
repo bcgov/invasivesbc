@@ -30,9 +30,9 @@ const Footer: React.FC<IFooterProps> = () => {
     }
 
     const connectionStatus = (networkContext.connected && 'Online') || 'Offline';
-    const connectionStatusString = `${connectionStatus} (type: ${networkContext.connectionType})`;
+    //const connectionStatusString = `${connectionStatus} (type: ${networkContext.connectionType})`;
 
-    setNetworkStatusString(connectionStatusString);
+    setNetworkStatusString(connectionStatus);
   }, [networkContext]);
 
   return (
