@@ -8,7 +8,8 @@ export enum ActivityType {
   Dispersal = 'Dispersal',
   Transect = 'Transect',
   Treatment = 'Treatment',
-  Monitoring = 'Monitoring'
+  Monitoring = 'Monitoring',
+  FREP = 'FREP'
 }
 
 export enum ActivitySubtype {
@@ -36,7 +37,10 @@ export enum ActivitySubtype {
   Transect_Vegetation = 'Activity_Transect_Vegetation',
   Transect_BiocontrolEfficacy = 'Activity_Transect_BiocontrolEfficacy',
 
-  Collection_Biocontrol = 'Activity_Collection_Biocontrol'
+  Collection_Biocontrol = 'Activity_Collection_Biocontrol',
+  Activity_FREP_FormA = 'Activity_FREP_FormA',
+  Activity_FREP_FormB = 'Activity_FREP_FormB',
+  Activity_FREP_FormC = 'Activity_FREP_FormC'
 }
 
 export enum ActivitySubtypeShortLabels {
@@ -68,7 +72,12 @@ export enum ActivitySubtypeShortLabels {
   Activity_Transect_BiocontrolEfficacy = 'Biocontrol Efficacy Transect',
 
   // Collections:
-  Activity_Collection_Biocontrol = 'Biocontrol Collection'
+  Activity_Collection_Biocontrol = 'Biocontrol Collection',
+
+  // FREP
+  Activity_FREP_FormA = 'Form A',
+  Activity_FREP_FormB = 'Form B',
+  Activity_FREP_FormC = 'Form C'
 }
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
@@ -78,7 +87,8 @@ export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
   [ActivityType.Treatment]: Build,
   [ActivityType.Monitoring]: Visibility,
   [ActivityType.Dispersal]: Visibility,
-  [ActivityType.Collection]: Assignment
+  [ActivityType.Collection]: Assignment,
+  [ActivityType.FREP]: Visibility
 };
 
 export enum ActivityLetter {

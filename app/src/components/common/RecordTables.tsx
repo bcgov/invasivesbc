@@ -2,8 +2,11 @@ import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@material-ui/
 import { useKeycloak } from '@react-keycloak/web';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import {
-  ActivitySubtype, ActivitySubtypeShortLabels,
-  ActivitySyncStatus, ActivityType, FormValidationStatus,
+  ActivitySubtype,
+  ActivitySubtypeShortLabels,
+  ActivitySyncStatus,
+  ActivityType,
+  FormValidationStatus,
   ReviewStatus
 } from 'constants/activities';
 import { DEFAULT_PAGE_SIZE, DocType } from 'constants/database';
@@ -15,7 +18,8 @@ import { useHistory } from 'react-router-dom';
 import {
   addLinkedActivityToDB,
   generateDBActivityPayload,
-  getShortActivityID, sanitizeRecord
+  getShortActivityID,
+  sanitizeRecord
 } from 'utils/addActivity';
 
 export const activityStandardMapping = (doc) => {
@@ -572,22 +576,31 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   }, [headers?.length]);
 };
 
-export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+export const FREPActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const { tableSchemaType, ...otherProps } = props;
   return (
     <ActivitiesTable
-      tableName="Animal Activities"
-      activitySubtypes={[ActivitySubtype.Activity_AnimalTerrestrial, ActivitySubtype.Activity_AnimalAquatic]}
-      tableSchemaType={[
-        'Observation',
-        'Activity_AnimalTerrestrial',
-        'Activity_AnimalAquatic',
-        ...arrayWrap(tableSchemaType)
-      ]}
+      tableName="FREP Forms"
+      activitySubtypes={[ActivitySubtype.Activity_FREP_FormC]}
+      tableSchemaType={['Observation', 'FREP_FormC', ...arrayWrap(tableSchemaType)]}
       {...otherProps}
     />
   );
+};
+
+export const MyFREPTable: React.FC<IActivitiesTable> = (props) => {
+  const { tableSchemaType, ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <MyActivitiesTable
+        tableName="FREP Forms"
+        activitySubtypes={[ActivitySubtype.Activity_FREP_FormC]}
+        tableSchemaType={['Observation', 'FREP_FormC', ...arrayWrap(tableSchemaType)]}
+        {...otherProps}
+      />
+    );
+  }, []);
 };
 
 export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
@@ -595,7 +608,7 @@ export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <MyActivitiesTable
-        tableName="Animal Activities"
+        tableName="FREP Forms"
         activitySubtypes={[ActivitySubtype.Activity_AnimalTerrestrial, ActivitySubtype.Activity_AnimalAquatic]}
         tableSchemaType={[
           'Observation',

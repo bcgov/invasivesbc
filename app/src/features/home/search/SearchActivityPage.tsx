@@ -25,7 +25,8 @@ import {
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
   getJurisdictionPercentValidator,
-  getDuplicateInvasivePlantsValidator
+  getDuplicateInvasivePlantsValidator,
+  getPlotIdentificatiomTreesValidator
 } from 'rjsf/business-rules/customValidation';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 
@@ -214,7 +215,8 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
           getDuplicateInvasivePlantsValidator(activity.activitySubtype),
           getHerbicideApplicationRateValidator(),
           getTransectOffsetDistanceValidator(),
-          getJurisdictionPercentValidator()
+          getJurisdictionPercentValidator(),
+          getPlotIdentificatiomTreesValidator(activity.activitySubtype)
         ])}
         classes={classes}
         activity={activity}

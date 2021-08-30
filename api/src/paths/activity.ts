@@ -121,7 +121,8 @@ const post_put_apiDoc = {
                         { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
                         { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
                         { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
-                        { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
+                        { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' },
+                        { $ref: '#/components/schemas/Activity_FREP_FormC' }
                       ]
                     },
                     created_by: {

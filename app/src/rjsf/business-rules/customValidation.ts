@@ -566,3 +566,45 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
     return errors;
   };
 }
+
+/* 
+  function to validate frep form a BAF, fixed_area and full_count_area fields
+ */
+export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    console.log(formData);
+    if (!formData || !formData.activity_subtype_data) {
+      return errors;
+    }
+    let form_b_index = 0;
+    // For each form b
+    if (formData.activity_subtype_data.form_b) {
+      formData.activity_subtype_data.form_b.forEach((formB: any) => {
+        // For each form a
+        let form_a_index = 0;
+        if (formB.form_a) {
+          formB.form_a.forEach((formA: any) => {
+            // Check if plot identification trees section is valid
+            if (formA.plot_identification_trees) {
+              let form = formA.plot_identification_trees;
+              console.log('form[' + form_b_index + '][' + form_a_index + ']: ', form);
+              errors.activity_subtype_data['form_b'][form_b_index].form_a[
+                form_a_index
+              ].plot_identification_trees.__errors = [];
+              if (form.trees_exist == 'Yes' && !form.baf && !form.fixed_area && !form.full_count_area) {
+                errors.activity_subtype_data['form_b'][form_b_index].form_a[
+                  form_a_index
+                ].plot_identification_trees.addError(
+                  'Please fill out at least one of BAF, Fixed Area Radius (m) or Full Count Area (ha).'
+                );
+              }
+            }
+            form_a_index++;
+          });
+        }
+        form_b_index++;
+      });
+    }
+    return errors;
+  };
+}

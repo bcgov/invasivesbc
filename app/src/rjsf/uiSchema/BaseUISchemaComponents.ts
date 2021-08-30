@@ -1209,6 +1209,183 @@ const Monitoring_BiologicalTerrestrialPlant = {
   biological_agent_spread: {}
 };
 
+const FREP = {
+  observation_type_code: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  observation_persons: {
+    items: {
+      ...Persons
+    }
+  }
+};
+
+const FREP_Stand_Table = {
+  ...ThreeColumnStyle,
+  tree_num: {},
+  species: { 'ui:widget': 'single-select-autocomplete' },
+  wt_class: { 'ui:widget': 'single-select-autocomplete' },
+  dbh: {},
+  ht: {}
+};
+
+const FREP_Log = {
+  ...ThreeColumnStyle,
+  log_num: {},
+  species: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  decay_class: {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  diameter: {},
+  length: {}
+};
+
+const FREP_FormA = {
+  plot_identification: {
+    ...ThreeColumnStyle,
+    date: {},
+    opening_id: {},
+    assessed_by: {},
+    plot_number: {},
+    stratum_id: { 'ui:widget': 'single-select-autocomplete' },
+    stratum_number: { 'ui:widget': 'single-select-autocomplete' },
+    stratum_type: { 'ui:widget': 'single-select-autocomplete' },
+    utm_zone: {},
+    easting: {},
+    northing: {}
+  },
+  plot_identification_trees: {
+    ...ThreeColumnStyle,
+    trees_exist: {},
+    baf: {},
+    fixed_area: {},
+    full_count_area: {}
+  },
+  stand_table: { items: { ...FREP_Stand_Table } },
+  tree_comments: {},
+  plot_information: {
+    cwd_in_transect: {},
+    first_leg: {},
+    second_leg: {},
+    log: { items: { ...FREP_Log } },
+    log_comments: {}
+  }
+};
+
+const FREP_FormB = {
+  stratum_summary: {
+    ...ThreeColumnStyle,
+    date: {},
+    opening_id: {},
+    assessed_by: {},
+    stratum_id: { 'ui:widget': 'single-select-autocomplete' },
+    stratum_number: { 'ui:widget': 'single-select-autocomplete' },
+    stratum_type: { 'ui:widget': 'single-select-autocomplete' },
+    num_plots_stratum: {},
+    mapped_stratum_size: {},
+    bec_zone: { 'ui:widget': 'single-select-autocomplete' },
+    subzone: { 'ui:widget': 'single-select-autocomplete' },
+    variant: { 'ui:widget': 'single-select-autocomplete' },
+    site_series: { 'ui:widget': 'single-select-autocomplete' },
+    stratum_location_consistent: { 'ui:widget': 'single-select-autocomplete' },
+    estimated_size: {}
+  },
+  dispersed_summary: {
+    ...ThreeColumnStyle,
+    estimated_age_of_oldest_trees: {},
+    patch_location: { 'ui:widget': 'single-select-autocomplete' },
+    percent_trees_windthrown: { 'ui:widget': 'single-select-autocomplete' },
+    windthrow_distribution: { 'ui:widget': 'single-select-autocomplete' },
+    windthrow_treatment: { 'ui:widget': 'single-select-autocomplete' }
+  },
+  reserve_constraints: {
+    ...ThreeColumnStyle,
+    reserve_constraints_none: { 'ui:widget': 'single-select-autocomplete' },
+    wetsite: { 'ui:widget': 'single-select-autocomplete' },
+    rmz: { 'ui:widget': 'single-select-autocomplete' },
+    rrz: { 'ui:widget': 'single-select-autocomplete' },
+    rock_outcrop: { 'ui:widget': 'single-select-autocomplete' },
+    noncommerical_brush: { 'ui:widget': 'single-select-autocomplete' },
+    low_mercantile_timber: { 'ui:widget': 'single-select-autocomplete' },
+    sensitive_terrain: { 'ui:widget': 'single-select-autocomplete' },
+    uwr_wha_whf: { 'ui:widget': 'single-select-autocomplete' },
+    ogma: { 'ui:widget': 'single-select-autocomplete' },
+    visuals: { 'ui:widget': 'single-select-autocomplete' },
+    cultural_heritage_feature: { 'ui:widget': 'single-select-autocomplete' },
+    recration_feature: { 'ui:widget': 'single-select-autocomplete' },
+    other: {},
+    comments: {}
+  },
+  ecological_anchors: {
+    ...ThreeColumnStyle,
+    ecological_anchors_none: { 'ui:widget': 'single-select-autocomplete' },
+    bear_den: {},
+    hibernaculum: {},
+    vet_trees: { 'ui:widget': 'single-select-autocomplete' },
+    mineral_lick: {},
+    large_stick_nest: {},
+    cavity_nest: {},
+    large_hollow_tree: {},
+    large_witches_broom: {},
+    karst_feature: { 'ui:widget': 'single-select-autocomplete' },
+    large_tree_for_site: { 'ui:widget': 'single-select-autocomplete' },
+    cwd_heavy_concentration: { 'ui:widget': 'single-select-autocomplete' },
+    active_wildlife_trails: { 'ui:widget': 'single-select-autocomplete' },
+    active_wlt_cwd_feeding: { 'ui:widget': 'single-select-autocomplete' },
+    uncommon_tree_species: { 'ui:widget': 'single-select-autocomplete' },
+    ecological_anchors_other: {},
+    ecological_anchors_comments: {}
+  },
+  form_a: {
+    items: {
+      ...FREP_FormA
+    }
+  }
+};
+
+const FREP_FormC = {
+  opening_identification: {
+    ...ThreeColumnStyle,
+    opening_number: {},
+    opening_id: {},
+    license_number: {},
+    cp_number: {},
+    block: {},
+    license: {},
+    district_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    location_description: {},
+    nar: {},
+    gross_area: {},
+    override_code: {
+      'ui:widget': 'single-select-autocomplete'
+    }
+  },
+  innovative_practices: {
+    innovative_practices: {}
+  },
+  invasive_plants: {
+    invasive_code: {
+      'ui:widget': 'single-select-autocomplete'
+    }
+  },
+  evaluator_opinion: {
+    ...TwoColumnStyle,
+    evaluator_opinion_code: {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    rationale: {}
+  },
+  form_b: {
+    items: {
+      ...FREP_FormB
+    }
+  }
+};
+
 /*
   Export
 */
@@ -1239,7 +1416,13 @@ const BaseUISchemaComponents = {
   OneColumnStyle,
   TwoColumnStyle,
   Jurisdictions,
-  Weather_Conditions
+  Weather_Conditions,
+  FREP,
+  FREP_FormA,
+  FREP_FormB,
+  FREP_FormC,
+  FREP_Log,
+  FREP_Stand_Table
 };
 
 export default BaseUISchemaComponents;

@@ -22,6 +22,7 @@ import ActivityListDate from './ActivityListDate';
 import {
   MyAdditionalBiocontrolActivitiesTable,
   MyAnimalActivitiesTable,
+  MyFREPTable,
   MyMonitoringTable,
   MyObservationsTable,
   MyPastActivitiesTable,
@@ -275,6 +276,7 @@ const ActivitiesList: React.FC = () => {
             <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Form Type">
               <MenuItem value="Plant">Plant</MenuItem>
               <MenuItem value="Animal">Animal</MenuItem>
+              <MenuItem value="FREP">FREP</MenuItem>
               <MenuItem value="Review">Review</MenuItem>
               <MenuItem value="Past Activities">Past Activities</MenuItem>
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
@@ -299,6 +301,11 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Review' && (
             <Box>
               <ReviewActivitiesTable />
+            </Box>
+          )}
+          {workflowFunction === 'FREP' && (
+            <Box>
+              <MyFREPTable />
             </Box>
           )}
           {workflowFunction === 'Past Activities' && (
