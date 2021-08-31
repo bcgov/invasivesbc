@@ -160,6 +160,13 @@ export function LayerPicker(props: any) {
     return radio === 'other' ? <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null;
   }
 
+  const RenderLayers = (props) => {
+    // loop over all layers in config / layer picker state
+    // return each layer with the right props / layer mode
+    // return layers in right order
+    return <></>;
+  };
+
   //update context on ObjectState change
   useEffect(() => {
     setLayersSelected(objectState);
@@ -262,87 +269,90 @@ export function LayerPicker(props: any) {
   };
 
   return (
-    <div style={{ zIndex: 1000 }}>
-      <IconButton
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        onClick={handleClick}>
-        <LayersIcon />
-      </IconButton>
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}>
-        <div
-          onTouchStart={() => {
-            map.dragging.disable();
-            map.doubleClickZoom.disable();
+    <>
+      <div style={{ zIndex: 1000 }}>
+        <IconButton
+          className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+          onClick={handleClick}>
+          <LayersIcon />
+        </IconButton>
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left'
           }}
-          onTouchMove={() => {
-            map.dragging.disable();
-            map.doubleClickZoom.disable();
-          }}
-          onTouchEnd={() => {
-            map.dragging.disable();
-            map.doubleClickZoom.disable();
-          }}
-          onMouseOver={() => {
-            if (Capacitor.getPlatform() == 'web') {
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}>
+          <div
+            onTouchStart={() => {
               map.dragging.disable();
               map.doubleClickZoom.disable();
-            }
-          }}
-          onMouseOut={() => {
-            if (Capacitor.getPlatform() == 'web') {
-              map.dragging.enable();
-              map.doubleClickZoom.enable();
-            }
-          }}>
-          <FormControl
-            style={{
-              display: 'flex',
-              marginLeft: '10px'
+            }}
+            onTouchMove={() => {
+              map.dragging.disable();
+              map.doubleClickZoom.disable();
+            }}
+            onTouchEnd={() => {
+              map.dragging.disable();
+              map.doubleClickZoom.disable();
+            }}
+            onMouseOver={() => {
+              if (Capacitor.getPlatform() == 'web') {
+                map.dragging.disable();
+                map.doubleClickZoom.disable();
+              }
+            }}
+            onMouseOut={() => {
+              if (Capacitor.getPlatform() == 'web') {
+                map.dragging.enable();
+                map.doubleClickZoom.enable();
+              }
             }}>
-            <RadioGroup row value={radio} onChange={handleRadioChange}>
-              <FormControlLabel value="default" control={<Radio />} label="default" />
-              {getSateliteMap(radio)}
-              <FormControlLabel value="other" control={<Radio />} label="other" />
-              {getOpenStreetMap(radio)}
-            </RadioGroup>
-          </FormControl>
-          <FormControl
-            style={{
-              display: 'flex',
-              marginLeft: '10px'
-            }}>
-            <FormControlLabel
-              control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
-              label="Activities"
+            <FormControl
+              style={{
+                display: 'flex',
+                marginLeft: '10px'
+              }}>
+              <RadioGroup row value={radio} onChange={handleRadioChange}>
+                <FormControlLabel value="default" control={<Radio />} label="default" />
+                {getSateliteMap(radio)}
+                <FormControlLabel value="other" control={<Radio />} label="other" />
+                {getOpenStreetMap(radio)}
+              </RadioGroup>
+            </FormControl>
+            <FormControl
+              style={{
+                display: 'flex',
+                marginLeft: '10px'
+              }}>
+              <FormControlLabel
+                control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
+                label="Activities"
+              />
+            </FormControl>
+            <SortableListContainer
+              items={sortArray(objectState)}
+              onSortEnd={onSortEnd}
+              useDragHandle={true}
+              lockAxis="y"
             />
-          </FormControl>
-          <SortableListContainer
-            items={sortArray(objectState)}
-            onSortEnd={onSortEnd}
-            useDragHandle={true}
-            lockAxis="y"
-          />
-        </div>
-      </Popover>
-      {checked ? (
-        <>
-          {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>*/}
-          {/*<GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} />*/}
-          {/*<GeoJSON data={vanIsland} onEachFeature={setupFeature} />*/}
-        </>
-      ) : null}
-    </div>
+          </div>
+        </Popover>
+        {checked ? (
+          <>
+            {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>*/}
+            {/*<GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} />*/}
+            {/*<GeoJSON data={vanIsland} onEachFeature={setupFeature} />*/}
+          </>
+        ) : null}
+      </div>
+      <RenderLayers />
+    </>
   );
 }

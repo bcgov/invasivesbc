@@ -39,6 +39,7 @@ import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
 import { RenderKeyFeaturesNearFeature } from './LayerLoaderHelpers/DataBCRenderFeaturesNearFeature';
 import { toolStyles } from './Tools/ToolBtnStyles';
+import { DataBCLayer, LayerMode } from './LayerLoaderHelpers/DataBCRenderLayer';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -280,6 +281,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             {/* this line below works - its what you need for geosjon*/}
             <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
+          </LayersControl.Overlay>
+          <LayersControl.Overlay checked name="placenames">
+            <DataBCLayer layerName={'WHSE_BASEMAPPING.GNS_GEOGRAPHICAL_NAMES_SP'} mode={LayerMode.WMSOnline} />
           </LayersControl.Overlay>
         </LayersControl>
       </MapRequestContextProvider>
