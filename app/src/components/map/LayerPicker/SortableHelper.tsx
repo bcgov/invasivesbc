@@ -170,11 +170,11 @@ export function LayerPicker(props: any) {
       updateParent(parent.id, { expanded: expanded });
     };
     return (
-      <ListItem ContainerComponent="div">
-        <Grid container xs={12}>
+      <ListItem ContainerComponent="div" style={{ width: '100%', maxWidth: 360 }}>
+        <Grid container xs={12} spacing={1}>
           <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
             <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item xs={1}>
+              <Grid item xs>
                 <Checkbox
                   checked={parent.enabled}
                   name={parent.id}
@@ -185,7 +185,7 @@ export function LayerPicker(props: any) {
                   }}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
                   {parent.id}
                 </AccordionSummary>
@@ -199,8 +199,11 @@ export function LayerPicker(props: any) {
                   }}
                 />
               </Grid>
-              <Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
+              <Grid item xs className={classes.spinnerGridItem} style={{ position: 'relative' }}>
                 {parent.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
+              </Grid>
+              <Grid item xs>
+                <DragHandle />
               </Grid>
             </Grid>
             {parent.children.map((child: any) => (
@@ -226,9 +229,7 @@ export function LayerPicker(props: any) {
               </Grid>
             ))}
           </Accordion>
-          <ListItemSecondaryAction>
-            <DragHandle />
-          </ListItemSecondaryAction>
+          {/*<ListItemSecondaryAction style={{ width: 32 }}></ListItemSecondaryAction>*/}
         </Grid>
       </ListItem>
     );
