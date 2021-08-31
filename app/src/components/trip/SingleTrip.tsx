@@ -42,13 +42,24 @@ export const SingleTrip: React.FC<any> = (props) => {
   // initial fetch
   useEffect(() => {
     getStateFromTrip();
+    updateSpacialStatus();
   }, [databaseContext]);
 
-  const helperCheckForGeo = () => {
-    if (props.geometry) {
+  const updateSpacialStatus = async () => {
+    const res = await query(
+      {
+        type: QueryType.DOC_TYPE_AND_ID,
+        docType: DocType.TRIP,
+        ID: props.trip_ID
+      },
+      databaseContext
+    );
+    const trip = JSON.parse(res[0].json);
+
+    if (trip.geometry.length > 0) {
       return TripStatusCode.ready;
     } else {
-      return stepState[1].status;
+      return TripStatusCode.initial;
     }
   };
 
@@ -62,12 +73,16 @@ export const SingleTrip: React.FC<any> = (props) => {
   };
 
   //generic helper to mark step as done if there isn't a special purpose check
-  const helperStepDoneOrSkip = (stepNumber) => {
+  const helperStepDoneOrSkip = async (stepNumber) => {
     const newState: any = [...stepState];
     for (let i = 1; i < stepState.length; i++) {
       newState[i] = { ...newState[i], expanded: false };
-      if (i === stepNumber && i !== 2) {
-        newState[i] = { ...newState[i], status: TripStatusCode.ready };
+      if (i === stepNumber) {
+        if (i === 2) {
+          newState[i] = { ...newState[i], status: await updateSpacialStatus() };
+        } else {
+          newState[i] = { ...newState[i], status: TripStatusCode.ready };
+        }
       }
     }
     saveState([...newState]);
@@ -101,7 +116,7 @@ export const SingleTrip: React.FC<any> = (props) => {
               expanded={stepState[2].expanded}
               classes={props.classes}
               tripStepDetailsClassName={props.classes.activityRecordList}
-              stepStatus={helperCheckForGeo()}
+              stepStatus={stepState[2]?.status}
               stepAccordionOnChange={(event, expanded) => {
                 helperCloseOtherAccordions(expanded, 2);
               }}
