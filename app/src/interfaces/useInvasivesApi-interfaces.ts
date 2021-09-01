@@ -4,6 +4,7 @@ import { Feature } from 'geojson';
 
 /**
  * Activity search filter criteria.
+ * DEPRECATED: Warning - anything using this interface is likely slated for removal
  *
  * @export
  * @interface IActivitySearchCriteria
