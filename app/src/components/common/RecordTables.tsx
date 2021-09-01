@@ -748,38 +748,50 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
           }
         ]}
         dropdown={(row) => (
-          <ActivitiesTable
-            tableName=""
-            key={row._id}
-            tableSchemaType={[
-              'Treatment',
-              'Treatment_ChemicalPlant',
-              'Treatment_ChemicalPlantAquatic',
-              'Treatment_MechanicalPlant',
-              'Treatment_BiologicalPlant',
-              ...arrayWrap(tableSchemaType)
-            ]}
-            enableSelection={false}
-            headers={[
-              'jurisdiction_code',
-              /* 'biogeoclimatic_zones',
-              {
-                id: 'flnro_districts',
-                title: 'FLNRO Districts'
-              },
-              'ownership',
-              'regional_districts', */
-              'access_description',
-              'general_comment'
-            ]}
-            rows={[row]}
-            pagination={false}
-            actions={{
-              sync: {
-                enabled: false
-              }
-            }}
-          />
+          <>
+            <ActivitiesTable
+              tableName=""
+              key={row._id}
+              tableSchemaType={[
+                'Treatment',
+                'Treatment_ChemicalPlant',
+                'Treatment_MechanicalPlant',
+                'Treatment_BiologicalPlant',
+                ...arrayWrap(tableSchemaType)
+              ]}
+              enableSelection={false}
+              headers={[
+                'jurisdiction_code',
+                'biogeoclimatic_zones',
+                {
+                  id: 'flnro_districts',
+                  title: 'FLNRO Districts'
+                },
+                'ownership',
+                'regional_districts',
+                'access_description',
+                'general_comment'
+              ]}
+              rows={[row]}
+              pagination={false}
+              actions={actions === false ? false : {
+                sync: {
+                  enabled: false
+                }
+              }}
+            />
+
+            <MonitoringTable
+              tableName="Linked Monitoring"
+              key={row._id + '_monitoring'}
+              rows={defaultActivitiesFetch({
+                dataAccess,
+                linked_id: row._id
+              })}
+              hideEmpty
+              actions={false}
+            />
+          </>
         )}
         actions={actions === false ? false : {
           ...actions,
