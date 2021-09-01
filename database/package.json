@@ -20,6 +20,7 @@
     "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
+    "@turf/turf": "^6.5.0",
     "axios": "^0.21.0",
     "csv-parse": "^4.14.1",
     "csv-parser": "^2.3.3",
