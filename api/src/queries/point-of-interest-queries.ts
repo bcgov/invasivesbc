@@ -16,6 +16,7 @@ export const postPointOfInterestSQL = (point_of_interest: PointOfInterestPostReq
     INSERT INTO point_of_interest_incoming_data (
       point_of_interest_type,
       point_of_interest_subtype,
+      species_positive,
       received_timestamp,
       point_of_interest_payload,
       geog,
@@ -23,6 +24,7 @@ export const postPointOfInterestSQL = (point_of_interest: PointOfInterestPostReq
     ) VALUES (
       ${point_of_interest.pointOfInterest_type},
       ${point_of_interest.pointOfInterest_subtype},
+      ${point_of_interest.species_positive},
       ${point_of_interest.received_timestamp},
       ${point_of_interest.pointOfInterestPostBody}
   `;
@@ -81,6 +83,7 @@ export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBo
     INSERT INTO point_of_interest_incoming_data (
       point_of_interest_type,
       point_of_interest_subtype,
+      species_positive,
       received_timestamp,
       point_of_interest_payload,
       geog,
@@ -91,6 +94,7 @@ export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBo
     sqlStatement.append(SQL`(
       ${data[i].pointOfInterest_type},
       ${data[i].pointOfInterest_subtype},
+      ${data[i].species_positive},
       ${data[i].received_timestamp},
       ${data[i].pointOfInterestPostBody}
     `);
@@ -217,6 +221,15 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
       sqlStatement.append(SQL`, ${searchCriteria.pointOfInterest_ids[idx]}`);
     }
     sqlStatement.append(SQL`)`);
+  }
+
+  // search intersects with some species codes
+  if (searchCriteria.species_positive && searchCriteria.species_positive.length) {
+    sqlStatement.append(SQL` AND ARRAY[`);
+    sqlStatement.append(SQL`${searchCriteria.species_positive[0]}`);
+    for (let idx = 1; idx < searchCriteria.species_positive.length; idx++)
+      sqlStatement.append(SQL`, ${searchCriteria.species_positive[idx]}`);
+    sqlStatement.append(SQL`]::varchar[] && species_positive`);
   }
 
   if (searchCriteria.search_feature) {

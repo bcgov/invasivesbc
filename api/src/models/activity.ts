@@ -36,6 +36,9 @@ export class ActivityPostRequestBody {
   reviewed_by: string;
   reviewed_at: string;
 
+  species_positive: string[];
+  species_negative: string[];
+
   /**
    * Creates an instance of ActivityPostRequestBody.
    *
@@ -84,6 +87,9 @@ export class ActivityPostRequestBody {
     this.review_status = (obj && obj.review_status) || null;
     this.reviewed_by = (obj && obj.reviewed_by) || null;
     this.reviewed_at = (obj && obj.reviewed_at) || null;
+
+    this.species_positive = obj?.species_positive || [];
+    this.species_negative = obj?.species_negative || [];
   }
 }
 
@@ -113,6 +119,11 @@ export class ActivitySearchCriteria {
 
   review_status: string[];
 
+  linked_id: string;
+
+  species_positive: string[];
+  species_negative: string[];
+
   order: string[];
 
   /**
@@ -141,6 +152,11 @@ export class ActivitySearchCriteria {
     this.created_by = (obj && obj.created_by) || null;
 
     this.review_status = (obj && obj.review_status) || [];
+
+    this.linked_id = obj?.linked_id || null;
+
+    this.species_positive = obj?.species_positive || [];
+    this.species_negative = obj?.species_negative || [];
 
     this.order = (obj && obj.order) || [];
   }

@@ -76,6 +76,24 @@ POST.apiDoc = {
                 type: 'string'
               }
             },
+            linked_id: {
+              type: 'string',
+              description: 'Limit results to only those which link to this Activity ID',
+            },
+            species_positive: {
+              type: 'array',
+              description: 'Limit results to only those matching at least one of the species in this list',
+              items: {
+                type: 'string'
+              }
+            },
+            species_negative: {
+              type: 'array',
+              description: 'Limit results to only those with "negative occurences" matching at least one of the species in this list',
+              items: {
+                type: 'string'
+              }
+            },
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
             },
