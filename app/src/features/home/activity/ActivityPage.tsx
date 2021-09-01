@@ -136,6 +136,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return false;
     }
 
+    // SECOND-ORDER EFFECT OVERRIDES (changing one field affects another)
+    updatedDoc = populateSpeciesArrays(updatedDoc);
+
     if (!updatedDoc._id) {
       return false;
     }
