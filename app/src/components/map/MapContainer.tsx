@@ -30,7 +30,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import TempPOILoader from './LayerLoaderHelpers/TempPOILoader';
 
 // Layer Picker
-import { LayerPicker } from './LayerPicker/SortableHelper';
+import { LayerPicker } from './LayerPicker/LayerPicker';
 import data from './LayerPicker/GEO_DATA.json';
 import DisplayPosition from './Tools/DisplayPosition';
 import { createPolygonFromBounds } from './LayerLoaderHelpers/LtlngBoundsToPoly';

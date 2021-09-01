@@ -14,7 +14,7 @@ import {
   getParent,
   getChild,
   sortObject
-} from './LayerPickerHelper';
+} from './SortLayerOrder';
 import ColorPicker from 'material-ui-color-picker';
 import { TileLayer, useMap } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
