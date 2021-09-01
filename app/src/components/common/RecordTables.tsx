@@ -1014,7 +1014,7 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
   }, [headers?.length]);
 };
 
-export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
   const { tableSchemaType, actions, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1088,13 +1088,13 @@ export const AdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (
   }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
 };
 
-export const MyAdditionalBiocontrolActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
   const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
-      <AdditionalBiocontrolActivitiesTable
+      <BiocontrolTable
         startingOrderBy="date_created"
         startingOrder="asc"
         headers={[

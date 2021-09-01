@@ -20,7 +20,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import '../../styles/spinners.scss';
 import ActivityListDate from './ActivityListDate';
 import {
-  MyAdditionalBiocontrolActivitiesTable,
+  MyBiocontrolTable,
   MyAnimalActivitiesTable,
   MyMonitoringTable,
   MyObservationsTable,
@@ -286,9 +286,9 @@ const ActivitiesList: React.FC = () => {
             <Box>
               <MyObservationsTable />
               <MyTreatmentsTable />
+              <MyBiocontrolTable />
               <MyMonitoringTable />
               <MyTransectsTable />
-              <MyAdditionalBiocontrolActivitiesTable />
             </Box>
           )}
           {workflowFunction === 'Animal' && (
