@@ -2263,9 +2263,10 @@
         "type": "object",
         "required": ["activity_id", "observer_first_name", "observer_last_name", "efficacy_code"],
         "properties": {
-          "activity_id": {
+          "linked_id": {
             "type": "string",
-            "title": "Treatment Id"
+            "title": "Linked Treatment ID",
+            "x-tooltip-text": "Identifier of linked treatment record"
           },
           "observer_first_name": {
             "type": "string",

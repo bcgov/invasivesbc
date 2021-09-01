@@ -333,6 +333,10 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(SQL`)`);
   }
 
+  if (searchCriteria.linked_id) {
+    sqlStatement.append(SQL` AND activity_payload::json #>> '{form_data, activity_type_data, linked_id}' = ${searchCriteria.linked_id}`);
+  }
+
   if (searchCriteria.date_range_start) {
     sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
   }
