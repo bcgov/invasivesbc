@@ -10,11 +10,11 @@ import {
   GeoJSON,
   MapContainer as ReactLeafletMapContainer,
   TileLayer,
-  LayersControl,
   useMap,
   FeatureGroup,
   useMapEvent,
-  ZoomControl
+  ZoomControl,
+  LayerGroup
 } from 'react-leaflet';
 import { interactiveGeoInputData } from './GeoMeta';
 import Spinner from 'components/spinner/Spinner';
@@ -252,7 +252,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <MapRequestContextProvider>
         <div className={toolClass.toolBtnsLoc}>
-          <LayerPicker data={data} />
           <DisplayPosition map={map} />
           <MeasureTool />
           {props.showDrawControls && (
@@ -260,6 +259,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
             </FeatureGroup>
           )}
+          <LayerPicker data={data} />
         </div>
 
         {/* Here is the offline component */}
@@ -272,20 +272,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <MapResizer />
         <AsyncExtent />
 
-        <LayersControl position="topright">
+        {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
             <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
           </LayersControl.BaseLayer>
           <LayersControl.Overlay checked name="Activities">
-            {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>*/}
-            {/* this line below works - its what you need for geosjon*/}
+            {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter}></TempPOILoader>}
+            {/* this line below works - its what you need for geosjon}
             <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
-            {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> */}
+            {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> }
           </LayersControl.Overlay>
           <LayersControl.Overlay checked name="placenames">
             <DataBCLayer layerName={'WHSE_BASEMAPPING.GNS_GEOGRAPHICAL_NAMES_SP'} mode={LayerMode.WMSOnline} />
           </LayersControl.Overlay>
-        </LayersControl>
+        </LayersControl>*/}
       </MapRequestContextProvider>
       {props.geometryState.geometry ? (
         <>

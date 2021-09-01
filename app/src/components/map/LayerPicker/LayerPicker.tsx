@@ -26,10 +26,6 @@ import LayersIcon from '@material-ui/icons/Layers';
 import {
   Checkbox,
   IconButton,
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
   Grid,
   ListItemSecondaryAction,
   ListItemIcon,
@@ -137,7 +133,7 @@ export function LayerPicker(props: any) {
   ));
 
   function WithCounter() {
-    const [seconds, setSeconds] = React.useState(10);
+    const [seconds, setSeconds] = React.useState(2);
     React.useEffect(() => {
       if (seconds > 0) {
         setTimeout(() => setSeconds(seconds - 1), 1000);
@@ -148,16 +144,6 @@ export function LayerPicker(props: any) {
 
   function getErrorIcon(time: any) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
-  }
-
-  function getSateliteMap(radioValue: any) {
-    return radio === 'default' ? (
-      <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-    ) : null;
-  }
-
-  function getOpenStreetMap(radioValue: any) {
-    return radio === 'other' ? <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null;
   }
 
   const RenderLayers = (props) => {
@@ -271,88 +257,39 @@ export function LayerPicker(props: any) {
   return (
     <>
       <div style={{ zIndex: 1000 }}>
-        <IconButton
-          className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-          onClick={handleClick}>
-          <LayersIcon />
-        </IconButton>
-        <Popover
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'left'
+        <div
+          onTouchStart={() => {
+            map.dragging.disable();
+            map.doubleClickZoom.disable();
           }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
+          onTouchMove={() => {
+            map.dragging.disable();
+            map.doubleClickZoom.disable();
+          }}
+          onTouchEnd={() => {
+            map.dragging.disable();
+            map.doubleClickZoom.disable();
+          }}
+          onMouseOver={() => {
+            if (Capacitor.getPlatform() == 'web') {
+              map.dragging.disable();
+              map.doubleClickZoom.disable();
+            }
+          }}
+          onMouseOut={() => {
+            if (Capacitor.getPlatform() == 'web') {
+              map.dragging.enable();
+              map.doubleClickZoom.enable();
+            }
           }}>
-          <div
-            onTouchStart={() => {
-              map.dragging.disable();
-              map.doubleClickZoom.disable();
-            }}
-            onTouchMove={() => {
-              map.dragging.disable();
-              map.doubleClickZoom.disable();
-            }}
-            onTouchEnd={() => {
-              map.dragging.disable();
-              map.doubleClickZoom.disable();
-            }}
-            onMouseOver={() => {
-              if (Capacitor.getPlatform() == 'web') {
-                map.dragging.disable();
-                map.doubleClickZoom.disable();
-              }
-            }}
-            onMouseOut={() => {
-              if (Capacitor.getPlatform() == 'web') {
-                map.dragging.enable();
-                map.doubleClickZoom.enable();
-              }
-            }}>
-            <FormControl
-              style={{
-                display: 'flex',
-                marginLeft: '10px'
-              }}>
-              <RadioGroup row value={radio} onChange={handleRadioChange}>
-                <FormControlLabel value="default" control={<Radio />} label="default" />
-                {getSateliteMap(radio)}
-                <FormControlLabel value="other" control={<Radio />} label="other" />
-                {getOpenStreetMap(radio)}
-              </RadioGroup>
-            </FormControl>
-            <FormControl
-              style={{
-                display: 'flex',
-                marginLeft: '10px'
-              }}>
-              <FormControlLabel
-                control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
-                label="Activities"
-              />
-            </FormControl>
-            <SortableListContainer
-              items={sortArray(objectState)}
-              onSortEnd={onSortEnd}
-              useDragHandle={true}
-              lockAxis="y"
-            />
-          </div>
-        </Popover>
-        {checked ? (
-          <>
-            {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>*/}
-            {/*<GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} />*/}
-            {/*<GeoJSON data={vanIsland} onEachFeature={setupFeature} />*/}
-          </>
-        ) : null}
+          <SortableListContainer
+            items={sortArray(objectState)}
+            onSortEnd={onSortEnd}
+            useDragHandle={true}
+            lockAxis="y"
+          />
+        </div>
       </div>
-      <RenderLayers />
     </>
   );
 }
