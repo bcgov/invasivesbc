@@ -236,7 +236,9 @@ export const sanitizeRecord = (input: any) => {
 
       // gross mapping for yet another db api field...
       form_data: activity_payload?.form_data,
-      geometry: geom || flattened.geometry || activity_payload?.geometry
+      geometry: geom || flattened.geometry || activity_payload?.geometry,
+      doc_type: input.docType,
+      docType: input.docType
     };
   }
 
@@ -270,7 +272,8 @@ export const mapDBActivityToDoc = (dbActivity: any) => {
       dbActivity.form_data,
       dbActivity.geometry,
       dbActivity.activity_type,
-      dbActivity.activity_subtype
+      dbActivity.activity_subtype,
+      dbActivity.docType
     ),
     ...mapKeys(otherKeys, camelCase)
   };
@@ -294,7 +297,8 @@ export function generateActivityPayload(
   formData: any,
   geometry: Feature[],
   activityType: ActivityType,
-  activitySubtype: ActivitySubtype
+  activitySubtype: ActivitySubtype,
+  docType: DocType
 ): IActivity {
   const id = uuidv4();
   const short_id: string = getShortActivityID({
@@ -306,7 +310,7 @@ export function generateActivityPayload(
     _id: id,
     shortId: short_id,
     activityId: id,
-    docType: DocType.ACTIVITY,
+    docType: docType === DocType.ACTIVITY ? DocType.ACTIVITY : DocType.REFERENCE_ACTIVITY,
     activityType,
     activitySubtype,
     status: ActivityStatus.NEW,
@@ -394,7 +398,7 @@ export async function addNewActivityToDB(
       activity_date_time: moment(new Date()).format()
     }
   };
-  const doc: IActivity = generateActivityPayload(formData, null, activityType, activitySubtype);
+  const doc: IActivity = generateActivityPayload(formData, null, activityType, activitySubtype, DocType.ACTIVITY);
 
   await databaseContext.database.put(doc);
   return doc;
@@ -458,7 +462,7 @@ export async function createLinkedActivity(
     formData.activity_type_data = { activity_id: linkedRecord._id };
   }
 
-  const doc: IActivity = generateActivityPayload(formData, geometry, activityType, activitySubtype);
+  const doc: IActivity = generateActivityPayload(formData, geometry, activityType, activitySubtype, DocType.ACTIVITY);
 
   return doc;
 }

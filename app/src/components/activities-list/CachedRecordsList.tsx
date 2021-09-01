@@ -316,16 +316,19 @@ const CachedRecordsList: React.FC = (props) => {
             rows={observations}
             selected={selectedObservations}
             setSelected={setSelectedGeneralized(setSelectedObservations)}
+            reference_only={true}
           />
           <TreatmentsTable
             rows={treatments}
             selected={selectedTreatments}
             setSelected={setSelectedGeneralized(setSelectedTreatments)}
+            reference_only={true}
           />
           <MonitoringTable
             rows={monitorings}
             selected={selectedMonitorings}
             setSelected={setSelectedGeneralized(setSelectedMonitorings)}
+            reference_only={true}
           />
           <PointsOfInterestTable
             rows={pointsOfInterest}

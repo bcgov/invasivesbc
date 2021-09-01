@@ -80,7 +80,7 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() === 'web') {
       return api.getActivityById(activityId);
     } else {
-      if (forceCache === true || !networkStatus.connected) {
+      if (forceCache === true || !networkStatus.connected || referenceActivity) {
         const dbcontext = context;
         return dbcontext.asyncQueue({
           asyncTask: async () => {
@@ -89,12 +89,14 @@ export const useDataAccess = () => {
             const res = await query(
               {
                 type: QueryType.DOC_TYPE_AND_ID,
-                docType: DocType.ACTIVITY,
+                docType: docType,
                 ID: activityId
               },
               dbcontext
             );
-            return JSON.parse(res[0].json);
+            const returnVal = { ...JSON.parse(res[0]?.json), docType: docType };
+            console.dir(returnVal);
+            return returnVal;
           }
         });
       } else {
@@ -114,7 +116,8 @@ export const useDataAccess = () => {
     context?: {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
-    }
+    },
+    referenceActivity = false
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       //TODO: implement getting old version from derver and making new with overwritten props
@@ -124,11 +127,12 @@ export const useDataAccess = () => {
       const dbcontext = context;
       return dbcontext.asyncQueue({
         asyncTask: () => {
+          const docType = referenceActivity ? DocType.REFERENCE_ACTIVITY : DocType.ACTIVITY;
           return upsert(
             [
               {
                 type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-                docType: DocType.ACTIVITY,
+                docType: docType,
                 json: activity,
                 ID: activity.activity_id
               }

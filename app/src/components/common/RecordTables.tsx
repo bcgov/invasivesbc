@@ -183,6 +183,7 @@ export interface IActivitiesTable extends IRecordTable {
   activitySubtypes?: any[];
   created_by?: string;
   review_status?: string[];
+  reference_only?: boolean;
 }
 
 const activitesDefaultHeaders = [
@@ -332,8 +333,11 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
             action: async (allSelectedRows) => {
               const selectedIds = allSelectedRows.map((row) => row[keyField]);
               if (selectedIds.length === 1) {
+                //will have to fix for bulk edit, hack for now
+                //                const isReferenceActivity = rows[0].docType === DocType.REFERENCE_ACTIVITY;
+                const isReferenceActivity = props.reference_only;
                 await dataAccess.setAppState(
-                  { activeActivity: selectedIds[0], isReferenceActivity: true },
+                  { activeActivity: selectedIds[0], isReferenceActivity: isReferenceActivity },
                   databaseContext
                 );
 >>>>>>> 2dbf4fc (wip open cached record)

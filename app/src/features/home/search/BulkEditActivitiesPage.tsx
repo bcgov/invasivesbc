@@ -20,6 +20,7 @@ import {
   getHerbicideApplicationRateValidator,
   getJurisdictionPercentValidator
 } from 'rjsf/business-rules/customValidation';
+import { DocType } from 'constants/database';
 
 interface IBulkEditActivitiesPage {
   classes?: any;
@@ -45,7 +46,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
       const { activityType, activitySubtype } = await getActivityByIdFromApi(invasivesApi, activityIdsToEdit[0]);
       const editActivityType = `${activityType}_BulkEdit` as ActivityType;
       const editActivitySubtype = `${activitySubtype}_BulkEdit` as ActivitySubtype;
-      const doc: IActivity = generateActivityPayload({}, null, editActivityType, editActivitySubtype);
+      const doc: IActivity = generateActivityPayload({}, null, editActivityType, editActivitySubtype, DocType.ACTIVITY);
 
       setActivity(doc);
       setIsLoading(false);

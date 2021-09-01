@@ -45,11 +45,7 @@ import {
 import { notifySuccess, notifyError } from '../../../utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from '../../../utils/geometryHelpers';
-import {
-  mapDocToDBActivity,
-  mapDBActivityToDoc,
-  populateSpeciesArrays
-} from '../../../utils/addActivity';
+import { mapDocToDBActivity, mapDBActivityToDoc, populateSpeciesArrays } from '../../../utils/addActivity';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
@@ -89,7 +85,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isFromCachedRecordsPage, setIsFromCachedRecordsPage] = useState();
   const [linkedActivity, setLinkedActivity] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
@@ -114,7 +109,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} updates Updates as subsets of the doc/activity object
    */
   const updateDoc = async (updates) => {
-    let updatedDoc = {
+    let updatedDoc;
+    console.dir('update doc from activity page', updates);
+    if (updates?.doc?.docType === DocType.REFERENCE_ACTIVITY || updates?.doc?.doc_type === DocType.REFERENCE_ACTIVITY) {
+      console.log('its a ref');
+      return true;
+    }
+    updatedDoc = {
       ...doc,
       ...updates,
       // deep merge:
@@ -148,18 +149,28 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return false;
     }
 
+    console.dir('updated doc somehow', updatedDoc);
+
     setDoc(updatedDoc);
     try {
       const dbUpdates = debounced(1000, async (updated) => {
         // TODO use an api endpoint to do this merge logic instead
-        const oldActivity = await dataAccess.getActivityById(updated._id, databaseContext, true);
+        console.log('getting activity`');
+        console.dir(updated);
+        if (!(doc?.docType || doc?.doc_type)) {
+          return true;
+        }
+        const isRef = doc.docType === DocType.REFERENCE_ACTIVITY || doc.docType === undefined;
+        const oldActivity = await dataAccess.getActivityById(updated._id, databaseContext, true, isRef);
+        const before = oldActivity.docType;
         const newActivity = {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
 
-        if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
-        else await dataAccess.updateActivity(newActivity, databaseContext);
+        if (!oldActivity) {
+          await dataAccess.updateActivity(newActivity, databaseContext, isRef);
+        }
       });
       await dbUpdates(updatedDoc);
       return true;
@@ -191,43 +202,46 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {Feature} geoJSON The geometry in GeoJSON format
    */
   const saveGeometry = useCallback((geom: Feature[]) => {
-    setDoc(async (activity: any) => {
-      const { latitude, longitude } = calculateLatLng(geom) || {};
+    if (doc?.docType !== DocType.REFERENCE_ACTIVITY) {
+      console.log('doc type: ', doc?.docType);
+      setDoc(async (activity: any) => {
+        const { latitude, longitude } = calculateLatLng(geom) || {};
 
-      //latlong to utms / utm zone conversion
-      let utm_easting, utm_northing, utm_zone;
-      //if statement prevents errors on page load, as lat/long isn't defined
-      if (longitude !== undefined && latitude !== undefined) {
-        utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
-        proj4.defs([
-          ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
-          ['EPSG:AUTO', `+proj=utm +zone= ${utm_zone} +datum=WGS84 +units=m +no_defs`]
-        ]);
-        const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
-        utm_easting = Number(en_m[0].toFixed(4));
-        utm_northing = Number(en_m[1].toFixed(4));
-      }
-      const activityDoc = {
-        ...activity,
-        formData: {
-          ...activity.formData,
-          activity_data: {
-            ...activity.formData.activity_data,
-            latitude,
-            longitude,
-            utm_easting,
-            utm_northing,
-            utm_zone,
-            reported_area: calculateGeometryArea(geom)
-          }
-        },
-        geometry: geom,
-        status: ActivityStatus.EDITED,
-        dateUpdated: new Date()
-      };
-      await updateDoc(activityDoc);
-      return activityDoc;
-    });
+        //latlong to utms / utm zone conversion
+        let utm_easting, utm_northing, utm_zone;
+        //if statement prevents errors on page load, as lat/long isn't defined
+        if (longitude !== undefined && latitude !== undefined) {
+          utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
+          proj4.defs([
+            ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
+            ['EPSG:AUTO', `+proj=utm +zone= ${utm_zone} +datum=WGS84 +units=m +no_defs`]
+          ]);
+          const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
+          utm_easting = Number(en_m[0].toFixed(4));
+          utm_northing = Number(en_m[1].toFixed(4));
+        }
+        const activityDoc = {
+          ...activity,
+          formData: {
+            ...activity.formData,
+            activity_data: {
+              ...activity.formData.activity_data,
+              latitude,
+              longitude,
+              utm_easting,
+              utm_northing,
+              utm_zone,
+              reported_area: calculateGeometryArea(geom)
+            }
+          },
+          geometry: geom,
+          status: ActivityStatus.EDITED,
+          dateUpdated: new Date()
+        };
+        await updateDoc(activityDoc);
+        return activityDoc;
+      });
+    }
   }, []);
 
   /**
@@ -384,12 +398,13 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         databaseContext
       );
     } else {
-      console.log('is reference acivity: ', appStateResults.isReferenceActivity);
+      const isReferenceActivity = appStateResults.isReferenceActivity ? true : false;
+      console.log('is reference acivity: ', isReferenceActivity);
       activityResults = await dataAccess.getActivityById(
         activityId || (appStateResults.activeActivity as string),
         databaseContext,
         true,
-        appStateResults.isReferenceActivity ? true : false
+        isReferenceActivity
       );
     }
     return mapDBActivityToDoc(activityResults);
@@ -518,24 +533,25 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               actionOnClick: async () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
                 setGeometry(null);
-
-                await updateDoc({
-                  ...doc,
-                  formData: {
-                    ...doc.formData,
-                    activity_data: {
-                      ...doc.formData.activity_data,
-                      latitude: undefined,
-                      longitude: undefined,
-                      utm_zone: undefined,
-                      utm_northing: undefined,
-                      utm_easting: undefined,
-                      well_id: undefined,
-                      well_proximity: undefined,
-                      reported_area: undefined
+                if (doc.docType === DocType.ACTIVITY) {
+                  await updateDoc({
+                    ...doc,
+                    formData: {
+                      ...doc.formData,
+                      activity_data: {
+                        ...doc.formData.activity_data,
+                        latitude: undefined,
+                        longitude: undefined,
+                        utm_zone: undefined,
+                        utm_northing: undefined,
+                        utm_easting: undefined,
+                        well_id: undefined,
+                        well_proximity: undefined,
+                        reported_area: undefined
+                      }
                     }
-                  }
-                });
+                  });
+                }
               }
             },
             {
@@ -543,7 +559,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               actionOnClick: async () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
 
-                await updateDoc({ formData: newFormData['formData'] });
+                if (doc.docType === DocType.ACTIVITY) {
+                  await updateDoc({ formData: newFormData['formData'] });
+                }
               },
               autoFocus: true
             }
@@ -565,7 +583,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               actionName: 'Ok',
               actionOnClick: async () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
-                await updateDoc({ formData: newFormData['formData'] });
+                if (doc.docType === DocType.ACTIVITY) {
+                  await updateDoc({ formData: newFormData['formData'] });
+                }
               },
               autoFocus: true
             }
@@ -574,7 +594,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
       //If not in Observation nor in Chemical Treatment, just make changes to fields
       else {
-        await updateDoc({ formData: newFormData['formData'] });
+        if (doc.docType === DocType.ACTIVITY) {
+          await updateDoc({ formData: newFormData['formData'] });
+        }
       }
     }
   };
