@@ -1554,8 +1554,8 @@ const Dispersal_BiologicalDispersal = {
 */
 
 const Treatment = {
-  'activity_id': {
-    'ui:readonly': true
+  linked_id: {
+    'ui:widget': 'single-select-autocomplete'
   },
   'treatment_organization': {},
   'treatment_location': {
@@ -1654,8 +1654,8 @@ const Treatment_BiologicalPlant_BulkEdit = {
 */
 
 const Monitoring = {
-  'activity_id': {
-    'ui:readonly': true
+  linked_id: {
+    'ui:widget': 'single-select-autocomplete'
   },
   'observer_first_name': {},
   'observer_last_name': {},

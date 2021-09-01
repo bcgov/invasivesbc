@@ -12,7 +12,7 @@ import {
 import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
 import { IPhoto } from '../../../components/photo/PhotoContainer';
-import { ActivityStatus, FormValidationStatus } from 'constants/activities';
+import { ActivityStatus, FormValidationStatus, ActivitySubtype } from 'constants/activities';
 import { DatabaseContext } from '../../../contexts/DatabaseContext';
 import proj4 from 'proj4';
 import { Feature } from 'geojson';
@@ -45,7 +45,7 @@ import {
 import { notifySuccess, notifyError } from '../../../utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from '../../../utils/geometryHelpers';
-import { cloneActivity, sanitizeRecord, addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from '../../../utils/addActivity';
+import { cloneActivity, mapDocToDBActivity, mapDBActivityToDoc, sanitizeRecord, populateSpeciesArrays } from '../../../utils/addActivity';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
@@ -109,9 +109,26 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} updates Updates as subsets of the doc/activity object
    */
   const updateDoc = async (updates) => {
-    const updatedDoc = {
+    let updatedDoc = {
       ...doc,
-      ...updates // TODO MERGE THESE
+      ...updates,
+      // deep merge:
+      formData: {
+        ...doc?.formData,
+        ...updates?.formData,
+        activity_data: {
+          ...doc?.formData?.activity_data,
+          ...updates?.formData?.activity_data
+        },
+        activity_type_data: {
+          ...doc?.formData?.activity_type_data,
+          ...updates?.formData?.activity_type_data
+        },
+        activity_subtype_data: {
+          ...doc?.formData?.activity_subtype_data,
+          ...updates?.formData?.activity_subtype_data
+        }
+      }
     };
     const hashedNewDoc = JSON.stringify(updatedDoc);
     const hashedDoc = JSON.stringify(doc);
@@ -133,7 +150,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           ...mapDocToDBActivity(updated)
         };
         
-        let res; 
+        let res;
         if (!oldActivity)
           res = await dataAccess.createActivity(newActivity, databaseContext);
         else
@@ -413,7 +430,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const handleRecordLinking = async (updatedDoc: any) => {
     let linkedRecordId: string = null;
 
-    if (updatedDoc.activitySubtype.includes('ChemicalPlant')) {
+    if (updatedDoc?.activitySubtype?.includes('ChemicalPlant')) {
       linkedRecordId = updatedDoc.formData?.activity_subtype_data?.activity_id;
     } else if (
       ['Treatment', 'Monitoring'].includes(updatedDoc.activityType) &&

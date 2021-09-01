@@ -71,6 +71,21 @@ export enum ActivitySubtypeShortLabels {
   Activity_Collection_Biocontrol = 'Biocontrol Collection'
 }
 
+export enum ActivityMonitoringLinks {
+  // Treatments:
+  Activity_Treatment_ChemicalPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
+  Activity_Treatment_MechanicalPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
+  Activity_Treatment_BiologicalPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
+
+  // Monitoring:
+  Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Treatment_ChemicalPlant',
+  Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Treatment_MechanicalPlant',
+  Activity_Monitoring_BiologicalTerrestrialPlant = 'Activity_Treatment_BiologicalPlant',
+
+  Activity_Dispersal_BiologicalDispersal = 'Activity_Collection_Biocontrol',
+  Activity_Collection_Biocontrol = 'Activity_Dispersal_BiologicalDispersal'
+};
+
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
   [ActivityType.Observation]: Assignment,
   [ActivityType.AnimalActivity]: Assignment,
