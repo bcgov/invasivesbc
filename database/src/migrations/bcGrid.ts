@@ -113,7 +113,7 @@ export async function up(knex: Knex): Promise<void> {
     });
     let largeGridItemIndex = 0;
 
-    if (NODE_ENV !== 'local') {
+    if (NODE_ENV === 'MANUAL_KNEX_RUN') {
       for (const largeGridItem of BCLargeGrid) {
         const sqlInsert = `INSERT INTO ${DB_SCHEMA}.bc_large_grid VALUES(${largeGridItemIndex}, 
         public.geography(
