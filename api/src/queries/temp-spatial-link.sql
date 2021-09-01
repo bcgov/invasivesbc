@@ -44,7 +44,7 @@ where
 ;
 
 -- Dump table with test code
--- pg_dump --dbname=InvasivesBC --username=invasivebc --table=invasivesbc.activity_incoming_data > /tmp/activity_dump.sql
+-- pg_dump --dbname=InvasivesBC --username=invasivebc --table=invasivesbc.activity_incoming_data --column-inserts --data-only > /tmp/activity_dump.sql
 
 
 -- activity_observation_aquaticplant_with_codes
