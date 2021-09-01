@@ -328,7 +328,6 @@ export function generateDBActivityPayload(
 ) {
   const id = uuidv4();
   const time = moment(new Date()).format();
-  console.log(time, new Date());
   const short_id: string = getShortActivityID({
     activity_subtype: activitySubtype,
     activity_id: id,
