@@ -180,7 +180,6 @@ const activitesDefaultHeaders = [
     }
   },
   'date_created',
-  /* 
   'biogeoclimatic_zones',
   {
     id: 'elevation',
@@ -192,7 +191,6 @@ const activitesDefaultHeaders = [
   },
   'ownership',
   'regional_districts',
-  */
   'invasive_species_agency_code',
   'jurisdiction_code',
   {
@@ -291,7 +289,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startExpanded
         headers={activitesDefaultHeaders}
         rows={rows}
-        actions={{
+        actions={actions === false ? false : {
           ...actions,
           edit: {
             // NOTE: this might be a good candidate to be broken out to a parent class
@@ -625,7 +623,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[...headers, ...activitesDefaultHeaders]}
-        actions={{
+        actions={actions === false ? false : {
           ...actions,
           create_treatment: {
             key: 'create_treatment',
@@ -783,7 +781,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
             }}
           />
         )}
-        actions={{
+        actions={actions === false ? false : {
           ...actions,
           create_monitoring: {
             key: 'create_monitoring',
@@ -1065,19 +1063,19 @@ export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
             enableSelection={false}
             headers={[
               'jurisdiction_code',
-              /* 'biogeoclimatic_zones',
+              'biogeoclimatic_zones',
               {
                 id: 'flnro_districts',
                 title: 'FLNRO Districts'
               },
               'ownership',
-              'regional_districts', */
+              'regional_districts',
               'access_description',
               'general_comment'
             ]}
             rows={[row]}
             pagination={false}
-            actions={{
+            actions={actions === false ? false : {
               sync: {
                 enabled: false
               }
@@ -1174,7 +1172,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
             count: result.count
           };
         }}
-        actions={{
+        actions={actions === false ? false : {
           ...actions,
           delete: {
             enabled: false,
