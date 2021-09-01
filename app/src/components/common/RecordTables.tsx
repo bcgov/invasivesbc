@@ -44,6 +44,7 @@ export const activityStandardMapping = (doc) => {
       ],
       []
     ),
+    invasive_plant_code: doc.species_positive,
     date_created: flattened.created_timestamp?.substring(0, 10) + ' ' + flattened.date_created?.substring(11, 19),
     latitude: flattened.latitude && parseFloat(flattened.latitude).toFixed(6),
     longitude: flattened.longitude && parseFloat(flattened.longitude).toFixed(6),
@@ -128,7 +129,7 @@ const arrayWrap = (value) => {
 };
 
 export const defaultActivitiesFetch =
-  ({ dataAccess, activitySubtypes, created_by = undefined, review_status = [] }, databaseContext) =>
+  ({ dataAccess, activitySubtypes, created_by = undefined, review_status = [], linked_id = undefined }, databaseContext) =>
   async ({ page, rowsPerPage, order }) => {
     // Fetches fresh from the API (web).  TODO fetch from SQLite
     let dbPageSize = DEFAULT_PAGE_SIZE;
@@ -146,7 +147,8 @@ export const defaultActivitiesFetch =
         activity_subtype: arrayWrap(activitySubtypes),
         // startDate, endDate will be filters
         created_by: created_by, // my_keycloak_id
-        review_status: review_status
+        review_status: review_status,
+        linked_id: linked_id
       },
       databaseContext,
       true
