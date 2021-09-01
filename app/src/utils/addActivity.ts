@@ -38,8 +38,8 @@ const mapKeys = (source, mappingFunction) => {
 
 export const getShortActivityID = (activity) => {
   const record: any = mapKeys(activity, snakeCase);
-  if (!record?.activity_subtype || !record?.activity_id || !record?.date_created) return;
-  const shortYear = moment(record.date_created).format().substr(2, 2);
+  if (!record?.activity_subtype || !record?.activity_id || !(record?.date_created || record.created_timestamp)) return;
+  const shortYear = moment(record.date_created || record.created_timestamp).format().substr(2, 2);
   return shortYear + ActivityLetter[record.activity_subtype] + record.activity_id.substr(0, 4).toUpperCase();
 };
 
