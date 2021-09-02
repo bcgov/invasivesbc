@@ -7,7 +7,7 @@ import { useLayerControlContext } from './layerControlContext';
 
 export default function createControlledLayer(addLayerToControl) {
   return function ControlledLayer(props) {
-    console.log('controlled layer render');
+    //console.log('controlled layer render');
     const context = useLeafletContext();
     const layerContext = useLayerControlContext();
     const propsRef = useRef(props);

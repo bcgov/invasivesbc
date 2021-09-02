@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Children, useState } from 'react';
 import { Paper, Typography, IconButton } from '@material-ui/core';
 import { LayerGroup, useMapEvents, WMSTileLayer } from 'react-leaflet';
 import { Util } from 'leaflet';
@@ -23,7 +23,7 @@ const POSITION_CLASSES = {
   topright: 'leaflet-top leaflet-right'
 };
 
-function LayerControl({ position, data }) {
+function LayerControl({ position, children, data }) {
   const [collapsed, setCollapsed] = useState(true);
   const [layers, setLayers] = useState([]);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
@@ -108,14 +108,6 @@ function LayerControl({ position, data }) {
                     </AccordionSummary>
                     {groupedLayers[section]?.map((layerObj) => (
                       <>
-                        <Checkbox
-                          checked={layerObj.enabled}
-                          onChange={() => onLayerClick(layerObj)}
-                          name="checkedB"
-                          color="primary"
-                        />
-                        {console.dir(layerObj)}
-                        {console.dir(groupedLayers)}
                         <AccordionDetails>
                           <Accordion>
                             <FormControlLabel
@@ -138,21 +130,7 @@ function LayerControl({ position, data }) {
             </Paper>
           }
         </div>
-        {console.log('render')}
-        {data.map((parent) => (
-          <>
-            {console.log(parent)}
-            <GroupedLayer name={parent.id} group={parent.id}>
-              <LayerGroup>
-                {parent.children.map((child) => {
-                  <LayerGroup>
-                    <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} />;
-                  </LayerGroup>;
-                })}
-              </LayerGroup>
-            </GroupedLayer>
-          </>
-        ))}
+        {children}
       </div>
     </LayersControlProvider>
   );

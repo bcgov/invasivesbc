@@ -267,7 +267,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <Offline />
 
         <ZoomControl position="bottomright" />
-        <LayerControl position="topright" data={data}></LayerControl>
+        <LayerControl position="topright" data={data}>
+          {data.map((parent) =>
+            parent.children.map((child) => (
+              <GroupedLayer name={child.id} group={parent.id}>
+                <LayerGroup></LayerGroup>
+                <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} />
+              </GroupedLayer>
+            ))
+          )}
+        </LayerControl>
 
         {/* Here are the editing tools */}
 
