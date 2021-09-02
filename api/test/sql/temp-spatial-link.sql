@@ -2,11 +2,13 @@
   Unnest all species out of the species arrays.
   This creates new rows for every instance in the species array.
 */
+drop table if exists invasivesbc.test_spatial_overlay;
+create table invasivesbc.test_spatial_overlay as
 with unwrapped  as (
   select 
     activity_subtype,
     jsonb_array_elements(to_jsonb(species_positive)) "species",
-    geometry(geog) "geog"
+    geometry(geog) "geom"
   from
     activity_incoming_data
   where
@@ -17,8 +19,8 @@ with unwrapped  as (
     ) > 0
 )
 select
-  species,
-  public.st_union(geog) "geog"
+  species #>> '{}' "species", -- Convert from jsonb to text
+  public.st_union(geom) "geom"
 from
   unwrapped
 group by
