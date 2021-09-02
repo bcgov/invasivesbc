@@ -4,16 +4,31 @@
 */
 select 
   activity_subtype,
-  jsonb_array_elements(activity_payload -> 'species_positive') "species"
+  jsonb_array_elements(to_jsonb(species_positive)) "species",
+  geog
 from
   activity_incoming_data
 where
   activity_type = 'Observation' and
   deleted_timestamp is null and
-  json_array_length(
-    to_json(activity_payload -> 'species_positive')
+  array_length(
+    species_positive, 1
   ) > 0
 ;
+
+/*********** Not using the json lookup anymore **************/
+-- select 
+--   activity_subtype,
+--   jsonb_array_elements(activity_payload -> 'species_positive') "species"
+-- from
+--   activity_incoming_data
+-- where
+--   activity_type = 'Observation' and
+--   deleted_timestamp is null and
+--   json_array_length(
+--     to_json(activity_payload -> 'species_positive')
+--   ) > 0
+-- ;
 
 -- Testing the array length insert logic
 -- select 
