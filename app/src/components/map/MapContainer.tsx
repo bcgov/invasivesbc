@@ -267,13 +267,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <Offline />
 
         <ZoomControl position="bottomright" />
-        <LayerControl position="topright" data={data}>
-          {data.map((parent) => (
-            <GroupedLayer name={parent.id} group="Default">
-              <LayerGroup></LayerGroup>
-            </GroupedLayer>
-          ))}
-        </LayerControl>
+        <LayerControl position="topright" data={data}></LayerControl>
 
         {/* Here are the editing tools */}
 
@@ -289,9 +283,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             {/* this line below works - its what you need for geosjon}
             <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> }
-          </LayersControl.Overlay>
-          <LayersControl.Overlay checked name="placenames">
-            <DataBCLayer layerName={'WHSE_BASEMAPPING.GNS_GEOGRAPHICAL_NAMES_SP'} mode={LayerMode.WMSOnline} />
           </LayersControl.Overlay>
         </LayersControl>*/}
       </MapRequestContextProvider>

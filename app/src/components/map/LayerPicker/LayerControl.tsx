@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Paper, Typography, IconButton } from '@material-ui/core';
-import { useMapEvents } from 'react-leaflet';
+import { LayerGroup, useMapEvents, WMSTileLayer } from 'react-leaflet';
 import { Util } from 'leaflet';
 import Accordion from '@material-ui/core/Accordion';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -13,6 +13,7 @@ import lodashGroupBy from 'lodash.groupby';
 import { LayersControlProvider } from './layerControlContext';
 
 import createControlledLayer from './controlledLayer';
+import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
 
 // Classes used by Leaflet to position controls
 const POSITION_CLASSES = {
@@ -22,7 +23,7 @@ const POSITION_CLASSES = {
   topright: 'leaflet-top leaflet-right'
 };
 
-function LayerControl({ position, children, data }) {
+function LayerControl({ position, data }) {
   const [collapsed, setCollapsed] = useState(true);
   const [layers, setLayers] = useState([]);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
@@ -106,28 +107,52 @@ function LayerControl({ position, children, data }) {
                       <Typography>{section}</Typography>
                     </AccordionSummary>
                     {groupedLayers[section]?.map((layerObj) => (
-                      <AccordionDetails>
-                        <Accordion>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={layerObj.enabled}
-                                onChange={() => onLayerClick(layerObj)}
-                                name="checkedB"
-                                color="primary"
-                              />
-                            }
-                            label={layerObj.name}
-                          />
-                        </Accordion>
-                      </AccordionDetails>
+                      <>
+                        <Checkbox
+                          checked={layerObj.enabled}
+                          onChange={() => onLayerClick(layerObj)}
+                          name="checkedB"
+                          color="primary"
+                        />
+                        {console.dir(layerObj)}
+                        {console.dir(groupedLayers)}
+                        <AccordionDetails>
+                          <Accordion>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={layerObj.enabled}
+                                  onChange={() => onLayerClick(layerObj)}
+                                  name="checkedB"
+                                  color="primary"
+                                />
+                              }
+                              label={layerObj.name}
+                            />
+                          </Accordion>
+                        </AccordionDetails>
+                      </>
                     ))}
                   </Accordion>
                 ))}
             </Paper>
           }
         </div>
-        {children}
+        {console.log('render')}
+        {data.map((parent) => (
+          <>
+            {console.log(parent)}
+            <GroupedLayer name={parent.id} group={parent.id}>
+              <LayerGroup>
+                {parent.children.map((child) => {
+                  <LayerGroup>
+                    <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} />;
+                  </LayerGroup>;
+                })}
+              </LayerGroup>
+            </GroupedLayer>
+          </>
+        ))}
       </div>
     </LayersControlProvider>
   );
