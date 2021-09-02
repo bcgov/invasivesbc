@@ -2,18 +2,27 @@
   Unnest all species out of the species arrays.
   This creates new rows for every instance in the species array.
 */
-select 
-  activity_subtype,
-  jsonb_array_elements(to_jsonb(species_positive)) "species",
-  geog
+with unwrapped  as (
+  select 
+    activity_subtype,
+    jsonb_array_elements(to_jsonb(species_positive)) "species",
+    geometry(geog) "geog"
+  from
+    activity_incoming_data
+  where
+    activity_type = 'Observation' and
+    deleted_timestamp is null and
+    array_length(
+      species_positive, 1
+    ) > 0
+)
+select
+  species,
+  public.st_union(geog) "geog"
 from
-  activity_incoming_data
-where
-  activity_type = 'Observation' and
-  deleted_timestamp is null and
-  array_length(
-    species_positive, 1
-  ) > 0
+  unwrapped
+group by
+  species
 ;
 
 /*********** Not using the json lookup anymore **************/
