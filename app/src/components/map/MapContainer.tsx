@@ -40,6 +40,7 @@ import EditTools from './Tools/EditTools';
 import { RenderKeyFeaturesNearFeature } from './LayerLoaderHelpers/DataBCRenderFeaturesNearFeature';
 import { toolStyles } from './Tools/ToolBtnStyles';
 import { DataBCLayer, LayerMode } from './LayerLoaderHelpers/DataBCRenderLayer';
+import LayerControl, { GroupedLayer } from './LayerPicker/LayerControl';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -259,13 +260,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
             </FeatureGroup>
           )}
-          <LayerPicker data={data} />
+          {/*<LayerPicker data={data} />*/}
         </div>
 
         {/* Here is the offline component */}
         <Offline />
 
         <ZoomControl position="bottomright" />
+        <LayerControl position="topright" data={data}>
+          {data.map((parent) => (
+            <GroupedLayer name={parent.id} group="Default">
+              <LayerGroup></LayerGroup>
+            </GroupedLayer>
+          ))}
+        </LayerControl>
 
         {/* Here are the editing tools */}
 

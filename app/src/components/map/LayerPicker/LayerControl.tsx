@@ -22,7 +22,7 @@ const POSITION_CLASSES = {
   topright: 'leaflet-top leaflet-right'
 };
 
-function LayerControl({ position, children }) {
+function LayerControl({ position, children, data }) {
   const [collapsed, setCollapsed] = useState(true);
   const [layers, setLayers] = useState([]);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
@@ -34,7 +34,6 @@ function LayerControl({ position, children }) {
        
      }*/
   });
-
   const onLayerClick = (layerObj) => {
     if (map?.hasLayer(layerObj.layer)) {
       map.removeLayer(layerObj.layer);
@@ -112,7 +111,7 @@ function LayerControl({ position, children }) {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={layerObj.checked}
+                                checked={layerObj.enabled}
                                 onChange={() => onLayerClick(layerObj)}
                                 name="checkedB"
                                 color="primary"
@@ -120,8 +119,6 @@ function LayerControl({ position, children }) {
                             }
                             label={layerObj.name}
                           />
-                          <AccordionSummary expandIcon={<ExpandMoreIcon />}></AccordionSummary>
-                          <AccordionDetails>Oooga booga</AccordionDetails>
                         </Accordion>
                       </AccordionDetails>
                     ))}

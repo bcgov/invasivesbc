@@ -22,10 +22,8 @@ import { MapRequestContext } from 'contexts/MapRequestsContext';
 // for confirming loaded layers
 import DoneIcon from '@material-ui/icons/Done';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import LayersIcon from '@material-ui/icons/Layers';
 import {
   Checkbox,
-  IconButton,
   Grid,
   ListItemSecondaryAction,
   ListItemIcon,
@@ -37,9 +35,6 @@ import {
   makeStyles,
   Popover
 } from '@material-ui/core';
-import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
-import { GeoJSON } from 'react-leaflet';
-import TempPOILoader from '../LayerLoaderHelpers/TempPOILoader';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from '../Tools/ToolBtnStyles';
 
@@ -79,18 +74,10 @@ const useStyles = makeStyles((theme) => ({
 
 export function LayerPicker(props: any) {
   const classes = useStyles();
-  const toolClass = toolStyles();
   const mapLayersContext = useContext(MapRequestContext);
   const timeLeft = WithCounter();
-  const map = useMap();
-  const themeContext = useContext(ThemeContext);
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
-  const [checked, setChecked] = useState(false);
-  const [radio, setRadio] = useState('default');
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
@@ -133,7 +120,7 @@ export function LayerPicker(props: any) {
   ));
 
   function WithCounter() {
-    const [seconds, setSeconds] = React.useState(2);
+    const [seconds, setSeconds] = React.useState(10);
     React.useEffect(() => {
       if (seconds > 0) {
         setTimeout(() => setSeconds(seconds - 1), 1000);
@@ -241,55 +228,60 @@ export function LayerPicker(props: any) {
     setObjectState(returnVal);
   };
 
-  const handleCheckboxChange = (event) => {
-    setChecked(event.target.checked);
-  };
-  const handleRadioChange = (event) => {
-    setRadio(event.target.value);
-  };
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   return (
     <>
       <div style={{ zIndex: 1000 }}>
-        <div
-          onTouchStart={() => {
-            map.dragging.disable();
-            map.doubleClickZoom.disable();
-          }}
-          onTouchMove={() => {
-            map.dragging.disable();
-            map.doubleClickZoom.disable();
-          }}
-          onTouchEnd={() => {
-            map.dragging.disable();
-            map.doubleClickZoom.disable();
-          }}
-          onMouseOver={() => {
-            if (Capacitor.getPlatform() == 'web') {
+        {/*}
+          <div
+            onTouchStart={() => {
               map.dragging.disable();
               map.doubleClickZoom.disable();
-            }
-          }}
-          onMouseOut={() => {
-            if (Capacitor.getPlatform() == 'web') {
-              map.dragging.enable();
-              map.doubleClickZoom.enable();
-            }
-          }}>
-          <SortableListContainer
-            items={sortArray(objectState)}
-            onSortEnd={onSortEnd}
-            useDragHandle={true}
-            lockAxis="y"
-          />
-        </div>
+            }}
+            onTouchMove={() => {
+              map.dragging.disable();
+              map.doubleClickZoom.disable();
+            }}
+            onTouchEnd={() => {
+              map.dragging.disable();
+              map.doubleClickZoom.disable();
+            }}
+            onMouseOver={() => {
+              if (Capacitor.getPlatform() == 'web') {
+                map.dragging.disable();
+                map.doubleClickZoom.disable();
+              }
+            }}
+            onMouseOut={() => {
+              if (Capacitor.getPlatform() == 'web') {
+                map.dragging.enable();
+                map.doubleClickZoom.enable();
+              }
+            }}>*/}
+        {/*<FormControl
+              style={{
+                display: 'flex',
+                marginLeft: '10px'
+              }}>
+              <RadioGroup row value={radio} onChange={handleRadioChange}>
+                <FormControlLabel value="default" control={<Radio />} label="default" />
+                {getSateliteMap(radio)}
+                <FormControlLabel value="other" control={<Radio />} label="other" />
+                {getOpenStreetMap(radio)}
+              </RadioGroup>
+            </FormControl>
+            <FormControl
+              style={{
+                display: 'flex',
+                marginLeft: '10px'
+              }}>
+              <FormControlLabel
+                control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
+                label="Activities"
+              />
+            </FormControl>*/}
+        <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
       </div>
+      {/*<RenderLayers />*/}
     </>
   );
 }
