@@ -105,7 +105,7 @@
         "name": "Regional Invasive Species Organization Areas",
         "source": "null",
         "type": "null",
-        "BCGWcode": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+        "BCGWcode": "regional_invasive_species_organization_areas",
         "colorCode": "#000",
         "order": 3,
         "loaded": 70,

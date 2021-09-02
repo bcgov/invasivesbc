@@ -16,7 +16,7 @@ import {
   sortObject
 } from './SortLayerOrder';
 import ColorPicker from 'material-ui-color-picker';
-import { TileLayer, useMap } from 'react-leaflet';
+import { LayerGroup, TileLayer, useMap } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 // for confirming loaded layers
@@ -33,10 +33,15 @@ import {
   AccordionSummary,
   Accordion,
   makeStyles,
-  Popover
+  Popover,
+  IconButton,
+  Paper
 } from '@material-ui/core';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from '../Tools/ToolBtnStyles';
+import LayersIcon from '@material-ui/icons/Layers';
+import { LayersControlProvider } from './layerControlContext';
+import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,12 +77,21 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export function LayerPicker(props: any) {
+const POSITION_CLASSES = {
+  bottomleft: 'leaflet-bottom leaflet-left',
+  bottomright: 'leaflet-bottom leaflet-right',
+  topleft: 'leaflet-top leaflet-left',
+  topright: 'leaflet-top leaflet-right'
+};
+
+export function LayerPicker(props: any, { position }) {
   const classes = useStyles();
   const mapLayersContext = useContext(MapRequestContext);
   const timeLeft = WithCounter();
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
+  const [collapsed, setCollapsed] = useState(true);
+  const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
@@ -199,6 +213,7 @@ export function LayerPicker(props: any) {
                       });
                     }}
                   />
+                  {child.enabled ? <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} /> : null}
                 </Grid>
                 <Grid item xs={5}>
                   {child.id}
@@ -229,35 +244,35 @@ export function LayerPicker(props: any) {
   };
 
   return (
-    <>
-      <div style={{ zIndex: 1000 }}>
-        {/*}
-          <div
-            onTouchStart={() => {
-              map.dragging.disable();
-              map.doubleClickZoom.disable();
-            }}
-            onTouchMove={() => {
-              map.dragging.disable();
-              map.doubleClickZoom.disable();
-            }}
-            onTouchEnd={() => {
-              map.dragging.disable();
-              map.doubleClickZoom.disable();
-            }}
-            onMouseOver={() => {
-              if (Capacitor.getPlatform() == 'web') {
-                map.dragging.disable();
-                map.doubleClickZoom.disable();
-              }
-            }}
-            onMouseOut={() => {
-              if (Capacitor.getPlatform() == 'web') {
-                map.dragging.enable();
-                map.doubleClickZoom.enable();
-              }
-            }}>*/}
-        {/*<FormControl
+    <LayersControlProvider value={null}>
+      <div className={positionClass}>
+        <div
+          className="leaflet-control leaflet-bar"
+          onTouchStart={() => {
+            props.map.dragging.disable();
+            props.map.doubleClickZoom.disable();
+          }}
+          onTouchMove={() => {
+            props.map.dragging.disable();
+            props.map.doubleClickZoom.disable();
+          }}
+          onTouchEnd={() => {
+            props.map.dragging.disable();
+            props.map.doubleClickZoom.disable();
+          }}
+          onMouseOver={() => {
+            if (Capacitor.getPlatform() == 'web') {
+              props.map.dragging.disable();
+              props.map.doubleClickZoom.disable();
+            }
+          }}
+          onMouseOut={() => {
+            if (Capacitor.getPlatform() == 'web') {
+              props.map.dragging.enable();
+              props.map.doubleClickZoom.enable();
+            }
+          }}>
+          {/*<FormControl
               style={{
                 display: 'flex',
                 marginLeft: '10px'
@@ -279,9 +294,28 @@ export function LayerPicker(props: any) {
                 label="Activities"
               />
             </FormControl>*/}
-        <SortableListContainer items={sortArray(objectState)} onSortEnd={onSortEnd} useDragHandle={true} lockAxis="y" />
+          <Paper
+            onMouseEnter={() => setCollapsed(false)}
+            onMouseLeave={() => setCollapsed(true)}
+            // className={classes.container}
+          >
+            {collapsed && (
+              <IconButton>
+                <LayersIcon fontSize="default" />
+              </IconButton>
+            )}
+            {!collapsed ? (
+              <SortableListContainer
+                items={sortArray(objectState)}
+                onSortEnd={onSortEnd}
+                useDragHandle={true}
+                lockAxis="y"
+              />
+            ) : null}
+          </Paper>
+          {/*<RenderLayers />*/}
+        </div>
       </div>
-      {/*<RenderLayers />*/}
-    </>
+    </LayersControlProvider>
   );
 }

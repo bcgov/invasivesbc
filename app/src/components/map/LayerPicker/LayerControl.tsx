@@ -105,6 +105,7 @@ function LayerControl({ position, children, data }) {
                       aria-controls="panel1a-content"
                       id="panel1a-header">
                       <Typography>{section}</Typography>
+                      {console.log(groupedLayers)}
                     </AccordionSummary>
                     {groupedLayers[section]?.map((layerObj) => (
                       <>
