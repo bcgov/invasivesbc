@@ -15,6 +15,21 @@ where
   ) > 0
 ;
 
+-- Testing the array length insert logic
+-- select 
+--   activity_subtype,
+--   species_positive "species",
+--   array_length(species_positive, 1) "length"
+-- from
+--   activity_incoming_data
+-- where
+--   activity_type = 'Observation' and
+--   deleted_timestamp is null and
+--   array_length(
+--     species_positive, 1
+--   ) > 0
+-- ;
+
 -- Select all positive species observations
 select 
   activity_subtype,
@@ -42,6 +57,8 @@ where
     to_json(activity_payload -> 'species_negative')
   ) > 0
 ;
+
+select * from activity_incoming_data where activity_incoming_data_id = 3470;
 
 -- Dump table with test code
 -- pg_dump --dbname=InvasivesBC --username=invasivebc --table=invasivesbc.activity_incoming_data --column-inserts --data-only > /tmp/activity_dump.sql
