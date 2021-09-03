@@ -84,7 +84,7 @@ export enum ActivityMonitoringLinks {
 
   Activity_Dispersal_BiologicalDispersal = 'Activity_Collection_Biocontrol',
   Activity_Collection_Biocontrol = 'Activity_Dispersal_BiologicalDispersal'
-};
+}
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
   [ActivityType.Observation]: Assignment,

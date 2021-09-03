@@ -3,7 +3,13 @@ import { Container, Box, MenuItem, Button, FormControl, InputLabel, Select, make
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useQuery } from 'hooks/useQuery';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
-import { generateActivityPayload, cloneDBRecord, createLinkedActivity, sanitizeRecord, mapDBActivityToDoc } from 'utils/addActivity';
+import {
+  generateActivityPayload,
+  cloneDBRecord,
+  createLinkedActivity,
+  sanitizeRecord,
+  mapDBActivityToDoc
+} from 'utils/addActivity';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import StepperComponent from 'components/activity/StepperComponent';
@@ -99,12 +105,10 @@ const TreatmentCreationStepperPage: React.FC<ITreatmentCreationStepperPage> = (p
     const getGeometriesOfSelectedObservations = async () => {
       await Promise.all(
         selectedObservationIds.map(async (oId: any) => {
-
           let activity = await getActivityByIdFromApi(invasivesApi, oId);
           activity = mapDBActivityToDoc(activity);
 
-          if (selectedObservationIds.length === 1)
-            setObservation(activity);
+          if (selectedObservationIds.length === 1) setObservation(activity);
 
           setObservationSubtype(activity.activitySubtype);
           setObservationGeos((obsGeos: any) => obsGeos.concat(activity.geometry[activity.geometry.length - 1]));

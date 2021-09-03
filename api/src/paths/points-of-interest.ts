@@ -70,7 +70,8 @@ POST.apiDoc = {
             },
             species_positive: {
               type: 'array',
-              description: 'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the list.',
+              description:
+                'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the list.',
               items: {
                 type: 'string'
               }

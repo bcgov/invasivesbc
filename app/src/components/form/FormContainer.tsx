@@ -226,11 +226,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       const response = await dataAccess.getCachedApiSpec();
       let components = response.components;
       const subtypeSchema = components?.schemas?.[props.activity?.activitySubtype];
-      
+
       // Handle activity_id linking fetches
       try {
         if (props.activity?.activityType === 'Monitoring') {
-
           const treatments_response = await dataAccess.getActivities({
             column_names: ['activity_id', 'created_timestamp'],
             activity_type: ['Treatment'],
@@ -245,13 +244,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             return {
               enum: [treatment.activity_id],
               title: short_id + ' : ' + treatment.activity_id,
-              type: "string",
+              type: 'string',
               'x-code_sort_order': i + 1
-            }
+            };
           });
 
           let modifiedSchema = components.schemas['Monitoring'];
-          modifiedSchema =  {
+          modifiedSchema = {
             ...modifiedSchema,
             properties: {
               ...modifiedSchema?.properties,
@@ -261,18 +260,17 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 anyOf: treatments
               }
             }
-          }
+          };
           components = {
             ...components,
             schemas: {
               ...components.schemas,
-              'Monitoring': modifiedSchema
+              Monitoring: modifiedSchema
             }
-          }
+          };
         }
 
         // put Treatments => Observations linking here
-
       } catch (error) {
         // console.log('Could not load Activity IDs of linkable records');
       }

@@ -463,10 +463,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     );
   }, [rows.length, orderHeader, order, page, rowsPerPage]);
   // render all dropdowns on page
-  const renderedDropdowns = useMemo(
-    () => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)),
-    [pageRows, dropdown]
-  );
+  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
+    pageRows,
+    dropdown
+  ]);
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
   const verboseOverflows = useMemo(
@@ -688,10 +688,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     ]
   );
 
-  if (hideEmpty && (!totalRows || loading))
-    return null;
-  else
-    return rendered;
+  if (hideEmpty && (!totalRows || loading)) return null;
+  else return rendered;
 };
 
 function RecordTableHead(props) {

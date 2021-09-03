@@ -78,7 +78,7 @@ POST.apiDoc = {
             },
             linked_id: {
               type: 'string',
-              description: 'Limit results to only those which link to this Activity ID',
+              description: 'Limit results to only those which link to this Activity ID'
             },
             species_positive: {
               type: 'array',
@@ -89,7 +89,8 @@ POST.apiDoc = {
             },
             species_negative: {
               type: 'array',
-              description: 'Limit results to only those with "negative occurences" matching at least one of the species in this list',
+              description:
+                'Limit results to only those with "negative occurences" matching at least one of the species in this list',
               items: {
                 type: 'string'
               }

@@ -39,7 +39,9 @@ const mapKeys = (source, mappingFunction) => {
 export const getShortActivityID = (activity) => {
   const record: any = mapKeys(activity, snakeCase);
   if (!record?.activity_subtype || !record?.activity_id || !(record?.date_created || record.created_timestamp)) return;
-  const shortYear = moment(record.date_created || record.created_timestamp).format().substr(2, 2);
+  const shortYear = moment(record.date_created || record.created_timestamp)
+    .format()
+    .substr(2, 2);
   return shortYear + ActivityLetter[record.activity_subtype] + record.activity_id.substr(0, 4).toUpperCase();
 };
 
@@ -98,8 +100,7 @@ export const sanitizeRecord = (input: any) => {
     throw 'This is confusing.  A record should be an activity OR a POI';
 
   if (!flattened.activity_id && !flattened.point_of_interest_id) {
-    if (!flattened.doc_type)
-      throw 'Unknown Record type with no ID';
+    if (!flattened.doc_type) throw 'Unknown Record type with no ID';
 
     if (flattened.doc_type === DocType.ACTIVITY) {
       if (flattened._id) flattened.activity_id = flattened._id;
@@ -469,26 +470,25 @@ export async function createLinkedActivity(
 
 // extract and set the species codes (both positive and negative) of a given activity (or POI, once they're editable)
 export function populateSpeciesArrays(record) {
-  
   let species_positive = [];
   let species_negative = [];
   const subtypeData = record?.formData?.activity_subtype_data;
-  
+
   switch (record.activitySubtype) {
     case ActivitySubtype.Observation_PlantTerrestrial:
-      species_positive = subtypeData?.invasive_plants?.
-        filter((plant) => plant.occurrence?.includes('Positive'))
-        .map((plant) =>  plant.invasive_plant_code);
-      species_negative = subtypeData?.invasive_plants?.
-        filter((plant) => plant.occurrence?.includes('Negative'))
+      species_positive = subtypeData?.invasive_plants
+        ?.filter((plant) => plant.occurrence?.includes('Positive'))
+        .map((plant) => plant.invasive_plant_code);
+      species_negative = subtypeData?.invasive_plants
+        ?.filter((plant) => plant.occurrence?.includes('Negative'))
         .map((plant) => plant.invasive_plant_code);
       break;
     case ActivitySubtype.Observation_PlantAquatic:
-      species_positive = subtypeData?.invasive_plants?.
-        filter((plant) => plant.observation_type?.includes('Positive'))
-        .map((plant) =>  plant.invasive_plant_code);
-      species_negative = subtypeData?.invasive_plants?.
-        filter((plant) => plant.observation_type?.includes('Negative'))
+      species_positive = subtypeData?.invasive_plants
+        ?.filter((plant) => plant.observation_type?.includes('Positive'))
+        .map((plant) => plant.invasive_plant_code);
+      species_negative = subtypeData?.invasive_plants
+        ?.filter((plant) => plant.observation_type?.includes('Negative'))
         .map((plant) => plant.invasive_plant_code);
       break;
 
@@ -496,13 +496,13 @@ export function populateSpeciesArrays(record) {
       // no species selection currently
       break;
     case ActivitySubtype.Activity_AnimalAquatic:
-      species_positive = subtypeData?.invasive_aquatic_animals?.map(
-        (animal) => animal.invasive_animal_code
-      );
+      species_positive = subtypeData?.invasive_aquatic_animals?.map((animal) => animal.invasive_animal_code);
       break;
 
     case ActivitySubtype.Treatment_ChemicalPlant:
-      species_positive = subtypeData?.treatment_information?.invasive_plants_information?.map((plant) => plant.invasive_plant_code);
+      species_positive = subtypeData?.treatment_information?.invasive_plants_information?.map(
+        (plant) => plant.invasive_plant_code
+      );
       break;
     case ActivitySubtype.Treatment_MechanicalPlant:
     case ActivitySubtype.Treatment_BiologicalPlant:
@@ -514,32 +514,32 @@ export function populateSpeciesArrays(record) {
       break;
 
     case ActivitySubtype.Transect_FireMonitoring:
-      species_positive = subtypeData?.fire_monitoring_transect_lines?.map(
-        (line) => line.fire_monitoring_transect_points?.map(
-          (point) => point.invasive_plants?.map(
-            (plant) => plant.invasive_plant_code
+      species_positive = subtypeData?.fire_monitoring_transect_lines
+        ?.map((line) =>
+          line.fire_monitoring_transect_points?.map((point) =>
+            point.invasive_plants?.map((plant) => plant.invasive_plant_code)
           )
         )
-      ).flat(3);
+        .flat(3);
       break;
     case ActivitySubtype.Transect_Vegetation:
-      species_positive = subtypeData?.vegetation_transect_lines?.map(
-        (line) => [
-          line.vegetation_transect_points_percent_cover,
-          line.vegetation_transect_points_number_plants,
-          line.vegetation_transect_points_daubenmire
-        ]
-        .flat(2)
-        .filter((point) => point)
-        .map((point) => point.vegetation_transect_species?.invasive_plants?.map(
-          (plant) => plant.invasive_plant_code
-        ))
-      ).flat(3);
+      species_positive = subtypeData?.vegetation_transect_lines
+        ?.map((line) =>
+          [
+            line.vegetation_transect_points_percent_cover,
+            line.vegetation_transect_points_number_plants,
+            line.vegetation_transect_points_daubenmire
+          ]
+            .flat(2)
+            .filter((point) => point)
+            .map((point) =>
+              point.vegetation_transect_species?.invasive_plants?.map((plant) => plant.invasive_plant_code)
+            )
+        )
+        .flat(3);
       break;
     case ActivitySubtype.Transect_BiocontrolEfficacy:
-      species_positive = subtypeData?.transect_invasive_plants?.map(
-        (plant) => plant.invasive_plant_code
-      ) || [];
+      species_positive = subtypeData?.transect_invasive_plants?.map((plant) => plant.invasive_plant_code) || [];
       break;
     default:
       break;
@@ -547,11 +547,13 @@ export function populateSpeciesArrays(record) {
   console.log(3333, species_positive, species_negative);
   return {
     ...record,
-    species_positive: Array.from(new Set(species_positive || []))?.
-      filter((code) => typeof code === 'string')
-      .sort() || [],
-    species_negative: Array.from(new Set(species_negative || []))?.
-      filter((code) => typeof code === 'string')
-      .sort() || []
-  }
+    species_positive:
+      Array.from(new Set(species_positive || []))
+        ?.filter((code) => typeof code === 'string')
+        .sort() || [],
+    species_negative:
+      Array.from(new Set(species_negative || []))
+        ?.filter((code) => typeof code === 'string')
+        .sort() || []
+  };
 }
