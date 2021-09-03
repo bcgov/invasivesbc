@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Marker, Popup } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, IconButton } from '@material-ui/core';
+import { CircularProgress, IconButton, Typography } from '@material-ui/core';
 import proj4 from 'proj4';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
@@ -17,7 +17,7 @@ export const utm_zone = (longitude: number, latitude: number) => {
   const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
   let utmEasting = Number(en_m[0].toFixed(4));
   let utmNorthing = Number(en_m[1].toFixed(4));
-  return 'UTM  Zone:' + utmZone + ' UTM Easting:' + utmEasting + ' UTM Northing:' + utmNorthing;
+  return [utmZone, utmEasting, utmNorthing];
 };
 
 export default function DisplayPosition({ map }) {
@@ -26,6 +26,7 @@ export default function DisplayPosition({ map }) {
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
+  const [utm, setUTM] = useState([]);
   const divRef = useRef();
 
   useEffect(() => {
@@ -46,6 +47,7 @@ export default function DisplayPosition({ map }) {
 
   useEffect(() => {
     if (newPosition) {
+      setUTM(utm_zone(newPosition.coords.longitude, newPosition.coords.latitude));
       map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
     }
   }, [newPosition]);
@@ -63,7 +65,9 @@ export default function DisplayPosition({ map }) {
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
           <Popup>
             {/*position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)*/}
-            {utm_zone(newPosition.coords.longitude, newPosition.coords.latitude)}
+            <Typography>UTM Zone {utm[0]}</Typography>
+            <Typography>UTM Northing {utm[2]}</Typography>
+            <Typography>UTM Easting {utm[1]}</Typography>
           </Popup>
         </Marker>
       ) : null}

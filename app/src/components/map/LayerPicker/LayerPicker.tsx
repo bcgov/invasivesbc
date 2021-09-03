@@ -16,7 +16,7 @@ import {
   sortObject
 } from './SortLayerOrder';
 import ColorPicker from 'material-ui-color-picker';
-import { LayerGroup, TileLayer, useMap } from 'react-leaflet';
+import { Circle, LayerGroup, TileLayer, useMap } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 // for confirming loaded layers
@@ -91,6 +91,7 @@ export function LayerPicker(props: any, { position }) {
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
   const [collapsed, setCollapsed] = useState(true);
+  const [layers, setLayers] = useState([]);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
@@ -125,6 +126,23 @@ export function LayerPicker(props: any, { position }) {
     };
 
     setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
+  };
+
+  const updateChildLayers = (parent, child) => {
+    if (child.enabled) {
+      var temp;
+      for (let i in layers) {
+        if (layers[i] === child.BCGWcode) {
+          temp = i;
+        }
+      }
+      layers.splice(temp, 1);
+    } else if (!child.enabled) {
+      setLayers([...layers, child.BCGWcode]);
+    }
+    updateChild(parent.id, child.id, {
+      enabled: !getChild(objectState, parent.id, child.id).enabled
+    });
   };
 
   const DragHandle = SortableHandle(() => (
@@ -204,16 +222,8 @@ export function LayerPicker(props: any, { position }) {
               <Grid container direction="row" justifyContent="flex-start" alignItems="center">
                 &emsp;
                 <Grid item xs={2}>
-                  <Checkbox
-                    checked={child.enabled}
-                    name={child.id}
-                    onChange={() => {
-                      updateChild(parent.id, child.id, {
-                        enabled: !getChild(objectState, parent.id, child.id).enabled
-                      });
-                    }}
-                  />
-                  {child.enabled ? <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} /> : null}
+                  <Checkbox checked={child.enabled} name={child.id} onChange={() => updateChildLayers(parent, child)} />
+                  {/*child.enabled ? <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} /> : null*/}
                 </Grid>
                 <Grid item xs={5}>
                   {child.id}
@@ -300,18 +310,28 @@ export function LayerPicker(props: any, { position }) {
             // className={classes.container}
           >
             {collapsed && (
-              <IconButton>
-                <LayersIcon fontSize="default" />
-              </IconButton>
+              <>
+                {layers.map((layer) => (
+                  <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
+                ))}
+                <IconButton>
+                  <LayersIcon fontSize="default" />
+                </IconButton>
+              </>
             )}
-            {!collapsed ? (
-              <SortableListContainer
-                items={sortArray(objectState)}
-                onSortEnd={onSortEnd}
-                useDragHandle={true}
-                lockAxis="y"
-              />
-            ) : null}
+            {!collapsed && (
+              <>
+                {layers.map((layer) => (
+                  <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
+                ))}
+                <SortableListContainer
+                  items={sortArray(objectState)}
+                  onSortEnd={onSortEnd}
+                  useDragHandle={true}
+                  lockAxis="y"
+                />
+              </>
+            )}
           </Paper>
           {/*<RenderLayers />*/}
         </div>

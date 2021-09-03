@@ -13,8 +13,7 @@ import {
   useMap,
   FeatureGroup,
   useMapEvent,
-  ZoomControl,
-  LayerGroup
+  ZoomControl
 } from 'react-leaflet';
 import { interactiveGeoInputData } from './GeoMeta';
 import Spinner from 'components/spinner/Spinner';
@@ -39,8 +38,6 @@ import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
 import { RenderKeyFeaturesNearFeature } from './LayerLoaderHelpers/DataBCRenderFeaturesNearFeature';
 import { toolStyles } from './Tools/ToolBtnStyles';
-import { DataBCLayer, LayerMode } from './LayerLoaderHelpers/DataBCRenderLayer';
-import LayerControl, { GroupedLayer } from './LayerPicker/LayerControl';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -267,16 +264,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <Offline />
 
         <ZoomControl position="bottomright" />
-        {/*<LayerControl position="topright" data={data}>
-          {data.map((parent) =>
-            parent.children.map((child) => (
-              <GroupedLayer name={child.id} group={parent.id}>
-                <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} />
-              </GroupedLayer>
-            ))
-          )}
-        </LayerControl>*/}
-        <LayerPicker position="topright" map={map} data={data}></LayerPicker>
+        <LayerPicker position="topright" map={map} data={data} />
 
         {/* Here are the editing tools */}
 
