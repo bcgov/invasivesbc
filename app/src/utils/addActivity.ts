@@ -100,7 +100,7 @@ export const sanitizeRecord = (input: any) => {
     throw 'This is confusing.  A record should be an activity OR a POI';
 
   if (!flattened.activity_id && !flattened.point_of_interest_id) {
-    if (!flattened.doc_type) throw 'Unknown Record type with no ID';
+    if (!flattened.doc_type) throw new Error('Unknown Record type with no ID');
 
     if (flattened.doc_type === DocType.ACTIVITY) {
       if (flattened._id) flattened.activity_id = flattened._id;
@@ -240,7 +240,7 @@ export const sanitizeRecord = (input: any) => {
     };
   }
 
-  // TODO handle POIs
+  // handle POIs here
 };
 
 /*
@@ -416,9 +416,6 @@ export async function cloneActivity(clonedRecord: any) {
   };
 
   return doc;
-
-  // await databaseContext.database.put(doc);
-  //return await databaseContext.database.get(doc._id);
 }
 
 /*
@@ -462,8 +459,6 @@ export async function createLinkedActivity(
   }
 
   const doc: IActivity = generateActivityPayload(formData, geometry, activityType, activitySubtype);
-
-  // await databaseContext.database.put(doc);
 
   return doc;
 }

@@ -17,7 +17,6 @@ import Form from '@rjsf/material-ui';
 import { ActivitySyncStatus, ActivityMonitoringLinks } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from '../../contexts/themeContext';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import { getShortActivityID } from '../../utils/addActivity';
 import { useDataAccess } from '../../hooks/useDataAccess';
 import React, { useContext, useEffect, useState } from 'react';
@@ -255,7 +254,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             properties: {
               ...modifiedSchema?.properties,
               linked_id: {
-                ...modifiedSchema?.properties?.activity_id, // TODO REMOVE LEGACY VAR NAME ONCE PUSHED TO UPDATED DEV
                 ...modifiedSchema?.properties?.linked_id,
                 anyOf: treatments
               }
@@ -272,7 +270,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
         // put Treatments => Observations linking here
       } catch (error) {
-        // console.log('Could not load Activity IDs of linkable records');
+        console.log('Could not load Activity IDs of linkable records');
       }
       setSchemas({
         schema: { ...subtypeSchema, components: components },

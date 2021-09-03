@@ -5,7 +5,6 @@ import {
   ActivitySubtype,
   ActivitySubtypeShortLabels,
   ActivitySyncStatus,
-  ActivityType,
   FormValidationStatus,
   ReviewStatus
 } from 'constants/activities';
@@ -17,8 +16,6 @@ import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   sanitizeRecord,
-  createLinkedActivity,
-  addNewActivityToDB,
   generateDBActivityPayload,
   getShortActivityID
 } from 'utils/addActivity';
@@ -707,7 +704,6 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
-  const history = useHistory();
   const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();
   const { tableSchemaType, headers = [], ...otherProps } = props;

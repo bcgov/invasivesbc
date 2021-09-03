@@ -476,8 +476,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   // determine if any rows on the current page have a dropdown:
   const pageHasDropdown = useMemo(
     () =>
-      (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
-      (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0) ||
+      (!!dropdown && renderedDropdowns.filter((x) => x).length > 0) ||
+      (overflowDropdown && verboseOverflows.filter((x) => x).length > 0) ||
       (rowActions?.length > 0 && rowActionStyle === 'dropdown'),
     [dropdown, renderedDropdowns, overflowDropdown, verboseOverflows, rowActions?.length, rowActionStyle]
   );

@@ -12,7 +12,7 @@ import {
 import { FileCopy } from '@material-ui/icons';
 import ActivityComponent from '../../../components/activity/ActivityComponent';
 import { IPhoto } from '../../../components/photo/PhotoContainer';
-import { ActivityStatus, FormValidationStatus, ActivitySubtype } from 'constants/activities';
+import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { DatabaseContext } from '../../../contexts/DatabaseContext';
 import proj4 from 'proj4';
 import { Feature } from 'geojson';
@@ -46,10 +46,8 @@ import { notifySuccess, notifyError } from '../../../utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from '../../../utils/geometryHelpers';
 import {
-  cloneActivity,
   mapDocToDBActivity,
   mapDBActivityToDoc,
-  sanitizeRecord,
   populateSpeciesArrays
 } from '../../../utils/addActivity';
 import { useDataAccess } from '../../../hooks/useDataAccess';
@@ -159,9 +157,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           ...mapDocToDBActivity(updated)
         };
 
-        let res;
-        if (!oldActivity) res = await dataAccess.createActivity(newActivity, databaseContext);
-        else res = await dataAccess.updateActivity(newActivity, databaseContext);
+        if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
+        else await dataAccess.updateActivity(newActivity, databaseContext);
       });
       await dbUpdates(updatedDoc);
       return true;
@@ -398,10 +395,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /*
     Function to set the active activity in the DB context and the current activity view
   */
-  const setActiveActivity = async (activeActivity: any) => {
+  /* const setActiveActivity = async (activeActivity: any) => {
     setIsCloned(true);
     await dataAccess.setAppState({ activeActivity: activeActivity }, databaseContext);
-  };
+  }; */
 
   /*
     Function to generate clone activity button component
@@ -416,7 +413,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             startIcon={<FileCopy />}
             onClick={async () => {
               // const addedActivity = await addClonedActivityToDB(databaseContextPouch, doc);
-              // setActiveActivity(addedActivity);
+              //setActiveActivity(addedActivity);
               notifySuccess(
                 databaseContextPouch,
                 'Successfully cloned activity. You are now viewing the cloned activity.'

@@ -71,9 +71,7 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   */
   useEffect(() => {
     const getObservation = async () => {
-      let activity = await dataAccess.getActivityById(selectedObservationId);
-      activity = mapDBActivityToDoc(activity);
-      // const activity = await databaseContext.database.get(selectedObservationId);
+      const activity = await databaseContext.database.get(selectedObservationId);
 
       setObservationSubtype(activity.activitySubtype);
       setObservation(activity);

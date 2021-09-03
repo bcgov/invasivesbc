@@ -4,7 +4,6 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useQuery } from 'hooks/useQuery';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
 import {
-  generateActivityPayload,
   cloneDBRecord,
   createLinkedActivity,
   sanitizeRecord,
