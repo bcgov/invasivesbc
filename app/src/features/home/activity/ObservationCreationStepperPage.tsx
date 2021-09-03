@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Container, Box, MenuItem, Button, FormControl, InputLabel, Select, makeStyles } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useQuery } from 'hooks/useQuery';
-import { createLinkedActivity, mapDBActivityToDoc, sanitizeRecord } from 'utils/addActivity';
+import { createLinkedActivity, sanitizeRecord } from 'utils/addActivity';
 import { ActivityType, ActivitySubtype } from 'constants/activities';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import ActivityPage from 'features/home/activity/ActivityPage';

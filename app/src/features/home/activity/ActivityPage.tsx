@@ -89,7 +89,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
-  const [isCloned, setIsCloned] = useState(false);
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
@@ -600,7 +599,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
 
     getActivityData();
-  }, [databaseContext, isCloned]);
+  }, [databaseContext]);
 
   useEffect(() => {
     if (isLoading || !doc) {
