@@ -98,6 +98,9 @@ export const sanitizeRecord = (input: any) => {
     throw 'This is confusing.  A record should be an activity OR a POI';
 
   if (!flattened.activity_id && !flattened.point_of_interest_id) {
+    if (!flattened.doc_type)
+      throw 'Unknown Record type with no ID';
+
     if (flattened.doc_type === DocType.ACTIVITY) {
       if (flattened._id) flattened.activity_id = flattened._id;
       else {
@@ -235,6 +238,8 @@ export const sanitizeRecord = (input: any) => {
       geometry: geom || flattened.geometry || activity_payload?.geometry
     };
   }
+
+  // TODO handle POIs
 };
 
 /*

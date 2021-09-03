@@ -13,7 +13,6 @@ import moment from 'moment';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
-  addLinkedActivityToDB,
   sanitizeRecord,
   createLinkedActivity,
   addNewActivityToDB,
@@ -128,22 +127,26 @@ const arrayWrap = (value) => {
   return Array.isArray(value) ? value : [value];
 };
 
+const uniqueArray = (items) => {
+  return Array.from(new Set(arrayWrap(items)))
+}
+
 export const defaultActivitiesFetch =
-  ({ dataAccess, activitySubtypes, created_by = undefined, review_status = [], linked_id = undefined }, databaseContext) =>
+  ({ databaseContext, dataAccess, activitySubtypes = [], created_by = undefined, review_status = [], linked_id = undefined }) =>
   async ({ page, rowsPerPage, order }) => {
     // Fetches fresh from the API (web).  TODO fetch from SQLite
     let dbPageSize = DEFAULT_PAGE_SIZE;
     if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
       // if page is right near the db page limit
       dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
-    const types = arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]);
+    const types = uniqueArray(arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]));
     const result = await dataAccess.getActivities(
       {
         page: Math.floor((page * rowsPerPage) / dbPageSize),
         limit: dbPageSize,
         order: order,
         // search_feature: geometry TODO
-        activity_type: arrayWrap(types),
+        activity_type: types,
         activity_subtype: arrayWrap(activitySubtypes),
         // startDate, endDate will be filters
         created_by: created_by, // my_keycloak_id
@@ -267,15 +270,13 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   let rows = props.rows;
   if (Array.isArray(rows)) rows = rows.map(activityStandardMapping);
   if (typeof rows === 'undefined') {
-    rows = defaultActivitiesFetch(
-      {
-        dataAccess,
-        activitySubtypes: arrayWrap(activitySubtypes),
-        created_by,
-        review_status: review_status
-      },
-      databaseContext
-    );
+    rows = defaultActivitiesFetch({
+      databaseContext,
+      dataAccess,
+      activitySubtypes: arrayWrap(activitySubtypes),
+      created_by,
+      review_status: review_status
+    });
   }
   return useMemo(
     () => (
@@ -547,7 +548,7 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <ActivitiesTable
-        startingOrderBy="date_created"
+        startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -667,7 +668,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <ObservationsTable
-        startingOrderBy="date_created"
+        startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -693,7 +694,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();
-  const { tableSchemaType, actions, headers = [], ...otherProps } = props;
+  const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
       <ActivitiesTable
@@ -774,17 +775,14 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
               ]}
               rows={[row]}
               pagination={false}
-              actions={actions === false ? false : {
-                sync: {
-                  enabled: false
-                }
-              }}
+              actions={false}
             />
 
             <MonitoringTable
               tableName="Linked Monitoring"
               key={row._id + '_monitoring'}
               rows={defaultActivitiesFetch({
+                databaseContext,
                 dataAccess,
                 linked_id: row._id
               })}
@@ -793,55 +791,10 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
             />
           </>
         )}
-        actions={actions === false ? false : {
-          ...actions,
-          create_monitoring: {
-            key: 'create_monitoring',
-            enabled: true,
-            label: 'Create Monitoring',
-            bulkAction: false,
-            rowAction: true,
-            displayInvalid: 'hidden',
-            rowCondition: (row) => row.activityType === 'Treatment',
-            action: async (selectedRows) => {
-              if (selectedRows.length !== 1)
-                // action is for creating a single monitoring from a given row
-                // NOTE: might want to extend this into a multi-row monitoring action later
-                return;
-              const activity = selectedRows[0];
-
-              const linkedActivity = await createLinkedActivity(
-                ActivityType.Monitoring,
-                calculateMonitoringSubtypeByTreatmentSubtype(activity.activitySubtype),
-                activity
-              );
-
-              // await upsert(
-              //   [
-              //     {
-              //       type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-              //       docType: DocType.APPSTATE,
-              //       ID: '1',
-              //       json: { activeActivity: addedActivity._id }
-              //     }
-              //   ],
-              //   databaseContext
-              // );
-              await dataAccess.createActivity(sanitizeRecord(linkedActivity), databaseContext);
-
-              await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc: any) => {
-                return { ...appStateDoc, activeActivity: linkedActivity._id };
-              });
-
-              history.push(`/home/activity`);
-            },
-            ...actions?.create_monitoring
-          }
-        }}
         {...otherProps}
       />
     );
-  }, [props.rows?.length, props.selected?.length, JSON.stringify(actions)]);
+  }, [props.rows?.length, props.selected?.length]);
 };
 
 export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
@@ -851,7 +804,7 @@ export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <TreatmentsTable
-        startingOrderBy="date_created"
+        startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -940,7 +893,7 @@ export const MyMonitoringTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <MonitoringTable
-        startingOrderBy="date_created"
+        startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -1004,7 +957,7 @@ export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <TransectsTable
-        startingOrderBy="date_created"
+        startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -1107,7 +1060,7 @@ export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <BiocontrolTable
-        startingOrderBy="date_created"
+        startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -1596,7 +1549,7 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     return (
       <ActivitiesTable
         tableName="Under Review"
-        startingOrderBy="date_created"
+        startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
           ...headers,
@@ -1613,14 +1566,12 @@ export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         ]}
         rows={
           rows ||
-          defaultActivitiesFetch(
-            {
-              dataAccess,
-              activitySubtypes: Object.values(ActivitySubtype),
-              review_status: [ReviewStatus.UNDER_REVIEW]
-            },
-            databaseContext
-          )
+          defaultActivitiesFetch({
+            databaseContext,
+            dataAccess,
+            activitySubtypes: Object.values(ActivitySubtype),
+            review_status: [ReviewStatus.UNDER_REVIEW]
+          })
         }
         {...otherProps}
       />

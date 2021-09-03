@@ -411,8 +411,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             color="primary"
             startIcon={<FileCopy />}
             onClick={async () => {
-              const addedActivity = await addClonedActivityToDB(databaseContextPouch, doc);
-              setActiveActivity(addedActivity);
+              // const addedActivity = await addClonedActivityToDB(databaseContextPouch, doc);
+              // setActiveActivity(addedActivity);
               notifySuccess(
                 databaseContextPouch,
                 'Successfully cloned activity. You are now viewing the cloned activity.'
