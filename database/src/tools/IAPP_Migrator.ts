@@ -871,7 +871,7 @@ const main = async () => {
 
           surveys: surveys.map((survey) => {
             // MAP IAPP SPECIES TO NEW CODES
-            let matchedSpecies = {};
+            const matchedSpecies = {};
             let bestMatch;
 
             if (speciesMatches[survey.Species]?.[survey.CommonName] !== undefined)
@@ -916,7 +916,7 @@ const main = async () => {
                 case 1:
                   bestMatch = Object.keys(matchedSpecies)[0];
                   break;
-                default:
+                default: {
                   const perfectMatches = Object.keys(matchedSpecies).filter(
                     (match) => matchedSpecies[match] === 'perfect'
                   );
@@ -971,6 +971,7 @@ const main = async () => {
 
                 // if (!bestMatch)
                 //   console.log('ALL conflicting matches: ', matchedSpecies, survey.Species, survey.CommonName);
+                }
               }
             }
             if (bestMatch === undefined) {
