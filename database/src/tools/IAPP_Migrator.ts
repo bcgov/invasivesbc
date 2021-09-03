@@ -966,11 +966,11 @@ const main = async () => {
                     bestMatch = poorMatches[0];
                     break;
                   }
-                // if (poorMatches.length > 1)
-                //   console.log('poor match conflict', matchedSpecies, survey.Species, survey.CommonName);
+                  // if (poorMatches.length > 1)
+                  //   console.log('poor match conflict', matchedSpecies, survey.Species, survey.CommonName);
 
-                // if (!bestMatch)
-                //   console.log('ALL conflicting matches: ', matchedSpecies, survey.Species, survey.CommonName);
+                  // if (!bestMatch)
+                  //   console.log('ALL conflicting matches: ', matchedSpecies, survey.Species, survey.CommonName);
                 }
               }
             }
