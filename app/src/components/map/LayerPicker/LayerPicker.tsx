@@ -35,9 +35,10 @@ import {
   makeStyles,
   Popover,
   IconButton,
-  Paper
+  Paper,
+  Slider,
+  Typography
 } from '@material-ui/core';
-import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from '../Tools/ToolBtnStyles';
 import LayersIcon from '@material-ui/icons/Layers';
 import { LayersControlProvider } from './layerControlContext';
@@ -86,13 +87,23 @@ const POSITION_CLASSES = {
 
 export function LayerPicker(props: any, { position }) {
   const classes = useStyles();
+  const toolClass = toolStyles();
   const mapLayersContext = useContext(MapRequestContext);
   const timeLeft = WithCounter();
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
   const [collapsed, setCollapsed] = useState(true);
   const [layers, setLayers] = useState([]);
+  const [opacity, setOpacity] = useState<number>(1.0);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
+
+  const opacityText = (value: number) => {
+    return `${value.toFixed(1)}`;
+  };
+
+  const handleSlider = (event: any, newOpacity: number | number[]) => {
+    setOpacity(newOpacity as number);
+  };
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
@@ -165,12 +176,12 @@ export function LayerPicker(props: any, { position }) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
   }
 
-  const RenderLayers = (props) => {
+  /*const RenderLayers = (props) => {
     // loop over all layers in config / layer picker state
     // return each layer with the right props / layer mode
     // return layers in right order
     return <></>;
-  };
+  };*/
 
   //update context on ObjectState change
   useEffect(() => {
@@ -318,6 +329,18 @@ export function LayerPicker(props: any, { position }) {
             )}
             {!collapsed && (
               <>
+                <div className={toolClass.toolSlider}>
+                  <Typography>Opacity </Typography>
+                  <Typography style={{ marginRight: 10 }}>{opacityText(opacity)}</Typography>
+                  <Slider
+                    defaultValue={opacity}
+                    onChange={handleSlider}
+                    getAriaValueText={opacityText}
+                    step={0.0001}
+                    min={0.0}
+                    max={1.0}
+                  />
+                </div>
                 <SortableListContainer
                   items={sortArray(objectState)}
                   onSortEnd={onSortEnd}
@@ -327,7 +350,7 @@ export function LayerPicker(props: any, { position }) {
               </>
             )}
             {layers.map((layer) => (
-              <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
+              <DataBCLayer opacity={opacity} layerName={layer} mode={LayerMode.WMSOnline} />
             ))}
           </Paper>
           {/*<RenderLayers />*/}
