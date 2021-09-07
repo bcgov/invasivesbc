@@ -10,7 +10,7 @@ export enum LayerMode {
 
 export const DataBCLayer = (props) => {
   if (!props.mode) {
-    throw 'you missed a map mode';
+    throw new Error('you missed a map mode');
   }
   switch (props.mode) {
     case LayerMode.WMSOnline:

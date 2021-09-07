@@ -40,7 +40,12 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Popover
+  Popover,
+  Button,
+  Menu,
+  MenuItem,
+  Select,
+  InputLabel
 } from '@material-ui/core';
 import { toolStyles } from '../Tools/ToolBtnStyles';
 import LayersIcon from '@material-ui/icons/Layers';
@@ -101,9 +106,6 @@ export function LayerPicker(props: any, { position }) {
   const [layers, setLayers] = useState([]);
   const [opacity, setOpacity] = useState<number>(1.0);
   const [layermode, setLayerMode] = useState(LayerMode.WMSOnline as string);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const open = Boolean(anchorEl);
-  const id = open ? 'layerPicker' : undefined;
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
 
@@ -122,16 +124,8 @@ export function LayerPicker(props: any, { position }) {
     setOpacity(newOpacity as number);
   };
 
-  const handleRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLayerMode((event.target as HTMLInputElement).value);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setLayerMode(event.target.value as string);
   };
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
@@ -263,7 +257,6 @@ export function LayerPicker(props: any, { position }) {
                 &emsp;
                 <Grid item xs={2}>
                   <Checkbox checked={child.enabled} name={child.id} onChange={() => updateChildLayers(parent, child)} />
-                  {/*child.enabled ? <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} /> : null*/}
                 </Grid>
                 <Grid item xs={5}>
                   {child.id}
@@ -292,10 +285,6 @@ export function LayerPicker(props: any, { position }) {
     const returnVal = sortObject(objectState, oldIndex, newIndex);
     setObjectState(returnVal);
   };
-
-  useEffect(() => {
-    console.log(layermode);
-  }, [layermode]);
 
   return (
     <LayersControlProvider value={null}>
@@ -346,6 +335,15 @@ export function LayerPicker(props: any, { position }) {
                   vertical: 'top',
                   horizontal: 'right'
                 }}>
+                <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
+                  <SettingsIcon />
+                  <Select id="layer-menu" onChange={handleChange}>
+                    <MenuItem value={LayerMode.WMSOnline}>{LayerMode.WMSOnline}</MenuItem>
+                    <MenuItem value={LayerMode.WFSOnline}>{LayerMode.WFSOnline}</MenuItem>
+                    <MenuItem value={LayerMode.VectorTilesOffline}>{LayerMode.VectorTilesOffline}</MenuItem>
+                    <MenuItem value={LayerMode.RegularFeaturesOffline}>{LayerMode.RegularFeaturesOffline}</MenuItem>
+                  </Select>
+                </FormControl>
                 <div className={toolClass.toolSlider}>
                   <Typography>Opacity</Typography>
                   <Typography style={{ marginLeft: 10, marginRight: 10 }}>{opacityText(opacity)}</Typography>
@@ -358,18 +356,6 @@ export function LayerPicker(props: any, { position }) {
                     max={1.0}
                   />
                 </div>
-                <FormControl style={{ marginLeft: 10 }} component="fieldset">
-                  <RadioGroup aria-label="layer type" name="WMSOnline" value={layermode} onChange={handleRadio}>
-                    <FormControlLabel value={LayerMode.WMSOnline} control={<Radio />} label="WMS" />
-                    <FormControlLabel value={LayerMode.WFSOnline} control={<Radio />} label="WFS" />
-                    <FormControlLabel value={LayerMode.VectorTilesOffline} control={<Radio />} label="Vector Tiles" />
-                    <FormControlLabel
-                      value={LayerMode.RegularFeaturesOffline}
-                      control={<Radio />}
-                      label="Regular Features"
-                    />
-                  </RadioGroup>
-                </FormControl>
                 <SortableListContainer
                   items={sortArray(objectState)}
                   onSortEnd={onSortEnd}
@@ -383,55 +369,4 @@ export function LayerPicker(props: any, { position }) {
       </div>
     </LayersControlProvider>
   );
-  {
-    /*<Paper>
-            <IconButton onClick={handleClick}>
-              <LayersIcon fontSize="default" />
-            </IconButton>
-            <Popover
-              id={id}
-              open={open}
-              anchorEl={anchorEl}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'left'
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}>
-              <div className={toolClass.toolSlider}>
-                <Typography>Opacity</Typography>
-                <Typography style={{ marginLeft: 10, marginRight: 10 }}>{opacityText(opacity)}</Typography>
-                <Slider
-                  defaultValue={opacity}
-                  onChange={handleSlider}
-                  getAriaValueText={opacityText}
-                  step={0.0001}
-                  min={0.0}
-                  max={1.0}
-                />
-              </div>
-              <FormControl style={{ marginLeft: 10 }} component="fieldset">
-                <RadioGroup aria-label="layer type" name="WMSOnline" value={layermode} onChange={handleRadio}>
-                  <FormControlLabel value={LayerMode.WMSOnline} control={<Radio />} label="WMS" />
-                  <FormControlLabel value={LayerMode.WFSOnline} control={<Radio />} label="WFS" />
-                  <FormControlLabel value={LayerMode.VectorTilesOffline} control={<Radio />} label="Vector Tiles" />
-                  <FormControlLabel
-                    value={LayerMode.RegularFeaturesOffline}
-                    control={<Radio />}
-                    label="Regular Features"
-                  />
-                </RadioGroup>
-              </FormControl>
-              <SortableListContainer
-                items={sortArray(objectState)}
-                onSortEnd={onSortEnd}
-                useDragHandle={true}
-                lockAxis="y"
-              />
-            </Popover>
-          </Paper>*/
-  }
 }
