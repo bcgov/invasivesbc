@@ -425,6 +425,76 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
 };
 
 /**
+ * SQL query to fetch a grid cells that overlap with given geometry from either large grid or small grid;
+ *
+ * @param {string} geometry
+ * @param {string} largeGrid
+ * @returns {SQLStatement} sql query object
+ */
+export const getOverlappingBCGridCellsSQL = (
+  geometry: string,
+  largeGrid: string,
+  largeGrid_item_ids: number[]
+): SQLStatement => {
+  let idString = '(';
+
+  if (largeGrid_item_ids) {
+    let index = 0;
+    const length = largeGrid_item_ids.length;
+    largeGrid_item_ids.forEach((id) => {
+      if (index === length - 1) {
+        idString += id.toString() + ')';
+      } else {
+        idString += id.toString() + ',';
+      }
+      index++;
+    });
+  }
+
+  switch (largeGrid) {
+    case '1':
+      return SQL` 
+        SELECT id, public.st_asGeoJSON(geo) as geo
+            FROM invasivesbc.bc_large_grid
+            WHERE public.ST_INTERSECTS(
+              geo,
+              public.geography(
+                public.ST_Force2D(
+                  public.ST_SetSRID(
+                    public.ST_GeomFromGeoJSON(${geometry}),
+                    4326
+                  )
+                )
+              )
+            );
+      `;
+      break;
+    case '0':
+      if (largeGrid_item_ids.length < 1) {
+        throw 'Error: looking for small grid items but the large grid item id array wasn\'t provided';
+      } else {
+        const temp = JSON.stringify(largeGrid_item_ids).replace('[', '(').replace(']', ')');
+        const returnVal = SQL` 
+        SELECT public.st_asGeoJSON(geo) as geo
+            FROM invasivesbc.bc_small_grid
+            WHERE large_grid_item_id = ANY (${largeGrid_item_ids}) AND public.ST_INTERSECTS(
+              geo,
+              public.geography(
+                public.ST_Force2D(
+                  public.ST_SetSRID(
+                    public.ST_GeomFromGeoJSON(${geometry}),
+                    4326
+                  )
+                )
+              )
+            );
+        `;
+        return returnVal;
+      }
+      break;
+  }
+};
+/**
  * SQL queries to soft-delete activity records, marking them as `deleted`.
  *
  * @param {string} activityIds

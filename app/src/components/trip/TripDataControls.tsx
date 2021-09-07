@@ -379,19 +379,35 @@ export const TripDataControls: React.FC<any> = (props) => {
           type: 'FeatureCollection',
           features: JSON.parse(res[0].json).geometry
         };
-        const bbox = turf.bbox(tripGeo as AllGeoJSON);
-        const squareGrid = turf.squareGrid(bbox, 2);
-        console.log('created the grid, upserting grid items to sqllite...');
+
+        const result = await invasivesApi.getGridItemsThatOverlapPolygon(
+          JSON.stringify(tripGeo.features[0].geometry),
+          '1'
+        );
+
+        let idArr = [];
+        result.forEach((row) => {
+          idArr.push(row.id);
+        });
+
+        const smallGridResult = await invasivesApi.getGridItemsThatOverlapPolygon(
+          JSON.stringify(tripGeo.features[0].geometry),
+          '0',
+          idArr
+        );
+
         let gridIndex = 0;
-        squareGrid.features.forEach(async (gridItem) => {
-          const bufferedGeo = turf.buffer(gridItem, 550 / 1000);
+
+        smallGridResult.forEach(async (gridResult) => {
+          const feature = JSON.parse(gridResult.geo);
+          const bufferedGeo = turf.buffer(feature, 0);
           const wellsInside = await getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo);
           await upsert(
             [
               {
                 type: UpsertType.RAW_SQL,
                 sql: `INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES ('${JSON.stringify(
-                  gridItem
+                  bufferedGeo
                 )
                   .split(`'`)
                   .join(`''`)}','${JSON.stringify(wellsInside).split(`'`).join(`''`)}','well');`
@@ -400,7 +416,6 @@ export const TripDataControls: React.FC<any> = (props) => {
             databaseContext
           );
           gridIndex++;
-          console.log(`gridItem #${gridIndex}`);
         });
       } catch (e) {
         console.log('There was an error fetching layer data from the map. Skipping to the next step...');

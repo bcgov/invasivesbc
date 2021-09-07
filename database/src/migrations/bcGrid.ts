@@ -149,7 +149,6 @@ export async function up(knex: Knex): Promise<void> {
           smallGridItemIndex++;
         }
         await knex.raw(sqlInsertSm);
-        // console.log(sqlInsertSm + '\n');
 
         largeGridItemIndex++;
       }

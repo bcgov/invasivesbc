@@ -225,6 +225,25 @@ export const useInvasivesApi = () => {
     return data.options;
   };
 
+  const getGridItemsThatOverlapPolygon = async (
+    geometry: string,
+    largeGrid: string,
+    largeGrid_item_ids?: number[]
+  ): Promise<any> => {
+    const { data } = await Http.request({
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      method: 'POST',
+      data: {
+        geometry: geometry,
+        largeGrid: largeGrid,
+        largeGrid_item_ids: largeGrid_item_ids ? largeGrid_item_ids : []
+      },
+      url: options.baseUrl + `/api/bc-grid/bcGrid`
+    });
+
+    return data;
+  };
+
   /**
    * Fetch a signle activity by its id.
    *
@@ -437,6 +456,7 @@ export const useInvasivesApi = () => {
     updateActivity,
     getApiSpec,
     getCachedApiSpec,
+    getGridItemsThatOverlapPolygon,
     getPointsOfInterest,
     getMetabaseQueryResults,
     getMetabaseQueryOptions,
