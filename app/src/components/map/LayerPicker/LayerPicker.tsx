@@ -311,9 +311,6 @@ export function LayerPicker(props: any, { position }) {
           >
             {collapsed && (
               <>
-                {layers.map((layer) => (
-                  <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
-                ))}
                 <IconButton>
                   <LayersIcon fontSize="default" />
                 </IconButton>
@@ -321,9 +318,6 @@ export function LayerPicker(props: any, { position }) {
             )}
             {!collapsed && (
               <>
-                {layers.map((layer) => (
-                  <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
-                ))}
                 <SortableListContainer
                   items={sortArray(objectState)}
                   onSortEnd={onSortEnd}
@@ -332,6 +326,9 @@ export function LayerPicker(props: any, { position }) {
                 />
               </>
             )}
+            {layers.map((layer) => (
+              <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
+            ))}
           </Paper>
           {/*<RenderLayers />*/}
         </div>
