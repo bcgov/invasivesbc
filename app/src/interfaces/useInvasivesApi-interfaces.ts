@@ -62,7 +62,7 @@ export interface IActivitySearchCriteria {
    */
   date_range_end?: string;
   /**
-   * Activity ids filter.
+   * List of IDs to limit search within
    *
    * @type {string[]}
    * @memberof IActivitySearchCriteria
@@ -96,13 +96,6 @@ export interface IActivitySearchCriteria {
    * @memberof IActivitySearchCriteria
    */
   review_status?: string[];
-  /**
-   * List of IDs to limit search within
-   *
-   * @type {string}
-   * @memberof IActivitySearchCriteria
-   */
-  activity_ids?: string[];
   /**
    * Search for records linked to a particular ID
    *
