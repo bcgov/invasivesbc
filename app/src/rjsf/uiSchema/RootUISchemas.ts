@@ -210,7 +210,8 @@ const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
   },
   'activity_type_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring
+    ...BaseUISchemaComponents.Monitoring,
+    ...UISchemaComponents.Monitoring
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
@@ -222,7 +223,8 @@ const Activity_Monitoring_MechanicalTerrestrialAquaticPlant = {
   },
   'activity_type_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring
+    ...BaseUISchemaComponents.Monitoring,
+    ...UISchemaComponents.Monitoring
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
@@ -234,7 +236,8 @@ const Activity_Monitoring_BiologicalTerrestrialPlant = {
   },
   'activity_type_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring
+    ...BaseUISchemaComponents.Monitoring,
+    ...UISchemaComponents.Monitoring
   },
   'activity_subtype_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,

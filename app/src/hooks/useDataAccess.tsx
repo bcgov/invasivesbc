@@ -354,6 +354,7 @@ export const useDataAccess = () => {
   };
 
   return {
+    ...api,
     getPointsOfInterest,
     getActivityById,
     updateActivity,

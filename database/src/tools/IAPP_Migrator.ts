@@ -209,6 +209,247 @@ const chemMethodCodes = {
   Wick: 'WCK'
 };
 
+// "but you could just import these from the openapi codes tables!"
+// "yes but this is so much easier for a throwaway migrator!"
+const invasiveSpeciesCodes = {
+  // TERRESTRIAL
+  AR: 'African rue / harmal (PEGA HAR Peganum harmala)',
+  HB: 'Annual hawksbeard (CREP TEC Crepis tectorum)',
+  AS: 'Annual sow thistle (SONC OLE Sonchus oleraceus)',
+  BN: 'American black nightshade (SOLA AME Solanum americanum)',
+  BY: "Baby's breath (GYPS PAN Gypsophila paniculata)",
+  BB: "Bachelor's button (CENT CYA Centaurea cyanus)",
+  BA: 'Barnyard grass (ECHI CRU Echinochloa crusgalli)',
+  KB: 'Bighead knapweed (CENT MAC Centaurea macrocephala)',
+  BP: 'Bigleaf periwinkle / large periwinkle (VINC MAJ Vinca major)',
+  BH: 'Black henbane (HYOS NIG Hyoscyamus niger)',
+  BL: 'Black knapweed (CENT NIG Centaurea nigra)',
+  RB: 'Black locust (ROBI PSE Robinia pseudoacacia)',
+  BC: 'Bladder campion (SILE VUL Silene vulgaris)',
+  BW: 'Blueweed (ECHI VUL Echium vulgare)',
+  BO: 'Bohemian knotweed (FALL BOH Fallopia x bohemicum)',
+  RA: 'Bristly locust / rose acacia (ROBI HIS Robinia hispida)',
+  BK: 'Brown knapweed (CENT JAC Centaurea jacea)',
+  BT: 'Bull thistle (CIRS VUL Cirsium vulgare)',
+  CB: 'Bur chervil (ANTH CAU Anthriscus caucalis),20',
+  UR: 'Bur buttercup (CERA TES Ceratocephala testiculata)',
+  BU: 'Common burdock (ARCT MIN  Arctium minus)',
+  GB: 'Great burdock (ARCT LAP Arctium lappa)',
+  BD: 'Butterfly bush (BUDD DAV Buddleja davidii)',
+  FF: 'Buffalobur (SOLA ROS Solanum rostratum)',
+  AM: 'Camel thorn (ALHA MAU Alhagi maurorum)',
+  CT: 'Canada thistle (CIRS ARV Cirsium arvense)',
+  CA: 'Caraway (CARU CAR Carum carvi)',
+  CG: 'Carpet burweed (SOLI SES Soliva sessilis)',
+  DB: 'Cheatgrass / downy brome (BROM TEC Bromus tectorum)',
+  LC: 'Cherry laurel (PRUN LAU Prunus laurocerasus)',
+  CY: 'Chicory (CICH INT Cichorium intybus)',
+  CH: 'Chilean tarweed (MADI SAT Madia sativa)',
+  CE: 'Clary sage (SALV SCL Salvia sclarea)',
+  CF: 'Coltsfoot (TUSS FAR Tussilago farfara)',
+  AO: 'Common bugloss (ANCH OFF Anchusa officinalis)',
+  CO: 'Common comfrey (SYMP OFF Symphytum officinale)',
+  CC: 'Common crupina (CRUP VUL Crupina vulgaris)',
+  CX: 'Common hawkweed (PILO VUL Pilosella / Hieracium lanchenalii)',
+  CP: 'Common periwinkle (VINC MIN Vinca minor)',
+  TC: 'Common tansy (TANA VUL Tanacetum vulgare)',
+  CR: 'Creeping buttercup (RANU REP Ranunculus repens)',
+  CU: 'Cudweed (GNAP ULI Gnaphalium uliginosum)',
+  CD: 'Curled dock (RUME CRI Rumex crispus)',
+  CL: 'Cutleaf blackberry (RUBU LAC Rubus laciniatus)',
+  CS: 'Cypress spurge (EUPH CYP Euphorbia cyparissias)',
+  DT: 'Dalmatian toadflax (LINA DAL Linaria dalmatica)',
+  DR: "Dame's rocket (HESP MAT Hesperis matronalis)",
+  SL: 'Daphne / spurge laurel (DAPH LAU Daphne laureola)',
+  DK: 'Diffuse knapweed (CENT DIF Centaurea diffusa)',
+  DO: 'Dodder (CUSC SPP Cuscuta spp.)',
+  DE: 'Dwarf eelgrass (ZOST JAP Zostera japonica)',
+  DW: "Dyer's woad (ISAT TIN Isatis tinctoria)",
+  ES: 'Eggleaf spurge (EUPH OBL Euphorbia oblongata)',
+  HO: 'English holly (ILEX AQU Ilex aquifolium)',
+  EI: 'English ivy (HEDE HEL Hedera helix)',
+  EU: 'European bittersweet / climbing nightshade (SOLA DUL Solanum dulcamara)',
+  RC: 'European Common Reed / Common reed (PHRA AUS Phragmites australis subsp. australis)',
+  EH: 'European hawkweed (PILO SAB Pilosella / Hieracium sabaudum)',
+  EY: 'Eyebright (EUPH NEM Euphrasia nemorosa)',
+  FB: 'Field bindweed (CONV ARV Convolvulus arvensis)',
+  FS: 'Field scabious (KNAU ARV Knautia arvensis)',
+  FP: 'Flat pea / flat peavine (LATH SYL Lathyrus sylvestris)',
+  GM: 'French broom (GENI MON Genista monspessulana)',
+  AP: 'Garlic mustard (ALLI PET Alliaria petiolata)',
+  MA: 'Giant chickweed (MYOS AQU Myosoton aquaticum)',
+  GH: 'Giant hogweed (HERA MAN Heracleum mantegazzianum)',
+  GK: 'Giant knotweed (FALL SAC Fallopia sachalinensis)',
+  SW: 'Giant mannagrass / reed sweetgrass (GLYC MAX Glyceria maxima)',
+  AD: 'Giant reed / giant cane (ARUN DON Arundo donax)',
+  GP: 'Globepod hoary cress (LEPI APP Lepidium appelianum )',
+  RG: "Goat's rue / french lilac (GALE OFF Galega officinalis)",
+  GO: 'Gorse (ULEX EUR Ulex europaeus)',
+  GW: "Goutweed / bishop's weed (AEGO POD Aegopodium podagraria)",
+  GC: 'Greater celandine (CHEL MAJ Chelidonium majus)',
+  GN: 'Greater knapweed (CENT SCA Centaurea scabiosa)',
+  GF: 'Green foxtail / green bristlegrass (SETA VIR Setaria viridis)',
+  GS: 'Groundsel (SENE VUL Senecio vulgaris)',
+  HR: "Hairy cat'sear (HYPO RAD Hypochaeris radicata)",
+  HC: 'Heartpodded hoary cress / Hoary cress (CARD DRA Cardaria draba)',
+  BI: 'Hedge false bindweed (CALY SEP Calystegia sepium)',
+  HD: 'Hedgehog dogtail (CYNO ECH Cynosurus echinatus)',
+  GR: 'Herb robert (GERA ROB Geranium robertianum)',
+  HI: 'Himalayan blackberry (RUBU ARM Rubus armeniacus)',
+  PO: 'Himalayan knotweed (POLY POL Polygonum polystachyum)',
+  HA: 'Hoary alyssum (BERT INC Berteroa incana)',
+  HT: "Hound'stongue (CYNO OFF Cynoglossum officinale)",
+  IS: 'Iberian starthistle (CENT IBE Centaurea iberica)',
+  IT: 'Italian plumeless thistle (CARD PYC Carduus pycnocephalus)',
+  JP: 'Japanese butterbur (PETA JAP Petasites japonicus)',
+  JK: 'Japanese knotweed (FALL JAP Fallopia japonica)',
+  JW: 'Japanese wireweed (SARG MUT Sargassum muticum)',
+  GJ: 'Johnsongrass (SORG HAL Sorghum halepense)',
+  JG: 'Jointed goatgrass (AEGI CYL Aegilops cylindrica)',
+  KH: 'Kingdevil hawkweed (HIER FLO Hieracium floribundum)',
+  KO: 'Kochia (KOCH SCO Kochia scoparia)',
+  KU: 'Kudzu (PUER MON Pueraria montana)',
+  LT: "Lady'sthumb (POLY PER Polygonum persicaria)",
+  LS: 'Leafy spurge (EUPH ESU Euphorbia esula)',
+  LH: 'Lenspod hoary cress  (LEPI CHA Lepidium chalepense)',
+  RF: 'Lesser celandine / fig buttercup (RANU FIC Ranunculus ficaria)',
+  LO: 'Longspine sandbur (CENC LON Cenchrus longispinus)',
+  MX: 'Maltese star thistle (CENT MEL Centaurea melitensis)',
+  MT: 'Marsh plume thistle / Marsh thistle (CIRS PAL Cirsium palustre)',
+  MB: 'Meadow buttercup (RANU ACR Ranunculus acris)',
+  MC: 'Meadow clary (SALV PRA Salvia pratensis)',
+  MG: 'Meadow goatsbeard (TRAG PRA Tragopogon pratensis)',
+  MH: 'Meadow hawkweed (HIER CAE Hieracium caespitosum)',
+  MK: 'Meadow knapweed (CENT DEB Centaurea debeauxii)',
+  MS: 'Mediterranean sage (SALV AET Salvia aethiopsis)',
+  TM: 'Medusahead (TAEN CAP Taeniatherum caputmedusae)',
+  MI: 'Milk thistle (SILY MAR Silybum marianum)',
+  MO: 'Mountain bluet (CENT MON Centaurea montana)',
+  ME: 'Mouse ear hawkweed (HIER PIL Hieracium pilosella)',
+  MU: 'Mullein (VERB THA Verbascum thapsis)',
+  EM: 'Myrtle spurge (EUPH MYR Euphorbia myrsinites)',
+  NC: 'Nightflowering catchfly (SILE NOC Silene noctiflora)',
+  NT: 'Nodding thistle (CARD NUT Carduus nutans)',
+  NA: 'North africa grass (VENT DUB Ventenata dubia)',
+  OM: "Old man's beard / traveller's joy (CLEM VIT Clematis vitalba)",
+  OH: 'Orange hawkweed (HIER AUR Hieracium aurantiacum)',
+  OD: 'Oxeye daisy (LEUC VUL Leucanthemum vulgare)',
+  EP: "Paterson's Curse (ECHI PLA Echium plantagineum)",
+  PP: 'Perennial pepperweed (LEPI LAT Lepidium latifolium)',
+  PS: 'Perennial sow thistle (SONC ARV Sonchus arvensis)',
+  PT: 'Plumeless thistle (CARD ACA Carduus acanthoides)',
+  PH: 'Poison hemlock (CONI MAC Conium maculatum)',
+  PA: 'Polar hawkweed (PILO ATR Pilosella / Hieracium atratum)',
+  IM: "Policeman's helmet / himalayan balsam (IMPA GLA Impatiens glandulifera)",
+  PR: 'Portuguese broom (CYTI STR Cytisus striatus)',
+  LP: 'Portugese laurel (PRUN LUS Prunus lusitanica)',
+  PC: 'Prickly comfrey (SYMP ASP Symphytum asperum)',
+  PV: 'Puncturevine (TRIB TER Tribulus terrestris)',
+  PD: 'Purple deadnettle (LAMI PUR Lamium purpureum)',
+  PN: 'Purple nutsedge (CYPE ROT Cyperus rotundus)',
+  PU: 'Purple starthistle (CENT CAL Centaurea calcitrapa)',
+  QA: "Queen anne's lace / wild carrot (DAUC CAR Daucus carota)",
+  QH: 'Queendevil hawkweed (HIER PRE Hieracium praealtum)',
+  BR: 'Red bartsia (ODON SER Odontites serotina)',
+  RP: 'Redroot amaranth / rough pigweed (AMAR RET Amaranthus retroflexus)',
+  RE: 'Reed Canary Grass (PHAL ARU Phalaris arundinacea)',
+  RS: 'Rush skeletonweed (CHON JUN Chondrilla juncea)',
+  RK: 'Russian knapweed (ACRO REP Acroptilon repens)',
+  RO: 'Russian olive (ELAE ANG Elaeagnus angustifolia)',
+  RT: 'Russian thistle (SALS KAL Salsola kali)',
+  TA: 'Saltcedar / tamarisk (TAMA RAM Tamarix ramosissima)',
+  AH: 'Saltlover / halogeton (HALO GLO Halogeton glomeratus)',
+  SH: 'Scentless chamomile (MATR PER Matricaria perforata)',
+  SB: 'Scotch broom (CYTI SCO Cytisus scoparius)',
+  ST: 'Scotch thistle (ONOP ACA Onopordum acanthium)',
+  SS: 'Sheep sorrel (RUME ACE Rumex acetosella)',
+  SP: "Shepherd'spurse (CAPS BUR Capsella bursapastoris)",
+  SG: 'Shiny geranium (GERA LUC Geranium lucidum)',
+  CN: 'Shortfringed knapweed (CENT NIR Centaurea nigrescens)',
+  SE: 'Siberian elm (ULMU PUM Ulmus pumila)',
+  NS: 'Silverleaf nightshade (SOLA ELA Solanum elaeagnifolium)',
+  FT: 'Slender meadow foxtail (ALOP MYO Alopecurus myosuroides)',
+  BF: 'Slender false brome / false brome (BRAC SYL Brachypodium sylvaticum)',
+  HG: "Smooth cat's ear (HYPO GLA Hypochaeris glabra)",
+  SM: 'Smooth hawkweed (PILO LAE Pilosella / Hieracium laevigatum)',
+  BS: 'Spanish bluebells (HYAC HIS Hyacinthoides hispanica)',
+  SI: 'Spanish broom (SPAR JUN Spartium junceum)',
+  SX: 'Spotted hawkweed (PILO MAC Pilosella / Hieracium maculatum)',
+  SK: 'Spotted knapweed (CENT BIE Centaurea biebersteinii)',
+  MV: 'Spring millet grass (MILI VER Milium vernale)',
+  TP: 'Spurge flax (THYM PAS Thymelaea passerina)',
+  CV: 'Squarrose knapweed (CENT VIR Centaurea virgata ssp. squarrosa)',
+  SJ: "St. John's wort/Saint John's wort/ Goatweed (HYPE PER Hypericum perforatum)",
+  SC: 'Sulphur cinquefoil (POTE REC Potentilla recta)',
+  SF: 'Sweet fennel (FOEN VUL Foeniculum vulgare)',
+  SY: 'Syrian beancaper (ZYGO FAB Zygophyllum fabago)',
+  TH: 'Tall hawkweed (HIER OID Hieracium piloselloides)',
+  TR: 'Tansy ragwort (SENE JAC Senecio jacobaea)',
+  TB: 'Tartary buckwheat (FAGO TAT Fagopyrum tataricum)',
+  TS: 'Teasel (DIPS FUL Dipsacus fullonum)',
+  TX: 'Texas blueweed (HELI CIL Helianthus ciliaris)',
+  AA: 'Tree of heaven (AILA ALT Ailanthus altissima)',
+  VL: 'Velvet leaf (ABUT THE Abutilon theophrasti)',
+  WA: 'Wall hawkweed (PILO MUR Pilosella / Hieracium murorum)',
+  WG: "Western goat'sbeard (TRAG DUB Tragopogon dubius)",
+  WP: 'Whiplash hawkweed (HIER FLA Hieracium flagellare)',
+  WC: 'White cockle (LYCH ALB Lychnis alba)',
+  SR: 'White spanish broom (CYTI MUL Cytisus multiflorus)',
+  WB: 'Wild buckwheat (POLY CON Polygonum convolvulus)',
+  WI: 'Wild chervil (ANTH SYL Anthriscus sylvestris)',
+  WF: "Wild four o'clock (MIRA NYC Mirabilis nyctaginea)",
+  WM: 'Wild mustard (SINA ARV Sinapis arvensis)',
+  WO: 'Wild oats (AVEN FAT Avena fatua)',
+  PW: 'Wild parsnip (PAST SAT Pastinaca sativa)',
+  WT: 'Winged thistle / slenderflowered thistle (CARD TEN Carduus tenuiflorus)',
+  WS: 'Wood sage (SALV NEM Salvia nemorsa)',
+  WW: 'Wormwood (ARTE ABS Artemisia absinthium)',
+  YA: 'Yellow archangel (LAMI GAL Lamiastrum galeobdolon)',
+  YD: 'Yellowdevil hawkweed (HIER GLO Hieracium glomeratum)',
+  YH: 'Yellow hawkweed (HIER PRA Hieracium pratense)',
+  HS: 'Yellow hawkweed species (HIER PILO SPP Hieracium / Pilosella spp.)',
+  YN: 'Yellow nutsedge (CYPE ESC Cyperus esculentus)',
+  YS: 'Yellow starthistle (CENT SOL Centaurea solstitialis)',
+  YT: 'Yellow/common toadflax (LINA VUL Linaria vulgaris)',
+
+  // AQUATIC:
+  AB: 'American beachgrass (AMMO BRE Ammophila breviligulata)',
+  YC: 'Amphibious yellow cress (RORI AMP Rorippa amphibian)',
+  RI: 'Bog bulrush / ricefield bulrush (SCHO MUC Schoenoplectus mucronatus)',
+  ED: 'Brazilian waterweed (EGER DEN Egeria densa)',
+  CM: 'Cabomba (CABO CAR Cabomba caroliniana)',
+  FC: 'Common frogbit (HYDR MOR Hydrocharis morsusrange)',
+  UP: 'Curly leaf pondweed (POTA CRI Potamogeton crispus)',
+  DC: 'Denseflowered cordgrass (SPAR DEN Spartina densiflora)',
+  EC: 'English cordgrass (SPAR ANG Spartina anglica)',
+  EW: 'Eurasian watermilfoil (MYRI SPI Myriophyllum spicatum)',
+  EB: 'European beachgrass (AMMO ARE Ammophila arenaria)',
+  MQ: 'European water clover (MARS QUA Marsilea quadrifolia)',
+  WE: 'European waterlily (NYMP ALB Nymphaea alba)',
+  FW: 'Fanwort (CABO CAR Cabomba caroliniana)',
+  FM: 'Feathered mosquitofern (AZOL PIN Azolla pinnata)',
+  FR: 'Flowering rush (BUTO UMB Butomus umbellatus)',
+  FL: 'Fragrant water lily (NYMP ODO Nymphaea odorata subsp. odorata)',
+  GL: 'Garden yellow loosestrife (LYSI VUL Lysimachia vulgaris)',
+  SV: 'Giant salvinia (SALV MOL Salvinia molesta)',
+  HY: 'Hydrilla (HYDR VER Hydrilla verticillata)',
+  LL: 'Large yellow / spotted loosestrife (LYSI PUN Lysimachia punctata)',
+  OW: 'Major oxygen weed (LAGA ROS Lagarosiphon)',
+  PF: 'Parrot feather (MYRI AQU Myriophyllum aquaticum)',
+  PL: 'Purple loosestrife (LYTH SAL Lythrum salicaria)',
+  SN: 'Saltmeadow cordgrass (SPAR PAT Spartina patens)',
+  SA: 'Smooth cordgrass (SPAR ALT Spartina alterniflora)',
+  LM: 'Variable leaf milfoil (MYRI HET Myriophyllum heterophyllum)',
+  WL: 'Wand loosestrife (LYTH VIR Lythrum virgatum)',
+  TN: 'Water chestnut (TRAP NAT Trapa natans)',
+  NO: 'Watercress (NAST OFF Nasturtium officinale)',
+  WH: 'Water hyacinth (EICH CRA Eichhornia crassipes)',
+  LW: 'Water lettuce (PIST STR Pistia stratiotes)',
+  AQ: 'Water soldier (STRA ALO Stratiotes aloides)',
+  YI: 'Yellow flag iris (IRIS PSE Iris pseudachorus)',
+  YF: 'Yellow floating heart (NYMP PEL Nymphoides peltata)'
+};
+
 // IMPORT LOGIC:
 
 const cli = meow(
@@ -448,6 +689,56 @@ const main = async () => {
 
   let siteCount = 0;
   const batchSize = 1000;
+  let surveyMissedMatchCount = 0;
+  const speciesMatches = {
+    // OVERRIDES:
+    HIER: {
+      'Hawkweed species': null, // general species unsupported
+      'Yellow devil hawkwee': 'YD',
+      'Queen devil hawkweed': 'QH',
+      'King devil hawkweed': 'KH'
+    },
+    CENT: {
+      'Knapweed species': null, // general species unsupported
+      'Short-fringed knapwe': 'CN'
+    },
+    ARCT: {
+      'Burdock species': 'BU'
+    },
+    TRAG: {
+      "Western goat's-beard": 'WG',
+      'Meadow goats-beard': 'MG'
+    },
+    CYNO: {
+      "Hound's-tongue": 'HT'
+    },
+    SILE: {
+      'Night-flowering catc': 'NC'
+    },
+    HYPO: {
+      "Hairy cat's-ear": 'HR'
+    },
+    POLY: {
+      "Lady's-thumb": 'LT'
+    },
+    VINC: {
+      'Bigleaf / Large peri': 'BP'
+    },
+    SPAR: {
+      'Salt-meadow cord gra': 'SN',
+      'Dense-flowered cordg': 'DC'
+    },
+    SONC: {
+      'Sowthistle species': null // general species unsupported
+    },
+    SOLA: {
+      Nightshade: null // general species unsupported
+    },
+    DIDY: {
+      Didymo: null // removed, no longer considered invasive
+    }
+  };
+  const speciesMatchFailures = {};
 
   // assumes site CSV sorted by SiteID DESC
   while (siteCount < IAPPData.siteData.length) {
@@ -524,13 +815,14 @@ const main = async () => {
       if (!surveys?.length) continue;
 
       const surveyAgencyCodes = surveys.map((survey) => survey.SurveyAgency).filter((agency) => agency);
-      const surveySpecies = surveys.map((survey) => survey.Species).filter((agency) => agency);
 
       const now = new Date();
       const dd = String(now.getDate()).padStart(2, '0');
       const mm = String(now.getMonth() + 1).padStart(2, '0'); //January is 0!
       const yyyy = now.getFullYear();
       const today = yyyy + '-' + mm + '-' + dd;
+
+      let speciesOfThisSite = [];
 
       const requestBody: any = {
         point_of_interest_type: 'IAPP Site',
@@ -574,51 +866,181 @@ const main = async () => {
             slope: siteRecord.Slope,
             aspect_code: mapAspect(siteRecord.Aspect),
             aspect: siteRecord.Aspect,
-            site_elevation: siteRecord.Elevation,
-            species: surveySpecies
+            site_elevation: siteRecord.Elevation
           },
 
-          surveys: surveys.map((survey) => ({
-            survey_id: survey.SurveyID,
-            survey_date: formatDateToISO(survey.SurveyDate),
-            reported_area: hectaresToM2(survey.EstArea), // hectares to m2
-            map_code: survey.MapCode,
-            invasive_species_agency_code: survey.SurveyAgency,
-            // invasive_plant_code: 'NA', // TODO map common/species/genus to plant code
-            invasive_plant_code: survey.Species,
-            common_name: survey.CommonName, // redundant? ^
-            species: survey.Species, // redundant ^
-            genus: survey.Genus, // redundant? ^
-            invasive_plant_density_code: densityMap[survey.Density],
-            density: survey.Density, // redundant ^
-            invasive_plant_distribution_code: distributionMap[survey.Distribution],
-            distribution: survey.Distribution, // redundant ^
-            // proposed_treatment_code
-            observation_type_code: observationTypes[survey.SurveyType],
-            observation_type: survey.SurveyType, // redundant ^
-            general_comment: survey.Comment,
-            project_code: [
-              {
-                description: survey.PaperFileID
+          surveys: surveys.map((survey) => {
+            // MAP IAPP SPECIES TO NEW CODES
+            const matchedSpecies = {};
+            let bestMatch;
+
+            if (speciesMatches[survey.Species]?.[survey.CommonName] !== undefined)
+              bestMatch = speciesMatches[survey.Species][survey.CommonName];
+            else if (!speciesMatchFailures[survey.Species]?.[survey.CommonName] && survey.CommonName) {
+              Object.keys(invasiveSpeciesCodes).forEach((code) => {
+                const fullname = invasiveSpeciesCodes[code].split(' (')?.[0].split('/')?.[0].trim();
+                if (
+                  survey.CommonName &&
+                  survey.CommonName.includes(fullname) &&
+                  fullname.includes(survey.CommonName) &&
+                  invasiveSpeciesCodes[code].includes(survey.Species)
+                )
+                  matchedSpecies[code] = 'perfect';
+                else if (
+                  survey.CommonName &&
+                  invasiveSpeciesCodes[code].includes(survey.Species) &&
+                  (survey.CommonName.includes(fullname) || fullname.includes(survey.CommonName))
+                )
+                  matchedSpecies[code] = 'excellent';
+                else if (
+                  survey.CommonName &&
+                  (survey.CommonName.includes(invasiveSpeciesCodes[code].split(' (')[0]) ||
+                    invasiveSpeciesCodes[code].split(' (')[0].includes(survey.CommonName))
+                )
+                  matchedSpecies[code] = 'great';
+                else if (
+                  invasiveSpeciesCodes[code].includes(survey.Species) &&
+                  survey.CommonName &&
+                  invasiveSpeciesCodes[code].includes(survey.CommonName)
+                )
+                  matchedSpecies[code] = 'good';
+                else if (invasiveSpeciesCodes[code].includes(survey.Species)) matchedSpecies[code] = 'fair';
+                else if (survey.CommonName && invasiveSpeciesCodes[code].includes(survey.CommonName))
+                  matchedSpecies[code] = 'poor';
+              });
+
+              switch (Object.keys(matchedSpecies).length) {
+                case 0:
+                  // console.log('NO MATCHING SPECIES: ', matchedSpecies, survey.Species, survey.CommonName);
+                  break;
+                case 1:
+                  bestMatch = Object.keys(matchedSpecies)[0];
+                  break;
+                default: {
+                  const perfectMatches = Object.keys(matchedSpecies).filter(
+                    (match) => matchedSpecies[match] === 'perfect'
+                  );
+                  if (perfectMatches.length === 1) {
+                    bestMatch = perfectMatches[0];
+                    break;
+                  }
+                  // if (perfectMatches.length > 1)
+                  //   console.log('perfect match conflict', matchedSpecies, survey.Species, survey.CommonName);
+
+                  const excellentMatches = Object.keys(matchedSpecies).filter(
+                    (match) => matchedSpecies[match] === 'excellent'
+                  );
+                  if (excellentMatches.length === 1) {
+                    bestMatch = excellentMatches[0];
+                    break;
+                  }
+                  // if (excellentMatches.length > 1)
+                  //   console.log('excellent match conflict', matchedSpecies, survey.Species, survey.CommonName);
+
+                  const greatMatches = Object.keys(matchedSpecies).filter((match) => matchedSpecies[match] === 'great');
+                  if (greatMatches.length === 1) {
+                    bestMatch = greatMatches[0];
+                    break;
+                  }
+                  // if (greatMatches.length > 1)
+                  //   console.log('great match conflict', matchedSpecies, survey.Species, survey.CommonName);
+
+                  const goodMatches = Object.keys(matchedSpecies).filter((match) => matchedSpecies[match] === 'good');
+                  if (goodMatches.length === 1) {
+                    bestMatch = goodMatches[0];
+                    break;
+                  }
+                  // if (goodMatches.length > 1)
+                  //   console.log('good match conflict', matchedSpecies, survey.Species, survey.CommonName);
+
+                  const fairMatches = Object.keys(matchedSpecies).filter((match) => matchedSpecies[match] === 'fair');
+                  if (fairMatches.length === 1) {
+                    bestMatch = fairMatches[0];
+                    break;
+                  }
+                  // if (fairMatches.length > 1)
+                  //   console.log('fair match conflict', matchedSpecies, survey.Species, survey.CommonName);
+
+                  const poorMatches = Object.keys(matchedSpecies).filter((match) => matchedSpecies[match] === 'poor');
+                  if (poorMatches.length === 1) {
+                    bestMatch = poorMatches[0];
+                    break;
+                  }
+                  // if (poorMatches.length > 1)
+                  //   console.log('poor match conflict', matchedSpecies, survey.Species, survey.CommonName);
+
+                  // if (!bestMatch)
+                  //   console.log('ALL conflicting matches: ', matchedSpecies, survey.Species, survey.CommonName);
+                }
               }
-            ],
-            weeds_found: survey.WeedsFound,
-            employer_code: survey.EmployerCode ? survey.EmployerCode : undefined,
-            jurisdictions: [
-              {
-                jurisdiction_code: survey.Jur1,
-                percent_covered: survey.Jur1pct
-              },
-              {
-                jurisdiction_code: survey.Jur2,
-                percent_covered: survey.Jur2pct
-              },
-              {
-                jurisdiction_code: survey.Jur3,
-                percent_covered: survey.Jur3pct
+            }
+            if (bestMatch === undefined) {
+              surveyMissedMatchCount += 1;
+              if (!speciesMatchFailures[survey.Species]) speciesMatchFailures[survey.Species] = {};
+              if (!speciesMatchFailures[survey.Species]?.[survey.CommonName]) {
+                speciesMatchFailures[survey.Species][survey.CommonName] = 1;
+                console.log(
+                  'No match: ',
+                  speciesMatchFailures,
+                  speciesMatches,
+                  matchedSpecies,
+                  surveyMissedMatchCount,
+                  survey.Species,
+                  survey.CommonName
+                );
+              } else speciesMatchFailures[survey.Species][survey.CommonName] += 1;
+            } else {
+              if (bestMatch !== null) {
+                speciesOfThisSite.push(bestMatch);
+                speciesOfThisSite = Array.from(new Set(speciesOfThisSite));
               }
-            ].filter((jur) => jur.jurisdiction_code && jur.percent_covered && Number(jur.percent_covered) > 0)
-          })),
+              if (!speciesMatches[survey.Species]) speciesMatches[survey.Species] = {};
+              speciesMatches[survey.Species][survey.CommonName] = bestMatch;
+            }
+            // console.log('Match: ', bestMatch, matchedSpecies[bestMatch], surveyMissedMatchCount);
+
+            return {
+              survey_id: survey.SurveyID,
+              survey_date: formatDateToISO(survey.SurveyDate),
+              reported_area: hectaresToM2(survey.EstArea), // hectares to m2
+              map_code: survey.MapCode,
+              invasive_species_agency_code: survey.SurveyAgency,
+              // invasive_plant_code: 'NA', // TODO map common/species/genus to plant code
+              invasive_plant_code: bestMatch === null ? undefined : bestMatch,
+              common_name: survey.CommonName, // redundant? ^
+              species: survey.Species, // redundant ^
+              genus: survey.Genus, // redundant? ^
+              invasive_plant_density_code: densityMap[survey.Density],
+              density: survey.Density, // redundant ^
+              invasive_plant_distribution_code: distributionMap[survey.Distribution],
+              distribution: survey.Distribution, // redundant ^
+              // proposed_treatment_code
+              observation_type_code: observationTypes[survey.SurveyType],
+              observation_type: survey.SurveyType, // redundant ^
+              general_comment: survey.Comment,
+              project_code: [
+                {
+                  description: survey.PaperFileID
+                }
+              ],
+              weeds_found: survey.WeedsFound,
+              employer_code: survey.EmployerCode ? survey.EmployerCode : undefined,
+              jurisdictions: [
+                {
+                  jurisdiction_code: survey.Jur1,
+                  percent_covered: survey.Jur1pct
+                },
+                {
+                  jurisdiction_code: survey.Jur2,
+                  percent_covered: survey.Jur2pct
+                },
+                {
+                  jurisdiction_code: survey.Jur3,
+                  percent_covered: survey.Jur3pct
+                }
+              ].filter((jur) => jur.jurisdiction_code && jur.percent_covered && Number(jur.percent_covered) > 0)
+            };
+          }),
 
           mechanical_treatments: mechanical_treatments.map((t) => ({
             // General treatment properties:
@@ -815,6 +1237,8 @@ const main = async () => {
           }))
         }
       };
+      requestBody.species_positive = speciesOfThisSite.sort();
+      requestBody.species_negative = [];
 
       pois.push(requestBody);
       batch++;

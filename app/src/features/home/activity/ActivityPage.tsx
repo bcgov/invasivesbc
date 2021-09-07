@@ -45,7 +45,11 @@ import {
 import { notifySuccess, notifyError } from '../../../utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from '../../../utils/geometryHelpers';
-import { addClonedActivityToDB, mapDocToDBActivity, mapDBActivityToDoc } from '../../../utils/addActivity';
+import {
+  mapDocToDBActivity,
+  mapDBActivityToDoc,
+  populateSpeciesArrays
+} from '../../../utils/addActivity';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
@@ -85,7 +89,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
-  const [isCloned, setIsCloned] = useState(false);
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
@@ -109,15 +112,35 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} updates Updates as subsets of the doc/activity object
    */
   const updateDoc = async (updates) => {
-    const updatedDoc = {
+    let updatedDoc = {
       ...doc,
-      ...updates // TODO MERGE THESE
+      ...updates,
+      // deep merge:
+      formData: {
+        ...doc?.formData,
+        ...updates?.formData,
+        activity_data: {
+          ...doc?.formData?.activity_data,
+          ...updates?.formData?.activity_data
+        },
+        activity_type_data: {
+          ...doc?.formData?.activity_type_data,
+          ...updates?.formData?.activity_type_data
+        },
+        activity_subtype_data: {
+          ...doc?.formData?.activity_subtype_data,
+          ...updates?.formData?.activity_subtype_data
+        }
+      }
     };
     const hashedNewDoc = JSON.stringify(updatedDoc);
     const hashedDoc = JSON.stringify(doc);
     if (!updatedDoc || hashedDoc === hashedNewDoc) {
       return false;
     }
+
+    // SECOND-ORDER EFFECT OVERRIDES (changing one field affects another)
+    updatedDoc = populateSpeciesArrays(updatedDoc);
 
     if (!updatedDoc._id) {
       return false;
@@ -132,7 +155,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
-        await dataAccess.updateActivity(newActivity, databaseContext);
+
+        if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
+        else await dataAccess.updateActivity(newActivity, databaseContext);
       });
       await dbUpdates(updatedDoc);
       return true;
@@ -369,10 +394,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   /*
     Function to set the active activity in the DB context and the current activity view
   */
-  const setActiveActivity = async (activeActivity: any) => {
+  /* const setActiveActivity = async (activeActivity: any) => {
     setIsCloned(true);
     await dataAccess.setAppState({ activeActivity: activeActivity }, databaseContext);
-  };
+  }; */
 
   /*
     Function to generate clone activity button component
@@ -386,8 +411,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             color="primary"
             startIcon={<FileCopy />}
             onClick={async () => {
-              const addedActivity = await addClonedActivityToDB(databaseContextPouch, doc);
-              setActiveActivity(addedActivity);
+              // const addedActivity = await addClonedActivityToDB(databaseContextPouch, doc);
+              //setActiveActivity(addedActivity);
               notifySuccess(
                 databaseContextPouch,
                 'Successfully cloned activity. You are now viewing the cloned activity.'
@@ -408,7 +433,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const handleRecordLinking = async (updatedDoc: any) => {
     let linkedRecordId: string = null;
 
-    if (updatedDoc.activitySubtype.includes('ChemicalPlant')) {
+    if (updatedDoc?.activitySubtype?.includes('ChemicalPlant')) {
       linkedRecordId = updatedDoc.formData?.activity_subtype_data?.activity_id;
     } else if (
       ['Treatment', 'Monitoring'].includes(updatedDoc.activityType) &&
@@ -574,7 +599,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     };
 
     getActivityData();
-  }, [databaseContext, isCloned]);
+  }, [databaseContext]);
 
   useEffect(() => {
     if (isLoading || !doc) {

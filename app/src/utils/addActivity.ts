@@ -38,8 +38,10 @@ const mapKeys = (source, mappingFunction) => {
 
 export const getShortActivityID = (activity) => {
   const record: any = mapKeys(activity, snakeCase);
-  if (!record?.activity_subtype || !record?.activity_id || !record?.date_created) return;
-  const shortYear = moment(record.date_created).format().substr(2, 2);
+  if (!record?.activity_subtype || !record?.activity_id || !(record?.date_created || record.created_timestamp)) return;
+  const shortYear = moment(record.date_created || record.created_timestamp)
+    .format()
+    .substr(2, 2);
   return shortYear + ActivityLetter[record.activity_subtype] + record.activity_id.substr(0, 4).toUpperCase();
 };
 
@@ -98,6 +100,8 @@ export const sanitizeRecord = (input: any) => {
     throw 'This is confusing.  A record should be an activity OR a POI';
 
   if (!flattened.activity_id && !flattened.point_of_interest_id) {
+    if (!flattened.doc_type) throw new Error('Unknown Record type with no ID');
+
     if (flattened.doc_type === DocType.ACTIVITY) {
       if (flattened._id) flattened.activity_id = flattened._id;
       else {
@@ -207,6 +211,7 @@ export const sanitizeRecord = (input: any) => {
         }
       },
       */
+      _id: activity_id,
       activity_payload: {
         ...activity_payload,
         geom: geom || flattened.geometry || activity_payload?.geometry,
@@ -215,7 +220,7 @@ export const sanitizeRecord = (input: any) => {
           ...activity_payload?.form_data,
           activity_data: {
             ...activity_payload?.form_data?.activity_data,
-            activity_date_time: now
+            activity_date_time: flattened.date_created || now
           }
         }
       },
@@ -223,7 +228,7 @@ export const sanitizeRecord = (input: any) => {
       // legacy: dont actually care about these:
       status: flattened.status || ActivityStatus.NEW,
       date_created: flattened.date_created || now,
-      date_updated: flattened.date_updated || null,
+      date_updated: flattened.date_updated || flattened.date_created || null,
       media: flattened.photos?.map((photo) => ({
         file_name: photo.filepath,
         encoded_file: photo.dataUrl
@@ -234,6 +239,8 @@ export const sanitizeRecord = (input: any) => {
       geometry: geom || flattened.geometry || activity_payload?.geometry
     };
   }
+
+  // handle POIs here
 };
 
 /*
@@ -243,6 +250,7 @@ export const sanitizeRecord = (input: any) => {
 */
 export const mapDocToDBActivity = (doc: any) => ({
   ...mapKeys(doc, snakeCase),
+  _id: doc._id || doc.activity_id,
   sync_status: doc.sync?.status,
   media: doc.photos?.map((photo) => ({
     file_name: photo.filepath,
@@ -332,6 +340,7 @@ export function generateDBActivityPayload(
     date_created: time
   });
   return {
+    _id: id,
     short_id: short_id,
     activity_id: id,
     activity_type: activityType,
@@ -357,6 +366,21 @@ export function generateDBActivityPayload(
   };
 }
 
+export function cloneDBRecord(dbRecord) {
+  const id = uuidv4();
+  const time = moment(new Date()).format();
+  const clonedRecord = {
+    ...dbRecord,
+    _id: id,
+    date_created: time,
+    date_updated: null,
+    status: ActivityStatus.NEW,
+    activity_id: id
+  };
+  clonedRecord.short_id = getShortActivityID(clonedRecord);
+  return clonedRecord;
+}
+
 /*
   Function to create a brand new activity and save it to the DB
 */
@@ -376,10 +400,7 @@ export async function addNewActivityToDB(
   return doc;
 }
 
-/*
-  Function to create a cloned activity and save it to DB
-*/
-export async function addClonedActivityToDB(databaseContext: any, clonedRecord: any) {
+export async function cloneActivity(clonedRecord: any) {
   const id = uuidv4();
 
   // Used to avoid pouch DB conflict
@@ -394,18 +415,15 @@ export async function addClonedActivityToDB(databaseContext: any, clonedRecord: 
     activityId: id
   };
 
-  await databaseContext.database.put(doc);
-
-  return await databaseContext.database.get(doc._id);
+  return doc;
 }
 
 /*
-  Function to create a linked activity and save it to DB
+  Function to format a linked activity object
   The activity_id field which is present in the form data is populated to reference the linked activity record's id
   Also, the activity_data is populated based on business logic rules which specify which fields to copy
 */
-export async function addLinkedActivityToDB(
-  databaseContext: any,
+export async function createLinkedActivity(
   activityType: ActivityType,
   activitySubtype: ActivitySubtype,
   linkedRecord: any
@@ -442,7 +460,95 @@ export async function addLinkedActivityToDB(
 
   const doc: IActivity = generateActivityPayload(formData, geometry, activityType, activitySubtype);
 
-  await databaseContext.database.put(doc);
-
   return doc;
+}
+
+// extract and set the species codes (both positive and negative) of a given activity (or POI, once they're editable)
+export function populateSpeciesArrays(record) {
+  let species_positive = [];
+  let species_negative = [];
+  const subtypeData = record?.formData?.activity_subtype_data;
+
+  switch (record.activitySubtype) {
+    case ActivitySubtype.Observation_PlantTerrestrial:
+      species_positive = subtypeData?.invasive_plants
+        ?.filter((plant) => plant.occurrence?.includes('Positive'))
+        .map((plant) => plant.invasive_plant_code);
+      species_negative = subtypeData?.invasive_plants
+        ?.filter((plant) => plant.occurrence?.includes('Negative'))
+        .map((plant) => plant.invasive_plant_code);
+      break;
+    case ActivitySubtype.Observation_PlantAquatic:
+      species_positive = subtypeData?.invasive_plants
+        ?.filter((plant) => plant.observation_type?.includes('Positive'))
+        .map((plant) => plant.invasive_plant_code);
+      species_negative = subtypeData?.invasive_plants
+        ?.filter((plant) => plant.observation_type?.includes('Negative'))
+        .map((plant) => plant.invasive_plant_code);
+      break;
+
+    case ActivitySubtype.Activity_AnimalTerrestrial:
+      // no species selection currently
+      break;
+    case ActivitySubtype.Activity_AnimalAquatic:
+      species_positive = subtypeData?.invasive_aquatic_animals?.map((animal) => animal.invasive_animal_code);
+      break;
+
+    case ActivitySubtype.Treatment_ChemicalPlant:
+      species_positive = subtypeData?.treatment_information?.invasive_plants_information?.map(
+        (plant) => plant.invasive_plant_code
+      );
+      break;
+    case ActivitySubtype.Treatment_MechanicalPlant:
+    case ActivitySubtype.Treatment_BiologicalPlant:
+    case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant:
+    case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant:
+    case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
+    case ActivitySubtype.Activity_BiologicalDispersal:
+      species_positive = [subtypeData?.invasive_plant_code];
+      break;
+
+    case ActivitySubtype.Transect_FireMonitoring:
+      species_positive = subtypeData?.fire_monitoring_transect_lines
+        ?.map((line) =>
+          line.fire_monitoring_transect_points?.map((point) =>
+            point.invasive_plants?.map((plant) => plant.invasive_plant_code)
+          )
+        )
+        .flat(3);
+      break;
+    case ActivitySubtype.Transect_Vegetation:
+      species_positive = subtypeData?.vegetation_transect_lines
+        ?.map((line) =>
+          [
+            line.vegetation_transect_points_percent_cover,
+            line.vegetation_transect_points_number_plants,
+            line.vegetation_transect_points_daubenmire
+          ]
+            .flat(2)
+            .filter((point) => point)
+            .map((point) =>
+              point.vegetation_transect_species?.invasive_plants?.map((plant) => plant.invasive_plant_code)
+            )
+        )
+        .flat(3);
+      break;
+    case ActivitySubtype.Transect_BiocontrolEfficacy:
+      species_positive = subtypeData?.transect_invasive_plants?.map((plant) => plant.invasive_plant_code) || [];
+      break;
+    default:
+      break;
+  }
+  console.log(3333, species_positive, species_negative);
+  return {
+    ...record,
+    species_positive:
+      Array.from(new Set(species_positive || []))
+        ?.filter((code) => typeof code === 'string')
+        .sort() || [],
+    species_negative:
+      Array.from(new Set(species_negative || []))
+        ?.filter((code) => typeof code === 'string')
+        .sort() || []
+  };
 }

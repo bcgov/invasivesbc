@@ -53,6 +53,13 @@ POST.apiDoc = {
             },
             form_data: {
               oneOf: [{ $ref: '#/components/schemas/PointOfInterest_IAPP_Site' }]
+            },
+            species_positive: {
+              type: 'array',
+              title: 'Species Codes',
+              items: {
+                type: 'string'
+              }
             }
           }
         }

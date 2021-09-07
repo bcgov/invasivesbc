@@ -27,7 +27,9 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       reviewed_at,
       activity_payload,
       geog,
-      media_keys
+      media_keys,
+      species_positive,
+      species_negative
     ) VALUES (
       ${activity.activity_id},
       ${activity.activity_type},
@@ -70,6 +72,26 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
   } else {
     sqlStatement.append(SQL`
       ,null
+    `);
+  }
+
+  if (activity.species_positive?.length) {
+    sqlStatement.append(SQL`
+      ,${activity.species_positive}
+    `);
+  } else {
+    sqlStatement.append(SQL`
+      ,'{}'
+    `);
+  }
+
+  if (activity.species_negative?.length) {
+    sqlStatement.append(SQL`
+      ,${activity.species_negative}
+    `);
+  } else {
+    sqlStatement.append(SQL`
+      ,'{}'
     `);
   }
 
@@ -311,6 +333,12 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
     sqlStatement.append(SQL`)`);
   }
 
+  if (searchCriteria.linked_id) {
+    sqlStatement.append(
+      SQL` AND activity_payload::json #>> '{form_data, activity_type_data, linked_id}' = ${searchCriteria.linked_id}`
+    );
+  }
+
   if (searchCriteria.date_range_start) {
     sqlStatement.append(SQL` AND received_timestamp >= ${searchCriteria.date_range_start}::DATE`);
   }
@@ -326,6 +354,24 @@ export const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria): SQLSta
       sqlStatement.append(SQL`, ${searchCriteria.activity_ids[idx]}`);
     }
     sqlStatement.append(SQL`)`);
+  }
+
+  // search intersects with some species codes
+  if (searchCriteria.species_positive && searchCriteria.species_positive.length) {
+    sqlStatement.append(SQL` AND ARRAY[`);
+    sqlStatement.append(SQL`${searchCriteria.species_positive[0]}`);
+    for (let idx = 1; idx < searchCriteria.species_positive.length; idx++)
+      sqlStatement.append(SQL`, ${searchCriteria.species_positive[idx]}`);
+    sqlStatement.append(SQL`]::varchar[] && species_positive`);
+  }
+
+  // search intersects with some species codes
+  if (searchCriteria.species_negative && searchCriteria.species_negative.length) {
+    sqlStatement.append(SQL` AND ARRAY[`);
+    sqlStatement.append(SQL`${searchCriteria.species_negative[0]}`);
+    for (let idx = 1; idx < searchCriteria.species_negative.length; idx++)
+      sqlStatement.append(SQL`, ${searchCriteria.species_negative[idx]}`);
+    sqlStatement.append(SQL`]::varchar[] && species_negative`);
   }
 
   if (searchCriteria.search_feature) {

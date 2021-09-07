@@ -68,6 +68,14 @@ POST.apiDoc = {
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
             },
+            species_positive: {
+              type: 'array',
+              description:
+                'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the list.',
+              items: {
+                type: 'string'
+              }
+            },
             order: {
               type: 'array',
               description: 'A list of columns to order by. (for DESC, use "columname DESC")',

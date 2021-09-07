@@ -14,10 +14,11 @@ import {
 } from '@material-ui/core';
 import { ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
-import { ActivitySyncStatus } from '../../constants/activities';
+import { ActivitySyncStatus, ActivityMonitoringLinks } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from '../../contexts/themeContext';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import { getShortActivityID } from '../../utils/addActivity';
+import { useDataAccess } from '../../hooks/useDataAccess';
 import React, { useContext, useEffect, useState } from 'react';
 import ArrayFieldTemplate from '../../rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from '../../rjsf/templates/FieldTemplate';
@@ -57,7 +58,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
-  const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
 
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
 
@@ -221,11 +222,58 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
-      const response = await invasivesApi.getCachedApiSpec();
-      console.log('form container = api spec');
-      console.dir(response);
+      const response = await dataAccess.getCachedApiSpec();
+      let components = response.components;
+      const subtypeSchema = components?.schemas?.[props.activity?.activitySubtype];
+
+      // Handle activity_id linking fetches
+      try {
+        if (props.activity?.activityType === 'Monitoring') {
+          const treatments_response = await dataAccess.getActivities({
+            column_names: ['activity_id', 'created_timestamp'],
+            activity_type: ['Treatment'],
+            activity_subtype: [ActivityMonitoringLinks[props.activity.activitySubtype]],
+            order: ['created_timestamp']
+          });
+          const treatments = treatments_response.rows.map((treatment, i) => {
+            const short_id = getShortActivityID({
+              ...treatment,
+              activity_subtype: ActivityMonitoringLinks[props.activity.activitySubtype]
+            });
+            return {
+              enum: [treatment.activity_id],
+              title: short_id + ' : ' + treatment.activity_id,
+              type: 'string',
+              'x-code_sort_order': i + 1
+            };
+          });
+
+          let modifiedSchema = components.schemas['Monitoring'];
+          modifiedSchema = {
+            ...modifiedSchema,
+            properties: {
+              ...modifiedSchema?.properties,
+              linked_id: {
+                ...modifiedSchema?.properties?.linked_id,
+                anyOf: treatments
+              }
+            }
+          };
+          components = {
+            ...components,
+            schemas: {
+              ...components.schemas,
+              Monitoring: modifiedSchema
+            }
+          };
+        }
+
+        // put Treatments => Observations linking here
+      } catch (error) {
+        console.log('Could not load Activity IDs of linkable records');
+      }
       setSchemas({
-        schema: { ...response.components.schemas[props.activity.activitySubtype], components: response.components },
+        schema: { ...subtypeSchema, components: components },
         uiSchema: RootUISchemas[props.activity.activitySubtype]
       });
     };

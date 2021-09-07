@@ -250,6 +250,7 @@ export interface IRecordTable {
   pagination?: any;
   actions?: any;
   rowActionStyle?: string;
+  hideEmpty?: boolean;
 }
 
 const RecordTable: React.FC<IRecordTable> = (props) => {
@@ -279,7 +280,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     densePadding = false,
     padEmptyRows = false, // whitespace added to make the table the same height
     // even on the last page with only e.g. 1 row
-    rowActionStyle = 'dropdown' // || 'column'
+    rowActionStyle = 'dropdown', // || 'column'
+    hideEmpty = false
   } = props;
 
   const [rowsLoaded, setRowsLoaded] = useState(false);
@@ -461,10 +463,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     );
   }, [rows.length, orderHeader, order, page, rowsPerPage]);
   // render all dropdowns on page
-  const renderedDropdowns = useMemo(
-    () => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)),
-    [pageRows, dropdown]
-  );
+  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
+    pageRows,
+    dropdown
+  ]);
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
   const verboseOverflows = useMemo(
@@ -474,8 +476,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   // determine if any rows on the current page have a dropdown:
   const pageHasDropdown = useMemo(
     () =>
-      (!!dropdown && renderedDropdowns.filter((rendered) => rendered).length > 0) ||
-      (overflowDropdown && verboseOverflows.filter((hasOverflow) => hasOverflow).length > 0) ||
+      (!!dropdown && renderedDropdowns.filter((x) => x).length > 0) ||
+      (overflowDropdown && verboseOverflows.filter((x) => x).length > 0) ||
       (rowActions?.length > 0 && rowActionStyle === 'dropdown'),
     [dropdown, renderedDropdowns, overflowDropdown, verboseOverflows, rowActions?.length, rowActionStyle]
   );
@@ -592,7 +594,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
 
   const loading = (!schemasLoaded && tableSchemaType?.length > 0) || !rowsLoaded;
 
-  return useMemo(
+  const rendered = useMemo(
     () => (
       <div className={classes.component}>
         <Accordion defaultExpanded={startExpanded}>
@@ -685,6 +687,9 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
       orderBy
     ]
   );
+
+  if (hideEmpty && (!totalRows || loading)) return null;
+  else return rendered;
 };
 
 function RecordTableHead(props) {

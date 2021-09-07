@@ -84,6 +84,22 @@ const post_put_apiDoc = {
               type: 'string',
               title: 'Review status',
               description: 'The current review status of the activity'
+            },
+            species_positive: {
+              type: 'array',
+              title: 'Species Codes',
+              description: 'List of species in the given activity',
+              items: {
+                type: 'string'
+              }
+            },
+            species_negative: {
+              type: 'array',
+              title: 'Species Codes (Negatively Occuring)',
+              description: 'List of species negatively occuring in the given activity',
+              items: {
+                type: 'string'
+              }
             }
           },
           allOf: [

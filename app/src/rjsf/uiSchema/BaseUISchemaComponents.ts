@@ -1554,9 +1554,6 @@ const Dispersal_BiologicalDispersal = {
 */
 
 const Treatment = {
-  'activity_id': {
-    'ui:readonly': true
-  },
   'treatment_organization': {},
   'treatment_location': {
     'ui:widget': 'textarea'
@@ -1566,7 +1563,7 @@ const Treatment = {
       ...Persons
     }
   },
-  'ui:order':['activity_id','treatment_organization','treatment_location','treatment_persons']
+  'ui:order':['treatment_organization','treatment_location','treatment_persons']
 };
 
 const Treatment_MechanicalPlant = {
@@ -1654,8 +1651,8 @@ const Treatment_BiologicalPlant_BulkEdit = {
 */
 
 const Monitoring = {
-  'activity_id': {
-    'ui:readonly': true
+  linked_id: {
+    'ui:widget': 'single-select-autocomplete'
   },
   'observer_first_name': {},
   'observer_last_name': {},
@@ -1665,7 +1662,7 @@ const Monitoring = {
   'efficacy_code': {
     'ui:widget': 'single-select-autocomplete'
   },
-  'ui:order':['activity_id','observer_first_name','observer_last_name','tank_mix','efficacy_code']
+  'ui:order':['linked_id','observer_first_name','observer_last_name','tank_mix','efficacy_code']
 };
 
 const Monitoring_BiologicalTerrestrialPlant = {
