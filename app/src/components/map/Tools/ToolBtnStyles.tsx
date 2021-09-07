@@ -35,5 +35,12 @@ export const toolStyles = makeStyles((theme) => ({
   toolImg: {
     height: 24,
     width: 24
+  },
+  toolSlider: {
+    width: 300,
+    marginLeft: 10,
+    paddingTop: 20,
+    display: 'flex',
+    flexDirection: 'row'
   }
 }));

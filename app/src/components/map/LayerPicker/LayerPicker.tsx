@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
@@ -25,7 +25,6 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import {
   Checkbox,
   Grid,
-  ListItemSecondaryAction,
   ListItemIcon,
   ListItem,
   List,
@@ -33,15 +32,28 @@ import {
   AccordionSummary,
   Accordion,
   makeStyles,
-  Popover,
   IconButton,
-  Paper
+  Paper,
+  Slider,
+  Typography,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Popover,
+  Button,
+  Menu,
+  MenuItem,
+  Select,
+  InputLabel
 } from '@material-ui/core';
-import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from '../Tools/ToolBtnStyles';
 import LayersIcon from '@material-ui/icons/Layers';
 import { LayersControlProvider } from './layerControlContext';
 import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
+import SettingsIcon from '@material-ui/icons/Settings';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import { DomEvent } from 'leaflet';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,13 +98,35 @@ const POSITION_CLASSES = {
 
 export function LayerPicker(props: any, { position }) {
   const classes = useStyles();
+  const toolClass = toolStyles();
   const mapLayersContext = useContext(MapRequestContext);
   const timeLeft = WithCounter();
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
-  const [collapsed, setCollapsed] = useState(true);
   const [layers, setLayers] = useState([]);
+  const [opacity, setOpacity] = useState<number>(1.0);
+  const [layermode, setLayerMode] = useState(LayerMode.WMSOnline as string);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
+  const divref = useRef();
+
+  useEffect(() => {
+    if (divref?.current) {
+      DomEvent.disableClickPropagation(divref?.current);
+      DomEvent.disableScrollPropagation(divref?.current);
+    }
+  });
+
+  const opacityText = (value: number) => {
+    return `${value.toFixed(1)}`;
+  };
+
+  const handleSlider = (event: any, newOpacity: number | number[]) => {
+    setOpacity(newOpacity as number);
+  };
+
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setLayerMode(event.target.value as string);
+  };
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
@@ -165,12 +199,12 @@ export function LayerPicker(props: any, { position }) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
   }
 
-  const RenderLayers = (props) => {
+  /*const RenderLayers = (props) => {
     // loop over all layers in config / layer picker state
     // return each layer with the right props / layer mode
     // return layers in right order
     return <></>;
-  };
+  };*/
 
   //update context on ObjectState change
   useEffect(() => {
@@ -223,7 +257,6 @@ export function LayerPicker(props: any, { position }) {
                 &emsp;
                 <Grid item xs={2}>
                   <Checkbox checked={child.enabled} name={child.id} onChange={() => updateChildLayers(parent, child)} />
-                  {/*child.enabled ? <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} /> : null*/}
                 </Grid>
                 <Grid item xs={5}>
                   {child.id}
@@ -256,85 +289,83 @@ export function LayerPicker(props: any, { position }) {
   return (
     <LayersControlProvider value={null}>
       <div className={positionClass}>
-        <div
-          className="leaflet-control leaflet-bar"
-          onTouchStart={() => {
-            props.map.dragging.disable();
-            props.map.doubleClickZoom.disable();
-          }}
-          onTouchMove={() => {
-            props.map.dragging.disable();
-            props.map.doubleClickZoom.disable();
-          }}
-          onTouchEnd={() => {
-            props.map.dragging.disable();
-            props.map.doubleClickZoom.disable();
-          }}
-          onMouseOver={() => {
-            if (Capacitor.getPlatform() == 'web') {
-              props.map.dragging.disable();
-              props.map.doubleClickZoom.disable();
-            }
-          }}
-          onMouseOut={() => {
-            if (Capacitor.getPlatform() == 'web') {
-              props.map.dragging.enable();
-              props.map.doubleClickZoom.enable();
-            }
-          }}>
-          {/*<FormControl
-              style={{
-                display: 'flex',
-                marginLeft: '10px'
-              }}>
-              <RadioGroup row value={radio} onChange={handleRadioChange}>
-                <FormControlLabel value="default" control={<Radio />} label="default" />
-                {getSateliteMap(radio)}
-                <FormControlLabel value="other" control={<Radio />} label="other" />
-                {getOpenStreetMap(radio)}
-              </RadioGroup>
-            </FormControl>
-            <FormControl
-              style={{
-                display: 'flex',
-                marginLeft: '10px'
-              }}>
-              <FormControlLabel
-                control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
-                label="Activities"
-              />
-            </FormControl>*/}
-          <Paper
-            onMouseEnter={() => setCollapsed(false)}
-            onMouseLeave={() => setCollapsed(true)}
-            // className={classes.container}
-          >
-            {collapsed && (
-              <>
-                {layers.map((layer) => (
-                  <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
-                ))}
-                <IconButton>
+        {layers.map((layer) => (
+          <DataBCLayer opacity={opacity} layerName={layer} mode={layermode} />
+        ))}
+        <PopupState variant="popover" popupId="layerPicker">
+          {(popupState) => (
+            <div
+              className="leaflet-control leaflet-bar"
+              /*onTouchStart={() => {
+                props.map.dragging.disable();
+                props.map.doubleClickZoom.disable();
+              }}
+              onTouchMove={() => {
+                props.map.dragging.disable();
+                props.map.doubleClickZoom.disable();
+              }}
+              onTouchEnd={() => {
+                props.map.dragging.disable();
+                props.map.doubleClickZoom.disable();
+              }}
+              onMouseOver={() => {
+                if (Capacitor.getPlatform() == 'web') {
+                  props.map.dragging.disable();
+                  props.map.doubleClickZoom.disable();
+                }
+              }}
+              onMouseOut={() => {
+                if (Capacitor.getPlatform() == 'web') {
+                  props.map.dragging.enable();
+                  props.map.doubleClickZoom.enable();
+                }
+              }}*/ ref={divref}>
+              <Paper>
+                <IconButton {...bindTrigger(popupState)}>
                   <LayersIcon fontSize="default" />
                 </IconButton>
-              </>
-            )}
-            {!collapsed && (
-              <>
-                {layers.map((layer) => (
-                  <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
-                ))}
+              </Paper>
+              <Popover
+                {...bindPopover(popupState)}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}>
+                <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
+                  <SettingsIcon />
+                  <Select id="layer-menu" onChange={handleChange}>
+                    <MenuItem value={LayerMode.WMSOnline}>{LayerMode.WMSOnline}</MenuItem>
+                    <MenuItem value={LayerMode.WFSOnline}>{LayerMode.WFSOnline}</MenuItem>
+                    <MenuItem value={LayerMode.VectorTilesOffline}>{LayerMode.VectorTilesOffline}</MenuItem>
+                    <MenuItem value={LayerMode.RegularFeaturesOffline}>{LayerMode.RegularFeaturesOffline}</MenuItem>
+                  </Select>
+                </FormControl>
+                <div className={toolClass.toolSlider}>
+                  <Typography>Opacity</Typography>
+                  <Typography style={{ marginLeft: 10, marginRight: 10 }}>{opacityText(opacity)}</Typography>
+                  <Slider
+                    defaultValue={opacity}
+                    onChange={handleSlider}
+                    getAriaValueText={opacityText}
+                    step={0.0001}
+                    min={0.0}
+                    max={1.0}
+                  />
+                </div>
                 <SortableListContainer
                   items={sortArray(objectState)}
                   onSortEnd={onSortEnd}
                   useDragHandle={true}
                   lockAxis="y"
                 />
-              </>
-            )}
-          </Paper>
-          {/*<RenderLayers />*/}
-        </div>
+              </Popover>
+            </div>
+          )}
+        </PopupState>
       </div>
     </LayersControlProvider>
   );
