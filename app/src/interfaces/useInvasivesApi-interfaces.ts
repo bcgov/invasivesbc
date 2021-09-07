@@ -4,7 +4,6 @@ import { Feature } from 'geojson';
 
 /**
  * Activity search filter criteria.
- * DEPRECATED: Warning - anything using this interface is likely slated for removal
  *
  * @export
  * @interface IActivitySearchCriteria
@@ -97,6 +96,34 @@ export interface IActivitySearchCriteria {
    * @memberof IActivitySearchCriteria
    */
   review_status?: string[];
+  /**
+   * List of IDs to limit search within
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  activity_ids?: string[];
+  /**
+   * Search for records linked to a particular ID
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  linked_id?: string;
+  /**
+   * List of species positively occurring in the activity to partially match
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  species_positive?: string[];
+  /**
+   * List of species negatively occurring in the activity to partially match
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  species_negative?: string[];
 }
 
 /**
