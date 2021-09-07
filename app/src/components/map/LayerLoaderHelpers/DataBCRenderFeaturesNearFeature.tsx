@@ -19,6 +19,7 @@ import { NetworkContext } from 'contexts/NetworkContext';
 import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
 import { DocType } from 'constants/database';
 import { forEach } from 'jszip';
+import { utm_zone } from '../Tools/DisplayPosition';
 
 const wellIconSandard = new L.Icon({
   iconUrl: WellIconStandard,
@@ -194,8 +195,8 @@ const CustomWellPopup = ({ feature }) => {
   //Calculate utm_zone, northing and easting
   const latitude = feature.geometry.coordinates[0] || null;
   const longitude = feature.geometry.coordinates[1] || null;
-  let utm_easting, utm_northing, utm_zone;
-  if (longitude !== undefined && latitude !== undefined) {
+  let utm = utm_zone(longitude, latitude);
+  /*if (longitude !== undefined && latitude !== undefined) {
     utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
     proj4.defs([
       ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
@@ -204,7 +205,7 @@ const CustomWellPopup = ({ feature }) => {
     const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
     utm_easting = Number(en_m[0].toFixed(4));
     utm_northing = Number(en_m[1].toFixed(4));
-  }
+  }*/
 
   return (
     <div className={classes.popupWindow}>
@@ -222,15 +223,15 @@ const CustomWellPopup = ({ feature }) => {
       <Divider />
       <p>
         <b>UTM Zone: </b>
-        {utm_zone ? utm_zone : 'could not calculate'}
+        {utm[0] ? utm[0] : 'could not calculate'}
       </p>
       <p>
         <b>UTM Northing: </b>
-        {utm_northing ? utm_northing : 'could not calculate'}
+        {utm[2] ? utm[2] : 'could not calculate'}
       </p>
       <p>
         <b>UTM Easting: </b>
-        {utm_easting ? utm_easting : 'could not calculate'}
+        {utm[1] ? utm[1] : 'could not calculate'}
       </p>
       {popupContent}
     </div>

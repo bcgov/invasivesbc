@@ -70,6 +70,7 @@
     "leaflet.offline": "^2.0.0-beta.4",
     "leaflet.tilelayer.pouchdbcached": "^1.0.0",
     "localforage": "^1.9.0",
+    "lodash.groupby": "^4.6.0",
     "material-ui-color-picker": "^3.5.1",
     "material-ui-dropzone": "^3.5.0",
     "moment": "^2.29.0",

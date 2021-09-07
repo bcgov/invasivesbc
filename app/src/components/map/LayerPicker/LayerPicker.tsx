@@ -14,22 +14,16 @@ import {
   getParent,
   getChild,
   sortObject
-} from './LayerPickerHelper';
+} from './SortLayerOrder';
 import ColorPicker from 'material-ui-color-picker';
-import { TileLayer, useMap } from 'react-leaflet';
+import { Circle, LayerGroup, TileLayer, useMap } from 'react-leaflet';
 import { Capacitor } from '@capacitor/core';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 // for confirming loaded layers
 import DoneIcon from '@material-ui/icons/Done';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import LayersIcon from '@material-ui/icons/Layers';
 import {
   Checkbox,
-  IconButton,
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
   Grid,
   ListItemSecondaryAction,
   ListItemIcon,
@@ -39,13 +33,15 @@ import {
   AccordionSummary,
   Accordion,
   makeStyles,
-  Popover
+  Popover,
+  IconButton,
+  Paper
 } from '@material-ui/core';
-import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
-import { GeoJSON } from 'react-leaflet';
-import TempPOILoader from '../LayerLoaderHelpers/TempPOILoader';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from '../Tools/ToolBtnStyles';
+import LayersIcon from '@material-ui/icons/Layers';
+import { LayersControlProvider } from './layerControlContext';
+import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,20 +77,22 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export function LayerPicker(props: any) {
+const POSITION_CLASSES = {
+  bottomleft: 'leaflet-bottom leaflet-left',
+  bottomright: 'leaflet-bottom leaflet-right',
+  topleft: 'leaflet-top leaflet-left',
+  topright: 'leaflet-top leaflet-right'
+};
+
+export function LayerPicker(props: any, { position }) {
   const classes = useStyles();
-  const toolClass = toolStyles();
   const mapLayersContext = useContext(MapRequestContext);
   const timeLeft = WithCounter();
-  const map = useMap();
-  const themeContext = useContext(ThemeContext);
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
-  const [checked, setChecked] = useState(false);
-  const [radio, setRadio] = useState('default');
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  const [collapsed, setCollapsed] = useState(true);
+  const [layers, setLayers] = useState([]);
+  const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
@@ -130,6 +128,23 @@ export function LayerPicker(props: any) {
     setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
   };
 
+  const updateChildLayers = (parent, child) => {
+    if (child.enabled) {
+      var temp;
+      for (let i in layers) {
+        if (layers[i] === child.BCGWcode) {
+          temp = i;
+        }
+      }
+      layers.splice(temp, 1);
+    } else if (!child.enabled) {
+      setLayers([...layers, child.BCGWcode]);
+    }
+    updateChild(parent.id, child.id, {
+      enabled: !getChild(objectState, parent.id, child.id).enabled
+    });
+  };
+
   const DragHandle = SortableHandle(() => (
     <ListItemIcon>
       <DragHandleIcon />
@@ -150,15 +165,12 @@ export function LayerPicker(props: any) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
   }
 
-  function getSateliteMap(radioValue: any) {
-    return radio === 'default' ? (
-      <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-    ) : null;
-  }
-
-  function getOpenStreetMap(radioValue: any) {
-    return radio === 'other' ? <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null;
-  }
+  const RenderLayers = (props) => {
+    // loop over all layers in config / layer picker state
+    // return each layer with the right props / layer mode
+    // return layers in right order
+    return <></>;
+  };
 
   //update context on ObjectState change
   useEffect(() => {
@@ -210,15 +222,8 @@ export function LayerPicker(props: any) {
               <Grid container direction="row" justifyContent="flex-start" alignItems="center">
                 &emsp;
                 <Grid item xs={2}>
-                  <Checkbox
-                    checked={child.enabled}
-                    name={child.id}
-                    onChange={() => {
-                      updateChild(parent.id, child.id, {
-                        enabled: !getChild(objectState, parent.id, child.id).enabled
-                      });
-                    }}
-                  />
+                  <Checkbox checked={child.enabled} name={child.id} onChange={() => updateChildLayers(parent, child)} />
+                  {/*child.enabled ? <DataBCLayer layerName={child.BCGWcode} mode={LayerMode.WMSOnline} /> : null*/}
                 </Grid>
                 <Grid item xs={5}>
                   {child.id}
@@ -248,101 +253,89 @@ export function LayerPicker(props: any) {
     setObjectState(returnVal);
   };
 
-  const handleCheckboxChange = (event) => {
-    setChecked(event.target.checked);
-  };
-  const handleRadioChange = (event) => {
-    setRadio(event.target.value);
-  };
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   return (
-    <div style={{ zIndex: 1000 }}>
-      <IconButton
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        onClick={handleClick}>
-        <LayersIcon />
-      </IconButton>
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}>
+    <LayersControlProvider value={null}>
+      <div className={positionClass}>
         <div
+          className="leaflet-control leaflet-bar"
           onTouchStart={() => {
-            map.dragging.disable();
-            map.doubleClickZoom.disable();
+            props.map.dragging.disable();
+            props.map.doubleClickZoom.disable();
           }}
           onTouchMove={() => {
-            map.dragging.disable();
-            map.doubleClickZoom.disable();
+            props.map.dragging.disable();
+            props.map.doubleClickZoom.disable();
           }}
           onTouchEnd={() => {
-            map.dragging.disable();
-            map.doubleClickZoom.disable();
+            props.map.dragging.disable();
+            props.map.doubleClickZoom.disable();
           }}
           onMouseOver={() => {
             if (Capacitor.getPlatform() == 'web') {
-              map.dragging.disable();
-              map.doubleClickZoom.disable();
+              props.map.dragging.disable();
+              props.map.doubleClickZoom.disable();
             }
           }}
           onMouseOut={() => {
             if (Capacitor.getPlatform() == 'web') {
-              map.dragging.enable();
-              map.doubleClickZoom.enable();
+              props.map.dragging.enable();
+              props.map.doubleClickZoom.enable();
             }
           }}>
-          <FormControl
-            style={{
-              display: 'flex',
-              marginLeft: '10px'
-            }}>
-            <RadioGroup row value={radio} onChange={handleRadioChange}>
-              <FormControlLabel value="default" control={<Radio />} label="default" />
-              {getSateliteMap(radio)}
-              <FormControlLabel value="other" control={<Radio />} label="other" />
-              {getOpenStreetMap(radio)}
-            </RadioGroup>
-          </FormControl>
-          <FormControl
-            style={{
-              display: 'flex',
-              marginLeft: '10px'
-            }}>
-            <FormControlLabel
-              control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
-              label="Activities"
-            />
-          </FormControl>
-          <SortableListContainer
-            items={sortArray(objectState)}
-            onSortEnd={onSortEnd}
-            useDragHandle={true}
-            lockAxis="y"
-          />
+          {/*<FormControl
+              style={{
+                display: 'flex',
+                marginLeft: '10px'
+              }}>
+              <RadioGroup row value={radio} onChange={handleRadioChange}>
+                <FormControlLabel value="default" control={<Radio />} label="default" />
+                {getSateliteMap(radio)}
+                <FormControlLabel value="other" control={<Radio />} label="other" />
+                {getOpenStreetMap(radio)}
+              </RadioGroup>
+            </FormControl>
+            <FormControl
+              style={{
+                display: 'flex',
+                marginLeft: '10px'
+              }}>
+              <FormControlLabel
+                control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
+                label="Activities"
+              />
+            </FormControl>*/}
+          <Paper
+            onMouseEnter={() => setCollapsed(false)}
+            onMouseLeave={() => setCollapsed(true)}
+            // className={classes.container}
+          >
+            {collapsed && (
+              <>
+                {layers.map((layer) => (
+                  <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
+                ))}
+                <IconButton>
+                  <LayersIcon fontSize="default" />
+                </IconButton>
+              </>
+            )}
+            {!collapsed && (
+              <>
+                {layers.map((layer) => (
+                  <DataBCLayer layerName={layer} mode={LayerMode.WMSOnline} />
+                ))}
+                <SortableListContainer
+                  items={sortArray(objectState)}
+                  onSortEnd={onSortEnd}
+                  useDragHandle={true}
+                  lockAxis="y"
+                />
+              </>
+            )}
+          </Paper>
+          {/*<RenderLayers />*/}
         </div>
-      </Popover>
-      {checked ? (
-        <>
-          {/*<TempPOILoader pointOfInterestFilter={props.pointOfInterestFilter} ></TempPOILoader>*/}
-          {/*<GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} />*/}
-          {/*<GeoJSON data={vanIsland} onEachFeature={setupFeature} />*/}
-        </>
-      ) : null}
-    </div>
+      </div>
+    </LayersControlProvider>
   );
 }

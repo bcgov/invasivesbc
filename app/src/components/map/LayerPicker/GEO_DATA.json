@@ -1,6 +1,6 @@
 [
   {
-    "id": "water",
+    "id": "WATER",
     "name": "null",
     "source": "null",
     "type": "null",
@@ -11,39 +11,53 @@
     "enabled": false,
     "children": [
       {
-        "id": "waterShed",
-        "name": "null",
+        "id": "FW Wells",
+        "name": "Freshwater Wells",
         "source": "null",
         "type": "null",
+        "BCGWcode": "WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW",
         "colorCode": "#000",
         "order": 0,
         "loaded": 70,
         "enabled": false
       },
       {
-        "id": "waterStreams",
-        "name": "null",
+        "id": "FWAS",
+        "name": "Fish Watershed Atlas Streams",
         "source": "null",
         "type": "null",
+        "BCGWcode": "WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP",
         "colorCode": "#000",
         "order": 1,
         "loaded": 70,
         "enabled": false
       },
       {
-        "id": "waterBeds",
-        "name": "null",
+        "id": "FWAW",
+        "name": "Fish Watershed Atlas Wetlands",
         "source": "null",
         "type": "null",
+        "BCGWcode": "WHSE_BASEMAPPING.FWA_WETLANDS_POLY",
         "colorCode": "#000",
         "order": 2,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "FSWB",
+        "name": "Fish Sensitive Watershed Boundaries",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "WHSE_WILDLIFE_MANAGEMENT.WCP_FISH_SENSITIVE_WS_POLY",
+        "colorCode": "#000",
+        "order": 3,
         "loaded": 70,
         "enabled": false
       }
     ]
   },
   {
-    "id": "land",
+    "id": "LAND",
     "name": "null",
     "source": "null",
     "type": "null",
@@ -54,39 +68,97 @@
     "enabled": false,
     "children": [
       {
-        "id": "forest",
-        "name": "null",
+        "id": "Land Own.",
+        "name": "Land Ownership",
         "source": "null",
         "type": "null",
+        "BCGWcode": "WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW",
         "colorCode": "#000",
         "order": 0,
         "loaded": 70,
         "enabled": false
       },
       {
-        "id": "first nations",
-        "name": "null",
+        "id": "Fed. Parks",
+        "name": "Federal Parks",
         "source": "null",
         "type": "null",
+        "BCGWcode": "WHSE_ADMIN_BOUNDARIES.CLAB_NATIONAL_PARKS",
         "colorCode": "#000",
         "order": 1,
         "loaded": 70,
         "enabled": false
       },
       {
-        "id": "grassland",
-        "name": "null",
+        "id": "Bio. Zones",
+        "name": "Biogeoclimatic Zones",
         "source": "null",
         "type": "null",
+        "BCGWcode": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
         "colorCode": "#000",
         "order": 2,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "RISOA",
+        "name": "Regional Invasive Species Organization Areas",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "regional_invasive_species_organization_areas",
+        "colorCode": "#000",
+        "order": 3,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "Tenures",
+        "name": "Aggregate (gravel) Tennures",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "aggregate_tenures",
+        "colorCode": "#000",
+        "order": 4,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "IPMA",
+        "name": "Invasive Plant Management Areas",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "invasive_plant_management_areas",
+        "colorCode": "#000",
+        "order": 5,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "Wildlife",
+        "name": "Wildlife Habitat Areas",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY",
+        "colorCode": "#000",
+        "order": 6,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "FN Reserves",
+        "name": "First Nation Reserves",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
+        "colorCode": "#000",
+        "order": 7,
         "loaded": 70,
         "enabled": false
       }
     ]
   },
   {
-    "id": "thing",
+    "id": "GOV",
     "name": "null",
     "source": "null",
     "type": "null",
@@ -97,19 +169,86 @@
     "enabled": false,
     "children": [
       {
-        "id": "something",
-        "name": "null",
+        "id": "NRD",
+        "name": "Natural Resource District",
         "source": "null",
         "type": "null",
+        "BCGWcode": "WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG",
         "colorCode": "#000",
         "order": 0,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "MTD (District)",
+        "name": "Ministry of Transportations Districts",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY",
+        "colorCode": "#000",
+        "order": 1,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "MTD (Regional)",
+        "name": "Ministry of Transportations Districts",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "WHSE_ADMIN_BOUNDARIES.TADM_MOT_REGIONAL_BNDRY_POLY",
+        "colorCode": "#000",
+        "order": 2,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "MTRI",
+        "name": "Ministry of Transportation Road Inventory",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "WHSE_IMAGERY_AND_BASE_MAPS",
+        "colorCode": "#000",
+        "order": 3,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "ADMSRD",
+        "name": "Access and Directory Management Services Regional Districts",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP",
+        "colorCode": "#000",
+        "order": 4,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "ADMSM",
+        "name": "Access and Directory Management Services Municipalities",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "WHSE_LEGAL_ADMIN_BOUNDARIES",
+        "colorCode": "#000",
+        "order": 5,
+        "loaded": 70,
+        "enabled": false
+      },
+      {
+        "id": "Jurisdictions",
+        "name": "Jurisdictions",
+        "source": "null",
+        "type": "null",
+        "BCGWcode": "jurisdiction",
+        "colorCode": "#000",
+        "order": 6,
         "loaded": 70,
         "enabled": false
       }
     ]
   },
   {
-    "id": "notwater",
+    "id": "OTHER",
     "name": "null",
     "source": "null",
     "type": "null",
@@ -120,32 +259,24 @@
     "enabled": false,
     "children": [
       {
-        "id": "waterShed",
-        "name": "null",
+        "id": "OGMU",
+        "name": "Old Growth Management Units",
         "source": "null",
         "type": "null",
+        "BCGWcode": "WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW",
         "colorCode": "#000",
         "order": 0,
         "loaded": 70,
         "enabled": false
       },
       {
-        "id": "waterStreams",
+        "id": "Ungulate Winter Ranges",
         "name": "null",
         "source": "null",
         "type": "null",
+        "BCGWcode": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
         "colorCode": "#000",
         "order": 1,
-        "loaded": 70,
-        "enabled": false
-      },
-      {
-        "id": "waterBeds",
-        "name": "null",
-        "source": "null",
-        "type": "null",
-        "colorCode": "#000",
-        "order": 2,
         "loaded": 70,
         "enabled": false
       }

@@ -7,21 +7,12 @@ import { upsert, UpsertType } from 'contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
 // node doesn't have xml parsing or a dom. use xmldom
 import JSZip from 'jszip';
-import { ESLint } from 'eslint';
-import { GeoJSON, MapContainer } from 'react-leaflet';
 const DOMParser = require('xmldom').DOMParser;
 
 export const KML_TYPES = {
   KML: 'kml',
   KMZ: 'kmz',
   OTHER: 'other'
-};
-const interactiveGeometryStyle = () => {
-  return {
-    color: '#ff7800',
-    weight: 5,
-    opacity: 0.65
-  };
 };
 
 const KMZ_OR_KML = (input: File) => {
