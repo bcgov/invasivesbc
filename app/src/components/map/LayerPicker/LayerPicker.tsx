@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
@@ -25,7 +25,6 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import {
   Checkbox,
   Grid,
-  ListItemSecondaryAction,
   ListItemIcon,
   ListItem,
   List,
@@ -33,16 +32,23 @@ import {
   AccordionSummary,
   Accordion,
   makeStyles,
-  Popover,
   IconButton,
   Paper,
   Slider,
-  Typography
+  Typography,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Popover
 } from '@material-ui/core';
 import { toolStyles } from '../Tools/ToolBtnStyles';
 import LayersIcon from '@material-ui/icons/Layers';
 import { LayersControlProvider } from './layerControlContext';
 import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
+import SettingsIcon from '@material-ui/icons/Settings';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import { DomEvent } from 'leaflet';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -92,10 +98,21 @@ export function LayerPicker(props: any, { position }) {
   const timeLeft = WithCounter();
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
-  const [collapsed, setCollapsed] = useState(true);
   const [layers, setLayers] = useState([]);
   const [opacity, setOpacity] = useState<number>(1.0);
+  const [layermode, setLayerMode] = useState(LayerMode.WMSOnline as string);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'layerPicker' : undefined;
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
+  const divref = useRef();
+
+  useEffect(() => {
+    if (divref?.current) {
+      DomEvent.disableClickPropagation(divref?.current);
+      DomEvent.disableScrollPropagation(divref?.current);
+    }
+  });
 
   const opacityText = (value: number) => {
     return `${value.toFixed(1)}`;
@@ -103,6 +120,18 @@ export function LayerPicker(props: any, { position }) {
 
   const handleSlider = (event: any, newOpacity: number | number[]) => {
     setOpacity(newOpacity as number);
+  };
+
+  const handleRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLayerMode((event.target as HTMLInputElement).value);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
@@ -264,74 +293,62 @@ export function LayerPicker(props: any, { position }) {
     setObjectState(returnVal);
   };
 
+  useEffect(() => {
+    console.log(layermode);
+  }, [layermode]);
+
   return (
     <LayersControlProvider value={null}>
       <div className={positionClass}>
-        <div
-          className="leaflet-control leaflet-bar"
-          onTouchStart={() => {
-            props.map.dragging.disable();
-            props.map.doubleClickZoom.disable();
-          }}
-          onTouchMove={() => {
-            props.map.dragging.disable();
-            props.map.doubleClickZoom.disable();
-          }}
-          onTouchEnd={() => {
-            props.map.dragging.disable();
-            props.map.doubleClickZoom.disable();
-          }}
-          onMouseOver={() => {
-            if (Capacitor.getPlatform() == 'web') {
-              props.map.dragging.disable();
-              props.map.doubleClickZoom.disable();
-            }
-          }}
-          onMouseOut={() => {
-            if (Capacitor.getPlatform() == 'web') {
-              props.map.dragging.enable();
-              props.map.doubleClickZoom.enable();
-            }
-          }}>
-          {/*<FormControl
-              style={{
-                display: 'flex',
-                marginLeft: '10px'
-              }}>
-              <RadioGroup row value={radio} onChange={handleRadioChange}>
-                <FormControlLabel value="default" control={<Radio />} label="default" />
-                {getSateliteMap(radio)}
-                <FormControlLabel value="other" control={<Radio />} label="other" />
-                {getOpenStreetMap(radio)}
-              </RadioGroup>
-            </FormControl>
-            <FormControl
-              style={{
-                display: 'flex',
-                marginLeft: '10px'
-              }}>
-              <FormControlLabel
-                control={<Checkbox checked={checked} onChange={handleCheckboxChange} />}
-                label="Activities"
-              />
-            </FormControl>*/}
-          <Paper
-            onMouseEnter={() => setCollapsed(false)}
-            onMouseLeave={() => setCollapsed(true)}
-            // className={classes.container}
-          >
-            {collapsed && (
-              <>
-                <IconButton>
+        {layers.map((layer) => (
+          <DataBCLayer opacity={opacity} layerName={layer} mode={layermode} />
+        ))}
+        <PopupState variant="popover" popupId="layerPicker">
+          {(popupState) => (
+            <div
+              className="leaflet-control leaflet-bar"
+              /*onTouchStart={() => {
+                props.map.dragging.disable();
+                props.map.doubleClickZoom.disable();
+              }}
+              onTouchMove={() => {
+                props.map.dragging.disable();
+                props.map.doubleClickZoom.disable();
+              }}
+              onTouchEnd={() => {
+                props.map.dragging.disable();
+                props.map.doubleClickZoom.disable();
+              }}
+              onMouseOver={() => {
+                if (Capacitor.getPlatform() == 'web') {
+                  props.map.dragging.disable();
+                  props.map.doubleClickZoom.disable();
+                }
+              }}
+              onMouseOut={() => {
+                if (Capacitor.getPlatform() == 'web') {
+                  props.map.dragging.enable();
+                  props.map.doubleClickZoom.enable();
+                }
+              }}*/ ref={divref}>
+              <Paper>
+                <IconButton {...bindTrigger(popupState)}>
                   <LayersIcon fontSize="default" />
                 </IconButton>
-              </>
-            )}
-            {!collapsed && (
-              <>
+              </Paper>
+              <Popover
+                {...bindPopover(popupState)}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}>
                 <div className={toolClass.toolSlider}>
-                  <Typography>Opacity </Typography>
-                  <Typography style={{ marginRight: 10 }}>{opacityText(opacity)}</Typography>
+                  <Typography>Opacity</Typography>
+                  <Typography style={{ marginLeft: 10, marginRight: 10 }}>{opacityText(opacity)}</Typography>
                   <Slider
                     defaultValue={opacity}
                     onChange={handleSlider}
@@ -341,21 +358,80 @@ export function LayerPicker(props: any, { position }) {
                     max={1.0}
                   />
                 </div>
+                <FormControl style={{ marginLeft: 10 }} component="fieldset">
+                  <RadioGroup aria-label="layer type" name="WMSOnline" value={layermode} onChange={handleRadio}>
+                    <FormControlLabel value={LayerMode.WMSOnline} control={<Radio />} label="WMS" />
+                    <FormControlLabel value={LayerMode.WFSOnline} control={<Radio />} label="WFS" />
+                    <FormControlLabel value={LayerMode.VectorTilesOffline} control={<Radio />} label="Vector Tiles" />
+                    <FormControlLabel
+                      value={LayerMode.RegularFeaturesOffline}
+                      control={<Radio />}
+                      label="Regular Features"
+                    />
+                  </RadioGroup>
+                </FormControl>
                 <SortableListContainer
                   items={sortArray(objectState)}
                   onSortEnd={onSortEnd}
                   useDragHandle={true}
                   lockAxis="y"
                 />
-              </>
-            )}
-            {layers.map((layer) => (
-              <DataBCLayer opacity={opacity} layerName={layer} mode={LayerMode.WMSOnline} />
-            ))}
-          </Paper>
-          {/*<RenderLayers />*/}
-        </div>
+              </Popover>
+            </div>
+          )}
+        </PopupState>
       </div>
     </LayersControlProvider>
   );
+  {
+    /*<Paper>
+            <IconButton onClick={handleClick}>
+              <LayersIcon fontSize="default" />
+            </IconButton>
+            <Popover
+              id={id}
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}>
+              <div className={toolClass.toolSlider}>
+                <Typography>Opacity</Typography>
+                <Typography style={{ marginLeft: 10, marginRight: 10 }}>{opacityText(opacity)}</Typography>
+                <Slider
+                  defaultValue={opacity}
+                  onChange={handleSlider}
+                  getAriaValueText={opacityText}
+                  step={0.0001}
+                  min={0.0}
+                  max={1.0}
+                />
+              </div>
+              <FormControl style={{ marginLeft: 10 }} component="fieldset">
+                <RadioGroup aria-label="layer type" name="WMSOnline" value={layermode} onChange={handleRadio}>
+                  <FormControlLabel value={LayerMode.WMSOnline} control={<Radio />} label="WMS" />
+                  <FormControlLabel value={LayerMode.WFSOnline} control={<Radio />} label="WFS" />
+                  <FormControlLabel value={LayerMode.VectorTilesOffline} control={<Radio />} label="Vector Tiles" />
+                  <FormControlLabel
+                    value={LayerMode.RegularFeaturesOffline}
+                    control={<Radio />}
+                    label="Regular Features"
+                  />
+                </RadioGroup>
+              </FormControl>
+              <SortableListContainer
+                items={sortArray(objectState)}
+                onSortEnd={onSortEnd}
+                useDragHandle={true}
+                lockAxis="y"
+              />
+            </Popover>
+          </Paper>*/
+  }
 }
