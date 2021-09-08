@@ -283,7 +283,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           </LayersControl.Overlay>
         </LayersControl>*/}
       </MapRequestContextProvider>
-      {props.geometryState.geometry ? (
+      {/* {props.geometryState.geometry ? (
         <>
           <RenderKeyFeaturesNearFeature
             inputGeo={props.geometryState?.geometry[0]}
@@ -295,7 +295,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         </>
       ) : (
         <></>
-      )}
+      )} */}
     </ReactLeafletMapContainer>
   );
 };

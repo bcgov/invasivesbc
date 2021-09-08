@@ -1,5 +1,8 @@
+import { Feature } from '@turf/turf';
 import React from 'react';
-import { WMSTileLayer } from 'react-leaflet';
+import { useMap, WMSTileLayer } from 'react-leaflet';
+import { RenderKeyFeaturesNearFeature } from './DataBCRenderFeaturesNearFeature';
+import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',
@@ -9,6 +12,8 @@ export enum LayerMode {
 }
 
 export const DataBCLayer = (props) => {
+  const map = useMap();
+
   if (!props.mode) {
     throw new Error('you missed a map mode');
   }
@@ -29,6 +34,13 @@ export const DataBCLayer = (props) => {
       return <></>;
     case LayerMode.RegularFeaturesOffline:
       //this is the regular geojson stuff
-      return <></>;
+      return (
+        <RenderKeyFeaturesNearFeature
+          inputGeo={createPolygonFromBounds(map.getBounds(), map).toGeoJSON()}
+          dataBCLayerName={props.layerName}
+          proximityInMeters={550}
+          setWellIdandProximity={props.setWellIdandProximity}
+        />
+      );
   }
 };

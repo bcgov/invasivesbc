@@ -82,6 +82,9 @@ export const getDataFromDataBC: any = async (
   totalInBox = resp.data.numberMatched;
   console.log('***features found: ' + resp.data.numberMatched);
   console.log('***converting to geog from albers:');
+  if (!resp.data.numberMatched) {
+    return [];
+  }
   let returnVal = albersToGeog(resp.data).features;
   console.log('***features converted: ' + returnVal.length);
   if (!pageSize && !startIndex) {
