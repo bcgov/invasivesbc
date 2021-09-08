@@ -19,7 +19,9 @@ const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
 
 const API_HOST = REACT_APP_API_HOST;
 const API_PORT = REACT_APP_API_PORT;
-const API_URL = 'http://localhost:7080';
+const API_URL = REACT_APP_API_HOST
+  ? `http://${API_HOST}:${API_PORT}`
+  : 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
 console.log('API_URL', API_URL);
 
