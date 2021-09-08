@@ -191,7 +191,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     setTimeout(() => {
       mapResizer.invalidateSize();
     }, 100);
-
     return null;
   };
 
@@ -223,7 +222,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     useMapEvent('moveend', () => {
       let newArray = [];
       layersSelected.forEach((layer: any) => {
-        if (layer.enabled) newArray.push(layer.id);
+        if (layer.enabled) {
+          newArray.push(layer.id);
+        }
       });
 
       qRemove(lastRequestPushed, newArray);

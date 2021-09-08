@@ -1,7 +1,7 @@
 import buffer from '@turf/buffer';
 import { getDataFromDataBC } from 'components/map/WFSConsumer';
 import React, { useState, useEffect, useContext } from 'react';
-import { GeoJSON } from 'react-leaflet';
+import { GeoJSON, useMap } from 'react-leaflet';
 import { Feature, Geometry } from 'geojson';
 import * as turf from '@turf/turf';
 import pointToLineDistance from '@turf/point-to-line-distance';
@@ -30,14 +30,6 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const [geosToRender, setGeosToRender] = useState(null);
   const databaseContext = useContext(DatabaseContext2);
   const [keyval, setKeyval] = useState(0);
-
-  const withAsyncQueue = async (request: any) => {
-    return databaseContext.asyncQueue({
-      asyncTask: () => {
-        return request;
-      }
-    });
-  };
 
   //when there is new wellId and proximity, send info to ActivityPage
   useEffect(() => {
@@ -101,14 +93,12 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       const bufferedGeo = buffer(props.inputGeo, props.proximityInMeters / 1000);
       if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
         if (Capacitor.getPlatform() !== 'web' && !networkContext.connected) {
-          const res = await withAsyncQueue(
-            query(
-              {
-                type: QueryType.RAW_SQL,
-                sql: `SELECT * FROM layer_data WHERE layerName IN ('well');`
-              },
-              databaseContext
-            )
+          const res = await query(
+            {
+              type: QueryType.RAW_SQL,
+              sql: `SELECT * FROM layer_data WHERE layerName IN ('well');`
+            },
+            databaseContext
           );
           let allFeatures = [];
           res.forEach((row) => {
@@ -130,14 +120,12 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       } else {
         if (!geosToRender) {
           if (Capacitor.getPlatform() !== 'web' && !networkContext.connected) {
-            const res = await withAsyncQueue(
-              query(
-                {
-                  type: QueryType.RAW_SQL,
-                  sql: `SELECT * FROM layer_data WHERE layerName NOT IN ('well');`
-                },
-                databaseContext
-              )
+            const res = await query(
+              {
+                type: QueryType.RAW_SQL,
+                sql: `SELECT * FROM layer_data WHERE layerName NOT IN ('well');`
+              },
+              databaseContext
             );
             let allFeatures = [];
             res.forEach((row) => {
