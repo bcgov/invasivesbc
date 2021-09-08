@@ -45,7 +45,10 @@ import {
   Menu,
   MenuItem,
   Select,
-  InputLabel
+  InputLabel,
+  Dialog,
+  DialogTitle,
+  DialogActions
 } from '@material-ui/core';
 import { toolStyles } from '../Tools/ToolBtnStyles';
 import LayersIcon from '@material-ui/icons/Layers';
@@ -105,9 +108,24 @@ export function LayerPicker(props: any, { position }) {
   const [objectState, setObjectState] = useState(layersSelected);
   const [layers, setLayers] = useState([]);
   const [opacity, setOpacity] = useState<number>(1.0);
+  const [open, setOpen] = useState(false);
   const [layermode, setLayerMode] = useState(LayerMode.WMSOnline as string);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
+
+  function getErrorIcon(time: any) {
+    return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
+  }
+
+  function WithCounter() {
+    const [seconds, setSeconds] = React.useState(10);
+    React.useEffect(() => {
+      if (seconds > 0) {
+        setTimeout(() => setSeconds(seconds - 1), 1000);
+      }
+    });
+    return seconds;
+  }
 
   useEffect(() => {
     if (divref?.current) {
@@ -115,6 +133,11 @@ export function LayerPicker(props: any, { position }) {
       DomEvent.disableScrollPropagation(divref?.current);
     }
   });
+
+  //update context on ObjectState change
+  useEffect(() => {
+    setLayersSelected(objectState);
+  }, [objectState]);
 
   const opacityText = (value: number) => {
     return `${value.toFixed(1)}`;
@@ -126,6 +149,14 @@ export function LayerPicker(props: any, { position }) {
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setLayerMode(event.target.value as string);
+  };
+
+  const handleDialogOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpen(false);
   };
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
@@ -185,32 +216,6 @@ export function LayerPicker(props: any, { position }) {
     </ListItemIcon>
   ));
 
-  function WithCounter() {
-    const [seconds, setSeconds] = React.useState(10);
-    React.useEffect(() => {
-      if (seconds > 0) {
-        setTimeout(() => setSeconds(seconds - 1), 1000);
-      }
-    });
-    return seconds;
-  }
-
-  function getErrorIcon(time: any) {
-    return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
-  }
-
-  /*const RenderLayers = (props) => {
-    // loop over all layers in config / layer picker state
-    // return each layer with the right props / layer mode
-    // return layers in right order
-    return <></>;
-  };*/
-
-  //update context on ObjectState change
-  useEffect(() => {
-    setLayersSelected(objectState);
-  }, [objectState]);
-
   const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
       updateParent(parent.id, { expanded: expanded });
@@ -260,6 +265,11 @@ export function LayerPicker(props: any, { position }) {
                 </Grid>
                 <Grid item xs={5}>
                   {child.id}
+                </Grid>
+                <Grid item xs={1}>
+                  <IconButton onClick={handleDialogOpen}>
+                    <SettingsIcon />
+                  </IconButton>
                 </Grid>
                 <Grid item xs={2} style={{ position: 'relative' }}>
                   {child.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
@@ -336,7 +346,6 @@ export function LayerPicker(props: any, { position }) {
                   horizontal: 'right'
                 }}>
                 <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
-                  <SettingsIcon />
                   <Select id="layer-menu" onChange={handleChange}>
                     <MenuItem value={LayerMode.WMSOnline}>{LayerMode.WMSOnline}</MenuItem>
                     <MenuItem value={LayerMode.WFSOnline}>{LayerMode.WFSOnline}</MenuItem>

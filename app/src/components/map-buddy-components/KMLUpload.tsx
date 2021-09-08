@@ -127,9 +127,9 @@ export const KMLUpload: React.FC<any> = (props) => {
           }
         }
       } else if (geo.geometry?.type === 'LineString') {
-        len = geo.geometry.coordinates.length;
+        len = newGeo.geometry.coordinates.length;
         for (var k = 0; k < len; k++) {
-          newGeo.geometry.coordinates[i].pop();
+          newGeo.geometry.coordinates[k].pop();
         }
       }
       return newGeo;

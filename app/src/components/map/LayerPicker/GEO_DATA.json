@@ -18,8 +18,10 @@
         "BCGWcode": "WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW",
         "colorCode": "#000",
         "order": 0,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "FWAS",
@@ -29,8 +31,10 @@
         "BCGWcode": "WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP",
         "colorCode": "#000",
         "order": 1,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "FWAW",
@@ -40,8 +44,10 @@
         "BCGWcode": "WHSE_BASEMAPPING.FWA_WETLANDS_POLY",
         "colorCode": "#000",
         "order": 2,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "FSWB",
@@ -51,8 +57,10 @@
         "BCGWcode": "WHSE_WILDLIFE_MANAGEMENT.WCP_FISH_SENSITIVE_WS_POLY",
         "colorCode": "#000",
         "order": 3,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       }
     ]
   },
@@ -75,8 +83,10 @@
         "BCGWcode": "WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW",
         "colorCode": "#000",
         "order": 0,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "Fed. Parks",
@@ -86,8 +96,10 @@
         "BCGWcode": "WHSE_ADMIN_BOUNDARIES.CLAB_NATIONAL_PARKS",
         "colorCode": "#000",
         "order": 1,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "Bio. Zones",
@@ -97,8 +109,10 @@
         "BCGWcode": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
         "colorCode": "#000",
         "order": 2,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "RISOA",
@@ -108,8 +122,10 @@
         "BCGWcode": "regional_invasive_species_organization_areas",
         "colorCode": "#000",
         "order": 3,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "Tenures",
@@ -119,8 +135,10 @@
         "BCGWcode": "aggregate_tenures",
         "colorCode": "#000",
         "order": 4,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "IPMA",
@@ -130,8 +148,10 @@
         "BCGWcode": "invasive_plant_management_areas",
         "colorCode": "#000",
         "order": 5,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "Wildlife",
@@ -141,8 +161,10 @@
         "BCGWcode": "WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY",
         "colorCode": "#000",
         "order": 6,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "FN Reserves",
@@ -152,8 +174,10 @@
         "BCGWcode": "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
         "colorCode": "#000",
         "order": 7,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       }
     ]
   },
@@ -176,8 +200,10 @@
         "BCGWcode": "WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG",
         "colorCode": "#000",
         "order": 0,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "MTD (District)",
@@ -187,8 +213,10 @@
         "BCGWcode": "WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY",
         "colorCode": "#000",
         "order": 1,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "MTD (Regional)",
@@ -198,8 +226,10 @@
         "BCGWcode": "WHSE_ADMIN_BOUNDARIES.TADM_MOT_REGIONAL_BNDRY_POLY",
         "colorCode": "#000",
         "order": 2,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "MTRI",
@@ -209,8 +239,10 @@
         "BCGWcode": "WHSE_IMAGERY_AND_BASE_MAPS",
         "colorCode": "#000",
         "order": 3,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "ADMSRD",
@@ -220,8 +252,10 @@
         "BCGWcode": "WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP",
         "colorCode": "#000",
         "order": 4,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "ADMSM",
@@ -231,8 +265,10 @@
         "BCGWcode": "WHSE_LEGAL_ADMIN_BOUNDARIES",
         "colorCode": "#000",
         "order": 5,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "Jurisdictions",
@@ -242,8 +278,10 @@
         "BCGWcode": "jurisdiction",
         "colorCode": "#000",
         "order": 6,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       }
     ]
   },
@@ -266,8 +304,10 @@
         "BCGWcode": "WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW",
         "colorCode": "#000",
         "order": 0,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       },
       {
         "id": "Ungulate Winter Ranges",
@@ -277,8 +317,10 @@
         "BCGWcode": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
         "colorCode": "#000",
         "order": 1,
+        "opacity": 0.4,
         "loaded": 70,
-        "enabled": false
+        "enabled": false,
+        "dialogOpen": false
       }
     ]
   }
