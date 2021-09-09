@@ -1,8 +1,6 @@
-import { Feature } from '@turf/turf';
 import React from 'react';
 import { useMap, WMSTileLayer } from 'react-leaflet';
 import { RenderKeyFeaturesNearFeature } from './DataBCRenderFeaturesNearFeature';
-import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',
@@ -12,8 +10,6 @@ export enum LayerMode {
 }
 
 export const DataBCLayer = (props) => {
-  const map = useMap();
-
   if (!props.mode) {
     throw new Error('you missed a map mode');
   }

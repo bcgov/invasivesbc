@@ -1,5 +1,3 @@
-import buffer from '@turf/buffer';
-import { getDataFromDataBC } from '../../../components/map/WFSConsumer';
 import React, { useState, useEffect, useContext } from 'react';
 import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
 import { Feature, Geometry } from 'geojson';
@@ -7,9 +5,7 @@ import * as turf from '@turf/turf';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import { polygon } from '@turf/helpers';
-import L, { Layer } from 'leaflet';
-import { Capacitor } from '@capacitor/core';
-import { NetworkContext } from '../../../contexts/NetworkContext';
+import { Layer } from 'leaflet';
 import { DatabaseContext2, query, QueryType } from '../../../contexts/DatabaseContext2';
 import { WellMarker } from './WellMarker';
 import { q } from '../MapContainer';
@@ -29,7 +25,6 @@ interface IRenderKeyFeaturesNearFeature {
 export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeature) => {
   const [wellsWithClosest, setWellsWithClosest] = useState(null);
   const [wellIdandProximity, setWellIdandProximity] = useState(null);
-  const networkContext = useContext(NetworkContext);
   const [geosToRender, setGeosToRender] = useState(null);
   const databaseContext = useContext(DatabaseContext2);
   const [keyval, setKeyval] = useState(0);
@@ -40,6 +35,95 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       props.setWellIdandProximity(wellIdandProximity);
     }
   }, [wellIdandProximity]);
+
+  const map = useMap();
+  const mapRequestContext = useContext(MapRequestContext);
+  const { layersSelected } = mapRequestContext;
+  const [lastRequestPushed, setLastRequestPushed] = useState(null);
+
+  const qRemove = (lastReqPushed: any, newArray: any) => {
+    q.remove((worker: any) => {
+      if (worker.data && lastReqPushed?.extent) {
+        if (
+          !turf.booleanWithin(worker.data.extent, lastReqPushed.extent) &&
+          !turf.booleanOverlap(worker.data.extent, lastReqPushed.extent)
+        ) {
+          console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
+          return true;
+        }
+        if (!newArray.includes(worker.data.layer)) {
+          console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
+          return true;
+        }
+      }
+      return false;
+    });
+  };
+
+  useMapEvent('moveend', () => {
+    const newArray = [];
+    layersSelected.forEach((layer: any) => {
+      if (layer.enabled) {
+        newArray.push(layer.id);
+      }
+    });
+
+    qRemove(lastRequestPushed, newArray);
+
+    if (newArray.length > 0) {
+      newArray.forEach((layer) => {
+        q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer }, getLayerData);
+
+        setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
+      });
+    }
+    map.invalidateSize();
+  });
+
+  const getLayerData = async () => {
+    const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
+    if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
+      const res = await query(
+        {
+          type: QueryType.RAW_SQL,
+          sql: `SELECT * FROM layer_data WHERE layerName IN ('well');`
+        },
+        databaseContext
+      );
+
+      let allFeatures = [];
+
+      res.forEach((row) => {
+        const featureArea = JSON.parse(row.featureArea).geometry;
+        const featuresInArea = JSON.parse(row.featuresInArea);
+
+        if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
+          allFeatures = allFeatures.concat(featuresInArea);
+        }
+      });
+      if (props.inputGeo) {
+        setWellsWithClosest(getClosestWellToPolygon(allFeatures));
+      } else {
+        setWellsWithClosest(allFeatures);
+      }
+      setKeyval(Math.random()); //NOSONAR
+    } else {
+      const res = await query(
+        {
+          type: QueryType.RAW_SQL,
+          sql: `SELECT * FROM layer_data WHERE layerName NOT IN ('well');`
+        },
+        databaseContext
+      );
+      let allFeatures = [];
+      res.forEach((row) => {
+        const featuresInArea = JSON.parse(row.featuresInArea);
+        allFeatures = allFeatures.concat(featuresInArea);
+      });
+      setGeosToRender(allFeatures);
+      setKeyval(Math.random()); //NOSONAR
+    }
+  };
 
   /*
    * Function for going through array and labeling 1 closest well and wells inside the polygon
@@ -94,112 +178,6 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
         `;
         layer.bindPopup(popupContent);
       };
-
-  const map = useMap();
-  const mapRequestContext = useContext(MapRequestContext);
-  const { layersSelected } = mapRequestContext;
-  const [lastRequestPushed, setLastRequestPushed] = useState(null);
-
-  const qRemove = (lastReqPushed: any, newArray: any) => {
-    q.remove((worker: any) => {
-      if (worker.data && lastReqPushed?.extent) {
-        if (
-          !turf.booleanWithin(worker.data.extent, lastReqPushed.extent) &&
-          !turf.booleanOverlap(worker.data.extent, lastReqPushed.extent)
-        ) {
-          console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
-          return true;
-        }
-        if (!newArray.includes(worker.data.layer)) {
-          console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
-          return true;
-        }
-      }
-      return false;
-    });
-  };
-
-  useMapEvent('moveend', () => {
-    const newArray = [];
-    layersSelected.forEach((layer: any) => {
-      if (layer.enabled) {
-        newArray.push(layer.id);
-      }
-    });
-
-    qRemove(lastRequestPushed, newArray);
-
-    if (newArray.length > 0) {
-      newArray.forEach((layer) => {
-        q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer }, getLayerData);
-
-        setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
-      });
-    }
-    map.invalidateSize();
-  });
-
-  const getLayerData = async () => {
-    const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
-    const bufferedGeo = buffer(mapExtent, props.proximityInMeters / 1000);
-    if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
-      if (Capacitor.getPlatform() !== 'web' && !networkContext.connected) {
-        const res = await query(
-          {
-            type: QueryType.RAW_SQL,
-            sql: `SELECT * FROM layer_data WHERE layerName IN ('well');`
-          },
-          databaseContext
-        );
-
-        let allFeatures = [];
-
-        res.forEach((row) => {
-          if (props.inputGeo) {
-            const featureArea = JSON.parse(row.featureArea).geometry;
-            const featuresInArea = JSON.parse(row.featuresInArea);
-
-            if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
-              allFeatures = allFeatures.concat(featuresInArea);
-            }
-          } else {
-            console.log('hello2');
-            const featuresInArea = JSON.parse(row.featuresInArea);
-            allFeatures = allFeatures.concat(featuresInArea);
-          }
-        });
-        console.log('after foreach');
-        setWellsWithClosest(getClosestWellToPolygon(allFeatures));
-        setKeyval(Math.random()); //NOSONAR
-      } else {
-        getDataFromDataBC(props.dataBCLayerName, bufferedGeo).then((returnVal) => {
-          setWellsWithClosest(getClosestWellToPolygon(returnVal));
-          setKeyval(Math.random()); //NOSONAR
-        }, []);
-      }
-    } else {
-      if (Capacitor.getPlatform() !== 'web' && !networkContext.connected) {
-        const res = await query(
-          {
-            type: QueryType.RAW_SQL,
-            sql: `SELECT * FROM layer_data WHERE layerName NOT IN ('well');`
-          },
-          databaseContext
-        );
-        let allFeatures = [];
-        res.forEach((row) => {
-          const featuresInArea = JSON.parse(row.featuresInArea);
-          allFeatures = allFeatures.concat(featuresInArea);
-        });
-        setGeosToRender(allFeatures);
-      } else {
-        getDataFromDataBC(props.dataBCLayerName, bufferedGeo).then((returnVal) => {
-          setGeosToRender(returnVal);
-          setKeyval(Math.random()); //NOSONAR
-        });
-      }
-    }
-  };
 
   return (
     <>

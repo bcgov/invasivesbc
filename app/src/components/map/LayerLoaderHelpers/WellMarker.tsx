@@ -44,10 +44,11 @@ const wellIconClosest = new L.Icon({
 });
 
 export const WellMarker = ({ feature }) => {
+  const featureClosestOrStandard = feature.closest ? wellIconClosest : wellIconSandard;
   return (
     <Marker
       position={[feature.geometry.coordinates[1], feature.geometry.coordinates[0]]}
-      icon={feature.inside ? wellIconInside : feature.closest ? wellIconClosest : wellIconSandard}>
+      icon={feature.inside ? wellIconInside : featureClosestOrStandard}>
       <Popup>
         <CustomWellPopup feature={feature} />
       </Popup>
@@ -64,13 +65,13 @@ const CustomWellPopup = ({ feature }) => {
     popupContent = feature.properties.popupContent;
   }
   //shorten the id
-  let featureId = feature.properties.GW_WW_SYSID as String;
+  const featureId = feature.properties.GW_WW_SYSID as string;
 
   //Calculate utm_zone, northing and easting
   const latitude = feature.geometry.coordinates[0] || null;
   const longitude = feature.geometry.coordinates[1] || null;
-  let utm = utm_zone(longitude, latitude);
-
+  const utm = utm_zone(longitude, latitude);
+  const couldNotCalcString = 'could not calculate';
   return (
     <div className={classes.popupWindow}>
       <h2>Well ID:</h2>
@@ -87,15 +88,15 @@ const CustomWellPopup = ({ feature }) => {
       <Divider />
       <p>
         <b>UTM Zone: </b>
-        {utm[0] ? utm[0] : 'could not calculate'}
+        {utm[0] ? utm[0] : couldNotCalcString}
       </p>
       <p>
         <b>UTM Northing: </b>
-        {utm[2] ? utm[2] : 'could not calculate'}
+        {utm[2] ? utm[2] : couldNotCalcString}
       </p>
       <p>
         <b>UTM Easting: </b>
-        {utm[1] ? utm[1] : 'could not calculate'}
+        {utm[1] ? utm[1] : couldNotCalcString}
       </p>
       {popupContent}
     </div>
