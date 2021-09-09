@@ -9,7 +9,8 @@
     "loaded": 70,
     "expanded": false,
     "enabled": false,
-    "dialogOpen": false,
+    "colorpickerOpen": false,
+    "infoDialogOpen": false,
     "children": [
       {
         "id": "FW Wells",
@@ -75,7 +76,8 @@
     "loaded": 100,
     "expanded": false,
     "enabled": false,
-    "dialogOpen": false,
+    "colorpickerOpen": false,
+    "infoDialogOpen": false,
     "children": [
       {
         "id": "Land Own.",
@@ -193,7 +195,8 @@
     "loaded": 70,
     "expanded": false,
     "enabled": false,
-    "dialogOpen": false,
+    "colorpickerOpen": false,
+    "infoDialogOpen": false,
     "children": [
       {
         "id": "NRD",
@@ -298,7 +301,8 @@
     "loaded": 70,
     "expanded": false,
     "enabled": false,
-    "dialogOpen": false,
+    "colorpickerOpen": false,
+    "infoDialogOpen": false,
     "children": [
       {
         "id": "OGMU",

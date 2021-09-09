@@ -42,7 +42,8 @@ import {
   DialogTitle,
   DialogActions,
   DialogContent,
-  NativeSelect
+  NativeSelect,
+  Tooltip
 } from '@material-ui/core';
 import ColorPicker from 'material-ui-color-picker';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
@@ -54,6 +55,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import InfoIcon from '@material-ui/icons/Info';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,6 +88,9 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     position: 'relative'
+  },
+  tooltipWidth: {
+    maxWidth: 500
   }
 }));
 
@@ -225,9 +230,15 @@ export function LayerPicker(props: any, { position }) {
     });
   };
 
-  const toggleParentDialog = (parent) => {
+  const toggleColorPickerDialog = (parent) => {
     updateParent(parent.id, {
-      dialogOpen: !getParent(objectState, parent.id).dialogOpen
+      colorpickerOpen: !getParent(objectState, parent.id).colorpickerOpen
+    });
+  };
+
+  const toggleInfoDialog = (parent) => {
+    updateParent(parent.id, {
+      infoDialogOpen: !getParent(objectState, parent.id).infoDialogOpen
     });
   };
 
@@ -243,10 +254,10 @@ export function LayerPicker(props: any, { position }) {
     };
     return (
       <ListItem ContainerComponent="div" style={{ width: '100%', maxWidth: 360 }}>
-        <Grid container xs={12} spacing={1}>
+        <Grid container spacing={1}>
           <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
-            <Grid container justifyContent="flex-start" alignItems="center">
-              {/* Turned off until other portions complete
+            <Grid container xs={12} justifyContent="space-between" alignItems="center">
+              {/* Turned off until later
               <Grid item xs>
                 <Checkbox
                   checked={parent.enabled}
@@ -254,17 +265,28 @@ export function LayerPicker(props: any, { position }) {
                   onChange={() => toggleParentCheckbox(parent, parent.children)}
                 />
               </Grid>*/}
-              <Grid item xs={6}>
+              {/* Info Dialog */}
+              <Grid item xs={1}>
+                <Tooltip
+                  disableFocusListener
+                  classes={{ tooltip: classes.tooltipWidth }}
+                  title={JSON.stringify(parent)}>
+                  <IconButton onClick={() => toggleInfoDialog(parent)}>
+                    <InfoIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid item xs={7}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
                   {parent.id}
                 </AccordionSummary>
               </Grid>
-              {/* Parent Dialog Box */}
-              <Grid item xs>
-                <IconButton className={toolClass.toolBtn} onClick={() => toggleParentDialog(parent)}>
+              {/* Color Picker Dialog */}
+              <Grid item xs={1}>
+                <IconButton className={toolClass.toolBtn} onClick={() => toggleColorPickerDialog(parent)}>
                   <BrushIcon style={{ color: parent.colorCode }} />
                 </IconButton>
-                <Dialog open={parent.dialogOpen} onClose={() => toggleParentDialog(parent)}>
+                <Dialog open={parent.colorpickerOpen} onClose={() => toggleColorPickerDialog(parent)}>
                   <DialogTitle>{parent.id}</DialogTitle>
                   <DialogContent style={{ height: 300 }}>
                     <ColorPicker
@@ -286,10 +308,10 @@ export function LayerPicker(props: any, { position }) {
                 />*/}
               </Grid>
 
-              <Grid item xs className={classes.spinnerGridItem} style={{ position: 'relative' }}>
+              <Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
                 {parent.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
               </Grid>
-              <Grid item>
+              <Grid item xs={1}>
                 <DragHandle />
               </Grid>
             </Grid>
@@ -304,7 +326,9 @@ export function LayerPicker(props: any, { position }) {
                   />
                 </Grid>
                 <Grid item xs={5}>
-                  {child.id}
+                  <Tooltip disableFocusListener title={'tip of the tool'}>
+                    <Button>{child.id}</Button>
+                  </Tooltip>
                 </Grid>
                 {/* Child Dialog Box */}
                 <Grid item xs={2}>
@@ -312,7 +336,7 @@ export function LayerPicker(props: any, { position }) {
                     <SettingsIcon />
                   </IconButton>
                   <Dialog open={child.dialogOpen} onClose={() => toggleChildDialog(parent, child)}>
-                    <DialogTitle>{child.id}</DialogTitle>
+                    <DialogTitle>{child.name}</DialogTitle>
                     <DialogContent>
                       <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
                         <InputLabel>Layer</InputLabel>
