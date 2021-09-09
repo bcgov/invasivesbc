@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
+import { LayersControlProvider } from './layerControlContext';
+import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
+import { DomEvent } from 'leaflet';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
+import { Capacitor } from '@capacitor/core';
 /* HelperFiles */
 import {
   sortArray,
@@ -15,13 +18,8 @@ import {
   getChild,
   sortObject
 } from './SortLayerOrder';
-import ColorPicker from 'material-ui-color-picker';
-import { Circle, LayerGroup, TileLayer, useMap } from 'react-leaflet';
-import { Capacitor } from '@capacitor/core';
-import { MapRequestContext } from 'contexts/MapRequestsContext';
-// for confirming loaded layers
-import DoneIcon from '@material-ui/icons/Done';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import { toolStyles } from '../Tools/ToolBtnStyles';
+// MUI
 import {
   Checkbox,
   Grid,
@@ -37,14 +35,8 @@ import {
   Slider,
   Typography,
   FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   Popover,
   Button,
-  Menu,
-  MenuItem,
-  Select,
   InputLabel,
   Dialog,
   DialogTitle,
@@ -52,13 +44,16 @@ import {
   DialogContent,
   NativeSelect
 } from '@material-ui/core';
-import { toolStyles } from '../Tools/ToolBtnStyles';
-import LayersIcon from '@material-ui/icons/Layers';
-import { LayersControlProvider } from './layerControlContext';
-import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
-import SettingsIcon from '@material-ui/icons/Settings';
+import ColorPicker from 'material-ui-color-picker';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import { DomEvent } from 'leaflet';
+// MUI Icons
+import LayersIcon from '@material-ui/icons/Layers';
+import BrushIcon from '@material-ui/icons/Brush';
+import SettingsIcon from '@material-ui/icons/Settings';
+import DoneIcon from '@material-ui/icons/Done';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -138,10 +133,6 @@ export function LayerPicker(props: any, { position }) {
     setLayersSelected(objectState);
   }, [objectState]);
 
-  useEffect(() => {
-    console.dir(layers);
-  }, [layers]);
-
   const opacityText = (value: number) => {
     return `${value.toFixed(1)}`;
   };
@@ -200,17 +191,17 @@ export function LayerPicker(props: any, { position }) {
 
   const updateRenderedLayers = (parent, child) => {
     if (child.enabled) {
-      var temp;
+      var index;
       for (let i in layers) {
         if (layers[i].BCGWcode === child.BCGWcode) {
-          temp = i;
+          index = i;
         }
       }
-      var spliced = layers.splice(temp, 1);
+      var spliced = layers.splice(index, 1);
       console.log('spliced', spliced);
-      var layersBefore = [...layers.slice(0, temp)];
+      var layersBefore = [...layers.slice(0, index)];
       console.log('layers before', layersBefore);
-      var layersAfter = [...layers.slice(temp)];
+      var layersAfter = [...layers.slice(index)];
       console.log('layers after', layersAfter);
       setLayers([...layersBefore, ...layersAfter]);
     } else if (!child.enabled) {
@@ -226,9 +217,15 @@ export function LayerPicker(props: any, { position }) {
     updateChild(parent.id, child.id, fieldsToUpdate);
   };
 
-  const closeDialog = (parent, child) => {
+  const toggleChildDialog = (parent, child) => {
     updateChild(parent.id, child.id, {
       dialogOpen: !getChild(objectState, parent.id, child.id).dialogOpen
+    });
+  };
+
+  const toggleParentDialog = (parent) => {
+    updateParent(parent.id, {
+      dialogOpen: !getParent(objectState, parent.id).dialogOpen
     });
   };
 
@@ -263,14 +260,30 @@ export function LayerPicker(props: any, { position }) {
                   {parent.id}
                 </AccordionSummary>
               </Grid>
-              <Grid item xs={2} style={{ backgroundColor: parent.colorCode }}>
+              <Grid item xs={2}>
+                <IconButton className={toolClass.toolBtn} onClick={() => toggleParentDialog(parent)}>
+                  <BrushIcon style={{ color: parent.colorCode }} />
+                </IconButton>
+                <Dialog open={parent.dialogOpen} onClose={() => toggleParentDialog(parent)}>
+                  <DialogTitle>{parent.id}</DialogTitle>
+                  <DialogContent style={{ height: 300 }}>
+                    <ColorPicker
+                      name="color"
+                      defaultValue={parent.colorCode}
+                      onChange={(color: any) => {
+                        updateParent(parent.id, { colorCode: color });
+                      }}
+                    />
+                  </DialogContent>
+                </Dialog>
+                {/* old way
                 <ColorPicker
                   name="color"
                   defaultValue={parent.colorCode}
                   onChange={(color: any) => {
                     updateParent(parent.id, { colorCode: color });
                   }}
-                />
+                />*/}
               </Grid>
               <Grid item xs className={classes.spinnerGridItem} style={{ position: 'relative' }}>
                 {parent.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
@@ -293,15 +306,10 @@ export function LayerPicker(props: any, { position }) {
                   {child.id}
                 </Grid>
                 <Grid item xs={2}>
-                  <IconButton
-                    onClick={() =>
-                      updateChild(parent.id, child.id, {
-                        dialogOpen: !getChild(objectState, parent.id, child.id).dialogOpen
-                      })
-                    }>
+                  <IconButton onClick={() => toggleChildDialog(parent, child)}>
                     <SettingsIcon />
                   </IconButton>
-                  <Dialog open={child.dialogOpen} onClose={() => closeDialog(parent, child)}>
+                  <Dialog open={child.dialogOpen} onClose={() => toggleChildDialog(parent, child)}>
                     <DialogTitle>{child.id}</DialogTitle>
                     <DialogContent>
                       <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
@@ -333,7 +341,7 @@ export function LayerPicker(props: any, { position }) {
                       </div>
                     </DialogContent>
                     <DialogActions>
-                      <Button onClick={() => closeDialog(parent, child)}>Close</Button>
+                      <Button onClick={() => toggleChildDialog(parent, child)}>Close</Button>
                     </DialogActions>
                   </Dialog>
                 </Grid>
@@ -365,12 +373,9 @@ export function LayerPicker(props: any, { position }) {
   return (
     <LayersControlProvider value={null}>
       <div className={positionClass}>
-        {layers.map(
-          (layer) => (
-            <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} />
-          ),
-          [layers]
-        )}
+        {layers.map((layer) => (
+          <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} />
+        ))}
         <PopupState variant="popover" popupId="layerPicker">
           {(popupState) => (
             <div

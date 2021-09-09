@@ -9,6 +9,7 @@
     "loaded": 70,
     "expanded": false,
     "enabled": false,
+    "dialogOpen": false,
     "children": [
       {
         "id": "FW Wells",
@@ -68,12 +69,13 @@
     "id": "LAND",
     "name": "null",
     "source": "null",
-    "type": "none",
+    "type": "null",
     "colorCode": "#000",
     "order": 1,
     "loaded": 100,
     "expanded": false,
     "enabled": false,
+    "dialogOpen": false,
     "children": [
       {
         "id": "Land Own.",
@@ -185,12 +187,13 @@
     "id": "GOV",
     "name": "null",
     "source": "null",
-    "type": "none",
+    "type": "null",
     "colorCode": "#000",
     "order": 2,
     "loaded": 70,
     "expanded": false,
     "enabled": false,
+    "dialogOpen": false,
     "children": [
       {
         "id": "NRD",
@@ -289,12 +292,13 @@
     "id": "OTHER",
     "name": "null",
     "source": "null",
-    "type": "none",
+    "type": "null",
     "colorCode": "#000",
     "order": 3,
     "loaded": 70,
     "expanded": false,
     "enabled": false,
+    "dialogOpen": false,
     "children": [
       {
         "id": "OGMU",
