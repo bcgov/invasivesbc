@@ -131,6 +131,7 @@ export function LayerPicker(props: any, { position }) {
   //update context on ObjectState change
   useEffect(() => {
     setLayersSelected(objectState);
+    // check console.log(objectState);
   }, [objectState]);
 
   const opacityText = (value: number) => {
@@ -197,12 +198,13 @@ export function LayerPicker(props: any, { position }) {
           index = i;
         }
       }
-      var spliced = layers.splice(index, 1);
-      console.log('spliced', spliced);
+      //var spliced =
+      layers.splice(index, 1);
+      //check console.log('spliced', spliced);
       var layersBefore = [...layers.slice(0, index)];
-      console.log('layers before', layersBefore);
+      //check console.log('layers before', layersBefore);
       var layersAfter = [...layers.slice(index)];
-      console.log('layers after', layersAfter);
+      //check console.log('layers after', layersAfter);
       setLayers([...layersBefore, ...layersAfter]);
     } else if (!child.enabled) {
       setLayers([...layers, { BCGWcode: child.BCGWcode, opacity: child.opacity, type: child.type }]);
@@ -244,23 +246,21 @@ export function LayerPicker(props: any, { position }) {
         <Grid container xs={12} spacing={1}>
           <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
             <Grid container justifyContent="flex-start" alignItems="center">
+              {/* Turned off until other portions complete
               <Grid item xs>
                 <Checkbox
                   checked={parent.enabled}
                   name={parent.id}
-                  onChange={() => {
-                    updateParent(parent.id, {
-                      enabled: !getParent(objectState, parent.id).enabled
-                    });
-                  }}
+                  onChange={() => toggleParentCheckbox(parent, parent.children)}
                 />
-              </Grid>
-              <Grid item xs={5}>
+              </Grid>*/}
+              <Grid item xs={6}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
                   {parent.id}
                 </AccordionSummary>
               </Grid>
-              <Grid item xs={2}>
+              {/* Parent Dialog Box */}
+              <Grid item xs>
                 <IconButton className={toolClass.toolBtn} onClick={() => toggleParentDialog(parent)}>
                   <BrushIcon style={{ color: parent.colorCode }} />
                 </IconButton>
@@ -285,10 +285,11 @@ export function LayerPicker(props: any, { position }) {
                   }}
                 />*/}
               </Grid>
+
               <Grid item xs className={classes.spinnerGridItem} style={{ position: 'relative' }}>
                 {parent.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
               </Grid>
-              <Grid item xs>
+              <Grid item>
                 <DragHandle />
               </Grid>
             </Grid>
@@ -305,6 +306,7 @@ export function LayerPicker(props: any, { position }) {
                 <Grid item xs={5}>
                   {child.id}
                 </Grid>
+                {/* Child Dialog Box */}
                 <Grid item xs={2}>
                   <IconButton onClick={() => toggleChildDialog(parent, child)}>
                     <SettingsIcon />
