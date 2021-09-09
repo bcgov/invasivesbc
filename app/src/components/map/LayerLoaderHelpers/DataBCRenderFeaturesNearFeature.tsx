@@ -49,9 +49,11 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     let nearestWellIndex = null;
     let minDistanceKm = null;
     let wellInside = false;
-    if (turf.booleanWithin(props.inputGeo as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())) {
+    if (
+      turf.booleanWithin(props.inputGeo[0].geometry as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())
+    ) {
       arrayOfWells.forEach((well) => {
-        const turfPolygon = polygon((props.inputGeo.geometry as any).coordinates);
+        const turfPolygon = polygon((props.inputGeo[0].geometry as any).coordinates);
         const distanceKm = pointToLineDistance(well, polygonToLine(turfPolygon));
         //label points that are inside the polygon
         if (turf.inside(well, turfPolygon)) {
@@ -157,16 +159,16 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
             const featureArea = JSON.parse(row.featureArea).geometry;
             const featuresInArea = JSON.parse(row.featuresInArea);
 
-            if (turf.booleanContains(props.inputGeo, featureArea) || turf.booleanOverlap(props.inputGeo, featureArea)) {
+            if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
               allFeatures = allFeatures.concat(featuresInArea);
             }
           } else {
+            console.log('hello2');
             const featuresInArea = JSON.parse(row.featuresInArea);
-
             allFeatures = allFeatures.concat(featuresInArea);
           }
         });
-
+        console.log('after foreach');
         setWellsWithClosest(getClosestWellToPolygon(allFeatures));
         setKeyval(Math.random()); //NOSONAR
       } else {
