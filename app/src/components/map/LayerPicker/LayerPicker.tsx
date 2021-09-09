@@ -109,8 +109,6 @@ export function LayerPicker(props: any, { position }) {
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
   const [layers, setLayers] = useState([]);
-  const [opacity, setOpacity] = useState<number>(1.0);
-  const [layermode, setLayerMode] = useState(LayerMode.WMSOnline as string);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
 
@@ -143,28 +141,26 @@ export function LayerPicker(props: any, { position }) {
   useEffect(() => {
     console.dir(layers);
   }, [layers]);
-  /*
-  useEffect(() => {
-    console.dir(objectState);
-  }, [objectState]);*/
 
   const opacityText = (value: number) => {
     return `${value.toFixed(1)}`;
   };
 
   const updateLayer = (child, fieldsToUpdate: Object) => {
-    if (layers.length > 0) {
+    var arrLen = layers.length;
+    if (arrLen > 0) {
       var temp;
       for (let i in layers) {
         if (layers[i].BCGWcode === child.BCGWcode) {
           temp = i;
         }
       }
-      var layersBefore = [...layers.slice(0, temp)];
-      var layersAfter = [...layers.slice(temp + 1)];
+      const layersBefore = [...layers.slice(0, temp)];
+      const layersAfter = [...layers.slice(temp)];
       const oldLayer = layers[temp];
       const updatedLayer = { ...oldLayer, ...fieldsToUpdate };
-      setLayers([...layersBefore, updatedLayer, ...layersAfter]);
+      layersAfter[0] = updatedLayer;
+      setLayers([...layersBefore, ...layersAfter] as any);
     }
   };
 
@@ -202,7 +198,7 @@ export function LayerPicker(props: any, { position }) {
     setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
   };
 
-  const updateChildLayers = (parent, child) => {
+  const updateRenderedLayers = (parent, child) => {
     if (child.enabled) {
       var temp;
       for (let i in layers) {
@@ -210,8 +206,12 @@ export function LayerPicker(props: any, { position }) {
           temp = i;
         }
       }
+      var spliced = layers.splice(temp, 1);
+      console.log('spliced', spliced);
       var layersBefore = [...layers.slice(0, temp)];
-      var layersAfter = [...layers.slice(temp + 1)];
+      console.log('layers before', layersBefore);
+      var layersAfter = [...layers.slice(temp)];
+      console.log('layers after', layersAfter);
       setLayers([...layersBefore, ...layersAfter]);
     } else if (!child.enabled) {
       setLayers([...layers, { BCGWcode: child.BCGWcode, opacity: child.opacity, type: child.type }]);
@@ -224,6 +224,12 @@ export function LayerPicker(props: any, { position }) {
   const updateChildAndLayer = (parent, child, fieldsToUpdate: Object) => {
     updateLayer(child, fieldsToUpdate);
     updateChild(parent.id, child.id, fieldsToUpdate);
+  };
+
+  const closeDialog = (parent, child) => {
+    updateChild(parent.id, child.id, {
+      dialogOpen: !getChild(objectState, parent.id, child.id).dialogOpen
+    });
   };
 
   const DragHandle = SortableHandle(() => (
@@ -277,7 +283,11 @@ export function LayerPicker(props: any, { position }) {
               <Grid container direction="row" justifyContent="flex-start" alignItems="center">
                 &emsp;
                 <Grid item xs={2}>
-                  <Checkbox checked={child.enabled} name={child.id} onChange={() => updateChildLayers(parent, child)} />
+                  <Checkbox
+                    checked={child.enabled}
+                    name={child.id}
+                    onChange={() => updateRenderedLayers(parent, child)}
+                  />
                 </Grid>
                 <Grid item xs={5}>
                   {child.id}
@@ -291,13 +301,7 @@ export function LayerPicker(props: any, { position }) {
                     }>
                     <SettingsIcon />
                   </IconButton>
-                  <Dialog
-                    open={child.dialogOpen}
-                    onClose={() =>
-                      updateChild(parent.id, child.id, {
-                        dialogOpen: !getChild(objectState, parent.id, child.id).dialogOpen
-                      })
-                    }>
+                  <Dialog open={child.dialogOpen} onClose={() => closeDialog(parent, child)}>
                     <DialogTitle>{child.id}</DialogTitle>
                     <DialogContent>
                       <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
@@ -329,14 +333,7 @@ export function LayerPicker(props: any, { position }) {
                       </div>
                     </DialogContent>
                     <DialogActions>
-                      <Button
-                        onClick={() =>
-                          updateChild(parent.id, child.id, {
-                            dialogOpen: !getChild(objectState, parent.id, child.id).dialogOpen
-                          })
-                        }>
-                        Close
-                      </Button>
+                      <Button onClick={() => closeDialog(parent, child)}>Close</Button>
                     </DialogActions>
                   </Dialog>
                 </Grid>
@@ -368,9 +365,12 @@ export function LayerPicker(props: any, { position }) {
   return (
     <LayersControlProvider value={null}>
       <div className={positionClass}>
-        {layers.map((layer) => (
-          <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} />
-        ))}
+        {layers.map(
+          (layer) => (
+            <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} />
+          ),
+          [layers]
+        )}
         <PopupState variant="popover" popupId="layerPicker">
           {(popupState) => (
             <div
