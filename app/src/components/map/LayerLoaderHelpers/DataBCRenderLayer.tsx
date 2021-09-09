@@ -1,5 +1,5 @@
 import React from 'react';
-import { useMap, WMSTileLayer } from 'react-leaflet';
+import { WMSTileLayer } from 'react-leaflet';
 import { RenderKeyFeaturesNearFeature } from './DataBCRenderFeaturesNearFeature';
 
 export enum LayerMode {

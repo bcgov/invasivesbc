@@ -41,6 +41,15 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const { layersSelected } = mapRequestContext;
   const [lastRequestPushed, setLastRequestPushed] = useState(null);
 
+  useMapEvent('moveend', () => {
+    startFetchingLayers();
+  });
+
+  useEffect(() => {
+    startFetchingLayers();
+  }, []);
+
+  //function that compares last extent with the ones in the queue and deletes queue extents that are no more needed
   const qRemove = (lastReqPushed: any, newArray: any) => {
     q.remove((worker: any) => {
       if (worker.data && lastReqPushed?.extent) {
@@ -60,7 +69,8 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     });
   };
 
-  useMapEvent('moveend', () => {
+  //this is called on map load and each time the map is moved
+  const startFetchingLayers = () => {
     const newArray = [];
     layersSelected.forEach((layer: any) => {
       if (layer.enabled) {
@@ -78,8 +88,9 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       });
     }
     map.invalidateSize();
-  });
+  };
 
+  //gets layer data based on the layer name
   const getLayerData = async () => {
     const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
     if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
@@ -125,9 +136,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     }
   };
 
-  /*
-   * Function for going through array and labeling 1 closest well and wells inside the polygon
-   */
+  // Function for going through array and labeling 1 closest well and wells inside the polygon
   const getClosestWellToPolygon = (arrayOfWells) => {
     let index = 0;
     let nearestWellIndex = null;
@@ -167,6 +176,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     return arrayOfWells;
   };
 
+  //this is used to display all geoJSON data except for wells
   const onEachFeature = props.customOnEachFeature
     ? props.customOnEachFeature
     : (feature: Feature<Geometry, any>, layer: Layer) => {
