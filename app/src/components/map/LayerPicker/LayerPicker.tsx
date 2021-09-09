@@ -203,13 +203,15 @@ export function LayerPicker(props: any, { position }) {
           index = i;
         }
       }
-      //var spliced =
-      layers.splice(index, 1);
-      //check console.log('spliced', spliced);
+      var spliced = layers.splice(index, 1);
+      //check
+      console.log('spliced', spliced);
       var layersBefore = [...layers.slice(0, index)];
-      //check console.log('layers before', layersBefore);
+      //check
+      console.log('layers before', layersBefore);
       var layersAfter = [...layers.slice(index)];
-      //check console.log('layers after', layersAfter);
+      //check
+      console.log('layers after', layersAfter);
       setLayers([...layersBefore, ...layersAfter]);
     } else if (!child.enabled) {
       setLayers([...layers, { BCGWcode: child.BCGWcode, opacity: child.opacity, type: child.type }]);
@@ -297,6 +299,9 @@ export function LayerPicker(props: any, { position }) {
                       }}
                     />
                   </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => toggleColorPickerDialog(parent)}>Close</Button>
+                  </DialogActions>
                 </Dialog>
                 {/* old way
                 <ColorPicker
@@ -398,10 +403,10 @@ export function LayerPicker(props: any, { position }) {
 
   return (
     <LayersControlProvider value={null}>
+      {layers.map((layer) => (
+        <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} />
+      ))}
       <div className={positionClass}>
-        {layers.map((layer) => (
-          <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} />
-        ))}
         <PopupState variant="popover" popupId="layerPicker">
           {(popupState) => (
             <div
