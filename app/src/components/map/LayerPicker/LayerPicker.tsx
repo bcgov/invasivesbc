@@ -404,7 +404,7 @@ export function LayerPicker(props: any, { position }) {
   return (
     <LayersControlProvider value={null}>
       {layers.map((layer) => (
-        <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} />
+        <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} inputGeo={props.inputGeo} />
       ))}
       <div className={positionClass}>
         <PopupState variant="popover" popupId="layerPicker">

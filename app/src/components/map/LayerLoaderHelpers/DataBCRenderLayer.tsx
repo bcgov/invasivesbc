@@ -36,7 +36,7 @@ export const DataBCLayer = (props) => {
       //this is the regular geojson stuff
       return (
         <RenderKeyFeaturesNearFeature
-          inputGeo={createPolygonFromBounds(map.getBounds(), map).toGeoJSON()}
+          inputGeo={props.inputGeo}
           dataBCLayerName={props.layerName}
           proximityInMeters={550}
           setWellIdandProximity={props.setWellIdandProximity}

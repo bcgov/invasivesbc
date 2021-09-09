@@ -1,6 +1,6 @@
 import { MapContextMenuData } from 'features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -103,10 +103,7 @@ export const getZIndex = (doc) => {
 
 export const async = require('async');
 export const q = async.queue(function (task, callback) {
-  setTimeout(() => {
-    console.log('Working on task: ' + JSON.stringify(task));
-    callback();
-  }, 2000);
+  callback();
 }, 1);
 
 export interface IMapContainerProps {
@@ -214,32 +211,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     });
   };
 
-  const AsyncExtent = () => {
-    const mapRequestContext = useContext(MapRequestContext);
-    const { layersSelected } = mapRequestContext;
-    const [lastRequestPushed, setLastRequestPushed] = useState(null);
-
-    useMapEvent('moveend', () => {
-      let newArray = [];
-      layersSelected.forEach((layer: any) => {
-        if (layer.enabled) {
-          newArray.push(layer.id);
-        }
-      });
-
-      qRemove(lastRequestPushed, newArray);
-
-      if (newArray.length > 0) {
-        newArray.forEach((layer) => {
-          q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
-          setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
-        });
-      }
-    });
-
-    return null;
-  };
-
   return (
     <ReactLeafletMapContainer
       center={[55, -128]}
@@ -265,12 +236,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <Offline />
 
         <ZoomControl position="bottomright" />
-        <LayerPicker position="topright" map={map} data={data} />
+        <LayerPicker position="topright" map={map} data={data} inputGeo={props.geometryState?.geometry[0]} />
 
         {/* Here are the editing tools */}
 
         <MapResizer />
-        <AsyncExtent />
 
         {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
