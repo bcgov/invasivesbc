@@ -249,6 +249,10 @@ export function LayerPicker(props: any, { position }) {
       <DragHandleIcon />
     </ListItemIcon>
   ));
+  //update context on ObjectState change
+  useEffect(() => {
+    setLayersSelected(objectState);
+  }, [objectState]);
 
   const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {

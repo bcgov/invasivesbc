@@ -1,45 +1,30 @@
-import { MapContextMenuData } from 'features/home/map/MapContextMenu';
+import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer.css';
-import * as turf from '@turf/turf';
-import {
-  GeoJSON,
-  MapContainer as ReactLeafletMapContainer,
-  TileLayer,
-  useMap,
-  FeatureGroup,
-  useMapEvent,
-  ZoomControl
-} from 'react-leaflet';
-import { interactiveGeoInputData } from './GeoMeta';
-import Spinner from 'components/spinner/Spinner';
+import { MapContainer as ReactLeafletMapContainer, useMap, FeatureGroup, ZoomControl } from 'react-leaflet';
+import Spinner from '../../components/spinner/Spinner';
 
 // Offline dependencies
-import localforage from 'localforage';
 import 'leaflet.offline';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import { useDataAccess } from 'hooks/useDataAccess';
-import TempPOILoader from './LayerLoaderHelpers/TempPOILoader';
+import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 
 // Layer Picker
 import { LayerPicker } from './LayerPicker/LayerPicker';
 import data from './LayerPicker/GEO_DATA.json';
 import DisplayPosition from './Tools/DisplayPosition';
-import { createPolygonFromBounds } from './LayerLoaderHelpers/LtlngBoundsToPoly';
-import { MapRequestContextProvider, MapRequestContext } from 'contexts/MapRequestsContext';
+import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
-import { RenderKeyFeaturesNearFeature } from './LayerLoaderHelpers/DataBCRenderFeaturesNearFeature';
 import { toolStyles } from './Tools/ToolBtnStyles';
 
-let DefaultIcon = L.icon({
+const DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow
 });
@@ -87,12 +72,16 @@ export const getZIndex = (doc) => {
   const coords = doc.geometry[0]?.geometry.coordinates;
   let zIndex = 100000;
   if (doc.geometry[0].geometry.type === 'Polygon' && coords?.[0]) {
-    let highestLat = coords[0].reduce((max, point) => {
-      if (point[1] > max) return point[1];
+    const highestLat = coords[0].reduce((max, point) => {
+      if (point[1] > max) {
+        return point[1];
+      }
       return max;
     }, 0);
-    let lowestLat = coords[0].reduce((min, point) => {
-      if (point[1] < min) return point[1];
+    const lowestLat = coords[0].reduce((min, point) => {
+      if (point[1] < min) {
+        return point[1];
+      }
       return min;
     }, zIndex);
 
@@ -125,14 +114,6 @@ export interface IMapContainerProps {
   setWellIdandProximity?: (wellIdandProximity: any) => void;
 }
 
-const interactiveGeometryStyle = () => {
-  return {
-    color: '#ff7800',
-    weight: 5,
-    opacity: 0.65
-  };
-};
-
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [map, setMap] = useState<any>(null);
   const toolClass = toolStyles();
@@ -153,7 +134,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     );
     offlineLayer.addTo(mapOffline);
 
-    let [offlineing, setOfflineing] = useState(false);
+    const [offlineing, setOfflineing] = useState(false);
 
     const saveBasemapControl = (L.control as any).savetiles(offlineLayer, {
       zoomlevels: [13, 14, 15, 16, 17],
@@ -177,7 +158,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           1. Toggle between spinner and image depending on 'offlineing' status
           2. Swap image style based on zoom level
         */}
-        {offlineing ? <Spinner></Spinner> : <img src="/assets/icon/download.svg" style={iconStyle}></img>}
+        {offlineing ? (
+          <Spinner></Spinner>
+        ) : (
+          <img alt="offlineing_status" src="/assets/icon/download.svg" style={iconStyle}></img>
+        )}
       </div>
     );
   };
@@ -189,26 +174,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       mapResizer.invalidateSize();
     }, 100);
     return null;
-  };
-
-  //exclusively used for Async Extent
-  const qRemove = (lastRequestPushed: any, newArray: any) => {
-    q.remove((worker: any) => {
-      if (worker.data && lastRequestPushed?.extent) {
-        if (
-          !turf.booleanWithin(worker.data.extent, lastRequestPushed.extent) &&
-          !turf.booleanOverlap(worker.data.extent, lastRequestPushed.extent)
-        ) {
-          console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
-          return true;
-        }
-        if (!newArray.includes(worker.data.layer)) {
-          console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
-          return true;
-        }
-      }
-      return false;
-    });
   };
 
   return (
@@ -254,19 +219,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           </LayersControl.Overlay>
         </LayersControl>*/}
       </MapRequestContextProvider>
-      {/* {props.geometryState.geometry ? (
-        <>
-          <RenderKeyFeaturesNearFeature
-            inputGeo={props.geometryState?.geometry[0]}
-            dataBCLayerName="WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW"
-            proximityInMeters={550}
-            setWellIdandProximity={props.setWellIdandProximity}
-          />
-          <></>
-        </>
-      ) : (
-        <></>
-      )} */}
     </ReactLeafletMapContainer>
   );
 };

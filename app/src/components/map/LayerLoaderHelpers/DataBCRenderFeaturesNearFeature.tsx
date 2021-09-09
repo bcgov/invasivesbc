@@ -1,5 +1,5 @@
 import buffer from '@turf/buffer';
-import { getDataFromDataBC } from 'components/map/WFSConsumer';
+import { getDataFromDataBC } from '../../../components/map/WFSConsumer';
 import React, { useState, useEffect, useContext } from 'react';
 import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
 import { Feature, Geometry } from 'geojson';
@@ -9,12 +9,12 @@ import polygonToLine from '@turf/polygon-to-line';
 import { polygon } from '@turf/helpers';
 import L, { Layer } from 'leaflet';
 import { Capacitor } from '@capacitor/core';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
+import { NetworkContext } from '../../../contexts/NetworkContext';
+import { DatabaseContext2, query, QueryType } from '../../../contexts/DatabaseContext2';
 import { WellMarker } from './WellMarker';
 import { q } from '../MapContainer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
-import { MapRequestContext } from 'contexts/MapRequestsContext';
+import { MapRequestContext } from '../../../contexts/MapRequestsContext';
 
 interface IRenderKeyFeaturesNearFeature {
   inputGeo: Feature;
@@ -97,13 +97,13 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const mapRequestContext = useContext(MapRequestContext);
   const { layersSelected } = mapRequestContext;
   const [lastRequestPushed, setLastRequestPushed] = useState(null);
-  //exclusively used for Async Extent
-  const qRemove = (lastRequestPushed: any, newArray: any) => {
+
+  const qRemove = (lastReqPushed: any, newArray: any) => {
     q.remove((worker: any) => {
-      if (worker.data && lastRequestPushed?.extent) {
+      if (worker.data && lastReqPushed?.extent) {
         if (
-          !turf.booleanWithin(worker.data.extent, lastRequestPushed.extent) &&
-          !turf.booleanOverlap(worker.data.extent, lastRequestPushed.extent)
+          !turf.booleanWithin(worker.data.extent, lastReqPushed.extent) &&
+          !turf.booleanOverlap(worker.data.extent, lastReqPushed.extent)
         ) {
           console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
           return true;
@@ -118,7 +118,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   };
 
   useMapEvent('moveend', () => {
-    let newArray = [];
+    const newArray = [];
     layersSelected.forEach((layer: any) => {
       if (layer.enabled) {
         newArray.push(layer.id);
@@ -161,7 +161,6 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
               allFeatures = allFeatures.concat(featuresInArea);
             }
           } else {
-            const featureArea = JSON.parse(row.featureArea).geometry;
             const featuresInArea = JSON.parse(row.featuresInArea);
 
             allFeatures = allFeatures.concat(featuresInArea);
@@ -199,11 +198,6 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       }
     }
   };
-
-  // //when new geos received, get well data and run labeling function
-  // useEffect(() => {
-  //   q.push({ name: 'new extent' }, getLayerData);
-  // }, [props.inputGeo]);
 
   return (
     <>
