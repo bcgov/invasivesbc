@@ -4,7 +4,7 @@
 */
 drop table if exists invasivesbc.test_spatial_overlay;
 create table invasivesbc.test_spatial_overlay as
-with unwrapped  as (
+with unwrapped as (
   select 
     activity_subtype,
     jsonb_array_elements(to_jsonb(species_positive)) "species",
@@ -26,6 +26,76 @@ from
 group by
   species
 ;
+
+/*
+  Deletes
+  1. Create an exploaded layer of positives
+  2. Create an exploaded layer of negatives
+*/
+-- Positive Layer
+drop table if exists test_spatial_expload_positive;
+create table test_spatial_expload_positive as
+  select 
+    activity_subtype,
+    jsonb_array_elements(to_jsonb(species_positive)) "species",
+    geometry(geog) "geom"
+  from
+    activity_incoming_data
+  where
+    activity_type = 'Observation' and
+    deleted_timestamp is null and
+    array_length(
+      species_positive, 1
+    ) > 0
+  ;
+
+drop index if exists test_spatial_explode_positive_geom_gist;
+create index test_spatial_explode_positive_geom_gist on test_spatial_expload_positive using gist ("geom");
+
+alter table test_spatial_expload_positive add column gid serial;
+alter table test_spatial_expload_positive add primary key (gid);
+
+
+-- Negative Layer
+drop table if exists test_spatial_expload_negative;
+create table test_spatial_expload_negative as
+  select 
+    activity_subtype,
+    jsonb_array_elements(to_jsonb(species_negative)) "species",
+    geometry(geog) "geom"
+  from
+    activity_incoming_data
+  where
+    activity_type = 'Observation' and
+    deleted_timestamp is null and
+    array_length(
+      species_negative, 1
+    ) > 0
+  ;
+
+drop index if exists test_spatial_explode_negative_geom_gist;
+create index test_spatial_explode_negative_geom_gist on test_spatial_expload_negative using gist ("geom");
+
+alter table test_spatial_expload_negative add column gid serial;
+alter table test_spatial_expload_negative add primary key (gid);
+
+
+drop table if exists test_spatial_positive_negative;
+create table test_spatial_positive_negative as
+select
+  pos.species,
+  case 
+    when st_intersects(pos.geom,neg.geom) and -- TODO: Date difference here
+    then st_difference(pos.geom,neg.geom)
+    else pos.geom
+from
+  test_spatial_expload_positive pos join
+  test_spatial_expload_negative neg
+  on st_intersects(pos.geom,neg.geom)
+;
+
+/*********** End of Delete section **************/
+
 
 /*********** Not using the json lookup anymore **************/
 -- select 
