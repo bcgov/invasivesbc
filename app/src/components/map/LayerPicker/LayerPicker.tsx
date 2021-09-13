@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
+import { LayersControlProvider } from './layerControlContext';
+import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
+import { DomEvent } from 'leaflet';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
+import { Capacitor } from '@capacitor/core';
 /* HelperFiles */
 import {
   sortArray,
@@ -15,13 +18,8 @@ import {
   getChild,
   sortObject
 } from './SortLayerOrder';
-import ColorPicker from 'material-ui-color-picker';
-import { Circle, LayerGroup, TileLayer, useMap } from 'react-leaflet';
-import { Capacitor } from '@capacitor/core';
-import { MapRequestContext } from 'contexts/MapRequestsContext';
-// for confirming loaded layers
-import DoneIcon from '@material-ui/icons/Done';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import { toolStyles } from '../Tools/ToolBtnStyles';
+// MUI
 import {
   Checkbox,
   Grid,
@@ -37,23 +35,27 @@ import {
   Slider,
   Typography,
   FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   Popover,
   Button,
-  Menu,
-  MenuItem,
-  Select,
-  InputLabel
+  InputLabel,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  NativeSelect,
+  Tooltip
 } from '@material-ui/core';
-import { toolStyles } from '../Tools/ToolBtnStyles';
-import LayersIcon from '@material-ui/icons/Layers';
-import { LayersControlProvider } from './layerControlContext';
-import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
-import SettingsIcon from '@material-ui/icons/Settings';
+import ColorPicker from 'material-ui-color-picker';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import { DomEvent } from 'leaflet';
+// MUI Icons
+import LayersIcon from '@material-ui/icons/Layers';
+import BrushIcon from '@material-ui/icons/Brush';
+import SettingsIcon from '@material-ui/icons/Settings';
+import DoneIcon from '@material-ui/icons/Done';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import InfoIcon from '@material-ui/icons/Info';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,6 +88,9 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     position: 'relative'
+  },
+  tooltipWidth: {
+    maxWidth: 500
   }
 }));
 
@@ -104,10 +109,22 @@ export function LayerPicker(props: any, { position }) {
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
   const [layers, setLayers] = useState([]);
-  const [opacity, setOpacity] = useState<number>(1.0);
-  const [layermode, setLayerMode] = useState(LayerMode.WMSOnline as string);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
+
+  function getErrorIcon(time: any) {
+    return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
+  }
+
+  function WithCounter() {
+    const [seconds, setSeconds] = React.useState(10);
+    React.useEffect(() => {
+      if (seconds > 0) {
+        setTimeout(() => setSeconds(seconds - 1), 1000);
+      }
+    });
+    return seconds;
+  }
 
   useEffect(() => {
     if (divref?.current) {
@@ -116,16 +133,32 @@ export function LayerPicker(props: any, { position }) {
     }
   });
 
+  //update context on ObjectState change
+  useEffect(() => {
+    setLayersSelected(objectState);
+    // check console.log(objectState);
+  }, [objectState]);
+
   const opacityText = (value: number) => {
     return `${value.toFixed(1)}`;
   };
 
-  const handleSlider = (event: any, newOpacity: number | number[]) => {
-    setOpacity(newOpacity as number);
-  };
-
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setLayerMode(event.target.value as string);
+  const updateLayer = (child, fieldsToUpdate: Object) => {
+    var arrLen = layers.length;
+    if (arrLen > 0) {
+      var temp;
+      for (let i in layers) {
+        if (layers[i].BCGWcode === child.BCGWcode) {
+          temp = i;
+        }
+      }
+      const layersBefore = [...layers.slice(0, temp)];
+      const layersAfter = [...layers.slice(temp)];
+      const oldLayer = layers[temp];
+      const updatedLayer = { ...oldLayer, ...fieldsToUpdate };
+      layersAfter[0] = updatedLayer;
+      setLayers([...layersBefore, ...layersAfter] as any);
+    }
   };
 
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
@@ -162,20 +195,52 @@ export function LayerPicker(props: any, { position }) {
     setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
   };
 
-  const updateChildLayers = (parent, child) => {
+  const updateRenderedLayers = (parent, child) => {
     if (child.enabled) {
-      var temp;
+      var index;
       for (let i in layers) {
-        if (layers[i] === child.BCGWcode) {
-          temp = i;
+        if (layers[i].BCGWcode === child.BCGWcode) {
+          index = i;
         }
       }
-      layers.splice(temp, 1);
+      var spliced = layers.splice(index, 1);
+      //check
+      console.log('spliced', spliced);
+      var layersBefore = [...layers.slice(0, index)];
+      //check
+      console.log('layers before', layersBefore);
+      var layersAfter = [...layers.slice(index)];
+      //check
+      console.log('layers after', layersAfter);
+      setLayers([...layersBefore, ...layersAfter]);
     } else if (!child.enabled) {
-      setLayers([...layers, child.BCGWcode]);
+      setLayers([...layers, { BCGWcode: child.BCGWcode, opacity: child.opacity, type: child.type }]);
     }
     updateChild(parent.id, child.id, {
       enabled: !getChild(objectState, parent.id, child.id).enabled
+    });
+  };
+
+  const updateChildAndLayer = (parent, child, fieldsToUpdate: Object) => {
+    updateLayer(child, fieldsToUpdate);
+    updateChild(parent.id, child.id, fieldsToUpdate);
+  };
+
+  const toggleChildDialog = (parent, child) => {
+    updateChild(parent.id, child.id, {
+      dialogOpen: !getChild(objectState, parent.id, child.id).dialogOpen
+    });
+  };
+
+  const toggleColorPickerDialog = (parent) => {
+    updateParent(parent.id, {
+      colorpickerOpen: !getParent(objectState, parent.id).colorpickerOpen
+    });
+  };
+
+  const toggleInfoDialog = (parent) => {
+    updateParent(parent.id, {
+      infoDialogOpen: !getParent(objectState, parent.id).infoDialogOpen
     });
   };
 
@@ -185,70 +250,73 @@ export function LayerPicker(props: any, { position }) {
     </ListItemIcon>
   ));
 
-  function WithCounter() {
-    const [seconds, setSeconds] = React.useState(10);
-    React.useEffect(() => {
-      if (seconds > 0) {
-        setTimeout(() => setSeconds(seconds - 1), 1000);
-      }
-    });
-    return seconds;
-  }
-
-  function getErrorIcon(time: any) {
-    return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
-  }
-
-  /*const RenderLayers = (props) => {
-    // loop over all layers in config / layer picker state
-    // return each layer with the right props / layer mode
-    // return layers in right order
-    return <></>;
-  };*/
-
-  //update context on ObjectState change
-  useEffect(() => {
-    setLayersSelected(objectState);
-  }, [objectState]);
-
   const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
       updateParent(parent.id, { expanded: expanded });
     };
     return (
       <ListItem ContainerComponent="div" style={{ width: '100%', maxWidth: 360 }}>
-        <Grid container xs={12} spacing={1}>
+        <Grid container spacing={1}>
           <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
-            <Grid container justifyContent="flex-start" alignItems="center">
+            <Grid container xs={12} justifyContent="space-between" alignItems="center">
+              {/* Turned off until later
               <Grid item xs>
                 <Checkbox
                   checked={parent.enabled}
                   name={parent.id}
-                  onChange={() => {
-                    updateParent(parent.id, {
-                      enabled: !getParent(objectState, parent.id).enabled
-                    });
-                  }}
+                  onChange={() => toggleParentCheckbox(parent, parent.children)}
                 />
+              </Grid>*/}
+              {/* Info Dialog */}
+              <Grid item xs={1}>
+                <Tooltip
+                  disableFocusListener
+                  classes={{ tooltip: classes.tooltipWidth }}
+                  title={JSON.stringify(parent)}>
+                  <IconButton onClick={() => toggleInfoDialog(parent)}>
+                    <InfoIcon />
+                  </IconButton>
+                </Tooltip>
               </Grid>
-              <Grid item xs={5}>
+              <Grid item xs={7}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
                   {parent.id}
                 </AccordionSummary>
               </Grid>
-              <Grid item xs={2} style={{ backgroundColor: parent.colorCode }}>
+              {/* Color Picker Dialog */}
+              <Grid item xs={1}>
+                <IconButton className={toolClass.toolBtn} onClick={() => toggleColorPickerDialog(parent)}>
+                  <BrushIcon style={{ color: parent.colorCode }} />
+                </IconButton>
+                <Dialog open={parent.colorpickerOpen} onClose={() => toggleColorPickerDialog(parent)}>
+                  <DialogTitle>{parent.id}</DialogTitle>
+                  <DialogContent style={{ height: 300 }}>
+                    <ColorPicker
+                      name="color"
+                      defaultValue={parent.colorCode}
+                      onChange={(color: any) => {
+                        updateParent(parent.id, { colorCode: color });
+                      }}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => toggleColorPickerDialog(parent)}>Close</Button>
+                  </DialogActions>
+                </Dialog>
+                {/* old way
                 <ColorPicker
                   name="color"
                   defaultValue={parent.colorCode}
                   onChange={(color: any) => {
                     updateParent(parent.id, { colorCode: color });
                   }}
-                />
+                />*/}
               </Grid>
-              <Grid item xs className={classes.spinnerGridItem} style={{ position: 'relative' }}>
+
+              <Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
                 {parent.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
               </Grid>
-              <Grid item xs>
+              <Grid item xs={1}>
                 <DragHandle />
               </Grid>
             </Grid>
@@ -256,10 +324,57 @@ export function LayerPicker(props: any, { position }) {
               <Grid container direction="row" justifyContent="flex-start" alignItems="center">
                 &emsp;
                 <Grid item xs={2}>
-                  <Checkbox checked={child.enabled} name={child.id} onChange={() => updateChildLayers(parent, child)} />
+                  <Checkbox
+                    checked={child.enabled}
+                    name={child.id}
+                    onChange={() => updateRenderedLayers(parent, child)}
+                  />
                 </Grid>
                 <Grid item xs={5}>
-                  {child.id}
+                  <Tooltip disableFocusListener title={'tip of the tool'}>
+                    <Button>{child.id}</Button>
+                  </Tooltip>
+                </Grid>
+                {/* Child Dialog Box */}
+                <Grid item xs={2}>
+                  <IconButton onClick={() => toggleChildDialog(parent, child)}>
+                    <SettingsIcon />
+                  </IconButton>
+                  <Dialog open={child.dialogOpen} onClose={() => toggleChildDialog(parent, child)}>
+                    <DialogTitle>{child.name}</DialogTitle>
+                    <DialogContent>
+                      <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
+                        <InputLabel>Layer</InputLabel>
+                        <NativeSelect
+                          id="layer-menu"
+                          defaultValue={LayerMode.WMSOnline}
+                          onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                            updateChildAndLayer(parent, child, { type: event.target.value });
+                          }}>
+                          <option value={LayerMode.WMSOnline}>{LayerMode.WMSOnline}</option>
+                          <option value={LayerMode.WFSOnline}>{LayerMode.WFSOnline}</option>
+                          <option value={LayerMode.VectorTilesOffline}>{LayerMode.VectorTilesOffline}</option>
+                          <option value={LayerMode.RegularFeaturesOffline}>{LayerMode.RegularFeaturesOffline}</option>
+                        </NativeSelect>
+                      </FormControl>
+                      <div className={toolClass.toolSlider}>
+                        <Typography style={{ marginRight: 10 }}>Opacity</Typography>
+                        <Slider
+                          defaultValue={child.opacity}
+                          onChangeCommitted={(event: any, newOpacity: number | number[]) => {
+                            updateChildAndLayer(parent, child, { opacity: newOpacity as number });
+                          }}
+                          getAriaValueText={opacityText}
+                          step={0.0001}
+                          min={0.0}
+                          max={1.0}
+                        />
+                      </div>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={() => toggleChildDialog(parent, child)}>Close</Button>
+                    </DialogActions>
+                  </Dialog>
                 </Grid>
                 <Grid item xs={2} style={{ position: 'relative' }}>
                   {child.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
@@ -288,10 +403,10 @@ export function LayerPicker(props: any, { position }) {
 
   return (
     <LayersControlProvider value={null}>
+      {layers.map((layer) => (
+        <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} />
+      ))}
       <div className={positionClass}>
-        {layers.map((layer) => (
-          <DataBCLayer opacity={opacity} layerName={layer} mode={layermode} />
-        ))}
         <PopupState variant="popover" popupId="layerPicker">
           {(popupState) => (
             <div
@@ -335,27 +450,6 @@ export function LayerPicker(props: any, { position }) {
                   vertical: 'top',
                   horizontal: 'right'
                 }}>
-                <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
-                  <SettingsIcon />
-                  <Select id="layer-menu" onChange={handleChange}>
-                    <MenuItem value={LayerMode.WMSOnline}>{LayerMode.WMSOnline}</MenuItem>
-                    <MenuItem value={LayerMode.WFSOnline}>{LayerMode.WFSOnline}</MenuItem>
-                    <MenuItem value={LayerMode.VectorTilesOffline}>{LayerMode.VectorTilesOffline}</MenuItem>
-                    <MenuItem value={LayerMode.RegularFeaturesOffline}>{LayerMode.RegularFeaturesOffline}</MenuItem>
-                  </Select>
-                </FormControl>
-                <div className={toolClass.toolSlider}>
-                  <Typography>Opacity</Typography>
-                  <Typography style={{ marginLeft: 10, marginRight: 10 }}>{opacityText(opacity)}</Typography>
-                  <Slider
-                    defaultValue={opacity}
-                    onChange={handleSlider}
-                    getAriaValueText={opacityText}
-                    step={0.0001}
-                    min={0.0}
-                    max={1.0}
-                  />
-                </div>
                 <SortableListContainer
                   items={sortArray(objectState)}
                   onSortEnd={onSortEnd}

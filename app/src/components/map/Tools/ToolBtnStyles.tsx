@@ -1,6 +1,14 @@
 import { makeStyles } from '@material-ui/core';
 
 export const toolStyles = makeStyles((theme) => ({
+  toolBtn: {
+    height: 43,
+    width: 43,
+    zIndex: 1500,
+    borderRadius: 4,
+    marginRight: 10,
+    marginBottom: 5
+  },
   toolBtnsLoc: {
     display: 'flex',
     justifyContent: 'flex-end',

@@ -14,7 +14,15 @@ export const DataBCLayer = (props) => {
   }
   switch (props.mode) {
     case LayerMode.WMSOnline:
-      return <WMSTileLayer opacity={props.opacity} url="http://openmaps.gov.bc.ca/geo/ows" layers={props.layerName} />;
+      return (
+        <WMSTileLayer
+          transparent={true}
+          opacity={props.opacity}
+          format={'image/png'}
+          url="http://openmaps.gov.bc.ca/geo/ows"
+          layers={props.layerName}
+        />
+      );
     case LayerMode.WFSOnline:
       return <></>;
     case LayerMode.VectorTilesOffline:
