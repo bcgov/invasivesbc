@@ -29,7 +29,7 @@
     "@turf/helpers": "^6.1.4",
     "@turf/nearest-point": "^6.0.1",
     "aws-sdk": "~2.742.0",
-    "axios": "~0.21.1",
+    "axios": "~0.21.2",
     "body-parser": "~1.19.0",
     "csv-parser": "^3.0.0",
     "db-migrate": "~0.11.11",
