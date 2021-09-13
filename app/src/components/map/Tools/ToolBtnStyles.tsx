@@ -50,5 +50,8 @@ export const toolStyles = makeStyles((theme) => ({
     paddingTop: 20,
     display: 'flex',
     flexDirection: 'row'
+  },
+  tooltipWidth: {
+    maxWidth: 500
   }
 }));
