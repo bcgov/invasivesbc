@@ -203,13 +203,15 @@ export function LayerPicker(props: any, { position }) {
           index = i;
         }
       }
-      var spliced = layers.splice(index, 1);
+      console.log('index: ' + index);
+      var tempCopy = [...layers];
+      var spliced = tempCopy.splice(index, 1);
       //check
       console.log('spliced', spliced);
-      var layersBefore = [...layers.slice(0, index)];
+      var layersBefore = [...tempCopy.slice(0, index)];
       //check
       console.log('layers before', layersBefore);
-      var layersAfter = [...layers.slice(index)];
+      var layersAfter = [...tempCopy.slice(index)];
       //check
       console.log('layers after', layersAfter);
       setLayers([...layersBefore, ...layersAfter]);
@@ -407,9 +409,13 @@ export function LayerPicker(props: any, { position }) {
 
   return (
     <LayersControlProvider value={null}>
-      {layers.map((layer) => (
-        <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} inputGeo={props.inputGeo} />
-      ))}
+      {layers.map((layer) => {
+        console.log('rendering layers');
+        console.dir(layers);
+        return (
+          <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} inputGeo={props.inputGeo} />
+        );
+      })}
       <div className={positionClass}>
         <PopupState variant="popover" popupId="layerPicker">
           {(popupState) => (

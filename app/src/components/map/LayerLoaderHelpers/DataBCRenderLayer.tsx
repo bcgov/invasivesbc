@@ -17,6 +17,7 @@ export const DataBCLayer = (props) => {
     case LayerMode.WMSOnline:
       return (
         <WMSTileLayer
+          key={Math.random()}
           transparent={true}
           opacity={props.opacity}
           format={'image/png'}
