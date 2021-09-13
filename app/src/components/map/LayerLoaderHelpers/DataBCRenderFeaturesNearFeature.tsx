@@ -60,7 +60,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
           console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
           return true;
         }
-        if (!newArray.includes(worker.data.layer)) {
+        if (!newArray.includes(worker.data.BCGWcode)) {
           console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
           return true;
         }
@@ -73,9 +73,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const startFetchingLayers = () => {
     const newArray = [];
     layersSelected.forEach((layer: any) => {
-      if (layer.enabled) {
-        newArray.push(layer.id);
-      }
+      newArray.push(layer.BCGWcode);
     });
 
     qRemove(lastRequestPushed, newArray);

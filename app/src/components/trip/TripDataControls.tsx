@@ -400,17 +400,35 @@ export const TripDataControls: React.FC<any> = (props) => {
 
         smallGridResult.forEach(async (gridResult) => {
           const feature = JSON.parse(gridResult.geo);
+          console.log('grid result');
+          console.log(gridResult);
+          const gridId = gridResult.id;
           const bufferedGeo = turf.buffer(feature, 0);
           const wellsInside = await getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo);
+          console.log(`INSERT INTO layer_data (id, featureArea, featuresInArea, layerName) VALUES (${gridId},'${JSON.stringify(
+                  bufferedGeo
+                )
+                  .split(`'`)
+                  .join(`''`)}','${JSON.stringify(wellsInside).split(`'`).join(`''`)}','well') 
+                  ON CONFLICT(id) 
+                  DO 
+                    UPDATE SET featureArea='${JSON.stringify(bufferedGeo)
+                  .split(`'`)
+                  .join(`''`)}', featuresInArea='${JSON.stringify(wellsInside).split(`'`).join(`''`)}', layerName='well';`);
           await upsert(
             [
               {
                 type: UpsertType.RAW_SQL,
-                sql: `INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES ('${JSON.stringify(
+                sql: `INSERT INTO layer_data (id, featureArea, featuresInArea, layerName) VALUES (${gridId},'${JSON.stringify(
                   bufferedGeo
                 )
                   .split(`'`)
-                  .join(`''`)}','${JSON.stringify(wellsInside).split(`'`).join(`''`)}','well');`
+                  .join(`''`)}','${JSON.stringify(wellsInside).split(`'`).join(`''`)}','well') 
+                  ON CONFLICT(id) 
+                  DO 
+                    UPDATE SET featureArea='${JSON.stringify(bufferedGeo)
+                  .split(`'`)
+                  .join(`''`)}', featuresInArea='${JSON.stringify(wellsInside).split(`'`).join(`''`)}', layerName='well';`
               }
             ],
             databaseContext

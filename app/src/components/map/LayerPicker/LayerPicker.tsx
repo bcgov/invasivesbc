@@ -133,12 +133,6 @@ export function LayerPicker(props: any, { position }) {
     }
   });
 
-  //update context on ObjectState change
-  useEffect(() => {
-    setLayersSelected(objectState);
-    // check console.log(objectState);
-  }, [objectState]);
-
   const opacityText = (value: number) => {
     return `${value.toFixed(1)}`;
   };
@@ -248,8 +242,15 @@ export function LayerPicker(props: any, { position }) {
   ));
   //update context on ObjectState change
   useEffect(() => {
-    setLayersSelected(objectState);
-  }, [objectState]);
+    console.log(layers);
+    setLayersSelected(layers);
+  }, [layers]);
+
+  const toggleParentCheckbox = (parent) => {
+    updateParent(parent.id, {
+      enabled: !getParent(objectState, parent.id).enabled
+    });
+  };
 
   const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
@@ -260,14 +261,9 @@ export function LayerPicker(props: any, { position }) {
         <Grid container spacing={1}>
           <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
             <Grid container xs={12} justifyContent="space-between" alignItems="center">
-              {/* Turned off until later
               <Grid item xs>
-                <Checkbox
-                  checked={parent.enabled}
-                  name={parent.id}
-                  onChange={() => toggleParentCheckbox(parent, parent.children)}
-                />
-              </Grid>*/}
+                <Checkbox checked={parent.enabled} name={parent.id} onChange={() => toggleParentCheckbox(parent)} />
+              </Grid>
               {/* Info Dialog */}
               <Grid item xs={1}>
                 <Tooltip

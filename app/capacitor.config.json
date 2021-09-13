@@ -3,6 +3,9 @@
   "appName": "InvasivesBC-Ionic",
   "bundledWebRuntime": false,
   "npmClient": "npm",
+  "ios": {
+    "hideLogs": true
+  },
   "webDir": "build",
   "plugins": {
     "SplashScreen": {
