@@ -1,5 +1,6 @@
 import React from 'react';
 import { WMSTileLayer } from 'react-leaflet';
+import { RenderKeyFeaturesNearFeature } from './DataBCRenderFeaturesNearFeature';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',
@@ -29,6 +30,13 @@ export const DataBCLayer = (props) => {
       return <></>;
     case LayerMode.RegularFeaturesOffline:
       //this is the regular geojson stuff
-      return <></>;
+      return (
+        <RenderKeyFeaturesNearFeature
+          inputGeo={props.inputGeo}
+          dataBCLayerName={props.layerName}
+          proximityInMeters={550}
+          setWellIdandProximity={props.setWellIdandProximity}
+        />
+      );
   }
 };

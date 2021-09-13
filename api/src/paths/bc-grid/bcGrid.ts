@@ -79,7 +79,7 @@ POST.apiDoc = {
  * @return {RequestHandler}
  */
 export function getOverlapingBCGridCells(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     defaultLog.debug({ label: 'bcGrid', message: 'getOverlapingBCGridCells', body: req.body });
 
     const geometry = req.body.geometry;

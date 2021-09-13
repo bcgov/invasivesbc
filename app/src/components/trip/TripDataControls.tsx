@@ -385,7 +385,7 @@ export const TripDataControls: React.FC<any> = (props) => {
           '1'
         );
 
-        let idArr = [];
+        const idArr = [];
         result.forEach((row) => {
           idArr.push(row.id);
         });

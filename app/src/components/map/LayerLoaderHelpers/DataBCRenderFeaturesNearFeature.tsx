@@ -1,61 +1,16 @@
-import buffer from '@turf/buffer';
-import { getDataFromDataBC } from 'components/map/WFSConsumer';
 import React, { useState, useEffect, useContext } from 'react';
-import { Marker, Popup } from 'react-leaflet';
-import { Feature } from 'geojson';
-import { Divider, makeStyles, Theme } from '@material-ui/core';
-import proj4 from 'proj4';
+import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
+import { Feature, Geometry } from 'geojson';
 import * as turf from '@turf/turf';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import { polygon } from '@turf/helpers';
-import L from 'leaflet';
-
-import WellIconClosest from '../Icons/well-closest.svg';
-import WellIconInside from '../Icons/well-inside.svg';
-import WellIconStandard from '../Icons/well-standard.svg';
-import { Capacitor } from '@capacitor/core';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
-import { DocType } from 'constants/database';
-import { forEach } from 'jszip';
-import { utm_zone } from '../Tools/DisplayPosition';
-
-const wellIconSandard = new L.Icon({
-  iconUrl: WellIconStandard,
-  iconRetinaUrl: WellIconStandard,
-  iconAnchor: null,
-  popupAnchor: [-0.5, -20],
-  shadowUrl: null,
-  shadowSize: null,
-  shadowAnchor: null,
-  iconSize: new L.Point(50, 50),
-  className: 'icon'
-});
-
-const wellIconInside = new L.Icon({
-  iconUrl: WellIconInside,
-  iconRetinaUrl: WellIconInside,
-  iconAnchor: null,
-  popupAnchor: [-0.5, -20],
-  shadowUrl: null,
-  shadowSize: null,
-  shadowAnchor: null,
-  iconSize: new L.Point(50, 50),
-  className: 'icon'
-});
-
-const wellIconClosest = new L.Icon({
-  iconUrl: WellIconClosest,
-  iconRetinaUrl: WellIconClosest,
-  iconAnchor: null,
-  popupAnchor: [-0.5, -20],
-  shadowUrl: null,
-  shadowSize: null,
-  shadowAnchor: null,
-  iconSize: new L.Point(50, 50),
-  className: 'icon'
-});
+import { Layer } from 'leaflet';
+import { DatabaseContext2, query, QueryType } from '../../../contexts/DatabaseContext2';
+import { WellMarker } from './WellMarker';
+import { q } from '../MapContainer';
+import { createPolygonFromBounds } from './LtlngBoundsToPoly';
+import { MapRequestContext } from '../../../contexts/MapRequestsContext';
 
 interface IRenderKeyFeaturesNearFeature {
   inputGeo: Feature;
@@ -68,9 +23,11 @@ interface IRenderKeyFeaturesNearFeature {
 }
 
 export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeature) => {
-  const [geosWithClosest, setGeosWithClosest] = useState(null);
-  const [keyval, setKeyval] = useState(0);
+  const [wellsWithClosest, setWellsWithClosest] = useState(null);
   const [wellIdandProximity, setWellIdandProximity] = useState(null);
+  const [geosToRender, setGeosToRender] = useState(null);
+  const databaseContext = useContext(DatabaseContext2);
+  const [keyval, setKeyval] = useState(0);
 
   //when there is new wellId and proximity, send info to ActivityPage
   useEffect(() => {
@@ -79,168 +36,172 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     }
   }, [wellIdandProximity]);
 
-  /*
-   * Function for going through array and labeling 1 closest well and wells inside the polygon
-   */
-  const getClosestPointToPolygon = (arrayOfPoints) => {
-    let index = 0;
-    let nearestPointIndex = null;
-    let minDistanceKm = null;
-    let wellInside = false;
-    arrayOfPoints.forEach((point) => {
-      const turfPolygon = polygon((props.inputGeo.geometry as any).coordinates);
-      const distanceKm = pointToLineDistance(point, polygonToLine(turfPolygon));
-      //label points that are inside the polygon
-      if (turf.inside(point, turfPolygon)) {
-        arrayOfPoints[index] = { ...arrayOfPoints[index], inside: true, closest: false };
-        wellInside = true;
-      }
-      //set index of the closest well yet
-      if (!!!minDistanceKm || minDistanceKm > distanceKm) {
-        minDistanceKm = distanceKm;
-        if (!arrayOfPoints[index].inside) {
-          nearestPointIndex = index;
+  const map = useMap();
+  const mapRequestContext = useContext(MapRequestContext);
+  const { layersSelected } = mapRequestContext;
+  const [lastRequestPushed, setLastRequestPushed] = useState(null);
+
+  useMapEvent('moveend', () => {
+    startFetchingLayers();
+  });
+
+  useEffect(() => {
+    startFetchingLayers();
+  }, []);
+
+  //function that compares last extent with the ones in the queue and deletes queue extents that are no more needed
+  const qRemove = (lastReqPushed: any, newArray: any) => {
+    q.remove((worker: any) => {
+      if (worker.data && lastReqPushed?.extent) {
+        if (
+          !turf.booleanWithin(worker.data.extent, lastReqPushed.extent) &&
+          !turf.booleanOverlap(worker.data.extent, lastReqPushed.extent)
+        ) {
+          console.log('%cThe new extent does not overlap with and not inside of previous extent!', 'color:red');
+          return true;
+        }
+        if (!newArray.includes(worker.data.layer)) {
+          console.log('%cThe worker in a queue no longer needed as the layers have been changed!', 'color:red');
+          return true;
         }
       }
-      index++;
+      return false;
     });
-    //label closest well
-    arrayOfPoints[nearestPointIndex] = { ...arrayOfPoints[nearestPointIndex], closest: true };
-    //set new data to send to ActivityPage
-    if (arrayOfPoints[nearestPointIndex].properties) {
-      setWellIdandProximity({
-        id: arrayOfPoints[nearestPointIndex].properties.GW_WW_SYSID.toString(),
-        proximity: minDistanceKm * 1000,
-        wellInside: wellInside
-      });
-    }
-    return arrayOfPoints;
   };
 
-  const networkContext = useContext(NetworkContext);
-  const databaseContext = useContext(DatabaseContext2);
-
-  //when new geos received, get well data and run labeling function
-  useEffect(() => {
-    const getLayerData = async () => {
-      if (props.inputGeo) {
-        const bufferedGeo = buffer(props.inputGeo, props.proximityInMeters / 1000);
-        if (Capacitor.getPlatform() !== 'web' && !networkContext.connected) {
-          const res = await query(
-            {
-              type: QueryType.DOC_TYPE,
-              docType: DocType.LAYER_DATA
-            },
-            databaseContext
-          );
-          let allFeatures = [];
-          res.forEach((row) => {
-            const featureArea = JSON.parse(row.featureArea).geometry;
-            const featuresInArea = JSON.parse(row.featuresInArea);
-
-            if (turf.booleanContains(props.inputGeo, featureArea) || turf.booleanOverlap(props.inputGeo, featureArea)) {
-              allFeatures = allFeatures.concat(featuresInArea);
-            }
-          });
-          setGeosWithClosest(getClosestPointToPolygon(allFeatures));
-          setKeyval(Math.random()); //NOSONAR
-        } else {
-          getDataFromDataBC(props.dataBCLayerName, bufferedGeo).then((returnVal) => {
-            setGeosWithClosest(getClosestPointToPolygon(returnVal));
-            setKeyval(Math.random()); //NOSONAR
-          }, []);
-        }
+  //this is called on map load and each time the map is moved
+  const startFetchingLayers = () => {
+    const newArray = [];
+    layersSelected.forEach((layer: any) => {
+      if (layer.enabled) {
+        newArray.push(layer.id);
       }
-    };
-    getLayerData();
-  }, [props.inputGeo]);
+    });
+
+    qRemove(lastRequestPushed, newArray);
+
+    if (newArray.length > 0) {
+      newArray.forEach((layer) => {
+        q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer }, getLayerData);
+
+        setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
+      });
+    }
+    map.invalidateSize();
+  };
+
+  //gets layer data based on the layer name
+  const getLayerData = async () => {
+    const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
+    if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
+      const res = await query(
+        {
+          type: QueryType.RAW_SQL,
+          sql: `SELECT * FROM layer_data WHERE layerName IN ('well');`
+        },
+        databaseContext
+      );
+
+      let allFeatures = [];
+
+      res.forEach((row) => {
+        const featureArea = JSON.parse(row.featureArea).geometry;
+        const featuresInArea = JSON.parse(row.featuresInArea);
+
+        if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
+          allFeatures = allFeatures.concat(featuresInArea);
+        }
+      });
+      if (props.inputGeo) {
+        setWellsWithClosest(getClosestWellToPolygon(allFeatures));
+      } else {
+        setWellsWithClosest(allFeatures);
+      }
+      setKeyval(Math.random()); //NOSONAR
+    } else {
+      const res = await query(
+        {
+          type: QueryType.RAW_SQL,
+          sql: `SELECT * FROM layer_data WHERE layerName NOT IN ('well');`
+        },
+        databaseContext
+      );
+      let allFeatures = [];
+      res.forEach((row) => {
+        const featuresInArea = JSON.parse(row.featuresInArea);
+        allFeatures = allFeatures.concat(featuresInArea);
+      });
+      setGeosToRender(allFeatures);
+      setKeyval(Math.random()); //NOSONAR
+    }
+  };
+
+  // Function for going through array and labeling 1 closest well and wells inside the polygon
+  const getClosestWellToPolygon = (arrayOfWells) => {
+    let index = 0;
+    let nearestWellIndex = null;
+    let minDistanceKm = null;
+    let wellInside = false;
+    if (
+      turf.booleanWithin(props.inputGeo[0].geometry as any, createPolygonFromBounds(map.getBounds(), map).toGeoJSON())
+    ) {
+      arrayOfWells.forEach((well) => {
+        const turfPolygon = polygon((props.inputGeo[0].geometry as any).coordinates);
+        const distanceKm = pointToLineDistance(well, polygonToLine(turfPolygon));
+        //label points that are inside the polygon
+        if (turf.inside(well, turfPolygon)) {
+          arrayOfWells[index] = { ...arrayOfWells[index], inside: true, closest: false };
+          wellInside = true;
+        }
+        //set index of the closest well yet
+        if (!!!minDistanceKm || minDistanceKm > distanceKm) {
+          minDistanceKm = distanceKm;
+          if (!arrayOfWells[index].inside) {
+            nearestWellIndex = index;
+          }
+        }
+        index++;
+      });
+      //label closest well
+      arrayOfWells[nearestWellIndex] = { ...arrayOfWells[nearestWellIndex], closest: true };
+      //set new data to send to ActivityPage
+      if (arrayOfWells[nearestWellIndex].properties) {
+        setWellIdandProximity({
+          id: arrayOfWells[nearestWellIndex].properties.GW_WW_SYSID.toString(),
+          proximity: minDistanceKm * 1000,
+          wellInside: wellInside
+        });
+      }
+    }
+    return arrayOfWells;
+  };
+
+  //this is used to display all geoJSON data except for wells
+  const onEachFeature = props.customOnEachFeature
+    ? props.customOnEachFeature
+    : (feature: Feature<Geometry, any>, layer: Layer) => {
+        const popupContent = `
+    <div>
+        <p>${feature.id}</p>                  
+        <p>${JSON.stringify(feature)}</p>                  
+    </div>
+        `;
+        layer.bindPopup(popupContent);
+      };
 
   return (
     <>
-      {geosWithClosest && keyval ? (
-        geosWithClosest.map((feature) => {
+      {geosToRender && keyval && <GeoJSON key={keyval} onEachFeature={onEachFeature} data={geosToRender}></GeoJSON>}
+      {wellsWithClosest &&
+        keyval &&
+        wellsWithClosest.map((feature) => {
           if (feature.geometry.type === 'Point') {
-            return (
-              <Marker
-                position={[feature.geometry.coordinates[1], feature.geometry.coordinates[0]]}
-                icon={feature.inside ? wellIconInside : feature.closest ? wellIconClosest : wellIconSandard}>
-                <Popup>
-                  <CustomWellPopup feature={feature} />
-                </Popup>
-              </Marker>
-            );
+            return <WellMarker feature={feature} />;
           } else {
             return null;
           }
-        })
-      ) : (
-        <></>
-      )}
+        })}
       )
     </>
   );
 };
-
-const CustomWellPopup = ({ feature }) => {
-  const classes = useStyles();
-  let popupContent;
-
-  //just checking if feature has properties we want
-  if (feature.properties && feature.properties.popupContent) {
-    popupContent = feature.properties.popupContent;
-  }
-  //shorten the id
-  let featureId = feature.properties.GW_WW_SYSID as String;
-
-  //Calculate utm_zone, northing and easting
-  const latitude = feature.geometry.coordinates[0] || null;
-  const longitude = feature.geometry.coordinates[1] || null;
-  let utm = utm_zone(longitude, latitude);
-  /*if (longitude !== undefined && latitude !== undefined) {
-    utm_zone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
-    proj4.defs([
-      ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
-      ['EPSG:AUTO', `+proj=utm +zone= ${utm_zone} +datum=WGS84 +units=m +no_defs`]
-    ]);
-    const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
-    utm_easting = Number(en_m[0].toFixed(4));
-    utm_northing = Number(en_m[1].toFixed(4));
-  }*/
-
-  return (
-    <div className={classes.popupWindow}>
-      <h2>Well ID:</h2>
-      <p>{featureId}</p>
-      <h2>Coordinates</h2>
-      <p>
-        <b>Latitude: </b>
-        {feature.geometry.coordinates[1]}
-      </p>
-      <p>
-        <b>Longitude: </b>
-        {feature.geometry.coordinates[0]}
-      </p>
-      <Divider />
-      <p>
-        <b>UTM Zone: </b>
-        {utm[0] ? utm[0] : 'could not calculate'}
-      </p>
-      <p>
-        <b>UTM Northing: </b>
-        {utm[2] ? utm[2] : 'could not calculate'}
-      </p>
-      <p>
-        <b>UTM Easting: </b>
-        {utm[1] ? utm[1] : 'could not calculate'}
-      </p>
-      {popupContent}
-    </div>
-  );
-};
-
-const useStyles = makeStyles((theme: Theme) => ({
-  popupWindow: {
-    padding: '0.3rem',
-    lineHeight: '100%'
-  }
-}));

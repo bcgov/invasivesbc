@@ -249,6 +249,10 @@ export function LayerPicker(props: any, { position }) {
       <DragHandleIcon />
     </ListItemIcon>
   ));
+  //update context on ObjectState change
+  useEffect(() => {
+    setLayersSelected(objectState);
+  }, [objectState]);
 
   const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
@@ -404,7 +408,7 @@ export function LayerPicker(props: any, { position }) {
   return (
     <LayersControlProvider value={null}>
       {layers.map((layer) => (
-        <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} />
+        <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} inputGeo={props.inputGeo} />
       ))}
       <div className={positionClass}>
         <PopupState variant="popover" popupId="layerPicker">
