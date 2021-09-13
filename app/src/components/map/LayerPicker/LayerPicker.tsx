@@ -203,15 +203,10 @@ export function LayerPicker(props: any, { position }) {
           index = i;
         }
       }
-      var spliced = layers.splice(index, 1);
-      //check
-      console.log('spliced', spliced);
-      var layersBefore = [...layers.slice(0, index)];
-      //check
-      console.log('layers before', layersBefore);
-      var layersAfter = [...layers.slice(index)];
-      //check
-      console.log('layers after', layersAfter);
+      var tempCopy = [...layers];
+      tempCopy.splice(index, 1);
+      var layersBefore = [...tempCopy.slice(0, index)];
+      var layersAfter = [...tempCopy.slice(index)];
       setLayers([...layersBefore, ...layersAfter]);
     } else if (!child.enabled) {
       setLayers([...layers, { BCGWcode: child.BCGWcode, opacity: child.opacity, type: child.type }]);
@@ -222,7 +217,9 @@ export function LayerPicker(props: any, { position }) {
   };
 
   const updateChildAndLayer = (parent, child, fieldsToUpdate: Object) => {
-    updateLayer(child, fieldsToUpdate);
+    if (child.enabled) {
+      updateLayer(child, fieldsToUpdate);
+    }
     updateChild(parent.id, child.id, fieldsToUpdate);
   };
 
@@ -351,7 +348,7 @@ export function LayerPicker(props: any, { position }) {
                         <InputLabel>Layer</InputLabel>
                         <NativeSelect
                           id="layer-menu"
-                          defaultValue={LayerMode.WMSOnline}
+                          defaultValue={child.type}
                           onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                             updateChildAndLayer(parent, child, { type: event.target.value });
                           }}>
@@ -407,9 +404,11 @@ export function LayerPicker(props: any, { position }) {
 
   return (
     <LayersControlProvider value={null}>
-      {layers.map((layer) => (
-        <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} inputGeo={props.inputGeo} />
-      ))}
+      {layers.map((layer) => {
+        return (
+          <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} inputGeo={props.inputGeo} />
+        );
+      })}
       <div className={positionClass}>
         <PopupState variant="popover" popupId="layerPicker">
           {(popupState) => (
