@@ -92,17 +92,36 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const getLayerData = async () => {
     const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
     if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
-      const res = await query(
+      const largeGridRes = await query(
         {
           type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM layer_data WHERE layerName IN ('well');`
+          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('well');`
+        },
+        databaseContext
+      );
+
+      let largeGridItemIdString = '(';
+      let largeGridResIndex = 0;
+      largeGridRes.forEach((gridItem) => {
+        if (largeGridResIndex === largeGridRes.length - 1) {
+          largeGridItemIdString += gridItem.id + ')';
+        } else {
+          largeGridItemIdString += gridItem.id + ',';
+        }
+        largeGridResIndex++;
+      });
+
+      const smallGridRes = await query(
+        {
+          type: QueryType.RAW_SQL,
+          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('well') AND largeGridID IN ${largeGridItemIdString};`
         },
         databaseContext
       );
 
       let allFeatures = [];
 
-      res.forEach((row) => {
+      smallGridRes.forEach((row) => {
         const featureArea = JSON.parse(row.featureArea).geometry;
         const featuresInArea = JSON.parse(row.featuresInArea);
 
@@ -117,15 +136,34 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       }
       setKeyval(Math.random()); //NOSONAR
     } else {
-      const res = await query(
+      const largeGridRes = await query(
         {
           type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM layer_data WHERE layerName NOT IN ('well');`
+          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('well');`
+        },
+        databaseContext
+      );
+
+      let largeGridItemIdString = '(';
+      let largeGridResIndex = 0;
+      largeGridRes.forEach((gridItem) => {
+        if (largeGridResIndex === largeGridRes.length - 1) {
+          largeGridItemIdString += gridItem.id + ')';
+        } else {
+          largeGridItemIdString += gridItem.id + ',';
+        }
+        largeGridResIndex++;
+      });
+
+      const smallGridRes = await query(
+        {
+          type: QueryType.RAW_SQL,
+          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('well') AND largeGridID IN ${largeGridItemIdString};`
         },
         databaseContext
       );
       let allFeatures = [];
-      res.forEach((row) => {
+      smallGridRes.forEach((row) => {
         const featuresInArea = JSON.parse(row.featuresInArea);
         allFeatures = allFeatures.concat(featuresInArea);
       });
@@ -179,10 +217,10 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     ? props.customOnEachFeature
     : (feature: Feature<Geometry, any>, layer: Layer) => {
         const popupContent = `
-    <div>
-        <p>${feature.id}</p>                  
-        <p>${JSON.stringify(feature)}</p>                  
-    </div>
+          <div>
+              <p>${feature.id}</p>                  
+              <p>${JSON.stringify(feature)}</p>                  
+          </div>
         `;
         layer.bindPopup(popupContent);
       };

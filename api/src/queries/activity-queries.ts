@@ -458,8 +458,8 @@ export const getOverlappingBCGridCellsSQL = (
       if (grid_item_ids.length < 1) {
         throw 'Error: looking for small grid items but the large grid item id array wasn\'t provided';
       } else {
-        const returnVal = SQL` 
-        SELECT id, public.st_asGeoJSON(geo) as geo
+        return SQL` 
+        SELECT id, public.st_asGeoJSON(geo) as geo, large_grid_item_id 
             FROM invasivesbc.bc_small_grid
             WHERE large_grid_item_id = ANY (${grid_item_ids}) AND public.ST_INTERSECTS(
               geo,
@@ -473,7 +473,6 @@ export const getOverlappingBCGridCellsSQL = (
               )
             );
         `;
-        return returnVal;
       }
       break;
   }
