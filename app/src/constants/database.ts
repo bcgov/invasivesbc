@@ -12,7 +12,8 @@ export enum DocType {
   OFFLINE_EXTENT = 'offline_extent',
   OFFLINE_DATA = 'offline_data',
   PLAN_PAGE_EXTENT = 'plan_page_extent',
-  LAYER_DATA = 'layer_data'
+  LARGE_GRID_LAYER_DATA = 'large_grid_layer_data',
+  SMALL_GRID_LAYER_DATA = 'small_grid_layer_data'
 }
 
 // max and default db page row limit

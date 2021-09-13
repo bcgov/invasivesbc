@@ -115,13 +115,23 @@ export const DatabaseContext2Provider = (props) => {
     let setupSQL = ``;
     for (const value of enumKeys(DocType)) {
       switch (value) {
-        case 'LAYER_DATA':
+        case 'SMALL_GRID_LAYER_DATA':
           setupSQL += `create table if not exists  
             ${DocType[value]} 
              (
-              id INTEGER PRIMARY KEY,
+              id INTEGER UNIQUE,
               featureArea TEXT,
               featuresInArea TEXT,
+              layerName TEXT,
+              largeGridID INTEGER
+            );\n`;
+          break;
+        case 'LARGE_GRID_LAYER_DATA':
+          setupSQL += `create table if not exists  
+            ${DocType[value]} 
+             (
+              id INTEGER UNIQUE,
+              featureArea TEXT,
               layerName TEXT
             );\n`;
           break;

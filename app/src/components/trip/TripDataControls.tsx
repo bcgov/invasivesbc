@@ -390,6 +390,25 @@ export const TripDataControls: React.FC<any> = (props) => {
           idArr.push(row.id);
         });
 
+        result.forEach(async (row) => {
+          await upsert(
+            [
+              {
+                type: UpsertType.RAW_SQL,
+                sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea,layerName) VALUES (${row.id},'${JSON.stringify(
+                  row.geo
+                )
+                  .split(`'`)
+                  .join(`''`)}','well')
+                  ON CONFLICT(id) 
+                  DO 
+                    UPDATE SET featureArea='${JSON.stringify(row.geo).split(`'`).join(`''`)}', layerName='well';`
+              }
+            ],
+            databaseContext
+          );
+        });
+
         const smallGridResult = await invasivesApi.getGridItemsThatOverlapPolygon(
           JSON.stringify(tripGeo.features[0].geometry),
           '0',
@@ -400,17 +419,27 @@ export const TripDataControls: React.FC<any> = (props) => {
 
         smallGridResult.forEach(async (gridResult) => {
           const feature = JSON.parse(gridResult.geo);
+          const gridId = gridResult.id;
           const bufferedGeo = turf.buffer(feature, 0);
           const wellsInside = await getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo);
           await upsert(
             [
               {
                 type: UpsertType.RAW_SQL,
-                sql: `INSERT INTO layer_data (featureArea, featuresInArea, layerName) VALUES ('${JSON.stringify(
+                sql: `INSERT INTO SMALL_GRID_LAYER_DATA (id, featureArea, featuresInArea, layerName, largeGridID) VALUES (${gridId},'${JSON.stringify(
                   bufferedGeo
                 )
                   .split(`'`)
-                  .join(`''`)}','${JSON.stringify(wellsInside).split(`'`).join(`''`)}','well');`
+                  .join(`''`)}','${JSON.stringify(wellsInside).split(`'`).join(`''`)}','well',${
+                  gridResult.large_grid_item_id
+                }) 
+                  ON CONFLICT(id) 
+                  DO 
+                    UPDATE SET featureArea='${JSON.stringify(bufferedGeo)
+                      .split(`'`)
+                      .join(`''`)}', featuresInArea='${JSON.stringify(wellsInside)
+                  .split(`'`)
+                  .join(`''`)}', layerName='well', largeGridID=${gridResult.large_grid_item_id};`
               }
             ],
             databaseContext
