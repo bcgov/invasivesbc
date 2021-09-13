@@ -203,17 +203,10 @@ export function LayerPicker(props: any, { position }) {
           index = i;
         }
       }
-      console.log('index: ' + index);
       var tempCopy = [...layers];
-      var spliced = tempCopy.splice(index, 1);
-      //check
-      console.log('spliced', spliced);
+      tempCopy.splice(index, 1);
       var layersBefore = [...tempCopy.slice(0, index)];
-      //check
-      console.log('layers before', layersBefore);
       var layersAfter = [...tempCopy.slice(index)];
-      //check
-      console.log('layers after', layersAfter);
       setLayers([...layersBefore, ...layersAfter]);
     } else if (!child.enabled) {
       setLayers([...layers, { BCGWcode: child.BCGWcode, opacity: child.opacity, type: child.type }]);
@@ -224,7 +217,9 @@ export function LayerPicker(props: any, { position }) {
   };
 
   const updateChildAndLayer = (parent, child, fieldsToUpdate: Object) => {
-    updateLayer(child, fieldsToUpdate);
+    if (child.enabled) {
+      updateLayer(child, fieldsToUpdate);
+    }
     updateChild(parent.id, child.id, fieldsToUpdate);
   };
 
@@ -353,7 +348,7 @@ export function LayerPicker(props: any, { position }) {
                         <InputLabel>Layer</InputLabel>
                         <NativeSelect
                           id="layer-menu"
-                          defaultValue={LayerMode.WMSOnline}
+                          defaultValue={child.type}
                           onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                             updateChildAndLayer(parent, child, { type: event.target.value });
                           }}>
@@ -410,8 +405,6 @@ export function LayerPicker(props: any, { position }) {
   return (
     <LayersControlProvider value={null}>
       {layers.map((layer) => {
-        console.log('rendering layers');
-        console.dir(layers);
         return (
           <DataBCLayer opacity={layer.opacity} layerName={layer.BCGWcode} mode={layer.type} inputGeo={props.inputGeo} />
         );
