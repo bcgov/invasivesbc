@@ -1,15 +1,79 @@
-import { IconButton, Tooltip, Typography } from '@material-ui/core';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Button,
+  IconButton,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Theme,
+  Tooltip,
+  Typography
+} from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/Info';
-import React, { useState, useCallback, useEffect, useContext } from 'react';
-import { useMapEvent, GeoJSON } from 'react-leaflet';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import FolderIcon from '@material-ui/icons/Folder';
+import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
 import { utm_zone } from './DisplayPosition';
 import { toolStyles } from './ToolBtnStyles';
 import { ThemeContext } from 'contexts/themeContext';
+import { createStyles, withStyles } from '@material-ui/styles';
+import { createDataUTM, StyledTableCell, StyledTableRow } from './StyledTable';
+
+const GeneratePopup = ({ rows, map }) => {
+  const popupElRef = useRef(null);
+  const [section, setSection] = useState('position');
+
+  const hideElement = () => {
+    if (!popupElRef?.current || !map) return;
+    map.closePopup();
+  };
+
+  const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
+    setSection(newSection);
+  };
+
+  return (
+    <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
+      <TableContainer>
+        {section == 'position' && (
+          <TableBody>
+            {rows &&
+              rows?.map((row) => (
+                <StyledTableRow key={row.name}>
+                  <StyledTableCell component="th" scope="row">
+                    {row.name}
+                  </StyledTableCell>
+                  <StyledTableCell>{row.value}</StyledTableCell>
+                </StyledTableRow>
+              ))}
+          </TableBody>
+        )}
+        {section == 'records' && (
+          <TableBody>
+            <StyledTableRow>
+              <StyledTableCell>This</StyledTableCell>
+              <StyledTableCell>Guy</StyledTableCell>
+            </StyledTableRow>
+          </TableBody>
+        )}
+      </TableContainer>
+      <BottomNavigation value={section} onChange={handleChange}>
+        <BottomNavigationAction value="position" icon={<LocationOnIcon />} />
+        <BottomNavigationAction value="records" icon={<FolderIcon />} />
+      </BottomNavigation>
+      <Button onClick={hideElement}>Close</Button>
+    </Popup>
+  );
+};
 
 function SetViewOnClick({ map }: any, { animateRef }: any) {
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPT, setGeoPT] = useState(null);
   const [utm, setUTM] = useState(null);
+  const [rows, setRows] = useState(null);
   const themeContext = useContext(ThemeContext);
   const toolClass = toolStyles();
 
@@ -31,8 +95,6 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
     }
   };
 
-  const generatePopup = () => {};
-
   useMapEvent('click', (e) => {
     setPosition(e.latlng);
   });
@@ -43,6 +105,12 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
       generateGeo();
     }
   }, [position]);
+
+  useEffect(() => {
+    if (utm) {
+      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Northing', utm[2]), createDataUTM('Easting', utm[1])]);
+    }
+  }, [utm]);
 
   /* useEffect Check
   useEffect(() => {
@@ -61,7 +129,7 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
               <>
                 <Typography>UTM Zone {utm[0]}</Typography>
                 <Typography>UTM Northing {utm[2]}</Typography>
-                <Typography>UTM Easting {utm[1]}</Typography>{' '}
+                <Typography>UTM Easting {utm[1]}</Typography>
               </>
             )
           }>
@@ -70,7 +138,11 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
           </IconButton>
         </Tooltip>
       )}
-      {/*<GeoJSON data={geoPT} key={Math.random()} />*/}
+      {utm && (
+        <GeoJSON data={geoPT} key={Math.random()}>
+          <GeneratePopup rows={rows} map={map} />
+        </GeoJSON>
+      )}
     </>
   );
 }

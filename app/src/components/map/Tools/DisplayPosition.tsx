@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Marker, Popup } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, IconButton, Typography } from '@material-ui/core';
+import { CircularProgress, IconButton, TableBody, TableContainer, Typography } from '@material-ui/core';
 import proj4 from 'proj4';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './ToolBtnStyles';
+import { createDataUTM, StyledTableCell, StyledTableRow } from './StyledTable';
 
 export const utm_zone = (longitude: number, latitude: number) => {
   let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
@@ -15,8 +16,8 @@ export const utm_zone = (longitude: number, latitude: number) => {
     ['EPSG:AUTO', `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`]
   ]);
   const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
-  let utmEasting = Number(en_m[0].toFixed(4));
-  let utmNorthing = Number(en_m[1].toFixed(4));
+  let utmEasting = Number(en_m[0].toFixed(0));
+  let utmNorthing = Number(en_m[1].toFixed(0));
   return [utmZone, utmEasting, utmNorthing];
 };
 
@@ -27,6 +28,7 @@ export default function DisplayPosition({ map }) {
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
   const [utm, setUTM] = useState([]);
+  const [rows, setRows] = useState(null);
   const divRef = useRef();
 
   useEffect(() => {
@@ -52,6 +54,12 @@ export default function DisplayPosition({ map }) {
     }
   }, [newPosition]);
 
+  useEffect(() => {
+    if (utm) {
+      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Northing', utm[2]), createDataUTM('Easting', utm[1])]);
+    }
+  }, [utm]);
+
   const getLocation = async () => {
     setInitialTime(5);
     setStartTimer(true);
@@ -64,10 +72,19 @@ export default function DisplayPosition({ map }) {
       {newPosition && newPosition?.coords && newPosition?.coords?.latitude ? (
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
           <Popup>
-            {/*position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)*/}
-            <Typography>UTM Zone {utm[0]}</Typography>
-            <Typography>UTM Northing {utm[2]}</Typography>
-            <Typography>UTM Easting {utm[1]}</Typography>
+            <TableContainer>
+              <TableBody>
+                {rows &&
+                  rows?.map((row) => (
+                    <StyledTableRow key={row.name}>
+                      <StyledTableCell component="th" scope="row">
+                        {row.name}
+                      </StyledTableCell>
+                      <StyledTableCell>{row.value}</StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+              </TableBody>
+            </TableContainer>
           </Popup>
         </Marker>
       ) : null}
