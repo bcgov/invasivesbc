@@ -1,8 +1,9 @@
 /*
   Unnest all species out of the species arrays.
   This creates new rows for every instance in the species array.
+  Replaced with the positive and negative queries below
 */
-drop table if exists invasivesbc.test_spatial_overlay;
+/* drop table if exists invasivesbc.test_spatial_overlay;
 create table invasivesbc.test_spatial_overlay as
 with unwrapped as (
   select 
@@ -26,6 +27,7 @@ from
 group by
   species
 ;
+*/
 
 /*
   Deletes
@@ -37,6 +39,7 @@ drop table if exists test_spatial_expload_positive;
 create table test_spatial_expload_positive as
   select 
     activity_subtype,
+    created_timestamp,
     jsonb_array_elements(to_jsonb(species_positive)) "species",
     geometry(geog) "geom"
   from
@@ -61,6 +64,7 @@ drop table if exists test_spatial_expload_negative;
 create table test_spatial_expload_negative as
   select 
     activity_subtype,
+    created_timestamp,
     jsonb_array_elements(to_jsonb(species_negative)) "species",
     geometry(geog) "geom"
   from
@@ -80,20 +84,26 @@ alter table test_spatial_expload_negative add column gid serial;
 alter table test_spatial_expload_negative add primary key (gid);
 
 
+-- Run the deletion
+
 drop table if exists test_spatial_positive_negative;
 create table test_spatial_positive_negative as
 select
   pos.species #>> '{}' "species",
   case 
-    when st_intersects(pos.geom,neg.geom) -- and -- TODO: Date difference here
+    when st_intersects(pos.geom,neg.geom)
     then st_difference(pos.geom,neg.geom)
     else pos.geom
     end
 from
   test_spatial_expload_positive pos left outer join
   test_spatial_expload_negative neg
-  on st_intersects(pos.geom,neg.geom) and pos.species = neg.species
+  on
+    st_intersects(pos.geom,neg.geom) and
+    pos.species = neg.species and
+    pos.created_timestamp > neg.created_timestamp
 ;
+
 /* NEXT STEPS
   1. Simplify (remove) case statement
   2. Replace st_intersect with st_within
