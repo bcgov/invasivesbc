@@ -85,14 +85,21 @@ create table test_spatial_positive_negative as
 select
   pos.species,
   case 
-    when st_intersects(pos.geom,neg.geom) and -- TODO: Date difference here
+    when st_intersects(pos.geom,neg.geom) -- and -- TODO: Date difference here
     then st_difference(pos.geom,neg.geom)
     else pos.geom
+    end
 from
   test_spatial_expload_positive pos join
   test_spatial_expload_negative neg
   on st_intersects(pos.geom,neg.geom)
 ;
+/* NEXT STEPS
+  1. Simplify (remove) case statement
+  2. Replace st_intersect with st_within
+  3. Add date
+  4. Where statement to compare species
+*/
 
 /*********** End of Delete section **************/
 
