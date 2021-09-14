@@ -9,6 +9,7 @@ import { DatabaseChangesContextProvider } from './contexts/DatabaseChangesContex
 import { DatabaseContext, DatabaseContextProvider, IDatabaseContext } from './contexts/DatabaseContext';
 import { DatabaseContext2Provider } from './contexts/DatabaseContext2';
 import { ThemeContextProvider } from './contexts/themeContext';
+import { RolesContextProvider } from './contexts/RolesContext';
 import { NetworkContextProvider } from 'contexts/NetworkContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
@@ -29,7 +30,7 @@ const App: React.FC<IAppProps> = (props) => {
 
   //@ts-ignore
   const keycloak: KeycloakInstance = new Keycloak(keycloakInstanceConfig);
-
+  console.log('KEYCLOAK OBJ: ', keycloak);
   let keycloakConfig = null;
 
   if (window['cordova']) {
@@ -52,36 +53,38 @@ const App: React.FC<IAppProps> = (props) => {
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
       <ThemeContextProvider>
-        <NetworkContextProvider>
-          <CustomThemeProvider>
-            <IonReactRouter>
-              <DatabaseContext2Provider>
-                <DatabaseContextProvider>
-                  <DatabaseContext.Consumer>
-                    {(databaseContext: IDatabaseContext) => {
-                      if (Capacitor.getPlatform() === 'ios') {
-                        return (
-                          <DatabaseChangesContextProvider>
-                            <AppRouter {...appRouterProps} />
-                          </DatabaseChangesContextProvider>
-                        );
-                      }
-                      if (databaseContext.database) {
-                        // database not ready, delay loading app
-                        return (
-                          <DatabaseChangesContextProvider>
-                            <AppRouter {...appRouterProps} />
-                          </DatabaseChangesContextProvider>
-                        );
-                      }
-                      return <CircularProgress />;
-                    }}
-                  </DatabaseContext.Consumer>
-                </DatabaseContextProvider>
-              </DatabaseContext2Provider>
-            </IonReactRouter>
-          </CustomThemeProvider>
-        </NetworkContextProvider>
+        <RolesContextProvider>
+          <NetworkContextProvider>
+            <CustomThemeProvider>
+              <IonReactRouter>
+                <DatabaseContext2Provider>
+                  <DatabaseContextProvider>
+                    <DatabaseContext.Consumer>
+                      {(databaseContext: IDatabaseContext) => {
+                        if (Capacitor.getPlatform() === 'ios') {
+                          return (
+                            <DatabaseChangesContextProvider>
+                              <AppRouter {...appRouterProps} />
+                            </DatabaseChangesContextProvider>
+                          );
+                        }
+                        if (databaseContext.database) {
+                          // database not ready, delay loading app
+                          return (
+                            <DatabaseChangesContextProvider>
+                              <AppRouter {...appRouterProps} />
+                            </DatabaseChangesContextProvider>
+                          );
+                        }
+                        return <CircularProgress />;
+                      }}
+                    </DatabaseContext.Consumer>
+                  </DatabaseContextProvider>
+                </DatabaseContext2Provider>
+              </IonReactRouter>
+            </CustomThemeProvider>
+          </NetworkContextProvider>
+        </RolesContextProvider>
       </ThemeContextProvider>
     </Box>
   );

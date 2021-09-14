@@ -31,6 +31,7 @@ import {
 } from '../../components/common/RecordTables';
 import { DatabaseContext2, query, QueryType } from '../../contexts/DatabaseContext2';
 import BatchUpload from '../../components/batch-upload/BatchUpload';
+import { RolesContext } from 'contexts/RolesContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -81,6 +82,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
+  const rolesContext = useContext(RolesContext);
   const invasivesApi = useInvasivesApi();
   const [species, setSpecies] = useState(null);
 
