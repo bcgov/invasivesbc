@@ -5,10 +5,7 @@ import {
   Button,
   IconButton,
   TableBody,
-  TableCell,
   TableContainer,
-  TableRow,
-  Theme,
   Tooltip,
   Typography
 } from '@material-ui/core';
@@ -17,10 +14,9 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
 import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
 import { utm_zone } from './DisplayPosition';
-import { toolStyles } from './ToolBtnStyles';
+import { toolStyles } from './Helpers/ToolBtnStyles';
 import { ThemeContext } from 'contexts/themeContext';
-import { createStyles, withStyles } from '@material-ui/styles';
-import { createDataUTM, StyledTableCell, StyledTableRow } from './StyledTable';
+import { createDataUTM, RenderTablePosition, StyledTableCell, StyledTableRow } from './Helpers/StyledTable';
 
 const GeneratePopup = ({ rows, map }) => {
   const popupElRef = useRef(null);
@@ -38,19 +34,7 @@ const GeneratePopup = ({ rows, map }) => {
   return (
     <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
       <TableContainer>
-        {section == 'position' && (
-          <TableBody>
-            {rows &&
-              rows?.map((row) => (
-                <StyledTableRow key={row.name}>
-                  <StyledTableCell component="th" scope="row">
-                    {row.name}
-                  </StyledTableCell>
-                  <StyledTableCell>{row.value}</StyledTableCell>
-                </StyledTableRow>
-              ))}
-          </TableBody>
-        )}
+        {section == 'position' && <RenderTablePosition rows={rows} />}
         {section == 'records' && (
           <TableBody>
             <StyledTableRow>

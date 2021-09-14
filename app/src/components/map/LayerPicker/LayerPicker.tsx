@@ -18,7 +18,7 @@ import {
   getChild,
   sortObject
 } from './SortLayerOrder';
-import { toolStyles } from '../Tools/ToolBtnStyles';
+import { toolStyles } from '../Tools/Helpers/ToolBtnStyles';
 // MUI
 import {
   Checkbox,

@@ -22,7 +22,7 @@ import DisplayPosition from './Tools/DisplayPosition';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
-import { toolStyles } from './Tools/ToolBtnStyles';
+import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
 import { SetViewOnClick } from './Tools/InfoAreaDescription';
 
 const DefaultIcon = L.icon({

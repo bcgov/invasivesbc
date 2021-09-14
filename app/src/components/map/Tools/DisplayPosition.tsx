@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Marker, Popup } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, IconButton, TableBody, TableContainer, Typography } from '@material-ui/core';
+import { Button, CircularProgress, IconButton, TableBody, TableContainer, Typography } from '@material-ui/core';
 import proj4 from 'proj4';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './ToolBtnStyles';
-import { createDataUTM, StyledTableCell, StyledTableRow } from './StyledTable';
+import { toolStyles } from './Helpers/ToolBtnStyles';
+import { createDataUTM, RenderTablePosition, StyledTableCell, StyledTableRow } from './Helpers/StyledTable';
 
 export const utm_zone = (longitude: number, latitude: number) => {
   let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
@@ -29,7 +29,20 @@ export default function DisplayPosition({ map }) {
   const [startTimer, setStartTimer] = useState(false);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
-  const divRef = useRef();
+  const divRef = useRef(null);
+  const popupElRef = useRef(null);
+
+  const hideElement = () => {
+    if (!popupElRef?.current || !map) return;
+    map.closePopup();
+  };
+
+  const getLocation = async () => {
+    setInitialTime(5);
+    setStartTimer(true);
+    const position = await Geolocation.getCurrentPosition();
+    setNewPosition(position);
+  };
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
@@ -60,31 +73,15 @@ export default function DisplayPosition({ map }) {
     }
   }, [utm]);
 
-  const getLocation = async () => {
-    setInitialTime(5);
-    setStartTimer(true);
-    const position = await Geolocation.getCurrentPosition();
-    setNewPosition(position);
-  };
-
   return (
     <div>
       {newPosition && newPosition?.coords && newPosition?.coords?.latitude ? (
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
-          <Popup>
+          <Popup ref={popupElRef} closeButton={false}>
             <TableContainer>
-              <TableBody>
-                {rows &&
-                  rows?.map((row) => (
-                    <StyledTableRow key={row.name}>
-                      <StyledTableCell component="th" scope="row">
-                        {row.name}
-                      </StyledTableCell>
-                      <StyledTableCell>{row.value}</StyledTableCell>
-                    </StyledTableRow>
-                  ))}
-              </TableBody>
+              <RenderTablePosition rows={rows} />
             </TableContainer>
+            <Button onClick={hideElement}>Close</Button>
           </Popup>
         </Marker>
       ) : null}

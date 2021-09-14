@@ -9,7 +9,7 @@ import single from '../Icons/square.png';
 import multi from '../Icons/trim.png';
 import { async } from 'q';
 import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './ToolBtnStyles';
+import { toolStyles } from './Helpers/ToolBtnStyles';
 
 const EditTools = (props: any) => {
   const toolClass = toolStyles();
