@@ -10,8 +10,9 @@ import {
   IMetabaseQuerySearchCriteria
 } from '../../interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { AllGeoJSON } from '@turf/turf';
+import geoData from '../../components/map/LayerPicker/GEO_DATA.json';
 import { getDataFromDataBC } from '../../components/map/WFSConsumer';
+import { forEach } from 'jszip';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -41,6 +42,19 @@ export const TripDataControls: React.FC<any> = (props) => {
   const [totalRecordsToFetch, setTotalRecordsToFetch] = useState(0);
   const [totalRecordsFetched, setTotalRecordsFetched] = useState(0);
 
+  const getLayerNamesFromJSON = (geoData: any) => {
+    const layerNamesArr = [];
+
+    geoData.forEach((pLayer) => {
+      pLayer.children.forEach((cLayer) => {
+        layerNamesArr.push(cLayer.BCGWcode);
+      });
+    });
+
+    return layerNamesArr;
+  };
+
+  const [layerNames, setLayerNames] = useState(getLayerNamesFromJSON(geoData));
   // const bulkUpsert = async (upserts) => {
   //   let allDocsFetch = await databaseContext.database.allDocs({ include_docs: true });
   //   let allDocs = allDocsFetch?.rows ? allDocsFetch.rows : [];
@@ -375,76 +389,83 @@ export const TripDataControls: React.FC<any> = (props) => {
           databaseContext
         );
 
+        //convert geo to feature collection
         const tripGeo = {
           type: 'FeatureCollection',
           features: JSON.parse(res[0].json).geometry
         };
 
-        const result = await invasivesApi.getGridItemsThatOverlapPolygon(
+        //get all large grid items that overlap with geo
+        const largeGridResult = await invasivesApi.getGridItemsThatOverlapPolygon(
           JSON.stringify(tripGeo.features[0].geometry),
           '1'
         );
 
+        //get all the ids of large grid items
         const idArr = [];
-        result.forEach((row) => {
+        largeGridResult.forEach((row) => {
           idArr.push(row.id);
         });
 
-        result.forEach(async (row) => {
-          await upsert(
-            [
-              {
-                type: UpsertType.RAW_SQL,
-                sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea,layerName) VALUES (${row.id},'${JSON.stringify(
-                  row.geo
-                )
-                  .split(`'`)
-                  .join(`''`)}','well')
-                  ON CONFLICT(id) 
-                  DO 
-                    UPDATE SET featureArea='${JSON.stringify(row.geo).split(`'`).join(`''`)}', layerName='well';`
-              }
-            ],
-            databaseContext
-          );
-        });
-
+        //get all small grid items associated with list of large grid items that overlap with geo
         const smallGridResult = await invasivesApi.getGridItemsThatOverlapPolygon(
           JSON.stringify(tripGeo.features[0].geometry),
           '0',
           idArr
         );
 
-        let gridIndex = 0;
-
-        smallGridResult.forEach(async (gridResult) => {
-          const feature = JSON.parse(gridResult.geo);
-          const gridId = gridResult.id;
-          const bufferedGeo = turf.buffer(feature, 0);
-          const wellsInside = await getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo);
-          await upsert(
-            [
-              {
-                type: UpsertType.RAW_SQL,
-                sql: `INSERT INTO SMALL_GRID_LAYER_DATA (id, featureArea, featuresInArea, layerName, largeGridID) VALUES (${gridId},'${JSON.stringify(
-                  bufferedGeo
-                )
-                  .split(`'`)
-                  .join(`''`)}','${JSON.stringify(wellsInside).split(`'`).join(`''`)}','well',${
-                  gridResult.large_grid_item_id
-                }) 
-                  ON CONFLICT(id) 
+        //for each layer name, do...
+        layerNames.forEach(async (layerName) => {
+          //for each large grid item, do...
+          largeGridResult.forEach(async (row) => {
+            console.log('ran once');
+            console.log(layerName);
+            //insert large grid item into sqllite table
+            await upsert(
+              [
+                {
+                  type: UpsertType.RAW_SQL,
+                  sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea,layerName) VALUES (${
+                    row.id
+                  },'${JSON.stringify(row.geo).split(`'`).join(`''`)}','${layerName}')
+                  ON CONFLICT(id, layerName) 
                   DO 
+                    UPDATE SET featureArea='${JSON.stringify(row.geo).split(`'`).join(`''`)}';`
+                }
+              ],
+              databaseContext
+            );
+          });
+
+          //for each small grid item, do...
+          smallGridResult.forEach(async (gridResult) => {
+            const feature = JSON.parse(gridResult.geo);
+            const gridId = gridResult.id;
+            const bufferedGeo = turf.buffer(feature, 0);
+            const featuresInside = await getDataFromDataBC(layerName, bufferedGeo);
+            await upsert(
+              [
+                {
+                  type: UpsertType.RAW_SQL,
+                  sql: `INSERT INTO SMALL_GRID_LAYER_DATA (id, featureArea, featuresInArea, layerName, largeGridID) VALUES (${gridId},'${JSON.stringify(
+                    bufferedGeo
+                  )
+                    .split(`'`)
+                    .join(`''`)}','${JSON.stringify(featuresInside).split(`'`).join(`''`)}','${layerName}',${
+                    gridResult.large_grid_item_id
+                  })
+                  ON CONFLICT(id, layerName)
+                  DO
                     UPDATE SET featureArea='${JSON.stringify(bufferedGeo)
                       .split(`'`)
-                      .join(`''`)}', featuresInArea='${JSON.stringify(wellsInside)
-                  .split(`'`)
-                  .join(`''`)}', layerName='well', largeGridID=${gridResult.large_grid_item_id};`
-              }
-            ],
-            databaseContext
-          );
-          gridIndex++;
+                      .join(`''`)}', featuresInArea='${JSON.stringify(featuresInside)
+                    .split(`'`)
+                    .join(`''`)}', largeGridID=${gridResult.large_grid_item_id};`
+                }
+              ],
+              databaseContext
+            );
+          });
         });
       } catch (e) {
         console.log('There was an error fetching layer data from the map. Skipping to the next step...');

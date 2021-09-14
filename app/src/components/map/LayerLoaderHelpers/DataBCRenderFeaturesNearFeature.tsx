@@ -92,10 +92,11 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const getLayerData = async () => {
     const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
     if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
+      console.log('next crashes 4?');
       const largeGridRes = await query(
         {
           type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('well');`
+          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW');`
         },
         databaseContext
       );
@@ -110,11 +111,14 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
         }
         largeGridResIndex++;
       });
-
+      console.log('next crashes 3?');
+      console.log(
+        `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') AND largeGridID IN ${largeGridItemIdString};`
+      );
       const smallGridRes = await query(
         {
           type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('well') AND largeGridID IN ${largeGridItemIdString};`
+          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') AND largeGridID IN ${largeGridItemIdString};`
         },
         databaseContext
       );
@@ -134,12 +138,12 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       } else {
         setWellsWithClosest(allFeatures);
       }
-      setKeyval(Math.random()); //NOSONAR
     } else {
+      console.log('next crashes?');
       const largeGridRes = await query(
         {
           type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('well');`
+          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName NOT IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW');`
         },
         databaseContext
       );
@@ -154,11 +158,10 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
         }
         largeGridResIndex++;
       });
-
       const smallGridRes = await query(
         {
           type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('well') AND largeGridID IN ${largeGridItemIdString};`
+          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName NOT IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') AND largeGridID IN ${largeGridItemIdString};`
         },
         databaseContext
       );
@@ -168,7 +171,6 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
         allFeatures = allFeatures.concat(featuresInArea);
       });
       setGeosToRender(allFeatures);
-      setKeyval(Math.random()); //NOSONAR
     }
   };
 
