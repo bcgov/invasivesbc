@@ -83,16 +83,16 @@ alter table test_spatial_expload_negative add primary key (gid);
 drop table if exists test_spatial_positive_negative;
 create table test_spatial_positive_negative as
 select
-  pos.species,
+  pos.species #>> '{}' "species",
   case 
     when st_intersects(pos.geom,neg.geom) -- and -- TODO: Date difference here
     then st_difference(pos.geom,neg.geom)
     else pos.geom
     end
 from
-  test_spatial_expload_positive pos join
+  test_spatial_expload_positive pos left outer join
   test_spatial_expload_negative neg
-  on st_intersects(pos.geom,neg.geom)
+  on st_intersects(pos.geom,neg.geom) and pos.species = neg.species
 ;
 /* NEXT STEPS
   1. Simplify (remove) case statement
