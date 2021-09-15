@@ -113,6 +113,22 @@ alter table test_spatial_expload_positive_negative add primary key (gid);
 
 -- Merge everything together
 
+drop table if exists test_spatial_merge;
+create table test_spatial_merge as
+select
+  species,
+  st_collectionExtract(
+    unnest(
+      st_clusterWithin(
+        st_transform(geom,3005)
+      ,50)
+    ),3
+  ) "geom"
+from
+  test_spatial_positive_negative
+group by
+  species
+;
 
 -- This merges all polygons of each species... not optimal
 drop table if exists test_spatial_merge;
