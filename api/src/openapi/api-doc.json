@@ -385,6 +385,113 @@
           }
         }
       },
+      "Activity_Treatment_MechanicalPlantAquatic": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_type_data": {
+            "allOf": [
+              { "$ref": "#/components/schemas/Treatment" },
+              {
+                "properties": {
+                  "additional_auth_information": {
+                    "type": "string",
+                    "title": "Authorization information",
+                    "x-tooltip-text": "Description of authorization permit for in-stream work (e.g. In-stream Notification, private landowner authorization in private pond, etc)."
+                  }
+                }
+              }
+            ]
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Treatment_MechanicalPlantAquatic"
+          }
+        }
+      },
+      "Treatment_MechanicalPlantAquatic": {
+        "type": "object",
+        "title": " ",
+        "properties": {
+          "waterbody_data": {
+            "type": "object",
+            "title": "Waterbody Data",
+            "allOf": [
+              { "$ref": "#/components/schemas/WaterbodyData" },
+              {
+                "properties": {
+                  "water_level_management": {
+                    "type": "string",
+                    "title": "Water Level Management",
+                    "enum": ["None", "Weir", "Pump Station", "Dam", "Other"],
+                    "x-tooltip-text": "Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field"
+                  },
+                  "substrate_type": {
+                    "type": "string",
+                    "title": "Substrate Type",
+                    "enum": ["Silt/Organic", "Clay", "Sand", "Gravel", "Cobble", "Rip-rap"],
+                    "x-tooltip-text": "Select the most prevalent substrate composition"
+                  },
+                  "tidal_influence": {
+                    "type": "string",
+                    "title": "Tidal Influence",
+                    "enum": ["Yes", "No", "Unknown"],
+                    "x-tooltip-text": "Indicate if the water level at the observation point is influenced by tides"
+                  },
+                  "inflow_permanent": {
+                    "type": "string",
+                    "title": "Inflow (Permanent)",
+                    "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
+                  },
+                  "inflow_other": {
+                    "type": "string",
+                    "title": "Inflow (Temp. or seasonal)",
+                    "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
+                  },
+                  "outflow": {
+                    "type": "string",
+                    "title": "Outflow",
+                    "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
+                  }
+                },
+                "required": ["substrate_type", "tidal_influence"]
+              }
+            ]
+          },
+          "shoreline_types": {
+            "type": "array",
+            "title": "Shoreline Types",
+            "items": {
+              "$ref": "#/components/schemas/ShorelineTypes"
+            },
+            "x-tooltip-text": "Specify shoreline types with their respective percentages"
+          },
+          "water_quality": {
+            "type": "object",
+            "title": "Water Quality",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WaterQuality"
+              },
+              {
+                "properties": {
+                  "water_flow_rate": {
+                    "type": "number",
+                    "title": "Water flow rate (m/sec)",
+                    "minimum": 0,
+                    "x-tooltip-text": " Indicates average rate of water flow across treatment area, this affects herbicide dispersion and efficacy."
+                  }
+                },
+                "required": ["water_flow_rate"]
+              }
+            ]
+          },
+          "mechanical_treatment_information": {
+            "$ref": "#/components/schemas/Treatment_MechanicalPlant"
+          }
+        }
+      },
       "Activity": {
         "title": "Basic Information",
         "type": "object",
@@ -1541,7 +1648,7 @@
       "Treatment": {
         "title": "Treatment Information",
         "type": "object",
-        "required": ["treatment_organization", "treatment_persons"],
+        "required": ["treatment_persons"],
         "properties": {
           "treatment_persons": {
             "type": "array",
