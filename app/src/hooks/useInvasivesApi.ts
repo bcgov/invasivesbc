@@ -349,8 +349,8 @@ export const useInvasivesApi = () => {
         return await getApiSpec();
       }
     } catch (e) {
-      // alert('Unable to get api spec');
-      // alert(JSON.stringify(e));
+      alert('Unable to get api spec');
+      alert(JSON.stringify(e));
     }
   };
 
