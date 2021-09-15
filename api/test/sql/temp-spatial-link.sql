@@ -14,6 +14,7 @@ create table test_spatial_expload_positive as
   select 
     activity_subtype,
     created_timestamp,
+    activity_incoming_data_id,
     jsonb_array_elements(to_jsonb(species_positive)) "species", -- Explode species
     geometry(geog) "geom" -- Convert to Geometry (EPSG:4326)
   from
@@ -40,6 +41,7 @@ create table test_spatial_expload_negative as
   select 
     activity_subtype,
     created_timestamp,
+    activity_incoming_data_id,
     jsonb_array_elements(to_jsonb(species_negative)) "species",
     geometry(geog) "geom"
   from
@@ -65,6 +67,7 @@ drop table if exists test_spatial_positive_negative;
 create table test_spatial_positive_negative as
 select
   pos.species #>> '{}' "species",
+  pos.activity_incoming_data_id,
   case  -- If there is over, delete, otherwise pass through
     when st_intersects(pos.geom,neg.geom)
     then st_difference(pos.geom,neg.geom)
@@ -92,6 +95,7 @@ drop table if exists test_spatial_merge;
 create table test_spatial_merge as
 select
   species,
+  array_agg(activity_incoming_data_id), -- TODO: Untested aggregate function
   st_unaryUnion( -- Remove embedded linework
     st_collectionExtract( -- Convert from GeometryCollection to MultiPolygons
       unnest( -- Convert from an array to GeometryCollection
