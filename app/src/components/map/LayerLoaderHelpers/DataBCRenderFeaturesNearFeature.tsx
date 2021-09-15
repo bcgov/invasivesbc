@@ -229,10 +229,12 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
 
   return (
     <>
-      {geosToRender && keyval && <GeoJSON key={keyval} onEachFeature={onEachFeature} data={geosToRender}></GeoJSON>}
+      {geosToRender && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={geosToRender}></GeoJSON>}
       {wellsWithClosest &&
         keyval &&
         wellsWithClosest.map((feature) => {
+          console.log('there are wells:');
+
           if (feature.geometry.type === 'Point') {
             return <WellMarker feature={feature} />;
           } else {

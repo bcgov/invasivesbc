@@ -376,6 +376,22 @@ export const TripDataControls: React.FC<any> = (props) => {
       );
     };
 
+    const apiRequestQueue = async (request: any) => {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return request;
+        }
+      });
+    };
+
+    const sqlliteInsertQueue = async (request: any) => {
+      return databaseContext.asyncQueue({
+        asyncTask: () => {
+          return request;
+        }
+      });
+    };
+
     const fetchLayerData = async () => {
       try {
         console.log('starting to fetch layer data...');
@@ -407,7 +423,7 @@ export const TripDataControls: React.FC<any> = (props) => {
           idArr.push(row.id);
         });
 
-        //get all small grid items associated with list of large grid items that overlap with geo
+        // get all small grid items associated with list of large grid items that overlap with geo
         const smallGridResult = await invasivesApi.getGridItemsThatOverlapPolygon(
           JSON.stringify(tripGeo.features[0].geometry),
           '0',
@@ -421,19 +437,23 @@ export const TripDataControls: React.FC<any> = (props) => {
             console.log('ran once');
             console.log(layerName);
             //insert large grid item into sqllite table
-            await upsert(
-              [
-                {
-                  type: UpsertType.RAW_SQL,
-                  sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea,layerName) VALUES (${
-                    row.id
-                  },'${JSON.stringify(row.geo).split(`'`).join(`''`)}','${layerName}')
-                  ON CONFLICT(id, layerName) 
+            sqlliteInsertQueue(
+              upsert(
+                [
+                  {
+                    type: UpsertType.RAW_SQL,
+                    sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea) VALUES (${row.id},'${JSON.stringify(
+                      row.geo
+                    )
+                      .split(`'`)
+                      .join(`''`)}')
+                  ON CONFLICT(id) 
                   DO 
                     UPDATE SET featureArea='${JSON.stringify(row.geo).split(`'`).join(`''`)}';`
-                }
-              ],
-              databaseContext
+                  }
+                ],
+                databaseContext
+              )
             );
           });
 

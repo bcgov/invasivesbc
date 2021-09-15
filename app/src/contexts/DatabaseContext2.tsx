@@ -122,10 +122,8 @@ export const DatabaseContext2Provider = (props) => {
               id INTEGER,
               featureArea TEXT,
               featuresInArea TEXT,
-              layerName TEXT,
               largeGridID INTEGER
-            );
-            create unique index IF NOT EXISTS idx_smallGrid_id_layerName on SMALL_GRID_LAYER_DATA (id, layerName);\n`;
+            );`;
           break;
         case 'LARGE_GRID_LAYER_DATA':
           setupSQL += `create table if not exists  
