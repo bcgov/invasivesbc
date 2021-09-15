@@ -765,7 +765,7 @@ const RecordTableToolbar = (props) => {
   const [actionError, setActionError] = useState(props.actionError || '');
 
   const bulkActions: Array<any> = Object.values(actions)
-    .filter((action: any) => action.bulkAction)
+    .filter((action: any) => action.enabled && action.bulkAction)
     .map((action: any) => {
       const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
       if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
@@ -804,7 +804,7 @@ const RecordTableToolbar = (props) => {
     .filter((button) => button); // remove hidden actions
 
   const globalActions: Array<any> = Object.values(actions)
-    .filter((action: any) => action.globalAction)
+    .filter((action: any) => action.enabled && action.globalAction)
     .map((action: any) => {
       const isValid = action.globalCondition ? action.globalCondition(selectedRows) : true;
       if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;

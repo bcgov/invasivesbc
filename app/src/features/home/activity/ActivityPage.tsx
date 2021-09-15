@@ -156,8 +156,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           ...mapDocToDBActivity(updated)
         };
 
-        if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
-        else await dataAccess.updateActivity(newActivity, databaseContext);
+        let res;
+        if (!oldActivity)
+          res = await dataAccess.createActivity(newActivity, databaseContext);
+        else
+          res = await dataAccess.updateActivity(newActivity, databaseContext);
       });
       await dbUpdates(updatedDoc);
       return true;

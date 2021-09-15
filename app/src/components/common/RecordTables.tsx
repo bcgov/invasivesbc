@@ -241,7 +241,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   } = props;
 
   const createAction = (type: string, subtype: string) => ({
-    key: `create_activity_${subtype.toString().toLowerCase()}`,
+    key: `create_${subtype.toString().toLowerCase()}`,
     enabled: true,
     action: async (selectedRows) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
@@ -800,7 +800,12 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
                 linked_id: row._id
               })}
               hideEmpty
-              actions={false}
+              actions={{
+                create_activity: {
+                  // disable create buttons
+                  enabled: false
+                }
+              }}
             />
           </>
         )}
