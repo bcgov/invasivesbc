@@ -234,13 +234,12 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   useEffect(() => {
     const getApiSpec = async () => {
       const subtype = props.activity?.activity_subtype || props.activity?.activitySubtype;
-      if (!subtype)
-        throw "Activity has no Subtype specified";
+      if (!subtype) throw 'Activity has no Subtype specified';
       const response = await dataAccess.getCachedApiSpec();
       let components = response.components;
       let uiSchema = RootUISchemas[subtype];
       const subtypeSchema = components?.schemas?.[subtype];
-      
+
       // Handle activity_id linking fetches
       try {
         if (props.activity?.activityType === 'Monitoring') {
@@ -254,9 +253,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                   'ui:widget': undefined
                 }
               }
-            }
+            };
           } else {
-
             const treatments_response = await dataAccess.getActivities({
               column_names: ['activity_id', 'created_timestamp'],
               activity_type: ['Treatment'],
@@ -277,9 +275,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             });
 
             if (treatments?.length) {
-
               let modifiedSchema = components.schemas['Monitoring'];
-              modifiedSchema =  {
+              modifiedSchema = {
                 ...modifiedSchema,
                 properties: {
                   ...modifiedSchema?.properties,
@@ -289,14 +286,14 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                     anyOf: treatments
                   }
                 }
-              }
+              };
               components = {
                 ...components,
                 schemas: {
                   ...components.schemas,
-                  'Monitoring': modifiedSchema
+                  Monitoring: modifiedSchema
                 }
-              }
+              };
             }
           }
         }

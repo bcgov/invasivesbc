@@ -122,14 +122,12 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         }),
         databaseContext
       );
-      if (!result?.activity_id)
-        notifyError(databaseContext, "Count not save to database.");
-      else
-        window.location.reload();
+      if (!result?.activity_id) notifyError(databaseContext, 'Count not save to database.');
+      else window.location.reload();
     } catch (error) {
-      notifyError(databaseContext, "Could not save to database.  Are you connected to the internet?");
+      notifyError(databaseContext, 'Could not save to database.  Are you connected to the internet?');
     }
-  }
+  };
 
   const onReview = async () => {
     try {
@@ -147,19 +145,16 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         }),
         databaseContext
       );
-      if (!result?.activity_id)
-        notifyError(databaseContext, "Count not submit form for review.");
-      else
-        window.location.reload();
+      if (!result?.activity_id) notifyError(databaseContext, 'Count not submit form for review.');
+      else window.location.reload();
     } catch (error) {
-      notifyError(databaseContext, "Could not submit form for review.  Are you connected to the internet?");
+      notifyError(databaseContext, 'Could not submit form for review.  Are you connected to the internet?');
     }
-  }
+  };
 
   const onApprove = async () => {
     try {
-      if (activity.reviewStatus !== ReviewStatus.UNDER_REVIEW)
-        return;
+      if (activity.reviewStatus !== ReviewStatus.UNDER_REVIEW) return;
       const dbActivity: any = await dataAccess.getActivityById(activity.activityId, databaseContext);
       const result = await dataAccess.updateActivity(
         sanitizeRecord({
@@ -170,19 +165,16 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         }),
         databaseContext
       );
-      if (!result?.activity_id)
-        notifyError(databaseContext, "Count not approve form.");
-      else
-        window.location.reload();
+      if (!result?.activity_id) notifyError(databaseContext, 'Count not approve form.');
+      else window.location.reload();
     } catch (error) {
-      notifyError(databaseContext, "Could not approve form.  Are you connected to the internet?");
+      notifyError(databaseContext, 'Could not approve form.  Are you connected to the internet?');
     }
-  }
+  };
 
   const onDisapprove = async () => {
     try {
-      if (activity.reviewStatus !== ReviewStatus.UNDER_REVIEW)
-        return;
+      if (activity.reviewStatus !== ReviewStatus.UNDER_REVIEW) return;
       const dbActivity: any = await dataAccess.getActivityById(activity.activityId, databaseContext);
       const result = await dataAccess.updateActivity(
         sanitizeRecord({
@@ -193,14 +185,12 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         }),
         databaseContext
       );
-      if (!result?.activity_id)
-        notifyError(databaseContext, "Count not disapprove form.");
-      else
-        window.location.reload();
+      if (!result?.activity_id) notifyError(databaseContext, 'Count not disapprove form.');
+      else window.location.reload();
     } catch (error) {
-      notifyError(databaseContext, "Could not disapprove form.  Are you connected to the internet?");
+      notifyError(databaseContext, 'Could not disapprove form.  Are you connected to the internet?');
     }
-  }
+  };
 
   /*
   useEffect(() => {
@@ -331,7 +321,8 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
           <Typography className={props.classes.heading}>Activity Form</Typography>
         </AccordionSummary>
         <AccordionDetails className={props.classes.formContainer}>
-          <FormContainer {...props}
+          <FormContainer
+            {...props}
             onSave={onSave}
             saveStatus={activity.syncStatus}
             disableSave={

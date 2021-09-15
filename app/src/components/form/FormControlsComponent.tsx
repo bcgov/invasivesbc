@@ -70,10 +70,16 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
             <Grid item>
               <Tooltip
                 TransitionComponent={Zoom}
-                title={props.saveStatus === ActivitySyncStatus.SAVE_SUCCESSFUL
-                  ? "This form has been saved to the database where other InvasivesBC staff can reach it, and does not just live on your device."
-                  : "Save this form to the InvasivesBC database where other staff can reach it.  Currently this data is only on your device."}>
-                <Button disabled={isDisabled || props.disableSave} variant="contained" color="primary" onClick={() => props.onSave()}>
+                title={
+                  props.saveStatus === ActivitySyncStatus.SAVE_SUCCESSFUL
+                    ? 'This form has been saved to the database where other InvasivesBC staff can reach it, and does not just live on your device.'
+                    : 'Save this form to the InvasivesBC database where other staff can reach it.  Currently this data is only on your device.'
+                }>
+                <Button
+                  disabled={isDisabled || props.disableSave}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => props.onSave()}>
                   Save To Database
                 </Button>
               </Tooltip>
@@ -81,10 +87,12 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
           )}
           {props.onReview && !props.disableReview && (
             <Grid item>
-              <Tooltip
-                TransitionComponent={Zoom}
-                title={ReviewActionDescriptions[props.reviewStatus]}>
-                <Button disabled={props.disableReview} variant="contained" color="primary" onClick={() => props.onReview()}>
+              <Tooltip TransitionComponent={Zoom} title={ReviewActionDescriptions[props.reviewStatus]}>
+                <Button
+                  disabled={props.disableReview}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => props.onReview()}>
                   Flag For Admin Review
                 </Button>
               </Tooltip>
@@ -95,7 +103,11 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
               <Tooltip
                 TransitionComponent={Zoom}
                 title="Approve this form so it will be visible to all InvasivesBC users">
-                <Button disabled={props.disableApprove} variant="contained" color="primary" onClick={() => props.onApprove()}>
+                <Button
+                  disabled={props.disableApprove}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => props.onApprove()}>
                   Approve
                 </Button>
               </Tooltip>
@@ -106,7 +118,11 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
               <Tooltip
                 TransitionComponent={Zoom}
                 title="Disapprove this form and kick it back to the original author for revisions">
-                <Button disabled={props.disableDisapprove} variant="contained" color="primary" onClick={() => props.onDisapprove()}>
+                <Button
+                  disabled={props.disableDisapprove}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => props.onDisapprove()}>
                   Disapprove
                 </Button>
               </Tooltip>
