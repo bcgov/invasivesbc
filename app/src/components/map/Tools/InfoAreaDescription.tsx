@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import {
   BottomNavigation,
   BottomNavigationAction,
   Button,
   IconButton,
-  TableBody,
   TableContainer,
   Tooltip,
   Typography
@@ -12,15 +11,46 @@ import {
 import InfoIcon from '@material-ui/icons/Info';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
+import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
 import { utm_zone } from './DisplayPosition';
 import { toolStyles } from './Helpers/ToolBtnStyles';
 import { ThemeContext } from 'contexts/themeContext';
-import { createDataUTM, RenderTablePosition, StyledTableCell, StyledTableRow } from './Helpers/StyledTable';
+import {
+  createDataUTM,
+  RenderTableActivity,
+  RenderTablePosition,
+  StyledTableCell,
+  StyledTableRow
+} from './Helpers/StyledTable';
+import { useDataAccess } from '../../../hooks/useDataAccess';
+import { getDataFromDataBC } from '../WFSConsumer';
+import * as turf from '@turf/turf';
+import { Feature, Geometry } from 'geojson';
+import { Layer } from 'leaflet';
 
-const GeneratePopup = ({ rows, map }) => {
+const GeneratePopup = ({ utmRows, map, bufferedGeo }, props) => {
   const popupElRef = useRef(null);
+  const dataAccess = useDataAccess();
   const [section, setSection] = useState('position');
+  const [activityRecords, setActivity] = useState(null);
+
+  const updateActivityRecords = useCallback(async () => {
+    const activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
+    setActivity(activities);
+  }, []);
+
+  const onEachFeature = props.customOnEachFeature
+    ? props.customOnEachFeature
+    : (feature: Feature<Geometry, any>, layer: Layer) => {
+        const popupContent = `
+          <div>
+              <p>${feature.id}</p>                  
+              <p>${JSON.stringify(feature)}</p>                  
+          </div>
+        `;
+        layer.bindPopup(popupContent);
+      };
 
   const hideElement = () => {
     if (!popupElRef?.current || !map) return;
@@ -28,25 +58,21 @@ const GeneratePopup = ({ rows, map }) => {
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
+    updateActivityRecords();
     setSection(newSection);
   };
 
   return (
     <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
       <TableContainer>
-        {section == 'position' && <RenderTablePosition rows={rows} />}
-        {section == 'records' && (
-          <TableBody>
-            <StyledTableRow>
-              <StyledTableCell>This</StyledTableCell>
-              <StyledTableCell>Guy</StyledTableCell>
-            </StyledTableRow>
-          </TableBody>
-        )}
+        {section == 'position' && <RenderTablePosition rows={utmRows} />}
+        {section == 'activity' && activityRecords && <RenderTableActivity records={activityRecords} />}
+        {section == 'databc' && <Typography>No data currently</Typography>}
       </TableContainer>
       <BottomNavigation value={section} onChange={handleChange}>
-        <BottomNavigationAction value="position" icon={<LocationOnIcon />} />
-        <BottomNavigationAction value="records" icon={<FolderIcon />} />
+        <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
+        <BottomNavigationAction value="activity" label="Activity" icon={<DirectionsRunIcon />} />
+        <BottomNavigationAction value="databc" label="Data BC" icon={<FolderIcon />} />
       </BottomNavigation>
       <Button onClick={hideElement}>Close</Button>
     </Popup>
@@ -54,10 +80,12 @@ const GeneratePopup = ({ rows, map }) => {
 };
 
 function SetViewOnClick({ map }: any, { animateRef }: any) {
+  const [bufferedGeo, setBufferedGeo] = useState(null);
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPT, setGeoPT] = useState(null);
   const [utm, setUTM] = useState(null);
   const [rows, setRows] = useState(null);
+  const [databc, setDataBC] = useState(null);
   const themeContext = useContext(ThemeContext);
   const toolClass = toolStyles();
 
@@ -84,6 +112,13 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
   });
 
   useEffect(() => {
+    if (position) {
+      var point = turf.point([position.lng, position.lat]);
+      setBufferedGeo(turf.buffer(point, 3, { units: 'kilometers' }));
+    }
+  }, [position]);
+
+  useEffect(() => {
     if (isFinite(position?.lng) && isFinite(position?.lat)) {
       setUTM(utm_zone(position?.lng as number, position?.lat as number));
       generateGeo();
@@ -96,10 +131,13 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
     }
   }, [utm]);
 
-  /* useEffect Check
   useEffect(() => {
-    console.dir(geoPT?.features);
-  }, [geoPT]); */
+    if (bufferedGeo) {
+      getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
+        setDataBC(returnVal);
+      }, []);
+    }
+  }, [bufferedGeo]);
 
   return (
     <>
@@ -124,7 +162,7 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
       )}
       {utm && (
         <GeoJSON data={geoPT} key={Math.random()}>
-          <GeneratePopup rows={rows} map={map} />
+          {bufferedGeo && <GeneratePopup utmRows={rows} map={map} bufferedGeo={bufferedGeo} />}
         </GeoJSON>
       )}
     </>

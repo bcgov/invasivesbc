@@ -69,8 +69,8 @@ const CustomWellPopup = ({ feature }) => {
   const featureId = feature.properties.GW_WW_SYSID as string;
 
   //Calculate utm_zone, northing and easting
-  const latitude = feature.geometry.coordinates[0] || null;
-  const longitude = feature.geometry.coordinates[1] || null;
+  const latitude = feature.geometry.coordinates[1] || null;
+  const longitude = feature.geometry.coordinates[0] || null;
   const utm = utm_zone(longitude, latitude);
   const couldNotCalcString = 'could not calculate';
   return (
