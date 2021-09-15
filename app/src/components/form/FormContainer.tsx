@@ -234,7 +234,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
   useEffect(() => {
     const getApiSpec = async () => {
       const subtype = props.activity?.activity_subtype || props.activity?.activitySubtype;
-      if (!subtype) throw 'Activity has no Subtype specified';
+      if (!subtype) throw new Error('Activity has no Subtype specified');
       const response = await dataAccess.getCachedApiSpec();
       let components = response.components;
       let uiSchema = RootUISchemas[subtype];
@@ -281,7 +281,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 properties: {
                   ...modifiedSchema?.properties,
                   linked_id: {
-                    ...modifiedSchema?.properties?.activity_id, // TODO REMOVE LEGACY VAR NAME ONCE PUSHED TO UPDATED DEV
                     ...modifiedSchema?.properties?.linked_id,
                     anyOf: treatments
                   }

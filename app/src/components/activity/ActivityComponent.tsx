@@ -6,7 +6,7 @@ import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoCont
 import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 import { ReviewStatus, FormValidationStatus, ActivitySyncStatus } from 'constants/activities';
 import React, { useContext, useEffect, useState } from 'react';
-import { notifySuccess } from 'utils/NotificationUtils';
+import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { Geolocation } from '@capacitor/geolocation';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
@@ -17,7 +17,6 @@ import { useHistory } from 'react-router-dom';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import 'gridfix.css';
 import { sanitizeRecord } from 'utils/addActivity';
-import { notifyError } from 'utils/NotificationUtils';
 import { useKeycloak } from '@react-keycloak/web';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
