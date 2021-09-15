@@ -412,7 +412,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
             ...prevSchema,
             properties: {
               ...prevSchema.properties,
-              ...apiSpecResponse.components?.schemas[schemaType]?.properties
+              ...apiSpecResponse?.components?.schemas[schemaType]?.properties
             }
           }),
           {}

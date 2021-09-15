@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core';
 import { ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
+import { Capacitor } from '@capacitor/core';
 import { ActivitySyncStatus, ActivityMonitoringLinks } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from '../../contexts/themeContext';
@@ -55,6 +56,16 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
    * Note: Form validation rules will run, and must succeed, before this will be called.
    */
   onFormSubmitSuccess?: (event: ISubmitEvent<any>, formRef: any) => any;
+  onSave?: Function;
+  saveStatus?: string;
+  disableSave?: boolean;
+  onReview?: Function;
+  reviewStatus?: string;
+  disableReview?: boolean;
+  onApprove?: Function;
+  disableApprove?: boolean;
+  onDisapprove?: Function;
+  disableDisapprove?: boolean;
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
@@ -222,50 +233,72 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
+      const subtype = props.activity?.activity_subtype || props.activity?.activitySubtype;
+      if (!subtype)
+        throw "Activity has no Subtype specified";
       const response = await dataAccess.getCachedApiSpec();
       let components = response.components;
-      const subtypeSchema = components?.schemas?.[props.activity?.activitySubtype];
-
+      let uiSchema = RootUISchemas[subtype];
+      const subtypeSchema = components?.schemas?.[subtype];
+      
       // Handle activity_id linking fetches
       try {
         if (props.activity?.activityType === 'Monitoring') {
-          const treatments_response = await dataAccess.getActivities({
-            column_names: ['activity_id', 'created_timestamp'],
-            activity_type: ['Treatment'],
-            activity_subtype: [ActivityMonitoringLinks[props.activity.activitySubtype]],
-            order: ['created_timestamp']
-          });
-          const treatments = treatments_response.rows.map((treatment, i) => {
-            const short_id = getShortActivityID({
-              ...treatment,
-              activity_subtype: ActivityMonitoringLinks[props.activity.activitySubtype]
-            });
-            return {
-              enum: [treatment.activity_id],
-              title: short_id + ' : ' + treatment.activity_id,
-              type: 'string',
-              'x-code_sort_order': i + 1
-            };
-          });
-
-          let modifiedSchema = components.schemas['Monitoring'];
-          modifiedSchema = {
-            ...modifiedSchema,
-            properties: {
-              ...modifiedSchema?.properties,
-              linked_id: {
-                ...modifiedSchema?.properties?.linked_id,
-                anyOf: treatments
+          if (Capacitor.getPlatform() !== 'web') {
+            uiSchema = {
+              ...uiSchema,
+              activity_type_data: {
+                ...uiSchema?.activity_type_data,
+                linked_id: {
+                  ...uiSchema?.activity_type_data?.linked_id,
+                  'ui:widget': undefined
+                }
               }
             }
-          };
-          components = {
-            ...components,
-            schemas: {
-              ...components.schemas,
-              Monitoring: modifiedSchema
+          } else {
+
+            const treatments_response = await dataAccess.getActivities({
+              column_names: ['activity_id', 'created_timestamp'],
+              activity_type: ['Treatment'],
+              activity_subtype: [ActivityMonitoringLinks[subtype]],
+              order: ['created_timestamp']
+            });
+            const treatments = treatments_response.rows.map((treatment, i) => {
+              const short_id = getShortActivityID({
+                ...treatment,
+                activity_subtype: ActivityMonitoringLinks[subtype]
+              });
+              return {
+                enum: [treatment.activity_id],
+                title: short_id + ' : ' + treatment.activity_id,
+                type: 'string',
+                'x-code_sort_order': i + 1
+              };
+            });
+
+            if (treatments?.length) {
+
+              let modifiedSchema = components.schemas['Monitoring'];
+              modifiedSchema =  {
+                ...modifiedSchema,
+                properties: {
+                  ...modifiedSchema?.properties,
+                  linked_id: {
+                    ...modifiedSchema?.properties?.activity_id, // TODO REMOVE LEGACY VAR NAME ONCE PUSHED TO UPDATED DEV
+                    ...modifiedSchema?.properties?.linked_id,
+                    anyOf: treatments
+                  }
+                }
+              }
+              components = {
+                ...components,
+                schemas: {
+                  ...components.schemas,
+                  'Monitoring': modifiedSchema
+                }
+              }
             }
-          };
+          }
         }
 
         // put Treatments => Observations linking here
@@ -274,7 +307,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       }
       setSchemas({
         schema: { ...subtypeSchema, components: components },
-        uiSchema: RootUISchemas[props.activity.activitySubtype]
+        uiSchema: uiSchema
       });
     };
 
@@ -365,10 +398,10 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         <FormControlsComponent
           onSubmit={() => formRef.submit()}
           isDisabled={isDisabled}
+          activitySubtype={props.activity.activitySubtype}
           onCopy={props.copyFormData ? () => props.copyFormData() : null}
           onPaste={props.pasteFormData ? () => props.pasteFormData() : null}
-          activitySubtype={props.activity.activitySubtype}
-          hideCheckFormForErrors={props.hideCheckFormForErrors}
+          {...props}
         />
       </Box>
       <Dialog
