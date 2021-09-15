@@ -104,6 +104,13 @@ from
     pos.created_timestamp > neg.created_timestamp
 ;
 
+drop index if exists test_spatial_explode_positive_negative_geom_gist;
+create index test_spatial_explode_positive_negative_geom_gist on test_spatial_expload_positive_negative using gist ("geom");
+
+alter table test_spatial_expload_positive_negative add column gid serial;
+alter table test_spatial_expload_positive_negative add primary key (gid);
+
+
 -- Merge everything together
 
 drop table if exists test_spatial_merge;
@@ -116,6 +123,8 @@ from
 group by
   species
 ;
+
+-- SELECT ST_UnaryUnion(grp) FROM (SELECT unnest(ST_ClusterWithin(geom, 0.0001)) AS grp FROM tmpTable) sq;
 
 /* NEXT STEPS
   1. Simplify (remove) case statement
