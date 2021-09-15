@@ -14,11 +14,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import moment from 'moment';
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import {
-  sanitizeRecord,
-  generateDBActivityPayload,
-  getShortActivityID
-} from 'utils/addActivity';
+import { sanitizeRecord, generateDBActivityPayload, getShortActivityID } from 'utils/addActivity';
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);
@@ -131,41 +127,43 @@ const uniqueArray = (items) => {
   return Array.from(new Set(arrayWrap(items)));
 };
 
-export const defaultActivitiesFetch = ({
-  databaseContext,
-  dataAccess,
-  activitySubtypes = [],
-  created_by = undefined,
-  review_status = [],
-  linked_id = undefined
-}) => async ({ page, rowsPerPage, order }) => {
-  // Fetches fresh from the API (web).  TODO fetch from SQLite
-  let dbPageSize = DEFAULT_PAGE_SIZE;
-  if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
-    // if page is right near the db page limit
-    dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
-  const types = uniqueArray(arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]));
-  const result = await dataAccess.getActivities(
-    {
-      page: Math.floor((page * rowsPerPage) / dbPageSize),
-      limit: dbPageSize,
-      order: order,
-      // search_feature: geometry TODO
-      activity_type: types,
-      activity_subtype: arrayWrap(activitySubtypes),
-      // startDate, endDate will be filters
-      created_by: created_by, // my_keycloak_id
-      review_status: review_status,
-      linked_id: linked_id
-    },
+export const defaultActivitiesFetch =
+  ({
     databaseContext,
-    true
-  );
-  return {
-    rows: result?.rows?.map(activityStandardMapping) || [],
-    count: result?.count || 0
+    dataAccess,
+    activitySubtypes = [],
+    created_by = undefined,
+    review_status = [],
+    linked_id = undefined
+  }) =>
+  async ({ page, rowsPerPage, order }) => {
+    // Fetches fresh from the API (web).  TODO fetch from SQLite
+    let dbPageSize = DEFAULT_PAGE_SIZE;
+    if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
+      // if page is right near the db page limit
+      dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
+    const types = uniqueArray(arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]));
+    const result = await dataAccess.getActivities(
+      {
+        page: Math.floor((page * rowsPerPage) / dbPageSize),
+        limit: dbPageSize,
+        order: order,
+        // search_feature: geometry TODO
+        activity_type: types,
+        activity_subtype: arrayWrap(activitySubtypes),
+        // startDate, endDate will be filters
+        created_by: created_by, // my_keycloak_id
+        review_status: review_status,
+        linked_id: linked_id
+      },
+      databaseContext,
+      true
+    );
+    return {
+      rows: result?.rows?.map(activityStandardMapping) || [],
+      count: result?.count || 0
+    };
   };
-};
 
 export interface IActivitiesTable extends IRecordTable {
   workflow?: string;
@@ -714,13 +712,15 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
         activitySubtypes={[
           ActivitySubtype.Treatment_ChemicalPlant,
           ActivitySubtype.Treatment_ChemicalPlantAquatic,
-          ActivitySubtype.Treatment_MechanicalPlant
+          ActivitySubtype.Treatment_MechanicalPlant,
+          ActivitySubtype.Treatment_MechanicalPlantAquatic
         ]}
         tableSchemaType={[
           'Treatment',
           'Treatment_ChemicalPlant',
           'Treatment_ChemicalPlantAquatic',
           'Treatment_MechanicalPlant',
+          'Treatment_MechanicalPlantAquatic',
           ...arrayWrap(tableSchemaType)
         ]}
         headers={[
@@ -769,6 +769,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
                 'Treatment',
                 'Treatment_ChemicalPlant',
                 'Treatment_MechanicalPlant',
+                'Treatment_MechanicalPlantAquatic',
                 'Treatment_BiologicalPlant',
                 ...arrayWrap(tableSchemaType)
               ]}
