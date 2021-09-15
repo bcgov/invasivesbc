@@ -1,33 +1,7 @@
-/*
-  Unnest all species out of the species arrays.
-  This creates new rows for every instance in the species array.
-  Replaced with the positive and negative queries below
-*/
-/* drop table if exists invasivesbc.test_spatial_overlay;
-create table invasivesbc.test_spatial_overlay as
-with unwrapped as (
-  select 
-    activity_subtype,
-    jsonb_array_elements(to_jsonb(species_positive)) "species",
-    geometry(geog) "geom"
-  from
-    activity_incoming_data
-  where
-    activity_type = 'Observation' and
-    deleted_timestamp is null and
-    array_length(
-      species_positive, 1
-    ) > 0
-)
-select
-  species #>> '{}' "species", -- Convert from jsonb to text
-  public.st_union(geom) "geom"
-from
-  unwrapped
-group by
-  species
-;
-*/
+/* spatial-link.sql
+  Logic for spatially linking records of the same species
+  within a certain distance from eachother.
+ */
 
 /*
   Deletes
@@ -40,18 +14,19 @@ create table test_spatial_expload_positive as
   select 
     activity_subtype,
     created_timestamp,
-    jsonb_array_elements(to_jsonb(species_positive)) "species",
-    geometry(geog) "geom"
+    jsonb_array_elements(to_jsonb(species_positive)) "species", -- Explode species
+    geometry(geog) "geom" -- Convert to Geometry (EPSG:4326)
   from
     activity_incoming_data
   where
-    activity_type = 'Observation' and
-    deleted_timestamp is null and
-    array_length(
+    activity_type = 'Observation' and -- Observations for now
+    deleted_timestamp is null and -- Not deleted
+    array_length( -- At least one species registered
       species_positive, 1
     ) > 0
   ;
 
+-- Add indexes and IDs
 drop index if exists test_spatial_explode_positive_geom_gist;
 create index test_spatial_explode_positive_geom_gist on test_spatial_expload_positive using gist ("geom");
 
@@ -84,24 +59,24 @@ alter table test_spatial_expload_negative add column gid serial;
 alter table test_spatial_expload_negative add primary key (gid);
 
 
--- Run the deletion
 
+/*********** Run the deletion **************/
 drop table if exists test_spatial_positive_negative;
 create table test_spatial_positive_negative as
 select
   pos.species #>> '{}' "species",
-  case 
+  case  -- If there is over, delete, otherwise pass through
     when st_intersects(pos.geom,neg.geom)
     then st_difference(pos.geom,neg.geom)
     else pos.geom
     end
 from
-  test_spatial_expload_positive pos left outer join
+  test_spatial_expload_positive pos left outer join -- This allows the pass through
   test_spatial_expload_negative neg
   on
     st_intersects(pos.geom,neg.geom) and
     pos.species = neg.species and
-    pos.created_timestamp > neg.created_timestamp
+    pos.created_timestamp > neg.created_timestamp -- Only delete new negatives
 ;
 
 drop index if exists test_spatial_explode_positive_negative_geom_gist;
@@ -111,19 +86,19 @@ alter table test_spatial_expload_positive_negative add column gid serial;
 alter table test_spatial_expload_positive_negative add primary key (gid);
 
 
--- Merge everything together
 
+/*********** Merge everything together **************/
 drop table if exists test_spatial_merge;
 create table test_spatial_merge as
 select
   species,
-  st_collectionExtract(
-    unnest(
-      st_clusterWithin(
-        st_transform(geom,3005)
+  st_collectionExtract( -- Convert from GeometryCollection to MultiPolygon
+    unnest( -- Convert from an array to GeometryCollection
+      st_clusterWithin( -- Cluster within 50 meters
+        st_transform(geom,3005) -- Convert to Albers to get meters
       ,50)
-    ),3
-  ) "geom"
+    )
+  ,3) "geom"
 from
   test_spatial_positive_negative
 group by
@@ -131,15 +106,6 @@ group by
 ;
 
 
-
-/* NEXT STEPS
-  1. Simplify (remove) case statement
-  2. Replace st_intersect with st_within
-  3. Add date
-  4. Where statement to compare species
-*/
-
-/*********** End of Delete section **************/
 
 
 /*********** Not using the json lookup anymore **************/
@@ -172,94 +138,34 @@ group by
 -- ;
 
 -- Select all positive species observations
-select 
-  activity_subtype,
-  activity_payload -> 'species_positive' "species"
-from
-  activity_incoming_data
-where
-  activity_type = 'Observation' and
-  deleted_timestamp is null and
-  json_array_length(
-    to_json(activity_payload -> 'species_positive')
-  ) > 0
-;
+-- select 
+--   activity_subtype,
+--   activity_payload -> 'species_positive' "species"
+-- from
+--   activity_incoming_data
+-- where
+--   activity_type = 'Observation' and
+--   deleted_timestamp is null and
+--   json_array_length(
+--     to_json(activity_payload -> 'species_positive')
+--   ) > 0
+-- ;
 
 -- Select all negative species observations
-select 
-  activity_subtype,
-  activity_payload -> 'species_negative' "no species"
-from
-  activity_incoming_data
-where
-  activity_type = 'Observation' and
-  deleted_timestamp is null and
-  json_array_length(
-    to_json(activity_payload -> 'species_negative')
-  ) > 0
-;
+-- select 
+--   activity_subtype,
+--   activity_payload -> 'species_negative' "no species"
+-- from
+--   activity_incoming_data
+-- where
+--   activity_type = 'Observation' and
+--   deleted_timestamp is null and
+--   json_array_length(
+--     to_json(activity_payload -> 'species_negative')
+--   ) > 0
+-- ;
 
-select * from activity_incoming_data where activity_incoming_data_id = 3470;
+-- select * from activity_incoming_data where activity_incoming_data_id = 3470;
 
 -- Dump table with test code
 -- pg_dump --dbname=InvasivesBC --username=invasivebc --table=invasivesbc.activity_incoming_data --column-inserts --data-only > /tmp/activity_dump.sql
-
-
--- activity_observation_aquaticplant_with_codes
-SELECT
-  activity_incoming_data.activity_id
-  activity_incoming_data.version
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'invasive_plant_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'specific_use_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'proposed_treatment_code'::text)::text
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'flowering'::text)::text)::boolean AS flowering
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'plant_life_stage_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'plant_health_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'plant_seed_stage_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'range_unit_number'::text)::text
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'legacy_site_ind'::text)::text)::boolean AS legacy_site_ind
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'early_detection_rapid_resp_ind'::text)::text)::boolean AS early_detection_rapid_resp_ind
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'research_detection_ind'::text)::text)::boolean AS research_detection_ind
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'sample_point_number'::text)::text
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'special_care_ind'::text)::text)::boolean AS special_care_ind
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'biological_ind'::text)::text)::boolean AS biological_ind
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'secchi_depth'::text)::text)::numeric AS secchi_depth
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'water_depth'::text)::text)::numeric AS water_depth
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'voucher_submitted_ind'::text)::text)::boolean AS voucher_submitted_ind
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'voucher_submission_detail'::text)::text, '"'::text) AS voucher_submission_detail
-FROM
-  activity_incoming_data
-WHERE
-  activity_incoming_data.activity_type::text = 'Observation'::text AND
-  activity_incoming_data.activity_subtype::text = 'Activity_Observation_PlantAquatic'::text AND
-  activity_incoming_data.deleted_timestamp IS NULL;
-
--- activity_observation_terrestrialplant_with_codes
-SELECT
-  activity_incoming_data.activity_id
-  activity_incoming_data.version
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'invasive_plant_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'invasive_plant_density_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'invasive_plant_distribution_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'soil_texture_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'specific_use_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'slope_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'aspect_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'proposed_treatment_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'range_unit_number'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'plant_life_stage_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'plant_health_code'::text)::text
-  btrim((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'plant_seed_stage_code'::text)::text
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'flowering'::text)::text)::boolean AS flowering
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'legacy_site_ind'::text)::text)::boolean AS legacy_site_ind
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'early_detection_rapid_resp_ind'::text)::text)::boolean AS early_detection_rapid_resp_ind
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'research_detection_ind'::text)::text)::boolean AS research_detection_ind
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'well_ind'::text)::text)::boolean AS well_ind
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'special_care_ind'::text)::text)::boolean AS special_care_ind
-  ((((activity_incoming_data.activity_payload::json -> 'form_data'::text) -> 'activity_subtype_data'::text) -> 'biological_ind'::text)::text)::boolean AS biological_ind
-FROM
-  activity_incoming_data
-WHERE
-  activity_incoming_data.activity_type::text = 'Observation'::text AND
-  activity_incoming_data.activity_subtype::text = 'Activity_Observation_PlantTerrestrial'::text AND
-  activity_incoming_data.deleted_timestamp IS NULL;
