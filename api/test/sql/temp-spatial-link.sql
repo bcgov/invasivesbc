@@ -104,6 +104,19 @@ from
     pos.created_timestamp > neg.created_timestamp
 ;
 
+-- Merge everything together
+
+drop table if exists test_spatial_merge;
+create table test_spatial_merge as
+select
+  species, -- Convert from jsonb to text
+  public.st_union(geom) "geom"
+from
+  test_spatial_positive_negative
+group by
+  species
+;
+
 /* NEXT STEPS
   1. Simplify (remove) case statement
   2. Replace st_intersect with st_within
