@@ -130,31 +130,6 @@ group by
   species
 ;
 
--- This merges all polygons of each species... not optimal
-drop table if exists test_spatial_merge;
-create table test_spatial_merge as
-select
-  species, -- Convert from jsonb to text
-  public.st_union(geom) "geom"
-from
-  test_spatial_positive_negative
-group by
-  species
-;
-
--- Try with a join
-drop table if exists test_spatial_merge;
-create table test_spatial_merge as
-select
-  a.species, -- Convert from jsonb to text
-  st_union(a.geom,b.geom)
-from
-  test_spatial_positive_negative a left join
-  test_spatial_positive_negative b
-  on
-    st_intersects(a.geom,b.geom) and
-    a.species = b.species
-;
 
 
 /* NEXT STEPS
