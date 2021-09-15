@@ -113,6 +113,24 @@ alter table test_spatial_expload_positive_negative add primary key (gid);
 
 -- Merge everything together
 
+drop table if exists test_spatial_merge1;
+create table test_spatial_merge1 as
+select
+  species,
+  unnest(ST_ClusterWithin(geom, 1)) AS geom
+from
+  test_spatial_positive_negative
+group by
+  species
+;
+
+drop index if exists test_spatial_merge1_geom_gist;
+create index test_spatial_merge1_geom_gist on test_spatial_merge1 using gist ("geom");
+
+alter table test_spatial_merge1 add column gid serial;
+alter table test_spatial_merge1 add primary key (gid);
+
+/* This merges all polygons of each species... not optimal
 drop table if exists test_spatial_merge;
 create table test_spatial_merge as
 select
@@ -123,8 +141,27 @@ from
 group by
   species
 ;
+*/
 
--- SELECT ST_UnaryUnion(grp) FROM (SELECT unnest(ST_ClusterWithin(geom, 0.0001)) AS grp FROM tmpTable) sq;
+
+drop table if exists test_spatial_merge2;
+create table test_spatial_merge2 as
+select
+  species,
+  st_unaryUnion(geom)
+from
+  test_spatial_merge1
+;
+
+/* example taken from the internet
+SELECT
+  ST_UnaryUnion(grp)
+FROM (
+  SELECT
+    unnest(ST_ClusterWithin(geom, 0.0001)) AS grp
+  FROM tmpTable
+) sq;
+*/
 
 /* NEXT STEPS
   1. Simplify (remove) case statement
