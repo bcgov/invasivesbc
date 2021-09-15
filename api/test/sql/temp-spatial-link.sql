@@ -92,13 +92,15 @@ drop table if exists test_spatial_merge;
 create table test_spatial_merge as
 select
   species,
-  st_collectionExtract( -- Convert from GeometryCollection to MultiPolygon
-    unnest( -- Convert from an array to GeometryCollection
-      st_clusterWithin( -- Cluster within 50 meters
-        st_transform(geom,3005) -- Convert to Albers to get meters
-      ,50)
-    )
-  ,3) "geom"
+  st_unaryUnion( -- Remove embedded linework
+    st_collectionExtract( -- Convert from GeometryCollection to MultiPolygons
+      unnest( -- Convert from an array to GeometryCollection
+        st_clusterWithin( -- Cluster within 50 meters
+          st_transform(geom,3005) -- Convert to Albers to get meters
+        ,50)
+      )
+    ,3)
+  ) "geom"
 from
   test_spatial_positive_negative
 group by
