@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -11,6 +12,7 @@ import {
 } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/styles';
 import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
+import { useHistory } from 'react-router-dom';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -105,6 +107,7 @@ export const RenderTablePosition = ({ rows }) => {
 export const RenderTableActivity = ({ records }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const history = useHistory();
 
   const labels = ['ID', 'Date Created', 'Activity Type', 'SubType'];
 
@@ -129,7 +132,9 @@ export const RenderTableActivity = ({ records }) => {
               (row) => (
                 <StyledTableRow key={row?.activity_id}>
                   <StyledTableCell component="th" scope="row">
-                    {row.activity_payload.short_id}
+                    <Button size="small" onClick={() => history.push('/home/activities')}>
+                      {row.activity_payload.short_id}
+                    </Button>
                   </StyledTableCell>
                   <StyledTableCell>{row.activity_payload.date_created}</StyledTableCell>
                   <StyledTableCell>{row.activity_payload.activity_type}</StyledTableCell>
