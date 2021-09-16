@@ -32,7 +32,7 @@ const wktConvert = (input: any) => {
   return stringify(input);
 };
 
-// (wasn't being used) const layerName = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
+const layerName = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
 
 const buildURLForDataBC = (layerName: string, geoJSON: Object, pageSize?: number, startIndex?: number) => {
   let baseURL =
@@ -43,11 +43,11 @@ const buildURLForDataBC = (layerName: string, geoJSON: Object, pageSize?: number
   const reprojectedAsWKT = wktConvert(reprojected);
   const customCQL = '&CQL_FILTER=WITHIN(GEOMETRY,' + reprojectedAsWKT + ')';
   const encodedCQL = encodeURI(customCQL);
-  // (code smell) return baseURL + layerName + projection + customCQL;
+  // return baseURL + layerName + projection + customCQL;
   return baseURL + layerName + paging + projection + encodedCQL;
 };
 
-/* Removed for now (code smell)
+/* 
   const getHTTP = async (input: string) => {
     console.log('attempting URL: ' + input)
     let resp = await axios.get(input);
@@ -112,7 +112,6 @@ export const getDataFromDataBC: any = async (
     return [];
   }
   /*
-  (code smell, but may be needed)
   export const onlineConsumer: any = async (layerName, geoJsonFeature) => {
     //this is copied from useInvaisivesApi:
     const pageSize = 500;

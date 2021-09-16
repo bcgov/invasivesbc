@@ -23,13 +23,32 @@ import * as turf from '@turf/turf';
 import { Feature, Geometry } from 'geojson';
 import { Layer } from 'leaflet';
 
-const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }, props) => {
+export const generateGeo = (lat, lng, { setGeoPoint }) => {
+  if (lat && lng) {
+    setGeoPoint({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Point',
+            coordinates: [lng, lat]
+          }
+        }
+      ]
+    });
+  }
+};
+
+export const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }) => {
   const popupElRef = useRef(null);
   const dataAccess = useDataAccess();
   const [section, setSection] = useState('position');
   const [activityRecords, setActivity] = useState(null);
 
   const updateActivityRecords = useCallback(async () => {
+    //check console.dir('fetching buffered', bufferedGeo);
     const activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
     //(data check) console.dir(activities);
     setActivity(activities.rows);
@@ -41,9 +60,12 @@ const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }, props) => {
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
-    updateActivityRecords();
     setSection(newSection);
   };
+
+  useEffect(() => {
+    updateActivityRecords();
+  }, [bufferedGeo]);
 
   return (
     <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
@@ -65,30 +87,12 @@ const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }, props) => {
 function SetPointOnClick({ map }: any) {
   const [bufferedGeo, setBufferedGeo] = useState(null);
   const [position, setPosition] = useState(map?.getCenter());
-  const [geoPT, setGeoPT] = useState(null);
+  const [geoPoint, setGeoPoint] = useState(null);
   const [utm, setUTM] = useState(null);
   const [rows, setRows] = useState(null);
   const [databc, setDataBC] = useState(null);
   const themeContext = useContext(ThemeContext);
   const toolClass = toolStyles();
-
-  const generateGeo = () => {
-    if (position) {
-      setGeoPT({
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Point',
-              coordinates: [position?.lng, position?.lat]
-            }
-          }
-        ]
-      });
-    }
-  };
 
   useMapEvent('click', (e) => {
     setPosition(e.latlng);
@@ -101,7 +105,7 @@ function SetPointOnClick({ map }: any) {
     }
     if (isFinite(position?.lng) && isFinite(position?.lat)) {
       setUTM(utm_zone(position?.lng as number, position?.lat as number));
-      generateGeo();
+      generateGeo(position.lat, position.lng, { setGeoPoint });
     }
   }, [position]);
 
@@ -141,7 +145,7 @@ function SetPointOnClick({ map }: any) {
         </Tooltip>
       )}
       {utm && (
-        <GeoJSON data={geoPT} key={Math.random()}>
+        <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup utmRows={rows} map={map} bufferedGeo={bufferedGeo} databc={databc} />
         </GeoJSON>
       )}

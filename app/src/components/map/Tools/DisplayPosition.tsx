@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import { Marker, Popup } from 'react-leaflet';
+import { Marker } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { Button, CircularProgress, IconButton, TableBody, TableContainer, Typography } from '@material-ui/core';
+import { CircularProgress, IconButton } from '@material-ui/core';
 import proj4 from 'proj4';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './Helpers/ToolBtnStyles';
-import { createDataUTM, RenderTablePosition, StyledTableCell, StyledTableRow } from './Helpers/StyledTable';
+import { GeneratePopup, generateGeo } from './InfoAreaDescription';
+import { createDataUTM } from './Helpers/StyledTable';
+import * as turf from '@turf/turf';
+import { getDataFromDataBC } from '../WFSConsumer';
 
 export const utm_zone = (longitude: number, latitude: number) => {
   let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
@@ -27,15 +30,12 @@ export default function DisplayPosition({ map }) {
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
+  const [bufferedGeo, setBufferedGeo] = useState(null);
+  const [geoPoint, setGeoPoint] = useState(null);
+  const [databc, setDataBC] = useState(null);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
   const divRef = useRef(null);
-  const popupElRef = useRef(null);
-
-  const hideElement = () => {
-    if (!popupElRef?.current || !map) return;
-    map.closePopup();
-  };
 
   const getLocation = async () => {
     setInitialTime(5);
@@ -50,6 +50,12 @@ export default function DisplayPosition({ map }) {
   });
 
   useEffect(() => {
+    if (utm) {
+      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Northing', utm[2]), createDataUTM('Easting', utm[1])]);
+    }
+  }, [utm]);
+
+  useEffect(() => {
     if (initialTime > 0) {
       setTimeout(() => {
         setInitialTime(initialTime - 1);
@@ -62,29 +68,31 @@ export default function DisplayPosition({ map }) {
 
   useEffect(() => {
     if (newPosition) {
+      var point = turf.point([newPosition.coords.longitude, newPosition.coords.latitude]);
+      setBufferedGeo(turf.buffer(point, 3, { units: 'kilometers' }));
       setUTM(utm_zone(newPosition.coords.longitude, newPosition.coords.latitude));
       map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
+      if (isFinite(newPosition.coords.longitude) && isFinite(newPosition.coords.latitude)) {
+        generateGeo(newPosition.coords.latitude, newPosition.coords.longitude, { setGeoPoint });
+      }
     }
   }, [newPosition]);
 
   useEffect(() => {
-    if (utm) {
-      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Northing', utm[2]), createDataUTM('Easting', utm[1])]);
+    if (bufferedGeo) {
+      getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
+        setDataBC(returnVal);
+      }, []);
     }
-  }, [utm]);
+  }, [bufferedGeo]);
 
   return (
-    <div>
-      {newPosition && newPosition?.coords && newPosition?.coords?.latitude ? (
+    <>
+      {newPosition && bufferedGeo && (
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
-          <Popup ref={popupElRef} closeButton={false}>
-            <TableContainer>
-              <RenderTablePosition rows={rows} />
-            </TableContainer>
-            <Button onClick={hideElement}>Close</Button>
-          </Popup>
+          <GeneratePopup utmRows={rows} map={map} bufferedGeo={bufferedGeo} databc={databc} />
         </Marker>
-      ) : null}
+      )}
       <IconButton
         ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
@@ -93,6 +101,6 @@ export default function DisplayPosition({ map }) {
         onClick={getLocation}>
         {initialTime > 0 ? <CircularProgress size={24} /> : <LocationOnIcon />}
       </IconButton>
-    </div>
+    </>
   );
 }
