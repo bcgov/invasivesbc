@@ -16,20 +16,14 @@ import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
 import { utm_zone } from './DisplayPosition';
 import { toolStyles } from './Helpers/ToolBtnStyles';
 import { ThemeContext } from 'contexts/themeContext';
-import {
-  createDataUTM,
-  RenderTableActivity,
-  RenderTablePosition,
-  StyledTableCell,
-  StyledTableRow
-} from './Helpers/StyledTable';
+import { createDataUTM, RenderTableActivity, RenderTablePosition, RenderTableDataBC } from './Helpers/StyledTable';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { getDataFromDataBC } from '../WFSConsumer';
 import * as turf from '@turf/turf';
 import { Feature, Geometry } from 'geojson';
 import { Layer } from 'leaflet';
 
-const GeneratePopup = ({ utmRows, map, bufferedGeo }, props) => {
+const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }, props) => {
   const popupElRef = useRef(null);
   const dataAccess = useDataAccess();
   const [section, setSection] = useState('position');
@@ -37,20 +31,8 @@ const GeneratePopup = ({ utmRows, map, bufferedGeo }, props) => {
 
   const updateActivityRecords = useCallback(async () => {
     const activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
-    setActivity(activities);
+    setActivity(activities.rows);
   }, []);
-
-  const onEachFeature = props.customOnEachFeature
-    ? props.customOnEachFeature
-    : (feature: Feature<Geometry, any>, layer: Layer) => {
-        const popupContent = `
-          <div>
-              <p>${feature.id}</p>                  
-              <p>${JSON.stringify(feature)}</p>                  
-          </div>
-        `;
-        layer.bindPopup(popupContent);
-      };
 
   const hideElement = () => {
     if (!popupElRef?.current || !map) return;
@@ -67,7 +49,7 @@ const GeneratePopup = ({ utmRows, map, bufferedGeo }, props) => {
       <TableContainer>
         {section == 'position' && <RenderTablePosition rows={utmRows} />}
         {section == 'activity' && activityRecords && <RenderTableActivity records={activityRecords} />}
-        {section == 'databc' && <Typography>No data currently</Typography>}
+        {section == 'databc' && <RenderTableDataBC records={databc} />}
       </TableContainer>
       <BottomNavigation value={section} onChange={handleChange}>
         <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
@@ -88,6 +70,10 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
   const [databc, setDataBC] = useState(null);
   const themeContext = useContext(ThemeContext);
   const toolClass = toolStyles();
+
+  useEffect(() => {
+    console.dir(databc);
+  }, [databc]);
 
   const generateGeo = () => {
     if (position) {
@@ -162,7 +148,7 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
       )}
       {utm && (
         <GeoJSON data={geoPT} key={Math.random()}>
-          {bufferedGeo && <GeneratePopup utmRows={rows} map={map} bufferedGeo={bufferedGeo} />}
+          {bufferedGeo && <GeneratePopup utmRows={rows} map={map} bufferedGeo={bufferedGeo} databc={databc} />}
         </GeoJSON>
       )}
     </>
