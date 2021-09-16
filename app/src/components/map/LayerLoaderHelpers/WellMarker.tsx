@@ -47,6 +47,7 @@ export const WellMarker = ({ feature }) => {
   const featureClosestOrStandard = feature.closest ? wellIconClosest : wellIconSandard;
   return (
     <Marker
+      key={Math.random()} //NOSONAR
       position={[feature.geometry.coordinates[1], feature.geometry.coordinates[0]]}
       icon={feature.inside ? wellIconInside : featureClosestOrStandard}>
       <Popup>

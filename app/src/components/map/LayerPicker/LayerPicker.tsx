@@ -246,12 +246,6 @@ export function LayerPicker(props: any, { position }) {
     setLayersSelected(layers);
   }, [layers]);
 
-  const toggleParentCheckbox = (parent) => {
-    updateParent(parent.id, {
-      enabled: !getParent(objectState, parent.id).enabled
-    });
-  };
-
   const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
       updateParent(parent.id, { expanded: expanded });
@@ -261,10 +255,6 @@ export function LayerPicker(props: any, { position }) {
         <Grid container spacing={1}>
           <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
             <Grid container xs={12} justifyContent="space-between" alignItems="center">
-              <Grid item xs>
-                <Checkbox checked={parent.enabled} name={parent.id} onChange={() => toggleParentCheckbox(parent)} />
-              </Grid>
-              {/* Info Dialog */}
               <Grid item xs={1}>
                 <Tooltip
                   disableFocusListener

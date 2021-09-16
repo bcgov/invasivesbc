@@ -11,10 +11,12 @@ import { WellMarker } from './WellMarker';
 import { q } from '../MapContainer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
+import { getDataFromDataBC } from '../WFSConsumer';
 
-interface IRenderKeyFeaturesNearFeature {
+interface IRenderWFSFeatures {
   inputGeo: Feature;
   dataBCLayerName;
+  online: boolean;
   proximityInMeters: number;
   featureType?: string;
   memoHash?: string;
@@ -22,12 +24,11 @@ interface IRenderKeyFeaturesNearFeature {
   setWellIdandProximity?: (wellIdandProximity: any) => void;
 }
 
-export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeature) => {
+export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const [wellsWithClosest, setWellsWithClosest] = useState(null);
   const [wellIdandProximity, setWellIdandProximity] = useState(null);
   const [geosToRender, setGeosToRender] = useState(null);
   const databaseContext = useContext(DatabaseContext2);
-  const [keyval, setKeyval] = useState(0);
 
   //when there is new wellId and proximity, send info to ActivityPage
   useEffect(() => {
@@ -71,104 +72,133 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
 
   //this is called on map load and each time the map is moved
   const startFetchingLayers = () => {
-    const newArray = [];
+    const newLayerArray = [];
     layersSelected.forEach((layer: any) => {
-      newArray.push(layer.BCGWcode);
+      newLayerArray.push(layer.BCGWcode);
     });
 
-    qRemove(lastRequestPushed, newArray);
+    //calling function to remove no longer needed elements from the queue
+    qRemove(lastRequestPushed, newLayerArray);
 
-    if (newArray.length > 0) {
-      newArray.forEach((layer) => {
+    //if there are layers selected
+    if (newLayerArray.length > 0) {
+      //for each layer, push it and the map extent to the queue
+      //also set last request pushed use state var to use it in qRemove function
+      newLayerArray.forEach((layer) => {
         q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer }, getLayerData);
-
         setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
       });
     }
+    //this just rerenders the map
     map.invalidateSize();
   };
 
   //gets layer data based on the layer name
   const getLayerData = async () => {
+    //get the map extent as geoJson polygon feature
     const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
+    //if well layer is selected
     if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
-      const largeGridRes = await query(
-        {
-          type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('well');`
-        },
-        databaseContext
-      );
-
-      let largeGridItemIdString = '(';
-      let largeGridResIndex = 0;
-      largeGridRes.forEach((gridItem) => {
-        if (largeGridResIndex === largeGridRes.length - 1) {
-          largeGridItemIdString += gridItem.id + ')';
-        } else {
-          largeGridItemIdString += gridItem.id + ',';
-        }
-        largeGridResIndex++;
-      });
-
-      const smallGridRes = await query(
-        {
-          type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('well') AND largeGridID IN ${largeGridItemIdString};`
-        },
-        databaseContext
-      );
-
-      let allFeatures = [];
-
-      smallGridRes.forEach((row) => {
-        const featureArea = JSON.parse(row.featureArea).geometry;
-        const featuresInArea = JSON.parse(row.featuresInArea);
-
-        if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
-          allFeatures = allFeatures.concat(featuresInArea);
-        }
-      });
-      if (props.inputGeo) {
-        setWellsWithClosest(getClosestWellToPolygon(allFeatures));
-      } else {
-        setWellsWithClosest(allFeatures);
+      //if online, just get data from WFSonline consumer
+      if (props.online) {
+        getDataFromDataBC(props.dataBCLayerName, mapExtent).then((returnVal) => {
+          props.inputGeo ? setWellsWithClosest(getClosestWellToPolygon(returnVal)) : setWellsWithClosest(returnVal);
+        }, []);
       }
-      setKeyval(Math.random()); //NOSONAR
+      //if offline: try to get layer data from sqlite local storage
+      else {
+        //first, selecting large grid items with well layer name
+        const largeGridRes = await query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW');`
+          },
+          databaseContext
+        );
+
+        //create a string containing all large grid item ids that we got
+        let largeGridItemIdString = '(';
+        let largeGridResIndex = 0;
+        largeGridRes.forEach((gridItem) => {
+          if (largeGridResIndex === largeGridRes.length - 1) {
+            largeGridItemIdString += gridItem.id + ')';
+          } else {
+            largeGridItemIdString += gridItem.id + ',';
+          }
+          largeGridResIndex++;
+        });
+
+        //select small grid items with well layer name and large grid items id
+        const smallGridRes = await query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') AND largeGridID IN ${largeGridItemIdString};`
+          },
+          databaseContext
+        );
+
+        //foreach small grid item that we got, if grid item intersects with map extent,
+        //add it to the array of grid items
+        let allFeatures = [];
+        smallGridRes.forEach((row) => {
+          const featureArea = JSON.parse(row.featureArea).geometry;
+          const featuresInArea = JSON.parse(row.featuresInArea);
+          if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
+            allFeatures = allFeatures.concat(featuresInArea);
+          }
+        });
+        //set useState var to display wells
+        props.inputGeo ? setWellsWithClosest(getClosestWellToPolygon(allFeatures)) : setWellsWithClosest(allFeatures);
+      }
     } else {
-      const largeGridRes = await query(
-        {
-          type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('well');`
-        },
-        databaseContext
-      );
+      //if online, just get data from WFSonline consumer
+      if (props.online) {
+        getDataFromDataBC(props.dataBCLayerName, mapExtent).then((returnVal) => {
+          setGeosToRender(returnVal);
+        }, []);
+      }
+      //if offline: try to get layer data from sqlite local storage
+      else {
+        //getting all the layers except for wells
+        const largeGridRes = await query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName NOT IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW');`
+          },
+          databaseContext
+        );
 
-      let largeGridItemIdString = '(';
-      let largeGridResIndex = 0;
-      largeGridRes.forEach((gridItem) => {
-        if (largeGridResIndex === largeGridRes.length - 1) {
-          largeGridItemIdString += gridItem.id + ')';
-        } else {
-          largeGridItemIdString += gridItem.id + ',';
-        }
-        largeGridResIndex++;
-      });
+        //create a string containing all large grid item ids that we got
+        let largeGridItemIdString = '(';
+        let largeGridResIndex = 0;
+        largeGridRes.forEach((gridItem) => {
+          if (largeGridResIndex === largeGridRes.length - 1) {
+            largeGridItemIdString += gridItem.id + ')';
+          } else {
+            largeGridItemIdString += gridItem.id + ',';
+          }
+          largeGridResIndex++;
+        });
 
-      const smallGridRes = await query(
-        {
-          type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('well') AND largeGridID IN ${largeGridItemIdString};`
-        },
-        databaseContext
-      );
-      let allFeatures = [];
-      smallGridRes.forEach((row) => {
-        const featuresInArea = JSON.parse(row.featuresInArea);
-        allFeatures = allFeatures.concat(featuresInArea);
-      });
-      setGeosToRender(allFeatures);
-      setKeyval(Math.random()); //NOSONAR
+        //select small grid items (not well ones) with large grid items id
+        const smallGridRes = await query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName NOT IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') AND largeGridID IN ${largeGridItemIdString};`
+          },
+          databaseContext
+        );
+        let allFeatures = [];
+
+        //foreach small grid item that we got, if grid item intersects with map extent,
+        //add it to the array of grid items
+        smallGridRes.forEach((row) => {
+          const featuresInArea = JSON.parse(row.featuresInArea);
+          allFeatures = allFeatures.concat(featuresInArea);
+        });
+        //set usestate var to render features
+        setGeosToRender(allFeatures);
+      }
     }
   };
 
@@ -227,9 +257,8 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
 
   return (
     <>
-      {geosToRender && keyval && <GeoJSON key={keyval} onEachFeature={onEachFeature} data={geosToRender}></GeoJSON>}
+      {geosToRender && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={geosToRender}></GeoJSON>}
       {wellsWithClosest &&
-        keyval &&
         wellsWithClosest.map((feature) => {
           if (feature.geometry.type === 'Point') {
             return <WellMarker feature={feature} />;
