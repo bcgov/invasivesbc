@@ -31,7 +31,7 @@ const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }, props) => {
 
   const updateActivityRecords = useCallback(async () => {
     const activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
-    console.dir(activities);
+    //(data check) console.dir(activities);
     setActivity(activities.rows);
   }, []);
 
