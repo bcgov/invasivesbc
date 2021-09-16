@@ -13,6 +13,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import geoData from '../../components/map/LayerPicker/GEO_DATA.json';
 import { getDataFromDataBC } from '../../components/map/WFSConsumer';
 import { forEach } from 'jszip';
+const async = require('async');
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -376,21 +377,15 @@ export const TripDataControls: React.FC<any> = (props) => {
       );
     };
 
-    const apiRequestQueue = async (request: any) => {
-      return databaseContext.asyncQueue({
-        asyncTask: () => {
-          return request;
-        }
-      });
-    };
+    let gridItemsArr = [];
 
-    const sqlliteInsertQueue = async (request: any) => {
-      return databaseContext.asyncQueue({
-        asyncTask: () => {
-          return request;
-        }
-      });
-    };
+    const apiRequestsQueue = async.queue(function (task, callback) {
+      callback();
+    }, 1);
+
+    const dbUpsertsQueue = async.queue(function (task, callback) {
+      callback();
+    }, 1);
 
     const fetchLayerData = async () => {
       try {
@@ -433,60 +428,97 @@ export const TripDataControls: React.FC<any> = (props) => {
         //for each layer name, do...
         layerNames.forEach(async (layerName) => {
           //for each large grid item, do...
+
           largeGridResult.forEach(async (row) => {
-            console.log('ran once');
-            console.log(layerName);
             //insert large grid item into sqllite table
-            sqlliteInsertQueue(
-              upsert(
-                [
-                  {
-                    type: UpsertType.RAW_SQL,
-                    sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea) VALUES (${row.id},'${JSON.stringify(
-                      row.geo
-                    )
-                      .split(`'`)
-                      .join(`''`)}')
+            upsert(
+              [
+                {
+                  type: UpsertType.RAW_SQL,
+                  sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea) VALUES (${row.id},'${JSON.stringify(row.geo)
+                    .split(`'`)
+                    .join(`''`)}')
                   ON CONFLICT(id) 
                   DO 
                     UPDATE SET featureArea='${JSON.stringify(row.geo).split(`'`).join(`''`)}';`
-                  }
-                ],
-                databaseContext
-              )
+                }
+              ],
+              databaseContext
             );
           });
 
           //for each small grid item, do...
           smallGridResult.forEach(async (gridResult) => {
             const feature = JSON.parse(gridResult.geo);
+
             const gridId = gridResult.id;
             const bufferedGeo = turf.buffer(feature, 0);
-            const featuresInside = await getDataFromDataBC(layerName, bufferedGeo);
-            await upsert(
-              [
-                {
-                  type: UpsertType.RAW_SQL,
-                  sql: `INSERT INTO SMALL_GRID_LAYER_DATA (id, featureArea, featuresInArea, layerName, largeGridID) VALUES (${gridId},'${JSON.stringify(
-                    bufferedGeo
-                  )
-                    .split(`'`)
-                    .join(`''`)}','${JSON.stringify(featuresInside).split(`'`).join(`''`)}','${layerName}',${
-                    gridResult.large_grid_item_id
-                  })
-                  ON CONFLICT(id, layerName)
-                  DO
-                    UPDATE SET featureArea='${JSON.stringify(bufferedGeo)
-                      .split(`'`)
-                      .join(`''`)}', featuresInArea='${JSON.stringify(featuresInside)
-                    .split(`'`)
-                    .join(`''`)}', largeGridID=${gridResult.large_grid_item_id};`
+            apiRequestsQueue.push(
+              {
+                id: gridId,
+                bufferedGeo: bufferedGeo,
+                featureArea: JSON.stringify(bufferedGeo).split(`'`).join(`''`),
+                layerName: layerName,
+                largeGridId: gridResult.large_grid_item_id
+              },
+              async () => {
+                const featuresInArea = await getDataFromDataBC(layerName, bufferedGeo);
+                gridItemsArr.push({
+                  id: gridId,
+                  bufferedGeo: bufferedGeo,
+                  featureArea: JSON.stringify(bufferedGeo).split(`'`).join(`''`),
+                  layerName: layerName,
+                  featuresInArea: JSON.stringify(featuresInArea).split(`'`).join(`''`),
+                  largeGridID: gridResult.large_grid_item_id
+                });
+
+                if (gridItemsArr.length > 49) {
+                  dbUpsertsQueue.push({ gridItemsArray: gridItemsArr }, () => {
+                    let insertValuesString = '';
+                    let gridItemsIndex = 0;
+
+                    gridItemsArr.forEach((gridItem) => {
+                      if (gridItemsIndex < gridItemsArr.length - 1) {
+                        insertValuesString += `(
+                          ${gridItem.id},
+                          '${gridItem.featureArea}',
+                          '${gridItem.featuresInArea}',
+                          '${gridItem.layerName}',
+                          ${gridItem.largeGridID}),`;
+                      } else {
+                        insertValuesString += `(
+                          ${gridItem.id},
+                          '${gridItem.featureArea}',
+                          '${gridItem.featuresInArea}',
+                          '${gridItem.layerName}',
+                          ${gridItem.largeGridID}) `;
+                      }
+                      gridItemsIndex++;
+                    });
+                    upsert(
+                      [
+                        {
+                          type: UpsertType.RAW_SQL,
+                          sql: `INSERT INTO SMALL_GRID_LAYER_DATA (id, featureArea, featuresInArea, layerName, largeGridID) VALUES ${insertValuesString}
+                          ON CONFLICT(id, layerName) DO
+                          UPDATE SET
+                            featureArea=excluded.featureArea,
+                            featuresInArea=excluded.featuresInArea,
+                            largeGridID=excluded.largeGridID;`
+                        }
+                      ],
+                      databaseContext
+                    );
+                    gridItemsArr = [];
+                  });
                 }
-              ],
-              databaseContext
+              }
             );
+
+            // const featuresInside = await getDataFromDataBC(layerName, bufferedGeo);
           });
         });
+        console.log('finished fetching layer data.');
       } catch (e) {
         console.log('There was an error fetching layer data from the map. Skipping to the next step...');
         console.log(e);

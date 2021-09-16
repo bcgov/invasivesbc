@@ -92,7 +92,6 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
   const getLayerData = async () => {
     const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
     if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
-      console.log('next crashes 4?');
       const largeGridRes = await query(
         {
           type: QueryType.RAW_SQL,
@@ -103,6 +102,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
 
       let largeGridItemIdString = '(';
       let largeGridResIndex = 0;
+
       largeGridRes.forEach((gridItem) => {
         if (largeGridResIndex === largeGridRes.length - 1) {
           largeGridItemIdString += gridItem.id + ')';
@@ -111,10 +111,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
         }
         largeGridResIndex++;
       });
-      console.log('next crashes 3?');
-      console.log(
-        `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') AND largeGridID IN ${largeGridItemIdString};`
-      );
+
       const smallGridRes = await query(
         {
           type: QueryType.RAW_SQL,
@@ -128,18 +125,12 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
       smallGridRes.forEach((row) => {
         const featureArea = JSON.parse(row.featureArea).geometry;
         const featuresInArea = JSON.parse(row.featuresInArea);
-
         if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
           allFeatures = allFeatures.concat(featuresInArea);
         }
       });
-      if (props.inputGeo) {
-        setWellsWithClosest(getClosestWellToPolygon(allFeatures));
-      } else {
-        setWellsWithClosest(allFeatures);
-      }
+      props.inputGeo ? setWellsWithClosest(getClosestWellToPolygon(allFeatures)) : setWellsWithClosest(allFeatures);
     } else {
-      console.log('next crashes?');
       const largeGridRes = await query(
         {
           type: QueryType.RAW_SQL,
@@ -231,10 +222,7 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     <>
       {geosToRender && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={geosToRender}></GeoJSON>}
       {wellsWithClosest &&
-        keyval &&
         wellsWithClosest.map((feature) => {
-          console.log('there are wells:');
-
           if (feature.geometry.type === 'Point') {
             return <WellMarker feature={feature} />;
           } else {

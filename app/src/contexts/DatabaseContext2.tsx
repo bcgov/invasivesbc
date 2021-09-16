@@ -122,18 +122,17 @@ export const DatabaseContext2Provider = (props) => {
               id INTEGER,
               featureArea TEXT,
               featuresInArea TEXT,
-              largeGridID INTEGER
-            );`;
+              largeGridID INTEGER,
+              layerName TEXT
+            );create unique index IF NOT EXISTS idx_smallGrid_id_layerName on SMALL_GRID_LAYER_DATA (id, layerName);\n`;
           break;
         case 'LARGE_GRID_LAYER_DATA':
           setupSQL += `create table if not exists  
             ${DocType[value]} 
              (
-              id INTEGER,
-              featureArea TEXT,
-              layerName TEXT
-            );
-            create unique index IF NOT EXISTS idx_largeGrid_id_layerName on LARGE_GRID_LAYER_DATA (id, layerName);\n`;
+              id INTEGER UNIQUE,
+              featureArea TEXT
+            );`;
           break;
         case 'TRIP':
           setupSQL += `create table if not exists 
