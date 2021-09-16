@@ -111,6 +111,12 @@ group by
   species
 ;
 
+drop index if exists test_spatial_merge_geom_gist;
+create index test_spatial_merge_geom_gist on test_spatial_merge using gist ("geom");
+
+alter table test_spatial_merge add column gid serial;
+alter table test_spatial_merge add primary key (gid);
+
 
 
 
