@@ -95,7 +95,7 @@ drop table if exists test_spatial_merge;
 create table test_spatial_merge as
 select
   species,
-  array_agg(activity_incoming_data_id), -- Collect original IDs 
+  array_agg(activity_incoming_data_id) "activity_ids", -- Collect original IDs 
   st_unaryUnion( -- Remove embedded linework
     st_collectionExtract( -- Convert from GeometryCollection to MultiPolygons
       unnest( -- Convert from an array to GeometryCollection
