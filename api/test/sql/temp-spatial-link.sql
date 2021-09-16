@@ -79,14 +79,14 @@ from
   on
     st_intersects(pos.geom,neg.geom) and
     pos.species = neg.species and
-    pos.created_timestamp > neg.created_timestamp -- Only delete new negatives
+    pos.created_timestamp < neg.created_timestamp -- Only delete new negatives
 ;
 
-drop index if exists test_spatial_explode_positive_negative_geom_gist;
-create index test_spatial_explode_positive_negative_geom_gist on test_spatial_expload_positive_negative using gist ("geom");
+drop index if exists test_spatial_positive_negative_geom_gist;
+create index test_spatial_positive_negative_geom_gist on test_spatial_positive_negative using gist ("geom");
 
-alter table test_spatial_expload_positive_negative add column gid serial;
-alter table test_spatial_expload_positive_negative add primary key (gid);
+alter table test_spatial_positive_negative add column gid serial;
+alter table test_spatial_positive_negative add primary key (gid);
 
 
 
@@ -95,7 +95,7 @@ drop table if exists test_spatial_merge;
 create table test_spatial_merge as
 select
   species,
-  array_agg(activity_incoming_data_id), -- TODO: Untested aggregate function
+  array_agg(activity_incoming_data_id), -- Collect original IDs 
   st_unaryUnion( -- Remove embedded linework
     st_collectionExtract( -- Convert from GeometryCollection to MultiPolygons
       unnest( -- Convert from an array to GeometryCollection
