@@ -42,51 +42,16 @@ export const TripDataControls: React.FC<any> = (props) => {
   const [totalRecordsToFetch, setTotalRecordsToFetch] = useState(0);
   const [totalRecordsFetched, setTotalRecordsFetched] = useState(0);
 
-  const getLayerNamesFromJSON = (geoData: any) => {
+  //helper function to get all layer names from geo_data.json file
+  const getLayerNamesFromJSON = (geoDataJSON: any) => {
     const layerNamesArr = [];
-
-    geoData.forEach((pLayer) => {
+    geoDataJSON.forEach((pLayer) => {
       pLayer.children.forEach((cLayer) => {
         layerNamesArr.push(cLayer.BCGWcode);
       });
     });
-
     return layerNamesArr;
   };
-
-  const [layerNames, setLayerNames] = useState(getLayerNamesFromJSON(geoData));
-  // const bulkUpsert = async (upserts) => {
-  //   let allDocsFetch = await databaseContext.database.allDocs({ include_docs: true });
-  //   let allDocs = allDocsFetch?.rows ? allDocsFetch.rows : [];
-
-  //   const newUpserts = { ...upserts };
-
-  //   // go through all docs, flagging those already existing:
-  //   const modifiedDocs = allDocs
-  //     .filter((doc) => {
-  //       const id = doc.doc?._id;
-  //       newUpserts[id] = undefined; // remove found docs*/ // does this not block updates?
-  //       return upserts[id];
-  //     })
-  //     .map((doc) => {
-  //       return upserts[doc.id](doc.doc);
-  //     });
-
-  //   const newDocs = Object.keys(newUpserts)
-  //     .filter((id) => newUpserts[id] !== undefined)
-  //     .map((id) => upserts[id]());
-
-  //   const resultDocs = [...modifiedDocs, ...newDocs];
-  //   resultDocs.sort((a, b) => {
-  //     if (a.id < b.id) return -1;
-  //     if (a.id > b.id) return 1;
-  //     return 0;
-  //   });
-
-  //   await databaseContext.database.bulkDocs(resultDocs);
-
-  //   return Object.keys(upserts).length;
-  // };
 
   const getPhotos = async (row) => {
     const photos = [];
