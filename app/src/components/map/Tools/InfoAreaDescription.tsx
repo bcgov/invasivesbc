@@ -31,6 +31,7 @@ const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }, props) => {
 
   const updateActivityRecords = useCallback(async () => {
     const activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
+    console.dir(activities);
     setActivity(activities.rows);
   }, []);
 
@@ -61,7 +62,7 @@ const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }, props) => {
   );
 };
 
-function SetViewOnClick({ map }: any, { animateRef }: any) {
+function SetPointOnClick({ map }: any) {
   const [bufferedGeo, setBufferedGeo] = useState(null);
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPT, setGeoPT] = useState(null);
@@ -70,10 +71,6 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
   const [databc, setDataBC] = useState(null);
   const themeContext = useContext(ThemeContext);
   const toolClass = toolStyles();
-
-  useEffect(() => {
-    console.dir(databc);
-  }, [databc]);
 
   const generateGeo = () => {
     if (position) {
@@ -102,9 +99,6 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
       var point = turf.point([position.lng, position.lat]);
       setBufferedGeo(turf.buffer(point, 3, { units: 'kilometers' }));
     }
-  }, [position]);
-
-  useEffect(() => {
     if (isFinite(position?.lng) && isFinite(position?.lat)) {
       setUTM(utm_zone(position?.lng as number, position?.lat as number));
       generateGeo();
@@ -148,11 +142,11 @@ function SetViewOnClick({ map }: any, { animateRef }: any) {
       )}
       {utm && (
         <GeoJSON data={geoPT} key={Math.random()}>
-          {bufferedGeo && <GeneratePopup utmRows={rows} map={map} bufferedGeo={bufferedGeo} databc={databc} />}
+          <GeneratePopup utmRows={rows} map={map} bufferedGeo={bufferedGeo} databc={databc} />
         </GeoJSON>
       )}
     </>
   );
 }
 
-export { SetViewOnClick };
+export { SetPointOnClick };

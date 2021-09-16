@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Table,
   TableBody,
@@ -11,6 +11,48 @@ import {
 } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/styles';
 import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
+
+const CreateTableHead = ({ labels }) => {
+  return (
+    <TableHead>
+      <StyledTableRow>
+        {labels.map((label) => (
+          <StyledTableCell>{label}</StyledTableCell>
+        ))}
+      </StyledTableRow>
+    </TableHead>
+  );
+};
+
+const CreateEmptyRows = ({ emptyRows }) => {
+  return (
+    <StyledTableRow style={{ height: 34 * emptyRows }}>
+      <StyledTableCell colSpan={6} />
+    </StyledTableRow>
+  );
+};
+
+const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handleChangeRowsPerPage }) => {
+  return (
+    <TableFooter>
+      <TableRow>
+        <TablePagination
+          count={records?.length}
+          rowsPerPageOptions={[5]}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          SelectProps={{
+            inputProps: { 'aria-label': 'rows per page' },
+            native: true
+          }}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          ActionsComponent={TablePaginationActions}
+        />
+      </TableRow>
+    </TableFooter>
+  );
+};
 
 export const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
@@ -64,6 +106,8 @@ export const RenderTableActivity = ({ records }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const labels = ['ID', 'Date Created', 'Activity Type', 'SubType'];
+
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, records?.length - page * rowsPerPage);
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -77,14 +121,7 @@ export const RenderTableActivity = ({ records }) => {
 
   return (
     <Table size="small">
-      <TableHead>
-        <StyledTableRow>
-          <StyledTableCell>ID</StyledTableCell>
-          <StyledTableCell>Date Created</StyledTableCell>
-          <StyledTableCell>Activity Type</StyledTableCell>
-          <StyledTableCell>Subtype</StyledTableCell>
-        </StyledTableRow>
-      </TableHead>
+      <CreateTableHead labels={labels} />
       <TableBody>
         {records && (
           <>
@@ -102,28 +139,14 @@ export const RenderTableActivity = ({ records }) => {
             )}
           </>
         )}
-        {emptyRows > 0 && (
-          <StyledTableRow style={{ height: 34 * emptyRows }}>
-            <StyledTableCell colSpan={6} />
-          </StyledTableRow>
-        )}
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              count={records?.length}
-              rowsPerPageOptions={[5]}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: { 'aria-label': 'rows per page' },
-                native: true
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
+        {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
+        <CreateTableFooter
+          records={records}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
       </TableBody>
     </Table>
   );
@@ -134,6 +157,8 @@ export const RenderTableDataBC = ({ records }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, records?.length - page * rowsPerPage);
+
+  const labels = ['AQUIFER ID', 'Coordinates', 'Street Address'];
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
@@ -146,13 +171,7 @@ export const RenderTableDataBC = ({ records }) => {
 
   return (
     <Table size="small">
-      <TableHead>
-        <StyledTableRow>
-          <StyledTableCell>ID</StyledTableCell>
-          <StyledTableCell>Coordinates</StyledTableCell>
-          <StyledTableCell>Street</StyledTableCell>
-        </StyledTableRow>
-      </TableHead>
+      <CreateTableHead labels={labels} />
       <TableBody>
         {records && (
           <>
@@ -171,28 +190,14 @@ export const RenderTableDataBC = ({ records }) => {
             )}
           </>
         )}
-        {emptyRows > 0 && (
-          <StyledTableRow style={{ height: 34 * emptyRows }}>
-            <StyledTableCell colSpan={6} />
-          </StyledTableRow>
-        )}
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              count={records?.length}
-              rowsPerPageOptions={[5]}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: { 'aria-label': 'rows per page' },
-                native: true
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
+        {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
+        <CreateTableFooter
+          records={records}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
       </TableBody>
     </Table>
   );

@@ -23,7 +23,7 @@ import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
 import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
-import { SetViewOnClick } from './Tools/InfoAreaDescription';
+import { SetPointOnClick } from './Tools/InfoAreaDescription';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -117,7 +117,6 @@ export interface IMapContainerProps {
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [map, setMap] = useState<any>(null);
-  const animateRef = useRef(true);
   const toolClass = toolStyles();
 
   const Offline = () => {
@@ -189,7 +188,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <MapRequestContextProvider>
         <div className={toolClass.toolBtnsLoc}>
-          <SetViewOnClick map={map} animateRef={animateRef} />
+          <SetPointOnClick map={map} />
           <DisplayPosition map={map} />
           <MeasureTool />
           {props.showDrawControls && (
