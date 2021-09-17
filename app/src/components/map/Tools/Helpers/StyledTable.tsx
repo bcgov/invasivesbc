@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Button,
+  Collapse,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -8,11 +10,14 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Theme
+  Theme,
+  Typography
 } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/styles';
 import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
 import { useHistory } from 'react-router-dom';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -78,16 +83,6 @@ export const createDataUTM = (name: string, value: any) => {
   return { name, value };
 };
 
-export const createDataActivity = (
-  activity_id: string,
-  shortID: string,
-  date_created: string,
-  activity_type: string,
-  subtype: string
-) => {
-  return { activity_id, shortID, date_created, activity_type, subtype };
-};
-
 export const RenderTablePosition = ({ rows }) => {
   return (
     <TableBody>
@@ -105,13 +100,32 @@ export const RenderTablePosition = ({ rows }) => {
 };
 
 export const RenderTableActivity = ({ records }) => {
-  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [emptyRows, setEmptyRows] = useState(0);
+  const [rows, setRows] = useState(records);
+  const [page, setPage] = useState(0);
+
   const history = useHistory();
 
   const labels = ['ID', 'Date Created', 'Activity Type', 'SubType'];
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, records?.length - page * rowsPerPage);
+  const updateRow = (row, fieldsToUpdate: Object) => {
+    var arrLen = rows.length;
+    if (arrLen > 0) {
+      var index;
+      for (let i in rows) {
+        if (rows[i].tempObj.activity_id === row.tempObj.activity_id) {
+          index = i;
+        }
+      }
+      const rowsBefore = [...rows.slice(0, index)];
+      const rowsAfter = [...rows.slice(index)];
+      const oldRow = rows[index];
+      const updatedRow = { ...oldRow, ...fieldsToUpdate };
+      rowsAfter[0] = updatedRow;
+      setRows([...rowsBefore, ...rowsAfter]);
+    }
+  };
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
@@ -122,31 +136,41 @@ export const RenderTableActivity = ({ records }) => {
     setPage(0);
   };
 
+  useEffect(() => {
+    if (rows) {
+      setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
+    }
+  }, [rows]);
+
   return (
     <Table size="small">
       <CreateTableHead labels={labels} />
       <TableBody>
-        {records && (
+        {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
           <>
-            {(rowsPerPage > 0 ? records?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : records).map(
-              (row) => (
-                <StyledTableRow key={row?.activity_id}>
-                  <StyledTableCell component="th" scope="row">
-                    <Button size="small" onClick={() => history.push('/home/activities')}>
-                      {row.activity_payload.short_id}
-                    </Button>
-                  </StyledTableCell>
-                  <StyledTableCell>{row.activity_payload.date_created}</StyledTableCell>
-                  <StyledTableCell>{row.activity_payload.activity_type}</StyledTableCell>
-                  <StyledTableCell>{row.activity_payload.activity_subtype}</StyledTableCell>
-                </StyledTableRow>
-              )
-            )}
+            <StyledTableRow key={row?.tempObj.activity_id}>
+              <StyledTableCell component="th" scope="row">
+                <IconButton size="small" onClick={() => updateRow(row, { open: !row.open })}>
+                  {row?.open ? <KeyboardArrowDown /> : <KeyboardArrowRight />}
+                </IconButton>
+                <Button size="small" onClick={() => history.push('/home/activities')}>
+                  {row?.tempObj.activity_payload.short_id}
+                </Button>
+              </StyledTableCell>
+              <StyledTableCell>{row?.tempObj.activity_payload.date_created}</StyledTableCell>
+              <StyledTableCell>{row?.tempObj.activity_payload.activity_type}</StyledTableCell>
+              <StyledTableCell>{row?.tempObj.activity_payload.activity_subtype}</StyledTableCell>
+            </StyledTableRow>
+            <TableRow>
+              <Collapse in={row?.open} timeout="auto" unmountOnExit>
+                <Typography>Yo</Typography>
+              </Collapse>
+            </TableRow>
           </>
-        )}
+        ))}
         {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
         <CreateTableFooter
-          records={records}
+          records={rows}
           rowsPerPage={rowsPerPage}
           page={page}
           handleChangePage={handleChangePage}
@@ -158,8 +182,8 @@ export const RenderTableActivity = ({ records }) => {
 };
 
 export const RenderTableDataBC = ({ records }) => {
-  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, records?.length - page * rowsPerPage);
 
@@ -182,15 +206,17 @@ export const RenderTableDataBC = ({ records }) => {
           <>
             {(rowsPerPage > 0 ? records?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : records).map(
               (row) => (
-                <StyledTableRow key={row?.properties.WELL_TAG_NUMBER}>
-                  <StyledTableCell component="th" scope="row">
-                    {row.properties.AQUIFER_ID}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    {row.geometry.coordinates[0].toFixed(2)},{row.geometry.coordinates[1].toFixed(2)}
-                  </StyledTableCell>
-                  <StyledTableCell>{row.properties.STREET_ADDRESS}</StyledTableCell>
-                </StyledTableRow>
+                <>
+                  <StyledTableRow key={row?.properties.WELL_TAG_NUMBER}>
+                    <StyledTableCell component="th" scope="row">
+                      {row.properties.AQUIFER_ID}
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      {row.geometry.coordinates[0].toFixed(2)},{row.geometry.coordinates[1].toFixed(2)}
+                    </StyledTableCell>
+                    <StyledTableCell>{row.properties.STREET_ADDRESS}</StyledTableCell>
+                  </StyledTableRow>
+                </>
               )
             )}
           </>

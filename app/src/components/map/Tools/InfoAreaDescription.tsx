@@ -42,10 +42,11 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 };
 
 export const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }) => {
-  const popupElRef = useRef(null);
-  const dataAccess = useDataAccess();
-  const [section, setSection] = useState('position');
   const [activityRecords, setActivity] = useState(null);
+  const [section, setSection] = useState('position');
+  const [rows, setRows] = useState([]);
+  const dataAccess = useDataAccess();
+  const popupElRef = useRef(null);
 
   const updateActivityRecords = useCallback(async () => {
     //check console.dir('fetching buffered', bufferedGeo);
@@ -67,11 +68,27 @@ export const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }) => {
     updateActivityRecords();
   }, [bufferedGeo]);
 
+  useEffect(() => {
+    if (activityRecords) {
+      var len = activityRecords.length;
+      var tempArr = [];
+      tempArr.length = len;
+      for (let i in activityRecords) {
+        var tempObj = activityRecords[i];
+        tempArr[parseInt(i)] = {
+          tempObj,
+          open: false
+        };
+        setRows(tempArr);
+      }
+    }
+  }, [activityRecords]);
+
   return (
     <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
       <TableContainer>
         {section == 'position' && <RenderTablePosition rows={utmRows} />}
-        {section == 'activity' && activityRecords && <RenderTableActivity records={activityRecords} />}
+        {section == 'activity' && rows && <RenderTableActivity records={rows} />}
         {section == 'databc' && <RenderTableDataBC records={databc} />}
       </TableContainer>
       <BottomNavigation value={section} onChange={handleChange}>
