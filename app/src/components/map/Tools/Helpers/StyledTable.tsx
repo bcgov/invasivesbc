@@ -18,6 +18,7 @@ import TablePaginationActions from '@material-ui/core/TablePagination/TablePagin
 import { useHistory } from 'react-router-dom';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
+import { JsonToTable } from 'react-json-to-table';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -58,6 +59,16 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
         />
       </TableRow>
     </TableFooter>
+  );
+};
+
+const CreateAccordionTable = ({ row }) => {
+  const obj = row?.tempObj.activity_payload;
+  return (
+    <p>
+      some data
+      {/*<JsonToTable json={obj.form_data} />*/}
+    </p>
   );
 };
 
@@ -142,6 +153,10 @@ export const RenderTableActivity = ({ records }) => {
     }
   }, [rows]);
 
+  useEffect(() => {
+    console.dir(rows);
+  }, [rows]);
+
   return (
     <Table size="small">
       <CreateTableHead labels={labels} />
@@ -167,7 +182,7 @@ export const RenderTableActivity = ({ records }) => {
             </StyledTableRow>
             <TableRow>
               <Collapse in={row?.open} timeout="auto" unmountOnExit>
-                <Typography>Yo</Typography>
+                <CreateAccordionTable row={row} />
               </Collapse>
             </TableRow>
           </>
