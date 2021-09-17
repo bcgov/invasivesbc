@@ -63,7 +63,7 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
 };
 
 const CreateAccordionTable = ({ row }) => {
-  const obj = row?.tempObj.activity_payload;
+  // json to use const obj = row?.tempObj.activity_payload;
   return (
     <p>
       some data
@@ -152,10 +152,10 @@ export const RenderTableActivity = ({ records }) => {
       setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
     }
   }, [rows]);
-
-  useEffect(() => {
+  /* check for data
+  // useEffect(() => {
     console.dir(rows);
-  }, [rows]);
+  }, [rows]);*/
 
   return (
     <Table size="small">
