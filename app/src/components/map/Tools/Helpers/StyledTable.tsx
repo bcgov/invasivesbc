@@ -107,7 +107,7 @@ export const RenderTableActivity = ({ records }) => {
 
   const history = useHistory();
 
-  const labels = ['ID', 'Date Created', 'Activity Type', 'SubType'];
+  const labels = ['ID', 'Activity Type', 'SubType'];
 
   const updateRow = (row, fieldsToUpdate: Object) => {
     var arrLen = rows.length;
@@ -149,7 +149,10 @@ export const RenderTableActivity = ({ records }) => {
         {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
           <>
             <StyledTableRow key={row?.tempObj.activity_id}>
-              <StyledTableCell component="th" scope="row">
+              <StyledTableCell
+                style={{ display: 'flex', flexflow: 'row nowrap', marginRight: -20 }}
+                component="th"
+                scope="row">
                 <IconButton size="small" onClick={() => updateRow(row, { open: !row.open })}>
                   {row?.open ? <KeyboardArrowDown /> : <KeyboardArrowRight />}
                 </IconButton>
@@ -157,9 +160,10 @@ export const RenderTableActivity = ({ records }) => {
                   {row?.tempObj.activity_payload.short_id}
                 </Button>
               </StyledTableCell>
-              <StyledTableCell>{row?.tempObj.activity_payload.date_created}</StyledTableCell>
-              <StyledTableCell>{row?.tempObj.activity_payload.activity_type}</StyledTableCell>
-              <StyledTableCell>{row?.tempObj.activity_payload.activity_subtype}</StyledTableCell>
+              <StyledTableCell style={{ marginRight: -40 }}>
+                {row?.tempObj.activity_payload.activity_type}
+              </StyledTableCell>
+              <StyledTableCell>{row?.tempObj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>
             </StyledTableRow>
             <TableRow>
               <Collapse in={row?.open} timeout="auto" unmountOnExit>
