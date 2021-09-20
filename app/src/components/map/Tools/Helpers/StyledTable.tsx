@@ -10,15 +10,13 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Theme,
-  Typography
+  Theme
 } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/styles';
 import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
 import { useHistory } from 'react-router-dom';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
-import { JsonToTable } from 'react-json-to-table';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -64,12 +62,7 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
 
 const CreateAccordionTable = ({ row }) => {
   // json to use const obj = row?.tempObj.activity_payload;
-  return (
-    <p>
-      some data
-      {/*<JsonToTable json={obj.form_data} />*/}
-    </p>
-  );
+  return <p>some data</p>;
 };
 
 export const StyledTableCell = withStyles((theme: Theme) =>

@@ -242,7 +242,6 @@ export function LayerPicker(props: any, { position }) {
   ));
   //update context on ObjectState change
   useEffect(() => {
-    console.log(layers);
     setLayersSelected(layers);
   }, [layers]);
 
