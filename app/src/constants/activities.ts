@@ -154,3 +154,14 @@ export enum ReviewStatus {
   APPROVED = 'Approved', // approved by review process
   DISAPPROVED = 'Disapproved' // deemed invalid by review process - can be resubmitted for review
 }
+
+export const ReviewActionDescriptions: { [key: string]: string } = {
+  [ReviewStatus.PREAPPROVED]:
+    'Submit this for Review by InvasivesBC staff. Currently pre-approved and does not require further review.',
+  [ReviewStatus.NOT_REVIEWED]: 'Submit this for Review by InvasivesBC staff.',
+  [ReviewStatus.UNDER_REVIEW]: 'Submitted for review.  This form is currently being reviewed by the InvasivesBC staff',
+  [ReviewStatus.APPROVED]:
+    'Re-Submit this for Review by InvasivesBC staff. Currently approved and does not require further review.',
+  [ReviewStatus.DISAPPROVED]:
+    'Re-Submit this for Review by InvasivesBC staff. Currently dispproved and requires changes for approval.'
+};

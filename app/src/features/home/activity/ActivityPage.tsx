@@ -45,11 +45,7 @@ import {
 import { notifySuccess, notifyError } from '../../../utils/NotificationUtils';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
 import { calculateLatLng, calculateGeometryArea } from '../../../utils/geometryHelpers';
-import {
-  mapDocToDBActivity,
-  mapDBActivityToDoc,
-  populateSpeciesArrays
-} from '../../../utils/addActivity';
+import { mapDocToDBActivity, mapDBActivityToDoc, populateSpeciesArrays } from '../../../utils/addActivity';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';

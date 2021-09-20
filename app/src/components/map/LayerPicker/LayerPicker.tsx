@@ -425,7 +425,7 @@ export function LayerPicker(props: any, { position }) {
               }}*/ ref={divref}>
               <Paper>
                 <IconButton {...bindTrigger(popupState)}>
-                  <LayersIcon fontSize="default" />
+                  <LayersIcon fontSize="medium" />
                 </IconButton>
               </Paper>
               <Popover
