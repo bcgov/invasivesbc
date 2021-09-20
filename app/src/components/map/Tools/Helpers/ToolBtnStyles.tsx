@@ -9,6 +9,13 @@ export const toolStyles = makeStyles((theme) => ({
     marginRight: 10,
     marginBottom: 5
   },
+  toolBtnCircle: {
+    height: 43,
+    width: 43,
+    zIndex: 1500,
+    marginRight: 10,
+    marginBottom: 5
+  },
   toolBtnsLoc: {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -50,5 +57,16 @@ export const toolStyles = makeStyles((theme) => ({
     paddingTop: 20,
     display: 'flex',
     flexDirection: 'row'
+  },
+  tooltipWidth: {
+    maxWidth: 500
+  },
+  toolIconLight: {
+    backgroundColor: 'white',
+    borderRadius: '100%'
+  },
+  toolIconDark: {
+    backgroundColor: '#424242',
+    borderRadius: '100%'
   }
 }));

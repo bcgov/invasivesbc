@@ -18,7 +18,7 @@ import {
   getChild,
   sortObject
 } from './SortLayerOrder';
-import { toolStyles } from '../Tools/ToolBtnStyles';
+import { toolStyles } from '../Tools/Helpers/ToolBtnStyles';
 // MUI
 import {
   Checkbox,
@@ -242,7 +242,6 @@ export function LayerPicker(props: any, { position }) {
   ));
   //update context on ObjectState change
   useEffect(() => {
-    console.log(layers);
     setLayersSelected(layers);
   }, [layers]);
 
