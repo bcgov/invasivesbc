@@ -103,10 +103,9 @@ export const RenderTablePosition = ({ rows }) => {
   );
 };
 
-export const RenderTableActivity = ({ records }) => {
+export const RenderTableActivity = ({ rows, setRows }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [emptyRows, setEmptyRows] = useState(0);
-  const [rows, setRows] = useState(records);
   const [page, setPage] = useState(0);
 
   const history = useHistory();
@@ -145,10 +144,6 @@ export const RenderTableActivity = ({ records }) => {
       setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
     }
   }, [rows]);
-  /* check for data
-  // useEffect(() => {
-    console.dir(rows);
-  }, [rows]);*/
 
   return (
     <Table size="small">

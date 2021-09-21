@@ -1,22 +1,10 @@
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
-import {
-  BottomNavigation,
-  BottomNavigationAction,
-  Button,
-  IconButton,
-  Slider,
-  TableContainer,
-  Tooltip,
-  Typography
-} from '@material-ui/core';
-import InfoIcon from '@material-ui/icons/Info';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { BottomNavigation, BottomNavigationAction, Button, Slider, TableContainer } from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
 import { utm_zone } from './DisplayPosition';
-import { toolStyles } from './Helpers/ToolBtnStyles';
-import { ThemeContext } from 'contexts/themeContext';
 import { createDataUTM, RenderTableActivity, RenderTablePosition, RenderTableDataBC } from './Helpers/StyledTable';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { getDataFromDataBC } from '../WFSConsumer';
@@ -52,26 +40,30 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
   const popupElRef = useRef(null);
   var activities;
 
-  function valueText(value: number) {
-    return `${value}km`;
-  }
-
   useEffect(() => {
     if (lat && lng) {
       var point = turf.point([lng, lat]);
       setBufferedGeo(turf.buffer(point, radius, { units: 'kilometers' }));
-      updateActivityRecords();
     }
   }, [radius]);
 
+  useEffect(() => {
+    if (bufferedGeo) {
+      getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
+        setDataBC(returnVal);
+      }, []);
+      updateActivityRecords();
+    }
+  }, [bufferedGeo]);
+
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
+      setRows([]);
       //check console.dir('fetching buffered', bufferedGeo);
       activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
       //(data check) console.dir(activities);
       //setActivity(activities.rows);
-
-      if (activities.rows.length > 0) {
+      if (activities) {
         var len = activities.rows.length;
         var tempArr = [];
         tempArr.length = len;
@@ -83,18 +75,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
           };
           setRows(tempArr);
         }
-      } else {
-        setRows([]);
-      }
-    }
-  }, [bufferedGeo]);
-
-  useEffect(() => {
-    if (bufferedGeo) {
-      getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
-        setDataBC(returnVal);
-      }, []);
-      updateActivityRecords();
+      } else setRows([]);
     }
   }, [bufferedGeo]);
 
@@ -106,6 +87,10 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
     setSection(newSection);
   };
+
+  function valueText(value: number) {
+    return `${value}km`;
+  }
 
   return (
     <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
@@ -123,7 +108,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
       />
       <TableContainer>
         {section == 'position' && <RenderTablePosition rows={utmRows} />}
-        {section == 'activity' && <RenderTableActivity records={rows} />}
+        {section == 'activity' && <RenderTableActivity rows={rows} setRows={rows} />}
         {section == 'databc' && <RenderTableDataBC records={databc} />}
       </TableContainer>
       <BottomNavigation value={section} onChange={handleChange}>
