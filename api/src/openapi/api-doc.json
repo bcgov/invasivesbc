@@ -1861,7 +1861,7 @@
                 "type": "string",
                 "title": "Treatment Notice Signs",
                 "enum": ["Yes", "No", "Unknown"],
-                "default": "No",
+                "default": "Yes",
                 "x-tooltip-text": "Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not"
               }
             }
@@ -2026,7 +2026,7 @@
                 "type": "string",
                 "title": "Treatment Notice Signs",
                 "enum": ["Yes", "No", "Unknown"],
-                "default": "No",
+                "default": "Yes",
                 "x-tooltip-text": "Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not"
               }
             }
@@ -3386,16 +3386,6 @@
                     "enum": ["Yes", "No"],
                     "x-tooltip-text": "If specimen collected, provide details in observation comments"
                   },
-                  "genetic_sample_id": {
-                    "type": "string",
-                    "title": "Genetic Sample ID",
-                    "x-tooltip-text": "Unique identifier for each voucher collected. Helpful to include abbreviation of waterbody name"
-                  },
-                  "genetic_structure_collected": {
-                    "type": "string",
-                    "title": "Genetic Structure Collected",
-                    "x-tooltip-text": "Describe plant parts collected. Ideal to collect entire plant structure for verification purposes"
-                  },
                   "edna_sample": {
                     "type": "string",
                     "title": "eDNA Sample",
@@ -3408,12 +3398,39 @@
                   "edna_sample",
                   "invasive_plant_density_code",
                   "voucher_specimen_collected",
-                  "genetic_structure_collected",
-                  "genetic_sample_id",
                   "plant_life_stage_code",
                   "invasive_plant_distribution_code"
                 ],
                 "dependencies": {
+                  "voucher_specimen_collected": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "voucher_specimen_collected": {
+                            "enum": ["Yes"]
+                          },
+                          "genetic_sample_id": {
+                            "type": "string",
+                            "title": "Genetic Sample ID",
+                            "x-tooltip-text": "Unique identifier for each voucher collected. Helpful to include abbreviation of waterbody name"
+                          },
+                          "genetic_structure_collected": {
+                            "type": "string",
+                            "title": "Genetic Structure Collected",
+                            "x-tooltip-text": "Describe plant parts collected. Ideal to collect entire plant structure for verification purposes"
+                          }
+                        },
+                        "required": ["genetic_structure_collected", "genetic_sample_id"]
+                      },
+                      {
+                        "properties": {
+                          "voucher_specimen_collected": {
+                            "enum": ["No"]
+                          }
+                        }
+                      }
+                    ]
+                  },
                   "edna_sample": {
                     "oneOf": [
                       {
@@ -3429,12 +3446,22 @@
                                 "title": "eDNA sample ID",
                                 "type": "number"
                               },
-                              "genetic_structure_collected": {
-                                "title": "Genetic Structure Collected",
-                                "type": "string"
+                              "sample_type": {
+                                "title": "Sample Type",
+                                "type": "string",
+                                "enum": ["water", "soil", "plant material", "animal material"],
+                                "default": "water"
+                              },
+                              "field_replicates_num": {
+                                "title": "Number of field replicates",
+                                "type": "number"
+                              },
+                              "control_sample_taken": {
+                                "title": "Control sample taken",
+                                "type": "boolean"
                               }
                             },
-                            "required": ["edna_sample_id", "genetic_structure_collected"]
+                            "required": ["edna_sample_id", "sample_type"]
                           }
                         },
                         "required": ["enda_sample_information"]
