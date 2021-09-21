@@ -90,6 +90,6 @@ objects:
               value: ${VERSION}
           imagePullPolicy: Always
       restartPolicy: Never
-      activeDeadlineSeconds: 900
+      activeDeadlineSeconds: 7200
       dnsPolicy: ClusterFirst
     status: {}
