@@ -37,7 +37,7 @@ jobs:
   # Clean any artifacts created by the deploy-pr workflow
   clean:
     name: Clean Closed PR Build and Deploy Artifacts
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     # Only clean if the PR was closed (but not merged) and was marked as a PR-DEPLOY
     if: ${{ github.event.pull_request.merged == false && contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:

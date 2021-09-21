@@ -37,7 +37,7 @@ jobs:
   # Build the Database image
   buildDatabase:
     name: Build Database Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -68,7 +68,7 @@ jobs:
   # Build the Database Setup image
   buildDatabaseSetup:
     name: Build Database Setup Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -99,7 +99,7 @@ jobs:
   # Build the API image
   buildAPI:
     name: Build API Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -130,7 +130,7 @@ jobs:
   # Build the web frontend app image
   buildAPP:
     name: Build App Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -161,7 +161,7 @@ jobs:
   # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -195,7 +195,7 @@ jobs:
   # Deploy Database image
   deployDatabaseSetup:
     name: Deploy Database Setup Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -230,7 +230,7 @@ jobs:
   # Deploy API image
   deployAPI:
     name: Deploy API Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -265,7 +265,7 @@ jobs:
   # Deploy App image
   deployAPP:
     name: Deploy App Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -299,7 +299,7 @@ jobs:
   # Smoke Test the API (dev only, as this may create records with random test data)
   postmanAPITests:
     name: Postman API Tests (Dev only)
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: |
       ${{ github.base_ref == 'dev' &&
         ( contains(github.event.pull_request.labels.*.name, 'PR-DEPLOY') ||
