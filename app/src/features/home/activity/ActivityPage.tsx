@@ -15,6 +15,7 @@ import { IPhoto } from '../../../components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { DatabaseContext } from '../../../contexts/DatabaseContext';
 import proj4 from 'proj4';
+import * as turf from '@turf/turf';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from '../../../utils/FunctionUtils';
@@ -50,6 +51,7 @@ import { useDataAccess } from '../../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
 import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
+import bcArea from '../../../components/map/BC_AREA.json';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -601,7 +603,28 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    saveGeometry(geometry);
+
+    if (geometry) {
+      if (turf.booleanWithin(geometry[0] as any, bcArea as any)) {
+        saveGeometry(geometry);
+      } else {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Error!',
+          dialogContentText: 'The geometry drawn is outside the British Columbia.',
+          dialogActions: [
+            {
+              actionName: 'OK',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+              },
+              autoFocus: true
+            }
+          ]
+        });
+        setGeometry(null);
+      }
+    }
   }, [geometry, isLoading, saveGeometry]);
 
   useEffect(() => {
@@ -667,17 +690,20 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         <>
           <Box marginTop="2rem" mb={3}>
             <Typography align="center" variant="h4">
-              {doc.activitySubtype
-                .replace(/([A-Z])/g, ' $1')
-                .replace(/_/g, '')
-                .replace(/^./, function (str) {
-                  return str.toUpperCase();
-                })}
+              {doc.activitySubtype &&
+                doc.activitySubtype
+                  .replace(/([A-Z])/g, ' $1')
+                  .replace(/_/g, '')
+                  .replace(/^./, function (str) {
+                    return str.toUpperCase();
+                  })}
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">Activity ID: {doc.activityId}</Typography>
-            <Typography align="center">Date created: {doc.dateCreated.split('T')[0]}</Typography>
+            <Typography align="center">Activity ID: {doc.activityId ? doc.activityId : 'unknown'}</Typography>
+            <Typography align="center">
+              Date created: {doc.dateCreated ? doc.dateCreated.split('T')[0] : 'unknown'}
+            </Typography>
           </Box>
           <ActivityComponent
             customValidation={getCustomValidator([
