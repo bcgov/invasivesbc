@@ -12,6 +12,7 @@ import {
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import geoData from '../../components/map/LayerPicker/GEO_DATA.json';
 import { getDataFromDataBC } from '../../components/map/WFSConsumer';
+import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 const async = require('async');
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +42,13 @@ export const TripDataControls: React.FC<any> = (props) => {
   const [fetch, setFetch] = useState(false);
   const [totalRecordsToFetch, setTotalRecordsToFetch] = useState(0);
   const [totalRecordsFetched, setTotalRecordsFetched] = useState(0);
+
+  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogContentText: null
+  });
 
   //helper function to get all layer names from geo_data.json file
   const getLayerNamesFromJSON = (geoDataJSON: any) => {
@@ -498,12 +506,46 @@ export const TripDataControls: React.FC<any> = (props) => {
     }
   };
 
+  const deleteOldTrip = async () => {
+    setWarningDialog({
+      dialogOpen: true,
+      dialogTitle: 'Are you sure?',
+      dialogContentText: 'You are about to delete this trip. Are you sure you want to do this?',
+      dialogActions: [
+        {
+          actionName: 'No',
+          actionOnClick: async () => {
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
+          }
+        },
+        {
+          actionName: 'Yes',
+          actionOnClick: async () => {
+            await upsert(
+              [
+                {
+                  type: UpsertType.RAW_SQL,
+                  sql: `DELETE FROM TRIP WHERE id=${props.trip_ID}`
+                }
+              ],
+              databaseContext
+            );
+            console.log(`Trip #${props.trip_ID} was deleted!`);
+            props.setTripDeleted(props.trip_ID);
+            setWarningDialog({ ...warningDialog, dialogOpen: false });
+          },
+          autoFocus: true
+        }
+      ]
+    });
+
+    return null;
+  };
+
   const deleteTripAndFetch = async () => {
     //get the trip again cause it prob changed
     await getTrip();
-    const deleteOldTrip = () => {
-      return null;
-    };
+
     //todo:
     deleteOldTrip();
     //fetch what is selected here:
@@ -525,15 +567,28 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="primary"
-        disabled={fetching}
-        onClick={() => {
-          setFetch(true);
-        }}>
-        {'Cache Trip For Offline'}
-      </Button>
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <Button
+          style={{ marginLeft: '0.5rem', marginRight: '0.5rem' }}
+          variant="contained"
+          color="primary"
+          disabled={fetching}
+          onClick={() => {
+            setFetch(true);
+          }}>
+          {'Cache Trip For Offline'}
+        </Button>
+        <Button
+          style={{ marginLeft: '0.5rem', marginRight: '0.5rem' }}
+          variant="contained"
+          color="primary"
+          disabled={fetching}
+          onClick={() => {
+            deleteOldTrip();
+          }}>
+          {'Delete this trip'}
+        </Button>
+      </Box>
       {fetching && (
         <>
           <Box width="100%" paddingTop="10px">
@@ -553,6 +608,12 @@ export const TripDataControls: React.FC<any> = (props) => {
           </Box>
         </>
       )}
+      <WarningDialog
+        dialogOpen={warningDialog.dialogOpen}
+        dialogTitle={warningDialog.dialogTitle}
+        dialogActions={warningDialog.dialogActions}
+        dialogContentText={warningDialog.dialogContentText}
+      />
     </>
   );
 };

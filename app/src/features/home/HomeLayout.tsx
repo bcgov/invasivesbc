@@ -23,7 +23,7 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
 
   const addNotificationsToPage = null;
 
-    /*  let notifications = await databaseContext.database.find({
+  /*  let notifications = await databaseContext.database.find({
       selector: {
         docType: DocType.NOTIFICATION,
         acknowledged: false
@@ -46,7 +46,6 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
       setIsOpen(true);
     }
     */
-
 
   useEffect(() => {
     const updateComponent = () => {
@@ -91,7 +90,14 @@ const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
       <Box mb="43px" height="inherit" width="inherit" overflow="auto">
         {props.children}
       </Box>
-      <Box position="absolute" bottom="0" left="0" right="0" bgcolor="primary.main" color="primary.contrastText">
+      <Box
+        style={{ zIndex: 99999999999 }}
+        position="absolute"
+        bottom="0"
+        left="0"
+        right="0"
+        bgcolor="primary.main"
+        color="primary.contrastText">
         <Footer />
       </Box>
     </Box>
