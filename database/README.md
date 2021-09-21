@@ -74,3 +74,9 @@ npx knex --knexfile ./knexfile.ts migrate:make <insert name here> --env local
 
 - Double check that your environment variables have been set correctly.
 - Double check that the line endings of the `.env` file are `LF` and not `CLRF`
+
+# Development
+```bash
+cd database/src
+knex seed:run --env local --specific 05_riso.ts.ts
+```
