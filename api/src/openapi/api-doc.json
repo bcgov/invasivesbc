@@ -462,7 +462,7 @@
           "shoreline_types": {
             "type": "array",
             "title": "Shoreline Types",
-            "minItems": 1,
+            "default": [{}],
             "items": {
               "$ref": "#/components/schemas/ShorelineTypes"
             },
@@ -601,7 +601,7 @@
           },
           "jurisdictions": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Jurisdictions",
             "items": {
               "$ref": "#/components/schemas/Jurisdiction"
@@ -611,6 +611,7 @@
           "project_code": {
             "type": "array",
             "title": "Project Code",
+            "default": [{}],
             "items": {
               "$ref": "#/components/schemas/ProjectCode"
             },
@@ -643,7 +644,7 @@
           },
           "jurisdictions": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Jurisdictions",
             "items": {
               "$ref": "#/components/schemas/Jurisdiction"
@@ -756,7 +757,7 @@
           },
           "observation_persons": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Observation Person(s)",
             "items": {
               "$ref": "#/components/schemas/Persons"
@@ -784,7 +785,7 @@
           },
           "invasive_plants": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Terrestrial Invasive Plants",
             "items": {
               "$ref": "#/components/schemas/TerrestrialPlants"
@@ -852,7 +853,7 @@
                   },
                   "shoreline_types": {
                     "type": "array",
-                    "minItems": 1,
+                    "default": [{}],
                     "title": "Shoreline Types",
                     "items": {
                       "$ref": "#/components/schemas/ShorelineTypes"
@@ -877,7 +878,7 @@
           },
           "invasive_plants": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Aquatic Invasive Plant Information",
             "items": {
               "$ref": "#/components/schemas/AquaticPlants"
@@ -1359,7 +1360,7 @@
           },
           "invasive_aquatic_animals": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Aquatic Animals",
             "items": {
               "$ref": "#/components/schemas/AquaticAnimals"
@@ -1377,7 +1378,7 @@
           },
           "fire_monitoring_transect_lines": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Fire Monitoring Transect Lines",
             "items": {
               "$ref": "#/components/schemas/FireMonitoringTransectLines"
@@ -1395,7 +1396,7 @@
           },
           "vegetation_transect_lines": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Vegetation Transect Lines",
             "items": {
               "$ref": "#/components/schemas/VegetationTransectLines"
@@ -1413,7 +1414,7 @@
           },
           "transect_invasive_plants": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Targeted Species",
             "items": {
               "$ref": "#/components/schemas/TransectInvasivePlants"
@@ -1422,7 +1423,7 @@
           "biocontrol_efficacy_transect_lines": {
             "type": "array",
             "title": "Biocontrol Efficacy Transect Lines",
-            "minItems": 1,
+            "default": [{}],
             "items": {
               "$ref": "#/components/schemas/BiocontrolEfficacyTransectLines"
             }
@@ -1664,7 +1665,7 @@
         "properties": {
           "treatment_persons": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Treatment Person(s)",
             "items": {
               "$ref": "#/components/schemas/Persons"
@@ -1719,7 +1720,7 @@
                   },
                   "shoreline_types": {
                     "type": "array",
-                    "minItems": 1,
+                    "default": [{}],
                     "title": "Shoreline Types",
                     "items": {
                       "$ref": "#/components/schemas/ShorelineTypes"
@@ -1877,7 +1878,7 @@
               "invasive_plants_information": {
                 "title": "Invasive Plants",
                 "type": "array",
-                "minItems": 1,
+                "default": [{}],
                 "items": {
                   "properties": {
                     "invasive_plant_code": {
@@ -1899,7 +1900,7 @@
                     },
                     "herbicide": {
                       "type": "array",
-                      "minItems": 1,
+                      "default": [{}],
                       "title": "Herbicide",
                       "items": {
                         "$ref": "#/components/schemas/Herbicide"
@@ -2042,7 +2043,7 @@
               "invasive_plants_information": {
                 "title": "Invasive Plants",
                 "type": "array",
-                "minItems": 1,
+                "default": [{}],
                 "items": {
                   "properties": {
                     "invasive_plant_code": {
@@ -2064,7 +2065,7 @@
                     },
                     "herbicide": {
                       "type": "array",
-                      "minItems": 1,
+                      "default": [{}],
                       "title": "Herbicide",
                       "items": {
                         "$ref": "#/components/schemas/Herbicide"
@@ -2140,7 +2141,7 @@
           },
           "herbicide": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Herbicide",
             "items": {
               "$ref": "#/components/schemas/Herbicide"
@@ -2592,7 +2593,7 @@
           },
           "collection_persons": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Name(s) of Person(s) doing the collection",
             "items": {
               "$ref": "#/components/schemas/Persons"
@@ -2609,7 +2610,7 @@
           "collections": {
             "title": " ",
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "minimum": 1,
             "items": {
               "title": "Collection Details",
@@ -2716,7 +2717,7 @@
                 },
                 "actual_quantity_and_life_stage_of_agent_collected": {
                   "type": "array",
-                  "minItems": 1,
+                  "default": [{}],
                   "title": "Actual Quantity and Life Stage of Agent Collected",
                   "items": {
                     "$ref": "#/components/schemas/Agent_Quantity_And_Life_Stage"
@@ -2725,7 +2726,7 @@
                 },
                 "estimated_quantity_and_life_stage_of_agent_collected": {
                   "type": "array",
-                  "minItems": 1,
+                  "default": [{}],
                   "title": "Estimated Quantity and Life Stage of Agent Collected",
                   "items": {
                     "$ref": "#/components/schemas/Agent_Quantity_And_Life_Stage"
@@ -2769,7 +2770,6 @@
       },
       "ProjectCode": {
         "type": "object",
-        "required": ["description"],
         "properties": {
           "description": {
             "type": "string",
@@ -4154,7 +4154,7 @@
           },
           "fire_monitoring_transect_points": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Transect Points Information",
             "items": {
               "$ref": "#/components/schemas/FireMonitoringTransectPoints"
@@ -4187,7 +4187,7 @@
                   },
                   "vegetation_transect_points_percent_cover": {
                     "type": "array",
-                    "minItems": 1,
+                    "default": [{}],
                     "title": "Transect Points Information",
                     "items": {
                       "$ref": "#/components/schemas/VegetationTransectPointsPercentCover"
@@ -4203,7 +4203,7 @@
                   },
                   "vegetation_transect_points_number_plants": {
                     "type": "array",
-                    "minItems": 1,
+                    "default": [{}],
                     "title": "Transect Points Information",
                     "items": {
                       "$ref": "#/components/schemas/VegetationTransectPointsNumberPlants"
@@ -4219,7 +4219,7 @@
                   },
                   "vegetation_transect_points_daubenmire": {
                     "type": "array",
-                    "minItems": 1,
+                    "default": [{}],
                     "title": "Transect Points Information",
                     "items": {
                       "$ref": "#/components/schemas/VegetationTransectPointsDaubenmire"
@@ -4240,7 +4240,7 @@
           },
           "biocontrol_efficacy_transect_points": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Transect Points Information",
             "items": {
               "$ref": "#/components/schemas/BiocontrolEfficacyTransectPoints"
@@ -4317,7 +4317,7 @@
           },
           "invasive_plants": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Invasive Plants",
             "items": {
               "$ref": "#/components/schemas/InvasivePlants"
@@ -4333,7 +4333,7 @@
         "properties": {
           "invasive_plants": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Invasive Plants",
             "items": {
               "type": "object",
@@ -4352,7 +4352,7 @@
           },
           "lumped_species": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Lumped Species",
             "items": {
               "type": "object",
@@ -4371,7 +4371,7 @@
           },
           "custom_species": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Custom Species",
             "items": {
               "type": "object",
@@ -4397,7 +4397,7 @@
         "properties": {
           "invasive_plants": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Invasive Plants",
             "items": {
               "type": "object",
@@ -4416,7 +4416,7 @@
           },
           "lumped_species": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Lumped Species",
             "items": {
               "type": "object",
@@ -4435,7 +4435,7 @@
           },
           "custom_species": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Custom Species",
             "items": {
               "type": "object",
@@ -4461,7 +4461,7 @@
         "properties": {
           "invasive_plants": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Invasive Plants",
             "items": {
               "type": "object",
@@ -4480,7 +4480,7 @@
           },
           "lumped_species": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Lumped Species",
             "items": {
               "type": "object",
@@ -4499,7 +4499,7 @@
           },
           "custom_species": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Custom Species",
             "items": {
               "type": "object",
@@ -5348,7 +5348,7 @@
           },
           "surveys": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Surveys",
             "description": "Legacy IAPP Surveys from this point of interest",
             "items": {
@@ -5357,7 +5357,7 @@
           },
           "mechanical_treatments": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Mechanical Treatments",
             "description": "Legacy IAPP Mechanical Treatments",
             "items": {
@@ -5366,7 +5366,7 @@
           },
           "chemical_treatments": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Mechanical Treatments",
             "description": "Legacy IAPP Mechanical Treatments",
             "items": {
@@ -5375,7 +5375,7 @@
           },
           "biological_treatments": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Biological Treatments",
             "description": "Legacy IAPP Biological Treatments",
             "items": {
@@ -5384,7 +5384,7 @@
           },
           "biological_dispersals": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Biological Dispersals",
             "description": "Legacy IAPP Biological Dispersals",
             "items": {
@@ -5459,6 +5459,7 @@
           "project_code": {
             "type": "array",
             "title": "Project Code",
+            "default": [{}],
             "items": {
               "$ref": "#/components/schemas/ProjectCode"
             }
@@ -5547,7 +5548,7 @@
           },
           "surveys": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "items": {
               "$ref": "#/components/schemas/IAPP_Survey"
             }
@@ -5671,13 +5672,14 @@
           "project_code": {
             "type": "array",
             "title": "Project Code",
+            "default": [{}],
             "items": {
               "$ref": "#/components/schemas/ProjectCode"
             }
           },
           "jurisdictions": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Jurisdictions",
             "minimum": 1,
             "maximum": 3,
@@ -5750,6 +5752,7 @@
           "project_code": {
             "type": "array",
             "title": "Project Code",
+            "default": [{}],
             "items": {
               "$ref": "#/components/schemas/ProjectCode"
             }
@@ -5839,7 +5842,7 @@
           },
           "monitoring": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Monitoring",
             "items": {
               "type": "object",
@@ -5964,7 +5967,7 @@
           },
           "monitoring": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Monitoring",
             "items": {
               "type": "object",
@@ -6076,7 +6079,7 @@
           },
           "monitoring": {
             "type": "array",
-            "minItems": 1,
+            "default": [{}],
             "title": "Monitoring",
             "items": {
               "type": "object",
