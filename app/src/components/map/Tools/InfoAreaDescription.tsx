@@ -1,16 +1,23 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { BottomNavigation, BottomNavigationAction, Button, Slider, TableContainer } from '@material-ui/core';
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Button,
+  Slider,
+  TableContainer,
+  Typography
+} from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
 import { utm_zone } from './DisplayPosition';
 import { createDataUTM, RenderTableActivity, RenderTablePosition, RenderTableDataBC } from './Helpers/StyledTable';
-import { useDataAccess } from '../../../hooks/useDataAccess';
 import { getDataFromDataBC } from '../WFSConsumer';
 import * as turf from '@turf/turf';
 import { Feature, Geometry } from 'geojson';
 import { Layer } from 'leaflet';
+import { useDataAccess } from '../../../hooks/useDataAccess';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
@@ -94,21 +101,26 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
 
   return (
     <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
-      <Slider
-        aria-label="Kilometers"
-        defaultValue={radius}
-        onChange={(event: any, newRadius: number) => {
-          setRadius(newRadius);
-        }}
-        getAriaValueText={valueText}
-        step={1}
-        marks
-        min={1}
-        max={10}
-      />
+      <Typography>Radius</Typography>
+      <div style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -40 }}>
+        <Typography>{radius} km</Typography>
+        <Slider
+          style={{ width: 225, alignSelf: 'center', marginLeft: 10 }}
+          aria-label="Kilometers"
+          defaultValue={radius}
+          onChange={(event: any, newRadius: number) => {
+            setRadius(newRadius);
+          }}
+          getAriaValueText={valueText}
+          step={1}
+          marks
+          min={1}
+          max={10}
+        />
+      </div>
       <TableContainer>
         {section == 'position' && <RenderTablePosition rows={utmRows} />}
-        {section == 'activity' && <RenderTableActivity rows={rows} setRows={rows} />}
+        {section == 'activity' && <RenderTableActivity rows={rows} setRows={setRows} />}
         {section == 'databc' && <RenderTableDataBC records={databc} />}
       </TableContainer>
       <BottomNavigation value={section} onChange={handleChange}>

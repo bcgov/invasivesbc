@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import {
   Button,
   Collapse,
@@ -17,6 +17,8 @@ import TablePaginationActions from '@material-ui/core/TablePagination/TablePagin
 import { useHistory } from 'react-router-dom';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+import { useDataAccess } from 'hooks/useDataAccess';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -107,10 +109,18 @@ export const RenderTableActivity = ({ rows, setRows }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [emptyRows, setEmptyRows] = useState(0);
   const [page, setPage] = useState(0);
+  const databaseContext = useContext(DatabaseContext2);
+  const dataAccess = useDataAccess();
 
   const history = useHistory();
 
   const labels = ['ID', 'Activity Type', 'SubType'];
+
+  useEffect(() => {
+    if (rows) {
+      setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
+    }
+  }, [rows]);
 
   const updateRow = (row, fieldsToUpdate: Object) => {
     var arrLen = rows.length;
@@ -139,12 +149,6 @@ export const RenderTableActivity = ({ rows, setRows }) => {
     setPage(0);
   };
 
-  useEffect(() => {
-    if (rows) {
-      setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
-    }
-  }, [rows]);
-
   return (
     <Table size="small">
       <CreateTableHead labels={labels} />
@@ -159,7 +163,13 @@ export const RenderTableActivity = ({ rows, setRows }) => {
                 <IconButton size="small" onClick={() => updateRow(row, { open: !row.open })}>
                   {row?.open ? <KeyboardArrowDown /> : <KeyboardArrowRight />}
                 </IconButton>
-                <Button size="small" onClick={() => history.push('/home/activities')}>
+                <Button
+                  size="small"
+                  onClick={async () => {
+                    const id = row.tempObj.activity_id;
+                    await dataAccess.setAppState({ activeActivity: id }, databaseContext);
+                    history.push({ pathname: `/home/activity` });
+                  }}>
                   {row?.tempObj.activity_payload.short_id}
                 </Button>
               </StyledTableCell>
@@ -209,25 +219,23 @@ export const RenderTableDataBC = ({ records }) => {
     <Table size="small">
       <CreateTableHead labels={labels} />
       <TableBody>
-        {records && (
-          <>
-            {(rowsPerPage > 0 ? records?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : records).map(
-              (row) => (
-                <>
-                  <StyledTableRow key={row?.properties.WELL_TAG_NUMBER}>
-                    <StyledTableCell component="th" scope="row">
-                      {row.properties.AQUIFER_ID}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {row.geometry.coordinates[0].toFixed(2)},{row.geometry.coordinates[1].toFixed(2)}
-                    </StyledTableCell>
-                    <StyledTableCell>{row.properties.STREET_ADDRESS}</StyledTableCell>
-                  </StyledTableRow>
-                </>
-              )
-            )}
-          </>
-        )}
+        <>
+          {(rowsPerPage > 0 ? records?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : records).map(
+            (row) => (
+              <>
+                <StyledTableRow key={row?.properties.WELL_TAG_NUMBER}>
+                  <StyledTableCell component="th" scope="row">
+                    {row.properties.AQUIFER_ID}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    {row.geometry.coordinates[0].toFixed(2)},{row.geometry.coordinates[1].toFixed(2)}
+                  </StyledTableCell>
+                  <StyledTableCell>{row.properties.STREET_ADDRESS}</StyledTableCell>
+                </StyledTableRow>
+              </>
+            )
+          )}
+        </>
         {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
         <CreateTableFooter
           records={records}
