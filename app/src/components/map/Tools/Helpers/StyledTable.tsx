@@ -64,7 +64,38 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
 
 const CreateAccordionTable = ({ row }) => {
   // json to use const obj = row?.tempObj.activity_payload;
-  return <p>some data</p>;
+  return (
+    <Table size="small">
+      <TableBody>
+        <StyledTableRow>
+          <StyledTableCell>Created Date</StyledTableCell>
+          <StyledTableCell>{row.tempObj.activity_payload.date_created}</StyledTableCell>
+        </StyledTableRow>
+        <StyledTableRow>
+          <StyledTableCell>Created By</StyledTableCell>
+          <StyledTableCell>{row.tempObj.activity_payload.created_by}</StyledTableCell>
+        </StyledTableRow>
+        <StyledTableRow>
+          <StyledTableCell>Ownership</StyledTableCell>
+          <StyledTableCell>{row.tempObj.ownership}</StyledTableCell>
+        </StyledTableRow>
+        <StyledTableRow>
+          <StyledTableCell>Moti District</StyledTableCell>
+          <StyledTableCell>{row.tempObj.moti_districts}</StyledTableCell>
+        </StyledTableRow>
+        <StyledTableRow>
+          <StyledTableCell>Regional Districts</StyledTableCell>
+          <StyledTableCell>{row.tempObj.regional_districts}</StyledTableCell>
+        </StyledTableRow>
+        <StyledTableRow>
+          <StyledTableCell>Invasive Speciecs Agency Code</StyledTableCell>
+          <StyledTableCell>
+            {row.tempObj.activity_payload.form_data.activity_data.invasive_species_agency_code}
+          </StyledTableCell>
+        </StyledTableRow>
+      </TableBody>
+    </Table>
+  );
 };
 
 export const StyledTableCell = withStyles((theme: Theme) =>

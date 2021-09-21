@@ -63,19 +63,22 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
     }
   }, [bufferedGeo]);
 
+  useEffect(() => {
+    if (rows) console.dir(rows);
+  }, [rows]);
+
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
       setRows([]);
       //check console.dir('fetching buffered', bufferedGeo);
       activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
       //(data check) console.dir(activities);
-      //setActivity(activities.rows);
       if (activities) {
-        var len = activities.rows.length;
+        var len = activities?.rows.length;
         var tempArr = [];
         tempArr.length = len;
-        for (let i in activities.rows) {
-          var tempObj = activities.rows[i];
+        for (let i in activities?.rows) {
+          var tempObj = activities?.rows[i];
           tempArr[parseInt(i)] = {
             tempObj,
             open: false
