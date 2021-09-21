@@ -1,5 +1,5 @@
 import { Button, CircularProgress, Container, IconButton, makeStyles, Paper } from '@material-ui/core';
-import { DeleteForever } from '@material-ui/icons';
+import { Delete, DeleteForever } from '@material-ui/icons';
 import MapContainer from '../../../components/map/MapContainer';
 import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -77,7 +77,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext2);
-
+  const [tripDeleted, seTripDeleted] = useState();
   const [geometry, setGeometry] = useState<Feature[]>([]);
 
   const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
@@ -206,7 +206,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
       await getTrips();
     };
     initialLoad();
-  }, [newTripID, tripsLoaded]);
+  }, [newTripID, tripsLoaded, tripDeleted]);
 
   const addTrip = async () => {
     let newID = await helperGetMaxTripID();
@@ -320,7 +320,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                 }))
           }
           dropdown={(row) => {
-            return <SingleTrip trip_ID={row.trip_ID} classes={classes} />;
+            return <SingleTrip trip_ID={row.trip_ID} classes={classes} setTripDeleted={seTripDeleted} />;
           }}></RecordTable>
       )}
     </Container>

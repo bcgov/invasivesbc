@@ -664,43 +664,59 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         </>
       )}
       {doc && (
-        <ActivityComponent
-          customValidation={getCustomValidator([
-            getAreaValidator(doc.activitySubtype),
-            getDateAndTimeValidator(doc.activitySubtype),
-            getWindValidator(doc.activitySubtype),
-            getSlopeAspectBothFlatValidator(),
-            getTemperatureValidator(doc.activitySubtype),
-            getDuplicateInvasivePlantsValidator(doc.activitySubtype),
-            getHerbicideApplicationRateValidator(),
-            getTransectOffsetDistanceValidator(),
-            getHerbicideMixValidation(),
-            getVegTransectPointsPercentCoverValidator(),
-            getDurationCountAndPlantCountValidation(),
-            getPersonNameNoNumbersValidator(),
-            getJurisdictionPercentValidator(),
-            getInvasivePlantsValidator(linkedActivity)
-          ])}
-          customErrorTransformer={getCustomErrorTransformer()}
-          classes={classes}
-          activity={doc}
-          linkedActivity={linkedActivity}
-          onFormChange={onFormChange}
-          onFormSubmitSuccess={onFormSubmitSuccess}
-          onFormSubmitError={onFormSubmitError}
-          photoState={{ photos, setPhotos }}
-          mapId={doc._id}
-          geometryState={{ geometry, setGeometry }}
-          //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-          extentState={{ extent, setExtent }}
-          contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-          pasteFormData={() => pasteFormData()}
-          copyFormData={() => copyFormData()}
-          //cloneActivityButton={generateCloneActivityButton}
-          setParentFormRef={props.setParentFormRef}
-          showDrawControls={true}
-          setWellIdandProximity={setWellIdandProximity}
-        />
+        <>
+          <Box marginTop="2rem" mb={3}>
+            <Typography align="center" variant="h4">
+              {doc.activitySubtype
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/_/g, '')
+                .replace(/^./, function (str) {
+                  return str.toUpperCase();
+                })}
+            </Typography>
+          </Box>
+          <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
+            <Typography align="center">Activity ID: {doc.activityId}</Typography>
+            <Typography align="center">Date created: {doc.dateCreated.split('T')[0]}</Typography>
+          </Box>
+          <ActivityComponent
+            customValidation={getCustomValidator([
+              getAreaValidator(doc.activitySubtype),
+              getDateAndTimeValidator(doc.activitySubtype),
+              getWindValidator(doc.activitySubtype),
+              getSlopeAspectBothFlatValidator(),
+              getTemperatureValidator(doc.activitySubtype),
+              getDuplicateInvasivePlantsValidator(doc.activitySubtype),
+              getHerbicideApplicationRateValidator(),
+              getTransectOffsetDistanceValidator(),
+              getHerbicideMixValidation(),
+              getVegTransectPointsPercentCoverValidator(),
+              getDurationCountAndPlantCountValidation(),
+              getPersonNameNoNumbersValidator(),
+              getJurisdictionPercentValidator(),
+              getInvasivePlantsValidator(linkedActivity)
+            ])}
+            customErrorTransformer={getCustomErrorTransformer()}
+            classes={classes}
+            activity={doc}
+            linkedActivity={linkedActivity}
+            onFormChange={onFormChange}
+            onFormSubmitSuccess={onFormSubmitSuccess}
+            onFormSubmitError={onFormSubmitError}
+            photoState={{ photos, setPhotos }}
+            mapId={doc._id}
+            geometryState={{ geometry, setGeometry }}
+            //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+            extentState={{ extent, setExtent }}
+            contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+            pasteFormData={() => pasteFormData()}
+            copyFormData={() => copyFormData()}
+            //cloneActivityButton={generateCloneActivityButton}
+            setParentFormRef={props.setParentFormRef}
+            showDrawControls={true}
+            setWellIdandProximity={setWellIdandProximity}
+          />
+        </>
       )}
       <WarningDialog
         dialogOpen={warningDialog.dialogOpen}
