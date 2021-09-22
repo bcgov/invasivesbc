@@ -13,12 +13,27 @@ module.exports = (settings) => {
 
   let objects = [];
 
+  let real_node_env;
+  switch (phases[phase].env) {
+    case 'dev':
+      real_node_env = 'development';
+      break;
+    case 'test':
+      real_node_env = 'test';
+      break;
+    case 'prod':
+      real_node_env = 'production';
+      break;
+    default:
+      real_node_env = 'development';
+  }
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/app.bc.yaml`, {
       param: {
         NAME: phases[phase].name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
+        REAL_NODE_ENV: real_node_env,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
         SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref
       }
