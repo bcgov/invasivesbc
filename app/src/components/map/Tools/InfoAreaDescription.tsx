@@ -75,7 +75,6 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
 
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
-      setRows([]);
       activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
       if (activities) {
         var tempArr = [];
@@ -89,7 +88,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
           }
         }
         setRows(tempArr);
-      }
+      } else setRows([]);
     }
   }, [bufferedGeo]);
 
