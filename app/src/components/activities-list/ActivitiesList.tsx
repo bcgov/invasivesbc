@@ -31,7 +31,8 @@ import {
 } from '../../components/common/RecordTables';
 import { DatabaseContext2, query, QueryType } from '../../contexts/DatabaseContext2';
 import BatchUpload from '../../components/batch-upload/BatchUpload';
-import { RolesContext } from 'contexts/RolesContext';
+import { RolesContext } from '../../contexts/RolesContext';
+import { ALL_ROLES, PLANT_ROLES, ANIMAL_ROLES, USER_ACCESS, User_Access } from 'constants/roles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -182,8 +183,22 @@ interface IActivityList {
 const ActivitiesList: React.FC = () => {
   const classes = useStyles();
 
+  let hasPlantAccess = false;
+  let hasAnimalAccess = false;
+
   const databaseContext = useContext(DatabaseContext2);
+  const rolesContext = useContext(RolesContext);
   const { keycloak } = useKeycloak();
+  console.log(rolesContext.userRoles);
+  rolesContext.userRoles.forEach((role) => {
+    if (role.includes('animals') || role.includes('both') || role.includes('admin')) {
+      hasAnimalAccess = true;
+    }
+    if (role.includes('plants') || role.includes('both') || role.includes('admin')) {
+      hasPlantAccess = true;
+    }
+  });
+
   useEffect(() => {
     const userId = async () => {
       const userInfo: any = keycloak
@@ -275,8 +290,8 @@ const ActivitiesList: React.FC = () => {
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>Workflow Functions</InputLabel>
             <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Form Type">
-              <MenuItem value="Plant">Plant</MenuItem>
-              <MenuItem value="Animal">Animal</MenuItem>
+              {hasPlantAccess ? <MenuItem value="Plant">Plant</MenuItem> : null}
+              {hasAnimalAccess ? <MenuItem value="Animal">Animal</MenuItem> : null}
               <MenuItem value="Review">Review</MenuItem>
               <MenuItem value="Past Activities">Past Activities</MenuItem>
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>

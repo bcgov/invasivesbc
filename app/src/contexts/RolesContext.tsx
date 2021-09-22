@@ -1,16 +1,21 @@
 import * as React from 'react';
-
-// export const ThemeContext = React.createContext();
-
+import useKeycloakWrapper from '../hooks/useKeycloakWrapper';
 interface IRolesContext {
   userRoles: string[];
+  setUserRoles: React.Dispatch<React.SetStateAction<Array<Object>>>;
 }
 
 export const RolesContext = React.createContext<IRolesContext>({
-  userRoles: []
+  userRoles: [],
+  setUserRoles: () => {}
 });
 
 export const RolesContextProvider: React.FC = (props) => {
-  const [userRoles] = React.useState([]);
-  return <RolesContext.Provider value={{ userRoles }}>{props.children}</RolesContext.Provider>;
+  const keycloak = useKeycloakWrapper();
+  let roles: string[] = [];
+  if (keycloak.roles) {
+    roles = keycloak.roles;
+  }
+  const [userRoles, setUserRoles] = React.useState(roles);
+  return <RolesContext.Provider value={{ userRoles, setUserRoles }}>{props.children}</RolesContext.Provider>;
 };

@@ -30,7 +30,6 @@ const App: React.FC<IAppProps> = (props) => {
 
   //@ts-ignore
   const keycloak: KeycloakInstance = new Keycloak(keycloakInstanceConfig);
-  console.log('KEYCLOAK OBJ: ', keycloak);
   let keycloakConfig = null;
 
   if (window['cordova']) {
