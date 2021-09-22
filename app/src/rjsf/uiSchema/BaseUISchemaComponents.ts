@@ -221,8 +221,12 @@ const AquaticPlants = {
   'edna_sample':{},
   'enda_sample_information':{
     'edna_sample_id':{},
-    'genetic_structure_collected':{},
-    'ui:order':['edna_sample_id','genetic_structure_collected']
+    'sample_type':{},
+    'field_replicates_num': {},
+    'control_sample_taken':{
+      'ui:widget': 'select'
+    },
+    'ui:order':['edna_sample_id','sample_type','field_replicates_num','control_sample_taken']
   },
   'ui:order':[
     'sample_point_id',

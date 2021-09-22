@@ -14,6 +14,36 @@ export function getCustomValidator(validators: rjsfValidator[]): rjsfValidator {
   };
 }
 /*
+  Function to validate that:
+  users should not be able to create both a positive and negative observation of the same species
+  users should not be able to make two observations of the same species within a record.
+*/
+export function getPosAndNegObservationValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.invasive_plants ||
+      formData.activity_subtype_data.invasive_plants.length < 1
+    ) {
+      return errors;
+    }
+
+    const invPlantCodes = [];
+
+    formData.activity_subtype_data.invasive_plants.forEach((invPlant) => {
+      if (invPlantCodes.includes(invPlant.invasive_plant_code)) {
+        errors.activity_subtype_data['invasive_plants'].addError(
+          "You can't make two observations of the same species within a record."
+        );
+      } else {
+        invPlantCodes.push(invPlant.invasive_plant_code);
+      }
+    });
+
+    return errors;
+  };
+}
+/*
   Function to validate that in case 'slope' field has 'flat' option 
   selected, 'aspect' field option has to be 'flat' as well (and vice versa)
 */
