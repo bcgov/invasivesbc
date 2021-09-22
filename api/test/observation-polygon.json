@@ -1,70 +1,81 @@
 {
+  "activity_id": "e3cad5c7-b229-434e-9d7b-f2134a6a24b0",
+  "created_timestamp": "2021-01-18T21:00:04.324Z",
   "activity_type": "Observation",
-  "activity_subtype": "Terrestrial Invasive Plant",
-  "date": "2019-04-12",
-  "deviceRequestUID": "string",
+  "activity_subtype": "Activity_Observation_PlantTerrestrial",
   "geometry": [
     {
-      "type": "Polygon",
-      "coordinates": [
-        [
+      "type": "Feature",
+      "properties": {
+        "isRectangle": true
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
           [
-            -125.6,
-            48.3
-          ],
-          [
-            -126.6,
-            48.3
-          ],
-          [
-            -126.6,
-            49.3
-          ],
-          [
-            -125.6,
-            48.3
+            [
+              -128.211435,
+              55.018623
+            ],
+            [
+              -128.211435,
+              55.019299
+            ],
+            [
+              -128.20979,
+              55.019299
+            ],
+            [
+              -128.20979,
+              55.018623
+            ],
+            [
+              -128.211435,
+              55.018623
+            ]
           ]
         ]
-      ]
+      }
     }
   ],
-  "activity_data": {
-    "latitude": 49.29153,
-    "longitude": -124.95511,
-    "reported_area": 10
-  },
-  "activity_type_data": {
-    "negative_observation_ind": false,
-    "aquatic_observation_ind": false,
-    "primary_user_last_name": "mike",
-    "secondary_user_first_name": "mike",
-    "secondary_user_last_name": "mike",
-    "species": "banana",
-    "primary_file_id": "test",
-    "secondary_file_id": "test",
-    "location_comment": "test",
-    "general_observation_comment": "general comment",
-    "sample_label_number": "string"
-  },
-  "activity_subtype_data": {
-    "species": "banana",
-    "distribution": 123,
-    "density": 123,
-    "soil_texture": 1,
-    "slope": 123,
-    "aspect": 123,
-    "flowering": true,
-    "specific_use": 123,
-    "proposed_action": 123,
-    "seed_stage": 123,
-    "plant_health": 123,
-    "plant_life_stage": 123,
-    "early_detection": 1,
-    "research": true,
-    "well_on_site_ind": true,
-    "special_care_ind": true,
-    "biological_care_ind": true,
-    "legacy_site_ind": true,
-    "range_unit": "Canyon"
+  "media": [],
+  "form_data": {
+    "activity_data": {
+      "general_comment": "fdsf",
+      "access_description": "asdf",
+      "activity_date_time": "2021-01-18T13:00:04-08:00",
+      "reported_area": 7900,
+      "latitude": 55.018961,
+      "longitude": -128.210612,
+      "invasive_species_agency_code": "OGC",
+      "jurisdiction_code": "PCAN"
+    },
+    "activity_type_data": {
+      "observation_type_code": "TR",
+      "negative_obs_ind": false,
+      "observer_first_name": "fds",
+      "observer_last_name": "fds"
+    },
+    "activity_subtype_data": {
+      "flowering": false,
+      "legacy_site_ind": false,
+      "early_detection_rapid_resp_ind": false,
+      "research_detection_ind": false,
+      "well_ind": false,
+      "special_care_ind": false,
+      "biological_ind": false,
+      "invasive_plant_code": "BL",
+      "invasive_plant_density_code": "L",
+      "invasive_plant_distribution_code": "WS",
+      "soil_texture_code": "F",
+      "specific_use_code": "TS",
+      "slope_code": "GS",
+      "aspect_code": "E",
+      "proposed_treatment_code": "MT",
+      "range_unit_number": "3",
+      "plant_life_stage_code": "MFD",
+      "plant_health_code": "GH",
+      "plant_seed_stage_code": "NO"
+    }
   }
 }

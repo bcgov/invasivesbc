@@ -1,14 +1,27 @@
-import { CameraResultType, CameraSource } from '@capacitor/core';
+//import { CameraResultType, CameraSource } from '@capacitor/core';
+import { CameraResultType, CameraSource } from '@capacitor/camera';
 import { useCamera } from '@ionic/react-hooks/camera';
-import { Box, Button, Card, CardActions, CardMedia, CircularProgress, Grid, IconButton } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardMedia,
+  CircularProgress,
+  FormControl,
+  Grid,
+  IconButton,
+  TextField
+} from '@material-ui/core';
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
-import React from 'react';
+import React, { useState } from 'react';
 
 export interface IPhoto {
   filepath: string;
   webviewPath?: string;
   base64?: string;
   dataUrl?: string;
+  description?: string;
 }
 
 export interface IPhotoContainerProps {
@@ -21,19 +34,32 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const { getPhoto } = useCamera();
 
   const takePhoto = async () => {
-    const cameraPhoto = await getPhoto({
-      resultType: CameraResultType.DataUrl,
-      source: CameraSource.Camera,
-      quality: 100
-    });
+    try {
+      const cameraPhoto = await getPhoto({
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+        quality: 100
+      });
 
-    const fileName = new Date().getTime() + '.' + cameraPhoto.format;
-    const photo = {
-      filepath: fileName,
-      dataUrl: cameraPhoto.dataUrl
-    };
+      const fileName = new Date().getTime() + '.' + cameraPhoto.format;
+      const photo = {
+        filepath: fileName,
+        dataUrl: cameraPhoto.dataUrl,
+        description: 'text'
+      };
 
-    props.photoState.setPhotos([...props.photoState.photos, photo]);
+      props.photoState.setPhotos([...props.photoState.photos, photo]);
+    } catch (e) {
+      console.log('user cancelled or other camera problem');
+      console.log(JSON.stringify(e));
+    }
+  };
+
+  const changePhotoDescription = (filepath: any, fieldsToUpdate: Object) => {
+    const oldPhoto = props.photoState.photos.find((photo) => photo.filepath === filepath);
+    const otherPhotos = props.photoState.photos.filter((photo) => photo.filepath !== filepath);
+    const updatedPhoto = { ...oldPhoto, ...fieldsToUpdate };
+    props.photoState.setPhotos([...otherPhotos, updatedPhoto] as any);
   };
 
   const deletePhotos = async () => {
@@ -65,6 +91,14 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                       </IconButton>
                     </CardActions>
                   )}
+                  <FormControl>
+                    {photo.description}
+                    <TextField
+                      label="Change Description"
+                      onBlur={(e) => changePhotoDescription(photo.filepath, { description: e.target.value })}
+                    />
+                    <Button>Save</Button>
+                  </FormControl>
                 </Card>
               </Grid>
             ))}
@@ -74,7 +108,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       {!props.isDisabled && (
         <Box>
           <Grid container>
-            <Grid container item spacing={3} justify="center">
+            <Grid container item spacing={3} justifyContent="center">
               <Grid item>
                 <Button variant="contained" color="primary" startIcon={<AddAPhoto />} onClick={() => takePhoto()}>
                   Add A Photo

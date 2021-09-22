@@ -4,13 +4,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { WRITE_ROLES } from '../constants/misc';
+import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivityPostRequestBody } from '../models/activity';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
-import { getLogger } from '../utils/logger';
 import { commit as commitContext } from '../utils/context-queries';
+import { getLogger } from '../utils/logger';
 import { uploadMedia } from './media';
 
 const defaultLog = getLogger('activity');
@@ -24,7 +24,7 @@ const post_put_apiDoc = {
   tags: ['activity'],
   security: [
     {
-      Bearer: WRITE_ROLES
+      Bearer: ALL_ROLES
     }
   ],
   requestBody: {
@@ -32,7 +32,15 @@ const post_put_apiDoc = {
     content: {
       'application/json': {
         schema: {
-          required: ['activity_id', 'created_timestamp', 'activity_type', 'activity_subtype'],
+          required: [
+            'activity_id',
+            'created_timestamp',
+            'activity_type',
+            'activity_subtype',
+            'created_by',
+            'sync_status',
+            'form_status'
+          ],
           properties: {
             activity_id: {
               type: 'string',
@@ -54,43 +62,152 @@ const post_put_apiDoc = {
               type: 'string',
               title: 'Activity subtype'
             },
-            media: {
+            created_by: {
+              type: 'string',
+              title: 'Created by',
+              description: 'ID of the author of the activity.'
+            },
+            sync_status: {
+              enum: ['Save Successful', 'Not Saved', 'Saving Failed'],
+              type: 'string',
+              title: 'Save status',
+              description: 'Whether the activity was saved or not, or had a saving error'
+            },
+            form_status: {
+              enum: ['Valid', 'Invalid', 'Not Validated'],
+              type: 'string',
+              title: 'Form status',
+              description: 'Validation status of the activity form.'
+            },
+            review_status: {
+              enum: ['Pre-Approved', 'Not Reviewed', 'Under Review', 'Approved', 'Disapproved'],
+              type: 'string',
+              title: 'Review status',
+              description: 'The current review status of the activity'
+            },
+            species_positive: {
               type: 'array',
-              title: 'Media',
+              title: 'Species Codes',
+              description: 'List of species in the given activity',
               items: {
-                $ref: '#/components/schemas/Media'
+                type: 'string'
               }
             },
-            geometry: {
+            species_negative: {
               type: 'array',
-              title: 'Geometries',
+              title: 'Species Codes (Negatively Occuring)',
+              description: 'List of species negatively occuring in the given activity',
               items: {
-                ...(geoJSON_Feature_Schema as any)
-              },
-              description: 'An array of GeoJSON Features'
-            },
-            form_data: {
+                type: 'string'
+              }
+            }
+          },
+          allOf: [
+            {
               oneOf: [
-                { $ref: '#/components/schemas/Activity_Observation_PlantTerrestial' },
-                { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
-                { $ref: '#/components/schemas/Activity_Observation_AnimalTerrestrial' },
-                { $ref: '#/components/schemas/Activity_Observation_AnimalAquatic' },
-                { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_BiologicalDispersalPlant' },
-                { $ref: '#/components/schemas/Activity_Treatment_MechanicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Treatment_ChemicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Treatment_BiologicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
-                { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAnimal' },
-                { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialAnimal' }
+                {
+                  properties: {
+                    media: {
+                      type: 'array',
+                      title: 'Media',
+                      items: {
+                        $ref: '#/components/schemas/Media'
+                      }
+                    },
+                    geometry: {
+                      type: 'array',
+                      title: 'Geometries',
+                      items: {
+                        ...(geoJSON_Feature_Schema as any)
+                      },
+                      description: 'An array of GeoJSON Features'
+                    },
+                    form_data: {
+                      oneOf: [
+                        { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
+                        { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
+                        { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
+                        { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
+                        { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
+                        { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
+                        { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
+                        { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
+                        { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+                        { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                        { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
+                        { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
+                        { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
+                        { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
+                      ]
+                    },
+                    created_by: {
+                      type: 'string',
+                      title: 'Created by',
+                      description: 'ID of the author of the activity.'
+                    },
+                    sync_status: {
+                      enum: ['Not Saved', 'Saving Failed', 'Save Successful'],
+                      type: 'string',
+                      title: 'Saving status',
+                      description: 'Whether the activity was saved or not, or had a saving error'
+                    },
+                    form_status: {
+                      enum: ['Valid'],
+                      type: 'string',
+                      title: 'Form status',
+                      description: 'Validation status of the activity form.'
+                    }
+                  }
+                },
+                {
+                  properties: {
+                    form_status: {
+                      enum: ['Invalid', 'Not Validated'],
+                      type: 'string',
+                      title: 'Form status',
+                      description: 'Validation status of the activity form.'
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              anyOf: [
+                {
+                  properties: {
+                    review_status: {
+                      enum: ['Pre-Approved', 'Not Reviewed', 'Under Review'],
+                      type: 'string',
+                      title: 'Review status',
+                      description: 'The current review status of the activity'
+                    }
+                  }
+                },
+                {
+                  properties: {
+                    review_status: {
+                      enum: ['Approved', 'Disapproved'],
+                      type: 'string',
+                      title: 'Review status',
+                      description: 'The current review status of the activity'
+                    },
+                    reviewed_by: {
+                      type: 'string',
+                      title: 'Reviewed by',
+                      description: 'The id of the latest reviewer'
+                    },
+                    reviewed_at: {
+                      type: 'string',
+                      title: 'Reviewed at',
+                      format: 'date-time',
+                      example: '2018-11-13T20:20:39+00:00',
+                      description: 'Date of latest review. Must be in ISO8601 format.'
+                    }
+                  }
+                }
               ]
             }
-          }
+          ]
         }
       }
     }
@@ -195,7 +312,6 @@ function createActivity(): RequestHandler {
             message: 'Resource with matching activity_id already exists.'
           };
         }
-
         createResponse = await connection.query(createActivitySQLStatement.text, createActivitySQLStatement.values);
 
         await connection.query('COMMIT');
@@ -207,7 +323,7 @@ function createActivity(): RequestHandler {
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       // kick off asynchronous context collection activities
-      commitContext(result, req);
+      if (req.body.form_data.activity_data.latitude) commitContext(result, req);
 
       return res.status(200).json(result);
     } catch (error) {
@@ -271,7 +387,7 @@ function updateActivity(): RequestHandler {
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       // kick off asynchronous context collection activities
-      commitContext(result, req);
+      if (req.body.form_data?.activity_data?.latitude) commitContext(result, req);
 
       return res.status(200).json(result);
     } catch (error) {

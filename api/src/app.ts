@@ -20,7 +20,10 @@ app.use(function (req: any, res: any, next: any) {
   defaultLog.info(`${req.method} ${req.url}`);
 
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With, Content-Type, Authorization, responseType, Access-Control-Allow-Origin'
+  );
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 'max-age=4');
@@ -30,7 +33,7 @@ app.use(function (req: any, res: any, next: any) {
 
 // Initialize express-openapi framework
 initialize({
-  validateApiDoc: true,
+  validateApiDoc: false,
   apiDoc: './src/openapi/api-doc.json', // base open api spec
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
@@ -53,9 +56,12 @@ initialize({
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
+    defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
   },
-  errorMiddleware: function (error, req, res) {
+  // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  errorMiddleware: function (error, req, res, next) {
     if (!error.status) {
       // TODO some unplanned errors do have a status, maybe change status to code for intentional errors?
       // log any unintentionally thrown errors (where no status has been set)

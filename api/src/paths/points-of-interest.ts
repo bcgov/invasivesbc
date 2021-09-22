@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -35,14 +35,17 @@ POST.apiDoc = {
             },
             limit: {
               type: 'number',
-              default: 25,
+              default: SEARCH_LIMIT_DEFAULT,
               minimum: 0,
-              maximum: 100
+              maximum: SEARCH_LIMIT_MAX
             },
             point_of_interest_type: {
               type: 'string'
             },
             point_of_interest_subtype: {
+              type: 'string'
+            },
+            iappType: {
               type: 'string'
             },
             date_range_start: {
@@ -55,8 +58,30 @@ POST.apiDoc = {
               description: 'Date range end, in YYYY-MM-DD format. Defaults time to end of day.',
               example: '2020-08-30'
             },
+            point_of_interest_ids: {
+              type: 'array',
+              description: 'A list of ids to limit results to',
+              items: {
+                type: 'string'
+              }
+            },
             search_feature: {
               ...(geoJSON_Feature_Schema as any)
+            },
+            species_positive: {
+              type: 'array',
+              description:
+                'A list of Terrestrial or Aquatic plant species codes to search for.  Results will match any in the list.',
+              items: {
+                type: 'string'
+              }
+            },
+            order: {
+              type: 'array',
+              description: 'A list of columns to order by. (for DESC, use "columname DESC")',
+              items: {
+                type: 'string'
+              }
             }
           }
         }
@@ -73,8 +98,19 @@ POST.apiDoc = {
             items: {
               type: 'object',
               properties: {
-                // Don't specify exact response, as it will vary, and is not currently enforced anyways
-                // Eventually this could be updated to be a oneOf list, similar to the Post request below.
+                rows: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      // Don't specify exact object properties, as it will vary, and is not currently enforced anyways
+                      // Eventually this could be updated to be a oneOf list, similar to the Post request below.
+                    }
+                  }
+                },
+                count: {
+                  type: 'number'
+                }
               }
             }
           }
@@ -105,9 +141,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       message: 'getPointsOfInterestBySearchFilterCriteria',
       body: req.body
     });
-
     const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(req.body);
-
     const connection = await getDBConnection();
 
     if (!connection) {
@@ -129,9 +163,13 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = (response && response.rows) || null;
+      // parse the rows from the response
+      const rows = { rows: (response && response.rows) || [] };
 
-      return res.status(200).json(result);
+      // parse the count from the response
+      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
+
+      return res.status(200).json({ ...rows, ...count });
     } catch (error) {
       defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error });
       throw error;

@@ -14,7 +14,7 @@ jobs:
   # Print variables for logging and debugging purposes
   checkEnv:
     name: Check Env variables
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     env:
       LABELS: ${{ toJson(github.event.pull_request.labels) }}
@@ -32,7 +32,7 @@ jobs:
   # Build the Database image
   buildDatabase:
     name: Build Database Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -46,7 +46,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.16
+          node-version: 12.3.1
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -64,7 +64,7 @@ jobs:
   # Build the Database Setup image
   buildDatabaseSetup:
     name: Build Database Setup Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -78,7 +78,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.16
+          node-version: 12.3.1
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -96,7 +96,7 @@ jobs:
   # Build the API image
   buildAPI:
     name: Build API Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -110,7 +110,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.16
+          node-version: 12.3.1
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -128,7 +128,7 @@ jobs:
   # Build the web frontend app
   buildAPP:
     name: Build App Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -142,7 +142,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.16
+          node-version: 12.3.1
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -160,7 +160,7 @@ jobs:
   # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -176,7 +176,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.16
+          node-version: 12.3.1
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -194,7 +194,7 @@ jobs:
   # Deploy Database image
   deployDatabaseSetup:
     name: Deploy Database Setup Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -211,7 +211,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.16
+          node-version: 12.3.1
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -229,7 +229,7 @@ jobs:
   # Deploy API image
   deployAPI:
     name: Deploy API Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -246,7 +246,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.16
+          node-version: 12.3.1
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -264,7 +264,7 @@ jobs:
   # Deploy App image
   deployAPP:
     name: Deploy App Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     if: ${{ github.event.pull_request.merged == true }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -280,7 +280,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.16
+          node-version: 12.3.1
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -298,7 +298,7 @@ jobs:
   # Clean any artifacts created by the deploy-pr workflow (if it ran, see comments at the top of `deploy-pr.yml`)
   clean:
     name: Clean Merged PR Build and Deploy Artifacts
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     # Only clean if the PR was merged (but not closed) and was marked as a PR-DEPLOY
     if: |
       ${{ github.event.pull_request.merged == true &&
@@ -321,7 +321,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.16
+          node-version: 12.3.1
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.

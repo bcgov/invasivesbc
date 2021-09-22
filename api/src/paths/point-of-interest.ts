@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { WRITE_ROLES } from '../constants/misc';
+import { ALL_ROLES } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { PointOfInterestPostRequestBody } from '../models/point-of-interest';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
@@ -19,7 +19,7 @@ POST.apiDoc = {
   tags: ['point-of-interest'],
   security: [
     {
-      Bearer: WRITE_ROLES
+      Bearer: ALL_ROLES
     }
   ],
   requestBody: {
@@ -53,6 +53,13 @@ POST.apiDoc = {
             },
             form_data: {
               oneOf: [{ $ref: '#/components/schemas/PointOfInterest_IAPP_Site' }]
+            },
+            species_positive: {
+              type: 'array',
+              title: 'Species Codes',
+              items: {
+                type: 'string'
+              }
             }
           }
         }
@@ -96,7 +103,6 @@ POST.apiDoc = {
 function createPointOfInterest(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'point-of-interest', message: 'createPointOfInterest', body: req.params });
-
     const connection = await getDBConnection();
     if (!connection) {
       throw {
@@ -120,7 +126,7 @@ function createPointOfInterest(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = (response && response.rows && response.rows[0]) || null;
+      const result = response?.rows?.[0] || null;
 
       return res.status(200).json(result);
     } catch (error) {

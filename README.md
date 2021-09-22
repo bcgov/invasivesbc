@@ -1,9 +1,13 @@
 # Invasive Species BC
-[![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
+
+[![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+[![Dev Build Successful](https://github.com/bcgov/invasivesbc/actions/workflows/deploy.yml/badge.svg)](https://github.com/bcgov/invasivesbc/actions/workflows/deploy.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_invasivesbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_invasivesbc) [![codecov](https://codecov.io/gh/bcgov/invasivesbc/branch/dev/graph/badge.svg)](https://codecov.io/gh/bcgov/invasivesbc)
 
 ## Introduction
+
+
 
 Invasive species are non-native plants and animals whose introduction and spread in British Columbia cause significant economic, social or environmental damage. This application tracks the observation, treatment, and monitoring of invasive species in the Province of British Columbia.
 
@@ -100,11 +104,11 @@ The ideal multi-platform supporting machine is the Mac, But Windows and Linus wo
 
 ### Android Development
 
-Install AndroidStudio and the Android SDK
+Install AndroidStudio and the Android SDK.
 
 ### IOS Development
 
-On MacOS: Install xCode
+On MacOS: Install xCode.
 
 
 ## Setup Instructions

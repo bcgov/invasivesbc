@@ -1,12 +1,7 @@
 import { Operation } from 'express-openapi';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('misc/version');
 
 export const GET: Operation = [
   (req, res) => {
-    defaultLog.debug({ label: 'misc-version-get' });
-
     const versionInfo = {
       version: process.env.VERSION || '0',
       environment: process.env.environment || process.env.NODE_ENV || 'localhost'

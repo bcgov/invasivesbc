@@ -13,6 +13,8 @@ const defaultLog = getLogger('auth-utils');
 const APP_CERTIFICATE_URL =
   process.env.APP_CERTIFICATE_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs';
 
+const KEYCLOAK_CLIENT_ID = 'invasives-bc';
+
 const TOKEN_IGNORE_EXPIRATION: boolean =
   process.env.TOKEN_IGNORE_EXPIRATION === 'true' ||
   process.env.NODE_ENV === 'dev' ||
@@ -113,21 +115,21 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
       };
     }
 
+    defaultLog.debug({ label: 'verifyToken', message: 'verifiedToken', verifiedToken });
+
     // Add the verified token to the request for future use, if needed
     req.auth_payload = verifiedToken;
 
-    // Verify user
-    const verifiedUser = await verifyUser(req, scopes);
+    // Verify that the user role(s) (from keycloak) align with the required roles for this endpoint (security scopes)
+    // The user may have multiple roles, but this check only requires 1 role to match for successful authorization
+    const areUserRolesValid = userHasValidRoles(scopes, verifiedToken['resource_access'][KEYCLOAK_CLIENT_ID].roles);
 
-    if (!verifiedUser) {
+    if (!areUserRolesValid) {
       throw {
         status: 401,
         message: 'Access Denied'
       };
     }
-
-    // Add the user to the request for future use, if needed
-    req.auth_user = verifiedUser;
 
     return true;
   } catch (error) {
@@ -156,8 +158,6 @@ const verifyToken = function (tokenString: any, secretOrPublicKey: any): any {
       return null;
     }
 
-    defaultLog.debug({ label: 'verifyToken', message: 'verifiedToken', verifiedToken });
-
     // Verify that the token came from the expected issuer
     // Example: when running in prod, only accept tokens from `sso.pathfinder...` and not `sso-dev.pathfinder...`, etc
     if (!APP_CERTIFICATE_URL.includes(verifiedToken.iss)) {
@@ -174,48 +174,6 @@ const verifyToken = function (tokenString: any, secretOrPublicKey: any): any {
 
     return verifiedToken;
   });
-};
-
-/**
- * Verify the user.
- *
- * - Fetches the matching user and their assigned roles based on the users email
- * - Checks that the user has at least one of the required roles for the current route
- *
- * @param {*} req
- * @returns
- */
-export const verifyUser = async function (req: any, scopes: string[]) {
-  // get user and their role
-  const response = await getUserWithRoles(req.auth_payload.email);
-
-  if (!response) {
-    defaultLog.warn({
-      label: 'verifyUser',
-      message: 'failed to find user with matching email',
-      email: req.auth_payload.email,
-      response
-    });
-    return null;
-  }
-
-  const userHasRole = verifyUserRoles(scopes, response['code_name']);
-
-  if (!userHasRole) {
-    defaultLog.warn({ label: 'verifyUser', message: 'user verification error: insufficient roles' });
-    defaultLog.debug({
-      label: 'verifyUser',
-      message: 'user verification error: insufficient roles',
-      userRoles: response['role_code'],
-      requiredRoles: scopes
-    });
-    return null;
-  }
-
-  defaultLog.debug({ label: 'verifyUser', message: 'user verification success' });
-
-  // return verified user
-  return response;
 };
 
 /**
@@ -291,4 +249,29 @@ export const getUserWithRoles = async function (email: string) {
   } finally {
     connection.release();
   }
+};
+
+/**
+ * Checks a set of user roles against a set of valid roles.
+ *
+ * @param {(string | string[])} validRoles one or more valid roles to match against
+ * @param {(string | string[])} userRoles one or more user roles to check against the valid roles
+ * @return {boolean} true if the user has at least 1 of the valid roles, false otherwise
+ */
+export const userHasValidRoles = function (validRoles: string | string[], userRoles: string | string[]): boolean {
+  if (!Array.isArray(validRoles)) {
+    validRoles = [validRoles];
+  }
+
+  if (!Array.isArray(userRoles)) {
+    userRoles = [userRoles];
+  }
+
+  for (const validRole of validRoles) {
+    if (userRoles.includes(validRole)) {
+      return true;
+    }
+  }
+
+  return false;
 };

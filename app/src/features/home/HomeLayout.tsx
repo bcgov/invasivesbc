@@ -2,46 +2,41 @@ import { Box, Collapse, IconButton } from '@material-ui/core';
 import Badge from '@material-ui/core/Badge';
 import { Close, MarkunreadMailbox } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
-import NetworkStatusComponent from 'components/network/NetworkStatusComponent';
+import Footer from 'components/Footer/Footer';
 import TabsContainer from 'components/tabs/TabsContainer';
 import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
+// import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 
-const HomeLayout = (props: any) => {
+export interface IHomeLayoutProps {
+  children: any;
+}
+
+const HomeLayout: React.FC<IHomeLayoutProps> = (props: any) => {
   const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
+  // const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [isOpen, setIsOpen] = useState(false);
   const [notification, setNotification] = useState(null);
   const [notificationCount, setNotificationCount] = useState(0);
 
-  const addNotificationsToPage = useCallback(async () => {
-    await databaseContext.database.createIndex({
-      index: {
-        name: 'notifyIndex',
-        fields: ['dateCreated', '_id', 'docType', 'notificationType', 'text', 'acknowledged']
-      }
-    });
+  const addNotificationsToPage = null;
 
-    const notifyIndex = await (await databaseContext.database.getIndexes()).indexes.find(
-      (e) => e.name === 'notifyIndex'
-    );
-
-    const notifications = await databaseContext.database.find({
+  /*  let notifications = await databaseContext.database.find({
       selector: {
-        dateCreated: { $gte: null },
-        _id: { $gte: null },
         docType: DocType.NOTIFICATION,
-        notificationType: { $gte: null },
-        text: { $gte: null },
         acknowledged: false
       },
+      fields: ['dateCreated', '_id', 'notificationType', 'text', 'docType', 'acknowledged'],
+      use_index: 'notificationsIndex'
+    });
 
-      fields: ['dateCreated', '_id', 'docType', 'notificationType', 'text', 'acknowledged'],
-      sort: [{ dateCreated: 'desc' }], //    <--   can't find or use index
-      use_index: notifyIndex.ddoc
+    notifications.docs = notifications.docs.filter((note) => note._id && note.notificationType && note.text);
+    notifications.docs.sort((a, b) => {
+      if (a.dateCreated < b.dateCreated) return 1;
+      if (a.dateCreated > b.dateCreated) return -1;
+      return 0;
     });
 
     setNotificationCount(notifications.docs.length);
@@ -50,15 +45,15 @@ const HomeLayout = (props: any) => {
       setNotification(notifications.docs[0]);
       setIsOpen(true);
     }
-  }, [databaseContext.database]);
+    */
 
   useEffect(() => {
     const updateComponent = () => {
-      addNotificationsToPage();
+      //  addNotificationsToPage();
     };
 
     updateComponent();
-  }, [databaseChangesContext, addNotificationsToPage]);
+  }, [addNotificationsToPage]);
 
   const acknowledgeNotification = (docId: string) => {
     databaseContext.database.upsert(docId, (doc) => {
@@ -70,7 +65,7 @@ const HomeLayout = (props: any) => {
 
   return (
     <Box width="inherit" height="100%" display="flex" flex="1" flexDirection="column">
-      <TabsContainer />
+      <TabsContainer isMobileNoNetwork={props.children.props.isMobileNoNetwork} />
       <Collapse timeout={50} in={isOpen}>
         <Alert
           // severity can't be null so this is a workaround
@@ -96,14 +91,14 @@ const HomeLayout = (props: any) => {
         {props.children}
       </Box>
       <Box
-        height="43px"
+        style={{ zIndex: 99999999999 }}
         position="absolute"
         bottom="0"
         left="0"
         right="0"
         bgcolor="primary.main"
         color="primary.contrastText">
-        <NetworkStatusComponent />
+        <Footer />
       </Box>
     </Box>
   );

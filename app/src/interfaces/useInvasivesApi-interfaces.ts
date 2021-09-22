@@ -27,20 +27,6 @@ export interface IActivitySearchCriteria {
    */
   limit?: number;
   /**
-   * Column name to sort by.
-   *
-   * @type {string}
-   * @memberof IActivitySearchCriteria
-   */
-  sort_by?: string;
-  /**
-   * Direction to sort by.
-   *
-   * @type {SORT_DIRECTION}
-   * @memberof IActivitySearchCriteria
-   */
-  sort_direction?: SORT_DIRECTION;
-  /**
    * Columns to return.
    *
    * @type {string[]}
@@ -76,12 +62,61 @@ export interface IActivitySearchCriteria {
    */
   date_range_end?: string;
   /**
+   * List of IDs to limit search within
+   *
+   * @type {string[]}
+   * @memberof IActivitySearchCriteria
+   */
+  activity_ids?: string[];
+  /**
    * GeoJSON feature (of type polygon) to search in.
    *
    * @type {Feature}
    * @memberof IActivitySearchCriteria
    */
   search_feature?: Feature;
+  /**
+   * Activity requested return order.
+   *
+   * @type {string[]}
+   * @memberof IActivitySearchCriteria
+   */
+  order?: string[];
+  /**
+   * Identifier of the original author of the activity
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  created_by?: string;
+  /**
+   * Review status of the record
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  review_status?: string[];
+  /**
+   * Search for records linked to a particular ID
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  linked_id?: string;
+  /**
+   * List of species positively occurring in the activity to partially match
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  species_positive?: string[];
+  /**
+   * List of species negatively occurring in the activity to partially match
+   *
+   * @type {string}
+   * @memberof IActivitySearchCriteria
+   */
+  species_negative?: string[];
 }
 
 /**
@@ -91,13 +126,41 @@ export interface IActivitySearchCriteria {
  * @interface ICreateOrUpdateActivity
  */
 export interface ICreateOrUpdateActivity {
+  version?: string;
   activity_id: string;
+  activity_type: any;
+  activity_subtype: any;
+  received_timestamp?: string;
+  deleted_timestamp?: string;
+  media_keys?: any;
+  biogeoclimatic_zones?: any;
+  regional_invasive_species_organization_areas?: any;
+  invasive_plant_management_areas?: any;
+  ownership?: any;
+  regional_districts?: any;
+  flnro_districts?: any;
+  moti_districts?: any;
+  elevation?: any;
+  well_proximity?: any;
+  utm_zone?: any;
+  utm_northing?: any;
+  utm_easting?: any;
+  albers_northing?: any;
+  albers_easting?: any;
+  activity_incoming_data?: any;
+  reviewed_by?: any;
+  reviewed_at?: any;
+
   created_timestamp: string;
-  activity_type: ActivityType;
-  activity_subtype: ActivitySubtype;
+
   geometry: Feature[];
-  media: IMedia[];
+  media?: IMedia[];
   form_data: any;
+
+  sync_status?: string;
+  form_status?: string;
+  created_by?: string;
+  review_status?: string;
 }
 
 /**
@@ -121,12 +184,20 @@ export interface IMedia {
  */
 export interface IPointOfInterestSearchCriteria {
   /**
+   * Will only grab geos from api or local db
+   *
+   * @type {boolean}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  geoOnly?: boolean;
+  /**
    * The page of results to return. Starts at 0.
    *
    * @type {number}
    * @memberof IPointOfInterestSearchCriteria
    */
   page?: number;
+  /**
   /**
    * The number of results to return.
    *@
@@ -163,12 +234,76 @@ export interface IPointOfInterestSearchCriteria {
    */
   date_range_end?: Date;
   /**
+   * Point of Interest ids filter.
+   *
+   * @type {string[]}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  point_of_interest_ids?: string[];
+  /**
    * GeoJSON feature (of type polygon) to search in.
    *
    * @type {Feature}
    * @memberof IPointOfInterestSearchCriteria
    */
   search_feature?: Feature;
+  /**
+   * Point of Interest requested return order.
+   *
+   * @type {string[]}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  order?: string[];
+  /**
+   * Point of Interest - should query be local or server
+   *
+   * @type {boolean}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  online?: boolean;
+  /**
+   * Idenitifier of the original author of the point of interest
+   *
+   * @type {string}
+   * @memberof IPointOfInterestSearchCriteria
+   */
+  created_by?: string;
+}
+
+/**
+ * MetabaseQuery search filter criteria.
+ *
+ * @export
+ * @interface IMetabaseQuerySearchCriteria
+ */
+export interface IMetabaseQuerySearchCriteria {
+  /**
+   * The id of a corresponding Metabase Query to search for.
+   *
+   * @type {number}
+   * @memberof IMetabaseQuerySearchCriteria
+   */
+  metabaseQueryId?: number;
+  /**
+   * GeoJSON feature (of type polygon) to search in.
+   *
+   * @type {Feature}
+   * @memberof IMetabaseQuerySearchCriteria
+   */
+  search_feature?: Feature;
+}
+
+/**
+ * Create Metabase Query post body
+ *
+ * @export
+ * @interface ICreateMetabaseQuery
+ */
+export interface ICreateMetabaseQuery {
+  name?: string;
+  description?: string;
+  activity_ids?: string[];
+  point_of_interest_ids?: string[];
 }
 
 /**

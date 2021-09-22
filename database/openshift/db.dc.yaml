@@ -55,7 +55,7 @@ parameters:
     displayName: Volume Capacity
     name: VOLUME_CAPACITY
     required: true
-    value: '3Gi'
+    value: '15Gi'
   - description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION

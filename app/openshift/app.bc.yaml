@@ -30,13 +30,13 @@ parameters:
     value: dev
   - name: BASE_IMAGE_URL
     required: true
-    value: registry.access.redhat.com/ubi8/nodejs-10:1-41
+    value: registry.redhat.io/rhscl/nodejs-12-rhel7
   - name: SOURCE_IMAGE_NAME
     required: true
-    value: redhat-ubi-node-10
+    value: nodejs-12-rhel7
   - name: SOURCE_IMAGE_TAG
     required: true
-    value: 1-41
+    value: latest
 objects:
   - kind: ImageStream
     apiVersion: v1
