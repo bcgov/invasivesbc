@@ -16,7 +16,7 @@ import { createDataUTM, RenderTableActivity, RenderTablePosition, RenderTableDat
 import { getDataFromDataBC } from '../WFSConsumer';
 import * as turf from '@turf/turf';
 import { Feature, Geometry } from 'geojson';
-import { Layer } from 'leaflet';
+import { DomEvent, Layer } from 'leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
@@ -48,6 +48,13 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
   var activities;
 
   useEffect(() => {
+    if (popupElRef?.current) {
+      DomEvent.disableClickPropagation(popupElRef?.current);
+      DomEvent.disableScrollPropagation(popupElRef?.current);
+    }
+  });
+
+  useEffect(() => {
     if (lat && lng) {
       var point = turf.point([lng, lat]);
       setBufferedGeo(turf.buffer(point, radius, { units: 'kilometers' }));
@@ -59,33 +66,30 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
       getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
         setDataBC(returnVal);
       }, []);
-      updateActivityRecords();
     }
   }, [bufferedGeo]);
 
   useEffect(() => {
-    if (rows) console.dir(rows);
-  }, [rows]);
+    updateActivityRecords();
+  }, [bufferedGeo]);
 
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
       setRows([]);
-      //check console.dir('fetching buffered', bufferedGeo);
       activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
-      //(data check) console.dir(activities);
       if (activities) {
-        var len = activities?.rows.length;
         var tempArr = [];
-        tempArr.length = len;
-        for (let i in activities?.rows) {
-          var tempObj = activities?.rows[i];
-          tempArr[parseInt(i)] = {
-            tempObj,
-            open: false
-          };
-          setRows(tempArr);
+        for (let i in activities.rows) {
+          if (activities.rows[i]) {
+            var obj = activities.rows[i];
+            tempArr.push({
+              obj,
+              open: false
+            });
+          }
         }
-      } else setRows([]);
+        setRows(tempArr);
+      }
     }
   }, [bufferedGeo]);
 

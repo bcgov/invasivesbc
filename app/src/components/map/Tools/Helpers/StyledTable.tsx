@@ -69,28 +69,28 @@ const CreateAccordionTable = ({ row }) => {
       <TableBody>
         <StyledTableRow>
           <StyledTableCell>Created Date</StyledTableCell>
-          <StyledTableCell>{row.tempObj.activity_payload.date_created}</StyledTableCell>
+          <StyledTableCell>{row.obj.activity_payload.date_created}</StyledTableCell>
         </StyledTableRow>
         <StyledTableRow>
           <StyledTableCell>Created By</StyledTableCell>
-          <StyledTableCell>{row.tempObj.activity_payload.created_by}</StyledTableCell>
+          <StyledTableCell>{row.obj.activity_payload.created_by}</StyledTableCell>
         </StyledTableRow>
         <StyledTableRow>
           <StyledTableCell>Ownership</StyledTableCell>
-          <StyledTableCell>{row.tempObj.ownership}</StyledTableCell>
+          <StyledTableCell>{row.obj.ownership}</StyledTableCell>
         </StyledTableRow>
         <StyledTableRow>
           <StyledTableCell>Moti District</StyledTableCell>
-          <StyledTableCell>{row.tempObj.moti_districts}</StyledTableCell>
+          <StyledTableCell>{row.obj.moti_districts}</StyledTableCell>
         </StyledTableRow>
         <StyledTableRow>
           <StyledTableCell>Regional Districts</StyledTableCell>
-          <StyledTableCell>{row.tempObj.regional_districts}</StyledTableCell>
+          <StyledTableCell>{row.obj.regional_districts}</StyledTableCell>
         </StyledTableRow>
         <StyledTableRow>
           <StyledTableCell>Invasive Speciecs Agency Code</StyledTableCell>
           <StyledTableCell>
-            {row.tempObj.activity_payload.form_data.activity_data.invasive_species_agency_code}
+            {row.obj.activity_payload.form_data.activity_data.invasive_species_agency_code}
           </StyledTableCell>
         </StyledTableRow>
       </TableBody>
@@ -138,7 +138,7 @@ export const RenderTablePosition = ({ rows }) => {
 
 export const RenderTableActivity = ({ rows, setRows }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [emptyRows, setEmptyRows] = useState(0);
+  //const [emptyRows, setEmptyRows] = useState(0);
   const [page, setPage] = useState(0);
   const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();
@@ -147,18 +147,18 @@ export const RenderTableActivity = ({ rows, setRows }) => {
 
   const labels = ['ID', 'Activity Type', 'SubType'];
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (rows) {
       setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
     }
-  }, [rows]);
+  }, [rows]);*/
 
   const updateRow = (row, fieldsToUpdate: Object) => {
     var arrLen = rows.length;
     if (arrLen > 0) {
       var index;
       for (let i in rows) {
-        if (rows[i].tempObj.activity_id === row.tempObj.activity_id) {
+        if (rows[i].obj.activity_id === row.obj.activity_id) {
           index = i;
         }
       }
@@ -186,7 +186,7 @@ export const RenderTableActivity = ({ rows, setRows }) => {
       <TableBody>
         {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
           <>
-            <StyledTableRow key={row?.tempObj.activity_id}>
+            <StyledTableRow key={row?.obj.activity_id}>
               <StyledTableCell
                 style={{ display: 'flex', flexflow: 'row nowrap', marginRight: -20 }}
                 component="th"
@@ -197,17 +197,15 @@ export const RenderTableActivity = ({ rows, setRows }) => {
                 <Button
                   size="small"
                   onClick={async () => {
-                    const id = row.tempObj.activity_id;
+                    var id = row.obj.activity_id;
                     await dataAccess.setAppState({ activeActivity: id }, databaseContext);
                     history.push({ pathname: `/home/activity` });
                   }}>
-                  {row?.tempObj.activity_payload.short_id}
+                  {row?.obj.activity_payload.short_id}
                 </Button>
               </StyledTableCell>
-              <StyledTableCell style={{ marginRight: -40 }}>
-                {row?.tempObj.activity_payload.activity_type}
-              </StyledTableCell>
-              <StyledTableCell>{row?.tempObj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>
+              <StyledTableCell style={{ marginRight: -40 }}>{row?.obj.activity_payload.activity_type}</StyledTableCell>
+              <StyledTableCell>{row?.obj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>
             </StyledTableRow>
             <TableRow>
               <Collapse in={row?.open} timeout="auto" unmountOnExit>
@@ -216,7 +214,7 @@ export const RenderTableActivity = ({ rows, setRows }) => {
             </TableRow>
           </>
         ))}
-        {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
+        {/*emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />*/}
         <CreateTableFooter
           records={rows}
           rowsPerPage={rowsPerPage}
@@ -233,7 +231,7 @@ export const RenderTableDataBC = ({ records }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, records?.length - page * rowsPerPage);
+  //const emptyRows = rowsPerPage - Math.min(rowsPerPage, records?.length - page * rowsPerPage);
 
   const labels = ['AQUIFER ID', 'Coordinates', 'Street Address'];
 
@@ -267,7 +265,7 @@ export const RenderTableDataBC = ({ records }) => {
             )
           )}
         </>
-        {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
+        {/*emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />*/}
         <CreateTableFooter
           records={records}
           rowsPerPage={rowsPerPage}
