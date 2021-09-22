@@ -8,5 +8,5 @@ export async function seed(knex: Knex): Promise<void> {
   const sql = await ungzip(data);
 
   await knex.raw('drop table if exists regional_invasive_species_organization_areas');
-  // await knex.raw(sql.toString());
+  await knex.raw(sql.toString());
 }
