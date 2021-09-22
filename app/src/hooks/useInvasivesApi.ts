@@ -19,10 +19,32 @@ const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
 
 const API_HOST = REACT_APP_API_HOST;
 const API_PORT = REACT_APP_API_PORT;
-const API_URL = REACT_APP_API_HOST
-  ? `http://${API_HOST}:${API_PORT}`
-  : 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
 
+// If NODE_ENV is set, it will take precedence.
+// If no node env is set, you get react env vars.
+// If no react env vars are set, you get the default docker URL.
+
+// This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
+
+let API_URL;
+// you can't actually use NODE_ENV becuase you can't override it.
+switch (process.env.REAL_NODE_ENV) {
+  case 'development':
+    API_URL = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
+    break;
+  case 'test':
+    API_URL = 'https://api-test-invasivesbci.apps.silver.devops.gov.bc.ca';
+    break;
+  case 'production':
+    API_URL = 'https://invasivesbci.apps.silver.devops.gov.bc.ca';
+    break;
+  default:
+    API_URL = API_HOST ? `http://${API_HOST}:${API_PORT}` : 'http://localhost:7080';
+    break;
+}
+
+// This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
+console.dir(process.env);
 console.log('API_URL', API_URL);
 
 /**

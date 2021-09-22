@@ -1,0 +1,19 @@
+#/bin/bash
+case $1 in
+
+  "dev")
+    export REAL_NODE_ENV='development'
+    ;;
+
+  "local")
+    export REAL_NODE_ENV='local'
+    ;;
+
+  "test")
+    export REAL_NODE_ENV='test'
+    ;;
+
+  "prod")
+    export REAL_NODE_ENV='production'
+    ;;
+esac

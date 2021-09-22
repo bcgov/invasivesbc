@@ -21,6 +21,7 @@ import {
   Divider,
   Hidden
 } from '@material-ui/core';
+import './TabsContainer.css';
 import clsx from 'clsx';
 import { Assignment, Bookmarks, Explore, HomeWork, Map, Search, Home } from '@material-ui/icons';
 import { ALL_ROLES } from 'constants/roles';
@@ -290,6 +291,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 onClick={() => history.push('/')}
               />
               <b>InvasivesBC</b>
+              <div className={'beta'}>BETA</div>
             </Grid>
             <Hidden smDown>
               <Grid xs={11} item>
