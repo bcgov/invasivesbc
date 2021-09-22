@@ -107,7 +107,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   return (
     <Container className={props.classes.container}>
       <Box display="flex" justifyContent="space-between">
-        <Typography variant="h4">Welcome to the InvasivesBC Application</Typography>
+        <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
         {userInfo && (
           <Button variant="contained" color="primary" size="large" onClick={logoutUser}>
             Logout
