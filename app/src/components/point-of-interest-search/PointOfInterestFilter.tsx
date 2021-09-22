@@ -1,7 +1,12 @@
+import { Capacitor } from '@capacitor/core';
 import DateFnsUtils from '@date-io/date-fns';
+import DatesFnsUtils from '@date-io/date-fns';
 import {
+  Box,
   Button,
+  FormControlLabel,
   Grid,
+  Input,
   InputLabel,
   List,
   ListItem,
@@ -9,16 +14,19 @@ import {
   MenuItem,
   Paper,
   Select,
-  Switch
+  Switch,
+  TextField
 } from '@material-ui/core';
-import { Add, DeleteForever } from '@material-ui/icons';
+import { Add, ContactlessOutlined, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import React, { useContext, useEffect, useState } from 'react';
 
 interface IPointOfInterestChoices {
   pointOfInterestType: string;
+  iappType?: string;
   includePhotos: boolean;
   includeForms: boolean;
   startDate: string;
@@ -37,34 +45,51 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
+  const databaseContext = useContext(DatabaseContext2);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
+  const [iappSelected, setIappSelected] = useState(false);
 
   const getPointOfInterestChoicesFromTrip = async () => {
-    let docs = await databaseContext.database.find({
-      selector: {
-        _id: 'trip'
-      }
-    });
-    if (docs.docs.length > 0) {
-      let tripDoc = docs.docs[0];
-      if (tripDoc.pointOfInterestChoices) {
-        setPointOfInterestChoices([...tripDoc.pointOfInterestChoices]);
+    if (Capacitor.getPlatform() !== 'web') {
+      let queryResults = await query(
+        { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
+        databaseContext
+      );
+      const choices = JSON.parse(queryResults[0].json).pointOfInterestChoices;
+      if (choices) {
+        setPointOfInterestChoices([...choices]);
+        console.log('choices are here');
+        console.log(choices[0]['pointOfInterestType']);
+        setIappSelected(choices[0]['pointOfInterestType'] !== '');
       }
     }
   };
+
+  //change this to only look for changes that are relevant
   useEffect(() => {
     const updateComponent = () => {
       getPointOfInterestChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext]);
+  }, []);
 
   const saveChoices = async (newPointOfInterestChoices) => {
-    await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...tripDoc, pointOfInterestChoices: newPointOfInterestChoices };
-    });
+    //sqlite
+    if (Capacitor.getPlatform() !== 'web') {
+      const tripID: string = props.trip_ID;
+      let result = await upsert(
+        [
+          {
+            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+            ID: tripID,
+            docType: DocType.TRIP,
+            json: { pointOfInterestChoices: newPointOfInterestChoices }
+          }
+        ],
+        databaseContext
+      );
+    }
+    setPointOfInterestChoices([...newPointOfInterestChoices]);
   };
 
   const addPointOfInterestChoice = (newPointOfInterest: IPointOfInterestChoices) => {
@@ -102,18 +127,91 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           id="demo-simple-select"
                           value={pointOfInterestChoice.pointOfInterestType}
                           onChange={(e) => {
+                            let iappType = null;
+                            let iappSiteID = '';
+                            if (e.target.value === 'IAPP Site') {
+                              iappType = '';
+                              setIappSelected(true);
+                            } else {
+                              iappType = null;
+                              setIappSelected(false);
+                            }
                             updatePointOfInterestChoice(
-                              { ...pointOfInterestChoice, pointOfInterestType: e.target.value },
+                              {
+                                ...pointOfInterestChoice,
+                                pointOfInterestType: e.target.value,
+                                iappType: iappType,
+                                iappSiteID: iappSiteID
+                              },
                               index
                             );
                           }}>
                           <MenuItem value={''}>All</MenuItem>
                           <MenuItem value={'IAPP Site'}>IAPP Site</MenuItem>
-                          <MenuItem value={'Well'}>Well</MenuItem>
                         </Select>
                       </div>
                     </Grid>
                     <Grid item xs={4}>
+                      <div style={{ display: iappSelected ? 'block' : 'none' }}>
+                        <InputLabel id="demo-simple-select-label">IAPP Data Type</InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={pointOfInterestChoice.iappType}
+                          onChange={(e) => {
+                            updatePointOfInterestChoice({ ...pointOfInterestChoice, iappType: e.target.value }, index);
+                          }}>
+                          <MenuItem value={''}>All</MenuItem>
+                          <MenuItem value={'survey_dates'}>Survey Dates</MenuItem>
+                          <MenuItem value={'chemical_treatment_dates'}>Chemical Treatment Dates</MenuItem>
+                          <MenuItem value={'chemical_treatment_monitoring_dates'}>
+                            Chemical Treatment Monitoring Dates
+                          </MenuItem>
+                          <MenuItem value={'biological_dispersal_dates'}>Biological Dispersal</MenuItem>
+                          <MenuItem value={'biological_treatment_dates'}>Biological Treatment Dates</MenuItem>
+                          <MenuItem value={'biological_treatment_monitoring_dates'}>
+                            Biological Treatment Monitoring Dates
+                          </MenuItem>
+                          <MenuItem value={'mechanical_treatment_dates'}>Mechanical Treatment Dates</MenuItem>
+                          <MenuItem value={'mechanical_treatment_monitoring_dates'}>
+                            Mechanical Treatment Monitoring Dates
+                          </MenuItem>
+                          <MenuItem value={'mechanical_treatment_monitoring_dates'}>
+                            Mechanical Treatment Monitoring Dates
+                          </MenuItem>
+                        </Select>
+                      </div>
+                    </Grid>
+                    <Grid style={{ display: iappSelected ? 'block' : 'none' }} item xs={6}>
+                      <InputLabel>Filter by IAPP Site ID?</InputLabel>
+                      <Switch
+                        checked={pointOfInterestChoice.filterByIappSiteID}
+                        onChange={() => {
+                          updatePointOfInterestChoice(
+                            { ...pointOfInterestChoice, filterByIappSiteID: !pointOfInterestChoice.filterByIappSiteID },
+                            index
+                          );
+                        }}
+                        name="checkedB"
+                        color="primary"
+                      />
+                    </Grid>
+
+                    <Grid style={{ display: iappSelected ? 'block' : 'none' }} item xs={6}>
+                      <InputLabel style={{ display: pointOfInterestChoice.filterByIappSiteID ? 'block' : 'none' }}>
+                        IAPP Site ID
+                      </InputLabel>
+                      <Input
+                        type={'number'}
+                        style={{ display: pointOfInterestChoice.filterByIappSiteID ? 'block' : 'none' }}
+                        id="poi-id-filter"
+                        value={pointOfInterestChoice.iappSiteID}
+                        onChange={(e) => {
+                          updatePointOfInterestChoice({ ...pointOfInterestChoice, iappSiteID: e.target.value }, index);
+                        }}
+                      />
+                    </Grid>
+                    {/*   <Grid item xs={4}>
                       <InputLabel>Photos</InputLabel>
                       <Switch
                         color="primary"
@@ -125,8 +223,8 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           );
                         }}
                       />
-                    </Grid>
-                    <Grid item xs={4}>
+                      </Grid>*/}
+                    {/*  <Grid item xs={4}>
                       <InputLabel>Forms</InputLabel>
                       <Switch
                         color="primary"
@@ -138,7 +236,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                           );
                         }}
                       />
-                    </Grid>
+                      </Grid> */}
                     <Grid item xs={6}>
                       <KeyboardDatePicker
                         autoOk
@@ -146,13 +244,13 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                         format="MM/dd/yyyy"
                         margin="normal"
                         id="date-picker-inline"
-                        label="Earliest Date"
+                        label="Earliest Dates"
                         value={pointOfInterestChoice.startDate}
                         onChange={(e) => {
                           updatePointOfInterestChoice({ ...pointOfInterestChoice, startDate: e }, index);
                         }}
                         KeyboardButtonProps={{
-                          'aria-label': 'change date start'
+                          'aria-label': 'change Dates start'
                         }}
                       />
                     </Grid>
@@ -173,7 +271,7 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
                         }}
                       />
                     </Grid>
-                    <Grid container item justify="flex-end">
+                    <Grid container item justifyContent="flex-end">
                       <Button
                         variant="contained"
                         startIcon={<DeleteForever />}
@@ -187,21 +285,23 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
             );
           })}
         </List>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={() => {
-            addPointOfInterestChoice({
-              pointOfInterestType: '',
-              includePhotos: false,
-              includeForms: false,
-              startDate: null,
-              endDate: null
-            });
-          }}>
-          Add New
-        </Button>
+        <Box>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={() => {
+              addPointOfInterestChoice({
+                pointOfInterestType: '',
+                includePhotos: true,
+                includeForms: true,
+                startDate: null,
+                endDate: null
+              });
+            }}>
+            Add New
+          </Button>
+        </Box>
       </MuiPickersUtilsProvider>
     </>
   );

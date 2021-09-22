@@ -1,4 +1,4 @@
-import { SEARCH_LIMIT_MAX, SORT_DIRECTION } from '../constants/misc';
+import { SEARCH_LIMIT_MAX } from '../constants/misc';
 import { IMediaItem } from './media';
 
 /**
@@ -28,13 +28,28 @@ export class ActivityPostRequestBody {
 
   mediaKeys: string[];
 
+  form_status: string;
+  sync_status: string;
+  created_by: string;
+
+  review_status: string;
+  reviewed_by: string;
+  reviewed_at: string;
+
+  species_positive: string[];
+  species_negative: string[];
+
   /**
    * Creates an instance of ActivityPostRequestBody.
    *
    * @param {*} [obj]
    * @memberof ActivityPostRequestBody
    */
-  constructor(obj?: any) {
+  //NOSONAR
+  constructor(object?: any) {
+    // eslint-disable-next-line no-unused-vars
+    const { activity_payload, ...obj } = object; // remove payload from obj to prevent infinite recursion
+
     // Add whole original object for auditing
     this.activityPostBody = {
       ...obj,
@@ -64,6 +79,17 @@ export class ActivityPostRequestBody {
     this.geoJSONFeature = (obj && obj.geometry) || [];
 
     this.mediaKeys = (obj && obj.mediaKeys) || null;
+
+    this.form_status = (obj && obj.form_status) || null;
+    this.sync_status = (obj && obj.sync_status) || null;
+    this.created_by = (obj && obj.created_by) || null;
+
+    this.review_status = (obj && obj.review_status) || null;
+    this.reviewed_by = (obj && obj.reviewed_by) || null;
+    this.reviewed_at = (obj && obj.reviewed_at) || null;
+
+    this.species_positive = obj?.species_positive || [];
+    this.species_negative = obj?.species_negative || [];
   }
 }
 
@@ -76,8 +102,6 @@ export class ActivityPostRequestBody {
 export class ActivitySearchCriteria {
   page: number;
   limit: number;
-  sort_by: string;
-  sort_direction: string;
 
   activity_type: string[];
   activity_subtype: string[];
@@ -85,9 +109,22 @@ export class ActivitySearchCriteria {
   date_range_start: Date;
   date_range_end: Date;
 
+  activity_ids: string[];
+
   search_feature: GeoJSON.Feature;
 
   column_names: string[];
+
+  created_by: string;
+
+  review_status: string[];
+
+  linked_id: string;
+
+  species_positive: string[];
+  species_negative: string[];
+
+  order: string[];
 
   /**
    * Creates an instance of ActivitySearchCriteria.
@@ -95,11 +132,10 @@ export class ActivitySearchCriteria {
    * @param {*} [obj]
    * @memberof ActivitySearchCriteria
    */
+  //NOSONAR
   constructor(obj?: any) {
     this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
     this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;
-    this.sort_by = (obj && obj.sort_by) || '';
-    this.sort_direction = (obj && obj.sort_direction) || SORT_DIRECTION.ASC;
 
     this.activity_type = (obj && obj.activity_type) || [];
     this.activity_subtype = (obj && obj.activity_subtype) || [];
@@ -107,9 +143,22 @@ export class ActivitySearchCriteria {
     this.date_range_start = (obj && obj.date_range_start) || null;
     this.date_range_end = (obj && obj.date_range_end) || null;
 
+    this.activity_ids = (obj && obj.activity_ids) || [];
+
     this.search_feature = (obj && obj.search_feature) || null;
 
     this.column_names = (obj && obj.column_names) || [];
+
+    this.created_by = (obj && obj.created_by) || null;
+
+    this.review_status = (obj && obj.review_status) || [];
+
+    this.linked_id = obj?.linked_id || null;
+
+    this.species_positive = obj?.species_positive || [];
+    this.species_negative = obj?.species_negative || [];
+
+    this.order = (obj && obj.order) || [];
   }
 
   setPage(page: number): number {

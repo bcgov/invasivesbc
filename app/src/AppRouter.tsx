@@ -1,13 +1,13 @@
+import { Network } from '@capacitor/network';
 import { CircularProgress } from '@material-ui/core';
-import { NetworkContext } from 'contexts/NetworkContext';
-import HomeRouter from 'features/home/HomeRouter';
-import AuthLayout from 'layouts/AuthLayout';
-import PublicLayout from 'layouts/PublicLayout';
-import AccessDenied from 'pages/misc/AccessDenied';
-import { NotFoundPage } from 'pages/misc/NotFoundPage';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
-import AppRoute from 'utils/AppRoute';
+import HomeRouter from './features/home/HomeRouter';
+import AuthLayout from './layouts/AuthLayout';
+import PublicLayout from './layouts/PublicLayout';
+import AccessDenied from './pages/misc/AccessDenied';
+import { NotFoundPage } from './pages/misc/NotFoundPage';
+import AppRoute from './utils/AppRoute';
 
 interface IAppRouterProps {
   deviceInfo: any;
@@ -16,20 +16,27 @@ interface IAppRouterProps {
 }
 
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
-  const networkContext = useContext(NetworkContext);
-
   const [layout, setLayout] = useState<React.FC<any>>(null);
+  const [isMobileNoNetwork, setIsMobileNoNetwork] = useState(false);
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
   };
 
+  const getMobileStatus = async () => {
+    const status = await Network.getStatus();
+    setIsMobileNoNetwork(status.connected);
+  };
+
+  useEffect(() => {
+    getMobileStatus();
+  }, []);
+
   useEffect(() => {
     // If on mobile and have no internet connection, then bypass keycloak
-    const newLayout = window['cordova'] && !networkContext?.connected ? PublicLayout : AuthLayout;
-
-    setLayout(() => newLayout);
-  }, [networkContext]);
+    // removed network check for now - can't use current version of capactior network as context
+    setLayout(() => AuthLayout);
+  });
 
   if (!layout) {
     return <CircularProgress />;
@@ -47,6 +54,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         layout={layout}
         keycloak={props.keycloak}
         keycloakConfig={props.keycloakConfig}
+        isMobileNoNetwork={isMobileNoNetwork}
       />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>

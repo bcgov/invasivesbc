@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
   },
   map: {
     height: '100%',
-    width: '100%'
+    width: '100%',
+    zIndex: 0
   },
   formContainer: {},
   photoContainer: {}
@@ -56,7 +57,7 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
     const getActivityData = async () => {
       const activityResults = await databaseContext.database.find({ selector: { _id: urlParams['id'] } });
 
-      // TODO these are reference activities, so do we really have an extent to set? Or are we just zooming to where the geometry is?
+      // TODO these are cached activities, so do we really have an extent to set? Or are we just zooming to where the geometry is?
       setGeometry(activityResults.docs[0].geometry);
       setPhotos(activityResults.docs[0].photos);
       setDoc(activityResults.docs[0]);
@@ -76,6 +77,7 @@ const ReferencesActivityPage: React.FC<IReferencesActivityPage> = (props) => {
         activity={doc}
         mapId={doc._id}
         photoState={{ photos, setPhotos }}
+        showDrawControls={false}
         geometryState={{ geometry, setGeometry }}
         extentState={{ extent, setExtent }}
         contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y

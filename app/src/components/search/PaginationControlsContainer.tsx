@@ -45,7 +45,7 @@ const PaginationControlsContainer: React.FC<IPaginationControlsContainer> = (pro
 
   return (
     <fieldset className={props.classes.fieldset}>
-      <Grid container spacing={4} justify={'space-between'}>
+      <Grid container spacing={4} justifyContent={'space-between'}>
         <Grid item>
           <FormControl component="fieldset" className={props.classes.formControl} disabled={props.isDisabled}>
             <FormLabel component="legend" className={props.classes.formLabel}>

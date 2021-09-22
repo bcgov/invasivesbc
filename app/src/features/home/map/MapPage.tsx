@@ -1,16 +1,19 @@
 import { Button, CircularProgress, Container, Grid, makeStyles, Theme, Box } from '@material-ui/core';
 import clsx from 'clsx';
+import moment from 'moment';
 import { IPhoto } from 'components/photo/PhotoContainer';
 import { interactiveGeoInputData } from 'components/map/GeoMeta';
-import MapContainer from 'components/map/MapContainer';
 import { IAPPSite } from 'components/points-of-interest/IAPP/IAPP-Site';
 import { ActivitiesPOI } from 'components/points-of-interest/ActivitiesPOI/ActivitiesPOI';
 import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { Feature } from 'geojson';
+import { Feature, GeoJsonObject } from 'geojson';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { MapContextMenu, MapContextMenuData } from './MapContextMenu';
+import MapContainer from 'components/map/MapContainer';
+
+const GEO_UPDATE_MIN_INTERVAL = 60000; // 60s
 
 const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
@@ -18,7 +21,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   map: {
     height: '100%',
-    width: '100%'
+    width: '100%',
+    zIndex: 0
   },
   mainGrid: {
     height: '100%',
@@ -51,10 +55,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface IMapProps {
   classes?: any;
 }
-
-const PointOfInterestPopUp = (name: string) => {
-  return '<div>' + name + '</div>';
-};
 
 interface popOutComponentProps {
   classes?: any;
@@ -100,7 +100,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const databaseChangesContext = useContext(DatabaseChangesContext);
 
   const [geometry, setGeometry] = useState<Feature[]>([]);
-  const [interactiveGeometry, setInteractiveGeometry] = useState<interactiveGeoInputData[]>(null);
+  const [interactiveGeometry, setInteractiveGeometry] = useState<GeoJsonObject>(null);
   const [selectedInteractiveGeometry, setSelectedInteractiveGeometry] = useState<interactiveGeoInputData>(null);
 
   const [isReadyToLoadMap, setIsReadyToLoadMap] = useState(false);
@@ -109,6 +109,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
   const [extent, setExtent] = useState(null);
   const [formActivityData, setFormActivityData] = useState(null);
   const [photos, setPhotos] = useState<IPhoto[]>([]);
+  const [geoUpdateTimestamp, setGeoUpdateTimestamp] = useState(null);
 
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
@@ -116,7 +117,7 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
   // don't load the map until interactive geos ready
   useEffect(() => {
-    const didInteractiveGeosLoad = interactiveGeometry ? true : false;
+    const didInteractiveGeosLoad = true;
     setIsReadyToLoadMap(didInteractiveGeosLoad);
   }, [databaseChangesContext, interactiveGeometry]);
 
@@ -124,191 +125,39 @@ const MapPage: React.FC<IMapProps> = (props) => {
     setContextMenuState({ ...contextMenuState, isOpen: false });
   };
 
-  const handleGeoClick = (geo: any) => {
+  const handleGeoClick = async (geo: any) => {
     setShowPopOut(true);
-    setSelectedInteractiveGeometry(geo);
+    // fetch all data for the given geo
+    const results = await databaseContext.database.find({ selector: { _id: geo._id } });
+
+    setSelectedInteractiveGeometry(results.docs[0]);
   };
 
   const getActivityData = useCallback(async () => {
-    const appStateResults = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
+    let appStateResults; // = await databaseContext.database.find({ selector: { _id: DocType.APPSTATE } });
 
     if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
       return;
     }
 
-    const activityResults = await databaseContext.database.find({
-      selector: { _id: appStateResults.docs[0].activeActivity }
-    });
+    const activityResults = null;
 
-    if (activityResults && activityResults.docs[0]) {
-      setFormActivityData(activityResults.docs[0]);
-      setPhotos(activityResults.docs[0].photos || []);
+    if (activityResults && activityResults?.docs[0]) {
+      setFormActivityData(activityResults?.docs[0]);
+      setPhotos(activityResults?.docs[0].photos || []);
     }
   }, [databaseContext.database]);
 
   const getEverythingWithAGeo = useCallback(async () => {
-    let docs = await databaseContext.database.find({
-      selector: {
-        docType: {
-          $in: [
-            DocType.REFERENCE_ACTIVITY,
-            DocType.ACTIVITY,
-            DocType.REFERENCE_POINT_OF_INTEREST,
-            DocType.POINT_OF_INTEREST
-          ]
-        }
-      }
-    });
-
-    if (!docs || !docs.docs || !docs.docs.length) {
+    const now = moment().valueOf();
+    if (geoUpdateTimestamp !== null && now < geoUpdateTimestamp + GEO_UPDATE_MIN_INTERVAL) {
       return;
     }
 
-    let geos = [];
-    let interactiveGeos = [];
-
-    docs.docs.forEach((row) => {
-      if (!row.geometry || !row.geometry.length) {
-        return;
-      }
-
-      geos.push(row.geometry[0]);
-
-      let coordinatesString = 'Polygon';
-      if (row.geometry[0].geometry.type !== 'Polygon') {
-        const coords = [
-          Number(row.geometry[0]?.geometry.coordinates[1]).toFixed(2),
-          Number(row.geometry[0]?.geometry.coordinates[0]).toFixed(2)
-        ];
-        coordinatesString = `(${coords[0]}, ${coords[1]})`;
-      }
-
-      switch (row.docType) {
-        case DocType.POINT_OF_INTEREST:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'New Point of Interest:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#99E472',
-            zIndex: 1, // need to ask jamie how to implement this
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('clicked geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          */
-          /*
-          showPopUp: boolean;})*/
-          break;
-        case DocType.REFERENCE_ACTIVITY:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Past Activity:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#F3C911',
-            zIndex: 1, // need to ask jamie how to implement this
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          break;
-        case DocType.ACTIVITY:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Activity:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#E044A7',
-            zIndex: 1, // need to ask jamie how to implement this
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          */
-          /*
-          showPopUp: boolean;})*/
-          break;
-        case DocType.REFERENCE_POINT_OF_INTEREST:
-          interactiveGeos.push({
-            //mapContext: MapContext.MAIN_MAP,
-            recordDocID: row._id,
-            recordDocType: row.docType,
-            description: 'Point of Interest:\n ' + row._id + '\n' + coordinatesString,
-
-            // basic display:
-            geometry: row.geometry[0],
-            color: '#FF5733',
-            zIndex: 1, // need to ask jamie how to implement this
-
-            // interactive
-            onClickCallback: () => {
-              //setInteractiveGeometry([interactiveGeos])
-              console.log('before handle geo');
-              handleGeoClick(row);
-            }, //try to get this one working first
-            popUpComponent: PointOfInterestPopUp
-          });
-          /* isSelected?: boolean;
-
-          markerComponent?: FunctionComponent;
-          showMarkerAtZoom?: number;
-          showMarker: boolean;
-
-          */
-          /*
-          showPopUp: boolean;})*/
-          break;
-        default:
-          break;
-      }
-    });
-
-    setGeometry(geos);
-
-    setInteractiveGeometry(
-      interactiveGeos
-    ); /*/todo figure out to have this as a dictionary with only the delta
-        getting written to on updates*/
+    setGeoUpdateTimestamp(now);
 
     //setIsReadyToLoadMap(true)
-  }, [databaseContext.database]);
+  }, [extent]);
 
   useEffect(() => {
     const updateComponent = () => {
@@ -317,11 +166,6 @@ const MapPage: React.FC<IMapProps> = (props) => {
 
     updateComponent();
   }, [databaseChangesContext, showPopOut, getEverythingWithAGeo]);
-
-  useEffect(() => {
-    console.log('chosen geo');
-    console.dir(selectedInteractiveGeometry);
-  }, [selectedInteractiveGeometry]);
 
   useEffect(() => {
     getActivityData();
@@ -345,7 +189,9 @@ const MapPage: React.FC<IMapProps> = (props) => {
             {isReadyToLoadMap ? (
               <MapContainer
                 classes={classes}
+                showDrawControls={false}
                 mapId={'mainMap'}
+                pointOfInterestFilter={{ page: 1, limit: 1000, online: true, geoOnly: true }}
                 geometryState={{ geometry, setGeometry }}
                 interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
                 extentState={{ extent, setExtent }}

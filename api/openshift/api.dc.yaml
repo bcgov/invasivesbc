@@ -104,6 +104,26 @@ objects:
             - env:
                 - name: API_HOST
                   value: ${HOST}
+                - name: METABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: METABASE_URL
+                      name: ${DB_SERVICE_NAME}
+                - name: METABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: METABASE_USER
+                      name: ${DB_SERVICE_NAME}
+                - name: METABASE_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      key: METABASE_PASS
+                      name: ${DB_SERVICE_NAME}
+                - name: METABASE_COLLECTION_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: METABASE_COLLECTION_ID
+                      name: ${DB_SERVICE_NAME}
                 - name: DB_HOST
                   value: ${DB_SERVICE_NAME}
                 - name: DB_USER

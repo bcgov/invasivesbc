@@ -9,12 +9,26 @@ import * as turf from '@turf/turf';
 export function calculateGeometryArea(geometry: Feature[]) {
   let totalArea = 0;
 
-  if (!geometry || !geometry.length || geometry[0].geometry.type === 'LineString') {
-    return parseFloat(totalArea.toFixed(0));
+  if (!geometry || !geometry.length || geometry[geometry.length - 1].geometry.type === 'LineString') {
+    return totalArea;
   }
 
-  const geo = geometry[0];
-  if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
+  /*
+    Use the last index because sometimes we allow multiple geos on map
+  */
+  const geo = geometry[geometry.length - 1];
+
+  /*
+    If the geometry is a point, then the area is nominally 1 square metre
+
+    Since circles are represented as points, if the geo has the radius property
+    we use it to calculate the area of the circle
+
+    Otherwise, calculate the area of the polygon using turf
+  */
+  if (geo.geometry.type === 'Point' && !geo.properties.hasOwnProperty('radius')) {
+    totalArea = 1;
+  } else if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
     totalArea = Math.PI * Math.pow(geo.properties.radius, 2);
   } else if (geo.geometry.type === 'Polygon') {
     totalArea = turf.area(turf.polygon(geo.geometry['coordinates']));
@@ -29,14 +43,18 @@ export function calculateGeometryArea(geometry: Feature[]) {
  * @param {Feature[]} geoJSON The geometry in GeoJSON format
  */
 export function calculateLatLng(geom: Feature[]) {
-  if (!geom || !geom[0] || !geom[0].geometry) return;
+  if (!geom || !geom[geom.length - 1] || !geom[geom.length - 1].geometry) return;
 
-  const geo = geom[0].geometry;
+  const geo = geom[geom.length - 1].geometry;
   const firstCoord = geo['coordinates'][0];
 
   let latitude = null;
   let longitude = null;
 
+  /*
+    Calculations based on business rules as to how anchor points need to be calculated
+    for different geometry types
+  */
   if (geo.type === 'Point') {
     latitude = geo.coordinates[1];
     longitude = firstCoord;

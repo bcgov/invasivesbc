@@ -1,6 +1,6 @@
 code_header_name,code_name,code_description,code_sort_order
 pest_management_plan,102-0670-16-21,102-0670-16-21 [South Coastal Mainland of BC],1
-pest_management_plan,FLNR PMP 402-0664-15/20,FLNR PMP 402-0664-15/20 [Central and Northern BC],2
+pest_management_plan,FLNR PMP 402-0680-20/25,FLNR PMP 402-0680-20/25 [Central and Northern BC],2
 pest_management_plan,FLNR-PMP 402-0677-19/24,FLNR-PMP 402-0677-19/24 [South Coastal Region of BC],3
 pest_management_plan,FLNR-PMP 402-0678-19/24,FLNR-PMP 402-0678-19/24 [Southern Interior of BC],4
 pest_management_plan,KMC Facilities 879-0002-16/21,KMC Facilities 879-0002-16/21 [Kinder Morgan Canada Facilities],5
@@ -38,10 +38,10 @@ plant_seed_stage_code,SF,Seeds forming,3
 plant_seed_stage_code,SM,Seeds mature,4
 plant_seed_stage_code,SD,Seeds have dropped,5
 plant_seed_stage_code,OT,Other - Add notes in comments,6
-animal_behavior_code,U,Unknown,2
-animal_behavior_code,M,Moving,3
-animal_behavior_code,R,Resting,4
-animal_behavior_code,D,Deceased,5
+animal_behavior_code,U,Unknown,1
+animal_behavior_code,M,Moving,2
+animal_behavior_code,R,Resting,3
+animal_behavior_code,D,Deceased,4
 bioagent_maturity_status_code,X,unknown,1
 bioagent_maturity_status_code,P,Primary,2
 bioagent_maturity_status_code,S,Secondary,3
@@ -51,8 +51,10 @@ biological_agent_stage_code,AD,Adult,2
 biological_agent_stage_code,EG,Egg,3
 biological_agent_stage_code,PU,Pupa,4
 biological_agent_stage_code,LA,Larva,5
-biological_agent_stage_code,OT,Other,6
-biological_agent_stage_code,AL,All,7
+biological_agent_stage_code,NY,Nymph,6
+biological_agent_stage_code,DE,Dead,7
+biological_agent_stage_code,OT,Other,8
+biological_agent_stage_code,AL,All,9
 biological_agent_presence_code,NA,unknown,1
 biological_agent_presence_code,FF,Foliar Feeding Damage,2
 biological_agent_presence_code,EP,Eggs Present,3
@@ -63,6 +65,10 @@ biological_agent_presence_code,AP,Adults Present,7
 biological_agent_presence_code,OM,Oviposition Marks,8
 biological_agent_presence_code,PP,Pupa(e) Present,9
 biological_agent_presence_code,EH,Exit Holes/Tunnels,10
+biological_agent_presence_code,ST,Stem Feeding Damage,11
+biological_agent_presence_code,FE,Feeding,12
+biological_agent_presence_code,FR,Frass,13
+biological_agent_presence_code,GA,In Gall,14
 classified_area_code,X,unknown,1
 classified_area_code,C,Collection,2
 classified_area_code,R,Research,3
@@ -75,19 +81,19 @@ proposed_treatment_code,BT,Biological treatment,6
 proposed_treatment_code,BC,Biological collection,7
 proposed_treatment_code,BM,Biological monitoring,8
 proposed_treatment_code,BD,Biological dispersal survey,9
-observation_type_code,OP,Operational (General),1
-observation_type_code,CU,Cursory (Citizen),2
-observation_type_code,PR,Precise (Specialist),3
-observation_type_code,DR,Drone,4
-observation_type_code,MO,Mobile RAW,5
-observation_type_code,AP,Air Photo,6
-observation_type_code,SI,Satellite Image,7
-observation_type_code,FC,Field Camera,8
-observation_type_code,TR,Tracking device,9
-observation_type_code,VI,Video,10
-observation_type_code,AU,Audio,11
-observation_type_code,ME,Mechanical recording,12
-observation_type_code,OT,Other Type,13
+observation_type_code,CU,Cursory,1
+observation_type_code,OP,Operational,2
+observation_type_code,PR,Precise,3
+observation_method_code,DR,Drone,1
+observation_method_code,MO,Mobile RAW,2
+observation_method_code,AP,Air Photo,3
+observation_method_code,SI,Satellite Image,4
+observation_method_code,FC,Field Camera,5
+observation_method_code,TR,Tracking device,6
+observation_method_code,VI,Video,7
+observation_method_code,AU,Audio,8
+observation_method_code,ME,Mechanical recording,9
+observation_method_code,OT,Other Type,10
 observation_geometry_code,PT,Point - Small area circle,1
 observation_geometry_code,BX,Box - Length x Area,2
 observation_geometry_code,WP,Waypoint buffered path,3
@@ -99,44 +105,47 @@ observation_geometry_code,GP,GPS tracking path,8
 observation_geometry_code,RA,Radio tracking path,9
 observation_geometry_code,WA,Water body outline,10
 observation_geometry_code,DR,Drone track,11
-specific_use_code,NA,unknown,1
-specific_use_code,GP,Gravel pit,2
-specific_use_code,NS,No-spray zone,3
-specific_use_code,HW,Numbered highway,4
-specific_use_code,PL,Parking lot,5
-specific_use_code,RS,Rec site/trail,6
-specific_use_code,RA,Rest area,7
-specific_use_code,SS,Sensitive site,8
-specific_use_code,TS,Transfer station/landfill,9
-specific_use_code,PF,Within PFZ,10
-specific_use_code,WB,Within PFZ - water body,11
-specific_use_code,WE,Within PFZ - well,12
-specific_use_code,YD,Yard / ditching waste dump,13
-specific_use_code,QU,Quarry,14
-specific_use_code,RW,Railway,15
-specific_use_code,TL,Transmission line,16
-specific_use_code,CL,Cultivated land,17
-specific_use_code,RC,Research site,18
-specific_use_code,RV,Reservoir,19
-specific_use_code,MI,Mine site,20
-specific_use_code,MT,Mine tailings,21
-specific_use_code,BS,Burn scar,22
-specific_use_code,IS,Industrial site,23
-aspect_code,NA,unknown,1
-aspect_code,N,North facing,2
-aspect_code,NE,Northeast facing,3
-aspect_code,E,East facing,4
-aspect_code,SE,Southeast facing,5
-aspect_code,S,South facing,6
-aspect_code,SW,Southwest facing,7
-aspect_code,W,West facing,8
-aspect_code,NW,Northwest facing,9
-invasive_plant_density_code,X,unknown,1
-invasive_plant_density_code,L,<= 1plant/m2 (Low),2
-invasive_plant_density_code,M,2-5 plants/m2 (Med),3
-invasive_plant_density_code,H,6-10 plants/m2 (High),4
-invasive_plant_density_code,D,>10 plants/m2 (Dense),5
-slope_code,NA,unknown,1
+specific_use_code,NO,None,1
+specific_use_code,NA,unknown,2
+specific_use_code,GP,Gravel pit,3
+specific_use_code,NS,No-spray zone,4
+specific_use_code,HW,Numbered highway,5
+specific_use_code,PL,Parking lot,6
+specific_use_code,RS,Rec site/trail,7
+specific_use_code,RA,Rest area,8
+specific_use_code,SS,Sensitive site,9
+specific_use_code,TS,Transfer station/landfill,10
+specific_use_code,PF,Within PFZ,11
+specific_use_code,WB,Within PFZ - water body,12
+specific_use_code,WE,Within PFZ - well,13
+specific_use_code,YD,Yard / ditching waste dump,14
+specific_use_code,QU,Quarry,15
+specific_use_code,RW,Railway,16
+specific_use_code,TL,Transmission line,17
+specific_use_code,CL,Cultivated land,18
+specific_use_code,RC,Research site,19
+specific_use_code,RV,Reservoir,20
+specific_use_code,MI,Mine site,21
+specific_use_code,MT,Mine tailings,22
+specific_use_code,BS,Burn scar,23
+specific_use_code,IS,Industrial site,24
+specific_use_code,CP,Community pasture,25
+aspect_code,FL,Flat,1
+aspect_code,NA,variable,2
+aspect_code,N,North facing,3
+aspect_code,NE,Northeast facing,4
+aspect_code,E,East facing,5
+aspect_code,SE,Southeast facing,6
+aspect_code,S,South facing,7
+aspect_code,SW,Southwest facing,8
+aspect_code,W,West facing,9
+aspect_code,NW,Northwest facing,10
+invasive_plant_density_code,NA,unknown,1
+invasive_plant_density_code,L,1|<= 1plant/m2 (Low),2
+invasive_plant_density_code,M,2|2-5 plants/m2 (Med),3
+invasive_plant_density_code,H,3|6-10 plants/m2 (High),4
+invasive_plant_density_code,D,4|>10 plants/m2 (Dense),5
+slope_code,NA,variable,1
 slope_code,FL,Flat 0 %,2
 slope_code,NF,Nearly flat 1-4 %,3
 slope_code,GS,Gentle slope 5-9 %,4
@@ -146,21 +155,23 @@ slope_code,VS,Very strong slope 20-24 %,7
 slope_code,ES,Extreme slope 25-29 %,8
 slope_code,ST,Steep slope 30-44 %,9
 slope_code,VT,Very steep slope > 45 %,10
-invasive_plant_distribution_code,NA,unknown,1
-invasive_plant_distribution_code,RS,"rare individual,a single occurrence ",2
-invasive_plant_distribution_code,FS,few sporadically occurring individuals,3
-invasive_plant_distribution_code,CL,single patch or clump of a species,4
-invasive_plant_distribution_code,SS,several sporadically occurring individuals,5
-invasive_plant_distribution_code,FP,a few patches or clumps of a species,6
-invasive_plant_distribution_code,WS,several well-spaced patches or clumps,7
-invasive_plant_distribution_code,CU,continuous uniform occurrence of well-spaced individuals,8
-invasive_plant_distribution_code,CO,continuous occurrence of a species with a few gaps in the distribution,9
-invasive_plant_distribution_code,CD,continuous dense occurrence of a species,10
-mechanical_disposal_code,N,None (in situ),1
-mechanical_disposal_code,GP,Gravel pit,2
-mechanical_disposal_code,BD,Buried,3
-mechanical_disposal_code,BT,Burnt,4
-mechanical_disposal_code,OT,Other,5
+invasive_plant_distribution_code,X,unknown,1
+invasive_plant_distribution_code,RS,"1|rare individual,a single occurrence",2
+invasive_plant_distribution_code,FS,2|few sporadically occurring individuals,3
+invasive_plant_distribution_code,CL,3|single patch or clump of a species,4
+invasive_plant_distribution_code,SS,4|several sporadically occurring individuals,5
+invasive_plant_distribution_code,FP,5|a few patches or clumps of a species,6
+invasive_plant_distribution_code,WS,6|several well-spaced patches or clumps,7
+invasive_plant_distribution_code,CU,7|continuous uniform occurrence of well-spaced individuals,8
+invasive_plant_distribution_code,CO,8|continuous occurrence of a species with a few gaps in the distribution,9
+invasive_plant_distribution_code,CD,9|continuous dense occurrence of a species,10
+mechanical_disposal_code,N,In Situ,1
+mechanical_disposal_code,DPC,Dry and Passive Compost,2
+mechanical_disposal_code,IC,Industrial Compost,3
+mechanical_disposal_code,B,Burned,4
+mechanical_disposal_code,II,Industrial Incineration,5
+mechanical_disposal_code,LR,Landfill Regular,6
+mechanical_disposal_code,LDB,Landfill deep Burial,7
 mechanical_method_code,DIG,Digging,1
 mechanical_method_code,BRY,Bury,2
 mechanical_method_code,BUR,Controlled Burning,3
@@ -213,7 +224,6 @@ chemical_method_code,FBO,Fixed Boom,8
 chemical_method_code,HGU,Hand Gun,9
 chemical_method_code,SPR,Spread,10
 chemical_method_code,WCK,Wick,11
-chemical_method_code,NOT,Chemical Method not recorded,12
 efficacy_code,1,90% - 100%,1
 efficacy_code,2,80% - 89%,2
 efficacy_code,3,70% - 79%,3
@@ -224,30 +234,76 @@ efficacy_code,7,30% - 39%,7
 efficacy_code,8,20% - 29%,8
 efficacy_code,9,10% - 19%,9
 efficacy_code,10,0% - 9%,10
+invasive_plant_aquatic_code,AB,American beachgrass (AMMO BRE Ammophila breviligulata),1
+invasive_plant_aquatic_code,YC,Amphibious yellow cress (RORI AMP Rorippa amphibian),2
+invasive_plant_aquatic_code,RI,Bog bulrush / ricefield bulrush (SCHO MUC Schoenoplectus mucronatus),3
+invasive_plant_aquatic_code,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),4
+invasive_plant_aquatic_code,ED,Brazilian waterweed (EGER DEN Egeria densa),5
+invasive_plant_aquatic_code,CM,Cabomba (CABO CAR Cabomba caroliniana),6
+invasive_plant_aquatic_code,FC,Common frogbit (HYDR MOR Hydrocharis morsus-range),7
+invasive_plant_aquatic_code,UP,Curly leaf pondweed (POTA CRI Potamogeton crispus),8
+invasive_plant_aquatic_code,DC,Dense-flowered cordgrass (SPAR DEN Spartina densiflora),9
+invasive_plant_aquatic_code,DO,Dodder (CUSC SPP Cuscuta spp.),10
+invasive_plant_aquatic_code,EC,English cordgrass (SPAR ANG Spartina anglica),11
+invasive_plant_aquatic_code,EW,Eurasian watermilfoil (MYRI SPI Myriophyllum spicatum),12
+invasive_plant_aquatic_code,EB,European beachgrass (AMMO ARE Ammophila arenaria),13
+invasive_plant_aquatic_code,RC,European Common Reed / Common reed (PHRA AUS Phragmites australis subsp. australis),14
+invasive_plant_aquatic_code,MQ,European water clover (MARS QUA Marsilea quadrifolia),15
+invasive_plant_aquatic_code,WE,European waterlily (NYMP ALB Nymphaea alba),16
+invasive_plant_aquatic_code,FW,Fanwort (CABO CAR Cabomba caroliniana),17
+invasive_plant_aquatic_code,FM,Feathered mosquito-fern (AZOL PIN Azolla pinnata),18
+invasive_plant_aquatic_code,FR,Flowering rush (BUTO UMB Butomus umbellatus),19
+invasive_plant_aquatic_code,FL,Fragrant water lily (NYMP ODO Nymphaea odorata subsp. odorata),20
+invasive_plant_aquatic_code,GL,Garden yellow loosestrife (LYSI VUL Lysimachia vulgaris),21
+invasive_plant_aquatic_code,GK,Giant knotweed (FALL SAC Fallopia sachalinensis),22
+invasive_plant_aquatic_code,SW,Giant mannagrass / reed sweetgrass (GLYC MAX Glyceria maxima),23
+invasive_plant_aquatic_code,AD,Giant reed / giant cane (ARUN DON Arundo donax),24
+invasive_plant_aquatic_code,SV,Giant salvinia (SALV MOL Salvinia molesta),25
+invasive_plant_aquatic_code,PO,Himalayan knotweed (POLY POL Polygonum polystachyum),26
+invasive_plant_aquatic_code,HY,Hydrilla (HYDR VER Hydrilla verticillata),27
+invasive_plant_aquatic_code,JK,Japanese knotweed (FALL JAP Fallopia japonica),28
+invasive_plant_aquatic_code,GJ,Johnsongrass (SORG HAL Sorghum halepense),29
+invasive_plant_aquatic_code,LL,Large yellow / spotted loosestrife (LYSI PUN Lysimachia punctata),30
+invasive_plant_aquatic_code,OW,Major oxygen weed (LAGA ROS Lagarosiphon),31
+invasive_plant_aquatic_code,PF,Parrot feather (MYRI AQU Myriophyllum aquaticum),32
+invasive_plant_aquatic_code,IM,Policeman's helmet / himalayan balsam (IMPA GLA Impatiens glandulifera),33
+invasive_plant_aquatic_code,PL,Purple loosestrife (LYTH SAL Lythrum salicaria),34
+invasive_plant_aquatic_code,RE,Reed Canary Grass (PHAL ARU Phalaris arundinacea),35
+invasive_plant_aquatic_code,SN,Salt-meadow cordgrass (SPAR PAT Spartina patens),36
+invasive_plant_aquatic_code,SA,Smooth cordgrass (SPAR ALT Spartina alterniflora),37
+invasive_plant_aquatic_code,LM,Variable leaf milfoil (MYRI HET Myriophyllum heterophyllum),38
+invasive_plant_aquatic_code,WL,Wand loosestrife (LYTH VIR Lythrum virgatum),39
+invasive_plant_aquatic_code,TN,Water chestnut (TRAP NAT Trapa natans),40
+invasive_plant_aquatic_code,NO,Watercress (NAST OFF Nasturtium officinale),41
+invasive_plant_aquatic_code,WH,Water hyacinth (EICH CRA Eichhornia crassipes),42
+invasive_plant_aquatic_code,LW,Water lettuce (PIST STR Pistia stratiotes),43
+invasive_plant_aquatic_code,AQ,Water soldier (STRA ALO Stratiotes aloides),44
+invasive_plant_aquatic_code,YI,Yellow flag iris (IRIS PSE Iris pseudachorus),45
+invasive_plant_aquatic_code,YF,Yellow floating heart (NYMP PEL Nymphoides peltata),46
 invasive_plant_code,AR,African rue / harmal (PEGA HAR Peganum harmala),1
-invasive_plant_code,AB,American beachgrass (AMMO BRE Ammophila breviligulata),2
-invasive_plant_code,YC,Amphibious yellow cress (RORI AMP Rorippa amphibian),3
-invasive_plant_code,HB,Annual hawksbeard (CREP TEC Crepis tectorum),4
-invasive_plant_code,AS,Annual sow thistle (SONC OLE Sonchus oleraceus),5
-invasive_plant_code,BY,Baby's breath (GYPS PAN Gypsophila paniculata),6
-invasive_plant_code,BB,Bachelor's button (CENT CYA Centaurea cyanus),7
-invasive_plant_code,BA,Barnyard grass (ECHI CRU Echinochloa crusgalli),8
-invasive_plant_code,KB,Bighead knapweed (CENT MAC Centaurea macrocephala),9
-invasive_plant_code,BP,Bigleaf periwinkle / large periwinkle (VINC MAJ Vinca major),10
-invasive_plant_code,BH,Black henbane (HYOS NIG Hyoscyamus niger),11
-invasive_plant_code,BL,Black knapweed (CENT NIG Centaurea nigra),12
-invasive_plant_code,RB,Black locust (ROBI PSE Robinia pseudoacacia),13
-invasive_plant_code,BC,Bladder campion (SILE VUL Silene vulgaris),14
-invasive_plant_code,BW,Blueweed (ECHI VUL Echium vulgare),15
-invasive_plant_code,RI,Bog bulrush / ricefield bulrush (SCHO MUC Schoenoplectus mucronatus),16
-invasive_plant_code,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),17
-invasive_plant_code,ED,Brazilian waterweed (EGER DEN Egeria densa),18
-invasive_plant_code,RA,Bristly locust / rose acacia (ROBI HIS Robinia hispida),19
-invasive_plant_code,BK,Brown knapweed (CENT JAC Centaurea jacea),20
-invasive_plant_code,BT,Bull thistle (CIRS VUL Cirsium vulgare),21
-invasive_plant_code,CB,Bur chervil (ANTH CAU Anthriscus caucalis),22
-invasive_plant_code,BU,Burdock species (ARCT SPP Arctium spp),23
-invasive_plant_code,BD,Butterfly bush (BUDD DAV Buddleja davidii),24
+invasive_plant_code,HB,Annual hawksbeard (CREP TEC Crepis tectorum),2
+invasive_plant_code,AS,Annual sow thistle (SONC OLE Sonchus oleraceus),3
+invasive_plant_code,BN,American black nightshade (SOLA AME Solanum americanum),4
+invasive_plant_code,BY,Baby's breath (GYPS PAN Gypsophila paniculata),5
+invasive_plant_code,BB,Bachelor's button (CENT CYA Centaurea cyanus),6
+invasive_plant_code,BA,Barnyard grass (ECHI CRU Echinochloa crusgalli),7
+invasive_plant_code,KB,Bighead knapweed (CENT MAC Centaurea macrocephala),8
+invasive_plant_code,BP,Bigleaf periwinkle / large periwinkle (VINC MAJ Vinca major),9
+invasive_plant_code,BH,Black henbane (HYOS NIG Hyoscyamus niger),10
+invasive_plant_code,BL,Black knapweed (CENT NIG Centaurea nigra),11
+invasive_plant_code,RB,Black locust (ROBI PSE Robinia pseudoacacia),12
+invasive_plant_code,BC,Bladder campion (SILE VUL Silene vulgaris),13
+invasive_plant_code,BW,Blueweed (ECHI VUL Echium vulgare),14
+invasive_plant_code,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),15
+invasive_plant_code,RA,Bristly locust / rose acacia (ROBI HIS Robinia hispida),16
+invasive_plant_code,BK,Brown knapweed (CENT JAC Centaurea jacea),17
+invasive_plant_code,BT,Bull thistle (CIRS VUL Cirsium vulgare),18
+invasive_plant_code,CB,"Bur chervil (ANTH CAU Anthriscus caucalis),20",19
+invasive_plant_code,UR,Bur buttercup (CERA TES Ceratocephala testiculata),20
+invasive_plant_code,BU,Common burdock (ARCT MIN  Arctium minus),21
+invasive_plant_code,GB,Great burdock (ARCT LAP Arctium lappa),22
+invasive_plant_code,BD,Butterfly bush (BUDD DAV Buddleja davidii),23
+invasive_plant_code,FF,Buffalo-bur (SOLA ROS Solanum rostratum),24
 invasive_plant_code,AM,Camel thorn (ALHA MAU Alhagi maurorum),25
 invasive_plant_code,CT,Canada thistle (CIRS ARV Cirsium arvense),26
 invasive_plant_code,CA,Caraway (CARU CAR Carum carvi),27
@@ -261,194 +317,168 @@ invasive_plant_code,CF,Coltsfoot (TUSS FAR Tussilago farfara),34
 invasive_plant_code,AO,Common bugloss (ANCH OFF Anchusa officinalis),35
 invasive_plant_code,CO,Common comfrey (SYMP OFF Symphytum officinale),36
 invasive_plant_code,CC,Common crupina (CRUP VUL Crupina vulgaris),37
-invasive_plant_code,FC,Common frogbit (HYDR MOR Hydrocharis morsus-range),38
-invasive_plant_code,CX,Common hawkweed (HIER VUL Hieracium lanchenalii),39
-invasive_plant_code,CP,Common periwinkle (VINC MIN Vinca minor),40
-invasive_plant_code,RC,Common reed (PHRA AUS Phragmites australis subsp. australis),41
-invasive_plant_code,TC,Common tansy (TANA VUL Tanacetum vulgare),42
-invasive_plant_code,CR,Creeping buttercup (RANU REP Ranunculus repens),43
-invasive_plant_code,CU,Cudweed (GNAP ULI Gnaphalium uliginosum),44
-invasive_plant_code,CD,Curled dock (RUME CRI Rumex crispus),45
-invasive_plant_code,UP,Curly leaf pondweed (POTA CRI Potamogeton crispus),46
-invasive_plant_code,CL,Cutleaf blackberry (RUBU LAC Rubus laciniatus),47
-invasive_plant_code,CS,Cypress spurge (EUPH CYP Euphorbia cyparissias),48
-invasive_plant_code,DT,Dalmatian toadflax (LINA DAL Linaria dalmatica),49
-invasive_plant_code,DR,Dame's rocket (HESP MAT Hesperis matronalis),50
-invasive_plant_code,SL,Daphne / spurge laurel (DAPH LAU Daphne laureola),51
-invasive_plant_code,DC,Dense-flowered cordgrass (SPAR DEN Spartina densiflora),52
-invasive_plant_code,DI,Didymo (DIDY GEM Didymosphenia geminata),53
-invasive_plant_code,DK,Diffuse knapweed (CENT DIF Centaurea diffusa),54
-invasive_plant_code,DO,Dodder (CUSC SPP Cuscuta spp.),55
-invasive_plant_code,DE,Dwarf eelgrass (ZOST JAP Zostera japonica),56
-invasive_plant_code,DW,Dyer's woad (ISAT TIN Isatis tinctoria),57
-invasive_plant_code,ES,Eggleaf spurge (EUPH OBL Euphorbia oblongata),58
-invasive_plant_code,EC,English cordgrass (SPAR ANG Spartina anglica),59
-invasive_plant_code,HO,English holly (ILEX AQU Ilex aquifolium),60
-invasive_plant_code,EI,English ivy (HEDE HEL Hedera helix),61
-invasive_plant_code,EW,Eurasian watermilfoil (MYRI SPI Myriophyllum spicatum),62
-invasive_plant_code,EB,European beachgrass (AMMO ARE Ammophila arenaria),63
-invasive_plant_code,EH,European hawkweed (HIER SAB Hieracium sabaudum),64
-invasive_plant_code,EL,European lake sedge (CARE ACU Carex acutiformis),65
-invasive_plant_code,MQ,European water clover (MARS QUA Marsilea quadrifolia),66
-invasive_plant_code,WE,European waterlily (NYMP ALB Nymphaea alba),67
-invasive_plant_code,EY,Eyebright (EUPH NEM Euphrasia nemorosa),68
-invasive_plant_code,BF,False brome (BRAC SYL Brachypodium sylvaticum),69
-invasive_plant_code,FW,Fanwort (CABO CAR Cabomba caroliniana),70
-invasive_plant_code,FM,Feathered mosquito-fern (AZOL PIN Azolla pinnata),71
-invasive_plant_code,FB,Field bindweed (CONV ARV Convolvulus arvensis),72
-invasive_plant_code,FS,Field scabious (KNAU ARV Knautia arvensis),73
-invasive_plant_code,FP,Flat pea / flat peavine (LATH SYL Lathyrus sylvestris),74
-invasive_plant_code,FR,Flowering rush (BUTO UMB Butomus umbellatus),75
-invasive_plant_code,FL,Fragrant water lily (NYMP ODO Nymphaea odorata subsp. odorata),76
-invasive_plant_code,GM,French broom (GENI MON Genista monspessulana),77
-invasive_plant_code,GL,Garden yellow loosestrife (LYSI VUL Lysimachia vulgaris),78
-invasive_plant_code,AP,Garlic mustard (ALLI PET Alliaria petiolata),79
-invasive_plant_code,MA,Giant chickweed (MYOS AQU Myosoton aquaticum),80
-invasive_plant_code,GH,Giant hogweed (HERA MAN Heracleum mantegazzianum),81
-invasive_plant_code,GK,Giant knotweed (FALL SAC Fallopia sachalinensis),82
-invasive_plant_code,SW,Giant mannagrass / reed sweetgrass (GLYC MAX Glyceria maxima),83
-invasive_plant_code,AD,Giant reed / giant cane (ARUN DON Arundo donax),84
-invasive_plant_code,SV,Giant salvinia (SALV MOL Salvinia molesta),85
-invasive_plant_code,RG,Goat's rue / french lilac (GALE OFF Galega officinalis),86
-invasive_plant_code,GO,Gorse (ULEX EUR Ulex europaeus),87
-invasive_plant_code,GW,Goutweed / bishop's weed (AEGO POD Aegopodium podagraria),88
-invasive_plant_code,GC,Greater celandine (CHEL MAJ Chelidonium majus),89
-invasive_plant_code,GN,Greater knapweed (CENT SCA Centaurea scabiosa),90
-invasive_plant_code,GF,Green foxtail / green bristlegrass (SETA VIR Setaria viridis),91
-invasive_plant_code,GS,Groundsel (SENE VUL Senecio vulgaris),92
-invasive_plant_code,HR,Hairy cat's-ear (HYPO RAD Hypochaeris radicata),93
-invasive_plant_code,HS,Hawkweed species (HIER SPP Hieracium spp),94
-invasive_plant_code,BI,Hedge false bindweed (CALY SEP Calystegia sepium),95
-invasive_plant_code,HD,Hedgehog dogtail (CYNO ECH Cynosurus echinatus),96
-invasive_plant_code,GR,Herb robert (GERA ROB Geranium robertianum),97
-invasive_plant_code,HI,Himalayan blackberry (RUBU ARM Rubus armeniacus),98
-invasive_plant_code,PO,Himalayan knotweed (POLY POL Polygonum polystachyum),99
-invasive_plant_code,HA,Hoary alyssum (BERT INC Berteroa incana),100
-invasive_plant_code,HC,Hoary cress (CARD DRA Cardaria draba),101
-invasive_plant_code,HT,Hound's-tongue (CYNO OFF Cynoglossum officinale),102
-invasive_plant_code,HY,Hydrilla (HYDR VER Hydrilla verticillata),103
-invasive_plant_code,IS,Iberian starthistle (CENT IBE Centaurea iberica),104
-invasive_plant_code,IT,Italian plumeless thistle (CARD PYC Carduus pycnocephalus),105
-invasive_plant_code,JK,Japanese knotweed (FALL JAP Fallopia japonica),106
-invasive_plant_code,JW,Japanese wireweed (SARG MUT Sargassum muticum),107
-invasive_plant_code,GJ,Johnsongrass (SORG HAL Sorghum halepense),108
-invasive_plant_code,JG,Jointed goatgrass (AEGI CYL Aegilops cylindrica),109
-invasive_plant_code,KH,King devil hawkweed (HIER FLO Hieracium floribundum),110
-invasive_plant_code,KS,Knapweed species (CENT SPP Centaurea spp.),111
-invasive_plant_code,KO,Kochia (KOCH SCO Kochia scoparia),112
-invasive_plant_code,KU,Kudzu (PUER MON Pueraria montana),113
-invasive_plant_code,LT,Lady's-thumb (POLY PER Polygonum persicaria),114
-invasive_plant_code,LL,Large yellow / spotted loosestrife (LYSI PUN Lysimachia punctata),115
-invasive_plant_code,LS,Leafy spurge (EUPH ESU Euphorbia esula),116
-invasive_plant_code,RF,Lesser celandine / fig buttercup (RANU FIC Ranunculus ficaria),117
-invasive_plant_code,LO,Longspine sandbur (CENC LON Cenchrus longispinus),118
-invasive_plant_code,OW,Major oxygen weed (LAGA ROS Lagarosiphon),119
-invasive_plant_code,MX,Maltese star thistle (CENT MEL Centaurea melitensis),120
-invasive_plant_code,MT,Marsh plume thistle/Marsh thistle (CIRS PAL Cirsium palustre),121
-invasive_plant_code,MB,Meadow buttercup (RANU ACR Ranunculus acris),122
-invasive_plant_code,MC,Meadow clary (SALV PRA Salvia pratensis),123
-invasive_plant_code,MG,Meadow goats-beard (TRAG PRA Tragopogon pratensis),124
-invasive_plant_code,MH,Meadow hawkweed (HIER CAE Hieracium caespitosum),125
-invasive_plant_code,MK,Meadow knapweed (CENT DEB Centaurea debeauxii),126
-invasive_plant_code,MS,Mediterranean sage (SALV AET Salvia aethiopsis),127
-invasive_plant_code,TM,Medusahead (TAEN CAP Taeniatherum caput-medusae),128
-invasive_plant_code,MI,Milk thistle (SILY MAR Silybum marianum),129
-invasive_plant_code,MO,Mountain bluet (CENT MON Centaurea montana),130
-invasive_plant_code,ME,Mouse ear hawkweed (HIER PIL Hieracium pilosella),131
-invasive_plant_code,MU,Mullein (VERB THA Verbascum thapsis),132
-invasive_plant_code,NC,Night-flowering catchfly (SILE NOC Silene noctiflora),133
-invasive_plant_code,NI,Nightshade (SOLA SPP Solanum spp),134
-invasive_plant_code,NT,Nodding thistle (CARD NUT Carduus nutans),135
-invasive_plant_code,NA,North africa grass (VENT DUB Ventenata dubia),136
-invasive_plant_code,OM,Old man's beard / traveller's joy (CLEM VIT Clematis vitalba),137
-invasive_plant_code,OH,Orange hawkweed (HIER AUR Hieracium aurantiacum),138
-invasive_plant_code,OD,Oxeye daisy (LEUC VUL Leucanthemum vulgare),139
-invasive_plant_code,PF,Parrot feather (MYRI AQU Myriophyllum aquaticum),140
-invasive_plant_code,PP,Perennial pepperweed (LEPI LAT Lepidium latifolium),141
-invasive_plant_code,PS,Perennial sow thistle (SONC ARV Sonchus arvensis),142
-invasive_plant_code,PT,Plumeless thistle (CARD ACA Carduus acanthoides),143
-invasive_plant_code,PH,Poison hemlock (CONI MAC Conium maculatum),144
-invasive_plant_code,PA,Polar hawkweed (HIER ATR Hieracium atratum),145
-invasive_plant_code,IM,Policeman's helmet / himalayan balsam (IMPA GLA Impatiens glandulifera),146
-invasive_plant_code,LP,Portugese laurel (PRUN LUS Prunus lusitanica),147
-invasive_plant_code,PR,Portuguese broom (CYTI STR Cytisus striatus),148
-invasive_plant_code,PC,Prickly comfrey (SYMP ASP Symphytum asperum),149
-invasive_plant_code,PV,Puncturevine (TRIB TER Tribulus terrestris),150
-invasive_plant_code,PD,Purple deadnettle (LAMI PUR Lamium purpureum),151
-invasive_plant_code,PL,Purple loosestrife (LYTH SAL Lythrum salicaria),152
-invasive_plant_code,PN,Purple nutsedge (CYPE ROT Cyperus rotundus),153
-invasive_plant_code,PU,Purple starthistle (CENT CAL Centaurea calcitrapa),154
-invasive_plant_code,QA,Queen anne's lace / wild carrot (DAUC CAR Daucus carota),155
-invasive_plant_code,QH,Queen devil hawkweed (HIER PRE Hieracium praealtum),156
-invasive_plant_code,BR,Red bartsia (ODON SER Odontites serotina),157
-invasive_plant_code,RP,Redroot amaranth / rough pigweed (AMAR RET Amaranthus retroflexus),158
-invasive_plant_code,RS,Rush skeletonweed (CHON JUN Chondrilla juncea),159
-invasive_plant_code,RK,Russian knapweed (ACRO REP Acroptilon repens),160
-invasive_plant_code,RO,Russian olive (ELAE ANG Elaeagnus angustifolia),161
-invasive_plant_code,RT,Russian thistle (SALS KAL Salsola kali),162
-invasive_plant_code,TA,Saltcedar / tamarisk (TAMA RAM Tamarix ramosissima),163
-invasive_plant_code,AH,Saltlover / halogeton (HALO GLO Halogeton glomeratus),164
-invasive_plant_code,SN,Salt-meadow cord grass (SPAR PAT Spartina patens),165
-invasive_plant_code,SA,Saltwater cord grass (SPAR ALT Spartina alterniflora),166
-invasive_plant_code,SH,Scentless chamomile (MATR PER Matricaria perforata),167
-invasive_plant_code,SB,Scotch broom (CYTI SCO Cytisus scoparius),168
-invasive_plant_code,ST,Scotch thistle (ONOP ACA Onopordum acanthium),169
-invasive_plant_code,SS,Sheep sorrel (RUME ACE Rumex acetosella),170
-invasive_plant_code,SP,Shepherd's-purse (CAPS BUR Capsella bursa-pastoris),171
-invasive_plant_code,SG,Shiny geranium (GERA LUC Geranium lucidum),172
-invasive_plant_code,CN,Short-fringed knapweed (CENT NIR Centaurea nigrescens),173
-invasive_plant_code,SE,Siberian elm (ULMU PUM Ulmus pumila),174
-invasive_plant_code,NS,Silverleaf nightshade (SOLA ELA Solanum elaeagnifolium),175
-invasive_plant_code,FT,Slender meadow foxtail (ALOP MYO Alopecurus myosuroides),176
-invasive_plant_code,HG,Smooth cat's ear (HYPO GLA Hypochaeris glabra),177
-invasive_plant_code,SM,Smooth hawkweed (HIER LAE Hieracium laevigatum),178
-invasive_plant_code,SO,Sowthistle species (SONC SPP Sonchus species),179
-invasive_plant_code,BS,Spanish bluebells (HYAC HIS Hyacinthoides hispanica),180
-invasive_plant_code,SI,Spanish broom (SPAR JUN Spartium junceum),181
-invasive_plant_code,SX,Spotted hawkweed (HIER MAC Hieracium maculatum),182
-invasive_plant_code,SK,Spotted knapweed (CENT BIE Centaurea biebersteinii),183
-invasive_plant_code,MV,Spring millet grass (MILI VER Milium vernale),184
-invasive_plant_code,TP,Spurge flax (THYM PAS Thymelaea passerina),185
-invasive_plant_code,CV,Squarrose knapweed (CENT VIR Centaurea virgata ssp. squarrosa),186
-invasive_plant_code,SJ,St. John's wort/Saint John's wort/ Goatweed (HYPE PER Hypericum perforatum),187
-invasive_plant_code,SC,Sulphur cinquefoil (POTE REC Potentilla recta),188
-invasive_plant_code,SF,Sweet fennel (FOEN VUL Foeniculum vulgare),189
-invasive_plant_code,SY,Syrian bean-caper (ZYGO FAB Zygophyllum fabago),190
-invasive_plant_code,TH,Tall hawkweed (HIER OID Hieracium piloselloides),191
-invasive_plant_code,TR,Tansy ragwort (SENE JAC Senecio jacobaea),192
-invasive_plant_code,TB,Tartary buckwheat (FAGO TAT Fagopyrum tataricum),193
-invasive_plant_code,TS,Teasel (DIPS FUL Dipsacus fullonum),194
-invasive_plant_code,TX,Texas blueweed (HELI CIL Helianthus ciliaris),195
-invasive_plant_code,AA,Tree of heaven (AILA ALT Ailanthus altissima),196
-invasive_plant_code,LM,Variable leaf milfoil (MYRI HET Myriophyllum heterophyllum),197
-invasive_plant_code,VL,Velvet leaf (ABUT THE Abutilon theophrasti),198
-invasive_plant_code,WA,Wall hawkweed (HIER MUR Hieracium murorum),199
-invasive_plant_code,WL,Wand loosestrife (LYTH VIR Lythrum virgatum),200
-invasive_plant_code,TN,Water chestnut (TRAP NAT Trapa natans),201
-invasive_plant_code,WH,Water hyacinth (EICH CRA Eichhornia crassipes),202
-invasive_plant_code,LW,Water lettuce (PIST STR Pistia stratiotes),203
-invasive_plant_code,AQ,Water soldier (STRA ALO Stratiotes aloides),204
-invasive_plant_code,NO,Watercress (NAST OFF Nasturtium officinale),205
-invasive_plant_code,WG,Western goat's-beard (TRAG DUB Tragopogon dubius),206
-invasive_plant_code,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),207
-invasive_plant_code,WC,White cockle (LYCH ALB Lychnis alba),208
-invasive_plant_code,WB,Wild buckwheat (POLY CON Polygonum convolvulus),209
-invasive_plant_code,WI,Wild chervil (ANTH SYL Anthriscus sylvestris),210
-invasive_plant_code,WF,Wild four o'clock (MIRA NYC Mirabilis nyctaginea),211
-invasive_plant_code,WM,Wild mustard (SINA ARV Sinapis arvensis),212
-invasive_plant_code,WO,Wild oats (AVEN FAT Avena fatua),213
-invasive_plant_code,PW,Wild parsnip (PAST SAT Pastinaca sativa),214
-invasive_plant_code,WT,Winged thistle / slender-flowered thistle (CARD TEN Carduus tenuiflorus),215
-invasive_plant_code,WS,Wood sage (SALV NEM Salvia nemorsa),216
-invasive_plant_code,WW,Wormwood (ARTE ABS Artemisia absinthium),217
-invasive_plant_code,YA,Yellow archangel (LAMI GAL Lamiastrum galeobdolon),218
-invasive_plant_code,YD,Yellow devil hawkweed (HIER GLO Hieracium glomeratum),219
-invasive_plant_code,YF,Yellow floating heart (NYMP PEL Nymphoides peltata),220
-invasive_plant_code,YH,Yellow hawkweed (HIER PRA Hieracium pratense),221
-invasive_plant_code,YI,Yellow iris (IRIS PSE Iris pseudachorus),222
-invasive_plant_code,YN,Yellow nutsedge (CYPE ESC Cyperus esculentus),223
-invasive_plant_code,YS,Yellow starthistle (CENT SOL Centaurea solstitialis),224
-invasive_plant_code,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),225
+invasive_plant_code,CX,Common hawkweed (PILO VUL Pilosella / Hieracium lanchenalii),38
+invasive_plant_code,CP,Common periwinkle (VINC MIN Vinca minor),39
+invasive_plant_code,TC,Common tansy (TANA VUL Tanacetum vulgare),40
+invasive_plant_code,CR,Creeping buttercup (RANU REP Ranunculus repens),41
+invasive_plant_code,CU,Cudweed (GNAP ULI Gnaphalium uliginosum),42
+invasive_plant_code,CD,Curled dock (RUME CRI Rumex crispus),43
+invasive_plant_code,CL,Cutleaf blackberry (RUBU LAC Rubus laciniatus),44
+invasive_plant_code,CS,Cypress spurge (EUPH CYP Euphorbia cyparissias),45
+invasive_plant_code,DT,Dalmatian toadflax (LINA DAL Linaria dalmatica),46
+invasive_plant_code,DR,Dame's rocket (HESP MAT Hesperis matronalis),47
+invasive_plant_code,SL,Daphne / spurge laurel (DAPH LAU Daphne laureola),48
+invasive_plant_code,DK,Diffuse knapweed (CENT DIF Centaurea diffusa),49
+invasive_plant_code,DO,Dodder (CUSC SPP Cuscuta spp.),50
+invasive_plant_code,DE,Dwarf eelgrass (ZOST JAP Zostera japonica),51
+invasive_plant_code,DW,Dyer's woad (ISAT TIN Isatis tinctoria),52
+invasive_plant_code,ES,Eggleaf spurge (EUPH OBL Euphorbia oblongata),53
+invasive_plant_code,HO,English holly (ILEX AQU Ilex aquifolium),54
+invasive_plant_code,EI,English ivy (HEDE HEL Hedera helix),55
+invasive_plant_code,EU,European bittersweet / climbing nightshade (SOLA DUL Solanum dulcamara),56
+invasive_plant_code,RC,European Common Reed / Common reed (PHRA AUS Phragmites australis subsp. australis),57
+invasive_plant_code,EH,European hawkweed (PILO SAB Pilosella / Hieracium sabaudum),58
+invasive_plant_code,EY,Eyebright (EUPH NEM Euphrasia nemorosa),59
+invasive_plant_code,FB,Field bindweed (CONV ARV Convolvulus arvensis),60
+invasive_plant_code,FS,Field scabious (KNAU ARV Knautia arvensis),61
+invasive_plant_code,FP,Flat pea / flat peavine (LATH SYL Lathyrus sylvestris),62
+invasive_plant_code,GM,French broom (GENI MON Genista monspessulana),63
+invasive_plant_code,AP,Garlic mustard (ALLI PET Alliaria petiolata),64
+invasive_plant_code,MA,Giant chickweed (MYOS AQU Myosoton aquaticum),65
+invasive_plant_code,GH,Giant hogweed (HERA MAN Heracleum mantegazzianum),66
+invasive_plant_code,GK,Giant knotweed (FALL SAC Fallopia sachalinensis),67
+invasive_plant_code,SW,Giant mannagrass / reed sweetgrass (GLYC MAX Glyceria maxima),68
+invasive_plant_code,AD,Giant reed / giant cane (ARUN DON Arundo donax),69
+invasive_plant_code,GP,Globe-pod hoary cress (LEPI APP Lepidium appelianum ),70
+invasive_plant_code,RG,Goat's rue / french lilac (GALE OFF Galega officinalis),71
+invasive_plant_code,GO,Gorse (ULEX EUR Ulex europaeus),72
+invasive_plant_code,GW,Goutweed / bishop's weed (AEGO POD Aegopodium podagraria),73
+invasive_plant_code,GC,Greater celandine (CHEL MAJ Chelidonium majus),74
+invasive_plant_code,GN,Greater knapweed (CENT SCA Centaurea scabiosa),75
+invasive_plant_code,GF,Green foxtail / green bristlegrass (SETA VIR Setaria viridis),76
+invasive_plant_code,GS,Groundsel (SENE VUL Senecio vulgaris),77
+invasive_plant_code,HR,Hairy cat's-ear (HYPO RAD Hypochaeris radicata),78
+invasive_plant_code,HC,Heart-podded hoary cress / Hoary cress (CARD DRA Cardaria draba),79
+invasive_plant_code,BI,Hedge false bindweed (CALY SEP Calystegia sepium),80
+invasive_plant_code,HD,Hedgehog dogtail (CYNO ECH Cynosurus echinatus),81
+invasive_plant_code,GR,Herb robert (GERA ROB Geranium robertianum),82
+invasive_plant_code,HI,Himalayan blackberry (RUBU ARM Rubus armeniacus),83
+invasive_plant_code,PO,Himalayan knotweed (POLY POL Polygonum polystachyum),84
+invasive_plant_code,HA,Hoary alyssum (BERT INC Berteroa incana),85
+invasive_plant_code,HT,Hound's-tongue (CYNO OFF Cynoglossum officinale),86
+invasive_plant_code,IS,Iberian starthistle (CENT IBE Centaurea iberica),87
+invasive_plant_code,IT,Italian plumeless thistle (CARD PYC Carduus pycnocephalus),88
+invasive_plant_code,JP,Japanese butterbur (PETA JAP Petasites japonicus),89
+invasive_plant_code,JK,Japanese knotweed (FALL JAP Fallopia japonica),90
+invasive_plant_code,JW,Japanese wireweed (SARG MUT Sargassum muticum),91
+invasive_plant_code,GJ,Johnsongrass (SORG HAL Sorghum halepense),92
+invasive_plant_code,JG,Jointed goatgrass (AEGI CYL Aegilops cylindrica),93
+invasive_plant_code,KH,Kingdevil hawkweed (HIER FLO Hieracium floribundum),94
+invasive_plant_code,KO,Kochia (KOCH SCO Kochia scoparia),95
+invasive_plant_code,KU,Kudzu (PUER MON Pueraria montana),96
+invasive_plant_code,LT,Lady's-thumb (POLY PER Polygonum persicaria),97
+invasive_plant_code,LS,Leafy spurge (EUPH ESU Euphorbia esula),98
+invasive_plant_code,LH,Lens-pod hoary cress  (LEPI CHA Lepidium chalepense),99
+invasive_plant_code,RF,Lesser celandine / fig buttercup (RANU FIC Ranunculus ficaria),100
+invasive_plant_code,LO,Longspine sandbur (CENC LON Cenchrus longispinus),101
+invasive_plant_code,MX,Maltese star thistle (CENT MEL Centaurea melitensis),102
+invasive_plant_code,MT,Marsh plume thistle / Marsh thistle (CIRS PAL Cirsium palustre),103
+invasive_plant_code,MB,Meadow buttercup (RANU ACR Ranunculus acris),104
+invasive_plant_code,MC,Meadow clary (SALV PRA Salvia pratensis),105
+invasive_plant_code,MG,Meadow goats-beard (TRAG PRA Tragopogon pratensis),106
+invasive_plant_code,MH,Meadow hawkweed (HIER CAE Hieracium caespitosum),107
+invasive_plant_code,MK,Meadow knapweed (CENT DEB Centaurea debeauxii),108
+invasive_plant_code,MS,Mediterranean sage (SALV AET Salvia aethiopsis),109
+invasive_plant_code,TM,Medusahead (TAEN CAP Taeniatherum caput-medusae),110
+invasive_plant_code,MI,Milk thistle (SILY MAR Silybum marianum),111
+invasive_plant_code,MO,Mountain bluet (CENT MON Centaurea montana),112
+invasive_plant_code,ME,Mouse ear hawkweed (HIER PIL Hieracium pilosella),113
+invasive_plant_code,MU,Mullein (VERB THA Verbascum thapsis),114
+invasive_plant_code,EM,Myrtle spurge (EUPH MYR Euphorbia myrsinites),115
+invasive_plant_code,NC,Night-flowering catchfly (SILE NOC Silene noctiflora),116
+invasive_plant_code,NT,Nodding thistle (CARD NUT Carduus nutans),117
+invasive_plant_code,NA,North africa grass (VENT DUB Ventenata dubia),118
+invasive_plant_code,OM,Old man's beard / traveller's joy (CLEM VIT Clematis vitalba),119
+invasive_plant_code,OH,Orange hawkweed (HIER AUR Hieracium aurantiacum),120
+invasive_plant_code,OD,Oxeye daisy (LEUC VUL Leucanthemum vulgare),121
+invasive_plant_code,EP,Paterson's Curse (ECHI PLA Echium plantagineum),122
+invasive_plant_code,PP,Perennial pepperweed (LEPI LAT Lepidium latifolium),123
+invasive_plant_code,PS,Perennial sow thistle (SONC ARV Sonchus arvensis),124
+invasive_plant_code,PT,Plumeless thistle (CARD ACA Carduus acanthoides),125
+invasive_plant_code,PH,Poison hemlock (CONI MAC Conium maculatum),126
+invasive_plant_code,PA,Polar hawkweed (PILO ATR Pilosella / Hieracium atratum),127
+invasive_plant_code,IM,Policeman's helmet / himalayan balsam (IMPA GLA Impatiens glandulifera),128
+invasive_plant_code,PR,Portuguese broom (CYTI STR Cytisus striatus),129
+invasive_plant_code,LP,Portugese laurel (PRUN LUS Prunus lusitanica),130
+invasive_plant_code,PC,Prickly comfrey (SYMP ASP Symphytum asperum),131
+invasive_plant_code,PV,Puncturevine (TRIB TER Tribulus terrestris),132
+invasive_plant_code,PD,Purple deadnettle (LAMI PUR Lamium purpureum),133
+invasive_plant_code,PN,Purple nutsedge (CYPE ROT Cyperus rotundus),134
+invasive_plant_code,PU,Purple starthistle (CENT CAL Centaurea calcitrapa),135
+invasive_plant_code,QA,Queen anne's lace / wild carrot (DAUC CAR Daucus carota),136
+invasive_plant_code,QH,Queendevil hawkweed (HIER PRE Hieracium praealtum),137
+invasive_plant_code,BR,Red bartsia (ODON SER Odontites serotina),138
+invasive_plant_code,RP,Redroot amaranth / rough pigweed (AMAR RET Amaranthus retroflexus),139
+invasive_plant_code,RE,Reed Canary Grass (PHAL ARU Phalaris arundinacea),140
+invasive_plant_code,RS,Rush skeletonweed (CHON JUN Chondrilla juncea),141
+invasive_plant_code,RK,Russian knapweed (ACRO REP Acroptilon repens),142
+invasive_plant_code,RO,Russian olive (ELAE ANG Elaeagnus angustifolia),143
+invasive_plant_code,RT,Russian thistle (SALS KAL Salsola kali),144
+invasive_plant_code,TA,Saltcedar / tamarisk (TAMA RAM Tamarix ramosissima),145
+invasive_plant_code,AH,Saltlover / halogeton (HALO GLO Halogeton glomeratus),146
+invasive_plant_code,SH,Scentless chamomile (MATR PER Matricaria perforata),147
+invasive_plant_code,SB,Scotch broom (CYTI SCO Cytisus scoparius),148
+invasive_plant_code,ST,Scotch thistle (ONOP ACA Onopordum acanthium),149
+invasive_plant_code,SS,Sheep sorrel (RUME ACE Rumex acetosella),150
+invasive_plant_code,SP,Shepherd's-purse (CAPS BUR Capsella bursa-pastoris),151
+invasive_plant_code,SG,Shiny geranium (GERA LUC Geranium lucidum),152
+invasive_plant_code,CN,Short-fringed knapweed (CENT NIR Centaurea nigrescens),153
+invasive_plant_code,SE,Siberian elm (ULMU PUM Ulmus pumila),154
+invasive_plant_code,NS,Silverleaf nightshade (SOLA ELA Solanum elaeagnifolium),155
+invasive_plant_code,FT,Slender meadow foxtail (ALOP MYO Alopecurus myosuroides),156
+invasive_plant_code,BF,Slender false brome / false brome (BRAC SYL Brachypodium sylvaticum),157
+invasive_plant_code,HG,Smooth cat's ear (HYPO GLA Hypochaeris glabra),158
+invasive_plant_code,SM,Smooth hawkweed (PILO LAE Pilosella / Hieracium laevigatum),159
+invasive_plant_code,BS,Spanish bluebells (HYAC HIS Hyacinthoides hispanica),160
+invasive_plant_code,SI,Spanish broom (SPAR JUN Spartium junceum),161
+invasive_plant_code,SX,Spotted hawkweed (PILO MAC Pilosella / Hieracium maculatum),162
+invasive_plant_code,SK,Spotted knapweed (CENT BIE Centaurea biebersteinii),163
+invasive_plant_code,MV,Spring millet grass (MILI VER Milium vernale),164
+invasive_plant_code,TP,Spurge flax (THYM PAS Thymelaea passerina),165
+invasive_plant_code,CV,Squarrose knapweed (CENT VIR Centaurea virgata ssp. squarrosa),166
+invasive_plant_code,SJ,St. John's wort/Saint John's wort/ Goatweed (HYPE PER Hypericum perforatum),167
+invasive_plant_code,SC,Sulphur cinquefoil (POTE REC Potentilla recta),168
+invasive_plant_code,SF,Sweet fennel (FOEN VUL Foeniculum vulgare),169
+invasive_plant_code,SY,Syrian bean-caper (ZYGO FAB Zygophyllum fabago),170
+invasive_plant_code,TH,Tall hawkweed (HIER OID Hieracium piloselloides),171
+invasive_plant_code,TR,Tansy ragwort (SENE JAC Senecio jacobaea),172
+invasive_plant_code,TB,Tartary buckwheat (FAGO TAT Fagopyrum tataricum),173
+invasive_plant_code,TS,Teasel (DIPS FUL Dipsacus fullonum),174
+invasive_plant_code,TX,Texas blueweed (HELI CIL Helianthus ciliaris),175
+invasive_plant_code,AA,Tree of heaven (AILA ALT Ailanthus altissima),176
+invasive_plant_code,VL,Velvet leaf (ABUT THE Abutilon theophrasti),177
+invasive_plant_code,WA,Wall hawkweed (PILO MUR Pilosella / Hieracium murorum),178
+invasive_plant_code,WG,Western goat's-beard (TRAG DUB Tragopogon dubius),179
+invasive_plant_code,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),180
+invasive_plant_code,WC,White cockle (LYCH ALB Lychnis alba),181
+invasive_plant_code,SR,White spanish broom (CYTI MUL Cytisus multiflorus),182
+invasive_plant_code,WB,Wild buckwheat (POLY CON Polygonum convolvulus),183
+invasive_plant_code,WI,Wild chervil (ANTH SYL Anthriscus sylvestris),184
+invasive_plant_code,WF,Wild four o'clock (MIRA NYC Mirabilis nyctaginea),185
+invasive_plant_code,WM,Wild mustard (SINA ARV Sinapis arvensis),186
+invasive_plant_code,WO,Wild oats (AVEN FAT Avena fatua),187
+invasive_plant_code,PW,Wild parsnip (PAST SAT Pastinaca sativa),188
+invasive_plant_code,WT,Winged thistle / slender-flowered thistle (CARD TEN Carduus tenuiflorus),189
+invasive_plant_code,WS,Wood sage (SALV NEM Salvia nemorsa),190
+invasive_plant_code,WW,Wormwood (ARTE ABS Artemisia absinthium),191
+invasive_plant_code,YA,Yellow archangel (LAMI GAL Lamiastrum galeobdolon),192
+invasive_plant_code,YD,Yellowdevil hawkweed (HIER GLO Hieracium glomeratum),193
+invasive_plant_code,YH,Yellow hawkweed (HIER PRA Hieracium pratense),194
+invasive_plant_code,HS,Yellow hawkweed species (HIER PILO SPP Hieracium / Pilosella spp.),195
+invasive_plant_code,YN,Yellow nutsedge (CYPE ESC Cyperus esculentus),196
+invasive_plant_code,YS,Yellow starthistle (CENT SOL Centaurea solstitialis),197
+invasive_plant_code,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),198
+invasive_plant_code,FU,Death cap fungus [Amanita phalloides],199
 invasive_animal_code,ABD,American black duck [Anas rubripes],1
 invasive_animal_code,ABF,American bullfrog [Lithobates catesbeiana],2
 invasive_animal_code,ASD,American shad [Alosa sapidissima],3
@@ -666,270 +696,277 @@ biological_agent_code,UROPSOL,UROPSOL [Urophora solstitialus (L.)],89
 biological_agent_code,UROPSPP,UROPSPP [Urophora species],90
 biological_agent_code,UROPSTY,UROPSTY [Urophora stylata (L.)],91
 biological_agent_code,ZEUXGIA,ZEUXGIA [Zeuxidiplosis giardi],92
-invasive_species_agency_code,MOF,"Forests, Lands, Natural Resource Operations & Rural Development",1
-invasive_species_agency_code,MOT,Ministry of Transportation & Infrastructure,2
-invasive_species_agency_code,MWLA,Environment & Climate Change Strategy,3
-invasive_species_agency_code,MAFF,Ministry of Agriculture,4
-invasive_species_agency_code,MEM,"Energy, Mines & Petroleum Resources",5
-invasive_species_agency_code,BCTC,British Columbia Transmission Corporation,6
-invasive_species_agency_code,AAFC,Agriculture and Agri-Food Canada,7
-invasive_species_agency_code,DND,Department of National Defense,8
-invasive_species_agency_code,OGC,BC Oil and Gas Commission,9
-invasive_species_agency_code,PCAN,Parks Canada,10
-invasive_species_agency_code,CPR,CP Rail,11
-invasive_species_agency_code,HYDR,BC Hydro and Power Authority,12
-invasive_species_agency_code,COQ,City of Coquitlam,13
-invasive_species_agency_code,SUR,City of Surrey,14
-invasive_species_agency_code,RICH,City of Richmond,15
-invasive_species_agency_code,CPM,City of Port Moody,16
-invasive_species_agency_code,PITT,City of Pitt Meadows,17
-invasive_species_agency_code,BBY,City of Burnaby,18
+invasive_species_agency_code,AATR,A & A Trading,1
+invasive_species_agency_code,AAFC,Agriculture and Agri-Food Canada,2
+invasive_species_agency_code,ACRD,Alberni-Clayoquot Regional District,3
+invasive_species_agency_code,APO,Apollo Forest Products Ltd.,4
+invasive_species_agency_code,ATCO,ATCO Wood Products Ltd.,5
+invasive_species_agency_code,HYDR,BC Hydro and Power Authority,6
+invasive_species_agency_code,OGC,BC Oil and Gas Commission,7
+invasive_species_agency_code,BEL,Bella Bella Asset Holdings Ltd.,8
+invasive_species_agency_code,BISS,BISS - Boundary Invasive Species Society,9
+invasive_species_agency_code,BIM,Bowen Island Municipality,10
+invasive_species_agency_code,BCTC,British Columbia Transmission Corporation,11
+invasive_species_agency_code,CAN,Canfor,12
+invasive_species_agency_code,CRD,Capital Regional District,13
+invasive_species_agency_code,CBRD,Cariboo Regional District,14
+invasive_species_agency_code,CAR,Carrier Lumber Ltd.,15
+invasive_species_agency_code,CCCIPC,CCCIPC - Cariboo Chilcotin Coast Invasive Plant Committee,16
+invasive_species_agency_code,CCRD,Central Coast Regional District,17
+invasive_species_agency_code,CISC,CISC - Coastal Invasive Species Committee,18
 invasive_species_agency_code,CABB,City of Abbotsford,19
-invasive_species_agency_code,COLW,City of Colwood,20
-invasive_species_agency_code,NAN,City of Nanaimo,21
-invasive_species_agency_code,KELO,City of Kelowna,22
+invasive_species_agency_code,BBY,City of Burnaby,20
+invasive_species_agency_code,COLW,City of Colwood,21
+invasive_species_agency_code,COQ,City of Coquitlam,22
 invasive_species_agency_code,KAM,City of Kamloops,23
-invasive_species_agency_code,PG,City of Prince George,24
-invasive_species_agency_code,VIC,City of Victoria,25
-invasive_species_agency_code,MISS,District of Mission,26
-invasive_species_agency_code,DOT,District of Tofino,27
-invasive_species_agency_code,KENT,District of Kent,28
-invasive_species_agency_code,DSEC,District of Sechelt,29
-invasive_species_agency_code,DWV,District of West Vancouver,30
-invasive_species_agency_code,DSAN,District of Saanich,31
-invasive_species_agency_code,DCS,District of Central Saanich,32
-invasive_species_agency_code,SID,Town of Sidney,33
-invasive_species_agency_code,GIBS,Town of Gibsons,34
-invasive_species_agency_code,DLT,The Corporation of Delta,35
-invasive_species_agency_code,LANG,Township of Langley,36
-invasive_species_agency_code,BIM,Bowen Island Municipality,37
-invasive_species_agency_code,NCOW,Municipality of North Cowichan,38
-invasive_species_agency_code,ACRD,Alberni-Clayoquot Regional District,39
-invasive_species_agency_code,RDBN,Regional District of Bulkley-Nechako,40
-invasive_species_agency_code,CRD,Capital Regional District,41
-invasive_species_agency_code,CBRD,Cariboo Regional District,42
-invasive_species_agency_code,CCRD,Central Coast Regional District,43
-invasive_species_agency_code,CKRD,Regional District of Central Kootenay,44
-invasive_species_agency_code,RDCO,Regional District of Central Okanagan,45
-invasive_species_agency_code,CSRD,Columbia-Shuswap Regional District,46
-invasive_species_agency_code,CMRD,Comox Valley Regional District,47
-invasive_species_agency_code,CVRD,Cowichan Valley Regional District,48
+invasive_species_agency_code,KELO,City of Kelowna,24
+invasive_species_agency_code,NAN,City of Nanaimo,25
+invasive_species_agency_code,PITT,City of Pitt Meadows,26
+invasive_species_agency_code,CPM,City of Port Moody,27
+invasive_species_agency_code,PG,City of Prince George,28
+invasive_species_agency_code,RICH,City of Richmond,29
+invasive_species_agency_code,SUR,City of Surrey,30
+invasive_species_agency_code,VIC,City of Victoria,31
+invasive_species_agency_code,CKISS,CKISS - Central Kootenay Invasive Species Society,32
+invasive_species_agency_code,CSRD,Columbia-Shuswap Regional District,33
+invasive_species_agency_code,CMRD,Comox Valley Regional District,34
+invasive_species_agency_code,CVRD,Cowichan Valley Regional District,35
+invasive_species_agency_code,CPR,CP Rail,36
+invasive_species_agency_code,CRISP,CRISP - Capital Regional Invasive Species Partnership,37
+invasive_species_agency_code,CSISS,CSISS - Columbia Shuswap Invasive Species Society,38
+invasive_species_agency_code,DND,Department of National Defense,39
+invasive_species_agency_code,DHC,Diamond Head Consulting Ltd,40
+invasive_species_agency_code,DCS,District of Central Saanich,41
+invasive_species_agency_code,KENT,District of Kent,42
+invasive_species_agency_code,MISS,District of Mission,43
+invasive_species_agency_code,DSAN,District of Saanich,44
+invasive_species_agency_code,DSEC,District of Sechelt,45
+invasive_species_agency_code,DOT,District of Tofino,46
+invasive_species_agency_code,DWV,District of West Vancouver,47
+invasive_species_agency_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada,48
 invasive_species_agency_code,RDEK,East Kootenay Regional District of East Kootenay,49
-invasive_species_agency_code,FVRD,Fraser Valley Regional District,50
-invasive_species_agency_code,RDFG,Regional District Fraser-Fort George,51
-invasive_species_agency_code,MVRD,Metro Vancouver Regional District,52
-invasive_species_agency_code,RDKS,Regional District of Kitimat-Stikine,53
-invasive_species_agency_code,RDKB,Regional District of Kootenay Boundary,54
-invasive_species_agency_code,RDMW,Regional District of Mount Waddington,55
-invasive_species_agency_code,RDN,Regional District of Nanaimo,56
-invasive_species_agency_code,RDNO,Regional District of North Okanagan,57
-invasive_species_agency_code,NRRM,Northern Rockies Regional Municipality,58
-invasive_species_agency_code,RDOS,Regional District of Okanagan-Similkameen,59
-invasive_species_agency_code,PRRD,Peace River Regional District,60
-invasive_species_agency_code,NCRD,North Coast Regional District,61
-invasive_species_agency_code,SLRD,Squamish-Lillooet Regional District,62
-invasive_species_agency_code,RDST,Regional District of Stikine,63
-invasive_species_agency_code,RDS,Strathcona Regional District,64
-invasive_species_agency_code,SCRD,Sunshine Coast Regional District,65
-invasive_species_agency_code,TNRD,Thompson-Nicola Regional District,66
-invasive_species_agency_code,QRD,qathet Regional District,67
-invasive_species_agency_code,IPC,ISCBC - Invasive Species Council of BC,68
-invasive_species_agency_code,CISC,CISC - Coastal Invasive Species Committee,69
-invasive_species_agency_code,ISCM,ISCMV - Invasive Species Council of Metro Vancouver,70
-invasive_species_agency_code,FVISS,FVISS - Fraser Valley Invasive Species Society,71
-invasive_species_agency_code,SSISC,SSISC - Sea to Sky Invasive Species Council,72
-invasive_species_agency_code,LRISS,LRISS - Lillooet Regional Invasive Species Society,73
-invasive_species_agency_code,OASISS,OASISS - Okanagan and Similkameen Invasive Species Society,74
-invasive_species_agency_code,BISS,BISS - Boundary Invasive Species Society,75
-invasive_species_agency_code,CKISS,CKISS - Central Kootenay Invasive Species Society,76
-invasive_species_agency_code,EKISC,EKISC - East Kootenay Invasive Species Council,77
-invasive_species_agency_code,CSISS,CSISS - Columbia Shuswap Invasive Species Society,78
-invasive_species_agency_code,CCCIPC,CCCIPC - Cariboo Chilcotin Coast Invasive Plant Committee,79
-invasive_species_agency_code,NWIPC,NWIPC - Northwest Invasive Plant Council,80
-invasive_species_agency_code,TNIPMC,TNIPMC - Thompson Nicola Invasive Plant Management Committee,81
-invasive_species_agency_code,CRISP,CRISP - Capital Regional Invasive Species Partnership,82
-invasive_species_agency_code,AATR,A & A Trading,83
-invasive_species_agency_code,APO,Apollo Forest Products Ltd.,84
-invasive_species_agency_code,ATCO,ATCO Wood Products Ltd.,85
-invasive_species_agency_code,BEL,Bella Bella Asset Holdings Ltd.,86
-invasive_species_agency_code,CAN,Canfor,87
-invasive_species_agency_code,CAR,Carrier Lumber Ltd.,88
-invasive_species_agency_code,DHC,Diamond Head Consulting Ltd,89
-invasive_species_agency_code,DUC,Ducks Unlimited Canada - Canards Illimites Canada,90
-invasive_species_agency_code,FRS,FortisBC Inc,91
-invasive_species_agency_code,FWCP,Fish and Wildlife Compensation Program - Columbia Basin,92
-invasive_species_agency_code,GBL,Gorman Brothers Lumber Ltd.,93
-invasive_species_agency_code,GIBR,Gibraltar Mines Ltd.,94
-invasive_species_agency_code,KMC,Kinder Morgan Canada,95
-invasive_species_agency_code,LM,Lakeland Mills Ltd.,96
-invasive_species_agency_code,LNT,Lower North Thompson Community Forest Society,97
-invasive_species_agency_code,LPC,Louisiana-Pacific Canada Ltd.,98
-invasive_species_agency_code,LKB,Lower Kootenay Band,99
-invasive_species_agency_code,MC,Meadow Creek Cedar Ltd.,100
-invasive_species_agency_code,MTP,Mill & Timber Products Ltd.,101
-invasive_species_agency_code,NCC,The Nature Conservancy of Canada,102
-invasive_species_agency_code,NTBC,The Nature Trust of BC,103
-invasive_species_agency_code,OIB,Osoyoos Indian Band,104
-invasive_species_agency_code,POTA,Pope and Talbot Ltd.,105
-invasive_species_agency_code,RBCM,Royal BC Museum,106
-invasive_species_agency_code,RPC,Richmond Plywood Corporation Limited,107
-invasive_species_agency_code,SIB,Skeetchestn Indian Band,108
-invasive_species_agency_code,SIFC,Slocan Integral Forestry Cooperative,109
-invasive_species_agency_code,SIGD,Sechelt Indian Government District,110
-invasive_species_agency_code,TCP,Teal Cedar Products Ltd.,111
-invasive_species_agency_code,TER,Terasen Gas Inc,112
-invasive_species_agency_code,TOL,Tolko,113
+invasive_species_agency_code,EKISC,EKISC - East Kootenay Invasive Species Council,50
+invasive_species_agency_code,FWCP,Fish and Wildlife Compensation Program - Columbia Basin,51
+invasive_species_agency_code,FRS,FortisBC Inc,52
+invasive_species_agency_code,FVRD,Fraser Valley Regional District,53
+invasive_species_agency_code,FVISS,FVISS - Fraser Valley Invasive Species Society,54
+invasive_species_agency_code,GIBR,Gibraltar Mines Ltd.,55
+invasive_species_agency_code,GOLD,Golder and Associates,56
+invasive_species_agency_code,GBL,Gorman Brothers Lumber Ltd.,57
+invasive_species_agency_code,IPC,ISCBC - Invasive Species Council of BC,58
+invasive_species_agency_code,ISCM,ISCMV - Invasive Species Council of Metro Vancouver,59
+invasive_species_agency_code,KMC,Kinder Morgan Canada,60
+invasive_species_agency_code,LM,Lakeland Mills Ltd.,61
+invasive_species_agency_code,LPC,Louisiana-Pacific Canada Ltd.,62
+invasive_species_agency_code,LKB,Lower Kootenay Band,63
+invasive_species_agency_code,LNT,Lower North Thompson Community Forest Society,64
+invasive_species_agency_code,LRISS,LRISS - Lillooet Regional Invasive Species Society,65
+invasive_species_agency_code,MC,Meadow Creek Cedar Ltd.,66
+invasive_species_agency_code,MVRD,Metro Vancouver Regional District,67
+invasive_species_agency_code,MTP,Mill & Timber Products Ltd.,68
+invasive_species_agency_code,MAFF,Ministry of Agriculture,69
+invasive_species_agency_code,MEM,"Ministry of Energy, Mines & Petroleum Resources",70
+invasive_species_agency_code,MWLA,Ministry of Environment & Climate Change Strategy,71
+invasive_species_agency_code,MOF,"Ministry of Forests, Lands, Natural Resource Operations & Rural Development",72
+invasive_species_agency_code,MOT,Ministry of Transportation & Infrastructure,73
+invasive_species_agency_code,NCOW,Municipality of North Cowichan,74
+invasive_species_agency_code,NCRD,North Coast Regional District,75
+invasive_species_agency_code,NRRM,Northern Rockies Regional Municipality,76
+invasive_species_agency_code,NWIPC,NWIPC - Northwest Invasive Plant Council,77
+invasive_species_agency_code,OASISS,OASISS - Okanagan and Similkameen Invasive Species Society,78
+invasive_species_agency_code,OIB,Osoyoos Indian Band,79
+invasive_species_agency_code,PCAN,Parks Canada,80
+invasive_species_agency_code,PRRD,Peace River Regional District,81
+invasive_species_agency_code,POTA,Pope and Talbot Ltd.,82
+invasive_species_agency_code,PRIV,Private,83
+invasive_species_agency_code,QRD,qathet Regional District,84
+invasive_species_agency_code,RDFG,Regional District Fraser-Fort George,85
+invasive_species_agency_code,RDBN,Regional District of Bulkley-Nechako,86
+invasive_species_agency_code,CKRD,Regional District of Central Kootenay,87
+invasive_species_agency_code,RDCO,Regional District of Central Okanagan,88
+invasive_species_agency_code,RDKS,Regional District of Kitimat-Stikine,89
+invasive_species_agency_code,RDKB,Regional District of Kootenay Boundary,90
+invasive_species_agency_code,RDMW,Regional District of Mount Waddington,91
+invasive_species_agency_code,RDN,Regional District of Nanaimo,92
+invasive_species_agency_code,RDNO,Regional District of North Okanagan,93
+invasive_species_agency_code,RDOS,Regional District of Okanagan-Similkameen,94
+invasive_species_agency_code,RDST,Regional District of Stikine,95
+invasive_species_agency_code,RPC,Richmond Plywood Corporation Limited,96
+invasive_species_agency_code,RBCM,Royal BC Museum,97
+invasive_species_agency_code,SIGD,Sechelt Indian Government District,98
+invasive_species_agency_code,SIB,Skeetchestn Indian Band,99
+invasive_species_agency_code,SIFC,Slocan Integral Forestry Cooperative,100
+invasive_species_agency_code,WCE,Spectra Energy,101
+invasive_species_agency_code,SLRD,Squamish-Lillooet Regional District,102
+invasive_species_agency_code,SSISC,SSISC - Sea to Sky Invasive Species Council,103
+invasive_species_agency_code,RDS,Strathcona Regional District,104
+invasive_species_agency_code,SCRD,Sunshine Coast Regional District,105
+invasive_species_agency_code,TCP,Teal Cedar Products Ltd.,106
+invasive_species_agency_code,TER,Terasen Gas Inc,107
+invasive_species_agency_code,DLT,The Corporation of Delta,108
+invasive_species_agency_code,NCC,The Nature Conservancy of Canada,109
+invasive_species_agency_code,NTBC,The Nature Trust of BC,110
+invasive_species_agency_code,TRU,Thompson Rivers University,111
+invasive_species_agency_code,TNRD,Thompson-Nicola Regional District,112
+invasive_species_agency_code,TNIPMC,TNIPMC - Thompson Nicola Invasive Plant Management Committee,113
 invasive_species_agency_code,TPIB,Tobacco Plains Indian Band,114
-invasive_species_agency_code,TRU,Thompson Rivers University,115
-invasive_species_agency_code,TTM,Ts'elxweyeqw Tribe Management Ltd,116
-invasive_species_agency_code,UBC,University of British Columbia,117
-invasive_species_agency_code,WBL,Wynndel Box & Lumber Co. Ltd.,118
-invasive_species_agency_code,WCE,Spectra Energy,119
-invasive_species_agency_code,WDLT,Woodlots,120
-invasive_species_agency_code,WEY,Weyerhaeuser Company Limited,121
-invasive_species_agency_code,WFM,West Fraser Mills,122
-invasive_species_agency_code,WFP,Western Forest Products Inc.,123
+invasive_species_agency_code,TOL,Tolko,115
+invasive_species_agency_code,GIBS,Town of Gibsons,116
+invasive_species_agency_code,SID,Town of Sidney,117
+invasive_species_agency_code,LANG,Township of Langley,118
+invasive_species_agency_code,TTM,Ts'elxweyeqw Tribe Management Ltd,119
+invasive_species_agency_code,UBC,University of British Columbia,120
+invasive_species_agency_code,WFM,West Fraser Mills,121
+invasive_species_agency_code,WFP,Western Forest Products Inc.,122
+invasive_species_agency_code,WEY,Weyerhaeuser Company Limited,123
+invasive_species_agency_code,WDLT,Woodlots,124
+invasive_species_agency_code,WBL,Wynndel Box & Lumber Co. Ltd.,125
 jurisdiction_code,MOF,"Ministry of Forests, Lands, Natural Resource Operations & Rural Development",1
 jurisdiction_code,MOT,Ministry of Transportation and Infrastructure,2
 jurisdiction_code,HYDR,BC Hydro and Power Authority,3
 jurisdiction_code,MW,Ministry of Environment & Climate Change Strategy,4
 jurisdiction_code,MAFF,Ministry of Agriculture,5
 jurisdiction_code,PP,Provincial Parks,6
-jurisdiction_code,P ,Private Land,7
+jurisdiction_code,P,Private Land,7
 jurisdiction_code,MOP,Municipality owned land,8
 jurisdiction_code,PCAN,Parks Canada,9
-jurisdiction_code,BCR,BC Rail,10
-jurisdiction_code,BCTC,British Columbia Transmission Corporation,11
-jurisdiction_code,TEL,Telus,12
-jurisdiction_code,TER,Terasen Gas Inc.,13
-jurisdiction_code,CNR,CN Rail,14
-jurisdiction_code,CPR,CP Rail,15
-jurisdiction_code,DFO,Department of Fisheries and Oceans,16
-jurisdiction_code,DND,Department of National Defense,17
-jurisdiction_code,DOT,Department of Transportation,18
-jurisdiction_code,DUKE,Enbridge,19
-jurisdiction_code,GL,Grazing Lease,20
-jurisdiction_code,IR,First Nations Reserves,21
-jurisdiction_code,MN,Mining Companies,22
-jurisdiction_code,MR,Military Reserves,23
-jurisdiction_code,MRD,Regional District owned land,24
-jurisdiction_code,PIPE,Oil and Gas Companies,25
-jurisdiction_code,PNG,Pacific Northern Gas,26
-jurisdiction_code,TRP,TransCanada Pipelines,27
-pesticide_employer_code,19603,19603 A.R.M. CONTRACTORS,1
-pesticide_employer_code,22691,22691 ACCURATEW6 WELLSITE SOLUTIONS LTD.,2
-pesticide_employer_code,00691,00691 ACE VEGETATION CONTROL SERVICE LTD.,3
-pesticide_employer_code,21003,21003 ACTUAL LANDSCAPING INC.,4
-pesticide_employer_code,03921,03921 ADEPT VEGETATION MANAGEMENT INC,5
-pesticide_employer_code,02485,"02485 ASHCROFT, CORPORATION OF THE VILLAGE",6
-pesticide_employer_code,23637,23637 ASPEN TREE SERVICES INC.,7
-pesticide_employer_code,00594,00594 ASPLUNDH CANADA ULC,8
-pesticide_employer_code,19583,19583 B BAR S RANCH,9
-pesticide_employer_code,14062,14062 BACKROAD CONTRACTING LTD,10
-pesticide_employer_code,22026,22026 BACKWOODS RESOURCES INC.,11
-pesticide_employer_code,00235,00235 BARE GROUND VEGETATION SERVICES LTD,12
-pesticide_employer_code,17145,17145 BDK RESOURCE SERVICES LTD.,13
-pesticide_employer_code,17204,17204 BLACKTAIL RESOURCES INC.,14
-pesticide_employer_code,00907,00907 BOULTBEE PEST CONTROL LTD.,15
-pesticide_employer_code,00651,00651 BUGS-GON TREE SERVICE,16
-pesticide_employer_code,25578,25578 BURLEY BOYS TREE SERVICE LTD.,17
-pesticide_employer_code,17406,17406 BUSY BEE SPRAY SERVICES,18
-pesticide_employer_code,08625,08625 CAM CAMPBELL HOLDINGS LTD.,19
-pesticide_employer_code,15462,15462 CAPITAL REGIONAL DISTRICT PARKS,20
-pesticide_employer_code,00458,00458 CARIBOO REGIONAL DISTRICT,21
-pesticide_employer_code,06361,06361 CITY OF CHILLIWACK PUBLIC WORKS DEPARTMENT,22
-pesticide_employer_code,00303,00303 CITY OF COQUITLAM,23
-pesticide_employer_code,24557,24557 CITY OF FORT ST. JOHN,24
-pesticide_employer_code,00267,00267 CITY OF POWELL RIVER,25
-pesticide_employer_code,03142,03142 CITY OF PRINCE GEORGE,26
-pesticide_employer_code,22147,22147 CITY OF WEST KELOWNA,27
-pesticide_employer_code,20444,20444 COLEBRAN VEGETATION LTD,28
-pesticide_employer_code,02986,02986 CORPORATION OF THE CITY OF CRANBROOK,29
-pesticide_employer_code,00271,00271 CORPORATION OF THE CITY OF PENTICTON,30
-pesticide_employer_code,25637,25637 COWICHAN VALLEY REGIONAL DISTRICT,31
-pesticide_employer_code,24817,24817 CRABBE CONTRACTING LTD,32
-pesticide_employer_code,03198,03198 D.C. FORESTRY SERVICES LTD.,33
-pesticide_employer_code,01899,01899 D.J. SILVICULTURE ENTERPRISES ULC,34
-pesticide_employer_code,03616,03616 DAVEY TREE SERVICES LTD.,35
-pesticide_employer_code,19065,19065 DIAMOND HEAD CONSULTING LTD.,36
-pesticide_employer_code,22476,22476 DISTRICT OF HUDSON'S HOPE,37
-pesticide_employer_code,09585,09585 DISTRICT OF TAYLOR RECREATION DEPARTMENT,38
-pesticide_employer_code,21643,21643 DOUGLAS LAKE CATTLE COMPANY,39
-pesticide_employer_code,17824,17824 DRINKWATER ENVIRONMENTAL SERVICES LTD,40
-pesticide_employer_code,00796,00796 DUKA ENVIRONMENTAL SERVICES LTD.,41
-pesticide_employer_code,20484,20484 EAST KOOTENAY INVASIVE SPECIES COUNCIL,42
-pesticide_employer_code,24757,24757 EAST KOOTENAY OUTDOOR SPECIALIST / METCALF LAWN CARE,43
-pesticide_employer_code,02013,02013 EASY FEED FERTILIZER,44
-pesticide_employer_code,23678,23678 ELEVATE ENERGY SERVICES LTD.,45
-pesticide_employer_code,24438,24438 ETHIX CONTRACTING LTD.,46
-pesticide_employer_code,03281,03281 FRASER VALLEY REGIONAL DISTRICT,47
-pesticide_employer_code,15843,15843 GARNER VEGETATION CONTROL,48
-pesticide_employer_code,22229,22229 GREEN ADMIRAL NATURE RESTORATION LTD.,49
-pesticide_employer_code,22389,22389 GREENER THIS SIDE INVASIVE PLANT MANAGEMENT,50
-pesticide_employer_code,02641,02641 H.P. CONTRACTING,51
-pesticide_employer_code,24519,24519 HIGH MOUNTAIN CONTRACTING,52
-pesticide_employer_code,21563,21563 INTEGRITY INDUSTRIAL SERVICES LTD.,53
-pesticide_employer_code,25677,25677 INVASIVE CONTROL SOLUTIONS,54
-pesticide_employer_code,16882,16882 INVASIVE SPECIES COUNCIL OF BRITISH COLUMBIA SOCIETY,55
-pesticide_employer_code,18943,18943 INVASIVE SPECIES COUNCIL OF METRO VANCOUVER SOCIETY,56
-pesticide_employer_code,25117,25117 J. FOX CONSULTING,57
-pesticide_employer_code,08401,"08401 JANZEN ENTERPRISES LIMITED, DBA: LEWY'S LAWNCARE",58
-pesticide_employer_code,19243,19243 JL VEGETATION SOLUTIONS,59
-pesticide_employer_code,03410,03410 K W B CONTRACTING LTD,60
-pesticide_employer_code,18884,18884 KINGSCLERE RANCH LTD.,61
-pesticide_employer_code,23777,23777 KOOTENAY GROUND MAINTENANCE,62
-pesticide_employer_code,11282,11282 KOOTENAY WEED CONTROL,63
-pesticide_employer_code,10041,10041 LATINA LANDSCAPES AND MAINTENANCE,64
-pesticide_employer_code,23573,23573 LOWER NICOLA SITE SERVICES LIMITED PARTNERSHIP,65
-pesticide_employer_code,02620,"02620 MAILLOUX, BRUNO",66
-pesticide_employer_code,20763,20763 MAPLE LEAF FORESTRY LTD.,67
-pesticide_employer_code,03391,03391 MARJORI SUSAN REAY,68
-pesticide_employer_code,08706,08706 MELBERN VEGETATION LTD,69
-pesticide_employer_code,18463,18463 MGP CONTRACTING,70
-pesticide_employer_code,24998,24998 MIKE FADUM AND ASSOCIATES LTD.,71
-pesticide_employer_code,00259,00259 MORROW BIOSCIENCE LTD.,72
-pesticide_employer_code,12682,12682 MOUNTAIN VIEW RESOURCES,73
-pesticide_employer_code,18144,18144 MYRNA JOY GAMMIE,74
-pesticide_employer_code,14042,14042 NORTH ASCENT ENVIRONMENTAL INC.,75
-pesticide_employer_code,23511,23511 NORTH SHORE ENVIRONMENTAL CONSULTANTS INC.,76
-pesticide_employer_code,20824,20824 NORTHERN ROCKY MOUNTAIN ENTERPRISES LTD.,77
-pesticide_employer_code,19044,19044 OKANAGAN AND SIMILKAMEEN INVASIVE SPECIES SOCIETY (OASISS),78
-pesticide_employer_code,02990,02990 PACIFIC WEED SERVICE LTD,79
-pesticide_employer_code,01086,01086 PARA SPACE LANDSCAPING INC.,80
-pesticide_employer_code,00295,00295 PARKS OPERATIONS SECTION,81
-pesticide_employer_code,12045,12045 PATHFINDER ENDEAVOURS LTD.,82
-pesticide_employer_code,23618,23618 PINCHIN LTD.,83
-pesticide_employer_code,03663,03663 PINEVIEW MANAGEMENT LTD,84
-pesticide_employer_code,22606,22606 PRIMROSE LANDSCAPING & HORTICULTURE LTD.,85
-pesticide_employer_code,14322,14322 PRONTO ENTERPRISES LTD,86
-pesticide_employer_code,00902,00902 REGIONAL DISTRICT OF NORTH OKANAGAN,87
-pesticide_employer_code,00491,00491 RICHBAR NURSERY LTD.,88
-pesticide_employer_code,14843,14843 ROCKY MOUNTAIN FORESTRY CONSULTING INC.,89
-pesticide_employer_code,18603,18603 SEA TO SKY INVASIVE SPECIES COUNCIL,90
-pesticide_employer_code,24937,24937 SEA WOLF FORESTRY LTD.,91
-pesticide_employer_code,18243,18243 SELLENTIN'S HABITAT RESTORATION,92
-pesticide_employer_code,22971,22971 SETETKWE ENVIRONMENTAL INC.,93
-pesticide_employer_code,23579,23579 SOUTHERN FRONTIER FORESTRY SERVICES,94
-pesticide_employer_code,03195,03195 SPECTRUM RESOURCE GROUP INC.,95
-pesticide_employer_code,21683,21683 STAT ENERGY SERVICES INC.,96
-pesticide_employer_code,18143,18143 STERLING OPERATIONS,97
-pesticide_employer_code,20063,20063 STRATEGIC NATURAL RESOURCE CONSULTANTS INC.,98
-pesticide_employer_code,11642,11642 SYLVIS ENVIRONMENTAL SERVICES INC,99
-pesticide_employer_code,03573,03573 T & J FORESTRY CONTRACTING LTD.,100
-pesticide_employer_code,03727,03727 THE CITY OF COLWOOD,101
-pesticide_employer_code,01271,01271 THE CORPORATION OF THE CITY OF VICTORIA,102
-pesticide_employer_code,02200,02200 THE CORPORATION OF THE DISTRICT OF SAANICH,103
-pesticide_employer_code,02481,02481 THE CORPORATION OF THE VILLAGE OF KEREMEOS,104
-pesticide_employer_code,25080,25080 THE GRASS GUY,105
-pesticide_employer_code,22086,22086 THOMPSON NICOLA INVASIVES MANAGMENT,106
-pesticide_employer_code,19804,19804 TK' EMLUPSEMC FORESTRY DEVELOPMENT CORPORATION,107
-pesticide_employer_code,00345,00345 TOWN OF OLIVER,108
-pesticide_employer_code,25617,25617 UPPER NICOLA INDIAN BAND,109
-pesticide_employer_code,03873,03873 VILLAGE OF NAKUSP,110
-pesticide_employer_code,20663,20663 WEST FORK RESOURCE MANAGMENT LTD.,111
-pesticide_employer_code,01838,01838 WESTERN WEED CONTROL (1980) LTD.,112
-pesticide_employer_code,23531,23531 YENDOR LOGGING,113
-pesticide_employer_code,15142,15142 ZEDI FIELD SERVICES,114
+jurisdiction_code,FED,Federal,10
+jurisdiction_code,GRVF,Gravel - FLNRO,11
+jurisdiction_code,GRVM,Gravel - MOTI,12
+jurisdiction_code,CNR,CN Rail,13
+jurisdiction_code,CPR,CP Rail,14
+jurisdiction_code,BCR,BC Rail,15
+jurisdiction_code,RAIL,Other Rail,16
+jurisdiction_code,BCTC,British Columbia Transmission Corporation,17
+jurisdiction_code,TEL,Telus,18
+jurisdiction_code,TER,Terasen Gas Inc.,19
+jurisdiction_code,DFO,Department of Fisheries and Oceans,20
+jurisdiction_code,DND,Department of National Defense,21
+jurisdiction_code,DOT,Department of Transportation,22
+jurisdiction_code,DUKE,Enbridge,23
+jurisdiction_code,GL,Grazing Lease,24
+jurisdiction_code,IR,First Nations Reserves,25
+jurisdiction_code,MN,Mining Companies,26
+jurisdiction_code,MR,Military Reserves,27
+jurisdiction_code,MRD,Regional District owned land,28
+jurisdiction_code,PIPE,Oil and Gas Companies,29
+jurisdiction_code,PNG,Pacific Northern Gas,30
+jurisdiction_code,TRP,TransCanada Pipelines,31
+service_license_code,0,00000 BC Government Ministries,1
+service_license_code,19603,19603 A.R.M. CONTRACTORS,2
+service_license_code,22691,22691 ACCURATEW6 WELLSITE SOLUTIONS LTD.,3
+service_license_code,691,00691 ACE VEGETATION CONTROL SERVICE LTD.,4
+service_license_code,21003,21003 ACTUAL LANDSCAPING INC.,5
+service_license_code,3921,03921 ADEPT VEGETATION MANAGEMENT INC,6
+service_license_code,2485,"02485 ASHCROFT, CORPORATION OF THE VILLAGE",7
+service_license_code,23637,23637 ASPEN TREE SERVICES INC.,8
+service_license_code,594,00594 ASPLUNDH CANADA ULC,9
+service_license_code,19583,19583 B BAR S RANCH,10
+service_license_code,14062,14062 BACKROAD CONTRACTING LTD,11
+service_license_code,22026,22026 BACKWOODS RESOURCES INC.,12
+service_license_code,235,00235 BARE GROUND VEGETATION SERVICES LTD,13
+service_license_code,17145,17145 BDK RESOURCE SERVICES LTD.,14
+service_license_code,17204,17204 BLACKTAIL RESOURCES INC.,15
+service_license_code,907,00907 BOULTBEE PEST CONTROL LTD.,16
+service_license_code,651,00651 BUGS-GON TREE SERVICE,17
+service_license_code,25578,25578 BURLEY BOYS TREE SERVICE LTD.,18
+service_license_code,17406,17406 BUSY BEE SPRAY SERVICES,19
+service_license_code,8625,08625 CAM CAMPBELL HOLDINGS LTD.,20
+service_license_code,15462,15462 CAPITAL REGIONAL DISTRICT PARKS,21
+service_license_code,458,00458 CARIBOO REGIONAL DISTRICT,22
+service_license_code,6361,06361 CITY OF CHILLIWACK PUBLIC WORKS DEPARTMENT,23
+service_license_code,303,00303 CITY OF COQUITLAM,24
+service_license_code,24557,24557 CITY OF FORT ST. JOHN,25
+service_license_code,267,00267 CITY OF POWELL RIVER,26
+service_license_code,3142,03142 CITY OF PRINCE GEORGE,27
+service_license_code,22147,22147 CITY OF WEST KELOWNA,28
+service_license_code,20444,20444 COLEBRAN VEGETATION LTD,29
+service_license_code,2986,02986 CORPORATION OF THE CITY OF CRANBROOK,30
+service_license_code,271,00271 CORPORATION OF THE CITY OF PENTICTON,31
+service_license_code,25637,25637 COWICHAN VALLEY REGIONAL DISTRICT,32
+service_license_code,24817,24817 CRABBE CONTRACTING LTD,33
+service_license_code,3198,03198 D.C. FORESTRY SERVICES LTD.,34
+service_license_code,1899,01899 D.J. SILVICULTURE ENTERPRISES ULC,35
+service_license_code,3616,03616 DAVEY TREE SERVICES LTD.,36
+service_license_code,19065,19065 DIAMOND HEAD CONSULTING LTD.,37
+service_license_code,22476,22476 DISTRICT OF HUDSON'S HOPE,38
+service_license_code,9585,09585 DISTRICT OF TAYLOR RECREATION DEPARTMENT,39
+service_license_code,21643,21643 DOUGLAS LAKE CATTLE COMPANY,40
+service_license_code,17824,17824 DRINKWATER ENVIRONMENTAL SERVICES LTD,41
+service_license_code,796,00796 DUKA ENVIRONMENTAL SERVICES LTD.,42
+service_license_code,20484,20484 EAST KOOTENAY INVASIVE SPECIES COUNCIL,43
+service_license_code,24757,24757 EAST KOOTENAY OUTDOOR SPECIALIST / METCALF LAWN CARE,44
+service_license_code,2013,02013 EASY FEED FERTILIZER,45
+service_license_code,23678,23678 ELEVATE ENERGY SERVICES LTD.,46
+service_license_code,24438,24438 ETHIX CONTRACTING LTD.,47
+service_license_code,3281,03281 FRASER VALLEY REGIONAL DISTRICT,48
+service_license_code,15843,15843 GARNER VEGETATION CONTROL,49
+service_license_code,22229,22229 GREEN ADMIRAL NATURE RESTORATION LTD.,50
+service_license_code,22389,22389 GREENER THIS SIDE INVASIVE PLANT MANAGEMENT,51
+service_license_code,2641,02641 H.P. CONTRACTING,52
+service_license_code,24519,24519 HIGH MOUNTAIN CONTRACTING,53
+service_license_code,21563,21563 INTEGRITY INDUSTRIAL SERVICES LTD.,54
+service_license_code,25677,25677 INVASIVE CONTROL SOLUTIONS,55
+service_license_code,16882,16882 INVASIVE SPECIES COUNCIL OF BRITISH COLUMBIA SOCIETY,56
+service_license_code,18943,18943 INVASIVE SPECIES COUNCIL OF METRO VANCOUVER SOCIETY,57
+service_license_code,25117,25117 J. FOX CONSULTING,58
+service_license_code,8401,"08401 JANZEN ENTERPRISES LIMITED, DBA: LEWY'S LAWNCARE",59
+service_license_code,19243,19243 JL VEGETATION SOLUTIONS,60
+service_license_code,3410,03410 K W B CONTRACTING LTD,61
+service_license_code,18884,18884 KINGSCLERE RANCH LTD.,62
+service_license_code,23777,23777 KOOTENAY GROUND MAINTENANCE,63
+service_license_code,11282,11282 KOOTENAY WEED CONTROL,64
+service_license_code,10041,10041 LATINA LANDSCAPES AND MAINTENANCE,65
+service_license_code,23573,23573 LOWER NICOLA SITE SERVICES LIMITED PARTNERSHIP,66
+service_license_code,2620,"02620 MAILLOUX, BRUNO",67
+service_license_code,20763,20763 MAPLE LEAF FORESTRY LTD.,68
+service_license_code,3391,03391 MARJORI SUSAN REAY,69
+service_license_code,8706,08706 MELBERN VEGETATION LTD,70
+service_license_code,18463,18463 MGP CONTRACTING,71
+service_license_code,24998,24998 MIKE FADUM AND ASSOCIATES LTD.,72
+service_license_code,259,00259 MORROW BIOSCIENCE LTD.,73
+service_license_code,12682,12682 MOUNTAIN VIEW RESOURCES,74
+service_license_code,18144,18144 MYRNA JOY GAMMIE,75
+service_license_code,14042,14042 NORTH ASCENT ENVIRONMENTAL INC.,76
+service_license_code,23511,23511 NORTH SHORE ENVIRONMENTAL CONSULTANTS INC.,77
+service_license_code,20824,20824 NORTHERN ROCKY MOUNTAIN ENTERPRISES LTD.,78
+service_license_code,19044,19044 OKANAGAN AND SIMILKAMEEN INVASIVE SPECIES SOCIETY (OASISS),79
+service_license_code,2990,02990 PACIFIC WEED SERVICE LTD,80
+service_license_code,1086,01086 PARA SPACE LANDSCAPING INC.,81
+service_license_code,295,00295 PARKS OPERATIONS SECTION,82
+service_license_code,12045,12045 PATHFINDER ENDEAVOURS LTD.,83
+service_license_code,23618,23618 PINCHIN LTD.,84
+service_license_code,3663,03663 PINEVIEW MANAGEMENT LTD,85
+service_license_code,22606,22606 PRIMROSE LANDSCAPING & HORTICULTURE LTD.,86
+service_license_code,14322,14322 PRONTO ENTERPRISES LTD,87
+service_license_code,902,00902 REGIONAL DISTRICT OF NORTH OKANAGAN,88
+service_license_code,491,00491 RICHBAR NURSERY LTD.,89
+service_license_code,14843,14843 ROCKY MOUNTAIN FORESTRY CONSULTING INC.,90
+service_license_code,18603,18603 SEA TO SKY INVASIVE SPECIES COUNCIL,91
+service_license_code,24937,24937 SEA WOLF FORESTRY LTD.,92
+service_license_code,18243,18243 SELLENTIN'S HABITAT RESTORATION,93
+service_license_code,22971,22971 SETETKWE ENVIRONMENTAL INC.,94
+service_license_code,23579,23579 SOUTHERN FRONTIER FORESTRY SERVICES,95
+service_license_code,3195,03195 SPECTRUM RESOURCE GROUP INC.,96
+service_license_code,21683,21683 STAT ENERGY SERVICES INC.,97
+service_license_code,18143,18143 STERLING OPERATIONS,98
+service_license_code,20063,20063 STRATEGIC NATURAL RESOURCE CONSULTANTS INC.,99
+service_license_code,11642,11642 SYLVIS ENVIRONMENTAL SERVICES INC,100
+service_license_code,3573,03573 T & J FORESTRY CONTRACTING LTD.,101
+service_license_code,3727,03727 THE CITY OF COLWOOD,102
+service_license_code,1271,01271 THE CORPORATION OF THE CITY OF VICTORIA,103
+service_license_code,2200,02200 THE CORPORATION OF THE DISTRICT OF SAANICH,104
+service_license_code,2481,02481 THE CORPORATION OF THE VILLAGE OF KEREMEOS,105
+service_license_code,25080,25080 THE GRASS GUY,106
+service_license_code,22086,22086 THOMPSON NICOLA INVASIVES MANAGMENT,107
+service_license_code,19804,19804 TK' EMLUPSEMC FORESTRY DEVELOPMENT CORPORATION,108
+service_license_code,345,00345 TOWN OF OLIVER,109
+service_license_code,25617,25617 UPPER NICOLA INDIAN BAND,110
+service_license_code,3873,03873 VILLAGE OF NAKUSP,111
+service_license_code,20663,20663 WEST FORK RESOURCE MANAGMENT LTD.,112
+service_license_code,1838,01838 WESTERN WEED CONTROL (1980) LTD.,113
+service_license_code,23531,23531 YENDOR LOGGING,114
+service_license_code,15142,15142 ZEDI FIELD SERVICES,115
 liquid_herbicide_code,14725,"AM500a [2,4-D 2,4-D Amine 500] 14725",1
 liquid_herbicide_code,9528,"AM500b [2,4-D 2,4-D Amine 500] 9528",2
 liquid_herbicide_code,5931,"AM600a [2,4-D 2,4-D Amine 600] 5931",3
@@ -938,43 +975,539 @@ liquid_herbicide_code,23713,Arsenal [imazapyr Arsenal] 23713,5
 liquid_herbicide_code,31641,"Aspect [picloram/2,4-D Aspect] 31641",6
 liquid_herbicide_code,23957,Banvel2 [dicamba Banvel II] 23957,7
 liquid_herbicide_code,29249,BanvelVM [Banvel VM] 29249,8
-liquid_herbicide_code,29888,CreditX [glyphosate Credit Xtreme] 29888,9
-liquid_herbicide_code,27856,"Dyvel [dicamba/2,4-D/mecoprop-p Dyvel DSp] 27856",10
-liquid_herbicide_code,21053,Garlon4 [triclopyr Garlon 4] 21053,11
-liquid_herbicide_code,29334,GarlonRTU [Garlon RTU] 29334,12
-liquid_herbicide_code,28945,GarlonXRT [Garlon XRT] 28945,13
-liquid_herbicide_code,27634,Grazon [Grazon] 27634,14
-liquid_herbicide_code,31642,GrazonXC [Grazon XC] 31642,15
-liquid_herbicide_code,30841,Habitat [Habitat] 30841,16
-liquid_herbicide_code,27801,"Killex [2,4-D/mecoprop-p/dicamba Killex] 27801",17
-liquid_herbicide_code,23545,Lontrel360 [Lontrel 360] 23545,18
-liquid_herbicide_code,32957,Method240SL [Method 240SL] 32957,19
-liquid_herbicide_code,28517,Millstone [aminopyralid Milestone] 28517,20
-liquid_herbicide_code,26722,Oracle [Oracle] 26722,21
-liquid_herbicide_code,27884,"Par3 [mecoprop-p/2,4-D/dicamba Par III] 27884",22
-liquid_herbicide_code,30203,PowerLN [Powerline] 30203,23
-liquid_herbicide_code,30063,"ReclaimIIB [2,4-D Reclaim II B] 30063",24
-liquid_herbicide_code,28551,RestoreA [Aminopyralid Restore A] 28551,25
-liquid_herbicide_code,28552,"RestoreB [2,4-D Restore B] 28552",26
-liquid_herbicide_code,26271,Reward [Diquat ion Reward] 26271,27
-liquid_herbicide_code,22759,RoundupSC [Roundup Super Concentrate] 22759,28
-liquid_herbicide_code,28198,RoundupTR [Roundup Transorb HC] 28198,29
-liquid_herbicide_code,27487,RoundupWM [Roundup Weathermax] 27487,30
-liquid_herbicide_code,29498,StartUp [StartUp] 29498,31
-liquid_herbicide_code,9007,Tordon101 [Tordon 101] 9007,32
-liquid_herbicide_code,9005,Tordon22K [picloram Tordon 22K] 9005,33
-liquid_herbicide_code,27972,"Trillion [2,4-D/mecoprop-p/dicamba Trillion] 27972",34
-liquid_herbicide_code,26980,Vanquish [Vanquish] 26980,35
-liquid_herbicide_code,27615,VantagePMs [Vantage Plus Max / VPM II] 27615,36
-liquid_herbicide_code,29994,VantageXRT [Vantage XRT] 29994,37
-liquid_herbicide_code,28840,VP480 [VP480] 28840,38
-granule_herbicide_code,29752,Clearview [aminopyralid/metsulfuron-methyl Clearview] 29752,1
-granule_herbicide_code,23005,Escort [metsulfuron methyl Escort] 23005,2
-granule_herbicide_code,33128,LongRun [flazasulfuron LongRun] 33128,3
-granule_herbicide_code,31559,Torpedo [flumioxazin and pyroxasulfone Torpedo] 31559,4
-granule_herbicide_code,31209,Sandea [halosulfuron Sandea] 31209,5
-granule_herbicide_code,31382,NaviusVM [metsulfuron-methyl/Aminocyclopyrachlor Navius VM] 31382,6
-granule_herbicide_code,30065,Overdrive [diflufenzopyr Overdrive] 30065,7
-granule_herbicide_code,30062,ReclaimIIA [aminopyralid/metsulfuron-methyl Reclaim II A] 30062,8
-granule_herbicide_code,30920,Truvist [chlorsulfuron/aminocyclopyrachlor Truvist] 30920,9
-granule_herbicide_code,30917,Method50SG [aminocyclopyrachlor Method 50SG] 30917,10
+liquid_herbicide_code,29752,Clearview [aminopyralid/metsulfuron-methyl Clearview] (G) 29752,9
+liquid_herbicide_code,29888,CreditX [glyphosate Credit Xtreme] 29888,10
+liquid_herbicide_code,27856,"Dyvel [dicamba/2,4-D/mecoprop-p Dyvel DSp] 27856",11
+liquid_herbicide_code,23005,Escort [metsulfuron methyl Escort] (G) 23005,12
+liquid_herbicide_code,21053,Garlon4 [triclopyr Garlon 4] 21053,13
+liquid_herbicide_code,29334,GarlonRTU [Garlon RTU] 29334,14
+liquid_herbicide_code,28945,GarlonXRT [Garlon XRT] 28945,15
+liquid_herbicide_code,27634,Grazon [Grazon] 27634,16
+liquid_herbicide_code,31642,GrazonXC [Grazon XC] 31642,17
+liquid_herbicide_code,30841,Habitat [Habitat] 30841,18
+liquid_herbicide_code,27801,"Killex [2,4-D/mecoprop-p/dicamba Killex] 27801",19
+liquid_herbicide_code,33128,LongRun [flazasulfuron LongRun] (G) 33128,20
+liquid_herbicide_code,23545,Lontrel360 [Lontrel 360] 23545,21
+liquid_herbicide_code,32957,Method240SL [Method 240SL] 32957,22
+liquid_herbicide_code,30917,Method50SG [aminocyclopyrachlor Method 50SG] (G) 30917,23
+liquid_herbicide_code,28517,Milestone [aminopyralid Milestone] 28517,24
+liquid_herbicide_code,31382,NaviusVM [metsulfuron-methyl/Aminocyclopyrachlor Navius VM] (G) 31382,25
+liquid_herbicide_code,26722,Oracle [Oracle] 26722,26
+liquid_herbicide_code,30065,Overdrive [diflufenzopyr Overdrive] (G) 30065,27
+liquid_herbicide_code,27884,"Par3 [mecoprop-p/2,4-D/dicamba Par III] 27884",28
+liquid_herbicide_code,30203,PowerLN [Powerline] 30203,29
+liquid_herbicide_code,30062,ReclaimIIA [aminopyralid/metsulfuron-methyl Reclaim II A] (G) 30062,30
+liquid_herbicide_code,30063,"ReclaimIIB [2,4-D Reclaim II B] 30063",31
+liquid_herbicide_code,28551,RestoreA [Aminopyralid Restore A] 28551,32
+liquid_herbicide_code,28552,"RestoreB [2,4-D Restore B] 28552",33
+liquid_herbicide_code,26271,Reward [Diquat ion Reward] 26271,34
+liquid_herbicide_code,22759,RoundupSC [Roundup Super Concentrate] 22759,35
+liquid_herbicide_code,28198,RoundupTR [Roundup Transorb HC] 28198,36
+liquid_herbicide_code,27487,RoundupWM [Roundup Weathermax] 27487,37
+liquid_herbicide_code,31209,Sandea [halosulfuron Sandea] (G) 31209,38
+liquid_herbicide_code,29498,StartUp [StartUp] 29498,39
+liquid_herbicide_code,9007,Tordon101 [Tordon 101] 9007,40
+liquid_herbicide_code,9005,Tordon22K [picloram Tordon 22K] 9005,41
+liquid_herbicide_code,31559,Torpedo [flumioxazin and pyroxasulfone Torpedo] (G) 31559,42
+liquid_herbicide_code,27972,"Trillion [2,4-D/mecoprop-p/dicamba Trillion] 27972",43
+liquid_herbicide_code,30920,Truvist [chlorsulfuron/aminocyclopyrachlor Truvist] (G) 30920,44
+liquid_herbicide_code,26980,Vanquish [Vanquish] 26980,45
+liquid_herbicide_code,27615,VantagePMs [Vantage Plus Max / VPM II] 27615,46
+liquid_herbicide_code,29994,VantageXRT [Vantage XRT] 29994,47
+liquid_herbicide_code,28840,VP480 [VP480] 28840,48
+research_trial_code,NA,Unknown or indeterminant,1
+research_trial_code,Y,Yes,2
+research_trial_code,N,No,3
+research_trial_code,X,Future,4
+realm_code,Af,Alpine field,1
+realm_code,Ag,Alpine grassland,2
+realm_code,Ah,Alpine heath,3
+realm_code,Am,Alpine meadow,4
+realm_code,As,Alpine nivation,5
+realm_code,At,Alpine tundra,6
+realm_code,Az,Alpine zoogenic,7
+realm_code,Bb,Beach beachland,8
+realm_code,Br,Beach headland,9
+realm_code,Ed,Estuary meadow,10
+realm_code,Em,Estuary marsh,11
+realm_code,Et,Estuary tidal flat,12
+realm_code,Fa,Flood active channel,13
+realm_code,Ff,Flood fringe,14
+realm_code,Fl,Flood lowbench,15
+realm_code,Fm,Flood midbench,16
+realm_code,Ga,Grassland alkali meadow,17
+realm_code,Gb,Grassland brushland,18
+realm_code,Gg,Grassland,19
+realm_code,Gs,Grassland shrub steppe,20
+realm_code,Hh,Halophyte,21
+realm_code,Hs,Spring-seepage,22
+realm_code,Hv,Vernal pool,23
+realm_code,Hw,Waterfall,24
+realm_code,Rc,Cliff,25
+realm_code,Ro,Rock outcrop,26
+realm_code,Rt,Talus,27
+realm_code,Sc,Subalpine shrub carr,28
+realm_code,Sk,Krummholz,29
+realm_code,Ss,Subalpine shrub seepage,30
+realm_code,Vh,Avalanche herb,31
+realm_code,Vs,Avalanche shrub,32
+realm_code,Vt,Avalanche treed,33
+realm_code,Wa,Wetland alpine,34
+realm_code,Wb,Wetland bog,35
+realm_code,Wf,Wetland fen,36
+realm_code,Wm,Wetland marsh,37
+realm_code,Ws,Wetland swamp,38
+realm_code,Ww,Wetland shallow water,39
+realm_code,Xh,Disclimax herb,40
+realm_code,Xs,Disclimax shrub,41
+ecological_moisture_regime_code,NA,Unknown or indeterminant,1
+ecological_moisture_regime_code,VX,Very xeric,2
+ecological_moisture_regime_code,XR,Xeric,3
+ecological_moisture_regime_code,XS,Xeric to Subxeric,4
+ecological_moisture_regime_code,SX,Subxeric,5
+ecological_moisture_regime_code,MS,Mesic,6
+ecological_moisture_regime_code,SM,Submesic,7
+ecological_moisture_regime_code,HY,Hygric,8
+ecological_moisture_regime_code,SH,Subhygric,9
+ecological_moisture_regime_code,HD,Hydric,10
+ecological_moisture_regime_code,SD,Subhydric,11
+ecological_moisture_regime_code,XX,Subhydric to hydric,12
+mesoslope_position_code,NA,Unknown or indeterminant,1
+mesoslope_position_code,CR,Crest,2
+mesoslope_position_code,US,Upper slope,3
+mesoslope_position_code,MS,Middle slope,4
+mesoslope_position_code,LS,Lower slope,5
+mesoslope_position_code,TO,Toe,6
+mesoslope_position_code,DP,Depression,7
+mesoslope_position_code,LV,Level,8
+mesoslope_position_code,GL,Gully,9
+site_surface_shape_code,NA,Unknown or indeterminant,1
+site_surface_shape_code,HO,Hollow,2
+site_surface_shape_code,RD,Rounded,3
+site_surface_shape_code,LN,Linear,4
+soil_properties_code,NA,Unknown or indeterminant,1
+soil_properties_code,SD,Sand,2
+soil_properties_code,SL,Silt,3
+soil_properties_code,CL,Clay,4
+soil_properties_code,GR,Gravel,5
+soil_properties_code,VA,Variable,6
+soil_properties_code,CP,Compact,7
+surface_substrate_code,NA,Unknown or indeterminant,1
+surface_substrate_code,BS,Bare soil,2
+surface_substrate_code,MS,Moss,3
+surface_substrate_code,OM,Organic matter,4
+surface_substrate_code,DW,Decaying wood,5
+surface_substrate_code,SD,Sand,6
+surface_substrate_code,GR,Gravel,7
+surface_substrate_code,CO,Cobble,8
+surface_substrate_code,BR,Bedrock,9
+surface_substrate_code,CP,Compact,10
+disturbance_condition_code,NA,Unknown or indeterminant,1
+disturbance_condition_code,PR,Predicted,2
+disturbance_condition_code,CR,Current,3
+disturbance_type_code,NA,Unknown or indeterminant,1
+disturbance_type_code,CU,Cultivation,2
+disturbance_type_code,FI,Fire,3
+disturbance_type_code,FG,Fire guard,4
+disturbance_type_code,FL,Flooded,5
+disturbance_type_code,GZ,Grazing,6
+disturbance_type_code,LG,Logging,7
+disturbance_type_code,MN,Mining,8
+disturbance_type_code,MW,Mowing,9
+disturbance_type_code,RC,Recreation,10
+disturbance_type_code,RD,Roads,11
+disturbance_type_code,CM,Chemical,12
+disturbance_type_code,MR,MOTI Roadside,13
+disturbance_type_code,FR,FLNRO Roadside,14
+invasive_plant_change_code,NA,Unknown or indeterminant,1
+invasive_plant_change_code,NC,No change,2
+invasive_plant_change_code,IN,General increase,3
+invasive_plant_change_code,DE,General decrease,4
+invasive_plant_change_code,NW,New Species,5
+invasive_plant_change_code,AB,Species absent,6
+target_plant_change_code,NA,Unknown or indeterminant,7
+target_plant_change_code,NC,No change,8
+target_plant_change_code,LW,Increased < 35%,9
+target_plant_change_code,MD,Increase 35 to 70%,10
+target_plant_change_code,HI,Increase Greater than 70%,11
+biocontrol_noted_code,NA,Unknown or indeterminant,1
+biocontrol_noted_code,Y,Yes,2
+biocontrol_noted_code,N,No,3
+biocontrol_noted_code,U,Unsure,4
+biocontrol_noted_code,SP,Species,5
+daubenmire_cover_code,-1,Unknown or indeterminant,1
+daubenmire_cover_code,0,0,2
+daubenmire_cover_code,1,1 to 5%,3
+daubenmire_cover_code,2,6 to 25%,4
+daubenmire_cover_code,3,25 to 50%,5
+daubenmire_cover_code,4,51 to 75%,6
+daubenmire_cover_code,5,76 to 95%,7
+daubenmire_cover_code,6,96 to 100%,8
+vegetation_transect_data_code,NA,Unknown or indeterminant,1
+vegetation_transect_data_code,IP,Invasive Plants,2
+vegetation_transect_data_code,NF,Native Forbs,3
+vegetation_transect_data_code,GR,Grasses,4
+vegetation_transect_data_code,BG,Bare ground,5
+vegetation_transect_data_code,ST,Shrubs / trees,6
+vegetation_transect_data_code,BY,Byrophytes,7
+vegetation_transect_data_code,LF,Litter / Feces,8
+cloud_cover_code,0,Clear Sky,2
+cloud_cover_code,1,Few 10% clouds,3
+cloud_cover_code,2,Few 20-30% clouds,4
+cloud_cover_code,3,Scattered 40% clouds,5
+cloud_cover_code,4,Scattered 50% clouds,6
+cloud_cover_code,5,Broken 50% clouds,7
+cloud_cover_code,6,Broken 60-70% clouds,8
+cloud_cover_code,7,Broken 90% clouds,9
+cloud_cover_code,8,Overcast 100% clouds,10
+cloud_cover_code,9,Obscured,11
+beaufort_wind_code,0,Calm < 1 km/h,2
+beaufort_wind_code,1,Light air 1-5 km/h,3
+beaufort_wind_code,2,Light breeze 6-11 km/h,4
+beaufort_wind_code,3,Gentle breeze 12-19 km/h,5
+beaufort_wind_code,4,Moderate breeze 20-28 km/h,6
+beaufort_wind_code,5,Fresh breeze 29-38 km/h,7
+beaufort_wind_code,6,Strong breeze 39-49 km/h,8
+beaufort_wind_code,7,Near gale 50-61 km/h,9
+beaufort_wind_code,8,Gale 62-74 km/h,10
+beaufort_wind_code,9,Strong gale 75-88 km/h,11
+beaufort_wind_code,10,Storm 89-102 km/h,12
+beaufort_wind_code,11,Violent storm 103-117 km/h,13
+beaufort_wind_code,12,Hurricane 118-133 km/h,14
+precipitation_code,NA,Unknown or indeterminant,1
+precipitation_code,NO,No Precipitation,2
+precipitation_code,DR,Drizzle,3
+precipitation_code,IN,Intermittent showers,4
+precipitation_code,SR,Steady Rain,5
+precipitation_code,DP,Down pour,6
+precipitation_code,RW,Residual Wet,7
+precipitation_code,SN,Snow,8
+precipitation_code,HA,Hail,9
+monitoring_duration_of_count_code,NA,Unknown or indeterminant,1
+monitoring_duration_of_count_code,OB,Observe (= handpick),2
+monitoring_duration_of_count_code,OT,Othre (timed),3
+monitoring_duration_of_count_code,SW,Sweep,4
+monitoring_duration_of_count_code,TT,Tap and Tray,5
+monitoring_duration_of_count_code,CL,Clip,6
+monitoring_duration_of_count_code,EX,Excavate,7
+monitoring_plant_count_code,NA,Unknown or indeterminant,1
+monitoring_plant_count_code,OC,Observe (= handpick),2
+monitoring_plant_count_code,OD,Other (counted),3
+monitoring_plant_count_code,PC,Plant(s),4
+monitoring_plant_count_code,CS,Sweep,5
+collecting_duration_of_count_code,NA,Unknown or indeterminant,1
+collecting_duration_of_count_code,AS,Aspirate,2
+collecting_duration_of_count_code,HP,Hand Pick,3
+collecting_duration_of_count_code,OT,Other (counted),4
+collecting_duration_of_count_code,SW,Sweep,5
+collecting_plant_count_code,NA,Unknown or indeterminant,1
+collecting_plant_count_code,CL,Clip,2
+collecting_plant_count_code,CS,Sweep,3
+collecting_plant_count_code,OC,Other (counted),4
+collecting_plant_count_code,TP,Transplant,5
+collecting_plant_count_code,TT,Tap and Tray,6
+target_plant_location_code,NA,Unknown or indeterminant,1
+target_plant_location_code,PT,Plant terminal (very top of plant),2
+target_plant_location_code,PU,Plant (upper half),3
+target_plant_location_code,PL,Plant (lower half),4
+target_plant_location_code,RE,Root (externally),5
+target_plant_location_code,RI,Root (internally),6
+target_plant_location_code,RO,Rosette,7
+target_plant_location_code,BG,Basal growth,8
+target_plant_location_code,ST,Stolon,9
+target_plant_location_code,AX,Axils,10
+target_plant_location_code,FI,Flower (inside),11
+target_plant_location_code,FS,Flower surface,12
+target_plant_location_code,IH,In seedhead,13
+target_plant_location_code,SH,On seed head,14
+target_plant_location_code,LS,Leaf/leaves (upper side/surface),15
+target_plant_location_code,LU,Leaf/leaves (underside),16
+target_plant_location_code,LT,Stem/stalk (external),17
+target_plant_location_code,SI,Stem/stalk (internal),18
+target_plant_location_code,PE,Petiole,19
+non-target_plant_location_code,NA,Unknown or indeterminant,1
+non-target_plant_location_code,DL,Duff/litter,2
+non-target_plant_location_code,IL,In litter,3
+non-target_plant_location_code,IS,In soil,4
+non-target_plant_location_code,OL,On litter,5
+non-target_plant_location_code,OS,On soil,6
+non-target_plant_location_code,OT,Other,7
+activity_of_agent_adults_code,NA,Unknown or indeterminant,1
+activity_of_agent_adults_code,BR,Breeding,2
+activity_of_agent_adults_code,OV,Ovipositioning,3
+density_count_type_code,NA,Unknown or indeterminant,1
+density_count_type_code,RD,Random Toss,2
+density_count_type_code,RT,Random Transect,3
+density_count_type_code,PT,Placed Toss,4
+density_count_type_code,TT,Timed Toss,5
+density_count_type_code,OT,Other,6
+frame_size_code,NA,Unknown or indeterminant,1
+frame_size_code,L,1.0 sq metre,2
+frame_size_code,M,0.75 sq metre,3
+frame_size_code,S,0.1 sq metre,4
+biocontrol_collection_code,As,Aspirate*,1
+biocontrol_collection_code,Hp,Hand pick*,2
+biocontrol_collection_code,Cl,Clipping**,3
+biocontrol_collection_code,Cs,Sweep (counted)**,4
+biocontrol_collection_code,Sw,Sweep (timed)*,5
+biocontrol_collection_code,Tt,Tap and tray*,6
+biocontrol_collection_code,Tp,Transplant**,7
+invasive_plant_code_withbiocontrol,BL,Black knapweed (CENT NIG Centaurea nigra),1
+invasive_plant_code_withbiocontrol,BO,Bohemian knotweed (FALL BOH Fallopia x bohemicum),2
+invasive_plant_code_withbiocontrol,BK,Brown knapweed (CENT JAC Centaurea jacea),3
+invasive_plant_code_withbiocontrol,BT,Bull thistle (CIRS VUL Cirsium vulgare),4
+invasive_plant_code_withbiocontrol,BU,Burdock species (ARCT SPP Arctium spp),5
+invasive_plant_code_withbiocontrol,CT,Canada thistle (CIRS ARV Cirsium arvense),6
+invasive_plant_code_withbiocontrol,CS,Cypress spurge (EUPH CYP Euphorbia cyparissias),7
+invasive_plant_code_withbiocontrol,DT,Dalmatian toadflax (LINA DAL Linaria dalmatica),8
+invasive_plant_code_withbiocontrol,DK,Diffuse knapweed (CENT DIF Centaurea diffusa),9
+invasive_plant_code_withbiocontrol,FB,Field bindweed (CONV ARV Convolvulus arvensis),10
+invasive_plant_code_withbiocontrol,GO,Gorse (ULEX EUR Ulex europaeus),11
+invasive_plant_code_withbiocontrol,BI,Hedge false bindweed (CALY SEP Calystegia sepium),12
+invasive_plant_code_withbiocontrol,HT,Hound's-tongue (CYNO OFF Cynoglossum officinale),13
+invasive_plant_code_withbiocontrol,JK,Japanese knotweed (FALL JAP Fallopia japonica),14
+invasive_plant_code_withbiocontrol,KH,King devil hawkweed (HIER FLO Hieracium floribundum),15
+invasive_plant_code_withbiocontrol,LS,Leafy spurge (EUPH ESU Euphorbia esula),16
+invasive_plant_code_withbiocontrol,MT,Marsh plume thistle/Marsh thistle (CIRS PAL Cirsium palustre),17
+invasive_plant_code_withbiocontrol,MH,Meadow hawkweed (HIER CAE Hieracium caespitosum),18
+invasive_plant_code_withbiocontrol,MK,Meadow knapweed (CENT DEB Centaurea debeauxii),19
+invasive_plant_code_withbiocontrol,ME,Mouse ear hawkweed (HIER PIL Hieracium pilosella),20
+invasive_plant_code_withbiocontrol,MU,Mullein (VERB THA Verbascum thapsis),21
+invasive_plant_code_withbiocontrol,NT,Nodding thistle (CARD NUT Carduus nutans),22
+invasive_plant_code_withbiocontrol,OH,Orange hawkweed (HIER AUR Hieracium aurantiacum),23
+invasive_plant_code_withbiocontrol,PS,Perennial sow thistle (SONC ARV Sonchus arvensis),24
+invasive_plant_code_withbiocontrol,PT,Plumeless thistle (CARD ACA Carduus acanthoides),25
+invasive_plant_code_withbiocontrol,PV,Puncturevine (TRIB TER Tribulus terrestris),26
+invasive_plant_code_withbiocontrol,PL,Purple loosestrife (LYTH SAL Lythrum salicaria),27
+invasive_plant_code_withbiocontrol,RS,Rush skeletonweed (CHON JUN Chondrilla juncea),28
+invasive_plant_code_withbiocontrol,RK,Russian knapweed (ACRO REP Acroptilon repens),29
+invasive_plant_code_withbiocontrol,SH,Scentless chamomile (MATR PER Matricaria perforata),30
+invasive_plant_code_withbiocontrol,SB,Scotch broom (CYTI SCO Cytisus scoparius),31
+invasive_plant_code_withbiocontrol,CN,Short-fringed knapweed (CENT NIR Centaurea nigrescens),32
+invasive_plant_code_withbiocontrol,SK,Spotted knapweed (CENT BIE Centaurea biebersteinii),33
+invasive_plant_code_withbiocontrol,SJ,St. John's wort/Saint John's wort/ Goatweed (HYPE PER Hypericum perforatum),34
+invasive_plant_code_withbiocontrol,TR,Tansy ragwort (SENE JAC Senecio jacobaea),35
+invasive_plant_code_withbiocontrol,WP,Whiplash hawkweed (HIER FLA Hieracium flagellare),36
+invasive_plant_code_withbiocontrol,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),37
+employer_code,BCMAEST,BC Ministry of Advanced Education and Skills Training,1
+employer_code,BCMAFF,"BC Ministry of Agriculture, Food and Fisheries",2
+employer_code,BCAG,BC Attorney General,3
+employer_code,BCMCFD,BC Ministry of Children & Family Development,4
+employer_code,BCMCS,BC Ministry of Citizens' Services,5
+employer_code,BCME,BC Ministry of Education,6
+employer_code,BCMEMLCI,"BC Ministry of Energy, Mines and Low Carbon Innovation",7
+employer_code,BCMECCS,BC Ministry of Environment & Climate Change Strategy,8
+employer_code,BCMF,BC Ministry of Finance,9
+employer_code,BCMFLNRORD,"BC Ministry of Forests, Lands, Natural Resource Operations and Rural Development",10
+employer_code,BCMH,BC Ministry of Health,11
+employer_code,BCMIRR,BC Ministry of Indigenous Relations & Reconciliation,12
+employer_code,BCMJERI,"BC Ministry of Jobs, Economic Recovery and Innovation",13
+employer_code,BCML,BC Ministry of Labour,14
+employer_code,BCMMHA,BC Ministry of Mental Health & Addictions,15
+employer_code,BCMMA,BC Ministry of Municipal Affairs,16
+employer_code,BCMPSSGEBC,BC Ministry of Public Safety & Solicitor General & Emergency B.C.,17
+employer_code,BCMSDPR,BC Ministry of Social Development & Poverty Reduction,18
+employer_code,BCMTACS,"BC Ministry of Tourism, Arts, Culture and Sport",19
+employer_code,BCMTI,BC Ministry of Transportation & Infrastructure,20
+employer_code,DOHMH,District of 100 Mile House,21
+employer_code,COABB,City of Abbotsford,22
+employer_code,VOALE,Village of Alert Bay,23
+employer_code,VOANM,Village of Anmore,24
+employer_code,COARM,City of Armstrong,25
+employer_code,VOASH,Village of Ashcroft,26
+employer_code,DOBAR,District of Barriere,27
+employer_code,VOBEL,Village of Belcarra,28
+employer_code,IOOF ,Island Municipality of Bowen Island,29
+employer_code,COBUR,City of Burnaby ,30
+employer_code,VOBUR,Village of Burns Lake,31
+employer_code,VOCAC,Village of Cache Creek,32
+employer_code,COCAM,City of Campbell River,33
+employer_code,VOCAN,Village of Canal Flats,34
+employer_code,COCAS,City of Castlegar,35
+employer_code,DOCEN,District of Central Saanich,36
+employer_code,VOCHA,Villiage of Chase,37
+employer_code,DOCHE,District of Chetwynd,38
+employer_code,COCHI,City of Chilliwack,39
+employer_code,DOCLE,District of Clearwater,40
+employer_code,VOCLI,Villiage of Clinton,41
+employer_code,DOCOL,District of Coldstream,42
+employer_code,COCOL,City of Colwood,43
+employer_code,TOCOM,Town of Comox,44
+employer_code,COCOQ,City of Coquitlam,45
+employer_code,COCOU,City of Courtenay,46
+employer_code,COCRA,City of Cranbrook,47
+employer_code,TOCRE,Town of Creston,48
+employer_code,CODAW,City of Dawson Creek,49
+employer_code,CODEL,City of Delta,50
+employer_code,CODUN,City of Duncan ,51
+employer_code,DOELK,District of Elkford,52
+employer_code,COEND,City of Enderby,53
+employer_code,TOESQ,Township of Esquimalt,54
+employer_code,COFER,City of Fernie,55
+employer_code,DOFORT,District of Fort St. James,56
+employer_code,COFORT,City of Fort St. John,57
+employer_code,VOFRA,Village of Fraser Lake,58
+employer_code,VOFRU,Village of Fruitvale,59
+employer_code,TOGIB,Town of Gibsons,60
+employer_code,VOGOL,Village of Gold River,61
+employer_code,TOGOL,Town of Golden ,62
+employer_code,COGRA,City of Grandforks,63
+employer_code,VOGRA,Village of Granisle,64
+employer_code,COGRE,City of Greenwood,65
+employer_code,VOHAR,Village of Harrison Hot Springs,66
+employer_code,VOHAZ,Village of Hazelton,67
+employer_code,DOHIG,District of Highlands,68
+employer_code,DOHOP,District of Hope,69
+employer_code,DOHOU,District of Houston,70
+employer_code,DOHUD,District of Hudson's Hope,71
+employer_code,DOINV,District of Invermere,72
+employer_code,MOMUN,Mountain Resort Municipality of Jumbo Glacier,73
+employer_code,COKAM,City of Kamloops,74
+employer_code,VOKAS,Village of Kaslo,75
+employer_code,COKEL,City of Kelowna,76
+employer_code,DOKEN,District of Kent,77
+employer_code,VOKER,Village of Keremeos,78
+employer_code,COKIM,City of Kimberley,79
+employer_code,DOKIT,District of Kitimat,80
+employer_code,TOLAD,Town of Ladysmith,81
+employer_code,DOLAK,District of Lake Country,82
+employer_code,TOLAK,Town of Lake Cowichan,83
+employer_code,COLANGF,City of Langford,84
+employer_code,COLANGLE,City of Langley,85
+employer_code,TOLAN,Township of Langley,86
+employer_code,DOLAN,District of Lantzville,87
+employer_code,DOLIL,District of Lillooet,88
+employer_code,VOLIO,Village of Lions Bay,89
+employer_code,DOLOG,District of Logan Lake,90
+employer_code,VOLUM,Village of Lumby,91
+employer_code,VOLYT,Village of Lytton,92
+employer_code,DOMAC,District of Mackenzie,93
+employer_code,COMAP,City of Maple Ridge,94
+employer_code,VOMAS,Village of Masset,95
+employer_code,VOMCB,Village of McBride,96
+employer_code,COMER,City of Merritt,97
+employer_code,DOMET,District of Metchosin,98
+employer_code,VOMID,Village of Midway,99
+employer_code,COMIS,City of Mission,100
+employer_code,VOMON,Village of Montrose,101
+employer_code,VONAK,Village of Nakusp,102
+employer_code,CONAN,City of Nanaimo,103
+employer_code,CONEL,City of Nelson,104
+employer_code,VONEW,Village of New Denver,105
+employer_code,DONEW,District of New Hazelton,106
+employer_code,CONEW,City of New Westminister,107
+employer_code,DONORC,District of North Cowichan,108
+employer_code,DONORS,District of North Saanich,109
+employer_code,CONOR,City of North Vancouver,110
+employer_code,DONOR,District of North Vancouver,111
+employer_code,NOREG,Northern Rockies Regional Municipality ,112
+employer_code,DOOAK,District of Oak Bay,113
+employer_code,TOOLI,Town of Oliver,114
+employer_code,TOOSO,Town of Osoyoos,115
+employer_code,COPAR,City of Parksville,116
+employer_code,DOPEA,District of Peachland ,117
+employer_code,VOPEM,Village of Pemberton,118
+employer_code,COPEN,City of Penticton,119
+employer_code,COPIT,City of Pitt Meadows,120
+employer_code,COPORALB,City of Port Alberni,121
+employer_code,VOPORALICE,Village of Port Alice,122
+employer_code,VOPORCLEM,Village of Port Clements,123
+employer_code,COPORCOQ,City of Port Coquitlam,124
+employer_code,DOPOREDW,District of Port Edward,125
+employer_code,DOPORHARD,District of Port Hardy,126
+employer_code,TOPOR,Town of Port McNeill,127
+employer_code,COPOR,City of Port Moody,128
+employer_code,VOPOU,Village of Pouce Coupe,129
+employer_code,COPOW,City of Powell River,130
+employer_code,COPRIGE,City of Prince George,131
+employer_code,COPRIRUP,City of Prince Rupert,132
+employer_code,TOPRI,Town of Princeton,133
+employer_code,TOQUA,Town of Qualicum Beach,134
+employer_code,VOQUE,Village of Queen Charlotte,135
+employer_code,COQUE,City of Quesnel,136
+employer_code,VORAD,Village of Radium Hot Springs,137
+employer_code,COREV,City of Revelstoke,138
+employer_code,CORIC,City of Richmond,139
+employer_code,COROS,City of Rossland,140
+employer_code,DOSAA,District of Saanich,141
+employer_code,VOSAL,Village of Salmo,142
+employer_code,COSAL,City of Salmon Arm,143
+employer_code,VOSAY,Village of Sayward,144
+employer_code,DOSEC,District of Sechelt,145
+employer_code,SOGOV,Sechelt Indian Government District,146
+employer_code,DOSIC,District of Sicamous,147
+employer_code,TOSID,Town of Sidney,148
+employer_code,VOSIL,Village of Silverton,149
+employer_code,VOSLO,Village of Slocan,150
+employer_code,TOSMI,Town of Smithers,151
+employer_code,DOSOO,District of Sooke,152
+employer_code,TOSPA,Township of Spallumcheen,153
+employer_code,DOSPA,District of Sparwood,154
+employer_code,DOSQU,District of Squamish,155
+employer_code,DOSTE,District of Stewart,156
+employer_code,DOSUM,District of Summerland,157
+employer_code,MOMUNSUNP,Mountain Resort Municipality of Sun Peaks,158
+employer_code,COSUR,City of Surrey,159
+employer_code,VOTAH,Village of Tahsis,160
+employer_code,DOTAY,District of Taylor,161
+employer_code,VOTEL,Village of Telkwa,162
+employer_code,COTER,City of Terrace,163
+employer_code,DOTOF,District of Tofino,164
+employer_code,COTRA,City of Trail,165
+employer_code,DOTUM,District of Tumbler Ridge,166
+employer_code,DOUCL,District of Ucluelet,167
+employer_code,VOVAL,Village of Valemount,168
+employer_code,COVAN,City of Vancouver,169
+employer_code,DOVAN,District of Vanderhoof,170
+employer_code,COVER,City of Vernon,171
+employer_code,COVIC,City of Victoria,172
+employer_code,TOVIE,Town of View Royal,173
+employer_code,VOWAR,Village of Warfield,174
+employer_code,COWES,City of West Kelowna,175
+employer_code,DOWES,District of West Vancouver,176
+employer_code,ROOF ,Resort Municipality of Whistler,177
+employer_code,COWHI,City of White Rock,178
+employer_code,COWIL,City of Williams Lake,179
+employer_code,VOZEB,Village of Zeballos,180
+employer_code,BOSPE,Boundary Invasive Species Society,181
+employer_code,COCOA,Cariboo Chilcotin Coast Invasive Plant Committee Society,182
+employer_code,COINVSPSO,Central Kootenay Invasive Species Society,183
+employer_code,COSPE,Coastal Invasive Species Committee Society,184
+employer_code,COSHINVSPSO,Columbia Shuswap Invasive Species Society,185
+employer_code,EOINV,East Kootenay Invasive Species Council,186
+employer_code,FOINV,Fraser Valley Invasive Species Society,187
+employer_code,ISCOBCS,Invasive Species Council of British Columbia Society,188
+employer_code,ISCOMVS,Invasive Species Council of Metro Vancouver Society,189
+employer_code,LOINV,Lillooet Regional Invasive Species Society,190
+employer_code,NOPLA,Northwest Invasive Plant Council,191
+employer_code,OOSIM,Okanagan and Similkameen Invasive Species Society,192
+employer_code,SOSKY,Sea to Sky Invasive Species Council,193
+waterbody_use_code,R,Recreation,1
+waterbody_use_code,F,Fishing,2
+waterbody_use_code,B,Boating,3
+waterbody_use_code,S,Swimming,4
+waterbody_use_code,AI,Agricultural Intake,5
+waterbody_use_code,IU,Industrial Discharge,6
+waterbody_use_code,SW,Spawning Channel,7
+waterbody_use_code,CWI,Community Water Intake,8
+waterbody_use_code,O,Other,9
+adjacent_land_use_code,AO,Agricultural Operation,1
+adjacent_land_use_code,RP,Recreational Property,2
+adjacent_land_use_code,PL,Private Land,3
+adjacent_land_use_code,IS,Industrial Site,4
+adjacent_land_use_code,SF,Small Farms,5
+adjacent_land_use_code,L,Livestock,6
+adjacent_land_use_code,P,Parkland,7
+adjacent_land_use_code,RES,Residential,8
+adjacent_land_use_code,PPL,Provincial Public Lands,9
+adjacent_land_use_code,RW,Railway,10
+adjacent_land_use_code,H,Highway,11
+adjacent_land_use_code,O,Other,12
+shoreline_type_code,RR,Riprap,1
+shoreline_type_code,RPL,Road/Parking Lot,2
+shoreline_type_code,BLoDI,Boat Launch or Dock Infrastructure,3
+shoreline_type_code,RRV,Riparian Vegetation,4
+shoreline_type_code,T,Turf,5
+shoreline_type_code,F,Fence,6
+shoreline_type_code,LGA,Livestock Grazing Access,7
+shoreline_type_code,O,Other,8

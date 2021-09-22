@@ -1,5 +1,7 @@
+import { Capacitor } from '@capacitor/core';
 import DateFnsUtils from '@date-io/date-fns';
 import {
+  Box,
   Button,
   Grid,
   InputLabel,
@@ -13,10 +15,10 @@ import {
 } from '@material-ui/core';
 import { Add, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { DocType } from 'constants/database';
 import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import SpeciesTree from './SpeciesInput';
 
 interface IActivityChoices {
   activityType: string;
@@ -39,35 +41,42 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const ActivityDataFilter: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext);
-  const databaseChangesContext = useContext(DatabaseChangesContext);
+  const databaseContext = useContext(DatabaseContext2);
   const [activityChoices, setActivityChoices] = useState([]);
 
   const getActivityChoicesFromTrip = useCallback(async () => {
-    let docs = await databaseContext.database.find({
-      selector: {
-        _id: 'trip'
-      }
-    });
-    if (docs.docs.length > 0) {
-      let tripDoc = docs.docs[0];
-      if (tripDoc.activityChoices) {
-        setActivityChoices([...tripDoc.activityChoices]);
-      }
+    let queryResults = await query(
+      { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
+      databaseContext
+    );
+    const choices = JSON.parse(queryResults[0].json).activityChoices;
+    if (choices) {
+      setActivityChoices([...choices]);
     }
-  }, [databaseContext.database]);
+  }, []);
 
   useEffect(() => {
     const updateComponent = () => {
       getActivityChoicesFromTrip();
     };
     updateComponent();
-  }, [databaseChangesContext, getActivityChoicesFromTrip]);
+  }, [getActivityChoicesFromTrip]);
 
   const saveChoices = async (newActivityChoices) => {
-    await databaseContext.database.upsert('trip', (tripDoc) => {
-      return { ...tripDoc, activityChoices: newActivityChoices };
-    });
+    console.log('updating trip ' + props.trip_ID + ' activity filters');
+    const tripID: string = props.trip_ID;
+    let result = await upsert(
+      [
+        {
+          type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+          ID: tripID,
+          docType: DocType.TRIP,
+          json: { activityChoices: newActivityChoices }
+        }
+      ],
+      databaseContext
+    );
+    setActivityChoices([...newActivityChoices]);
   };
 
   const addActivityChoice = (newActivity: IActivityChoices) => {
@@ -87,6 +96,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   };
 
   const classes = useStyles();
+  const [memoHash, setMemoHash] = useState();
 
   return (
     <>
@@ -96,7 +106,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
             return (
               <ListItem key={index}>
                 <Paper className={classes.activityRecordsChoice}>
-                  <Grid container spacing={3}>
+                  <Grid xs={8} container spacing={3}>
                     <Grid item xs={4}>
                       <div>
                         <InputLabel id="demo-simple-select-label">Activity Type</InputLabel>
@@ -107,7 +117,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                           onChange={(e) => {
                             updateActivityChoice({ ...activityChoice, activityType: e.target.value }, index);
                           }}>
-                          <MenuItem value={''}>All</MenuItem>
+                          <MenuItem value={'All'}>All</MenuItem>
                           <MenuItem value={'Observation'}>Observation</MenuItem>
                           <MenuItem value={'Treatment'}>Treatment</MenuItem>
                           <MenuItem value={'Monitoring'}>Monitoring</MenuItem>
@@ -176,10 +186,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12}>
-                      <SpeciesTree />
-                    </Grid>
-                    <Grid container item justify="flex-end">
+                    <Grid container item justifyContent="flex-end">
                       <Button
                         variant="contained"
                         startIcon={<DeleteForever />}
@@ -193,22 +200,24 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
             );
           })}
         </List>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={() => {
-            addActivityChoice({
-              activityType: '',
-              includePhotos: false,
-              includeForms: false,
-              species: [],
-              startDate: null,
-              endDate: null
-            });
-          }}>
-          Add New
-        </Button>
+        <Box>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={() => {
+              addActivityChoice({
+                activityType: '',
+                includePhotos: false,
+                includeForms: false,
+                species: [],
+                startDate: null,
+                endDate: null
+              });
+            }}>
+            Add New
+          </Button>
+        </Box>
       </MuiPickersUtilsProvider>
     </>
   );

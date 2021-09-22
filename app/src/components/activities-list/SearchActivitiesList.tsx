@@ -1,5 +1,6 @@
 import {
   Box,
+  Checkbox,
   Divider,
   Grid,
   List,
@@ -11,10 +12,11 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
-import { ActivityTypeIcon } from 'constants/activities';
+import { ActivityTypeIcon, ActivitySubtype } from 'constants/activities';
 import { MediumDateFormat } from 'constants/misc';
 import moment from 'moment';
 import React from 'react';
+import { getShortActivityID } from 'utils/addActivity';
 import { useHistory } from 'react-router-dom';
 import ActivityListItem from './ActivityListItem';
 
@@ -39,6 +41,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'inline',
       marginRight: '1rem'
     }
+  },
+  multiSelect: {
+    flexBasis: 0
   }
 }));
 
@@ -48,14 +53,16 @@ interface ISearchActivityListItem {
 
 const SearchActivityListItem: React.FC<ISearchActivityListItem> = (props) => {
   const classes = useStyles();
-
   return (
     <Grid className={classes.activityListItem_Grid} container spacing={2}>
       <Divider flexItem={true} orientation="vertical" />
       <Grid item md={1}>
-        <Box overflow="hidden" textOverflow="ellipsis" title={props.activity._id}>
+        <Box
+          overflow="hidden"
+          textOverflow="ellipsis"
+          title={props.activity.short_id || getShortActivityID(props.activity) || props.activity._id}>
           <Typography className={classes.activitiyListItem_Typography}>ID</Typography>
-          {props.activity._id}
+          {props.activity.short_id || getShortActivityID(props.activity) || props.activity._id}
         </Box>
       </Grid>
       <Divider flexItem={true} orientation="vertical" />
@@ -71,12 +78,14 @@ const SearchActivityListItem: React.FC<ISearchActivityListItem> = (props) => {
 
 interface ISearchActivitiesList {
   activities: any[];
+  edits?: any[];
+  setEdits?: any;
 }
 
 const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
   const classes = useStyles();
-
   const history = useHistory();
+  const { edits, setEdits } = props;
 
   const navigateToSearchActivityPage = async (doc: any) => {
     history.push(`/home/search/activity/${doc._id}`);
@@ -85,12 +94,44 @@ const SearchActivitiesList: React.FC<ISearchActivitiesList> = (props) => {
   return (
     <List>
       {props.activities.map((activity) => {
+        const isChecked = edits.filter((edit) => edit.id === activity._id).length > 0;
+
+        // Temporarily limit bulk editing:
+        const allowedBulkEditSubtypes = [
+          ActivitySubtype.Observation_PlantTerrestrial,
+          ActivitySubtype.Treatment_ChemicalPlant,
+          ActivitySubtype.Treatment_MechanicalPlant,
+          ActivitySubtype.Treatment_BiologicalPlant
+        ];
+        const bulkEditIsDisabled = !allowedBulkEditSubtypes.includes(activity.activitySubtype);
+
         return (
           <Paper key={activity._id}>
             <ListItem
               button
               className={classes.activitiyListItem}
               onClick={() => navigateToSearchActivityPage(activity)}>
+              <Grid className={classes.multiSelect}>
+                <Checkbox
+                  checked={isChecked}
+                  disabled={bulkEditIsDisabled}
+                  style={bulkEditIsDisabled ? { visibility: 'hidden' } : {}}
+                  onChange={() =>
+                    setEdits(
+                      isChecked
+                        ? edits.filter((edit) => edit.id !== activity._id)
+                        : [
+                            {
+                              id: activity._id,
+                              subtype: activity.activitySubtype
+                            },
+                            ...edits
+                          ]
+                    )
+                  }
+                  onClick={(event) => event.stopPropagation()}
+                />
+              </Grid>
               <ListItemIcon>
                 <SvgIcon fontSize="large" component={ActivityTypeIcon[activity.activityType]} />
               </ListItemIcon>

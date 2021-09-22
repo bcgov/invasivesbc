@@ -3,6 +3,7 @@ import { Feature } from 'geojson';
 
 export interface IActivity {
   _id: string;
+  shortId: string;
   activityId: string;
   docType: string;
   activityType: ActivityType;
