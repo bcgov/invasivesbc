@@ -33,7 +33,7 @@ module.exports = (settings) => {
         NAME: phases[phase].name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
-        REAL_NODE_ENV: real_node_env,
+        REACT_APP_REAL_NODE_ENV: real_node_env,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
         SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref
       }
