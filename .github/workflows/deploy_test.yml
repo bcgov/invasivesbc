@@ -1,12 +1,12 @@
 # Static Deploy
 # Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev, Test, or Prod environments.
-name: Static Deploy - PROD
+name: Static Deploy - TEST
 
 on:
   pull_request:
     types: [closed]
     branches:
-      - prod
+      - test
 
 jobs:
   # Print variables for logging and debugging purposes
