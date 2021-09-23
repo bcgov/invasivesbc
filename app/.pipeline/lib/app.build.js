@@ -14,7 +14,7 @@ module.exports = (settings) => {
   let objects = [];
 
   let real_node_env;
-  switch (oc.git.ref) {
+  switch (phases[phase].branch) {
     case 'dev':
       real_node_env = 'development';
       break;
