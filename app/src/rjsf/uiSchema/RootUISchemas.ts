@@ -157,7 +157,6 @@ const Activity_Treatment_MechanicalPlant = {
     ...BaseUISchemaComponents.Treatment
   },
   'activity_subtype_data': {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_MechanicalPlant
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']

@@ -184,7 +184,7 @@
         "type": "object",
         "properties": {
           "activity_data": {
-            "$ref": "#/components/schemas/Activity"
+            "$ref": "#/components/schemas/Activity_Chemical"
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Treatment_ChemicalPlantAquatic"
@@ -250,7 +250,7 @@
         "type": "object",
         "properties": {
           "activity_data": {
-            "$ref": "#/components/schemas/Activity"
+            "$ref": "#/components/schemas/Activity_Chemical"
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Treatment_ChemicalPlant"
@@ -322,7 +322,7 @@
         "type": "object",
         "properties": {
           "activity_data": {
-            "$ref": "#/components/schemas/Activity"
+            "$ref": "#/components/schemas/Activity_Chemical"
           },
           "activity_type_data": {
             "$ref": "#/components/schemas/Monitoring"
@@ -493,7 +493,7 @@
           }
         }
       },
-      "Activity": {
+      "Activity_Chemical": {
         "title": "Basic Information",
         "type": "object",
         "required": [
@@ -558,6 +558,128 @@
             "title": "Well Proximity(m)",
             "minimum": 1,
             "x-tooltip-text": "Proximity of the closest well"
+          },
+          "employer_code": {
+            "type": "string",
+            "title": "Employer",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "employer_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The company or agency that the person(s) completing the activity is directly employed by"
+          },
+          "invasive_species_agency_code": {
+            "type": "string",
+            "title": "Funding Agency",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_species_agency_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Choose the organization that is paying for the work to be done. If multiple funders exist or in cases when an agency has been hired to manage the work on behalf of the primary funding agency, multiple Funding Agencies may be chosen."
+          },
+          "location_description": {
+            "type": "string",
+            "title": "Location Description",
+            "maxLength": 300,
+            "minLength": 5,
+            "default": "",
+            "x-tooltip-text": "Text entry to provide location directions. Locations should start general and get more specific"
+          },
+          "access_description": {
+            "type": "string",
+            "title": "Access Description",
+            "maxLength": 300,
+            "minLength": 5,
+            "default": "",
+            "x-tooltip-text": "Text entry to provide access directions."
+          },
+          "jurisdictions": {
+            "type": "array",
+            "default": [{}],
+            "title": "Jurisdictions",
+            "items": {
+              "$ref": "#/components/schemas/Jurisdiction"
+            },
+            "x-tooltip-text": "Specify one or more jurisdictions for this activity"
+          },
+          "project_code": {
+            "type": "array",
+            "title": "Project Code",
+            "default": [{}],
+            "items": {
+              "$ref": "#/components/schemas/ProjectCode"
+            },
+            "x-tooltip-text": "User defined identifier that can be used to filter or sort records"
+          },
+          "general_comment": {
+            "type": "string",
+            "title": "Comment",
+            "maxLength": 2000,
+            "default": "",
+            "x-tooltip-text": "Plain text description of any supporting information about the observation that is not captured elsewhere (up to 2000 characters)"
+          }
+        }
+      },
+      "Activity": {
+        "title": "Basic Information",
+        "type": "object",
+        "required": [
+          "invasive_species_agency_code",
+          "jurisdictions",
+          "access_description",
+          "activity_date_time",
+          "latitude",
+          "longitude",
+          "utm_zone",
+          "employer_code",
+          "utm_easting",
+          "utm_northing",
+          "reported_area",
+          "location_description"
+        ],
+        "properties": {
+          "activity_date_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date and Time",
+            "x-tooltip-text": "Date and time of the activity"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "x-tooltip-text": "Latitude of the anchor point for the specified geometry"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "x-tooltip-text": "Longitude of the anchor point for the specified geometry"
+          },
+          "utm_zone": {
+            "type": "string",
+            "title": "UTM Zone",
+            "x-tooltip-text": "UTM Zone of the anchor point for the specified geometry"
+          },
+          "utm_easting": {
+            "type": "number",
+            "title": "UTM Easting",
+            "x-tooltip-text": "UTM Easting of the anchor point for the specified geometry"
+          },
+          "utm_northing": {
+            "type": "number",
+            "title": "UTM Northing",
+            "x-tooltip-text": "UTM Northing of the anchor point for the specified geometry"
+          },
+          "reported_area": {
+            "type": "number",
+            "title": "Area (m\u00B2)",
+            "minimum": 1,
+            "x-tooltip-text": "Area of the activity automatically created from the geometry in square metres"
           },
           "employer_code": {
             "type": "string",
@@ -1897,15 +2019,44 @@
                       "type": "boolean",
                       "title": "Tank Mix",
                       "x-tooltip-text": "Check if there is a mix of herbicides in the tank"
-                    },
-                    "herbicide": {
-                      "type": "array",
-                      "default": [{}],
-                      "title": "Herbicide",
-                      "items": {
-                        "$ref": "#/components/schemas/Herbicide"
-                      },
-                      "x-tooltip-text": "Herbicide information for the treatment"
+                    }
+                  },
+                  "dependencies": {
+                    "tank_mix": {
+                      "oneOf": [
+                        {
+                          "properties": {
+                            "tank_mix": {
+                              "enum": [true]
+                            },
+                            "herbicide": {
+                              "type": "array",
+                              "default": [{}],
+                              "title": "Herbicide",
+                              "items": {
+                                "$ref": "#/components/schemas/Herbicide_with_tank_volume"
+                              },
+                              "x-tooltip-text": "Herbicide information for the treatment"
+                            }
+                          }
+                        },
+                        {
+                          "properties": {
+                            "tank_mix": {
+                              "enum": [false]
+                            },
+                            "herbicide": {
+                              "type": "array",
+                              "default": [{}],
+                              "title": "Herbicide",
+                              "items": {
+                                "$ref": "#/components/schemas/Herbicide"
+                              },
+                              "x-tooltip-text": "Herbicide information for the treatment"
+                            }
+                          }
+                        }
+                      ]
                     }
                   },
                   "required": ["invasive_plant_code"]
@@ -2062,19 +2213,48 @@
                       "type": "boolean",
                       "title": "Tank Mix",
                       "x-tooltip-text": "Check if there is a mix of herbicides in the tank"
-                    },
-                    "herbicide": {
-                      "type": "array",
-                      "default": [{}],
-                      "title": "Herbicide",
-                      "items": {
-                        "$ref": "#/components/schemas/Herbicide"
-                      },
-                      "x-tooltip-text": "Herbicide information for the treatment"
+                    }
+                  },
+                  "dependencies": {
+                    "tank_mix": {
+                      "oneOf": [
+                        {
+                          "properties": {
+                            "tank_mix": {
+                              "enum": [true]
+                            },
+                            "herbicide": {
+                              "type": "array",
+                              "default": [{}],
+                              "title": "Herbicide",
+                              "items": {
+                                "$ref": "#/components/schemas/Herbicide_with_tank_volume"
+                              },
+                              "x-tooltip-text": "Herbicide information for the treatment"
+                            }
+                          }
+                        },
+                        {
+                          "properties": {
+                            "tank_mix": {
+                              "enum": [false]
+                            },
+                            "herbicide": {
+                              "type": "array",
+                              "default": [{}],
+                              "title": "Herbicide",
+                              "items": {
+                                "$ref": "#/components/schemas/Herbicide"
+                              },
+                              "x-tooltip-text": "Herbicide information for the treatment"
+                            }
+                          }
+                        }
+                      ]
                     }
                   }
                 },
-                "required": ["invasive_plant_code", "herbicide"]
+                "required": ["invasive_plant_code"]
               }
             },
             "required": ["invasive_plants_information"]
@@ -2151,9 +2331,32 @@
         }
       },
       "Treatment_MechanicalPlant": {
-        "title": "Mechanical Treatment Information",
         "type": "object",
-        "required": ["invasive_plant_code", "mechanical_method_code", "mechanical_disposal_code"],
+        "title": "Treatment Mechanical Plant",
+        "properties": {
+          "mechanical_plant_information": {
+            "$ref": "#/components/schemas/Treatment_MechanicalPlant_Information"
+          }
+        }
+      },
+      "Treatment_MechanicalPlant_Information": {
+        "type": "array",
+        "title": "Mechanical Treatment Information",
+        "default": [{}],
+        "items": {
+          "$ref": "#/components/schemas/Treatment_MechanicalPlant_Information_Item"
+        }
+      },
+      "Treatment_MechanicalPlant_Information_Item": {
+        "title": " ",
+        "type": "object",
+        "required": [
+          "invasive_plant_code",
+          "treated_area",
+          "mechanical_method_code",
+          "mechanical_disposal_code",
+          "disposed_material"
+        ],
         "properties": {
           "invasive_plant_code": {
             "type": "string",
@@ -2166,6 +2369,11 @@
               "x-enum-code-sort-order": "code_sort_order"
             },
             "x-tooltip-text": "Target invasive plant species treated at this location"
+          },
+          "treated_area": {
+            "type": "number",
+            "title": "Treated Area (m2)",
+            "x-tooltip-text": "Treated Area (m2)"
           },
           "mechanical_method_code": {
             "type": "string",
@@ -2190,6 +2398,23 @@
               "x-enum-code-sort-order": "code_sort_order"
             },
             "x-tooltip-text": "Indicate disposal method"
+          },
+          "disposed_material": {
+            "type": "object",
+            "title": "Disposed material",
+            "properties": {
+              "disposed_material_input_format": {
+                "type": "string",
+                "title": "Disposed Material Format",
+                "enum": ["number of plants", "weight"]
+              },
+              "disposed_material_input_number": {
+                "type": "number",
+                "title": "Disposed Material Number",
+                "minimum": 0
+              }
+            },
+            "required": ["disposed_material_input_number", "disposed_material_input_format"]
           }
         }
       },
@@ -3567,7 +3792,7 @@
         },
         "required": ["application_rate", "herbicide_amount", "mix_delivery_rate", "area_treated"]
       },
-      "Herbicide": {
+      "Herbicide_with_tank_volume": {
         "type": "object",
         "required": ["herbicide_code", "herbicide_type"],
         "properties": {
@@ -3592,6 +3817,57 @@
             "title": "Tank Volume (L)",
             "type": "number",
             "x-tooltip-text": "Capacity of tank measured in litres"
+          }
+        },
+        "dependencies": {
+          "herbicide_type": {
+            "oneOf": [
+              {
+                "properties": {
+                  "herbicide_type": {
+                    "enum": ["liquid"]
+                  },
+                  "herbicide_information": {
+                    "title": " ",
+                    "$ref": "#/components/schemas/Herbicide_Liquid_Object"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "herbicide_type": {
+                    "enum": ["granular"]
+                  },
+                  "herbicide_information": {
+                    "title": " ",
+                    "$ref": "#/components/schemas/Herbicide_Granular_Object"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Herbicide": {
+        "type": "object",
+        "required": ["herbicide_code", "herbicide_type"],
+        "properties": {
+          "herbicide_code": {
+            "type": "string",
+            "title": "Herbicide",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "liquid_herbicide_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "herbicide_type": {
+            "title": "Herbicide Type",
+            "type": "string",
+            "enum": ["liquid", "granular"],
+            "x-tooltip-text": "Choose whether the herbicide being used is liquid or granular"
           }
         },
         "dependencies": {

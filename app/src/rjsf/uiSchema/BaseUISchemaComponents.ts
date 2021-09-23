@@ -1571,16 +1571,22 @@ const Treatment = {
 };
 
 const Treatment_MechanicalPlant = {
-  'invasive_plant_code': {
-    'ui:widget': 'single-select-autocomplete'
+  'mechanical_plant_information':{
+    items: {
+      ...ThreeColumnStyle,
+      'invasive_plant_code': {
+        'ui:widget': 'single-select-autocomplete'
+      },
+      'mechanical_method_code': {
+        'ui:widget': 'single-select-autocomplete'
+      },
+      'mechanical_disposal_code': {
+        'ui:widget': 'single-select-autocomplete'
+      },
+    },
+    'ui:order':['invasive_plant_code','mechanical_method_code','mechanical_disposal_code']
   },
-  'mechanical_method_code': {
-    'ui:widget': 'single-select-autocomplete'
-  },
-  'mechanical_disposal_code': {
-    'ui:widget': 'single-select-autocomplete'
-  },
-  'ui:order':['invasive_plant_code','mechanical_method_code','mechanical_disposal_code']
+  'ui:order':["mechanical_plant_information"]
 };
 
 const Treatment_MechanicalPlantAquatic = {
@@ -1625,7 +1631,10 @@ const Treatment_MechanicalPlantAquatic = {
       'water_flow_rate'
     ]
   },
-  ...Treatment_MechanicalPlant,
+  'mechanical_treatment_information': {
+    ...Treatment_MechanicalPlant
+  },
+  
   'ui:order':['waterbody_data','shoreline_types','water_quality']
 }
 
