@@ -1,6 +1,13 @@
 # Invasive Species BC
 
+
+[![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+[![Dev Build Successful](https://github.com/bcgov/invasivesbc/actions/workflows/deploy.yml/badge.svg)](https://github.com/bcgov/invasivesbc/actions/workflows/deploy.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_invasivesbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_invasivesbc) [![codecov](https://codecov.io/gh/bcgov/invasivesbc/branch/dev/graph/badge.svg)](https://codecov.io/gh/bcgov/invasivesbc)
+
 ## Introduction
+
+
 
 Invasive species are non-native plants and animals whose introduction and spread in British Columbia cause significant economic, social or environmental damage. This application tracks the observation, treatment, and monitoring of invasive species in the Province of British Columbia.
 
@@ -66,10 +73,15 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
 
 ## Project Structure
 
-    .config/                   - Whole application configuration
+    .config/                   - Common application configuration
+    .github/                   - Github actions
+    .docker/                   - Common Dockerfiles 
     .vscode/                   - IDE config for Visual Studio Code
     api/                       - API codebase
     app/                       - Ionic APP Codebase
+    database/                  - Database Codebase
+    env_config/                - ENV config files
+    testing/                   - Test scripts, in particular Postman configs
     CODE-OF-CONDUCT.md         - Code of Conduct
     CONTRIBUTING.md            - Contributing Guidelines
     LICENSE                    - License
@@ -78,7 +90,70 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
 
 ## Requirements
 
+We are using Visual Code for our IDE due to the excellent integration of our tolls and utilities.
+
+### Development
+
+Ionic/React
+
+```
+npm install -g @ionic/cli native-run cordova-res
+```
+
+The ideal multi-platform supporting machine is the Mac, But Windows and Linus work very well for Web and Android as well.
+
+### Android Development
+
+Install AndroidStudio and the Android SDK.
+
+### IOS Development
+
+On MacOS: Install xCode.
+
+
 ## Setup Instructions
+
+Clone the repository to your own machine and follow instructions below.
+
+## Run the app locally (web)
+
+In the app directory:
+
+```
+npm install
+
+ionic serve
+```
+
+## Run the app on mobile
+
+### Android
+
+On MacOS, Windows or Linux, in the app directory:
+
+1. `npm install`
+2. `ionic build`
+3. `ionic cap add android` (Only the first time, does not need to be repeated after)
+4. `ionic cap copy`
+5. `ionic cap sync`
+6. `npx cap open Android`
+
+Android Studio will open and, after a short delay, will allow you to run the application in the simulator.
+
+
+### IOS
+
+On MacOS, in the app directory:
+
+1. `npm install`
+2. `ionic build`
+3. `ionic cap add android` (Only the first time, does not need to be repeated after)
+4. `ionic cap copy`
+5. `ionic cap sync`
+6. `npx cap open ios`
+
+xCode will open and, after a short delay, will allow you to run the application in the simulator.
+
 
 ## Acknowledgements
 
@@ -92,7 +167,7 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,

@@ -1,0 +1,53 @@
+{
+  "name": "invasivesbci",
+  "namespaceSuffix": "7068ad",
+  "namespace": {
+    "tools": "tools",
+    "dev": "dev",
+    "test": "test",
+    "prod": "prod"
+  },
+  "version": "1.0.0",
+  "module": {
+    "db": "invasivesbci-db",
+    "api": "invasivesbci-api",
+    "app": "invasivesbci-app"
+  },
+  "staticBranches": [
+    "dev",
+    "test",
+    "prod"
+  ],
+  "staticUrls": {
+    "dev": "dev-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "test": "test-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "prod": "invasivesbci.apps.silver.devops.gov.bc.ca"
+  },
+  "staticUrlsAPI": {
+    "dev": "api-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "test": "api-test-invasivesbci.apps.silver.devops.gov.bc.ca",
+    "prod": "api-invasivesbci.apps.silver.devops.gov.bc.ca"
+  },
+  "certificateURL": {
+    "dev": "https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
+    "test": "https://test.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
+    "prod": "https://oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs"
+  },
+  "sso": {
+    "dev": {
+      "url": "https://dev.oidc.gov.bc.ca",
+      "clientId": "invasives-bc",
+      "realm": "dfmlcg7z"
+    },
+    "test": {
+      "url": "https://test.oidc.gov.bc.ca",
+      "clientId": "invasives-bc",
+      "realm": "dfmlcg7z"
+    },
+    "prod": {
+      "url": "https://oidc.gov.bc.ca",
+      "clientId": "invasives-bc",
+      "realm": "dfmlcg7z"
+    }
+  }
+}

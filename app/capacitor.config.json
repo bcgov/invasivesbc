@@ -1,0 +1,16 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "InvasivesBC-Ionic",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "ios": {
+    "hideLogs": true
+  },
+  "webDir": "build",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}

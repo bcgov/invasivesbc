@@ -1,0 +1,369 @@
+import {
+  IActivitySearchCriteria,
+  ICreateOrUpdateActivity,
+  IPointOfInterestSearchCriteria
+} from '../interfaces/useInvasivesApi-interfaces';
+import { useInvasivesApi } from './useInvasivesApi';
+import { DBRequest, DatabaseContext2, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext2';
+import { useContext } from 'react';
+import { DocType } from '../constants/database';
+import { Capacitor } from '@capacitor/core';
+import { DatabaseContext } from '../contexts/DatabaseContext';
+import { Network } from '@capacitor/network';
+
+/**
+ * Returns a set of supported api methods.
+ *
+ * @return {object} object whose properties are supported api methods.
+ *
+ */
+export const useDataAccess = () => {
+  const api = useInvasivesApi();
+  const databaseContext = useContext(DatabaseContext2);
+  const databaseContextPouch = useContext(DatabaseContext);
+  const platform = Capacitor.getPlatform();
+  /** //---------------COMPLETED
+   * Fetch points of interest by search criteria.
+   *
+   * @param {pointsOfInterestSearchCriteria} pointsOfInterestSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getPointsOfInterest = async (
+    pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
+    context?: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    },
+    forceCache = false
+  ): Promise<any> => {
+    const networkStatus = await Network.getStatus();
+    if (platform === 'web') {
+      return api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+    } else {
+      if (forceCache === true || !networkStatus.connected) {
+        const dbcontext = context;
+        return dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.DOC_TYPE,
+                docType: DocType.REFERENCE_POINT_OF_INTEREST,
+                limit: pointsOfInterestSearchCriteria.limit,
+                offset: pointsOfInterestSearchCriteria.page
+              },
+              databaseContext
+            );
+          }
+        });
+      } else {
+        return api.getPointsOfInterest(pointsOfInterestSearchCriteria);
+      }
+    }
+  };
+
+  /** //---------------COMPLETED
+   * Fetch a signle activity by its id.
+   *
+   * @param {string} activityId
+   * @return {*}  {Promise<any>}
+   */
+  const getActivityById = async (
+    activityId: string,
+    context?: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    },
+    forceCache?: boolean
+  ): Promise<any> => {
+    const networkStatus = await Network.getStatus();
+    if (Capacitor.getPlatform() === 'web') {
+      return api.getActivityById(activityId);
+    } else {
+      if (forceCache === true || !networkStatus.connected) {
+        const dbcontext = context;
+        return dbcontext.asyncQueue({
+          asyncTask: async () => {
+            const res = await query(
+              {
+                type: QueryType.DOC_TYPE_AND_ID,
+                docType: DocType.ACTIVITY,
+                ID: activityId
+              },
+              dbcontext
+            );
+            return JSON.parse(res[0].json);
+          }
+        });
+      } else {
+        return api.getActivityById(activityId);
+      }
+    }
+  };
+
+  /**
+   * Update an existing activity record.
+   *
+   * @param {ICreateOrUpdateActivity} activity
+   * @return {*}  {Promise<any>}
+   */
+  const updateActivity = async (
+    activity: ICreateOrUpdateActivity,
+    context?: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    }
+  ): Promise<any> => {
+    if (Capacitor.getPlatform() === 'web') {
+      //TODO: implement getting old version from derver and making new with overwritten props
+      // IN USEINVASIVES API
+      return api.updateActivity(activity);
+    } else {
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                docType: DocType.ACTIVITY,
+                json: activity,
+                ID: activity.activity_id
+              }
+            ],
+            dbcontext
+          );
+        }
+      });
+    }
+  };
+
+  /** //---------------COMPLETED
+   * Get all the trip records
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getTrips = async (context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }) => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: () => {
+        return query({ type: QueryType.DOC_TYPE, docType: DocType.TRIP }, dbcontext);
+      }
+    });
+  };
+
+  /** //---------------COMPLETED
+   * Add new trip object record
+   *
+   * @param {any} newTripObj
+   * @return {*}  {Promise<any>}
+   */
+  const addTrip = async (
+    newTripObj: any,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ) => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: () => {
+        return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], dbcontext);
+      }
+    });
+  };
+
+  /** //---------------COMPLETED
+   * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
+   *
+   * @param {activitiesSearchCriteria} activitiesSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getActivities = async (
+    activitiesSearchCriteria: IActivitySearchCriteria,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean },
+    forceCache = false,
+    referenceCache = false
+  ): Promise<any> => {
+    const networkStatus = await Network.getStatus();
+    if (Capacitor.getPlatform() === 'web') {
+      return api.getActivities(activitiesSearchCriteria);
+    } else {
+      if (forceCache === true || !networkStatus.connected) {
+        const dbcontext = context;
+        const table = referenceCache ? 'reference_activity' : 'activity';
+        const typeClause = activitiesSearchCriteria.activity_type
+          ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
+              activitiesSearchCriteria.activity_type
+            ).replace(/[\[\]']+/g, '')})`
+          : '';
+        const subTypeClause = activitiesSearchCriteria.activity_subtype
+          ? ` and json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
+              activitiesSearchCriteria.activity_subtype
+            ).replace(/[\[\]']+/g, '')})`
+          : '';
+
+        const sql = `select * from ${table} where 1=1 ${typeClause} ${subTypeClause}`;
+
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.RAW_SQL,
+                sql: sql
+              },
+              dbcontext
+            );
+          }
+        });
+        return {
+          rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
+          count: asyncReturnVal.length
+        };
+      } else {
+        return api.getActivities(activitiesSearchCriteria);
+      }
+    }
+  };
+
+  /** //---------------COMPLETED
+   * Create a new activity record.
+   *
+   * @param {ICreateOrUpdateActivity} activity
+   * @return {*}  {Promise<any>}
+   */
+  const createActivity = async (
+    activity: ICreateOrUpdateActivity,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ): Promise<any> => {
+    if (Capacitor.getPlatform() === 'web') {
+      return api.createActivity(activity);
+    } else {
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID,
+                docType: DocType.ACTIVITY,
+                ID: activity.activity_id,
+                json: activity
+              }
+            ],
+            dbcontext
+          );
+        }
+      });
+    }
+  };
+  /** //---------------COMPLETED
+   * Delete activities by ids.
+   *
+   * @param {string[]} activityIds
+   * @return {*}  {Promise<any>}
+   */
+  const deleteActivities = async (
+    activityIds: string[],
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ): Promise<any> => {
+    if (Capacitor.getPlatform() === 'web') {
+      return api.deleteActivities(activityIds);
+    } else {
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          const idsForSQL = JSON.stringify(activityIds).replace(/[\[\]']+/g, '');
+          const sql = `DELETE FROM Activity WHERE id IN ${'(' + idsForSQL + ')'}`;
+          return upsert(
+            [
+              {
+                type: UpsertType.RAW_SQL,
+                sql: sql
+              }
+            ],
+            dbcontext
+          );
+        }
+      });
+    }
+  };
+
+  /**
+   * Get appState
+   *
+   * @param {any} selector
+   * @return {*}  {Promise<any>}
+   */
+  const getAppState = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    if (Capacitor.getPlatform() === 'web') {
+      return databaseContextPouch.database.find({ selector: { _id: DocType.APPSTATE } });
+    } else {
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: async () => {
+          let res = await query(
+            {
+              type: QueryType.DOC_TYPE_AND_ID,
+              docType: DocType.APPSTATE,
+              ID: '1'
+            },
+            dbcontext
+          );
+          res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+          return res;
+        }
+      });
+    }
+  };
+
+  /**
+   * Get appState
+   *
+   * @param {any} activeActivity
+   * @return {*}  {Promise<any>}
+   */
+  const setAppState = async (
+    newState: any,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ): Promise<any> => {
+    if (Capacitor.getPlatform() === 'web') {
+      return databaseContextPouch.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+        return { ...appStateDoc, ...newState };
+      });
+    } else {
+      const dbcontext = context;
+
+      const appStateDoc = await getAppState(dbcontext);
+
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                docType: DocType.APPSTATE,
+                ID: '1',
+                json: { ...appStateDoc, ...newState }
+              }
+            ],
+            dbcontext
+          );
+        }
+      });
+    }
+  };
+
+  return {
+    ...api,
+    getPointsOfInterest,
+    getActivityById,
+    updateActivity,
+    getTrips,
+    addTrip,
+    getActivities,
+    createActivity,
+    deleteActivities,
+    getAppState,
+    setAppState
+  };
+};
