@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - test
+      - prod
 
 jobs:
   # Print variables for logging and debugging purposes
