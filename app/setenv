@@ -1,12 +1,15 @@
 #/bin/bash
 case $1 in
+#todo:  print what the urls are going to be
 
   "dev")
     export REAL_NODE_ENV='development'
+
     ;;
 
   "local")
     export REAL_NODE_ENV='local'
+    # TODO prompt user for optional port or use defaults
     ;;
 
   "test")
