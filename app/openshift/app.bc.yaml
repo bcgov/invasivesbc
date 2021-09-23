@@ -108,9 +108,9 @@ objects:
           from:
             kind: ImageStreamTag
             name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
-        env:
-          - name: "REACT_APP_REAL_NODE_ENV"
-            value: "${REACT_APP_REAL_NODE_ENV}"
+          env:
+            - name: "REACT_APP_REAL_NODE_ENV"
+              value: "${REACT_APP_REAL_NODE_ENV}"
         type: Docker
       successfulBuildsHistoryLimit: 5
       triggers:
