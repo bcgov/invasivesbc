@@ -37,6 +37,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     break;
 }
 
+console.log('SSO URL:', SSO_URL);
 const App: React.FC<IAppProps> = (props) => {
   const keycloakInstanceConfig: KeycloakConfig = {
     realm: 'dfmlcg7z',

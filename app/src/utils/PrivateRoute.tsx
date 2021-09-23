@@ -23,15 +23,26 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
 
   document.title = props.title;
 
+  // needs a clean solution to having some public pages
   return (
     <Route
       {...rest}
       render={(renderProps) => {
-        if (
-          (!keycloak.obj?.authenticated || !rest.roles || !keycloak.hasRole(rest.roles)) &&
-          !props.componentProps?.isMobileNoNetwork
-        ) {
-          return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
+        if (process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          if (
+            (!keycloak.obj?.authenticated || !rest.roles || !keycloak.hasRole(rest.roles)) &&
+            !props.componentProps?.isMobileNoNetwork
+          ) {
+            console.log('unauthenticated');
+            return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
+          } else {
+            console.log('authenticated');
+            return (
+              <Layout>
+                <Component {...renderProps} {...rest.componentProps} />
+              </Layout>
+            );
+          }
         } else {
           return (
             <Layout>
