@@ -137,7 +137,6 @@ const CreateAccordionTable = ({ row }) => {
   // Shortcuts
   var activity_payload = row.obj.activity_payload;
   var form_data = activity_payload.form_data;
-  var activity_subtype_data = form_data.activity_subtype_data;
   var shape = activity_payload.geometry[0];
   // Variables for table
   const [name, setName] = useState(null);
@@ -151,6 +150,12 @@ const CreateAccordionTable = ({ row }) => {
       const response = await dataAccess.getCachedApiSpec();
       // row check
       try {
+        /* json check in new tab
+        console.log(response);
+        var temp0 = JSON.stringify(response, null, 2);
+        var x = window.open();
+        x.document.open();
+        x.document.write('<html><body><pre>' + temp0 + '</pre></body></html>');*/
         setName(getPlantName(subtype, code, response));
       } catch (error) {
         console.log('did not log');
@@ -183,12 +188,10 @@ const CreateAccordionTable = ({ row }) => {
           <StyledTableCell>{code + ', ' + name}</StyledTableCell>
         </StyledTableRow>
       )}
-      {area && (
-        <StyledTableRow>
-          <StyledTableCell>Area</StyledTableCell>
-          <StyledTableCell>{area.toFixed(2)}</StyledTableCell>
-        </StyledTableRow>
-      )}
+      <StyledTableRow>
+        <StyledTableCell>Area</StyledTableCell>
+        <StyledTableCell>{area || area > 0 ? area.toFixed(2) : <>NWF</>}</StyledTableCell>
+      </StyledTableRow>
     </>
   );
 };
