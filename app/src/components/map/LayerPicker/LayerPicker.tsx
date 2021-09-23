@@ -362,9 +362,9 @@ export function LayerPicker(props: any, { position }) {
                     </DialogActions>
                   </Dialog>
                 </Grid>
-                <Grid item xs={2} style={{ position: 'relative' }}>
+                {/* <Grid item xs={2} style={{ position: 'relative' }}>
                   {child.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
-                </Grid>
+                        </Grid> */}
               </Grid>
             ))}
           </Accordion>

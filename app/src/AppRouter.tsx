@@ -51,7 +51,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         path="/home"
         title={getTitle('Home')}
         component={HomeRouter}
-        layout={layout}
+        layout={process.env.REACT_APP_REAL_NODE_ENV === 'production' ? PublicLayout : AuthLayout}
         keycloak={props.keycloak}
         keycloakConfig={props.keycloakConfig}
         isMobileNoNetwork={isMobileNoNetwork}
