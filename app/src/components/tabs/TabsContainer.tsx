@@ -203,11 +203,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: <Home />
           });
 
-          tabsUserHasAccessTo.push({
-            label: 'Search',
-            path: '/home/search',
-            icon: <Search />
-          });
+          if (process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+            tabsUserHasAccessTo.push({
+              label: 'Search',
+              path: '/home/search',
+              icon: <Search />
+            });
+          }
 
           if (Capacitor.getPlatform() !== 'web') {
             tabsUserHasAccessTo.push({
@@ -226,11 +228,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          tabsUserHasAccessTo.push({
-            label: 'My Records',
-            path: '/home/activities',
-            icon: <HomeWork />
-          });
+          if (process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+            tabsUserHasAccessTo.push({
+              label: 'My Records',
+              path: '/home/activities',
+              icon: <HomeWork />
+            });
+          }
 
           tabsUserHasAccessTo.push({
             label: 'Map',
@@ -238,11 +242,13 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             icon: <Map />
           });
 
-          tabsUserHasAccessTo.push({
-            label: 'Current Activity',
-            path: '/home/activity',
-            icon: <Assignment />
-          });
+          if (process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+            tabsUserHasAccessTo.push({
+              label: 'Current Activity',
+              path: '/home/activity',
+              icon: <Assignment />
+            });
+          }
         }
 
         return tabsUserHasAccessTo;
