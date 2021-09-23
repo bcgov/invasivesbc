@@ -37,7 +37,7 @@ parameters:
   - name: SOURCE_IMAGE_TAG
     required: true
     value: latest
-  - name: REAL_NODE_ENV
+  - name: REACT_APP_REAL_NODE_ENV
     description: temp - second env var - will consolidate after
     value: 'development'
 objects:
