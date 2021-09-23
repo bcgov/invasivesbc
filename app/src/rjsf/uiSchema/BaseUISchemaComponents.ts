@@ -1571,7 +1571,6 @@ const Treatment = {
 };
 
 const Treatment_MechanicalPlant = {
-  
   'mechanical_plant_information':{
     items: {
       ...ThreeColumnStyle,
@@ -1632,7 +1631,10 @@ const Treatment_MechanicalPlantAquatic = {
       'water_flow_rate'
     ]
   },
-  ...Treatment_MechanicalPlant,
+  'mechanical_treatment_information': {
+    ...Treatment_MechanicalPlant
+  },
+  
   'ui:order':['waterbody_data','shoreline_types','water_quality']
 }
 
