@@ -299,9 +299,9 @@ export function LayerPicker(props: any, { position }) {
                 />*/}
               </Grid>
 
-              <Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
+              {/*<Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
                 {parent.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
-              </Grid>
+              </Grid> */}
               <Grid item xs={1}>
                 <DragHandle />
               </Grid>

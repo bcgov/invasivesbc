@@ -28,7 +28,7 @@ const API_PORT = REACT_APP_API_PORT;
 
 let API_URL;
 // you can't actually use NODE_ENV becuase you can't override it.
-switch (process.env.REAL_NODE_ENV) {
+switch (process.env.REACT_APP_REAL_NODE_ENV) {
   case 'development':
     API_URL = 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca';
     break;
