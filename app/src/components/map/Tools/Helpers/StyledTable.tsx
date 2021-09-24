@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import {
   Button,
   Collapse,
@@ -17,6 +17,11 @@ import TablePaginationActions from '@material-ui/core/TablePagination/TablePagin
 import { useHistory } from 'react-router-dom';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { ActivityType, ActivitySubtypeShortLabels } from 'constants/activities';
+import * as turf from '@turf/turf';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -60,9 +65,135 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
   );
 };
 
+const getPlantName = (subtype, invasivePlantCode, response) => {
+  try {
+    if (subtype === 'Terrestrial Invasive Plant Chemical Treatment:')
+      subtype = subtype.substring(0, subtype.length - 1);
+    var plantType;
+    switch (subtype) {
+      case 'Plant Terrestrial':
+        plantType = response.components.schemas.TerrestrialPlants;
+        break;
+      case 'Plant Aquatic':
+        plantType = response.components.schemas.AquaticPlants;
+        break;
+      case 'Terrestrial Invasive Plant Chemical Treatment':
+        plantType = response.components.schemas.TerrestrialPlants;
+        break;
+      case 'Aquatic Invasive Plant Chemical Treatment':
+        plantType = response.components.schemas.AquaticPlants;
+        break;
+      case 'Terrestrial Invasive Plant Mechanical Treatment':
+        plantType = response.components.schemas.TerrestrialPlants;
+        break;
+      case 'Aquatic Invasive Plant Mechanical Treatment':
+        plantType = response.components.schemas.AquaticPlants;
+        break;
+      case 'Chemical':
+        plantType = response.components.schemas.TerrestrialPlants;
+        break;
+      case 'Mechanical':
+        plantType = response.components.schemas.TerrestrialPlants;
+        break;
+      case 'Biocontrol Release Monitoring':
+        plantType = response.components.schemas.TerrestrialPlants;
+        break;
+      default:
+        plantType = null;
+        break;
+    }
+    if (plantType) {
+      var plants = plantType.properties.invasive_plant_code.anyOf;
+      for (let i in plants) {
+        if (plants[i].enum[0] === invasivePlantCode) {
+          return plants[i].title.split('(')[0];
+        }
+      }
+    } else return null;
+  } catch (error) {
+    throw new error('Parameter not read');
+  }
+};
+
+const getPlantCode = (activity_payload) => {
+  if (activity_payload.species_positive) {
+    return activity_payload.species_positive[0];
+  } else if (activity_payload.species_negative) {
+    return activity_payload.species_negative[0];
+  }
+};
+
+const getArea = (shape) => {
+  if (shape.geometry.type === 'Polygon') {
+    var polygon = turf.polygon(shape.geometry.coordinates);
+    return turf.area(polygon);
+  } else {
+    return Math.PI * shape.properties?.radius;
+  }
+};
+
 const CreateAccordionTable = ({ row }) => {
-  // json to use const obj = row?.tempObj.activity_payload;
-  return <p>some data</p>;
+  const dataAccess = useInvasivesApi();
+  // Shortcuts
+  var activity_payload = row.obj.activity_payload;
+  var form_data = activity_payload.form_data;
+  var shape = activity_payload.geometry[0];
+  // Variables for table
+  const [name, setName] = useState(null);
+  var code = getPlantCode(activity_payload);
+  var area = getArea(shape);
+  var jurisdictions = form_data.activity_data.jurisdictions;
+  var subtype = ActivitySubtypeShortLabels[row.obj.activity_subtype];
+
+  useEffect(() => {
+    const getApiSpec = async () => {
+      const response = await dataAccess.getCachedApiSpec();
+      // row check
+      try {
+        /* json check in new tab
+        console.log(response);
+        var temp0 = JSON.stringify(response, null, 2);
+        var x = window.open();
+        x.document.open();
+        x.document.write('<html><body><pre>' + temp0 + '</pre></body></html>');*/
+        setName(getPlantName(subtype, code, response));
+      } catch (error) {
+        console.log('did not log');
+      }
+    };
+    getApiSpec();
+  }, [row]);
+
+  return (
+    <>
+      <StyledTableRow>
+        <StyledTableCell>Created Date</StyledTableCell>
+        <StyledTableCell>{activity_payload.date_created}</StyledTableCell>
+      </StyledTableRow>
+      <StyledTableRow>
+        <StyledTableCell>Subtype</StyledTableCell>
+        <StyledTableCell>{subtype}</StyledTableCell>
+      </StyledTableRow>
+      {jurisdictions && (
+        <StyledTableRow>
+          <StyledTableCell>Jurisdiction</StyledTableCell>
+          {jurisdictions.map((j) => (
+            <StyledTableCell>{j.jurisdiction_code}</StyledTableCell>
+          ))}
+        </StyledTableRow>
+      )}
+      {code && (
+        <StyledTableRow>
+          <StyledTableCell>Invasive Plant</StyledTableCell>
+          <StyledTableCell>{code + ', ' + name}</StyledTableCell>
+        </StyledTableRow>
+      )}
+      <StyledTableRow>
+        <StyledTableCell>Area</StyledTableCell>
+        <StyledTableCell>{area || area > 0 ? area.toFixed(2) : <>NWF</>}</StyledTableCell>
+      </StyledTableRow>
+    </>
+  );
 };
 
 export const StyledTableCell = withStyles((theme: Theme) =>
@@ -103,22 +234,29 @@ export const RenderTablePosition = ({ rows }) => {
   );
 };
 
-export const RenderTableActivity = ({ records }) => {
+export const RenderTableActivity = ({ rows, setRows }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [emptyRows, setEmptyRows] = useState(0);
-  const [rows, setRows] = useState(records);
   const [page, setPage] = useState(0);
+  const databaseContext = useContext(DatabaseContext2);
+  const dataAccess = useDataAccess();
 
   const history = useHistory();
 
-  const labels = ['ID', 'Activity Type', 'SubType'];
+  const labels = ['ID', 'Record Type'];
+
+  useEffect(() => {
+    if (rows) {
+      setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
+    }
+  }, [rows]);
 
   const updateRow = (row, fieldsToUpdate: Object) => {
     var arrLen = rows.length;
     if (arrLen > 0) {
       var index;
       for (let i in rows) {
-        if (rows[i].tempObj.activity_id === row.tempObj.activity_id) {
+        if (rows[i].obj.activity_id === row.obj.activity_id) {
           index = i;
         }
       }
@@ -140,23 +278,13 @@ export const RenderTableActivity = ({ records }) => {
     setPage(0);
   };
 
-  useEffect(() => {
-    if (rows) {
-      setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
-    }
-  }, [rows]);
-  /* check for data
-  // useEffect(() => {
-    console.dir(rows);
-  }, [rows]);*/
-
   return (
     <Table size="small">
       <CreateTableHead labels={labels} />
       <TableBody>
         {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
           <>
-            <StyledTableRow key={row?.tempObj.activity_id}>
+            <StyledTableRow key={row?.obj.activity_id}>
               <StyledTableCell
                 style={{ display: 'flex', flexflow: 'row nowrap', marginRight: -20 }}
                 component="th"
@@ -164,20 +292,24 @@ export const RenderTableActivity = ({ records }) => {
                 <IconButton size="small" onClick={() => updateRow(row, { open: !row.open })}>
                   {row?.open ? <KeyboardArrowDown /> : <KeyboardArrowRight />}
                 </IconButton>
-                <Button size="small" onClick={() => history.push('/home/activities')}>
-                  {row?.tempObj.activity_payload.short_id}
+                <Button
+                  size="small"
+                  onClick={async () => {
+                    var id = row.obj.activity_id;
+                    await dataAccess.setAppState({ activeActivity: id }, databaseContext);
+                    history.push({ pathname: `/home/activity` });
+                  }}>
+                  {row?.obj.activity_payload.short_id}
                 </Button>
               </StyledTableCell>
               <StyledTableCell style={{ marginRight: -40 }}>
-                {row?.tempObj.activity_payload.activity_type}
+                {ActivityType[row?.obj.activity_payload.activity_type]}
               </StyledTableCell>
-              <StyledTableCell>{row?.tempObj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>
+              {/*<StyledTableCell>{row?.obj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>*/}
             </StyledTableRow>
-            <TableRow>
-              <Collapse in={row?.open} timeout="auto" unmountOnExit>
-                <CreateAccordionTable row={row} />
-              </Collapse>
-            </TableRow>
+            <Collapse in={row?.open} timeout="auto" unmountOnExit>
+              <CreateAccordionTable row={row} />
+            </Collapse>
           </>
         ))}
         {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
@@ -214,25 +346,23 @@ export const RenderTableDataBC = ({ records }) => {
     <Table size="small">
       <CreateTableHead labels={labels} />
       <TableBody>
-        {records && (
-          <>
-            {(rowsPerPage > 0 ? records?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : records).map(
-              (row) => (
-                <>
-                  <StyledTableRow key={row?.properties.WELL_TAG_NUMBER}>
-                    <StyledTableCell component="th" scope="row">
-                      {row.properties.AQUIFER_ID}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {row.geometry.coordinates[0].toFixed(2)},{row.geometry.coordinates[1].toFixed(2)}
-                    </StyledTableCell>
-                    <StyledTableCell>{row.properties.STREET_ADDRESS}</StyledTableCell>
-                  </StyledTableRow>
-                </>
-              )
-            )}
-          </>
-        )}
+        <>
+          {(rowsPerPage > 0 ? records?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : records).map(
+            (row) => (
+              <>
+                <StyledTableRow key={row?.properties.WELL_TAG_NUMBER}>
+                  <StyledTableCell component="th" scope="row">
+                    {row.properties.AQUIFER_ID}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    {row.geometry.coordinates[0].toFixed(2)},{row.geometry.coordinates[1].toFixed(2)}
+                  </StyledTableCell>
+                  <StyledTableCell>{row.properties.STREET_ADDRESS}</StyledTableCell>
+                </StyledTableRow>
+              </>
+            )
+          )}
+        </>
         {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
         <CreateTableFooter
           records={records}

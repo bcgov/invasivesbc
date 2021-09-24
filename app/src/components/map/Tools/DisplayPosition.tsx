@@ -30,9 +30,7 @@ export default function DisplayPosition({ map }) {
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
-  const [bufferedGeo, setBufferedGeo] = useState(null);
   const [geoPoint, setGeoPoint] = useState(null);
-  const [databc, setDataBC] = useState(null);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
   const divRef = useRef(null);
@@ -68,8 +66,6 @@ export default function DisplayPosition({ map }) {
 
   useEffect(() => {
     if (newPosition) {
-      var point = turf.point([newPosition.coords.longitude, newPosition.coords.latitude]);
-      setBufferedGeo(turf.buffer(point, 3, { units: 'kilometers' }));
       setUTM(utm_zone(newPosition.coords.longitude, newPosition.coords.latitude));
       map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
       if (isFinite(newPosition.coords.longitude) && isFinite(newPosition.coords.latitude)) {
@@ -78,19 +74,16 @@ export default function DisplayPosition({ map }) {
     }
   }, [newPosition]);
 
-  useEffect(() => {
-    if (bufferedGeo) {
-      getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
-        setDataBC(returnVal);
-      }, []);
-    }
-  }, [bufferedGeo]);
-
   return (
     <>
-      {newPosition && bufferedGeo && (
+      {newPosition && (
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
-          <GeneratePopup utmRows={rows} map={map} bufferedGeo={bufferedGeo} databc={databc} />
+          <GeneratePopup
+            utmRows={rows}
+            map={map}
+            lat={newPosition.coords.latitude}
+            lng={newPosition.coords.longitude}
+          />
         </Marker>
       )}
       <IconButton

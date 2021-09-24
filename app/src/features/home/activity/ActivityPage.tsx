@@ -53,6 +53,7 @@ import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
 import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
 import bcArea from '../../../components/map/BC_AREA.json';
+import { utm_zone } from 'components/map/Tools/DisplayPosition';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -190,7 +191,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const saveGeometry = useCallback((geom: Feature[]) => {
     setDoc(async (activity: any) => {
       const { latitude, longitude } = calculateLatLng(geom) || {};
-
+      var utm = utm_zone(longitude, latitude);
+      var utmZone = utm[0];
+      var utm_easting = utm[1];
+      var utm_northing = utm[2];
+      /*****exported DisplayPosition utm_zone function
       //latlong to utms / utm zone conversion
       let utm_easting, utm_northing, utm_zone;
       //if statement prevents errors on page load, as lat/long isn't defined
@@ -203,7 +208,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
         utm_easting = Number(en_m[0].toFixed(4));
         utm_northing = Number(en_m[1].toFixed(4));
-      }
+      }*/
+
       const activityDoc = {
         ...activity,
         formData: {
@@ -214,7 +220,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             longitude,
             utm_easting,
             utm_northing,
-            utm_zone,
+            utmZone,
             reported_area: calculateGeometryArea(geom)
           }
         },

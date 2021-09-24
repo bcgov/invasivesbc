@@ -315,7 +315,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                       const selectedIds = allSelectedRows.map((row) => row[keyField]);
                       if (selectedIds.length === 1) {
                         await dataAccess.setAppState({ activeActivity: selectedIds[0] }, databaseContext);
-
                         // TODO switch by activity type, I guess...
                         history.push({ pathname: `/home/activity` });
                       } else {

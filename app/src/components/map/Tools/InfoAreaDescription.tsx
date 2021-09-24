@@ -1,27 +1,23 @@
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   BottomNavigation,
   BottomNavigationAction,
   Button,
-  IconButton,
+  Slider,
   TableContainer,
-  Tooltip,
   Typography
 } from '@material-ui/core';
-import InfoIcon from '@material-ui/icons/Info';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
 import { utm_zone } from './DisplayPosition';
-import { toolStyles } from './Helpers/ToolBtnStyles';
-import { ThemeContext } from 'contexts/themeContext';
 import { createDataUTM, RenderTableActivity, RenderTablePosition, RenderTableDataBC } from './Helpers/StyledTable';
-import { useDataAccess } from '../../../hooks/useDataAccess';
 import { getDataFromDataBC } from '../WFSConsumer';
 import * as turf from '@turf/turf';
 import { Feature, Geometry } from 'geojson';
-import { Layer } from 'leaflet';
+import { DomEvent, Layer } from 'leaflet';
+import { useDataAccess } from '../../../hooks/useDataAccess';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
@@ -41,19 +37,60 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
   }
 };
 
-export const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }) => {
-  const [activityRecords, setActivity] = useState(null);
+export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
+  const [bufferedGeo, setBufferedGeo] = useState(null);
   const [section, setSection] = useState('position');
+  const [databc, setDataBC] = useState(null);
+  const [radius, setRadius] = useState(3);
   const [rows, setRows] = useState([]);
   const dataAccess = useDataAccess();
   const popupElRef = useRef(null);
+  var activities;
+
+  useEffect(() => {
+    if (popupElRef?.current) {
+      DomEvent.disableClickPropagation(popupElRef?.current);
+      DomEvent.disableScrollPropagation(popupElRef?.current);
+    }
+  });
+
+  useEffect(() => {
+    if (lat && lng) {
+      var point = turf.point([lng, lat]);
+      setBufferedGeo(turf.buffer(point, radius, { units: 'kilometers' }));
+    }
+  }, [radius]);
+
+  useEffect(() => {
+    if (bufferedGeo) {
+      getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
+        setDataBC(returnVal);
+      }, []);
+    }
+  }, [bufferedGeo]);
+
+  useEffect(() => {
+    updateActivityRecords();
+  }, [bufferedGeo]);
 
   const updateActivityRecords = useCallback(async () => {
-    //check console.dir('fetching buffered', bufferedGeo);
-    const activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
-    //(data check) console.dir(activities);
-    setActivity(activities.rows);
-  }, []);
+    if (bufferedGeo) {
+      activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
+      if (activities) {
+        var tempArr = [];
+        for (let i in activities.rows) {
+          if (activities.rows[i]) {
+            var obj = activities.rows[i];
+            tempArr.push({
+              obj,
+              open: false
+            });
+          }
+        }
+        setRows(tempArr);
+      } else setRows([]);
+    }
+  }, [bufferedGeo]);
 
   const hideElement = () => {
     if (!popupElRef?.current || !map) return;
@@ -64,31 +101,32 @@ export const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }) => {
     setSection(newSection);
   };
 
-  useEffect(() => {
-    updateActivityRecords();
-  }, [bufferedGeo]);
-
-  useEffect(() => {
-    if (activityRecords) {
-      var len = activityRecords.length;
-      var tempArr = [];
-      tempArr.length = len;
-      for (let i in activityRecords) {
-        var tempObj = activityRecords[i];
-        tempArr[parseInt(i)] = {
-          tempObj,
-          open: false
-        };
-        setRows(tempArr);
-      }
-    }
-  }, [activityRecords]);
+  function valueText(value: number) {
+    return `${value}km`;
+  }
 
   return (
     <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
+      <Typography>Radius</Typography>
+      <div style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -40 }}>
+        <Typography>{radius} km</Typography>
+        <Slider
+          style={{ width: 225, alignSelf: 'center', marginLeft: 10 }}
+          aria-label="Kilometers"
+          defaultValue={radius}
+          onChange={(event: any, newRadius: number) => {
+            setRadius(newRadius);
+          }}
+          getAriaValueText={valueText}
+          step={1}
+          marks
+          min={1}
+          max={10}
+        />
+      </div>
       <TableContainer>
         {section == 'position' && <RenderTablePosition rows={utmRows} />}
-        {section == 'activity' && rows && <RenderTableActivity records={rows} />}
+        {section == 'activity' && <RenderTableActivity rows={rows} setRows={setRows} />}
         {section == 'databc' && <RenderTableDataBC records={databc} />}
       </TableContainer>
       <BottomNavigation value={section} onChange={handleChange}>
@@ -102,24 +140,16 @@ export const GeneratePopup = ({ utmRows, map, bufferedGeo, databc }) => {
 };
 
 function SetPointOnClick({ map }: any) {
-  const [bufferedGeo, setBufferedGeo] = useState(null);
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPoint, setGeoPoint] = useState(null);
   const [utm, setUTM] = useState(null);
   const [rows, setRows] = useState(null);
-  const [databc, setDataBC] = useState(null);
-  const themeContext = useContext(ThemeContext);
-  const toolClass = toolStyles();
 
   useMapEvent('click', (e) => {
     setPosition(e.latlng);
   });
 
   useEffect(() => {
-    if (position) {
-      var point = turf.point([position.lng, position.lat]);
-      setBufferedGeo(turf.buffer(point, 3, { units: 'kilometers' }));
-    }
     if (isFinite(position?.lng) && isFinite(position?.lat)) {
       setUTM(utm_zone(position?.lng as number, position?.lat as number));
       generateGeo(position.lat, position.lng, { setGeoPoint });
@@ -132,38 +162,11 @@ function SetPointOnClick({ map }: any) {
     }
   }, [utm]);
 
-  useEffect(() => {
-    if (bufferedGeo) {
-      getDataFromDataBC('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo).then((returnVal) => {
-        setDataBC(returnVal);
-      }, []);
-    }
-  }, [bufferedGeo]);
-
   return (
     <>
-      {position && (
-        <Tooltip
-          disableFocusListener
-          classes={{ tooltip: toolClass.tooltipWidth }}
-          placement="left"
-          title={
-            utm && (
-              <>
-                <Typography>UTM Zone {utm[0]}</Typography>
-                <Typography>UTM Northing {utm[2]}</Typography>
-                <Typography>UTM Easting {utm[1]}</Typography>
-              </>
-            )
-          }>
-          <IconButton className={toolClass.toolBtnCircle}>
-            <InfoIcon className={themeContext.themeType ? toolClass.toolIconDark : toolClass.toolIconLight} />
-          </IconButton>
-        </Tooltip>
-      )}
       {utm && (
         <GeoJSON data={geoPoint} key={Math.random()}>
-          <GeneratePopup utmRows={rows} map={map} bufferedGeo={bufferedGeo} databc={databc} />
+          <GeneratePopup utmRows={rows} map={map} lat={position.lat} lng={position.lng} />
         </GeoJSON>
       )}
     </>
