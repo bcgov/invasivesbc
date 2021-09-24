@@ -289,8 +289,8 @@ const ActivitiesList: React.FC = () => {
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>Workflow Functions</InputLabel>
             <Select value={workflowFunction} onChange={handleWorkflowFunctionChange} label="Select Form Type">
-              {hasPlantAccess ? <MenuItem value="Plant">Plant</MenuItem> : null}
-              {hasAnimalAccess ? <MenuItem value="Animal">Animal</MenuItem> : null}
+              <MenuItem value="Plant">Plant</MenuItem>
+              <MenuItem value="Animal">Animal</MenuItem>
               <MenuItem value="Review">Review</MenuItem>
               <MenuItem value="Past Activities">Past Activities</MenuItem>
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
