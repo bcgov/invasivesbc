@@ -7,7 +7,7 @@ import proj4 from 'proj4';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './Helpers/ToolBtnStyles';
-import { GeneratePopup, generateGeo } from './InfoAreaDescription';
+import { GeneratePopup } from './InfoAreaDescription';
 import { createDataUTM } from './Helpers/StyledTable';
 import * as turf from '@turf/turf';
 import { getDataFromDataBC } from '../WFSConsumer';
