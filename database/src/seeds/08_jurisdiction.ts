@@ -8,5 +8,14 @@ export async function seed(knex: Knex): Promise<void> {
   const sql = await ungzip(data);
 
   await knex.raw('drop table if exists jurisdiction');
-  await knex.raw(sql.toString());
+
+  /**
+   * This file is too big to run all at once.
+   * Split up by lines and run separately
+   */
+  const lines = sql.toString().split(/\r?\n/);
+
+  for (let line of lines) {
+    await knex.raw(line);
+  }
 }
