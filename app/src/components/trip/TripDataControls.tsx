@@ -542,15 +542,69 @@ export const TripDataControls: React.FC<any> = (props) => {
     return null;
   };
 
+  const fetchLeanActivitiesAndPoi = async () => {
+    console.log('started to fetch lean activities and poi');
+
+    const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
+
+    if (!geometry) {
+      return;
+    }
+
+    const activitiesData = await invasivesApi.getActivitiesLean({ search_feature: geometry });
+    const poisData = await invasivesApi.getPointsOfInterestLean({ search_feature: geometry });
+    const activitiesFeatureArray = [];
+    const poisFeatureArray = [];
+
+    activitiesData.rows.forEach((row) => {
+      activitiesFeatureArray.push(row.geojson);
+    });
+
+    poisData.rows.forEach((row) => {
+      poisFeatureArray.push(row.geojson);
+    });
+
+    const actvitiesGeoJSON = { type: 'FeatureCollection', features: activitiesFeatureArray };
+    const poiGeoJSON = { type: 'FeatureCollection', features: poisFeatureArray };
+
+    await upsert(
+      [
+        {
+          type: UpsertType.RAW_SQL,
+          sql: `INSERT INTO lean_activities (json, trip_ID) VALUES ('${JSON.stringify(actvitiesGeoJSON)}',${
+            props.trip_ID
+          })`
+        }
+      ],
+      databaseContext
+    );
+
+    await upsert(
+      [
+        {
+          type: UpsertType.RAW_SQL,
+          sql: `INSERT INTO lean_poi (json, trip_ID) VALUES ('${JSON.stringify(poiGeoJSON)}',${props.trip_ID})`
+        }
+      ],
+      databaseContext
+    );
+
+    console.log('finished fetching lean activities and poi');
+  };
+
   const deleteTripAndFetch = async () => {
     //get the trip again cause it prob changed
     await getTrip();
 
-    //todo:
-    deleteOldTrip();
     //fetch what is selected here:
     setFetching(true);
-    Promise.all([fetchLayerData(), fetchActivities(), fetchPointsOfInterest(), fetchMetabaseQueries()])
+    Promise.all([
+      fetchLeanActivitiesAndPoi()
+      // fetchLayerData(),
+      // fetchActivities(),
+      // fetchPointsOfInterest(),
+      // fetchMetabaseQueries()
+    ])
       .finally(() => setFetching(false))
       .catch((error) => {
         setFetching(false);

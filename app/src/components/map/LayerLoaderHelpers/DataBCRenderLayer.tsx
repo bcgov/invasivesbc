@@ -2,10 +2,12 @@ import React from 'react';
 import { WMSTileLayer } from 'react-leaflet';
 import { RenderWFSFeatures } from './RenderWFSFeatures';
 import { RenderVectorTilesOffline } from './RenderVectorTilesOffline';
+import { ActivitiesAndPoiLayer } from './ActivitiesAndPoiLayer';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',
   WFSOnline = 'wfs_online',
+  ActivitiesAndPOI = 'activities_and_poi',
   VectorTilesOffline = 'vector_tiles_offline',
   RegularFeaturesOffline = 'regular_features_offline'
 }
@@ -15,6 +17,8 @@ export const DataBCLayer = (props) => {
     throw new Error('you missed a map mode');
   }
   switch (props.mode) {
+    case LayerMode.ActivitiesAndPOI:
+      return <ActivitiesAndPoiLayer />;
     case LayerMode.WMSOnline:
       return (
         <WMSTileLayer
