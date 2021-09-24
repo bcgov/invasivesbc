@@ -19,6 +19,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import '../../styles/spinners.scss';
 import ActivityListDate from './ActivityListDate';
+import { GetUserAccessLevel } from 'utils/getAccessLevel';
 import {
   MyBiocontrolTable,
   MyAnimalActivitiesTable,
@@ -190,15 +191,13 @@ const ActivitiesList: React.FC = () => {
   const rolesContext = useContext(RolesContext);
   const { keycloak } = useKeycloak();
   console.log(rolesContext.userRoles);
-  rolesContext.userRoles.forEach((role) => {
-    if (role.includes('animals') || role.includes('both') || role.includes('admin')) {
-      hasAnimalAccess = true;
-    }
-    if (role.includes('plants') || role.includes('both') || role.includes('admin')) {
-      hasPlantAccess = true;
-    }
-  });
-
+  let accessLevel = GetUserAccessLevel();
+  if (accessLevel.hasPlantAccess) {
+    hasPlantAccess = true;
+  }
+  if (accessLevel.hasAnimalAccess) {
+    hasAnimalAccess = true;
+  }
   useEffect(() => {
     const userId = async () => {
       const userInfo: any = keycloak
