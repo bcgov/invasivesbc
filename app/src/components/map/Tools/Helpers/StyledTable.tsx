@@ -243,7 +243,7 @@ export const RenderTableActivity = ({ rows, setRows }) => {
 
   const history = useHistory();
 
-  const labels = ['ID', 'Record Type'];
+  const labels = ['ID', 'Species'];
 
   useEffect(() => {
     if (rows) {
@@ -302,9 +302,7 @@ export const RenderTableActivity = ({ rows, setRows }) => {
                   {row?.obj.activity_payload.short_id}
                 </Button>
               </StyledTableCell>
-              <StyledTableCell style={{ marginRight: -40 }}>
-                {ActivityType[row?.obj.activity_payload.activity_type]}
-              </StyledTableCell>
+              <StyledTableCell style={{ marginRight: -40 }}>{getPlantCode(row.obj.activity_payload)}</StyledTableCell>
               {/*<StyledTableCell>{row?.obj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>*/}
             </StyledTableRow>
             <Collapse in={row?.open} timeout="auto" unmountOnExit>

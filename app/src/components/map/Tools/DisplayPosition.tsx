@@ -12,6 +12,17 @@ import { createDataUTM } from './Helpers/StyledTable';
 import * as turf from '@turf/turf';
 import { getDataFromDataBC } from '../WFSConsumer';
 
+const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
+  if (initialTime > 0) {
+    setTimeout(() => {
+      setInitialTime(initialTime - 1);
+    }, 1000);
+  }
+  if (initialTime === 0 && startTimer) {
+    setStartTimer(false);
+  }
+};
+
 export const utm_zone = (longitude: number, latitude: number) => {
   let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
   proj4.defs([
@@ -30,13 +41,12 @@ export default function DisplayPosition({ map }) {
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
-  const [geoPoint, setGeoPoint] = useState(null);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
   const divRef = useRef(null);
 
   const getLocation = async () => {
-    setInitialTime(5);
+    setInitialTime(3);
     setStartTimer(true);
     const position = await Geolocation.getCurrentPosition();
     setNewPosition(position);
@@ -54,23 +64,13 @@ export default function DisplayPosition({ map }) {
   }, [utm]);
 
   useEffect(() => {
-    if (initialTime > 0) {
-      setTimeout(() => {
-        setInitialTime(initialTime - 1);
-      }, 1000);
-    }
-    if (initialTime === 0 && startTimer) {
-      setStartTimer(false);
-    }
+    timer({ initialTime, setInitialTime }, { startTimer, setStartTimer });
   }, [initialTime, startTimer]);
 
   useEffect(() => {
     if (newPosition) {
       setUTM(utm_zone(newPosition.coords.longitude, newPosition.coords.latitude));
       map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
-      if (isFinite(newPosition.coords.longitude) && isFinite(newPosition.coords.latitude)) {
-        generateGeo(newPosition.coords.latitude, newPosition.coords.longitude, { setGeoPoint });
-      }
     }
   }, [newPosition]);
 
