@@ -19,6 +19,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import '../../styles/spinners.scss';
 import ActivityListDate from './ActivityListDate';
+import { GetUserAccessLevel } from 'utils/getAccessLevel';
 import {
   MyBiocontrolTable,
   MyAnimalActivitiesTable,
@@ -31,6 +32,8 @@ import {
 } from '../../components/common/RecordTables';
 import { DatabaseContext2, query, QueryType } from '../../contexts/DatabaseContext2';
 import BatchUpload from '../../components/batch-upload/BatchUpload';
+import { RolesContext } from '../../contexts/RolesContext';
+import { ALL_ROLES, PLANT_ROLES, ANIMAL_ROLES, USER_ACCESS, User_Access } from 'constants/roles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -81,6 +84,7 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
+  const rolesContext = useContext(RolesContext);
   const invasivesApi = useInvasivesApi();
   const [species, setSpecies] = useState(null);
 
@@ -180,8 +184,20 @@ interface IActivityList {
 const ActivitiesList: React.FC = () => {
   const classes = useStyles();
 
+  let hasPlantAccess = false;
+  let hasAnimalAccess = false;
+
   const databaseContext = useContext(DatabaseContext2);
+  const rolesContext = useContext(RolesContext);
   const { keycloak } = useKeycloak();
+  console.log(rolesContext.userRoles);
+  let accessLevel = GetUserAccessLevel();
+  if (accessLevel.hasPlantAccess) {
+    hasPlantAccess = true;
+  }
+  if (accessLevel.hasAnimalAccess) {
+    hasAnimalAccess = true;
+  }
   useEffect(() => {
     const userId = async () => {
       const userInfo: any = keycloak
