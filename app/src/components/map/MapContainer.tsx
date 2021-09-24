@@ -1,6 +1,6 @@
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -22,7 +22,8 @@ import DisplayPosition from './Tools/DisplayPosition';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
-import { toolStyles } from './Tools/ToolBtnStyles';
+import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
+import { SetPointOnClick } from './Tools/InfoAreaDescription';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -187,6 +188,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <MapRequestContextProvider>
         <div className={toolClass.toolBtnsLoc}>
+          <SetPointOnClick map={map} />
           <DisplayPosition map={map} />
           <MeasureTool />
           {props.showDrawControls && (

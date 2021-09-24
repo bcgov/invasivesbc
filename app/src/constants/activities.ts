@@ -24,6 +24,7 @@ export enum ActivitySubtype {
   Treatment_ChemicalPlantAquatic = 'Activity_Treatment_ChemicalPlantAquatic',
   Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlant',
   Treatment_MechanicalPlant_BulkEdit = 'Activity_Treatment_MechanicalPlant_BulkEdit',
+  Treatment_MechanicalPlantAquatic = 'Activity_Treatment_MechanicalPlantAquatic',
   Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
   Treatment_BiologicalPlant_BulkEdit = 'Activity_Treatment_BiologicalPlant_BulkEdit',
 
@@ -53,6 +54,7 @@ export enum ActivitySubtypeShortLabels {
   Activity_Treatment_ChemicalPlantAquatic = 'Aquatic Invasive Plant Chemical Treatment',
   Activity_Treatment_MechanicalPlant = 'Terrestrial Invasive Plant Mechanical Treatment',
   Activity_Treatment_MechanicalPlant_BulkEdit = 'Terrestrial Invasive Plant Mechanical Treatment',
+  Activity_Treatment_MechanicalPlantAquatic = 'Aquatic Invasive Plant Mechanical Treatment',
   Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
   Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release',
 
@@ -109,6 +111,7 @@ export enum ActivityLetter {
   Activity_Treatment_ChemicalPlantAquatic = 'A',
   Activity_Treatment_MechanicalPlant = 'P',
   Activity_Treatment_MechanicalPlant_BulkEdit = 'P',
+  Activity_Treatment_MechanicalPlantAquatic = 'A',
   Activity_Treatment_BiologicalPlant = 'R',
   Activity_Treatment_BiologicalPlant_BulkEdit = 'R',
 
@@ -151,3 +154,14 @@ export enum ReviewStatus {
   APPROVED = 'Approved', // approved by review process
   DISAPPROVED = 'Disapproved' // deemed invalid by review process - can be resubmitted for review
 }
+
+export const ReviewActionDescriptions: { [key: string]: string } = {
+  [ReviewStatus.PREAPPROVED]:
+    'Submit this for Review by InvasivesBC staff. Currently pre-approved and does not require further review.',
+  [ReviewStatus.NOT_REVIEWED]: 'Submit this for Review by InvasivesBC staff.',
+  [ReviewStatus.UNDER_REVIEW]: 'Submitted for review.  This form is currently being reviewed by the InvasivesBC staff',
+  [ReviewStatus.APPROVED]:
+    'Re-Submit this for Review by InvasivesBC staff. Currently approved and does not require further review.',
+  [ReviewStatus.DISAPPROVED]:
+    'Re-Submit this for Review by InvasivesBC staff. Currently dispproved and requires changes for approval.'
+};

@@ -581,7 +581,7 @@ const MonitoringActivity = {
     'ui:disabled': true
   },
   'ui:order':[
-        'activity_date_time',
+    'activity_date_time',
     'latitude',
     'longitude',
     'utm_easting',
@@ -597,7 +597,6 @@ const MonitoringActivity = {
     'location_description',
     'access_description',
     'project_code',
-    'access_description',
     'jurisdiction_code']
 };
 

@@ -18,7 +18,7 @@ import {
   getChild,
   sortObject
 } from './SortLayerOrder';
-import { toolStyles } from '../Tools/ToolBtnStyles';
+import { toolStyles } from '../Tools/Helpers/ToolBtnStyles';
 // MUI
 import {
   Checkbox,
@@ -242,15 +242,8 @@ export function LayerPicker(props: any, { position }) {
   ));
   //update context on ObjectState change
   useEffect(() => {
-    console.log(layers);
     setLayersSelected(layers);
   }, [layers]);
-
-  const toggleParentCheckbox = (parent) => {
-    updateParent(parent.id, {
-      enabled: !getParent(objectState, parent.id).enabled
-    });
-  };
 
   const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
@@ -261,10 +254,6 @@ export function LayerPicker(props: any, { position }) {
         <Grid container spacing={1}>
           <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
             <Grid container xs={12} justifyContent="space-between" alignItems="center">
-              <Grid item xs>
-                <Checkbox checked={parent.enabled} name={parent.id} onChange={() => toggleParentCheckbox(parent)} />
-              </Grid>
-              {/* Info Dialog */}
               <Grid item xs={1}>
                 <Tooltip
                   disableFocusListener
@@ -310,9 +299,9 @@ export function LayerPicker(props: any, { position }) {
                 />*/}
               </Grid>
 
-              <Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
+              {/*<Grid item xs={1} className={classes.spinnerGridItem} style={{ position: 'relative' }}>
                 {parent.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
-              </Grid>
+              </Grid> */}
               <Grid item xs={1}>
                 <DragHandle />
               </Grid>
@@ -373,9 +362,9 @@ export function LayerPicker(props: any, { position }) {
                     </DialogActions>
                   </Dialog>
                 </Grid>
-                <Grid item xs={2} style={{ position: 'relative' }}>
+                {/* <Grid item xs={2} style={{ position: 'relative' }}>
                   {child.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
-                </Grid>
+                        </Grid> */}
               </Grid>
             ))}
           </Accordion>
@@ -436,7 +425,7 @@ export function LayerPicker(props: any, { position }) {
               }}*/ ref={divref}>
               <Paper>
                 <IconButton {...bindTrigger(popupState)}>
-                  <LayersIcon fontSize="default" />
+                  <LayersIcon fontSize="medium" />
                 </IconButton>
               </Paper>
               <Popover

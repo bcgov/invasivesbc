@@ -21,10 +21,28 @@ interface IAppProps {
   deviceInfo: DeviceInfo;
 }
 
+// temp till pipeline cleanup
+let SSO_URL;
+switch (process.env.REACT_APP_REAL_NODE_ENV) {
+  case 'development':
+    SSO_URL = 'https://dev.oidc.gov.bc.ca/auth/';
+    break;
+  case 'test':
+    SSO_URL = 'https://test.oidc.gov.bc.ca/auth/';
+    break;
+  case 'production':
+    SSO_URL = 'https://oidc.gov.bc.ca/auth/';
+    break;
+  default:
+    SSO_URL = 'https://dev.oidc.gov.bc.ca/auth/';
+    break;
+}
+
+console.log('SSO URL:', SSO_URL);
 const App: React.FC<IAppProps> = (props) => {
   const keycloakInstanceConfig: KeycloakConfig = {
     realm: 'dfmlcg7z',
-    url: 'https://dev.oidc.gov.bc.ca/auth/',
+    url: SSO_URL,
     clientId: 'invasives-bc'
   };
 

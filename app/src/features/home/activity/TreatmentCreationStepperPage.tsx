@@ -3,12 +3,7 @@ import { Container, Box, MenuItem, Button, FormControl, InputLabel, Select, make
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useQuery } from 'hooks/useQuery';
 import { ActivitySubtype, ActivityType } from 'constants/activities';
-import {
-  cloneDBRecord,
-  createLinkedActivity,
-  sanitizeRecord,
-  mapDBActivityToDoc
-} from 'utils/addActivity';
+import { cloneDBRecord, createLinkedActivity, sanitizeRecord, mapDBActivityToDoc } from 'utils/addActivity';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import ActivityPage from 'features/home/activity/ActivityPage';
 import StepperComponent from 'components/activity/StepperComponent';

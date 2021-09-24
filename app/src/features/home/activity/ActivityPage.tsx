@@ -15,6 +15,7 @@ import { IPhoto } from '../../../components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { DatabaseContext } from '../../../contexts/DatabaseContext';
 import proj4 from 'proj4';
+import * as turf from '@turf/turf';
 import { Feature } from 'geojson';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { debounced } from '../../../utils/FunctionUtils';
@@ -28,6 +29,7 @@ import {
   getTemperatureValidator,
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
+  getPosAndNegObservationValidator,
   getHerbicideMixValidation,
   getVegTransectPointsPercentCoverValidator,
   getDurationCountAndPlantCountValidation,
@@ -51,6 +53,8 @@ import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
 import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
 import { RolesContext } from 'contexts/RolesContext';
+import bcArea from '../../../components/map/BC_AREA.json';
+import { utm_zone } from 'components/map/Tools/DisplayPosition';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -188,7 +192,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const saveGeometry = useCallback((geom: Feature[]) => {
     setDoc(async (activity: any) => {
       const { latitude, longitude } = calculateLatLng(geom) || {};
-
+      var utm = utm_zone(longitude, latitude);
+      var utmZone = utm[0];
+      var utm_easting = utm[1];
+      var utm_northing = utm[2];
+      /*****exported DisplayPosition utm_zone function
       //latlong to utms / utm zone conversion
       let utm_easting, utm_northing, utm_zone;
       //if statement prevents errors on page load, as lat/long isn't defined
@@ -201,7 +209,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
         utm_easting = Number(en_m[0].toFixed(4));
         utm_northing = Number(en_m[1].toFixed(4));
-      }
+      }*/
+
       const activityDoc = {
         ...activity,
         formData: {
@@ -212,7 +221,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             longitude,
             utm_easting,
             utm_northing,
-            utm_zone,
+            utmZone,
             reported_area: calculateGeometryArea(geom)
           }
         },
@@ -602,7 +611,28 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    saveGeometry(geometry);
+
+    if (geometry) {
+      if (turf.booleanWithin(geometry[0] as any, bcArea as any)) {
+        saveGeometry(geometry);
+      } else {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Error!',
+          dialogContentText: 'The geometry drawn is outside the British Columbia.',
+          dialogActions: [
+            {
+              actionName: 'OK',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+              },
+              autoFocus: true
+            }
+          ]
+        });
+        setGeometry(null);
+      }
+    }
   }, [geometry, isLoading, saveGeometry]);
 
   useEffect(() => {
@@ -665,43 +695,63 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         </>
       )}
       {doc && (
-        <ActivityComponent
-          customValidation={getCustomValidator([
-            getAreaValidator(doc.activitySubtype),
-            getDateAndTimeValidator(doc.activitySubtype),
-            getWindValidator(doc.activitySubtype),
-            getSlopeAspectBothFlatValidator(),
-            getTemperatureValidator(doc.activitySubtype),
-            getDuplicateInvasivePlantsValidator(doc.activitySubtype),
-            getHerbicideApplicationRateValidator(),
-            getTransectOffsetDistanceValidator(),
-            getHerbicideMixValidation(),
-            getVegTransectPointsPercentCoverValidator(),
-            getDurationCountAndPlantCountValidation(),
-            getPersonNameNoNumbersValidator(),
-            getJurisdictionPercentValidator(),
-            getInvasivePlantsValidator(linkedActivity)
-          ])}
-          customErrorTransformer={getCustomErrorTransformer()}
-          classes={classes}
-          activity={doc}
-          linkedActivity={linkedActivity}
-          onFormChange={onFormChange}
-          onFormSubmitSuccess={onFormSubmitSuccess}
-          onFormSubmitError={onFormSubmitError}
-          photoState={{ photos, setPhotos }}
-          mapId={doc._id}
-          geometryState={{ geometry, setGeometry }}
-          //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
-          extentState={{ extent, setExtent }}
-          contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
-          pasteFormData={() => pasteFormData()}
-          copyFormData={() => copyFormData()}
-          //cloneActivityButton={generateCloneActivityButton}
-          setParentFormRef={props.setParentFormRef}
-          showDrawControls={true}
-          setWellIdandProximity={setWellIdandProximity}
-        />
+        <>
+          <Box marginTop="2rem" mb={3}>
+            <Typography align="center" variant="h4">
+              {doc.activitySubtype &&
+                doc.activitySubtype
+                  .replace(/([A-Z])/g, ' $1')
+                  .replace(/_/g, '')
+                  .replace(/^./, function (str) {
+                    return str.toUpperCase();
+                  })}
+            </Typography>
+          </Box>
+          <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
+            <Typography align="center">Activity ID: {doc.activityId ? doc.activityId : 'unknown'}</Typography>
+            <Typography align="center">
+              Date created: {doc.dateCreated ? doc.dateCreated.split('T')[0] : 'unknown'}
+            </Typography>
+          </Box>
+          <ActivityComponent
+            customValidation={getCustomValidator([
+              getAreaValidator(doc.activitySubtype),
+              getDateAndTimeValidator(doc.activitySubtype),
+              getWindValidator(doc.activitySubtype),
+              getSlopeAspectBothFlatValidator(),
+              getTemperatureValidator(doc.activitySubtype),
+              getPosAndNegObservationValidator(),
+              getDuplicateInvasivePlantsValidator(doc.activitySubtype),
+              getHerbicideApplicationRateValidator(),
+              getTransectOffsetDistanceValidator(),
+              getHerbicideMixValidation(),
+              getVegTransectPointsPercentCoverValidator(),
+              getDurationCountAndPlantCountValidation(),
+              getPersonNameNoNumbersValidator(),
+              getJurisdictionPercentValidator(),
+              getInvasivePlantsValidator(linkedActivity)
+            ])}
+            customErrorTransformer={getCustomErrorTransformer()}
+            classes={classes}
+            activity={doc}
+            linkedActivity={linkedActivity}
+            onFormChange={onFormChange}
+            onFormSubmitSuccess={onFormSubmitSuccess}
+            onFormSubmitError={onFormSubmitError}
+            photoState={{ photos, setPhotos }}
+            mapId={doc._id}
+            geometryState={{ geometry, setGeometry }}
+            //interactiveGeometryState={{ interactiveGeometry, setInteractiveGeometry }}
+            extentState={{ extent, setExtent }}
+            contextMenuState={{ state: contextMenuState, setContextMenuState }} // whether someone clicked, and click x & y
+            pasteFormData={() => pasteFormData()}
+            copyFormData={() => copyFormData()}
+            //cloneActivityButton={generateCloneActivityButton}
+            setParentFormRef={props.setParentFormRef}
+            showDrawControls={true}
+            setWellIdandProximity={setWellIdandProximity}
+          />
+        </>
       )}
       <WarningDialog
         dialogOpen={warningDialog.dialogOpen}

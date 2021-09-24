@@ -17,8 +17,11 @@ const AuthLayout: React.FC<IAuthLayoutProps> = (props) => {
       keycloak={props.keycloak}
       initConfig={props.keycloakConfig}
       LoadingComponent={<CircularProgress />}
-      onEvent={getKeycloakEventHandler(props.keycloak)}>
-      <RolesContextProvider>
+
+      onEvent={getKeycloakEventHandler(props.keycloak)}
+      //this is a hack so we can have a public page in prod today
+    >
+      {process.env.REACT_APP_REAL_NODE_ENV !== 'production' ? (
         <AuthStateContextProvider>
           <AuthStateContext.Consumer>
             {(context) => {
@@ -30,7 +33,10 @@ const AuthLayout: React.FC<IAuthLayoutProps> = (props) => {
             }}
           </AuthStateContext.Consumer>
         </AuthStateContextProvider>
-      </RolesContextProvider>
+
+      ) : (
+        <PublicLayout>{props.children}</PublicLayout>
+      )}
     </KeycloakProvider>
   );
 };

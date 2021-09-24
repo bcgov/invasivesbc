@@ -221,8 +221,12 @@ const AquaticPlants = {
   'edna_sample':{},
   'enda_sample_information':{
     'edna_sample_id':{},
-    'genetic_structure_collected':{},
-    'ui:order':['edna_sample_id','genetic_structure_collected']
+    'sample_type':{},
+    'field_replicates_num': {},
+    'control_sample_taken':{
+      'ui:widget': 'select'
+    },
+    'ui:order':['edna_sample_id','sample_type','field_replicates_num','control_sample_taken']
   },
   'ui:order':[
     'sample_point_id',
@@ -1567,17 +1571,72 @@ const Treatment = {
 };
 
 const Treatment_MechanicalPlant = {
-  'invasive_plant_code': {
-    'ui:widget': 'single-select-autocomplete'
+  'mechanical_plant_information':{
+    items: {
+      ...ThreeColumnStyle,
+      'invasive_plant_code': {
+        'ui:widget': 'single-select-autocomplete'
+      },
+      'mechanical_method_code': {
+        'ui:widget': 'single-select-autocomplete'
+      },
+      'mechanical_disposal_code': {
+        'ui:widget': 'single-select-autocomplete'
+      },
+    },
+    'ui:order':['invasive_plant_code','mechanical_method_code','mechanical_disposal_code']
   },
-  'mechanical_method_code': {
-    'ui:widget': 'single-select-autocomplete'
-  },
-  'mechanical_disposal_code': {
-    'ui:widget': 'single-select-autocomplete'
-  },
-  'ui:order':['invasive_plant_code','mechanical_method_code','mechanical_disposal_code']
+  'ui:order':["mechanical_plant_information"]
 };
+
+const Treatment_MechanicalPlantAquatic = {
+    'waterbody_data': {
+    ...ThreeColumnStyle,
+    ...WaterbodyData,
+    'water_level_management': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'substrate_type': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'tidal_influence': {},
+    'adjacent_land_use':{},
+    'inflow_permanent':{},
+    'inflow_other':{},
+    'outflow':{},
+    'ui:order':[
+      'waterbody_type',
+      'waterbody_name_gazetted',
+      'waterbody_name_local',
+      'waterbody_access',
+      'waterbody_use',
+      'water_level_management',
+      'substrate_type',
+      'tidal_influence',
+      'adjacent_land_use',
+      'inflow_permanent',
+      'inflow_other',
+      'outflow',
+    ]
+  },
+  'shoreline_types':{},
+  'water_quality': {
+    ...ThreeColumnStyle,
+    ...WaterQuality,
+    'water_flow_rate':{},
+    'ui:order':[
+      'water_sample_depth',
+      'secchi_depth',
+      'water_colour',
+      'water_flow_rate'
+    ]
+  },
+  'mechanical_treatment_information': {
+    ...Treatment_MechanicalPlant
+  },
+  
+  'ui:order':['waterbody_data','shoreline_types','water_quality']
+}
 
 const Treatment_MechanicalPlant_BulkEdit = {
   'invasive_plant_code': {
@@ -1718,6 +1777,7 @@ const BaseUISchemaComponents = {
   Dispersal_BiologicalDispersal,
   Treatment,
   Treatment_MechanicalPlant,
+  Treatment_MechanicalPlantAquatic,
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,

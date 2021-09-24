@@ -46,6 +46,9 @@ objects:
       name: '${NAME}'
       creationTimestamp:
       labels: {}
+      annotations: 
+        kubernetes.io/ingress-bandwidth: 100M
+        kubernetes.io/egress-bandwidth: 100M
     spec:
       containers:
         - name: test
@@ -53,10 +56,10 @@ objects:
           resources:
             limits:
               cpu: '1'
-              memory: 1.5Gi
+              memory: 2.5Gi
             requests:
-              cpu: 500m
-              memory: 512Mi
+              cpu: 1
+              memory: 1024Mi
           env:
             - name: DB_HOST
               value: ${DB_SERVICE_NAME}
@@ -87,6 +90,6 @@ objects:
               value: ${VERSION}
           imagePullPolicy: Always
       restartPolicy: Never
-      activeDeadlineSeconds: 900
+      activeDeadlineSeconds: 7200
       dnsPolicy: ClusterFirst
     status: {}

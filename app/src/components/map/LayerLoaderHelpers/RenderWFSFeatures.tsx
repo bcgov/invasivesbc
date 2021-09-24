@@ -11,23 +11,27 @@ import { WellMarker } from './WellMarker';
 import { q } from '../MapContainer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
+import { getDataFromDataBC } from '../WFSConsumer';
 
-interface IRenderKeyFeaturesNearFeature {
+interface IRenderWFSFeatures {
   inputGeo: Feature;
   dataBCLayerName;
-  proximityInMeters: number;
+  online: boolean;
   featureType?: string;
   memoHash?: string;
   customOnEachFeature?: any;
   setWellIdandProximity?: (wellIdandProximity: any) => void;
 }
 
-export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeature) => {
+export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const [wellsWithClosest, setWellsWithClosest] = useState(null);
   const [wellIdandProximity, setWellIdandProximity] = useState(null);
   const [geosToRender, setGeosToRender] = useState(null);
   const databaseContext = useContext(DatabaseContext2);
-  const [keyval, setKeyval] = useState(0);
+  const map = useMap();
+  const mapRequestContext = useContext(MapRequestContext);
+  const { layersSelected } = mapRequestContext;
+  const [lastRequestPushed, setLastRequestPushed] = useState(null);
 
   //when there is new wellId and proximity, send info to ActivityPage
   useEffect(() => {
@@ -36,20 +40,12 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
     }
   }, [wellIdandProximity]);
 
-  const map = useMap();
-  const mapRequestContext = useContext(MapRequestContext);
-  const { layersSelected } = mapRequestContext;
-  const [lastRequestPushed, setLastRequestPushed] = useState(null);
-
   useMapEvent('moveend', () => {
     startFetchingLayers();
   });
 
-  useEffect(() => {
-    startFetchingLayers();
-  }, []);
-
-  //function that compares last extent with the ones in the queue and deletes queue extents that are no more needed
+  //function that compares last extent (with layers selected for it)
+  //with the ones in the queue and deletes queue extents that are no longer needed
   const qRemove = (lastReqPushed: any, newArray: any) => {
     q.remove((worker: any) => {
       if (worker.data && lastReqPushed?.extent) {
@@ -71,35 +67,51 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
 
   //this is called on map load and each time the map is moved
   const startFetchingLayers = () => {
-    const newArray = [];
+    const newLayerArray = [];
     layersSelected.forEach((layer: any) => {
-      newArray.push(layer.BCGWcode);
+      newLayerArray.push(layer.BCGWcode);
     });
 
-    qRemove(lastRequestPushed, newArray);
+    //calling function to remove no longer needed elements from the queue
+    qRemove(lastRequestPushed, newLayerArray);
 
-    if (newArray.length > 0) {
-      newArray.forEach((layer) => {
+    //if there are layers selected
+    if (newLayerArray.length > 0) {
+      //for each layer, push it and the map extent to the queue
+      //also set last request pushed use state var to use it in qRemove function
+      newLayerArray.forEach((layer) => {
         q.push({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer }, getLayerData);
-
         setLastRequestPushed({ extent: createPolygonFromBounds(map.getBounds(), map).toGeoJSON(), layer: layer });
       });
     }
+    //this just rerenders the map
     map.invalidateSize();
   };
 
   //gets layer data based on the layer name
   const getLayerData = async () => {
+    //get the map extent as geoJson polygon feature
     const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
-    if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
+    //if well layer is selected
+
+    //if online, just get data from WFSonline consumer
+    if (props.online) {
+      getDataFromDataBC(props.dataBCLayerName, mapExtent).then((returnVal) => {
+        props.inputGeo ? setWellsWithClosest(getClosestWellToPolygon(returnVal)) : setWellsWithClosest(returnVal);
+      }, []);
+    }
+    //if offline: try to get layer data from sqlite local storage
+    else {
+      //first, selecting large grid items
       const largeGridRes = await query(
         {
           type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('well');`
+          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA;`
         },
         databaseContext
       );
 
+      //create a string containing all large grid item ids that we got
       let largeGridItemIdString = '(';
       let largeGridResIndex = 0;
       largeGridRes.forEach((gridItem) => {
@@ -111,68 +123,36 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
         largeGridResIndex++;
       });
 
+      //select small grid items with particular layer name and large grid items id
       const smallGridRes = await query(
         {
           type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('well') AND largeGridID IN ${largeGridItemIdString};`
+          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('${props.dataBCLayerName}') AND largeGridID IN ${largeGridItemIdString};`
         },
         databaseContext
       );
 
+      //foreach small grid item that we got, if grid item intersects with map extent,
+      //add it to the array of grid items
       let allFeatures = [];
-
       smallGridRes.forEach((row) => {
         const featureArea = JSON.parse(row.featureArea).geometry;
         const featuresInArea = JSON.parse(row.featuresInArea);
-
         if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
           allFeatures = allFeatures.concat(featuresInArea);
         }
       });
-      if (props.inputGeo) {
-        setWellsWithClosest(getClosestWellToPolygon(allFeatures));
+      //set useState var to display features
+      if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
+        //if there is a geometry drawn, get closest wells and wells inside and label them
+        props.inputGeo ? setWellsWithClosest(getClosestWellToPolygon(allFeatures)) : setWellsWithClosest(allFeatures);
       } else {
-        setWellsWithClosest(allFeatures);
+        setGeosToRender(allFeatures);
       }
-      setKeyval(Math.random()); //NOSONAR
-    } else {
-      const largeGridRes = await query(
-        {
-          type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA WHERE layerName IN ('well');`
-        },
-        databaseContext
-      );
-
-      let largeGridItemIdString = '(';
-      let largeGridResIndex = 0;
-      largeGridRes.forEach((gridItem) => {
-        if (largeGridResIndex === largeGridRes.length - 1) {
-          largeGridItemIdString += gridItem.id + ')';
-        } else {
-          largeGridItemIdString += gridItem.id + ',';
-        }
-        largeGridResIndex++;
-      });
-
-      const smallGridRes = await query(
-        {
-          type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('well') AND largeGridID IN ${largeGridItemIdString};`
-        },
-        databaseContext
-      );
-      let allFeatures = [];
-      smallGridRes.forEach((row) => {
-        const featuresInArea = JSON.parse(row.featuresInArea);
-        allFeatures = allFeatures.concat(featuresInArea);
-      });
-      setGeosToRender(allFeatures);
-      setKeyval(Math.random()); //NOSONAR
     }
   };
 
-  // Function for going through array and labeling 1 closest well and wells inside the polygon
+  // Function for going through array of wells and labeling 1 closest well and wells inside the polygon
   const getClosestWellToPolygon = (arrayOfWells) => {
     let index = 0;
     let nearestWellIndex = null;
@@ -219,7 +199,6 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
         const popupContent = `
           <div>
               <p>${feature.id}</p>                  
-              <p>${JSON.stringify(feature)}</p>                  
           </div>
         `;
         layer.bindPopup(popupContent);
@@ -227,9 +206,8 @@ export const RenderKeyFeaturesNearFeature = (props: IRenderKeyFeaturesNearFeatur
 
   return (
     <>
-      {geosToRender && keyval && <GeoJSON key={keyval} onEachFeature={onEachFeature} data={geosToRender}></GeoJSON>}
+      {geosToRender && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={geosToRender}></GeoJSON>}
       {wellsWithClosest &&
-        keyval &&
         wellsWithClosest.map((feature) => {
           if (feature.geometry.type === 'Point') {
             return <WellMarker feature={feature} />;

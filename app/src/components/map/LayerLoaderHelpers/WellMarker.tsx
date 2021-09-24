@@ -47,6 +47,7 @@ export const WellMarker = ({ feature }) => {
   const featureClosestOrStandard = feature.closest ? wellIconClosest : wellIconSandard;
   return (
     <Marker
+      key={Math.random()} //NOSONAR
       position={[feature.geometry.coordinates[1], feature.geometry.coordinates[0]]}
       icon={feature.inside ? wellIconInside : featureClosestOrStandard}>
       <Popup>
@@ -68,8 +69,8 @@ const CustomWellPopup = ({ feature }) => {
   const featureId = feature.properties.GW_WW_SYSID as string;
 
   //Calculate utm_zone, northing and easting
-  const latitude = feature.geometry.coordinates[0] || null;
-  const longitude = feature.geometry.coordinates[1] || null;
+  const latitude = feature.geometry.coordinates[1] || null;
+  const longitude = feature.geometry.coordinates[0] || null;
   const utm = utm_zone(longitude, latitude);
   const couldNotCalcString = 'could not calculate';
   return (

@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import { Marker, Popup } from 'react-leaflet';
+import { Marker } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, IconButton, Typography } from '@material-ui/core';
+import { CircularProgress, IconButton } from '@material-ui/core';
 import proj4 from 'proj4';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './ToolBtnStyles';
+import { toolStyles } from './Helpers/ToolBtnStyles';
+import { GeneratePopup, generateGeo } from './InfoAreaDescription';
+import { createDataUTM } from './Helpers/StyledTable';
+import * as turf from '@turf/turf';
+import { getDataFromDataBC } from '../WFSConsumer';
 
 export const utm_zone = (longitude: number, latitude: number) => {
   let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
@@ -15,8 +19,8 @@ export const utm_zone = (longitude: number, latitude: number) => {
     ['EPSG:AUTO', `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`]
   ]);
   const en_m = proj4('EPSG:4326', 'EPSG:AUTO', [longitude, latitude]); // conversion from (long/lat) to UTM (E/N)
-  let utmEasting = Number(en_m[0].toFixed(4));
-  let utmNorthing = Number(en_m[1].toFixed(4));
+  let utmEasting = Number(en_m[0].toFixed(0));
+  let utmNorthing = Number(en_m[1].toFixed(0));
   return [utmZone, utmEasting, utmNorthing];
 };
 
@@ -26,13 +30,28 @@ export default function DisplayPosition({ map }) {
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
+  const [geoPoint, setGeoPoint] = useState(null);
   const [utm, setUTM] = useState([]);
-  const divRef = useRef();
+  const [rows, setRows] = useState(null);
+  const divRef = useRef(null);
+
+  const getLocation = async () => {
+    setInitialTime(5);
+    setStartTimer(true);
+    const position = await Geolocation.getCurrentPosition();
+    setNewPosition(position);
+  };
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   });
+
+  useEffect(() => {
+    if (utm) {
+      setRows([createDataUTM('UTM', utm[0]), createDataUTM('Northing', utm[2]), createDataUTM('Easting', utm[1])]);
+    }
+  }, [utm]);
 
   useEffect(() => {
     if (initialTime > 0) {
@@ -49,28 +68,24 @@ export default function DisplayPosition({ map }) {
     if (newPosition) {
       setUTM(utm_zone(newPosition.coords.longitude, newPosition.coords.latitude));
       map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
+      if (isFinite(newPosition.coords.longitude) && isFinite(newPosition.coords.latitude)) {
+        generateGeo(newPosition.coords.latitude, newPosition.coords.longitude, { setGeoPoint });
+      }
     }
   }, [newPosition]);
 
-  const getLocation = async () => {
-    setInitialTime(5);
-    setStartTimer(true);
-    const position = await Geolocation.getCurrentPosition();
-    setNewPosition(position);
-  };
-
   return (
-    <div>
-      {newPosition && newPosition?.coords && newPosition?.coords?.latitude ? (
+    <>
+      {newPosition && (
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
-          <Popup>
-            {/*position.lat.toFixed(4)}&ensp;{position.lng.toFixed(4)*/}
-            <Typography>UTM Zone {utm[0]}</Typography>
-            <Typography>UTM Northing {utm[2]}</Typography>
-            <Typography>UTM Easting {utm[1]}</Typography>
-          </Popup>
+          <GeneratePopup
+            utmRows={rows}
+            map={map}
+            lat={newPosition.coords.latitude}
+            lng={newPosition.coords.longitude}
+          />
         </Marker>
-      ) : null}
+      )}
       <IconButton
         ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
@@ -79,6 +94,6 @@ export default function DisplayPosition({ map }) {
         onClick={getLocation}>
         {initialTime > 0 ? <CircularProgress size={24} /> : <LocationOnIcon />}
       </IconButton>
-    </div>
+    </>
   );
 }

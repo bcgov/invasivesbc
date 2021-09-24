@@ -43,17 +43,17 @@ const buildURLForDataBC = (layerName: string, geoJSON: Object, pageSize?: number
   const reprojectedAsWKT = wktConvert(reprojected);
   const customCQL = '&CQL_FILTER=WITHIN(GEOMETRY,' + reprojectedAsWKT + ')';
   const encodedCQL = encodeURI(customCQL);
-  //return baseURL + layerName + projection + customCQL;
+  // return baseURL + layerName + projection + customCQL;
   return baseURL + layerName + paging + projection + encodedCQL;
 };
 
-/*
-const getHTTP = async (input: string) => {
-  console.log('attempting URL: ' + input)
-  let resp = await axios.get(input);
-  console.log('success')
-  return resp
-};
+/* 
+  const getHTTP = async (input: string) => {
+    console.log('attempting URL: ' + input)
+    let resp = await axios.get(input);
+    console.log('success')
+    return resp
+  };
 */
 
 const albersToGeog = (featureCollection: Object[]) => {
@@ -91,11 +91,11 @@ export const getDataFromDataBC: any = async (
     console.log('no page provided');
     return returnVal;
   } else {
-    const subsequentFetches = async (startIndex: number) => {
-      URL = buildURLForDataBC(layerName, geoJSON, pageSize, startIndex);
+    const subsequentFetches = async (beginningIndex: number) => {
+      URL = buildURLForDataBC(layerName, geoJSON, pageSize, beginningIndex);
       resp = await getHTTP(URL);
-      const reprojected = albersToGeog(resp.data).features;
-      return reprojected;
+      // code redundancy const reprojected = albersToGeog(resp.data).features;
+      return albersToGeog(resp.data).features;
     };
 
     try {
@@ -112,27 +112,26 @@ export const getDataFromDataBC: any = async (
     return [];
   }
   /*
+  export const onlineConsumer: any = async (layerName, geoJsonFeature) => {
+    //this is copied from useInvaisivesApi:
+    const pageSize = 500;
+    let totalInBox = 0;
+    let startIndex = 0;
+    let returnVal = [];
 
-export const onlineConsumer: any = async (layerName, geoJsonFeature) => {
-  //this is copied from useInvaisivesApi:
-  const pageSize = 500;
-  let totalInBox = 0;
-  let startIndex = 0;
-  let returnVal = [];
-
-  const getURL = (layerName, startIndex, pageSize) => {
-    return (
-      'https://openmaps.gov.bc.ca/geo/ows?service=WFS&version=2.0&request=GetFeature&typeName=pub:' +
-      layerName +
-      '&startindex=' +
-      startIndex +
-      '&count=' +
-      pageSize +
-      //'&bbox=' + boundingBox[0].toString() + ',' + boundingBox[1].toString() + ',' + boundingBox[2].toString() + ',' + boundingBox[3].toString() +
-      //'&sortBy=SEQUENCE_ID&outputFormat=application/json&srsname=EPSG:4326'
-      '&outputFormat=application/json&srsname=EPSG:4326'
-    );
-  }*/
+    const getURL = (layerName, startIndex, pageSize) => {
+      return (
+        'https://openmaps.gov.bc.ca/geo/ows?service=WFS&version=2.0&request=GetFeature&typeName=pub:' +
+        layerName +
+        '&startindex=' +
+        startIndex +
+        '&count=' +
+        pageSize +
+        //'&bbox=' + boundingBox[0].toString() + ',' + boundingBox[1].toString() + ',' + boundingBox[2].toString() + ',' + boundingBox[3].toString() +
+        //'&sortBy=SEQUENCE_ID&outputFormat=application/json&srsname=EPSG:4326'
+        '&outputFormat=application/json&srsname=EPSG:4326'
+      );
+    }*/
 
   /*
   //original layer name WHSE_BASEMAPPING.BC_MAJOR_CITIES_POINTS_500M

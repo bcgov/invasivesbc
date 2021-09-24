@@ -157,8 +157,25 @@ const Activity_Treatment_MechanicalPlant = {
     ...BaseUISchemaComponents.Treatment
   },
   'activity_subtype_data': {
-    ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Treatment_MechanicalPlant
+  },
+  'ui:order':['activity_data','activity_type_data','activity_subtype_data']
+};
+
+const Activity_Treatment_MechanicalPlantAquatic = {
+  'activity_data': {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  'activity_type_data': {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.Treatment,
+    'ui:order':['treatment_organization','treatment_location','treatment_persons','additional_auth_information']
+    
+  },
+  'activity_subtype_data': {
+    ...BaseUISchemaComponents.Treatment_MechanicalPlantAquatic,
+    'ui:order':['waterbody_data','shoreline_types','water_quality','mechanical_treatment_information']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
@@ -275,6 +292,7 @@ const RootUISchemas = {
   Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_ChemicalPlantAquatic,
   Activity_Treatment_MechanicalPlant,
+  Activity_Treatment_MechanicalPlantAquatic,
   Activity_Treatment_MechanicalPlant_BulkEdit,
   Activity_Treatment_BiologicalPlant,
   Activity_Treatment_BiologicalPlant_BulkEdit,

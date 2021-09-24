@@ -125,7 +125,7 @@ export const SingleTrip: React.FC<any> = (props) => {
               }}>
               <Paper className={props.classes.paper}>
                 <Typography variant="body1">
-                  Draw a polygon or square on the map, or upload a KML containing 1 shape.
+                  Draw a polygon or square on the map, or upload a KML/KMZ containing 1 shape.
                 </Typography>
                 <KMLUpload trip_ID={props.trip_ID} />
               </Paper>
@@ -194,7 +194,7 @@ export const SingleTrip: React.FC<any> = (props) => {
               doneButtonCallBack={() => {
                 helperStepDoneOrSkip(6);
               }}>
-              <TripDataControls trip_ID={props.trip_ID} />
+              <TripDataControls setTripDeleted={props.setTripDeleted} trip_ID={props.trip_ID} />
             </TripStep>
           </Grid>
         ) : (

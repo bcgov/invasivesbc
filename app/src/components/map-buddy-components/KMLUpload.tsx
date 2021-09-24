@@ -160,7 +160,7 @@ export const KMLUpload: React.FC<any> = (props) => {
 
   return (
     <DropzoneArea
-      dropzoneText="Upload KML here"
+      dropzoneText="Upload KML/KMZ here"
       onChange={(e) => {
         setAFile(e[0]);
       }}

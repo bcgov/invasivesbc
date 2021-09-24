@@ -1,6 +1,7 @@
 import React from 'react';
 import { WMSTileLayer } from 'react-leaflet';
-import { RenderKeyFeaturesNearFeature } from './DataBCRenderFeaturesNearFeature';
+import { RenderWFSFeatures } from './RenderWFSFeatures';
+import { RenderVectorTilesOffline } from './RenderVectorTilesOffline';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',
@@ -26,16 +27,23 @@ export const DataBCLayer = (props) => {
         />
       );
     case LayerMode.WFSOnline:
-      return <></>;
+      return (
+        <RenderWFSFeatures
+          inputGeo={props.inputGeo}
+          online={true}
+          dataBCLayerName={props.layerName}
+          setWellIdandProximity={props.setWellIdandProximity}
+        />
+      );
     case LayerMode.VectorTilesOffline:
-      return <></>;
+      return <RenderVectorTilesOffline opacity={props.opacity} dataBCLayerName={props.layerName} />;
     case LayerMode.RegularFeaturesOffline:
       //this is the regular geojson stuff
       return (
-        <RenderKeyFeaturesNearFeature
+        <RenderWFSFeatures
           inputGeo={props.inputGeo}
+          online={false}
           dataBCLayerName={props.layerName}
-          proximityInMeters={550}
           setWellIdandProximity={props.setWellIdandProximity}
         />
       );

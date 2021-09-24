@@ -33,7 +33,7 @@ module.exports = (settings) => {
         POSTGRESQL_DATABASE: 'InvasivesBC',
         IMAGE_STREAM_NAMESPACE: phases.build.namespace,
         VOLUME_CAPACITY:
-          `${name}-postgresql${phases[phase].suffix}` === `${name}-postgresql-dev-deploy` ? '10Gi' : '10Gi'
+          `${name}-postgresql${phases[phase].suffix}` === `${name}-postgresql-dev-deploy` ? '15Gi' : '15Gi'
       }
     })
   );
