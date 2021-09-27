@@ -52,9 +52,10 @@ import { useDataAccess } from '../../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
 import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
-import { RolesContext } from 'contexts/RolesContext';
+import { RolesContext } from '../../../contexts/RolesContext';
 import bcArea from '../../../components/map/BC_AREA.json';
-import { utm_zone } from 'components/map/Tools/DisplayPosition';
+import { calc_utm } from 'components/map/Tools/DisplayPosition';
+import { GetUserAccessLevel } from 'utils/getAccessLevel';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -84,6 +85,7 @@ interface IActivityPageProps {
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
+  console.log(GetUserAccessLevel());
 
   const databaseContextPouch = useContext(DatabaseContext);
   const databaseContext = useContext(DatabaseContext2);
@@ -192,10 +194,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const saveGeometry = useCallback((geom: Feature[]) => {
     setDoc(async (activity: any) => {
       const { latitude, longitude } = calculateLatLng(geom) || {};
-      var utm = utm_zone(longitude, latitude);
-      var utmZone = utm[0];
-      var utm_easting = utm[1];
-      var utm_northing = utm[2];
+      var utm = calc_utm(longitude, latitude);
+      let utm_zone = utm[0];
+      console.dir('activityPage', utm_zone);
+      let utm_easting = utm[1];
+      let utm_northing = utm[2];
       /*****exported DisplayPosition utm_zone function
       //latlong to utms / utm zone conversion
       let utm_easting, utm_northing, utm_zone;
@@ -219,9 +222,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             ...activity.formData.activity_data,
             latitude,
             longitude,
+            utm_zone,
             utm_easting,
             utm_northing,
-            utmZone,
             reported_area: calculateGeometryArea(geom)
           }
         },

@@ -5,7 +5,7 @@ import WellIconClosest from '../Icons/well-closest.svg';
 import WellIconInside from '../Icons/well-inside.svg';
 import WellIconStandard from '../Icons/well-standard.svg';
 import L from 'leaflet';
-import { utm_zone } from '../Tools/DisplayPosition';
+import { calc_utm } from '../Tools/DisplayPosition';
 
 const wellIconSandard = new L.Icon({
   iconUrl: WellIconStandard,
@@ -71,7 +71,7 @@ const CustomWellPopup = ({ feature }) => {
   //Calculate utm_zone, northing and easting
   const latitude = feature.geometry.coordinates[1] || null;
   const longitude = feature.geometry.coordinates[0] || null;
-  const utm = utm_zone(longitude, latitude);
+  const utm = calc_utm(longitude, latitude);
   const couldNotCalcString = 'could not calculate';
   return (
     <div className={classes.popupWindow}>
