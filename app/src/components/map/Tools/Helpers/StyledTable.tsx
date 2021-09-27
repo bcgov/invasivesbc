@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
   Button,
   Collapse,
+  Dialog,
   IconButton,
   Table,
   TableBody,
@@ -11,7 +12,8 @@ import {
   TablePagination,
   TableRow,
   Theme,
-  Tooltip
+  Tooltip,
+  Typography
 } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/styles';
 import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
@@ -23,6 +25,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 import * as turf from '@turf/turf';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { GetUserAccessLevel } from 'utils/getAccessLevel';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -230,8 +233,12 @@ export const RenderTableActivity = ({ rows, setRows }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [emptyRows, setEmptyRows] = useState(0);
   const [page, setPage] = useState(0);
+  const [open, setOpen] = useState(false);
   const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();
+  const userAccess = GetUserAccessLevel();
+
+  console.log(userAccess);
 
   const history = useHistory();
 
@@ -294,12 +301,19 @@ export const RenderTableActivity = ({ rows, setRows }) => {
                 <Button
                   size="small"
                   onClick={async () => {
-                    var id = row.obj.activity_id;
-                    await dataAccess.setAppState({ activeActivity: id }, databaseContext);
-                    history.push({ pathname: `/home/activity` });
+                    if (userAccess.hasPlantAccess) {
+                      var id = row.obj.activity_id;
+                      await dataAccess.setAppState({ activeActivity: id }, databaseContext);
+                      history.push({ pathname: `/home/activity` });
+                    } else {
+                      setOpen(true);
+                    }
                   }}>
                   {row?.obj.activity_payload.short_id}
                 </Button>
+                <Dialog open={open} onClose={() => setOpen(false)}>
+                  <Typography>Open Sesame</Typography>
+                </Dialog>
               </StyledTableCell>
               <StyledTableCell style={{ marginRight: -40 }}>
                 {getPlantCodes(row.obj.activity_payload).map((code) => (
