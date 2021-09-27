@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Button,
   Collapse,
@@ -10,7 +10,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Theme
+  Theme,
+  Tooltip
 } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/styles';
 import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
@@ -19,7 +20,7 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
 import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { ActivityType, ActivitySubtypeShortLabels } from 'constants/activities';
+import { ActivitySubtypeShortLabels } from 'constants/activities';
 import * as turf from '@turf/turf';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
@@ -115,11 +116,11 @@ const getPlantName = (subtype, invasivePlantCode, response) => {
   }
 };
 
-const getPlantCode = (activity_payload) => {
+const getPlantCodes = (activity_payload) => {
   if (activity_payload.species_positive) {
-    return activity_payload.species_positive[0];
+    return activity_payload.species_positive;
   } else if (activity_payload.species_negative) {
-    return activity_payload.species_negative[0];
+    return activity_payload.species_negative;
   }
 };
 
@@ -132,37 +133,17 @@ const getArea = (shape) => {
   }
 };
 
-const CreateAccordionTable = ({ row }) => {
-  const dataAccess = useInvasivesApi();
+const CreateAccordionTable = ({ row, response }) => {
   // Shortcuts
   var activity_payload = row.obj.activity_payload;
   var form_data = activity_payload.form_data;
   var shape = activity_payload.geometry[0];
   // Variables for table
-  const [name, setName] = useState(null);
-  var code = getPlantCode(activity_payload);
+  // for species name
+  var codes = getPlantCodes(activity_payload);
   var area = getArea(shape);
   var jurisdictions = form_data.activity_data.jurisdictions;
   var subtype = ActivitySubtypeShortLabels[row.obj.activity_subtype];
-
-  useEffect(() => {
-    const getApiSpec = async () => {
-      const response = await dataAccess.getCachedApiSpec();
-      // row check
-      try {
-        /* json check in new tab
-        console.log(response);
-        var temp0 = JSON.stringify(response, null, 2);
-        var x = window.open();
-        x.document.open();
-        x.document.write('<html><body><pre>' + temp0 + '</pre></body></html>');*/
-        setName(getPlantName(subtype, code, response));
-      } catch (error) {
-        console.log('did not log');
-      }
-    };
-    getApiSpec();
-  }, [row]);
 
   return (
     <>
@@ -177,15 +158,23 @@ const CreateAccordionTable = ({ row }) => {
       {jurisdictions && (
         <StyledTableRow>
           <StyledTableCell>Jurisdiction</StyledTableCell>
-          {jurisdictions.map((j) => (
-            <StyledTableCell>{j.jurisdiction_code}</StyledTableCell>
-          ))}
+          <StyledTableCell>
+            {jurisdictions.map((j) => (
+              <>{j.jurisdiction_code} </>
+            ))}
+          </StyledTableCell>
         </StyledTableRow>
       )}
-      {code && (
+      {codes && (
         <StyledTableRow>
           <StyledTableCell>Invasive Plant</StyledTableCell>
-          <StyledTableCell>{code + ', ' + name}</StyledTableCell>
+          <StyledTableCell>
+            {codes.map((code) => (
+              <Tooltip title={getPlantName(subtype, code, response)}>
+                <a>{code}</a>
+              </Tooltip>
+            ))}
+          </StyledTableCell>
         </StyledTableRow>
       )}
       <StyledTableRow>
@@ -235,6 +224,9 @@ export const RenderTablePosition = ({ rows }) => {
 };
 
 export const RenderTableActivity = ({ rows, setRows }) => {
+  // invasivesApi
+  const invasivesAccess = useInvasivesApi();
+  const [response, setResponse] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [emptyRows, setEmptyRows] = useState(0);
   const [page, setPage] = useState(0);
@@ -243,12 +235,19 @@ export const RenderTableActivity = ({ rows, setRows }) => {
 
   const history = useHistory();
 
-  const labels = ['ID', 'Record Type'];
+  const labels = ['ID', 'Species'];
 
   useEffect(() => {
     if (rows) {
       setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage));
     }
+  }, [rows]);
+
+  useEffect(() => {
+    const getApiSpec = async () => {
+      setResponse(await invasivesAccess.getCachedApiSpec());
+    };
+    getApiSpec();
   }, [rows]);
 
   const updateRow = (row, fieldsToUpdate: Object) => {
@@ -303,12 +302,14 @@ export const RenderTableActivity = ({ rows, setRows }) => {
                 </Button>
               </StyledTableCell>
               <StyledTableCell style={{ marginRight: -40 }}>
-                {ActivityType[row?.obj.activity_payload.activity_type]}
+                {getPlantCodes(row.obj.activity_payload).map((code) => (
+                  <>{code}</>
+                ))}
               </StyledTableCell>
               {/*<StyledTableCell>{row?.obj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>*/}
             </StyledTableRow>
             <Collapse in={row?.open} timeout="auto" unmountOnExit>
-              <CreateAccordionTable row={row} />
+              <CreateAccordionTable row={row} response={response} />
             </Collapse>
           </>
         ))}

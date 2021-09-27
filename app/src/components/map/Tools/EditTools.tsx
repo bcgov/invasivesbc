@@ -11,6 +11,47 @@ import { async } from 'q';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './Helpers/ToolBtnStyles';
 
+const circleORmarker = (feature, latLng, markerStyle) => {
+  if (feature.properties.radius) {
+    return L.circle(latLng, { radius: feature.properties.radius });
+  } else {
+    return L.circleMarker(latLng, markerStyle);
+  }
+};
+
+const drawingStep = (newGeoKeys, context) => {
+  Object.keys(newGeoKeys).forEach((key: any) => {
+    if (newGeoKeys[key].updated === true) {
+      // draw layers to map
+      Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
+        context.layerContainer.addLayer(layer);
+      });
+    } else if (newGeoKeys[key].updated === false) {
+      return;
+    } else {
+      // remove old keys (delete step)
+      Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
+        context.layerContainer.removeLayer(layer);
+      });
+      delete newGeoKeys[key];
+      return;
+    }
+    // reset updated status for next refresh:
+    delete newGeoKeys[key].updated;
+  });
+};
+
+const formulateTable = (feature) => {
+  let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+  Object.keys(feature.properties).forEach((f) => {
+    if (f !== 'uploadedSpatial') {
+      table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
+    }
+  });
+  table += '</table>';
+  return table;
+};
+
 const EditTools = (props: any) => {
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
@@ -159,13 +200,7 @@ const EditTools = (props: any) => {
 
         L.geoJSON(collection, {
           style,
-          pointToLayer: (feature: any, latLng: any) => {
-            if (feature.properties.radius) {
-              return L.circle(latLng, { radius: feature.properties.radius });
-            } else {
-              return L.circleMarker(latLng, markerStyle);
-            }
-          },
+          pointToLayer: (feature: any, latLng: any) => circleORmarker(feature, latLng, markerStyle),
           onEachFeature: (feature: any, layer: any) => {
             context.layerContainer.addLayer(layer);
           }
@@ -200,26 +235,14 @@ const EditTools = (props: any) => {
         const geo = L.geoJSON(interactObj.geometry, {
           // Note: the result of this isn't actually used, it seems?
           style,
-          pointToLayer: (feature: any, latLng: any) => {
-            if (feature.properties.radius) {
-              return L.circle(latLng, { radius: feature.properties.radius });
-            } else {
-              return L.circleMarker(latLng, markerStyle);
-            }
-          },
+          pointToLayer: (feature: any, latLng: any) => circleORmarker(feature, latLng, markerStyle),
           onEachFeature: (feature: any, layer: any) => {
             const content = interactObj.popUpComponent(interactObj.description);
             layer.on('click', () => {
               // Fires on click of single feature
 
               // Formulate a table containing all attributes
-              let table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
-              Object.keys(feature.properties).forEach((f) => {
-                if (f !== 'uploadedSpatial') {
-                  table += `<tr><td>${f}</td><td>${feature.properties[f]}</td></tr>`;
-                }
-              });
-              table += '</table>';
+              let table = formulateTable(feature);
 
               const loc = turf.centroid(feature);
               const center = [loc.geometry.coordinates[1], loc.geometry.coordinates[0]];
@@ -248,25 +271,7 @@ const EditTools = (props: any) => {
       });
     }
     // Drawing step:
-    Object.keys(newGeoKeys).forEach((key: any) => {
-      if (newGeoKeys[key].updated === true) {
-        // draw layers to map
-        Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
-          context.layerContainer.addLayer(layer);
-        });
-      } else if (newGeoKeys[key].updated === false) {
-        return;
-      } else {
-        // remove old keys (delete step)
-        Object.values(newGeoKeys[key].geo._layers).forEach((layer: L.Layer) => {
-          context.layerContainer.removeLayer(layer);
-        });
-        delete newGeoKeys[key];
-        return;
-      }
-      // reset updated status for next refresh:
-      delete newGeoKeys[key].updated;
-    });
+    drawingStep(newGeoKeys, context);
 
     // update stored geos, mapped by key
     setGeoKeys(newGeoKeys);
