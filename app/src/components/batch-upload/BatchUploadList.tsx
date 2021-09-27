@@ -36,7 +36,6 @@ const BatchUploadList: React.FC<BatchUploadListProps> = ({serial}) => {
             <th>ID</th>
             <th>Status</th>
             <th>Validated?</th>
-            <th>Created By</th>
             <th>Date</th>
           </tr>
           </thead>
@@ -53,7 +52,6 @@ const BatchUploadList: React.FC<BatchUploadListProps> = ({serial}) => {
                 <td>{d.id}</td>
                 <td>{d.status}</td>
                 <td>{d.validation_status}</td>
-                <td>{d.created_by}</td>
                 <td>{d.created_at}</td>
               </tr>
               {expandedRow == i && <tr key={`validation-${i}`}>
