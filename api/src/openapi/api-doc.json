@@ -880,6 +880,7 @@
           "observation_persons": {
             "type": "array",
             "default": [{}],
+            "minItems": 1,
             "title": "Observation Person(s)",
             "items": {
               "$ref": "#/components/schemas/Persons"
@@ -909,6 +910,7 @@
             "type": "array",
             "default": [{}],
             "title": "Terrestrial Invasive Plants",
+            "minItems": 1,
             "items": {
               "$ref": "#/components/schemas/TerrestrialPlants"
             },
@@ -1001,6 +1003,7 @@
           "invasive_plants": {
             "type": "array",
             "default": [{}],
+            "minItems": 1,
             "title": "Aquatic Invasive Plant Information",
             "items": {
               "$ref": "#/components/schemas/AquaticPlants"
@@ -2000,6 +2003,7 @@
               "invasive_plants_information": {
                 "title": "Invasive Plants",
                 "type": "array",
+                "minItems": 1,
                 "default": [{}],
                 "items": {
                   "properties": {
@@ -2021,42 +2025,31 @@
                       "x-tooltip-text": "Check if there is a mix of herbicides in the tank"
                     }
                   },
-                  "dependencies": {
-                    "tank_mix": {
-                      "oneOf": [
-                        {
-                          "properties": {
-                            "tank_mix": {
-                              "enum": [true]
-                            },
-                            "herbicide": {
-                              "type": "array",
-                              "default": [{}],
-                              "title": "Herbicide",
-                              "items": {
-                                "$ref": "#/components/schemas/Herbicide_with_tank_volume"
-                              },
-                              "x-tooltip-text": "Herbicide information for the treatment"
-                            }
-                          }
+                  "if": {
+                    "properties": {
+                      "tank_mix": {
+                        "enum": [true]
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "herbicide": {
+                        "type": "array",
+                        "default": [{}],
+                        "title": "Herbicide",
+                        "items": {
+                          "$ref": "#/components/schemas/Herbicide_with_tank_volume"
                         },
-                        {
-                          "properties": {
-                            "tank_mix": {
-                              "enum": [false]
-                            },
-                            "herbicide": {
-                              "type": "array",
-                              "default": [{}],
-                              "title": "Herbicide",
-                              "items": {
-                                "$ref": "#/components/schemas/Herbicide"
-                              },
-                              "x-tooltip-text": "Herbicide information for the treatment"
-                            }
-                          }
-                        }
-                      ]
+                        "x-tooltip-text": "Herbicide information for the treatment"
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "tank_mix": {
+                        "enum": [false]
+                      }
                     }
                   },
                   "required": ["invasive_plant_code"]
@@ -2194,6 +2187,7 @@
               "invasive_plants_information": {
                 "title": "Invasive Plants",
                 "type": "array",
+                "minItems": 1,
                 "default": [{}],
                 "items": {
                   "properties": {
@@ -3819,32 +3813,27 @@
             "x-tooltip-text": "Capacity of tank measured in litres"
           }
         },
-        "dependencies": {
-          "herbicide_type": {
-            "oneOf": [
-              {
-                "properties": {
-                  "herbicide_type": {
-                    "enum": ["liquid"]
-                  },
-                  "herbicide_information": {
-                    "title": " ",
-                    "$ref": "#/components/schemas/Herbicide_Liquid_Object"
-                  }
-                }
-              },
-              {
-                "properties": {
-                  "herbicide_type": {
-                    "enum": ["granular"]
-                  },
-                  "herbicide_information": {
-                    "title": " ",
-                    "$ref": "#/components/schemas/Herbicide_Granular_Object"
-                  }
-                }
-              }
-            ]
+        "if": {
+          "properties": {
+            "herbicide_type": {
+              "enum": ["liquid"]
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "herbicide_information": {
+              "title": " ",
+              "$ref": "#/components/schemas/Herbicide_Liquid_Object"
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "herbicide_information": {
+              "title": " ",
+              "$ref": "#/components/schemas/Herbicide_Granular_Object"
+            }
           }
         }
       },
@@ -4622,6 +4611,7 @@
             "type": "array",
             "default": [{}],
             "title": "Invasive Plants",
+            "minItems": 1,
             "items": {
               "$ref": "#/components/schemas/InvasivePlants"
             },
@@ -4638,6 +4628,7 @@
             "type": "array",
             "default": [{}],
             "title": "Invasive Plants",
+            "minItems": 1,
             "items": {
               "type": "object",
               "required": ["invasive_plant_code", "number_plants"],
@@ -4702,6 +4693,7 @@
             "type": "array",
             "default": [{}],
             "title": "Invasive Plants",
+            "minItems": 1,
             "items": {
               "type": "object",
               "required": ["invasive_plant_code", "daubenmire_classification"],
@@ -4766,6 +4758,7 @@
             "type": "array",
             "default": [{}],
             "title": "Invasive Plants",
+            "minItems": 1,
             "items": {
               "type": "object",
               "required": ["invasive_plant_code", "percent_covered"],
