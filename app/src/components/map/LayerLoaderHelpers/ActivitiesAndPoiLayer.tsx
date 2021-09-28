@@ -52,8 +52,14 @@ export const ActivitiesAndPoiLayer = (props) => {
 
   return (
     <>
-      {activities && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={activities} />}
-      {pois && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={pois} />}
+      {
+        //NOSONAR
+        activities && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={activities} />
+      }
+      {
+        //NOSONAR
+        pois && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={pois} />
+      }
     </>
   );
 };
