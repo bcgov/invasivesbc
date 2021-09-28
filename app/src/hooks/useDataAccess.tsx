@@ -127,30 +127,37 @@ export const useDataAccess = () => {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
     },
-    forceCache?: boolean
+    forceCache?: boolean,
+    referenceData = false
   ): Promise<any> => {
-    const networkStatus = await Network.getStatus();
-    if (Capacitor.getPlatform() === 'web') {
-      return api.getActivityById(activityId);
-    } else {
-      if (forceCache === true || !networkStatus.connected) {
-        const dbcontext = context;
-        return dbcontext.asyncQueue({
-          asyncTask: async () => {
-            const res = await query(
-              {
-                type: QueryType.DOC_TYPE_AND_ID,
-                docType: DocType.ACTIVITY,
-                ID: activityId
-              },
-              dbcontext
-            );
-            return JSON.parse(res[0].json);
-          }
-        });
-      } else {
+    try {
+      const networkStatus = await Network.getStatus();
+      if (Capacitor.getPlatform() === 'web') {
         return api.getActivityById(activityId);
+      } else {
+        if (forceCache === true || !networkStatus.connected) {
+          const dbcontext = context;
+          return dbcontext.asyncQueue({
+            asyncTask: async () => {
+              const res = await query(
+                {
+                  type: QueryType.DOC_TYPE_AND_ID,
+                  docType: referenceData ? DocType.REFERENCE_ACTIVITY : DocType.ACTIVITY,
+                  ID: activityId
+                },
+                dbcontext
+              );
+              return JSON.parse(res[0].json);
+            }
+          });
+        } else {
+          return api.getActivityById(activityId);
+        }
       }
+    } catch (e) {
+      throw `unable to get activity by id:  debug info:  ${JSON.stringify(
+        activityId
+      )}, ${referenceData})}, ${JSON.stringify(e)}`;
     }
   };
 
