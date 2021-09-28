@@ -23,7 +23,7 @@ const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) =
   }
 };
 
-export const utm_zone = (longitude: number, latitude: number) => {
+export const calc_utm = (longitude: number, latitude: number) => {
   let utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
   proj4.defs([
     ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
@@ -69,7 +69,7 @@ export default function DisplayPosition({ map }) {
 
   useEffect(() => {
     if (newPosition) {
-      setUTM(utm_zone(newPosition.coords.longitude, newPosition.coords.latitude));
+      setUTM(calc_utm(newPosition.coords.longitude, newPosition.coords.latitude));
       map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
     }
   }, [newPosition]);

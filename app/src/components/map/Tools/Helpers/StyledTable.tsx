@@ -232,7 +232,6 @@ export const RenderTableActivity = ({ rows, setRows }) => {
   const [page, setPage] = useState(0);
   const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();
-
   const history = useHistory();
 
   const labels = ['ID', 'Species'];

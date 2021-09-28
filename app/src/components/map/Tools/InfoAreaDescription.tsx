@@ -11,7 +11,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
-import { utm_zone } from './DisplayPosition';
+import { calc_utm } from './DisplayPosition';
 import { createDataUTM, RenderTableActivity, RenderTablePosition, RenderTableDataBC } from './Helpers/StyledTable';
 import { getDataFromDataBC } from '../WFSConsumer';
 import * as turf from '@turf/turf';
@@ -151,7 +151,7 @@ function SetPointOnClick({ map }: any) {
 
   useEffect(() => {
     if (isFinite(position?.lng) && isFinite(position?.lat)) {
-      setUTM(utm_zone(position?.lng as number, position?.lat as number));
+      setUTM(calc_utm(position?.lng as number, position?.lat as number));
       generateGeo(position.lat, position.lng, { setGeoPoint });
     }
   }, [position]);
