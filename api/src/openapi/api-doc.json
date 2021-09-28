@@ -2047,8 +2047,14 @@
                   },
                   "else": {
                     "properties": {
-                      "tank_mix": {
-                        "enum": [false]
+                      "herbicide": {
+                        "type": "array",
+                        "default": [{}],
+                        "title": "Herbicide",
+                        "items": {
+                          "$ref": "#/components/schemas/Herbicide"
+                        },
+                        "x-tooltip-text": "Herbicide information for the treatment"
                       }
                     }
                   },
