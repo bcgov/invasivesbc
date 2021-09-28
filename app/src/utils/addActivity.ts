@@ -97,10 +97,6 @@ export const sanitizeRecord = (input: any) => {
       }
     }
   };
-  console.dir('flattened', flattened);
-  console.dir('id', flattened.activity_id);
-  console.dir('poi ID', flattened.point_of_interest_id);
-  console.dir('doc type', flattened.doc_type);
 
   if (flattened.activity_id && flattened.point_of_interest_id)
     throw new Error('This is confusing.  A record should be an activity OR a POI');
