@@ -117,7 +117,7 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
                           onChange={(e) => {
                             updateActivityChoice({ ...activityChoice, activityType: e.target.value }, index);
                           }}>
-                          <MenuItem value={'All'}>All</MenuItem>
+                          <MenuItem value={''}>All</MenuItem>
                           <MenuItem value={'Observation'}>Observation</MenuItem>
                           <MenuItem value={'Treatment'}>Treatment</MenuItem>
                           <MenuItem value={'Monitoring'}>Monitoring</MenuItem>

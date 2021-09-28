@@ -761,7 +761,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       dialogOpen: true
     }));
     //get the trip again cause it prob changed
-    // await getTrip();
+    await getTrip();
 
     //fetch what is selected here:
     try {
