@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   CircularProgress,
   Dialog,
   DialogTitle,
@@ -35,14 +36,6 @@ export const ProgressDialog = (props: IProgressDialog) => {
     setOpen(props.dialogOpen);
   }, [props.dialogOpen]);
 
-  useEffect(() => {
-    if (props.done === true || props.error === true) {
-      setTimeout(() => {
-        setOpen(false);
-      }, 1000);
-    }
-  }, [props.done, props.error]);
-
   return (
     <Dialog open={open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
       <DialogTitle id="alert-dialog-title">
@@ -61,13 +54,22 @@ export const ProgressDialog = (props: IProgressDialog) => {
                 {item.state === 'in_progress' && (
                   <CircularProgress size={25} style={{ position: 'relative', width: 25, height: 25 }} />
                 )}
-                {item.state === 'error' && <ErrorIcon style={{ fill: '#46A44D' }} />}
+                {item.state === 'error' && <ErrorIcon style={{ fill: '#54101B' }} />}
               </Box>
             </ListItemAvatar>
             <ListItemText primary={item.name} secondary={item.description && item.description} />
           </ListItem>
         ))}
       </List>
+      <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Button
+          onClick={() => {
+            setOpen(false);
+          }}
+          variant="contained">
+          {props.done ? 'Close' : 'Cancell'}
+        </Button>
+      </Box>
     </Dialog>
   );
 };
