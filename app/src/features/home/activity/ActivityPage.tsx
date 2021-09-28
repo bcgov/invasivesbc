@@ -117,7 +117,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const updateDoc = async (updates) => {
     if (doc.docType === DocType.REFERENCE_ACTIVITY) {
-      alert('made it to update doc somehow');
       return;
     }
     let updatedDoc = {
@@ -408,7 +407,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       }
     }
 
-    alert(JSON.stringify(activityResults));
     return mapDBActivityToDoc(activityResults);
   };
 
@@ -600,9 +598,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const getActivityData = async () => {
       const activityResult = await getActivityResultsFromDB(props.activityId || null);
 
-      //already set to activity
-      //alert(JSON.stringify(activityResult));
-
       if (!activityResult) {
         setIsLoading(false);
         return;
@@ -611,9 +606,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       let updatedFormData = getDefaultFormDataValues(activityResult);
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
-      //alert(JSON.stringify(updatedDoc));
-
-      // await handleRecordLinking(updatedDoc);
 
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
@@ -733,7 +725,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
             <Typography align="center">Activity ID: {doc.activityId ? doc.activityId : 'unknown'}</Typography>
             <Typography align="center">
-              Date created: {doc.dateCreated ? doc.dateCreated.split('T')[0] : 'unknown'}
+              {/*
+              Date created: {doc.dateCreated ? doc.dateCreated : 'unknown'}*/}
             </Typography>
           </Box>
           <ActivityComponent
