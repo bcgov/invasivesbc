@@ -168,6 +168,22 @@ export const DatabaseContext2Provider = (props) => {
               json TEXT
             );\n`;
           break;
+        case 'LEAN_ACTIVITIES':
+          setupSQL += `create table if not exists ${DocType[value]} 
+             (
+              id TEXT PRIMARY KEY,
+              json TEXT,
+              trip_ID NUMBER
+            );\n`;
+          break;
+        case 'LEAN_POI':
+          setupSQL += `create table if not exists ${DocType[value]} 
+             (
+              id TEXT PRIMARY KEY,
+              json TEXT,
+              trip_ID NUMBER
+            );\n`;
+          break;
         default:
           setupSQL += `create table if not exists ${DocType[value]} 
              (

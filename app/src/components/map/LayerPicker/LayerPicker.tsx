@@ -337,6 +337,7 @@ export function LayerPicker(props: any, { position }) {
                           onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                             updateChildAndLayer(parent, child, { type: event.target.value });
                           }}>
+                          <option value={LayerMode.ActivitiesAndPOI}>{LayerMode.ActivitiesAndPOI}</option>
                           <option value={LayerMode.WMSOnline}>{LayerMode.WMSOnline}</option>
                           <option value={LayerMode.WFSOnline}>{LayerMode.WFSOnline}</option>
                           <option value={LayerMode.VectorTilesOffline}>{LayerMode.VectorTilesOffline}</option>

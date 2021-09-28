@@ -22,7 +22,7 @@ export const useDataAccess = () => {
   const databaseContext = useContext(DatabaseContext2);
   const databaseContextPouch = useContext(DatabaseContext);
   const platform = Capacitor.getPlatform();
-  /** //---------------COMPLETED
+  /**
    * Fetch points of interest by search criteria.
    *
    * @param {pointsOfInterestSearchCriteria} pointsOfInterestSearchCriteria
@@ -61,7 +61,61 @@ export const useDataAccess = () => {
     }
   };
 
-  /** //---------------COMPLETED
+  /**
+   * Fetch points of interest (lean) by search criteria.
+   *
+   * @param {pointsOfInterestSearchCriteria} pointsOfInterestSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getPointsOfInterestLean = async (
+    pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
+    context?: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    }
+  ): Promise<any> => {
+    const networkStatus = await Network.getStatus();
+    if (platform === 'web') {
+      return api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
+    } else {
+      if (!networkStatus.connected) {
+        const dbcontext = context;
+
+        let sql = `SELECT * FROM lean_poi WHERE public.ST_INTERSECTS(
+              json,
+              public.geography(
+                public.ST_Force2D(
+                  public.ST_SetSRID(
+                    public.ST_GeomFromGeoJSON(${pointsOfInterestSearchCriteria.search_feature}),
+                    4326
+                  )
+                )
+              )
+            )`;
+
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.RAW_SQL,
+                sql: sql
+              },
+              databaseContext
+            );
+          }
+        });
+
+        return {
+          rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
+          count: asyncReturnVal.length
+        };
+      } else {
+        return api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
+      }
+    }
+  };
+
+  /**
    * Fetch a signle activity by its id.
    *
    * @param {string} activityId
@@ -137,7 +191,7 @@ export const useDataAccess = () => {
     }
   };
 
-  /** //---------------COMPLETED
+  /**
    * Get all the trip records
    *
    * @return {*}  {Promise<any>}
@@ -151,7 +205,7 @@ export const useDataAccess = () => {
     });
   };
 
-  /** //---------------COMPLETED
+  /**
    * Add new trip object record
    *
    * @param {any} newTripObj
@@ -169,7 +223,7 @@ export const useDataAccess = () => {
     });
   };
 
-  /** //---------------COMPLETED
+  /**
    * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
    *
    * @param {activitiesSearchCriteria} activitiesSearchCriteria
@@ -222,7 +276,57 @@ export const useDataAccess = () => {
     }
   };
 
-  /** //---------------COMPLETED
+  /**
+   * Fetch activities (lean) by search criteria.
+   *
+   * @param {activitiesSearchCriteria} activitiesSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getActivitiesLean = async (
+    activitiesSearchCriteria: IActivitySearchCriteria,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ): Promise<any> => {
+    const networkStatus = await Network.getStatus();
+    if (Capacitor.getPlatform() === 'web') {
+      return api.getActivitiesLean(activitiesSearchCriteria);
+    } else {
+      if (!networkStatus.connected) {
+        const dbcontext = context;
+
+        let sql = `SELECT * FROM lean_activities WHERE public.ST_INTERSECTS(
+              json,
+              public.geography(
+                public.ST_Force2D(
+                  public.ST_SetSRID(
+                    public.ST_GeomFromGeoJSON(${activitiesSearchCriteria.search_feature}),
+                    4326
+                  )
+                )
+              )
+            )`;
+
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.RAW_SQL,
+                sql: sql
+              },
+              dbcontext
+            );
+          }
+        });
+        return {
+          rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
+          count: asyncReturnVal.length
+        };
+      } else {
+        return api.getActivitiesLean(activitiesSearchCriteria);
+      }
+    }
+  };
+
+  /**
    * Create a new activity record.
    *
    * @param {ICreateOrUpdateActivity} activity
@@ -253,7 +357,7 @@ export const useDataAccess = () => {
       });
     }
   };
-  /** //---------------COMPLETED
+  /**
    * Delete activities by ids.
    *
    * @param {string[]} activityIds
@@ -356,11 +460,13 @@ export const useDataAccess = () => {
   return {
     ...api,
     getPointsOfInterest,
+    getPointsOfInterestLean,
     getActivityById,
     updateActivity,
     getTrips,
     addTrip,
     getActivities,
+    getActivitiesLean,
     createActivity,
     deleteActivities,
     getAppState,

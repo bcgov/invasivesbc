@@ -110,6 +110,23 @@ export const useInvasivesApi = () => {
   };
 
   /**
+   * Fetch*
+   activities (lean) by search criteria.
+   * @param {activitiesSearchCriteria} activitiesSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getActivitiesLean = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/activities-lean/`,
+      data: activitiesSearchCriteria
+    });
+
+    return data;
+  };
+
+  /**
    * Delete activities by ids.
    *
    * @param {string[]} activityIds
@@ -174,6 +191,25 @@ export const useInvasivesApi = () => {
     };
     console.log('Observations as geojson', geojson);
     /******************End of GeoJSON*******************/
+
+    return data;
+  };
+
+  /**
+   * Fetch points of interest by search criteria.
+   *
+   * @param {pointsOfInterestSearchCriteria} pointsOfInterestSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getPointsOfInterestLean = async (
+    pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria
+  ): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/points-of-interest-lean/`,
+      data: pointsOfInterestSearchCriteria
+    });
 
     return data;
   };
@@ -471,6 +507,7 @@ export const useInvasivesApi = () => {
     getMedia,
     getSpeciesDetails,
     getActivities,
+    getActivitiesLean,
     deleteActivities,
     undeleteActivities,
     getActivityById,
@@ -480,6 +517,7 @@ export const useInvasivesApi = () => {
     getCachedApiSpec,
     getGridItemsThatOverlapPolygon,
     getPointsOfInterest,
+    getPointsOfInterestLean,
     getMetabaseQueryResults,
     getMetabaseQueryOptions,
     createMetabaseQuery,
