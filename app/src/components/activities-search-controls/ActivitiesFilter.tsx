@@ -45,10 +45,12 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   const [activityChoices, setActivityChoices] = useState([]);
 
   const getActivityChoicesFromTrip = useCallback(async () => {
-    let queryResults = await query(
-      { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
-      databaseContext
-    );
+    let queryResults = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query({ type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP }, databaseContext);
+      }
+    });
+
     const choices = JSON.parse(queryResults[0].json).activityChoices;
     if (choices) {
       setActivityChoices([...choices]);
@@ -65,17 +67,21 @@ export const ActivityDataFilter: React.FC<any> = (props) => {
   const saveChoices = async (newActivityChoices) => {
     console.log('updating trip ' + props.trip_ID + ' activity filters');
     const tripID: string = props.trip_ID;
-    let result = await upsert(
-      [
-        {
-          type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-          ID: tripID,
-          docType: DocType.TRIP,
-          json: { activityChoices: newActivityChoices }
-        }
-      ],
-      databaseContext
-    );
+    let result = await databaseContext.asyncQueue({
+      asyncTask: async () => {
+        return upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+              ID: tripID,
+              docType: DocType.TRIP,
+              json: { activityChoices: newActivityChoices }
+            }
+          ],
+          databaseContext
+        );
+      }
+    });
     setActivityChoices([...newActivityChoices]);
   };
 

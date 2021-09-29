@@ -97,17 +97,21 @@ export const KMLUpload: React.FC<any> = (props) => {
     setGeos(newGeos);
 
     if (props.trip_ID) {
-      await upsert(
-        [
-          {
-            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-            ID: props.trip_ID,
-            docType: DocType.TRIP,
-            json: { features: newGeos.features }
-          }
-        ],
-        databaseContext
-      );
+      await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                ID: props.trip_ID,
+                docType: DocType.TRIP,
+                json: { features: newGeos.features }
+              }
+            ],
+            databaseContext
+          );
+        }
+      });
     }
   };
 

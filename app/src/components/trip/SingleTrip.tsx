@@ -16,25 +16,31 @@ export const SingleTrip: React.FC<any> = (props) => {
   const [stepState, setStepState] = useState(null);
 
   const getStateFromTrip = useCallback(async () => {
-    const results = await query(
-      { type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID },
-      databaseContext
-    );
+    const results = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query({ type: QueryType.DOC_TYPE_AND_ID, docType: DocType.TRIP, ID: props.trip_ID }, databaseContext);
+      }
+    });
+
     setStepState(JSON.parse(results[0].json).stepState);
   }, [databaseContext]);
 
   const saveState = async (newState) => {
-    await upsert(
-      [
-        {
-          type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-          ID: props.trip_ID,
-          docType: DocType.TRIP,
-          json: { stepState: newState }
-        }
-      ],
-      databaseContext
-    );
+    await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+              ID: props.trip_ID,
+              docType: DocType.TRIP,
+              json: { stepState: newState }
+            }
+          ],
+          databaseContext
+        );
+      }
+    });
 
     setStepState(newState);
   };
@@ -46,14 +52,19 @@ export const SingleTrip: React.FC<any> = (props) => {
   }, [databaseContext]);
 
   const updateSpacialStatus = async () => {
-    const res = await query(
-      {
-        type: QueryType.DOC_TYPE_AND_ID,
-        docType: DocType.TRIP,
-        ID: props.trip_ID
-      },
-      databaseContext
-    );
+    const res = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query(
+          {
+            type: QueryType.DOC_TYPE_AND_ID,
+            docType: DocType.TRIP,
+            ID: props.trip_ID
+          },
+          databaseContext
+        );
+      }
+    });
+
     const trip = JSON.parse(res[0].json);
 
     if (trip.geometry.length > 0) {

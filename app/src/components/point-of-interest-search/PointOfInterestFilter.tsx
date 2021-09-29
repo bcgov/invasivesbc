@@ -51,10 +51,11 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
 
   const getPointOfInterestChoicesFromTrip = async () => {
     if (Capacitor.getPlatform() !== 'web') {
-      let queryResults = await query(
-        { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
-        databaseContext
-      );
+      let queryResults = await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query({ type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP }, databaseContext);
+        }
+      });
       const choices = JSON.parse(queryResults[0].json).pointOfInterestChoices;
       if (choices) {
         setPointOfInterestChoices([...choices]);
@@ -77,17 +78,21 @@ export const PointOfInterestDataFilter: React.FC<any> = (props) => {
     //sqlite
     if (Capacitor.getPlatform() !== 'web') {
       const tripID: string = props.trip_ID;
-      let result = await upsert(
-        [
-          {
-            type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-            ID: tripID,
-            docType: DocType.TRIP,
-            json: { pointOfInterestChoices: newPointOfInterestChoices }
-          }
-        ],
-        databaseContext
-      );
+      let result = await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                ID: tripID,
+                docType: DocType.TRIP,
+                json: { pointOfInterestChoices: newPointOfInterestChoices }
+              }
+            ],
+            databaseContext
+          );
+        }
+      });
     }
     setPointOfInterestChoices([...newPointOfInterestChoices]);
   };
