@@ -40,14 +40,18 @@ export const MetabaseSearch: React.FC<any> = (props) => {
   const invasivesApi = useInvasivesApi();
 
   const getMetabaseChoicesFromTrip = async () => {
-    let docs = await query(
-      {
-        type: QueryType.DOC_TYPE_AND_ID,
-        docType: DocType.TRIP,
-        ID: props.trip_ID
-      },
-      databaseContext
-    );
+    let docs = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query(
+          {
+            type: QueryType.DOC_TYPE_AND_ID,
+            docType: DocType.TRIP,
+            ID: props.trip_ID
+          },
+          databaseContext
+        );
+      }
+    });
     if (docs[0]?.json?.metabaseChoices) setMetabaseChoices([...JSON.parse(docs[0]?.json).metabaseChoices]);
     if (docs[0]?.json?.metabaseOptions) setMetabaseOptions([...JSON.parse(docs[0]?.json).metabaseOptions]);
     if (docs[0]?.json) setTrip(JSON.parse(docs[0]?.json));
@@ -64,17 +68,21 @@ export const MetabaseSearch: React.FC<any> = (props) => {
     ) {
       try {
         let options: Array<object> = await invasivesApi.getMetabaseQueryOptions();
-        await upsert(
-          [
-            {
-              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-              docType: DocType.TRIP,
-              ID: props.trip_ID,
-              json: { metabaseQueryOptionsLastChecked: moment().valueOf(), metabaseQueryOptions: options }
-            }
-          ],
-          databaseContext
-        );
+        await databaseContext.asyncQueue({
+          asyncTask: () => {
+            return upsert(
+              [
+                {
+                  type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                  docType: DocType.TRIP,
+                  ID: props.trip_ID,
+                  json: { metabaseQueryOptionsLastChecked: moment().valueOf(), metabaseQueryOptions: options }
+                }
+              ],
+              databaseContext
+            );
+          }
+        });
         setMetabaseOptions([...options]);
       } catch (error) {
         // if (trip.metabaseQueryOptions) setMetabaseOptions(trip.metabaseQueryOptions);
@@ -94,17 +102,21 @@ export const MetabaseSearch: React.FC<any> = (props) => {
   }, []);
 
   const saveChoices = async (newMetabaseChoices) => {
-    await upsert(
-      [
-        {
-          type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-          docType: DocType.TRIP,
-          ID: props.trip_ID,
-          json: { metabaseChoices: newMetabaseChoices }
-        }
-      ],
-      databaseContext
-    );
+    await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+              docType: DocType.TRIP,
+              ID: props.trip_ID,
+              json: { metabaseChoices: newMetabaseChoices }
+            }
+          ],
+          databaseContext
+        );
+      }
+    });
     setMetabaseChoices([...newMetabaseChoices]);
   };
 

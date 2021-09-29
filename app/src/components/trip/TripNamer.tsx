@@ -19,10 +19,11 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
   const [name, setName] = useState(null);
 
   const getNameFromTrip = useCallback(async () => {
-    let queryResults = await query(
-      { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
-      databaseContext
-    );
+    let queryResults = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query({ type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP }, databaseContext);
+      }
+    });
     let aName = JSON.parse(queryResults[0].json).name;
 
     if (aName) {
@@ -32,17 +33,21 @@ export const TripNamer: React.FC<ITripNamer> = (props) => {
 
   const saveInput = async (newName) => {
     const tripID: string = props.trip_ID;
-    let result = await upsert(
-      [
-        {
-          type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-          ID: tripID,
-          docType: DocType.TRIP,
-          json: { name: newName }
-        }
-      ],
-      databaseContext
-    );
+    let result = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return upsert(
+          [
+            {
+              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+              ID: tripID,
+              docType: DocType.TRIP,
+              json: { name: newName }
+            }
+          ],
+          databaseContext
+        );
+      }
+    });
   };
 
   // initial fetch

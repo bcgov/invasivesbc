@@ -202,7 +202,12 @@ const ActivitiesList: React.FC = () => {
     const userId = async () => {
       const userInfo: any = keycloak
         ? keycloak?.userInfo
-        : await query({ type: QueryType.DOC_TYPE_AND_ID, docType: DocType.KEYCLOAK, ID: '1' }, databaseContext);
+        : await databaseContext.asyncQueue({
+            asyncTask: () => {
+              return query({ type: QueryType.DOC_TYPE_AND_ID, docType: DocType.KEYCLOAK, ID: '1' }, databaseContext);
+            }
+          });
+
       return userInfo?.preferred_username;
     };
     if (!userId) throw "Keycloak error: can not get current user's username";

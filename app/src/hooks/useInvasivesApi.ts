@@ -42,7 +42,6 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     API_URL = API_HOST ? `http://${API_HOST}:${API_PORT}` : 'http://localhost:7080';
     break;
 }
-
 // This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
 console.dir(process.env);
 console.log('API_URL', API_URL);
@@ -413,14 +412,20 @@ export const useInvasivesApi = () => {
   };
 
   const getSpecFromCache = async () => {
-    let data = await query(
-      {
-        type: QueryType.DOC_TYPE_AND_ID,
-        docType: DocType.API_SPEC,
-        ID: '1'
-      },
-      databaseContext
-    );
+    let data = await databaseContext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE_AND_ID,
+            docType: DocType.API_SPEC,
+            ID: '1'
+          },
+          databaseContext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        return res;
+      }
+    });
 
     if (data?.length > 0) {
       data = JSON.parse(data[0].json);
@@ -433,17 +438,21 @@ export const useInvasivesApi = () => {
       console.log('caching spec');
       //cache if on mobile
       try {
-        await upsert(
-          [
-            {
-              type: UpsertType.DOC_TYPE_AND_ID,
-              docType: DocType.API_SPEC,
-              json: data,
-              ID: '1'
-            }
-          ],
-          databaseContext
-        );
+        await databaseContext.asyncQueue({
+          asyncTask: () => {
+            return upsert(
+              [
+                {
+                  type: UpsertType.DOC_TYPE_AND_ID,
+                  docType: DocType.API_SPEC,
+                  json: data,
+                  ID: '1'
+                }
+              ],
+              databaseContext
+            );
+          }
+        });
         return true;
       } catch (e) {
         alert('unable to cache api spec');

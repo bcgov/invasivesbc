@@ -196,7 +196,11 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
     }
 
     const sql = 'select max(id) as id from trip;';
-    const results = await query({ type: QueryType.RAW_SQL, sql }, databaseContext);
+    const results = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query({ type: QueryType.RAW_SQL, sql }, databaseContext);
+      }
+    });
     return results.length > 0 ? results[0].id : 0;
   };
 

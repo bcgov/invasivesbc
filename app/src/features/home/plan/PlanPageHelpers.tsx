@@ -16,10 +16,20 @@ export const deleteTripRecords = async (databaseContext, trip_ID) => {
     if (!databaseContext) {
     }
     console.log('trip id to delete ' + trip_ID);
-    await upsert(
-      [{ type: UpsertType.RAW_SQL, docType: DocType.TRIP, sql: `DELETE * FROM trip WHERE trip.id = ${trip_ID}` }],
-      databaseContext
-    );
+    await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return upsert(
+          [
+            {
+              type: UpsertType.RAW_SQL,
+              docType: DocType.TRIP,
+              sql: `DELETE * FROM trip WHERE trip.id = ${trip_ID}`
+            }
+          ],
+          databaseContext
+        );
+      }
+    });
     console.log('trip:' + trip_ID + ' has been deleted!');
 
     // let docs = await databaseContext.database.find({

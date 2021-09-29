@@ -103,13 +103,17 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     //if offline: try to get layer data from sqlite local storage
     else {
       //first, selecting large grid items
-      const largeGridRes = await query(
-        {
-          type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA;`
-        },
-        databaseContext
-      );
+      const largeGridRes = await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.RAW_SQL,
+              sql: `SELECT * FROM LARGE_GRID_LAYER_DATA;`
+            },
+            databaseContext
+          );
+        }
+      });
 
       //create a string containing all large grid item ids that we got
       let largeGridItemIdString = '(';
@@ -124,13 +128,17 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
       });
 
       //select small grid items with particular layer name and large grid items id
-      const smallGridRes = await query(
-        {
-          type: QueryType.RAW_SQL,
-          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('${props.dataBCLayerName}') AND largeGridID IN ${largeGridItemIdString};`
-        },
-        databaseContext
-      );
+      const smallGridRes = await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.RAW_SQL,
+              sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('${props.dataBCLayerName}') AND largeGridID IN ${largeGridItemIdString};`
+            },
+            databaseContext
+          );
+        }
+      });
 
       //foreach small grid item that we got, if grid item intersects with map extent,
       //add it to the array of grid items

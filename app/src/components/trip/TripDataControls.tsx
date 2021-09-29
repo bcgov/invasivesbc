@@ -101,10 +101,12 @@ export const TripDataControls: React.FC<any> = (props) => {
   };
 
   const getTrip = useCallback(async () => {
-    const queryResults = await query(
-      { type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP },
-      databaseContext
-    );
+    const queryResults = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query({ type: QueryType.DOC_TYPE_AND_ID, ID: props.trip_ID, docType: DocType.TRIP }, databaseContext);
+      }
+    });
+
     setTrip(JSON.parse(queryResults[0].json));
   }, [databaseContext]);
 
@@ -126,6 +128,18 @@ export const TripDataControls: React.FC<any> = (props) => {
     });
 
     if (!trip || !trip.activityChoices || !trip.activityChoices.length) {
+      setProgressDialog((prevState) => {
+        const itemsArr = prevState.items;
+        itemsArr[2] = {
+          ...itemsArr[2],
+          state: 'complete',
+          description: `The step is skipped as there were no activity choices entered.`
+        };
+        return {
+          ...prevState,
+          items: itemsArr
+        };
+      });
       return;
     }
 
@@ -171,7 +185,11 @@ export const TripDataControls: React.FC<any> = (props) => {
         });
       }
       try {
-        numberActivitiesFetched += await upsert(upserts, databaseContext);
+        numberActivitiesFetched += await databaseContext.asyncQueue({
+          asyncTask: () => {
+            return upsert(upserts, databaseContext);
+          }
+        });
         console.log(`Cached ${numberActivitiesFetched} activities.`);
       } catch (error) {
         console.log('Error with inserting Activities into database: ' + error);
@@ -212,6 +230,18 @@ export const TripDataControls: React.FC<any> = (props) => {
 
     try {
       if (!trip || !trip.pointOfInterestChoices || !trip.pointOfInterestChoices.length) {
+        setProgressDialog((prevState) => {
+          const itemsArr = prevState.items;
+          itemsArr[2] = {
+            ...itemsArr[2],
+            state: 'complete',
+            description: `The step is skipped as there were no point of interest choices entered.`
+          };
+          return {
+            ...prevState,
+            items: itemsArr
+          };
+        });
         return;
       }
 
@@ -333,6 +363,18 @@ export const TripDataControls: React.FC<any> = (props) => {
 
     try {
       if (!trip || !trip.metabaseChoices || !trip.metabaseChoices.length) {
+        setProgressDialog((prevState) => {
+          const itemsArr = prevState.items;
+          itemsArr[2] = {
+            ...itemsArr[2],
+            state: 'complete',
+            description: `The step is skipped as there were no metabase choices entered.`
+          };
+          return {
+            ...prevState,
+            items: itemsArr
+          };
+        });
         return;
       }
 
@@ -353,23 +395,26 @@ export const TripDataControls: React.FC<any> = (props) => {
         }
 
         const response = await invasivesApi.getMetabaseQueryResults(querySearchCriteria);
-
-        await upsert(
-          [
-            {
-              type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-              docType: DocType.TRIP,
-              ID: props.trip_ID,
-              json: {
-                metabaseQueryNames: {
-                  ...trip.metabaseQueryNames,
-                  [setOfChoices.metabaseQueryId]: response.name
+        await databaseContext.asyncQueue({
+          asyncTask: () => {
+            return upsert(
+              [
+                {
+                  type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                  docType: DocType.TRIP,
+                  ID: props.trip_ID,
+                  json: {
+                    metabaseQueryNames: {
+                      ...trip.metabaseQueryNames,
+                      [setOfChoices.metabaseQueryId]: response.name
+                    }
+                  }
                 }
-              }
-            }
-          ],
-          databaseContext
-        );
+              ],
+              databaseContext
+            );
+          }
+        });
 
         let responseRows = [];
         if (response?.activities?.length) {
@@ -462,6 +507,10 @@ export const TripDataControls: React.FC<any> = (props) => {
    *  Both of the queues are for caching layers data
    */
 
+  const fetchDataQueue = async.queue(function (task, callback) {
+    callback();
+  }, 1);
+
   //queue for managing api requests to WFS consumer
   const apiRequestsQueue = async.queue(function (task, callback) {
     callback();
@@ -486,16 +535,19 @@ export const TripDataControls: React.FC<any> = (props) => {
 
     try {
       console.log('starting to fetch layer data...');
-
       //getting the trip
-      const res = await query(
-        {
-          type: QueryType.DOC_TYPE_AND_ID,
-          docType: DocType.TRIP,
-          ID: props.trip_ID
-        },
-        databaseContext
-      );
+      const res = await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.DOC_TYPE_AND_ID,
+              docType: DocType.TRIP,
+              ID: props.trip_ID
+            },
+            databaseContext
+          );
+        }
+      });
 
       //convert geo to feature collection
       const tripGeo = {
@@ -527,19 +579,23 @@ export const TripDataControls: React.FC<any> = (props) => {
         //for each large grid item, do...
         largeGridResult.forEach(async (row) => {
           //insert large grid item into sqllite table
-          upsert(
-            [
-              {
-                type: UpsertType.RAW_SQL,
-                sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea) VALUES 
+          databaseContext.asyncQueue({
+            asyncTask: () => {
+              return upsert(
+                [
+                  {
+                    type: UpsertType.RAW_SQL,
+                    sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea) VALUES 
                   (${row.id},
                   '${JSON.stringify(row.geo).split(`'`).join(`''`)}')
                   ON CONFLICT(id) DO UPDATE SET 
                       featureArea='${JSON.stringify(row.geo).split(`'`).join(`''`)}';`
-              }
-            ],
-            databaseContext
-          );
+                  }
+                ],
+                databaseContext
+              );
+            }
+          });
         });
 
         let smallGridResLength = smallGridResult.length;
@@ -595,20 +651,24 @@ export const TripDataControls: React.FC<any> = (props) => {
                     gridItemsIndex++;
                   });
                   //performing batch upsert of 50 items
-                  upsert(
-                    [
-                      {
-                        type: UpsertType.RAW_SQL,
-                        sql: `INSERT INTO SMALL_GRID_LAYER_DATA (id, featureArea, featuresInArea, layerName, largeGridID) VALUES ${insertValuesString}
+                  databaseContext.asyncQueue({
+                    asyncTask: () => {
+                      return upsert(
+                        [
+                          {
+                            type: UpsertType.RAW_SQL,
+                            sql: `INSERT INTO SMALL_GRID_LAYER_DATA (id, featureArea, featuresInArea, layerName, largeGridID) VALUES ${insertValuesString}
                           ON CONFLICT(id, layerName) DO
                           UPDATE SET
                             featureArea=excluded.featureArea,
                             featuresInArea=excluded.featuresInArea,
                             largeGridID=excluded.largeGridID;`
-                      }
-                    ],
-                    databaseContext
-                  );
+                          }
+                        ],
+                        databaseContext
+                      );
+                    }
+                  });
                   //emptying the array to fill it with 50 items on next iteration
                   smallGridResLength -= 50;
                   gridItemsArr = [];
@@ -656,15 +716,19 @@ export const TripDataControls: React.FC<any> = (props) => {
         {
           actionName: 'Yes',
           actionOnClick: async () => {
-            await upsert(
-              [
-                {
-                  type: UpsertType.RAW_SQL,
-                  sql: `DELETE FROM TRIP WHERE id=${props.trip_ID}`
-                }
-              ],
-              databaseContext
-            );
+            await databaseContext.asyncQueue({
+              asyncTask: () => {
+                return upsert(
+                  [
+                    {
+                      type: UpsertType.RAW_SQL,
+                      sql: `DELETE FROM TRIP WHERE id=${props.trip_ID}`
+                    }
+                  ],
+                  databaseContext
+                );
+              }
+            });
             console.log(`Trip #${props.trip_ID} was deleted!`);
             props.setTripDeleted(props.trip_ID);
             setWarningDialog({ ...warningDialog, dialogOpen: false });
@@ -711,28 +775,34 @@ export const TripDataControls: React.FC<any> = (props) => {
 
       const actvitiesGeoJSON = { type: 'FeatureCollection', features: activitiesFeatureArray };
       const poiGeoJSON = { type: 'FeatureCollection', features: poisFeatureArray };
-
-      await upsert(
-        [
-          {
-            type: UpsertType.RAW_SQL,
-            sql: `INSERT INTO lean_activities (json, trip_ID) VALUES ('${JSON.stringify(actvitiesGeoJSON)}',${
-              props.trip_ID
-            })`
-          }
-        ],
-        databaseContext
-      );
-
-      await upsert(
-        [
-          {
-            type: UpsertType.RAW_SQL,
-            sql: `INSERT INTO lean_poi (json, trip_ID) VALUES ('${JSON.stringify(poiGeoJSON)}',${props.trip_ID})`
-          }
-        ],
-        databaseContext
-      );
+      await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.RAW_SQL,
+                sql: `INSERT INTO lean_activities (json, trip_ID) VALUES ('${JSON.stringify(actvitiesGeoJSON)}',${
+                  props.trip_ID
+                })`
+              }
+            ],
+            databaseContext
+          );
+        }
+      });
+      await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.RAW_SQL,
+                sql: `INSERT INTO lean_poi (json, trip_ID) VALUES ('${JSON.stringify(poiGeoJSON)}',${props.trip_ID})`
+              }
+            ],
+            databaseContext
+          );
+        }
+      });
 
       console.log('finished fetching lean activities and poi');
     } catch (e) {

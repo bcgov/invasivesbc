@@ -23,13 +23,17 @@ export const RenderVectorTilesOffline = (props) => {
 
   const getVectorTiles = async () => {
     // first, selecting large grid items with well layer name
-    const largeGridRes = await query(
-      {
-        type: QueryType.RAW_SQL,
-        sql: `SELECT * FROM LARGE_GRID_LAYER_DATA;`
-      },
-      databaseContext
-    );
+    const largeGridRes = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT * FROM LARGE_GRID_LAYER_DATA;`
+          },
+          databaseContext
+        );
+      }
+    });
 
     if (!largeGridRes) {
       return null;
@@ -48,13 +52,17 @@ export const RenderVectorTilesOffline = (props) => {
     });
 
     //select small grid items with current layer name and large grid items id
-    const smallGridRes = await query(
-      {
-        type: QueryType.RAW_SQL,
-        sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('${props.dataBCLayerName}') AND largeGridID IN ${largeGridItemIdString};`
-      },
-      databaseContext
-    );
+    const smallGridRes = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('${props.dataBCLayerName}') AND largeGridID IN ${largeGridItemIdString};`
+          },
+          databaseContext
+        );
+      }
+    });
 
     //foreach small grid item that we got,
     //add features inside of the item to the array of features
