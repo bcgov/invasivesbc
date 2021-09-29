@@ -4,6 +4,7 @@ import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { Feature, Geometry } from 'geojson';
 import { Layer } from 'leaflet';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 
 export const ActivitiesAndPoiLayer = (props) => {
   const map = useMap();
@@ -11,6 +12,19 @@ export const ActivitiesAndPoiLayer = (props) => {
   const [activities, setActivities] = useState(null);
   const [pois, setPois] = useState(null);
   const dataAccess = useDataAccess();
+  const options = {
+    maxZoom: 24,
+    tolerance: 3,
+    debug: 0,
+    style: {
+      fillColor: '#00000',
+      color: '#00000',
+      stroke: true,
+      opacity: props.opacity,
+      fillOpacity: props.opacity - 0.2,
+      weight: 5
+    }
+  };
 
   useMapEvent('moveend', () => {
     fetchData();
@@ -32,31 +46,15 @@ export const ActivitiesAndPoiLayer = (props) => {
 
     setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
-    console.log(pois);
   };
-
-  const onEachFeature = props.customOnEachFeature
-    ? props.customOnEachFeature
-    : (feature: Feature<Geometry, any>, layer: Layer) => {
-        const popupContent = `
-          <div>
-              <p>${feature.id}</p>                  
-          </div>
-        `;
-        layer.bindPopup(popupContent);
-      };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return (
     <>
       {
-        activities && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={activities} /> //NOSONAR
+        activities && <GeoJSONVtLayer geoJSON={activities} options={options} /> //NOSONAR
       }
       {
-        pois && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={pois} /> //NOSONAR
+        pois && <GeoJSONVtLayer geoJSON={pois} options={options} /> //NOSONAR
       }
     </>
   );
