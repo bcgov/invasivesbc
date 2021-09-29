@@ -116,7 +116,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} updates Updates as subsets of the doc/activity object
    */
   const updateDoc = async (updates) => {
-    if (doc.docType === DocType.REFERENCE_ACTIVITY) {
+    if (doc?.docType === DocType.REFERENCE_ACTIVITY) {
       return;
     }
     let updatedDoc = {
@@ -390,7 +390,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     let activityResults;
     if (Capacitor.getPlatform() === 'web') {
       activityResults = await dataAccess.getActivityById(
-        activityId || (appStateResults.activeActivity as string),
+        activityId || (appStateResults.docs[0].activeActivity as string),
         databaseContext,
         true
       );
@@ -406,7 +406,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         console.log('error reading activity: ', JSON.stringify(e));
       }
     }
-
     return mapDBActivityToDoc(activityResults);
   };
 
