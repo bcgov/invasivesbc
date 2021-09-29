@@ -38,7 +38,7 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
   },
 
   initialize: function (geojson, options) {
-    L.setOptions(this, options);
+    L.setOptions(this, options.options);
     (L.GridLayer.prototype as any).initialize.call(this, options);
     this.tileIndex = geojsonvt(geojson, this.options);
   },
@@ -84,7 +84,7 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
       }
     }
     if (type === 3) {
-      ctx.fill(this.options.style.fillRule || 'evenodd');
+      ctx.fill('evenodd');
     }
 
     ctx.stroke();

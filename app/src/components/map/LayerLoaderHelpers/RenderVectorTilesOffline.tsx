@@ -12,11 +12,11 @@ export const RenderVectorTilesOffline = (props) => {
     tolerance: 3,
     debug: 0,
     style: {
-      fillColor: '#1EB300',
-      color: '#F2FF00',
+      fillColor: '#00000',
+      color: '#00000',
       stroke: true,
       opacity: props.opacity,
-      fillOpacity: props.opacity - 0.1,
+      fillOpacity: props.opacity - 0.2,
       weight: 5
     }
   };
