@@ -15,7 +15,7 @@ export async function seed(knex: Knex): Promise<void> {
    */
   const lines = sql.toString().split(/\r?\n/);
 
-  for (let line of lines) {
+  for (const line of lines) {
     await knex.raw(line);
   }
 }
