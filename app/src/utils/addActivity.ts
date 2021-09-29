@@ -270,7 +270,8 @@ export const mapDBActivityToDoc = (dbActivity: any) => {
       dbActivity.form_data,
       dbActivity.geometry,
       dbActivity.activity_type,
-      dbActivity.activity_subtype
+      dbActivity.activity_subtype,
+      dbActivity.docType
     ),
     ...mapKeys(otherKeys, camelCase)
   };
@@ -282,7 +283,8 @@ export const mapDBActivityToDoc = (dbActivity: any) => {
       ...dbActivity.activity_payload?.sync,
       status: dbActivity.sync_status
     },
-    _id: dbActivity.activity_id
+    _id: dbActivity.activity_id,
+    id: dbActivity.id
   };
   return doc;
 };
@@ -294,7 +296,8 @@ export function generateActivityPayload(
   formData: any,
   geometry: Feature[],
   activityType: ActivityType,
-  activitySubtype: ActivitySubtype
+  activitySubtype: ActivitySubtype,
+  docType?: DocType
 ): IActivity {
   const id = uuidv4();
   const short_id: string = getShortActivityID({
@@ -304,9 +307,10 @@ export function generateActivityPayload(
   });
   return {
     _id: id,
+    id: id,
     shortId: short_id,
     activityId: id,
-    docType: DocType.ACTIVITY,
+    docType: docType,
     activityType,
     activitySubtype,
     status: ActivityStatus.NEW,

@@ -314,7 +314,10 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                     action: async (allSelectedRows) => {
                       const selectedIds = allSelectedRows.map((row) => row[keyField]);
                       if (selectedIds.length === 1) {
-                        await dataAccess.setAppState({ activeActivity: selectedIds[0] }, databaseContext);
+                        const appState = props.referenceData
+                          ? { activeActivity: selectedIds[0], referenceData: true }
+                          : { activeActivity: selectedIds[0], referenceData: false };
+                        await dataAccess.setAppState(appState, databaseContext);
                         // TODO switch by activity type, I guess...
                         history.push({ pathname: `/home/activity` });
                       } else {
@@ -671,6 +674,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
     return (
       <ActivitiesTable
         tableName="Observations"
+        referenceData={props.referenceData}
         activitySubtypes={[ActivitySubtype.Observation_PlantTerrestrial, ActivitySubtype.Observation_PlantAquatic]}
         tableSchemaType={[
           'Observation',

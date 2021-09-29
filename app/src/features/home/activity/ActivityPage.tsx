@@ -56,6 +56,7 @@ import { RolesContext } from '../../../contexts/RolesContext';
 import bcArea from '../../../components/map/BC_AREA.json';
 import { calc_utm } from 'components/map/Tools/DisplayPosition';
 import { GetUserAccessLevel } from 'utils/getAccessLevel';
+import { DocType } from 'constants/database';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -115,6 +116,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} updates Updates as subsets of the doc/activity object
    */
   const updateDoc = async (updates) => {
+    if (doc.docType === DocType.REFERENCE_ACTIVITY) {
+      return;
+    }
     let updatedDoc = {
       ...doc,
       ...updates,
@@ -379,24 +383,30 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   */
   const getActivityResultsFromDB = async (activityId: any): Promise<any> => {
     const appStateResults = await dataAccess.getAppState(databaseContext);
+    if (!appStateResults) {
+      return;
+    }
 
     let activityResults;
     if (Capacitor.getPlatform() === 'web') {
-      if (!appStateResults || !appStateResults.docs || !appStateResults.docs.length) {
-        return;
-      }
-
-      activityResults = await dataAccess.getActivityById(
-        activityId || appStateResults.docs[0].activeActivity,
-        databaseContext
-      );
-    } else {
       activityResults = await dataAccess.getActivityById(
         activityId || (appStateResults.activeActivity as string),
         databaseContext,
         true
       );
+    } else {
+      try {
+        activityResults = await dataAccess.getActivityById(
+          activityId || appStateResults.activeActivity,
+          databaseContext,
+          true,
+          appStateResults.referenceData
+        );
+      } catch (e) {
+        console.log('error reading activity: ', JSON.stringify(e));
+      }
     }
+
     return mapDBActivityToDoc(activityResults);
   };
 
@@ -597,8 +607,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
 
-      // await handleRecordLinking(updatedDoc);
-
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
@@ -643,7 +651,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    saveExtent(extent);
+    if (doc.docType !== DocType.REFERENCE_ACTIVITY) {
+      saveExtent(extent);
+    }
   }, [extent, isLoading, saveExtent]);
 
   useEffect(() => {
@@ -651,7 +661,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return;
     }
 
-    savePhotos(photos);
+    if (doc.docType !== DocType.REFERENCE_ACTIVITY) {
+      savePhotos(photos);
+    }
   }, [photos, isLoading]);
 
   useEffect(() => {
@@ -713,7 +725,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
             <Typography align="center">Activity ID: {doc.activityId ? doc.activityId : 'unknown'}</Typography>
             <Typography align="center">
-              Date created: {doc.dateCreated ? doc.dateCreated.split('T')[0] : 'unknown'}
+              {/*
+              Date created: {doc.dateCreated ? doc.dateCreated : 'unknown'}*/}
             </Typography>
           </Box>
           <ActivityComponent
