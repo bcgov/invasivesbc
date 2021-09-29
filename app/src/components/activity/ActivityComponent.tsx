@@ -111,9 +111,11 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       if (
         activity.formStatus !== FormValidationStatus.VALID ||
         activity.syncStatus === ActivitySyncStatus.SAVE_SUCCESSFUL
-      )
+      ) {
         return;
+      }
       const dbActivity: any = await dataAccess.getActivityById(activity.activityId, databaseContext);
+      console.dir('dbActivity', dbActivity);
       const result = await dataAccess.updateActivity(
         sanitizeRecord({
           ...dbActivity,

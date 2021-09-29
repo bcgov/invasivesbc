@@ -116,12 +116,19 @@ const getPlantName = (subtype, invasivePlantCode, response) => {
   }
 };
 
-const getPlantCodes = (activity_payload) => {
-  if (activity_payload.species_positive) {
-    return activity_payload.species_positive;
-  } else if (activity_payload.species_negative) {
-    return activity_payload.species_negative;
+const getPlantCodes = (obj) => {
+  var plantCodeList = [];
+  if (obj.species_positive) {
+    obj.species_positive.map((code) => {
+      plantCodeList.push(code);
+    });
   }
+  if (obj.species_negative) {
+    obj.species_negative.map((code) => {
+      plantCodeList.push(code);
+    });
+  }
+  return plantCodeList;
 };
 
 const getArea = (shape) => {
@@ -301,7 +308,7 @@ export const RenderTableActivity = ({ rows, setRows }) => {
                 </Button>
               </StyledTableCell>
               <StyledTableCell style={{ marginRight: -40 }}>
-                {getPlantCodes(row.obj.activity_payload).map((code) => (
+                {getPlantCodes(row.obj).map((code) => (
                   <>{code}</>
                 ))}
               </StyledTableCell>

@@ -61,7 +61,9 @@ export const activityDefaults = {
 AKA "IDGAF Record Formatter".  wraps an activity or doc or whatever and turns it into a format favoring DB-style
 */
 export const sanitizeRecord = (input: any) => {
-  if (typeof input !== 'object') throw 'Okay, you have to at least give an object though';
+  if (typeof input !== 'object') throw new Error('Okay, you have to at least give an object though');
+
+  console.dir('input', input);
 
   const flattened: any = {
     ...mapKeys(input?.formData, snakeCase),
@@ -97,7 +99,7 @@ export const sanitizeRecord = (input: any) => {
   };
 
   if (flattened.activity_id && flattened.point_of_interest_id)
-    throw 'This is confusing.  A record should be an activity OR a POI';
+    throw new Error('This is confusing.  A record should be an activity OR a POI');
 
   if (!flattened.activity_id && !flattened.point_of_interest_id) {
     if (!flattened.doc_type) throw new Error('Unknown Record type with no ID');
