@@ -10,7 +10,7 @@
 */
 -- Positive Layer
 drop table if exists test_spatial_expload_positive;
-create table test_spatial_expload_positive as
+create temporary table test_spatial_expload_positive as
   select 
     activity_subtype,
     created_timestamp,
@@ -37,7 +37,7 @@ alter table test_spatial_expload_positive add primary key (gid);
 
 -- Negative Layer
 drop table if exists test_spatial_expload_negative;
-create table test_spatial_expload_negative as
+create temporary table test_spatial_expload_negative as
   select 
     activity_subtype,
     created_timestamp,
@@ -64,7 +64,7 @@ alter table test_spatial_expload_negative add primary key (gid);
 
 /*********** Run the deletion **************/
 drop table if exists test_spatial_positive_negative;
-create table test_spatial_positive_negative as
+create temporary table test_spatial_positive_negative as
 select
   pos.species #>> '{}' "species",
   pos.activity_incoming_data_id,
@@ -91,8 +91,8 @@ alter table test_spatial_positive_negative add primary key (gid);
 
 
 /*********** Merge everything together **************/
-drop table if exists test_spatial_merge;
-create table test_spatial_merge as
+drop table if exists observations_by_species;
+create table observations_by_species as
 select
   species,
   array_agg(activity_incoming_data_id) "activity_ids", -- Collect original IDs 
@@ -111,11 +111,11 @@ group by
   species
 ;
 
-drop index if exists test_spatial_merge_geom_gist;
-create index test_spatial_merge_geom_gist on test_spatial_merge using gist ("geom");
+drop index if exists observations_by_species_geom_gist;
+create index observations_by_species_geom_gist on observations_by_species using gist ("geom");
 
-alter table test_spatial_merge add column gid serial;
-alter table test_spatial_merge add primary key (gid);
+alter table observations_by_species add column gid serial;
+alter table observations_by_species add primary key (gid);
 
 
 

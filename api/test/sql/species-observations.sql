@@ -6,7 +6,7 @@ select
   round(sum(st_area(p.geom))) "Area",
   p.activity_ids "Activity IDs"
 from
-  test_spatial_merge p,
+  observations_by_species p,
   code c
 where
   p.species = c.code_name and

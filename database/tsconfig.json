@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": ["es2018"],
+    "lib": ["es2018", "dom"],
     "baseUrl": "src",
     "outDir": "dist",
     "target": "es5",
