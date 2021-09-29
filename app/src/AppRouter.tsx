@@ -1,6 +1,6 @@
 import { Network } from '@capacitor/network';
 import { CircularProgress } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import HomeRouter from './features/home/HomeRouter';
 import AuthLayout from './layouts/AuthLayout';
@@ -8,6 +8,7 @@ import PublicLayout from './layouts/PublicLayout';
 import AccessDenied from './pages/misc/AccessDenied';
 import { NotFoundPage } from './pages/misc/NotFoundPage';
 import AppRoute from './utils/AppRoute';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 interface IAppRouterProps {
   deviceInfo: any;
@@ -18,6 +19,7 @@ interface IAppRouterProps {
 const AppRouter: React.FC<IAppRouterProps> = (props) => {
   const [layout, setLayout] = useState<React.FC<any>>(null);
   const [isMobileNoNetwork, setIsMobileNoNetwork] = useState(false);
+  const networkContext = useContext(NetworkContext);
 
   const getTitle = (page: string) => {
     return `InvasivesBC - ${page}`;
@@ -51,7 +53,9 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         path="/home"
         title={getTitle('Home')}
         component={HomeRouter}
-        layout={process.env.REACT_APP_REAL_NODE_ENV === 'production' ? PublicLayout : AuthLayout}
+        layout={
+          !networkContext.connected || process.env.REACT_APP_REAL_NODE_ENV === 'production' ? PublicLayout : AuthLayout
+        }
         keycloak={props.keycloak}
         keycloakConfig={props.keycloakConfig}
         isMobileNoNetwork={isMobileNoNetwork}
