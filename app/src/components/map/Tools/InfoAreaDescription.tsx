@@ -9,14 +9,13 @@ import {
 } from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
-import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
+import StorageIcon from '@material-ui/icons/Storage';
 import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
 import { calc_utm } from './DisplayPosition';
 import { createDataUTM, RenderTableActivity, RenderTablePosition, RenderTableDataBC } from './Helpers/StyledTable';
 import { getDataFromDataBC } from '../WFSConsumer';
 import * as turf from '@turf/turf';
-import { Feature, Geometry } from 'geojson';
-import { DomEvent, Layer } from 'leaflet';
+import { DomEvent } from 'leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
@@ -131,8 +130,8 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
       </TableContainer>
       <BottomNavigation value={section} onChange={handleChange}>
         <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
-        <BottomNavigationAction value="activity" label="Activity" icon={<DirectionsRunIcon />} />
-        <BottomNavigationAction value="databc" label="Data BC" icon={<FolderIcon />} />
+        <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
+        <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
       </BottomNavigation>
       <Button onClick={hideElement}>Close</Button>
     </Popup>
