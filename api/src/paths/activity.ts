@@ -95,8 +95,8 @@ const post_put_apiDoc = {
             },
             species_negative: {
               type: 'array',
-              title: 'Species Codes (Negatively Occuring)',
-              description: 'List of species negatively occuring in the given activity',
+              title: 'Species Codes (Negatively Occurring)',
+              description: 'List of species negatively occurring in the given activity',
               items: {
                 type: 'string'
               }
