@@ -508,7 +508,7 @@ export function populateSpeciesArrays(record) {
     case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant:
     case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant:
     case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
-    case ActivitySubtype.Activity_BiologicalDispersal:
+    case ActivitySubtype.Monitoring_BiologicalDispersal:
       species_positive = [subtypeData?.invasive_plant_code];
       break;
 

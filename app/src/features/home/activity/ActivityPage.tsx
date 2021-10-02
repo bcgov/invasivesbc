@@ -30,6 +30,7 @@ import {
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
   getPosAndNegObservationValidator,
+  getShorelineTypesPercentValidator,
   getHerbicideMixValidation,
   getVegTransectPointsPercentCoverValidator,
   getDurationCountAndPlantCountValidation,
@@ -303,18 +304,23 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return formData;
     }
 
-    formData.activity_subtype_data.collections.forEach((collection) => {
-      if (collection.start_time && collection.stop_time) {
-        const arrStart = collection.start_time.split(':');
-        const arrStop = collection.stop_time.split(':');
-        const minutesStart = +arrStart[0] * 60 + +arrStart[1];
-        const minutesStop = +arrStop[0] * 60 + +arrStop[1];
+    const collections = [...formData.activity_subtype_data.collections];
 
-        const total = minutesStop - minutesStart;
-        collection.total_time = total;
+    collections.forEach((collection) => {
+      if (collection.start_time && collection.stop_time) {
+        const start_time = new Date(collection.start_time);
+        const stop_time = new Date(collection.stop_time);
+
+        const diffMs = stop_time.getTime() - start_time.getTime();
+        const diffMins = Math.round(diffMs / 1000 / 60);
+        console.log(diffMins);
+        collection.total_time = diffMins;
       }
     });
-    return formData;
+    return {
+      ...formData,
+      activity_subtype_data: { ...formData.activity_subtype_data, collections: collections }
+    };
   };
 
   const autoFillSlopeAspect = (formData: any, lastField: string) => {
@@ -728,10 +734,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">Activity ID: {doc.activityId ? doc.activityId : 'unknown'}</Typography>
+            <Typography
+              onClick={() => {
+                console.log(doc);
+              }}
+              align="center">
+              Activity ID: {doc.shortId ? doc.shortId : 'unknown'}
+            </Typography>
             <Typography align="center">
-              {/*
-              Date created: {doc.dateCreated ? doc.dateCreated : 'unknown'}*/}
+              Date created: {doc.dateCreated ? new Date(doc.dateCreated).toString() : 'unknown'}
             </Typography>
           </Box>
           <ActivityComponent
@@ -745,6 +756,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getDuplicateInvasivePlantsValidator(doc.activitySubtype),
               getHerbicideApplicationRateValidator(),
               getTransectOffsetDistanceValidator(),
+              getShorelineTypesPercentValidator(),
               getHerbicideMixValidation(),
               getVegTransectPointsPercentCoverValidator(),
               getDurationCountAndPlantCountValidation(),

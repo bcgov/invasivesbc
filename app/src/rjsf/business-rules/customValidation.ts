@@ -164,6 +164,35 @@ export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
 /*
   Function to validate that the total percent value of all jurisdictions combined = 100
 */
+export function getShorelineTypesPercentValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.shoreline_types) {
+      return errors;
+    }
+    console.log(formData);
+
+    const { shoreline_types } = formData.activity_subtype_data;
+
+    let totalPercent = 0;
+
+    shoreline_types.forEach((shoreline_type: any) => {
+      totalPercent += shoreline_type.percent_covered;
+    });
+
+    errors.activity_subtype_data['shoreline_types'].__errors = [];
+    if (totalPercent !== 100) {
+      errors.activity_subtype_data['shoreline_types'].addError(
+        'Total percentage of area covered by jurisdictions must equal 100%'
+      );
+    }
+
+    return errors;
+  };
+}
+
+/*
+  Function to validate that the total percent value of all jurisdictions combined = 100
+*/
 export function getJurisdictionPercentValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (!formData || !formData.activity_data || !formData.activity_data.jurisdictions) {
@@ -221,7 +250,7 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
       'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
       'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
       'Activity_Monitoring_BiologicalTerrestrialPlant',
-      'Activity_Dispersal_BiologicalDispersal',
+      'Activity_Monitoring_BiologicalDispersal',
       'Activity_AnimalActivity_AnimalTerrestrial',
       'Activity_AnimalActivity_AnimalAquatic',
       'Activity_Transect_FireMonitoring',

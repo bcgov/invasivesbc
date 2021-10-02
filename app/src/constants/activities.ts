@@ -31,7 +31,7 @@ export enum ActivitySubtype {
   Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
   Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
   Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
-  Activity_BiologicalDispersal = 'Activity_Dispersal_BiologicalDispersal',
+  Monitoring_BiologicalDispersal = 'Activity_Monitoring_BiologicalDispersal',
 
   Transect_FireMonitoring = 'Activity_Transect_FireMonitoring',
   Transect_Vegetation = 'Activity_Transect_Vegetation',
@@ -62,7 +62,7 @@ export enum ActivitySubtypeShortLabels {
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical',
   Activity_Monitoring_BiologicalTerrestrialPlant = 'Biocontrol Release Monitoring',
-  Activity_Dispersal_BiologicalDispersal = 'Biocontrol Dispersal Monitoring',
+  Activity_Monitoring_BiologicalDispersal = 'Biocontrol Dispersal Monitoring',
 
   // Transects:
   Activity_Transect_FireMonitoring = 'Wildfire & Prescribed Burn Monitoring',
@@ -84,8 +84,8 @@ export enum ActivityMonitoringLinks {
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Treatment_MechanicalPlant',
   Activity_Monitoring_BiologicalTerrestrialPlant = 'Activity_Treatment_BiologicalPlant',
 
-  Activity_Dispersal_BiologicalDispersal = 'Activity_Collection_Biocontrol',
-  Activity_Collection_Biocontrol = 'Activity_Dispersal_BiologicalDispersal'
+  Activity_Monitoring_BiologicalDispersal = 'Activity_Collection_Biocontrol',
+  Activity_Collection_Biocontrol = 'Activity_Collection_Biocontrol'
 }
 
 export const ActivityTypeIcon: { [key: string]: SvgIconComponent } = {
@@ -119,7 +119,7 @@ export enum ActivityLetter {
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'C',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'P', // Aquatic?
   Activity_Monitoring_BiologicalTerrestrialPlant = 'P',
-  Activity_Dispersal_BiologicalDispersal = 'D',
+  Activity_Monitoring_BiologicalDispersal = 'D',
 
   // Transects:
   Activity_Transect_FireMonitoring = 'T',
