@@ -159,9 +159,11 @@ export const useDataAccess = () => {
         }
       }
     } catch (e) {
-      throw `unable to get activity by id:  debug info:  ${JSON.stringify(
-        activityId
-      )}, ${referenceData})}, ${JSON.stringify(e)}`;
+      throw new Error(
+        `unable to get activity by id:  debug info:  ${JSON.stringify(
+          activityId
+        )}, ${referenceData})}, ${JSON.stringify(e)}`
+      );
     }
   };
 
