@@ -17,6 +17,7 @@ import {
 } from '../../components/common/RecordTables';
 import { useDataAccess } from '../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../contexts/DatabaseContext2';
+import { sanitizeRecord } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -138,7 +139,7 @@ const CachedRecordsList: React.FC = (props) => {
       setPointsOfInterest(pois);
 
       const newDocs = records.rows
-        ?.map((doc) => doc)
+        ?.map((doc) => doc && sanitizeRecord(doc))
         .filter(
           (doc) => (doc.point_of_interest_id || doc.activity_id) && !doc.deleted_timestamp // reduncancy for safety
         );
@@ -202,13 +203,22 @@ const CachedRecordsList: React.FC = (props) => {
     }
   }, [geometry?.length]);
 
-  const observations = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Observation'), [docs]);
+  const observations = useMemo(
+    () => docs.filter((doc: any) => doc.activityType === 'Observation' || doc.activity_type === 'Observation'),
+    [docs]
+  );
   const [selectedObservations, setSelectedObservations] = useState([]);
 
-  const treatments = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Treatment'), [docs]);
+  const treatments = useMemo(
+    () => docs.filter((doc: any) => doc.activityType === 'Treatment' || doc.activity_type === 'Treatment'),
+    [docs]
+  );
   const [selectedTreatments, setSelectedTreatments] = useState([]);
 
-  const monitorings = useMemo(() => docs.filter((doc: any) => doc.activityType === 'Monitoring'), [docs]);
+  const monitorings = useMemo(
+    () => docs.filter((doc: any) => doc.activityType === 'Monitoring' || doc.activity_type === 'Monitoring'),
+    [docs]
+  );
   const [selectedMonitorings, setSelectedMonitorings] = useState([]);
 
   const getPointsOfInterest = async () => {

@@ -63,8 +63,6 @@ AKA "IDGAF Record Formatter".  wraps an activity or doc or whatever and turns it
 export const sanitizeRecord = (input: any) => {
   if (typeof input !== 'object') throw new Error('Okay, you have to at least give an object though');
 
-  console.dir('input', input);
-
   const flattened: any = {
     ...mapKeys(input?.formData, snakeCase),
     ...mapKeys(input?.formData?.point_of_interest_data, snakeCase),
