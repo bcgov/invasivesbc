@@ -137,7 +137,9 @@ export const useDataAccess = () => {
       } else {
         if (forceCache === true || !networkStatus.connected) {
           const dbcontext = context;
-          return dbcontext.asyncQueue({
+          console.log('------- line 140 useDataAccess ------', activityId);
+          // Removed for now due to not being able to open cached activity
+          const res = await dbcontext.asyncQueue({
             asyncTask: async () => {
               const res = await query(
                 {
@@ -147,9 +149,11 @@ export const useDataAccess = () => {
                 },
                 dbcontext
               );
-              return JSON.parse(res[0].json);
+              return JSON.parse(res[0]?.json);
+              // Removed for now due to not being able to open cached activity
             }
           });
+          return res;
         } else {
           return api.getActivityById(activityId);
         }
