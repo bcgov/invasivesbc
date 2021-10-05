@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ungzip } from 'node-gzip';
 
 export async function seed(knex: Knex): Promise<void> {
-  const url = 'https://quartech.s3.ca-central-1.amazonaws.com/invasive_plant_management_areas.sql.gz';
+  const url = 'https://nrs.objectstore.gov.bc.ca/seeds/invasive_plant_management_areas.sql.gz';
   const { data } = await axios.get(url, { responseType: 'arraybuffer' });
   const sql = await ungzip(data);
 

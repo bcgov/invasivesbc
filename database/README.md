@@ -69,14 +69,69 @@ pg_restore dumpFileName
 
 `Error: knex: Required configuration option 'client' is missing.`
 
-Run from database/src/:
-npx knex --knexfile ./knexfile.ts migrate:make <insert name here> --env local
+Run from database/src/: npx knex --knexfile ./knexfile.ts migrate:make <insert name here> --env local
 
 - Double check that your environment variables have been set correctly.
 - Double check that the line endings of the `.env` file are `LF` and not `CLRF`
 
 # Development
+
 ```bash
 cd database/src
 knex seed:run --env local --specific 05_riso.ts.ts
+```
+
+# Managing data in S3
+
+For custom datasets that are too large to store in Github, we use an object store owned by the Ministry. The technology follows the Amazon S3 standard. Thus allowing us to use the AWS SDK to upload and manage large SQL backups.
+
+There are helper functions for uploading and downloading S3 data in [file-utils.ts](../api/src/utils/file-utils.ts). You can see them being utilized in [media.ts](../api/src/paths/media.ts). This works well for software but isn't ideal for managing data and performing custom tasks.
+
+## Installing the AWS-SDK
+
+The Amazon _Software Development Kit (SDK)_ is used for manipulating all AWS cloud services. You need to install the entire tool to obtain the S3 commands we need. Luckily it is a Node Module much like all our other dependencies
+
+```bash
+npm -gi aws-sdk
+```
+
+## Configure
+
+```bash
+aws configure invasivesbc
+```
+
+You will be prompted to add a key and secret.
+
+## List buckets
+
+```bash
+aws s3 --endpoint-url https://nrs.objectstore.gov.bc.ca --profile invasivesbc ls
+```
+
+## Create bucket
+
+```bash
+aws s3 --endpoint-url https://nrs.objectstore.gov.bc.ca --profile invasivesbc mb s3://seeds
+```
+
+## Upload public file
+
+```bash
+aws s3 cp ./aggregate.sql.gz s3://seeds/aggregate.sql.gz \
+  --endpoint-url https://nrs.objectstore.gov.bc.ca \
+  --profile invasivesbc \
+  --acl public-read \
+```
+
+## List contents of a bucket
+
+```bash
+aws s3 --endpoint-url https://nrs.objectstore.gov.bc.ca --profile invasivesbc ls s3://seeds/
+```
+
+## Downloading data
+
+```bash
+curl https://nrs.objectstore.gov.bc.ca/seeds/aggregate.sql.gz > aggregate.sql.gz
 ```
