@@ -543,7 +543,6 @@ export function populateSpeciesArrays(record) {
     default:
       break;
   }
-  console.log(3333, species_positive, species_negative);
   return {
     ...record,
     species_positive:

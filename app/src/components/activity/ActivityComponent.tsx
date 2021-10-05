@@ -11,7 +11,6 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { Geolocation } from '@capacitor/geolocation';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
-import { Feature } from 'geojson';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
 import { useHistory } from 'react-router-dom';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';

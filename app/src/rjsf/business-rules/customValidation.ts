@@ -169,9 +169,10 @@ export function getShorelineTypesPercentValidator(): rjsfValidator {
     if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.shoreline_types) {
       return errors;
     }
-    console.log(formData);
 
     const { shoreline_types } = formData.activity_subtype_data;
+
+    console.log('I shouldnt be here');
 
     let totalPercent = 0;
 
@@ -495,7 +496,6 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
       let herbicideIndex = 0;
       invPlant.herbicide?.forEach((herbicide: any) => {
         if (!herbicide.herbicide_information?.application_rate || !herbicide.herbicide_code) {
-          console.log('no herbicide information found');
         } else if (
           herbicide.herbicide_information.application_rate &&
           herbicide.herbicide_information.application_rate > HerbicideApplicationRates[herbicide.herbicide_code]

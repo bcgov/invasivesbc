@@ -87,7 +87,6 @@ interface IActivityPageProps {
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
-  console.log(GetUserAccessLevel());
 
   const databaseContextPouch = useContext(DatabaseContext);
   const databaseContext = useContext(DatabaseContext2);
@@ -207,7 +206,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const { latitude, longitude } = calculateLatLng(geom) || {};
       var utm = calc_utm(longitude, latitude);
       let utm_zone = utm[0];
-      console.dir('activityPage', utm_zone);
       let utm_easting = utm[1];
       let utm_northing = utm[2];
       /*****exported DisplayPosition utm_zone function
@@ -351,7 +349,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any) => {
     let updatedFormData = event.formData;
-
+    console.log('EVENT');
+    console.log(event);
     updatedFormData.activity_subtype_data = populateHerbicideDilutionAndArea(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
 

@@ -49,7 +49,7 @@ export enum ActivitySubtypeShortLabels {
   Activity_AnimalActivity_AnimalAquatic = 'Animal Aquatic',
 
   // Treatments:
-  Activity_Treatment_ChemicalPlant = 'Terrestrial Invasive Plant Chemical Treatment:',
+  Activity_Treatment_ChemicalPlant = 'Terrestrial Invasive Plant Chemical Treatment',
   Activity_Treatment_ChemicalPlant_BulkEdit = 'Terrestrial Invasive Plant Chemical Treatment',
   Activity_Treatment_ChemicalPlantAquatic = 'Aquatic Invasive Plant Chemical Treatment',
   Activity_Treatment_MechanicalPlant = 'Terrestrial Invasive Plant Mechanical Treatment',
