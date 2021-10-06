@@ -36,6 +36,15 @@ const mapKeys = (source, mappingFunction) => {
   );
 };
 
+export const arrayWrap = (value) => {
+  if (!value) return [];
+  return Array.isArray(value) ? value : [value];
+};
+
+export const uniqueArray = (items) => {
+  return Array.from(new Set(arrayWrap(items)));
+};
+
 export const getShortActivityID = (activity) => {
   const record: any = mapKeys(activity, snakeCase);
   if (!record?.activity_subtype || !record?.activity_id || !(record?.date_created || record.created_timestamp)) return;
