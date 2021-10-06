@@ -69,38 +69,50 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
     }
   }, [bufferedGeo]);
 
+  const getSpecies = (arrSpecies, poi) => {
+    if (poi.species_negative) {
+      poi.species_negative.map((species) => arrSpecies.push(species));
+    }
+    if (poi.species_positive) {
+      poi.species_positive.map((species) => arrSpecies.push(species));
+    }
+  };
+
+  const getJurisdictions = (arrJurisdictions, poi) => {
+    var surveys = poi.point_of_interest_payload.form_data.surveys;
+    if (surveys) {
+      surveys.map((survey) => {
+        survey.jurisdictions.map((jurisdiction) => {
+          var flag = 0;
+          for (let i in arrJurisdictions) {
+            if (jurisdiction.jurisdiction_code === arrJurisdictions[i]) {
+              flag = 1;
+              break;
+            }
+          }
+          if (flag === 0) arrJurisdictions.push(jurisdiction.jurisdiction_code);
+        });
+      });
+    }
+  };
+
+  const setPoiRowData = (poi, arrSpecies, arrJurisdictions) => {
+    return {
+      site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
+      species: arrSpecies,
+      area: 'NWF',
+      jurisdictions: arrJurisdictions
+    };
+  };
+
   useEffect(() => {
     if ((pois as any)?.rows) {
       (pois as any)?.rows?.map((poi) => {
         var arrSpecies = [];
         var arrJurisdictions = [];
-        var surveys = poi.point_of_interest_payload.form_data.surveys;
-        if (poi.species_negative) {
-          poi.species_negative.map((species) => arrSpecies.push(species));
-        }
-        if (poi.species_positive) {
-          poi.species_positive.map((species) => arrSpecies.push(species));
-        }
-        if (surveys) {
-          surveys.map((survey) => {
-            survey.jurisdictions.map((jurisdiction) => {
-              var flag = 0;
-              for (let i in arrJurisdictions) {
-                if (jurisdiction.jurisdiction_code === arrJurisdictions[i]) {
-                  flag = 1;
-                  break;
-                }
-              }
-              if (flag === 0) arrJurisdictions.push(jurisdiction.jurisdiction_code);
-            });
-          });
-        }
-        var obj = {
-          site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
-          species: arrSpecies,
-          area: 'NWF',
-          jurisdictions: arrJurisdictions
-        };
+        getSpecies(arrSpecies, poi);
+        getJurisdictions(arrJurisdictions, poi);
+        var obj = setPoiRowData(poi, arrSpecies, arrJurisdictions);
         console.log(obj);
       });
     }
