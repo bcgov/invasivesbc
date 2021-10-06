@@ -26,7 +26,7 @@ import {
   IAPPChemicalTreatmentsTable,
   IAPPBiologicalTreatmentsTable,
   IAPPBiologicalDispersalsTable
-} from '../../common/RecordTables';
+} from '../../common/record-tables/PointOfInterestTables';
 
 const useStyles = makeStyles((theme) => ({
   heading: {

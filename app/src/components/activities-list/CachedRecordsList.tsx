@@ -12,9 +12,9 @@ import booleanIntersects from '@turf/boolean-intersects';
 import {
   ObservationsTable,
   TreatmentsTable,
-  MonitoringTable,
-  PointsOfInterestTable
-} from '../../components/common/RecordTables';
+  MonitoringTable
+} from '../../components/common/record-tables/ActivityTables';
+import { PointsOfInterestTable } from '../../components/common/record-tables/PointOfInterestTables';
 import { useDataAccess } from '../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../contexts/DatabaseContext2';
 import { sanitizeRecord } from 'utils/addActivity';
