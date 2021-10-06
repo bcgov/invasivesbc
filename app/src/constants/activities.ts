@@ -59,8 +59,8 @@ export enum ActivitySubtypeShortLabels {
   Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release',
 
   // Monitoring:
-  Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical',
-  Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical',
+  Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical Treatment Monitoring',
+  Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical Treatment Monitoring',
   Activity_Monitoring_BiologicalTerrestrialPlant = 'Biocontrol Release Monitoring',
   Activity_Monitoring_BiologicalDispersal = 'Biocontrol Dispersal Monitoring',
 
