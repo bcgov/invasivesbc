@@ -302,6 +302,7 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Review">Review</MenuItem>
               <MenuItem value="Past Activities">Past Activities</MenuItem>
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
+              <MenuItem value="IAPP Data">IAPP Data</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -333,6 +334,11 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Batch Upload' && (
             <Box>
               <BatchUpload />
+            </Box>
+          )}
+          {workflowFunction === 'IAPP Data' && (
+            <Box>
+              <IAPPSitesTable />
             </Box>
           )}
         </Box>
