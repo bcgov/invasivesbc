@@ -165,10 +165,11 @@ const useToolbarStyles = makeStyles((theme) => ({
     flex: '1 1 100%',
     fontSize: theme.typography.pxToRem(18),
     fontWeight: theme.typography.fontWeightRegular,
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    minWidth: 200
   },
   toolbar: {
-    justifyContent: 'space-between'
+    justifyContent: 'start'
   },
   button: {
     marginLeft: 10,
