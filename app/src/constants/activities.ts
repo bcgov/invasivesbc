@@ -153,7 +153,11 @@ export enum ActivityLetter {
   Activity_Transect_BiocontrolEfficacy = 'T',
 
   // Collections:
-  Activity_Collection_Biocontrol = 'B'
+  Activity_Collection_Biocontrol = 'B',
+
+  Activity_FREP_FormA = 'A',
+  Activity_FREP_FormB = 'B',
+  Activity_FREP_FormC = 'C'
 }
 
 export enum ActivityStatus {
