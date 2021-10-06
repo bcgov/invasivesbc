@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -10,9 +10,16 @@ import {
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
 import StorageIcon from '@material-ui/icons/Storage';
+import AdjustIcon from '@material-ui/icons/Adjust';
 import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
 import { calc_utm } from './DisplayPosition';
-import { createDataUTM, RenderTableActivity, RenderTablePosition, RenderTableDataBC } from './Helpers/StyledTable';
+import {
+  createDataUTM,
+  RenderTableActivity,
+  RenderTablePosition,
+  RenderTableDataBC,
+  RenderTablePOI
+} from './Helpers/StyledTable';
 import { getDataFromDataBC } from '../WFSConsumer';
 import * as turf from '@turf/turf';
 import { DomEvent } from 'leaflet';
@@ -38,6 +45,7 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
 
 export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
   const [bufferedGeo, setBufferedGeo] = useState(null);
+  const [poiTableRows, setPoiTableRows] = useState([]);
   const [section, setSection] = useState('position');
   const [databc, setDataBC] = useState(null);
   const [radius, setRadius] = useState(3);
@@ -67,6 +75,22 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
         setDataBC(returnVal);
       }, []);
     }
+  }, [bufferedGeo]);
+
+  useEffect(() => {
+    if ((pois as any)?.rows) {
+      (pois as any)?.rows?.map((poi) => {
+        var arrSpecies = [];
+        var arrJurisdictions = [];
+        getSpecies(arrSpecies, poi);
+        getJurisdictions(arrJurisdictions, poi);
+        setPoiTableRows((oldArray) => [...oldArray, setPoiRowData(poi, arrSpecies, arrJurisdictions)]);
+      });
+    }
+  }, [pois]);
+
+  useEffect(() => {
+    updateActivityRecords();
   }, [bufferedGeo]);
 
   const getSpecies = (arrSpecies, poi) => {
@@ -100,27 +124,9 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
     return {
       site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
       species: arrSpecies,
-      area: 'NWF',
       jurisdictions: arrJurisdictions
     };
   };
-
-  useEffect(() => {
-    if ((pois as any)?.rows) {
-      (pois as any)?.rows?.map((poi) => {
-        var arrSpecies = [];
-        var arrJurisdictions = [];
-        getSpecies(arrSpecies, poi);
-        getJurisdictions(arrJurisdictions, poi);
-        var obj = setPoiRowData(poi, arrSpecies, arrJurisdictions);
-        console.log(obj);
-      });
-    }
-  }, [pois]);
-
-  useEffect(() => {
-    updateActivityRecords();
-  }, [bufferedGeo]);
 
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
@@ -183,12 +189,14 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
       <TableContainer>
         {section == 'position' && <RenderTablePosition rows={utmRows} />}
         {section == 'activity' && <RenderTableActivity rows={rows} setRows={setRows} />}
-        {section == 'databc' && <RenderTableDataBC records={databc} />}
+        {section == 'databc' && <RenderTableDataBC rows={databc} />}
+        {section == 'poi' && <RenderTablePOI rows={poiTableRows} />}
       </TableContainer>
       <BottomNavigation value={section} onChange={handleChange}>
         <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
         <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
         <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
+        <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
       </BottomNavigation>
       <Button onClick={hideElement}>Close</Button>
     </Popup>
