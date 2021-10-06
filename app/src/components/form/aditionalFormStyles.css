@@ -1,0 +1,8 @@
+/* ----------Show just 1 error at a time for the field-------------*/
+#invasivesbc-activity-form ul li .Mui-error {
+  display: none;
+}
+
+#invasivesbc-activity-form ul li:first-child .Mui-error {
+  display: block;
+}

@@ -494,15 +494,18 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
     let invPlantIndex = 0;
     formData.activity_subtype_data.treatment_information.invasive_plants_information.forEach((invPlant: any) => {
       let herbicideIndex = 0;
-      invPlant.herbicide?.forEach((herbicide: any) => {
-        if (!herbicide.herbicide_information?.application_rate || !herbicide.herbicide_code) {
+
+      const herbicideName = !invPlant.tank_mix ? 'herbicide' : 'herbicide_with_tank_volume';
+
+      invPlant[herbicideName].forEach((herbicide: any) => {
+        if (!herbicide.application_rate || !herbicide.herbicide_code) {
         } else if (
-          herbicide.herbicide_information.application_rate &&
-          herbicide.herbicide_information.application_rate > HerbicideApplicationRates[herbicide.herbicide_code]
+          herbicide.application_rate &&
+          herbicide.application_rate > HerbicideApplicationRates[herbicide.herbicide_code]
         ) {
           errors.activity_subtype_data['treatment_information']['invasive_plants_information'][invPlantIndex][
-            'herbicide'
-          ][herbicideIndex]['herbicide_information']['application_rate'].addError(
+            herbicideName
+          ][herbicideIndex]['application_rate'].addError(
             `Application rate exceeds maximum applicable rate of ${
               HerbicideApplicationRates[herbicide.herbicide_code]
             } L/ha for this herbicide`
@@ -511,8 +514,8 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
         //if user clicked proceed in the warning dialog, remove the error
         if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('application_rate')) {
           errors.activity_subtype_data['treatment_information']['invasive_plants_information'][invPlantIndex][
-            'herbicide'
-          ][herbicideIndex]['herbicide_information']['application_rate'].__errors.pop();
+            herbicideName
+          ][herbicideIndex]['application_rate'].__errors.pop();
         }
 
         herbicideIndex++;

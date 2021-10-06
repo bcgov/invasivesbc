@@ -3604,102 +3604,6 @@
           }
         }
       },
-      "Herbicide_Liquid_Object": {
-        "type": "object",
-        "required": [
-          "area_treated_liquid",
-          "application_rate_liquid",
-          "herbicide_amount_liquid",
-          "mix_delivery_rate_liquid"
-        ],
-        "properties": {
-          "area_treated_liquid": {
-            "type": "string",
-            "title": "Area Treated (Ha)"
-          },
-          "application_rate_liquid": {
-            "type": "number",
-            "title": "Application Rate (L/ha)",
-            "format": "float",
-            "minimum": 0,
-            "x-tooltip-text": "Recommended label rate for herbicide (L/ha) used for this treatment"
-          },
-          "herbicide_amount_liquid": {
-            "type": "number",
-            "title": "Amount of Mix Used (L)",
-            "format": "float",
-            "minimum": 0,
-            "x-tooltip-text": "Volume in litres (ie 5.1 L) of herbicide and water mix"
-          },
-          "mix_delivery_rate_liquid": {
-            "type": "number",
-            "title": "Delivery Rate of Mix (L/ha)",
-            "format": "float",
-            "minimum": 0,
-            "x-tooltip-text": "Calibrated delivery rate of the device used to apply herbicide in L/ha"
-          },
-          "dilution_liquid": {
-            "type": "number",
-            "title": "Dilution %",
-            "minimum": 0,
-            "x-tooltip-text": "Percent (%) of product in the mix"
-          },
-          "specific_treatment_area_liquid": {
-            "type": "number",
-            "title": "Specific Treatment Area (ha)",
-            "minimum": 0,
-            "x-tooltip-text": "Area of the chemical treatment (ha) automatically calculated from the application and delivery rates used during chemical treatment"
-          }
-        }
-      },
-      "Herbicide_Granular_Object": {
-        "type": "object",
-        "required": [
-          "area_treated_granular",
-          "application_rate_granular",
-          "herbicide_amount_granular",
-          "mix_delivery_rate_granular"
-        ],
-        "properties": {
-          "area_treated_granular": {
-            "type": "string",
-            "title": "Area Treated (Ha)"
-          },
-          "application_rate_granular": {
-            "type": "number",
-            "title": "Application Rate (g/ha)",
-            "format": "float",
-            "minimum": 0,
-            "x-tooltip-text": "Recommended label rate for herbicide (G/ha) used for this treatment"
-          },
-          "herbicide_amount_granular": {
-            "type": "number",
-            "title": "Amount of Mix Used (g)",
-            "format": "float",
-            "minimum": 0,
-            "x-tooltip-text": "Volume in granules (ie 5.1 g) of herbicide and water mix"
-          },
-          "mix_delivery_rate_granular": {
-            "type": "number",
-            "title": "Delivery Rate of Mix (g/ha)",
-            "format": "float",
-            "minimum": 0,
-            "x-tooltip-text": "Calibrated delivery rate of the device used to apply herbicide in g/ha"
-          },
-          "dilution_granular": {
-            "type": "number",
-            "title": "Dilution %",
-            "minimum": 0,
-            "x-tooltip-text": "Percent (%) of product in the mix"
-          },
-          "specific_treatment_area_granular": {
-            "type": "number",
-            "title": "Specific Treatment Area (ha)",
-            "minimum": 0,
-            "x-tooltip-text": "Area of the chemical treatment (ha) automatically calculated from the application and delivery rates used during chemical treatment"
-          }
-        }
-      },
       "Invasive_Plant": {
         "properties": {
           "invasive_plant_code": {
@@ -3776,7 +3680,14 @@
       },
       "Herbicide": {
         "type": "object",
-        "required": ["herbicide_code", "herbicide_type"],
+        "required": [
+          "herbicide_code",
+          "herbicide_type",
+          "area_treated",
+          "application_rate",
+          "herbicide_amount",
+          "mix_delivery_rate"
+        ],
         "properties": {
           "herbicide_code": {
             "type": "string",
@@ -3794,6 +3705,43 @@
             "type": "string",
             "enum": ["liquid", "granular"],
             "x-tooltip-text": "Choose whether the herbicide being used is liquid or granular"
+          },
+          "area_treated": {
+            "type": "string",
+            "title": "Area Treated (Ha)"
+          },
+          "application_rate": {
+            "type": "number",
+            "title": "Application Rate (L/ha)",
+            "format": "float",
+            "minimum": 0,
+            "x-tooltip-text": "Recommended label rate for herbicide (L/ha) used for this treatment"
+          },
+          "herbicide_amount": {
+            "type": "number",
+            "title": "Amount of Mix Used (L)",
+            "format": "float",
+            "minimum": 0,
+            "x-tooltip-text": "Volume in litres (ie 5.1 L) of herbicide and water mix"
+          },
+          "mix_delivery_rate": {
+            "type": "number",
+            "title": "Delivery Rate of Mix (L/ha)",
+            "format": "float",
+            "minimum": 0,
+            "x-tooltip-text": "Calibrated delivery rate of the device used to apply herbicide in L/ha"
+          },
+          "dilution": {
+            "type": "number",
+            "title": "Dilution %",
+            "minimum": 0,
+            "x-tooltip-text": "Percent (%) of product in the mix"
+          },
+          "specific_treatment_area": {
+            "type": "number",
+            "title": "Specific Treatment Area (ha)",
+            "minimum": 0,
+            "x-tooltip-text": "Area of the chemical treatment (ha) automatically calculated from the application and delivery rates used during chemical treatment"
           }
         },
         "dependencies": {
@@ -3803,10 +3751,6 @@
                 "properties": {
                   "herbicide_type": {
                     "enum": ["liquid"]
-                  },
-                  "herbicide_information_liquid": {
-                    "title": " ",
-                    "$ref": "#/components/schemas/Herbicide_Liquid_Object"
                   }
                 }
               },
@@ -3815,9 +3759,14 @@
                   "herbicide_type": {
                     "enum": ["granular"]
                   },
-                  "herbicide_information_granular": {
-                    "title": " ",
-                    "$ref": "#/components/schemas/Herbicide_Granular_Object"
+                  "application_rate": {
+                    "title": "Application Rate (g/ha)"
+                  },
+                  "herbicide_amount": {
+                    "title": "Amount of Mix Used (g)"
+                  },
+                  "mix_delivery_rate": {
+                    "title": "Delivery Rate of Mix (g/ha)"
                   }
                 }
               }
