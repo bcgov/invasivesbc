@@ -102,7 +102,6 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
           jurisdictions: arrJurisdictions
         };
         console.log(obj);
-        console.log('yay');
       });
     }
   }, [pois]);
