@@ -70,22 +70,38 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
   }, [bufferedGeo]);
 
   useEffect(() => {
-    if (pois) {
-      pois.forEach((poi) => {
-        console.log(poi.point_of_interest_id);
-        var temp = [];
+    if ((pois as any)?.rows) {
+      (pois as any)?.rows?.map((poi) => {
+        var arrSpecies = [];
+        var arrJurisdictions = [];
+        var surveys = poi.point_of_interest_payload.form_data.surveys;
         if (poi.species_negative) {
-          poi.species_negative.map((species) => {
-            temp.push(species);
-          });
+          poi.species_negative.map((species) => arrSpecies.push(species));
         }
         if (poi.species_positive) {
-          poi.species_positive.map((species) => {
-            temp.push(species);
+          poi.species_positive.map((species) => arrSpecies.push(species));
+        }
+        if (surveys) {
+          surveys.map((survey) => {
+            survey.jurisdictions.map((jurisdiction) => {
+              var flag = 0;
+              for (let i in arrJurisdictions) {
+                if (jurisdiction.jurisdiction_code === arrJurisdictions[i]) {
+                  flag = 1;
+                  break;
+                }
+              }
+              if (flag === 0) arrJurisdictions.push(jurisdiction.jurisdiction_code);
+            });
           });
         }
-        console.log(temp);
-        console.log(poi.getArea());
+        var obj = {
+          site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
+          species: arrSpecies,
+          area: 'NWF',
+          jurisdictions: arrJurisdictions
+        };
+        console.log(obj);
       });
     }
   }, [pois]);
