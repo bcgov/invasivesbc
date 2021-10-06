@@ -213,47 +213,167 @@ function stableSort(rows, header, ascending) {
   return valueIndexPairs.map((row) => row[2]);
 }
 
-/*
-  OUTDATED:
-  headers: an array of (string/numeric) values (or objects if you want to get fancy and define other object cell properties)
-  rows: an array of arrays of columns, which can each contain (string/numeric) values or objects defining overrides to each cell
-  dropdown: if defined, gives a function to build the content of a dropdown section for each row, based on the 'source' and the current column index
-  pagination: object defining pagination settings, or just boolean true to use defaults.  No pagination if undefined/false
-  startsOpen: boolean to set the dropdown of each row to open by default or not (default closed)
-*/
 export interface IRecordTable {
-  rows?: any;
-  referenceData?: boolean;
-  totalRows?: number;
-  headers?: Array<any>;
-  tableName?: string;
-  tableSchemaType?: any;
-  expandable?: boolean;
-  startExpanded?: boolean;
-  rerenderFlagSetter?: any;
+  // GENERAL 
+  // keyField: field to use in each row as a key
   keyField?: string;
-  startingOrder?: string;
-  startingOrderBy?: string;
-  startingRowsPerPage?: number;
-  rowsPerPageOptions?: Array<number>;
-  densePadding?: boolean;
-  padEmptyRows?: boolean;
-  enableSelection?: boolean;
-  selected?: Array<any>;
-  setSelected?: (newSelected: Array<any>) => any;
-  enableFiltering?: boolean;
-  enableTooltips?: boolean;
-  className?: any;
-  dropdown?: (row: any) => any;
-  dropdownLimit?: boolean;
-  onToggleExpandRow?: (row: any, expandedRows?: Array<any>, selectedRows?: Array<any>) => any;
-  overflowDropdown?: boolean;
-  overflowLimit?: number;
-  pagination?: any;
+  // tableName: title of the table
+  tableName?: string;
+
+  // HEADERS / COLUMNS
+  // headers: list of columns to display for a given table and their behavior definitions 
+  // can just be an array of string keys (which will be auto-interpretted into matching schema fields)
+  // or object defining overrides to those default fields
+  headers?: any[];
+  // tableSchemaType: list of schema types to match against to auto-fill column definitions with api-docs schemas
+  // Note: this behavior should probably be bumped up a level and defined outside of RecordTable, modifying the headers here
+  tableSchemaType?: Array<string>;
+  
+  // ROWS
+  // rows: an array of row objects with column key-value pairs.
+  // OR a function telling the table how to fetch those rows from the DB, given an object defining its particular page, rowsPerPage, and order (and filters once implemented)
+  // note: order must be an array of strings in the form "field_to_order_by order_direction" where order_direction is ASC or DESC
+  rows?: any;
+
+  // referenceData: mark whether the rows are references or not
+  referenceData?: boolean;
+  rerenderFlagSetter?: any;
+  
+  // ACTIONS:
+  // key-value pairs of definitions of various actions which can be used on the table. e.g. delete, edit, create, etc
+  // OR boolean "false" to disable all actions
   actions?: any;
-  rowActionStyle?: string;
+  // rowActionStyle: whether to display row action buttons in a dropdown in each row, or to display inline in a column at the start or end of the row. (Inline not implemented yet) 
+  rowActionStyle?: ActionStyle;
+  
+  // DROPDOWN / EXPAND ROW
+  // dropdown: AKA expand content. function outputting the component which is rendered by a particular row when it is clicked. 
+  //  If this returns undefined there will be no dropdown content.  Note that a row might still be expandable
+  //  IF it has row action buttons (unless we're rendering them inline on the row, which isnt supported yet)
+  //  OR if some column in the row has reached its overflow character limit (e.g. a very long description column)
+  dropdown?: (row: any) => any;
+  // dropdownLimit: whether to only allow a single dropdown open at a time, auto-closing the previous one once a new row is clicked
+  dropdownLimit?: boolean;
+  // onToggleRowDropdown: function to call when a row is expanded, allowing signals to parent components when it happens (e.g. to update the map or the rest of a page)
+  onToggleRowDropdown?: (row: any, expandedRows?: Array<any>, selectedRows?: Array<any>) => any;
+  // overflowLimit: whether to set a character limit on any particular cell
+  //  if over the limit it's truncated with an ellipsis (...) and the full text will be displayed only when the row is expanded into a dropdown.
+  //  0 for no limit
+  overflowLimit?: number;
+
+  // SELECTION
+  // enableSelection: show/hide selection checkbox on each row, and presence of multi-select options (bulk edit, delete, etc)
+  enableSelection?: boolean;
+  // selected: currently selected rows override.  If undefined, will be managed by the RecordTable component.  Used for coordinating with the map page
+  selected?: Array<any>;
+  // setSelected: override function to call when a row is selected, to pass to parent components
+  setSelected?: (newSelected: Array<any>) => any;
+  
+  // PAGINATION:
+  // pagination: whether to always show pagination, or only when there are too many rows to fit in one page (overflow)
+  // OR false to disable pagination
+  pagination?: boolean | PaginationTypes;
+  // startingOrder: default order
+  startingOrder?: string;
+  // startingOrderBy: default orderBy
+  startingOrderBy?: string;
+  // startingRowsPerPage: default rowsPerPage, should be one of rowsPerPageOptions
+  startingRowsPerPage?: number;
+  // rowsPerPageOptions: dropdown list of numbers of rows per page to offer.  e.g. [10, 25, 50]
+  rowsPerPageOptions?: Array<number>;
+
+  // FILTERING (under construction)
+  // enableFiltering: not implemented yet, but will enable ability to access a filter menu
+  enableFiltering?: boolean;
+  
+  // GENERAL DISPLAY:
+  // expandable: allow the entire RecordTable to be grown/shrunk on click of the title text.  Not to be confused with expandRow which allows grow/shrink for each row
+  expandable?: boolean;
+  // startExpanded: default starting expanded state
+  startExpanded?: boolean;  
+  // enableTooltips: show/hide mouseover tooltips on each header, displaying detailed descriptions
+  enableTooltips?: boolean;
+  // hideEmpty: whether to display the table at all if it has no content
   hideEmpty?: boolean;
+  // padEmptyRows: whether the table should create whitespace on the last page up to its rowsPerPage limit in order to preserve the same height between all pages
+  padEmptyRows?: boolean;
+  // densePadding: legacy passthrough setting enabling a more condensed css look
+  densePadding?: boolean;
 }
+
+
+// action: look and feel, context, and click effect definitions for a button (or other actions in future e.g. sliders)  
+export interface IRecordTableAction {
+  // key: self-reflection so an action object knows the key it's being refered as. e.g. "edit"
+  key: string;
+  // enabled: if false, will hide action entirely.  Useful for defining actions generally for all RecordTable instances but only enabling them in appropriate contexts
+  enabled?: boolean;
+  // label: english text to display on buttons. e.g. "Edit Activity"
+  label: string;
+  // icon: icon to accompany label in button content
+  icon?: any;
+  // action: function to call when an action is clicked.  If it's a "bulk" or "global" action, it will apply to all currently-selected rows in the table.
+  // If it's a "row" action, it will apply to only the current row being clicked and "selectedRows" will be length 1.
+  // This single-definiton is useful since usually what you want to do for all selected rows is the same as a single row.
+  action: (selectedRows: Array<any>) => any;
+  // displayInvalid: what to do when an action is invalid (e.g. it fails its rowCondition check)
+  displayInvalid?: DisplayInvalid;
+  // invalidError: default message to display when the action is invalid and displayInvalid = 'error'.
+  // Note that customized errors can be thrown by the actual action() function which may be more descriptive to what went wrong
+  invalidError?: string;
+  // rowAction: whether to present this action as a button in each row
+  rowAction?: boolean;
+  // rowCondition: function determining whether the action is valid in a row.  e.g. if only some rows allow this particular action.
+  // displayInvalid determines behavior when it returns false.   Not needed if rowAction is false (disabled).
+  rowCondition?: (selectedRows: Array<any>) => boolean;
+  // bulkAction: whether to present this action as a button when a user has selected one or more rows (e.g. bulk edits/deletes)
+  bulkAction?: boolean;
+  // rowCondition: function determining whether the action is valid for the given selected rows.  e.g. if they must all be a certain type
+  // displayInvalid determines behavior when it returns false.  Not needed if bulkAction is false (disabled).
+  bulkCondition?: (selectedRows: Array<any>) => boolean;
+  // globalAction: whether to present this action as a button in the toolbar, regardless of selected rows (usually used for "create" actions)
+  globalAction?: boolean;
+  // rowCondition: function determining whether the action is valid in the toolbar.
+  // displayInvalid determines behavior when it returns false.  Not needed if globalAction is false (disabled).
+  globalCondition?: (selectedRows: Array<any>) => boolean;
+  //
+};
+
+// header: column behavior of 
+export interface IRecordTableHeader {
+  // GENERAL:
+  // id: the key the header is refered to as e.g. "activity_id"
+  id: string;
+  // title: english name of the column.  Will default to the id converted to Capitalized Case
+  title?: string;
+  // defaultOrder: order to sort the column by on first click (ASC or DESC). Default ASC
+  defaultOrder?: string;
+  // valueMap: key-value pairs mapping initial values to refined values, used for e.g. mapping short codes to their full names 
+  valueMap?: {
+    [key: string]: string
+  };
+  // tooltip: string description of the given header, displayed on mouseover if tooltips are enabled on the table
+  tooltip?: string;
+
+  // STYLE:
+  // className: style class
+  className?: any;
+  // type: if === 'number', will display values in the column with right-aligned style and decimal rounding.  'align' field overrides
+  type?: string;
+  // align: overrides 'type' and allows setting alignment of a column's contents
+  align?: string;
+  // padding: legacy padding override
+  padding?: any;
+};
+
+enum ActionStyle { dropdown = 'dropdown', start = 'start', end = 'end' };
+enum PaginationTypes { overlow = 'overflow', always = 'always' };
+enum DisplayInvalid {
+  disable = 'disable', // grey-out the action button and make it unclickable
+  hidden = 'hidden', // hide the action button
+  error = 'error' // show the action button as normal, but display an error on click
+};
+
 
 const RecordTable: React.FC<IRecordTable> = (props) => {
   const classes = useStyles();
@@ -294,16 +414,21 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
 
   // Handle selective loading of only a portion of the total rows:
-  const [rows, setRows] = useState(Array.isArray(props.rows) ? props.rows : []);
-  const [totalRows, setTotalRows] = useState(props.totalRows ? props.totalRows : rows.length);
+  const [rows, setRows] = useState(Array.isArray(props.rows) && props.rows || []);
+  const [totalRows, setTotalRows] = useState(Array.isArray(props.rows) && rows.length || 0);
   const [loadedRowsOffset, setLoadedRowsOffset] = useState(0);
+  const [toolbarErrorMessage, setToolbarErrorMessage] = useState();
   const loadBuffer = 2;
 
   useEffect(() => {
-    setRows(Array.isArray(props.rows) ? props.rows : []);
-    setTotalRows(props.totalRows ? props.totalRows : props.rows.length);
-  }, [props.totalRows, Array.isArray(props.rows) && props.rows?.length]);
+    setRows(Array.isArray(props.rows) && props.rows || []);
+    setTotalRows(Array.isArray(props.rows) && props.rows?.length || 0);
+  }, [Array.isArray(props.rows) && props.rows?.length]);
 
+  /*
+  Function to populate "rows" in the table when props.rows is given as a function instead of a simple array
+  Pages data for the given order.  Will need to include filters in this as well in future iterations
+  */
   const fetchRows = async () => {
     // console.log('fetchRows start: ', tableName);
     if (props.rows instanceof Function) {
@@ -324,7 +449,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
       // console.log('fetchRows: ', result);
       if (result) {
         await setRows(result.rows);
-        await setTotalRows(parseInt(result.count));
+        await setTotalRows(result.count);
         // offset from a couple pages back to avoid
         await setLoadedRowsOffset(Math.max(0, (page - loadBuffer) * rowsPerPage));
       }
@@ -549,7 +674,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
         newExpandedRows = expandedRows.filter((rowKey) => rowKey !== key);
       } else {
         if (dropdownLimit) {
-          // only supports dropdown limit of 0-1 here
+          // only supports dropdown limit of 0 or 1 here
           newExpandedRows = [key];
         } else newExpandedRows = [...expandedRows, key];
       }
