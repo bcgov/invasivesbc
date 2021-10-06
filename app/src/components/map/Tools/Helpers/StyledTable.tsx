@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
   Button,
+  ClickAwayListener,
   Collapse,
   IconButton,
   Table,
@@ -141,6 +142,13 @@ const getArea = (shape) => {
 };
 
 const CreateAccordionTable = ({ row, response }) => {
+  const [open, setOpen] = useState(false);
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
   // Shortcuts
   var activity_payload = row.obj.activity_payload;
   var form_data = activity_payload.form_data;
@@ -177,9 +185,17 @@ const CreateAccordionTable = ({ row, response }) => {
           <StyledTableCell>Invasive Plant</StyledTableCell>
           <StyledTableCell>
             {codes.map((code) => (
-              <Tooltip title={getPlantName(subtype, code, response)}>
-                <a>{code}</a>
-              </Tooltip>
+              <ClickAwayListener onClickAway={handleTooltipClose}>
+                <Tooltip
+                  onClose={handleTooltipClose}
+                  open={open}
+                  disableFocusListener
+                  disableHoverListener
+                  disableTouchListener
+                  title={getPlantName(subtype, code, response)}>
+                  <a onClick={handleTooltipOpen}>{code}</a>
+                </Tooltip>
+              </ClickAwayListener>
             ))}
           </StyledTableCell>
         </StyledTableRow>

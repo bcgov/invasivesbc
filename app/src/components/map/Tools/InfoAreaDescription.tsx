@@ -41,6 +41,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
   const [section, setSection] = useState('position');
   const [databc, setDataBC] = useState(null);
   const [radius, setRadius] = useState(3);
+  const [pois, setPOIs] = useState([]);
   const [rows, setRows] = useState([]);
   const dataAccess = useDataAccess();
   const popupElRef = useRef(null);
@@ -69,12 +70,38 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
   }, [bufferedGeo]);
 
   useEffect(() => {
+    if (pois) {
+      pois.forEach((poi) => {
+        console.log(poi.point_of_interest_id);
+        var temp = [];
+        if (poi.species_negative) {
+          poi.species_negative.map((species) => {
+            temp.push(species);
+          });
+        }
+        if (poi.species_positive) {
+          poi.species_positive.map((species) => {
+            temp.push(species);
+          });
+        }
+        console.log(temp);
+        console.log(poi.getArea());
+      });
+    }
+  }, [pois]);
+
+  useEffect(() => {
     updateActivityRecords();
   }, [bufferedGeo]);
 
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
       activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
+      var pointsofinterest = await dataAccess.getPointsOfInterest({
+        search_feature: bufferedGeo,
+        limit: 1000,
+        page: 0
+      });
       if (activities) {
         var tempArr = [];
         for (let i in activities.rows) {
@@ -87,6 +114,8 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
           }
         }
         setRows(tempArr);
+
+        setPOIs(pointsofinterest);
       } else setRows([]);
     }
   }, [bufferedGeo]);

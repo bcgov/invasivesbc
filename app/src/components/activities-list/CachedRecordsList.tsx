@@ -300,7 +300,7 @@ const CachedRecordsList: React.FC = (props) => {
         )}
       </Box>
       {docs.length > 0 && !loading && (
-        <Paper>
+        <Paper style={{ height: 500 }}>
           <MapContainer
             classes={classes}
             mapId="references_page_map_container"

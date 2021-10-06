@@ -137,7 +137,6 @@ export const useDataAccess = () => {
       } else {
         if (forceCache === true || !networkStatus.connected) {
           const dbcontext = context;
-          console.log('------- line 140 useDataAccess ------', activityId);
           // Removed for now due to not being able to open cached activity
           const res = await dbcontext.asyncQueue({
             asyncTask: async () => {
@@ -159,9 +158,11 @@ export const useDataAccess = () => {
         }
       }
     } catch (e) {
-      throw `unable to get activity by id:  debug info:  ${JSON.stringify(
-        activityId
-      )}, ${referenceData})}, ${JSON.stringify(e)}`;
+      throw new Error(
+        `unable to get activity by id:  debug info:  ${JSON.stringify(
+          activityId
+        )}, ${referenceData})}, ${JSON.stringify(e)}`
+      );
     }
   };
 

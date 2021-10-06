@@ -49,7 +49,7 @@ import ColorPicker from 'material-ui-color-picker';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 // MUI Icons
 import LayersIcon from '@material-ui/icons/Layers';
-import BrushIcon from '@material-ui/icons/Brush';
+import ColorLens from '@material-ui/icons/ColorLens';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DoneIcon from '@material-ui/icons/Done';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
@@ -272,7 +272,7 @@ export function LayerPicker(props: any, { position }) {
               {/* Color Picker Dialog */}
               <Grid item xs={1}>
                 <IconButton className={toolClass.toolBtn} onClick={() => toggleColorPickerDialog(parent)}>
-                  <BrushIcon style={{ color: parent.colorCode }} />
+                  <ColorLens style={{ color: parent.colorCode }} />
                 </IconButton>
                 <Dialog open={parent.colorpickerOpen} onClose={() => toggleColorPickerDialog(parent)}>
                   <DialogTitle>{parent.id}</DialogTitle>
