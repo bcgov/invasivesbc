@@ -379,31 +379,28 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const databaseContext = useContext(DatabaseContext);
-  const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
 
   const {
-    tableName = '',
-    keyField = '_id', // defaults to doc _id used by PouchDB
-    startingOrder = 'asc',
     // dropdown, // default none
-    dropdownLimit = true,
-    onToggleExpandRow, // callback fired when row is expanded (or contracted, for now)
-    overflowDropdown = true, // overflow into a dropdown when a cell is very verbose
-    overflowLimit = 50, // char limit
-    expandable = true,
-    startExpanded = true,
-    startingRowsPerPage = 10,
-    rowsPerPageOptions = false, // disable ability to change rows per page by default
-    enableSelection = false,
-    enableFiltering = false,
-    enableTooltips = true,
-    pagination = 'overflow', // by default, only shows paging options when more total rows than can fit on page 1
-    // className: tableClassName,
     densePadding = false,
-    padEmptyRows = false, // whitespace added to make the table the same height
-    // even on the last page with only e.g. 1 row
+    dropdownLimit = true,
+    enableFiltering = false,
+    enableSelection = false,
+    enableTooltips = true,
+    expandable = true,
+    hideEmpty = false,
+    keyField = '_id', // defaults to doc _id used by PouchDB
+    onToggleRowDropdown, // callback fired when row is expanded (or contracted, for now)
+    overflowLimit = 50, // char limit
+    padEmptyRows = false, // whitespace added to make the table the same height (even on the last page with only e.g. 1 row)
+    pagination = 'overflow', // by default, only shows paging options when more total rows than can fit on page 1
     rowActionStyle = 'dropdown', // || 'column'
-    hideEmpty = false
+    rowsPerPageOptions = undefined, // disable ability to change rows per page by default
+    startExpanded = true,
+    startingOrder = 'asc',
+    startingRowsPerPage = 10,
+    tableName = '',
   } = props;
 
   const [rowsLoaded, setRowsLoaded] = useState(false);
@@ -525,12 +522,12 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
 
   const [expandedRows, setExpandedRows] = useState([]);
   const [selected, setSelected] = useState(props.selected || []);
-  const dataAccess = useDataAccess();
+  
   const selectedHash = JSON.stringify(selected);
 
   const getApiSpec = useCallback(
     async (tableSchemaInput) => {
-      const apiSpecResponse = await invasivesApi.getCachedApiSpec();
+      const apiSpecResponse = await dataAccess.getCachedApiSpec();
       const schemaTypeList = typeof tableSchemaInput === 'string' ? [tableSchemaInput] : tableSchemaInput || [];
 
       await setSchemas({
@@ -597,20 +594,20 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
   const verboseOverflows = useMemo(
-    () => pageRows.map((row) => headers.filter(({ id }) => String(row[id]).length > overflowLimit).length > 0),
+    () => pageRows.map((row) => headers.filter(({ id }) => overflowLimit && String(row[id]).length > overflowLimit).length > 0),
     [pageRows, headers, overflowLimit]
   );
   // determine if any rows on the current page have a dropdown:
   const pageHasDropdown = useMemo(
     () =>
       (!!dropdown && renderedDropdowns.filter((x) => x).length > 0) ||
-      (overflowDropdown && verboseOverflows.filter((x) => x).length > 0) ||
+      (verboseOverflows.filter((x) => x).length > 0) ||
       (rowActions?.length > 0 && rowActionStyle === 'dropdown'),
-    [dropdown, renderedDropdowns, overflowDropdown, verboseOverflows, rowActions?.length, rowActionStyle]
+    [dropdown, renderedDropdowns, verboseOverflows, rowActions?.length, rowActionStyle]
   );
   const showPagination = pagination === 'overflow' ? totalRows > rowsPerPage : !!pagination;
 
-  const handleRequestSort = useCallback(
+  const onRequestSort = useCallback(
     (event, property) => {
       const isAsc = orderBy === property && order === 'asc';
       setOrder(isAsc ? 'desc' : 'asc');
@@ -620,7 +617,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     [orderBy, order]
   );
 
-  const handleSelectAllClick = useCallback(
+  const onSelectAllClick = useCallback(
     async (event) => {
       if (event.target.checked) {
         let newSelecteds;
@@ -656,11 +653,11 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     setSelected(newSelected);
   }, []);
 
-  const handleChangePage = (event, newPage) => {
+  const onPageChange = (event, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const onRowsPerPageChange = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -679,44 +676,14 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
         } else newExpandedRows = [...expandedRows, key];
       }
       setExpandedRows(newExpandedRows);
-      if (onToggleExpandRow)
-        onToggleExpandRow(
+      if (onToggleRowDropdown)
+        onToggleRowDropdown(
           pageRows.find((row) => row[keyField] === key),
           newExpandedRows,
           selectedRows
         );
     },
     [expandedRows?.length, JSON.stringify(expandedRows), dropdownLimit, selectedRows, pageRows]
-  );
-
-  const CachedTableHead = useMemo(
-    () => (
-      <RecordTableHead
-        classes={classes}
-        numSelected={selected.length}
-        order={order}
-        orderBy={orderBy}
-        onSelectAllClick={handleSelectAllClick}
-        onRequestSort={handleRequestSort}
-        totalRows={totalRows}
-        headers={headers}
-        enableSelection={enableSelection}
-        enableTooltips={enableTooltips}
-        pageHasDropdown={pageHasDropdown}
-      />
-    ),
-    [
-      selected?.length,
-      order,
-      orderBy,
-      handleSelectAllClick,
-      handleRequestSort,
-      totalRows,
-      headers,
-      enableSelection,
-      enableTooltips,
-      pageHasDropdown
-    ]
   );
 
   const loading = (!schemasLoaded && tableSchemaType?.length > 0) || !rowsLoaded;
@@ -728,11 +695,9 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
           {(enableSelection || enableFiltering || tableName.length > 0) && (
             <RecordTableToolbar
               selectedRows={enableSelection ? selectedRows : []}
-              tableName={tableName}
-              enableFiltering={enableFiltering}
-              actions={actions}
-              databaseContext={databaseContext}
-              fetchRows={fetchRows}
+              errorMessage={toolbarErrorMessage}
+              setErrorMessage={setToolbarErrorMessage}
+              {...{tableName, enableFiltering, actions, databaseContext, fetchRows}}
             />
           )}
           <AccordionDetails className={classes.paper}>
@@ -749,16 +714,14 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
                   aria-labelledby="tableTitle"
                   size={densePadding ? 'small' : 'medium'}
                   aria-label="enhanced table">
-                  {CachedTableHead}
+                  <RecordTableHead
+                    totalSelected={selected.length}
+                    {...{ classes, order, orderBy, onSelectAllClick, onRequestSort, totalRows, headers, enableSelection, enableTooltips, pageHasDropdown }}
+                  />
                   <TableBody>
                     {pageRows.map((row, index) => (
                       <RecordTableRow
                         key={row[keyField]}
-                        keyField={keyField}
-                        headers={headers}
-                        row={row}
-                        dropdown={dropdown}
-                        pageHasDropdown={pageHasDropdown}
                         hasOverflow={verboseOverflows[index]}
                         isExpanded={expandedRows.indexOf(row[keyField]) !== -1}
                         isSelected={selected.indexOf(row[keyField]) !== -1}
@@ -773,8 +736,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
                         }}
                         actions={rowActions}
                         actionStyle={rowActionStyle}
-                        databaseContext={databaseContext}
-                        fetchRows={fetchRows}
+                        {...{keyField, headers, row, dropdown, pageHasDropdown, enableSelection, databaseContext, fetchRows}}
                       />
                     ))}
                     {padEmptyRows && emptyRows > 0 && (
@@ -788,13 +750,9 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
             )}
             {!!totalRows && showPagination && (
               <TablePagination
-                rowsPerPageOptions={rowsPerPageOptions === false ? undefined : rowsPerPageOptions}
                 component="div"
                 count={totalRows}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+                {...{rowsPerPageOptions, rowsPerPage, page, onPageChange, onRowsPerPageChange}}
               />
             )}
           </AccordionDetails>
@@ -815,7 +773,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     ]
   );
 
-  if (hideEmpty && (!totalRows || loading)) return null;
+  if (hideEmpty && (!totalRows || loading)) return null
   else return rendered;
 };
 
@@ -825,7 +783,7 @@ function RecordTableHead(props) {
     onSelectAllClick,
     order,
     orderBy,
-    numSelected,
+    totalSelected,
     totalRows,
     onRequestSort,
     headers,
@@ -845,10 +803,10 @@ function RecordTableHead(props) {
             {enableSelection && totalRows < DEFAULT_PAGE_SIZE && (
               // disable Select-All for huge row counts (for now)
               <Checkbox
-                indeterminate={numSelected > 0 && numSelected < totalRows}
-                checked={totalRows > 0 && numSelected === totalRows}
+                indeterminate={totalSelected > 0 && totalSelected < totalRows}
+                checked={totalRows > 0 && totalSelected === totalRows}
                 onChange={onSelectAllClick}
-                inputProps={{ 'aria-label': 'select all desserts' }}
+                inputProps={{ 'aria-label': 'select all' }}
               />
             )}
             {pageHasDropdown && <IconButton aria-label="expand row" size="small" />}
@@ -886,10 +844,8 @@ function RecordTableHead(props) {
 
 const RecordTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { selectedRows, tableName, enableFiltering, actions, databaseContext, fetchRows } = props;
-  const numSelected = selectedRows?.length || 0;
-
-  const [actionError, setActionError] = useState(props.actionError || '');
+  const { selectedRows, tableName, enableFiltering, actions, databaseContext, fetchRows, errorMessage, setErrorMessage } = props;
+  const totalSelected = selectedRows?.length || 0;
 
   const bulkActions: Array<any> = Object.values(actions)
     .filter((action: any) => action.enabled && action.bulkAction)
@@ -915,12 +871,12 @@ const RecordTableToolbar = (props) => {
                   (action.rowCondition && selectedRows.filter((row) => !action.rowCondition(row))?.length)) &&
                 action.invalidError
               )
-                throw action.invalidError;
+                throw new Error(action.invalidError);
               await action.action(selectedRows);
               if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
             } catch (error) {
-              setActionError(error?.message || error);
-              setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
+              setErrorMessage(error?.message || error);
+              setTimeout(() => setErrorMessage(''), ACTION_ERROR_TIMEOUT);
               notifyError(databaseContext, error?.message || error || action.invalidError);
             }
           }}>
@@ -954,12 +910,12 @@ const RecordTableToolbar = (props) => {
                   (action.rowCondition && selectedRows.filter((row) => !action.rowCondition(row))?.length)) &&
                 action.invalidError
               )
-                throw action.invalidError;
+                throw new Error(action.invalidError);
               await action.action(selectedRows);
               if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
             } catch (error) {
-              setActionError(error?.message || error);
-              setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
+              setErrorMessage(error?.message || error);
+              setTimeout(() => setErrorMessage(''), ACTION_ERROR_TIMEOUT);
               notifyError(databaseContext, error?.message || error || action.invalidError);
             }
           }}>
@@ -977,23 +933,23 @@ const RecordTableToolbar = (props) => {
       id="panel-map-header">
       <Toolbar
         className={clsx(classes.root, {
-          [classes.highlight]: numSelected > 0
+          [classes.highlight]: totalSelected > 0
         })}>
         <Box>
-          {numSelected > 0 ? (
+          {totalSelected > 0 ? (
             <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-              {numSelected} selected
+              {totalSelected} selected
             </Typography>
           ) : (
             <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
               {tableName}
             </Typography>
           )}
-          {numSelected > 0 && bulkActions}
+          {totalSelected > 0 && bulkActions}
         </Box>
-        {numSelected > 0 && actionError}
+        {errorMessage}
       </Toolbar>
-      {enableFiltering && !numSelected && (
+      {enableFiltering && !totalSelected && (
         <Tooltip title="Filter list">
           <IconButton aria-label="filter list">
             <FilterList />
@@ -1075,7 +1031,7 @@ const RecordTableRow = (props) => {
                 !action.rowCondition(row) &&
                 action.invalidError
               )
-                throw action.invalidError;
+                throw new Error(action.invalidError);
               await action.action([row]);
               // await console.log('action ', action.key);
               if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
