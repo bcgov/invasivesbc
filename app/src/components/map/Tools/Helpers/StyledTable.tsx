@@ -30,7 +30,7 @@ const CreateTableHead = ({ labels }) => {
     <TableHead>
       <StyledTableRow>
         {labels.map((label) => (
-          <StyledTableCell>{label}&emsp;</StyledTableCell>
+          <StyledTableCell>{label}</StyledTableCell>
         ))}
       </StyledTableRow>
     </TableHead>
@@ -212,7 +212,8 @@ export const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
     body: {
       fontSize: 12,
-      textAlign: 'left'
+      textAlign: 'left',
+      width: 100
     }
   })
 )(TableCell);
