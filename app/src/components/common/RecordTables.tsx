@@ -288,6 +288,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       review_status: review_status
     });
   }
+
   return useMemo(
     () => (
       <>
