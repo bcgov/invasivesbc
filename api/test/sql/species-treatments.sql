@@ -4,9 +4,9 @@
 */
 select
   c.code_description "Species",
-  round(sum(st_area(p.geom))) "Area"
+  round(sum(public.st_area(p.geom))) "Area"
 from
-  activities_by_species p,
+  public.activities_by_species p,
   code c
 where
   p.species = c.code_name and
@@ -15,5 +15,5 @@ where
 group by
   c.code_description
 order by
-  round(sum(st_area(p.geom))) desc
+  round(sum(public.st_area(p.geom))) desc
 ;
