@@ -12,6 +12,7 @@
 drop table if exists test_spatial_expload_positive;
 create temporary table test_spatial_expload_positive as
   select 
+    activity_type,
     activity_subtype,
     created_timestamp,
     activity_incoming_data_id,
@@ -20,7 +21,7 @@ create temporary table test_spatial_expload_positive as
   from
     activity_incoming_data
   where
-    activity_type = 'Observation' and -- Observations for now
+    activity_type in ('Observation', 'Treatment') and -- Observations for now
     deleted_timestamp is null and -- Not deleted
     array_length( -- At least one species registered
       species_positive, 1
@@ -67,6 +68,8 @@ drop table if exists test_spatial_positive_negative;
 create temporary table test_spatial_positive_negative as
 select
   pos.species #>> '{}' "species",
+  pos.activity_type,
+  pos.created_timestamp,
   pos.activity_incoming_data_id,
   case  -- If there is over, delete, otherwise pass through
     when st_intersects(pos.geom,neg.geom)
@@ -91,10 +94,12 @@ alter table test_spatial_positive_negative add primary key (gid);
 
 
 /*********** Merge everything together **************/
-drop table if exists observations_by_species;
-create table observations_by_species as
+drop table if exists activities_by_species;
+create table activities_by_species as
 select
   species,
+  activity_type,
+  max(created_timestamp) "max_created_timestamp",
   array_agg(activity_incoming_data_id) "activity_ids", -- Collect original IDs 
   st_unaryUnion( -- Remove embedded linework
     st_collectionExtract( -- Convert from GeometryCollection to MultiPolygons
@@ -108,14 +113,15 @@ select
 from
   test_spatial_positive_negative
 group by
-  species
+  species,
+  activity_type
 ;
 
-drop index if exists observations_by_species_geom_gist;
-create index observations_by_species_geom_gist on observations_by_species using gist ("geom");
+drop index if exists activities_by_species_geom_gist;
+create index activities_by_species_geom_gist on activities_by_species using gist ("geom");
 
-alter table observations_by_species add column gid serial;
-alter table observations_by_species add primary key (gid);
+alter table activities_by_species add column gid serial;
+alter table activities_by_species add primary key (gid);
 
 
 
