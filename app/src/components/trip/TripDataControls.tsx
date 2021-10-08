@@ -38,6 +38,10 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const [trip, setTrip] = useState(null);
 
+  useEffect(() => {
+    console.log('--------- TRIPDATACONTROLS ----------', trip);
+  }, [trip]);
+
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -111,13 +115,13 @@ export const TripDataControls: React.FC<any> = (props) => {
   }, [databaseContext]);
 
   useEffect(() => {
-    const updateComponent = () => {
+    const updateComponent = async () => {
       getTrip();
     };
     updateComponent();
   }, [getTrip]);
 
-  const fetchActivities = async () => {
+  const fetchActivities = async (mytrip: any) => {
     setProgressDialog((prevState) => {
       const itemsArr = prevState.items;
       itemsArr[2] = { ...itemsArr[2], state: 'in_progress' };
@@ -127,7 +131,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       };
     });
 
-    if (!trip || !trip.activityChoices || !trip.activityChoices.length) {
+    if (!mytrip || !mytrip.activityChoices || !mytrip.activityChoices.length) {
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
         itemsArr[2] = {
@@ -140,13 +144,14 @@ export const TripDataControls: React.FC<any> = (props) => {
           items: itemsArr
         };
       });
-      return;
+      // return;
     }
 
     let numberActivitiesFetched = 0;
+    console.log('--------- LINE 151 ----------', mytrip);
 
     for (const setOfChoices of trip.activityChoices) {
-      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
+      const geometry = (mytrip.geometry && mytrip.geometry.length && mytrip.geometry[0]) || null;
 
       // a comment would be great here
       const activitySearchCriteria: IActivitySearchCriteria = {
@@ -837,7 +842,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     try {
       await fetchLeanActivitiesAndPoi();
       await fetchLayerData();
-      await fetchActivities();
+      await fetchActivities(trip);
       await fetchPointsOfInterest();
       await fetchMetabaseQueries();
       setProgressDialog((prevState) => ({

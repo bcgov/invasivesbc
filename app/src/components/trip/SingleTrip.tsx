@@ -10,10 +10,12 @@ import TripNamer from './TripNamer';
 import { TripStep } from './TripStep';
 import { TripStatusCode } from './TripStepStatus';
 import KMLUpload from '../../components/map-buddy-components/KMLUpload';
+import { useHistory } from 'react-router';
 
 export const SingleTrip: React.FC<any> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
   const [stepState, setStepState] = useState(null);
+  const history = useHistory();
 
   const getStateFromTrip = useCallback(async () => {
     const results = await databaseContext.asyncQueue({
@@ -97,6 +99,11 @@ export const SingleTrip: React.FC<any> = (props) => {
       }
     }
     saveState([...newState]);
+    if (stepNumber === 2 || stepNumber === 3) {
+      // Gonna refresh page
+      history.push('/home');
+      history.push('/home/plan');
+    }
   };
 
   return useMemo(() => {
