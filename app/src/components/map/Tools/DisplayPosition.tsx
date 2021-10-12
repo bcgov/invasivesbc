@@ -43,6 +43,7 @@ export default function DisplayPosition({ map }) {
   const [startTimer, setStartTimer] = useState(false);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
+  const [poiMarker, setPoiMarker] = useState(null);
   const divRef = useRef(null);
 
   const getLocation = async () => {
@@ -83,6 +84,7 @@ export default function DisplayPosition({ map }) {
             map={map}
             lat={newPosition.coords.latitude}
             lng={newPosition.coords.longitude}
+            setPoiMarker={setPoiMarker}
           />
         </Marker>
       )}

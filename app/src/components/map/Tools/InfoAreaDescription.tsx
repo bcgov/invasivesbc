@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -11,7 +11,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
 import StorageIcon from '@material-ui/icons/Storage';
 import AdjustIcon from '@material-ui/icons/Adjust';
-import { useMapEvent, GeoJSON, Popup } from 'react-leaflet';
+import { useMapEvent, GeoJSON, Popup, Marker, Tooltip } from 'react-leaflet';
 import { calc_utm } from './DisplayPosition';
 import {
   createDataUTM,
@@ -24,6 +24,12 @@ import { getDataFromDataBC } from '../WFSConsumer';
 import * as turf from '@turf/turf';
 import { DomEvent } from 'leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
+import { IconButton } from '@material-ui/core';
+import SearchIcon from '@material-ui/icons/Search';
+import L from 'leaflet';
+import { ThemeContext } from 'contexts/themeContext';
+import { toolStyles } from './Helpers/ToolBtnStyles';
+import POImarker from '../Icons/POImarker.png';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
@@ -43,7 +49,7 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
   }
 };
 
-export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
+export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker }) => {
   const [bufferedGeo, setBufferedGeo] = useState(null);
   const [poiTableRows, setPoiTableRows] = useState([]);
   const [section, setSection] = useState('position');
@@ -124,7 +130,8 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
     return {
       site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
       species: arrSpecies,
-      jurisdictions: arrJurisdictions
+      jurisdictions: arrJurisdictions,
+      geometry: poi.point_of_interest_payload.geometry
     };
   };
 
@@ -168,49 +175,66 @@ export const GeneratePopup = ({ utmRows, map, lat, lng }) => {
   }
 
   return (
-    <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
-      <Typography>Radius</Typography>
-      <div style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -40 }}>
-        <Typography>{radius} km</Typography>
-        <Slider
-          style={{ width: 225, alignSelf: 'center', marginLeft: 10 }}
-          aria-label="Kilometers"
-          defaultValue={radius}
-          onChange={(event: any, newRadius: number) => {
-            setRadius(newRadius);
-          }}
-          getAriaValueText={valueText}
-          step={1}
-          marks
-          min={1}
-          max={10}
-        />
-      </div>
-      <TableContainer>
-        {section == 'position' && <RenderTablePosition rows={utmRows} />}
-        {section == 'activity' && <RenderTableActivity rows={rows} setRows={setRows} />}
-        {section == 'databc' && <RenderTableDataBC rows={databc} />}
-        {section == 'poi' && <RenderTablePOI rows={poiTableRows} />}
-      </TableContainer>
-      <BottomNavigation value={section} onChange={handleChange}>
-        <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
-        <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
-        <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
-        <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
-      </BottomNavigation>
-      <Button onClick={hideElement}>Close</Button>
-    </Popup>
+    <>
+      <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
+        <Typography>Radius</Typography>
+        <div style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -40 }}>
+          <Typography>{radius} km</Typography>
+          <Slider
+            style={{ width: 225, alignSelf: 'center', marginLeft: 10 }}
+            aria-label="Kilometers"
+            defaultValue={radius}
+            onChange={(event: any, newRadius: number) => {
+              setRadius(newRadius);
+            }}
+            getAriaValueText={valueText}
+            step={1}
+            marks
+            min={1}
+            max={10}
+          />
+        </div>
+        <TableContainer>
+          {section == 'position' && <RenderTablePosition rows={utmRows} />}
+          {section == 'activity' && <RenderTableActivity rows={rows} setRows={setRows} />}
+          {section == 'databc' && <RenderTableDataBC rows={databc} />}
+          {section == 'poi' && <RenderTablePOI map={map} rows={poiTableRows} setPoiMarker={setPoiMarker} />}
+        </TableContainer>
+        <BottomNavigation value={section} onChange={handleChange}>
+          <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
+          <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
+          <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
+          <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
+        </BottomNavigation>
+        <Button onClick={hideElement}>Close</Button>
+      </Popup>
+    </>
   );
 };
 
 function SetPointOnClick({ map }: any) {
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPoint, setGeoPoint] = useState(null);
+  const [clickMode, setClickMode] = useState(false);
+  const [poiMarker, setPoiMarker] = useState(null);
   const [utm, setUTM] = useState(null);
   const [rows, setRows] = useState(null);
+  const divRef = useRef();
+  const themeContext = useContext(ThemeContext);
+  const toolClass = toolStyles();
+
+  const markerIcon = L.icon({
+    iconUrl: POImarker,
+    iconSize: [24, 24]
+  });
+
+  useEffect(() => {
+    L.DomEvent.disableClickPropagation(divRef?.current);
+    L.DomEvent.disableScrollPropagation(divRef?.current);
+  });
 
   useMapEvent('click', (e) => {
-    setPosition(e.latlng);
+    if (clickMode) setPosition(e.latlng);
   });
 
   useEffect(() => {
@@ -228,13 +252,35 @@ function SetPointOnClick({ map }: any) {
 
   return (
     <>
-      {utm && (
+      <IconButton
+        ref={divRef}
+        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+        onClick={() => setClickMode(!clickMode)}
+        style={clickMode ? { backgroundColor: '#006ee6' } : null}>
+        <SearchIcon />
+      </IconButton>
+      {utm && clickMode && (
         <GeoJSON data={geoPoint} key={Math.random()}>
-          <GeneratePopup utmRows={rows} map={map} lat={position.lat} lng={position.lng} />
+          <GeneratePopup utmRows={rows} map={map} lat={position.lat} lng={position.lng} setPoiMarker={setPoiMarker} />
         </GeoJSON>
+      )}
+      {poiMarker && (
+        <Marker
+          position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
+          icon={markerIcon}>
+          <Tooltip direction="top" opacity={0.5} permanent>
+            <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
+              {poiMarker.species.map((s) => (
+                <>{s} </>
+              ))}
+            </div>
+          </Tooltip>
+        </Marker>
       )}
     </>
   );
 }
+
+// Circle Icon: <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 export { SetPointOnClick };

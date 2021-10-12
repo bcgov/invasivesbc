@@ -24,6 +24,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 import * as turf from '@turf/turf';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { GeoJSON, Marker } from 'react-leaflet';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -400,7 +401,7 @@ export const RenderTableDataBC = ({ rows }) => {
   );
 };
 
-export const RenderTablePOI = ({ rows }) => {
+export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
@@ -426,7 +427,21 @@ export const RenderTablePOI = ({ rows }) => {
             <>
               <StyledTableRow key={row?.site_id}>
                 <StyledTableCell component="th" scope="row">
-                  {row.site_id}
+                  <a
+                    onClick={() => {
+                      console.log(row);
+                      if (row.geometry)
+                        map.flyTo(
+                          [row.geometry[0].geometry.coordinates[1], row.geometry[0].geometry.coordinates[0]],
+                          17
+                        );
+                      setPoiMarker({
+                        geometry: row.geometry[0],
+                        species: row.species
+                      });
+                    }}>
+                    {row.site_id}
+                  </a>
                 </StyledTableCell>
                 <StyledTableCell>
                   {row.species.map((s) => (
