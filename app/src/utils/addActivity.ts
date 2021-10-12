@@ -248,15 +248,18 @@ export const sanitizeRecord = (input: any) => {
   naming variables differently in different contexts was a good idea.
   Note for future refactoring: favor DB representation.
 */
-export const mapDocToDBActivity = (doc: any) => ({
-  ...mapKeys(doc, snakeCase),
-  _id: doc._id || doc.activity_id,
-  sync_status: doc.sync?.status,
-  media: doc.photos?.map((photo) => ({
-    file_name: photo.filepath,
-    encoded_file: photo.dataUrl
-  }))
-});
+export const mapDocToDBActivity = (doc: any) => {
+  const retVal = {
+    ...mapKeys(doc, snakeCase),
+    _id: doc._id || doc.activity_id,
+    sync_status: doc.sync?.status,
+    media: doc.photos?.map((photo) => ({
+      file_name: photo.filepath,
+      encoded_file: photo.dataUrl
+    }))
+  };
+  return retVal;
+};
 
 /*
   Function to temporarily deal with a grievous oversight by initial devs who thought 

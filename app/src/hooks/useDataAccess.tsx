@@ -180,7 +180,7 @@ export const useDataAccess = () => {
     }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      //TODO: implement getting old version from derver and making new with overwritten props
+      //TODO: implement getting old version from server and making new with overwritten props
       // IN USEINVASIVES API
       return api.updateActivity(activity);
     } else {

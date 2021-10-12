@@ -30,7 +30,6 @@ import {
   getHerbicideApplicationRateValidator,
   getTransectOffsetDistanceValidator,
   getPosAndNegObservationValidator,
-  getShorelineTypesPercentValidator,
   getHerbicideMixValidation,
   getVegTransectPointsPercentCoverValidator,
   getDurationCountAndPlantCountValidation,
@@ -87,6 +86,7 @@ interface IActivityPageProps {
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
+  console.log(GetUserAccessLevel());
 
   const databaseContextPouch = useContext(DatabaseContext);
   const databaseContext = useContext(DatabaseContext2);
@@ -119,6 +119,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (doc?.docType === DocType.REFERENCE_ACTIVITY) {
       return;
     }
+    console.log(' - - - -  update doc - ...doc');
+    console.log(doc);
+    console.log(' - - - -  update doc - ...updates');
+    console.log(updates);
     let updatedDoc = {
       ...doc,
       ...updates,
@@ -161,13 +165,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const oldActivity = await dataAccess.getActivityById(
           updated._id,
           databaseContext,
-          true,
+          false,
           appStateResults.referenceData
         );
         const newActivity = {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
+        console.log('***********NEW activity (line 180)');
+        console.log(newActivity);
 
         if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
         else await dataAccess.updateActivity(newActivity, databaseContext);
@@ -206,6 +212,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const { latitude, longitude } = calculateLatLng(geom) || {};
       var utm = calc_utm(longitude, latitude);
       let utm_zone = utm[0];
+      console.dir('activityPage', utm_zone);
       let utm_easting = utm[1];
       let utm_northing = utm[2];
       /*****exported DisplayPosition utm_zone function
@@ -252,7 +259,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} extent The leaflet bounds object
    */
   const saveExtent = async (newExtent: any) => {
-    await updateDoc({ extent: newExtent });
+    // await updateDoc({ extent: newExtent });
   };
 
   /**
@@ -261,7 +268,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {IPhoto} photosArr An array of photo objects.
    */
   const savePhotos = async (photosArr: IPhoto[]) => {
-    await updateDoc({ photos: photosArr, dateUpdated: new Date() });
+    // await updateDoc({ photos: photosArr, dateUpdated: new Date() });
   };
 
   /*
@@ -302,23 +309,18 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       return formData;
     }
 
-    const collections = [...formData.activity_subtype_data.collections];
-
-    collections.forEach((collection) => {
+    formData.activity_subtype_data.collections.forEach((collection) => {
       if (collection.start_time && collection.stop_time) {
-        const start_time = new Date(collection.start_time);
-        const stop_time = new Date(collection.stop_time);
+        const arrStart = collection.start_time.split(':');
+        const arrStop = collection.stop_time.split(':');
+        const minutesStart = +arrStart[0] * 60 + +arrStart[1];
+        const minutesStop = +arrStop[0] * 60 + +arrStop[1];
 
-        const diffMs = stop_time.getTime() - start_time.getTime();
-        const diffMins = Math.round(diffMs / 1000 / 60);
-        console.log(diffMins);
-        collection.total_time = diffMins;
+        const total = minutesStop - minutesStart;
+        collection.total_time = total;
       }
     });
-    return {
-      ...formData,
-      activity_subtype_data: { ...formData.activity_subtype_data, collections: collections }
-    };
+    return formData;
   };
 
   const autoFillSlopeAspect = (formData: any, lastField: string) => {
@@ -349,8 +351,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any) => {
     let updatedFormData = event.formData;
-    console.log('EVENT');
-    console.log(event);
+
     updatedFormData.activity_subtype_data = populateHerbicideDilutionAndArea(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
 
@@ -371,12 +372,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * Update the doc (activity) with the latest form data and store it in DB
    */
   const pasteFormData = async () => {
-    await updateDoc({
-      formData: retrieveFormDataFromSession(doc),
-      status: ActivityStatus.EDITED,
-      dateUpdated: new Date(),
-      formStatus: FormValidationStatus.NOT_VALIDATED
-    });
+    // await updateDoc({
+    //   formData: retrieveFormDataFromSession(doc),
+    //   status: ActivityStatus.EDITED,
+    //   dateUpdated: new Date(),
+    //   formStatus: FormValidationStatus.NOT_VALIDATED
+    // });
   };
 
   /**
@@ -403,14 +404,16 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       activityResults = await dataAccess.getActivityById(
         activityId || (appStateResults.docs[0].activeActivity as string),
         databaseContext,
-        true
+        false
       );
+      console.dir('activityResults - - -- -- ---');
+      console.dir(activityResults);
     } else {
       try {
         activityResults = await dataAccess.getActivityById(
           activityId || appStateResults.activeActivity,
           databaseContext,
-          true,
+          false,
           appStateResults.referenceData
         );
       } catch (e) {
@@ -616,7 +619,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       let updatedFormData = getDefaultFormDataValues(activityResult);
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
-
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
@@ -733,15 +735,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography
-              onClick={() => {
-                console.log(doc);
-              }}
-              align="center">
-              Activity ID: {doc.shortId ? doc.shortId : 'unknown'}
-            </Typography>
+            <Typography align="center">Activity ID: {doc.activityId ? doc.activityId : 'unknown'}</Typography>
             <Typography align="center">
-              Date created: {doc.dateCreated ? new Date(doc.dateCreated).toString() : 'unknown'}
+              {/*
+              Date created: {doc.dateCreated ? doc.dateCreated : 'unknown'}*/}
             </Typography>
           </Box>
           <ActivityComponent
@@ -755,7 +752,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getDuplicateInvasivePlantsValidator(doc.activitySubtype),
               getHerbicideApplicationRateValidator(),
               getTransectOffsetDistanceValidator(),
-              getShorelineTypesPercentValidator(),
               getHerbicideMixValidation(),
               getVegTransectPointsPercentCoverValidator(),
               getDurationCountAndPlantCountValidation(),

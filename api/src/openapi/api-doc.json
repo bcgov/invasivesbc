@@ -3689,6 +3689,12 @@
           "mix_delivery_rate"
         ],
         "properties": {
+          "herbicide_type": {
+            "title": "Herbicide Type",
+            "type": "string",
+            "enum": ["liquid", "granular"],
+            "x-tooltip-text": "Choose whether the herbicide being used is liquid or granular"
+          },
           "herbicide_code": {
             "type": "string",
             "title": "Herbicide",
@@ -3699,12 +3705,6 @@
               "x-enum-code-text": "code_description",
               "x-enum-code-sort-order": "code_sort_order"
             }
-          },
-          "herbicide_type": {
-            "title": "Herbicide Type",
-            "type": "string",
-            "enum": ["liquid", "granular"],
-            "x-tooltip-text": "Choose whether the herbicide being used is liquid or granular"
           },
           "area_treated": {
             "type": "string",
