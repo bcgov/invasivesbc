@@ -102,7 +102,9 @@ export const SingleTrip: React.FC<any> = (props) => {
     if (stepNumber === 2 || stepNumber === 3) {
       // Gonna refresh page
       history.push('/home');
-      history.push('/home/plan');
+      setTimeout(() => {
+        history.push('/home/plan');
+      }, 250);
     }
   };
 

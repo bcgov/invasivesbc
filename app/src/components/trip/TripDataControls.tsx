@@ -148,7 +148,6 @@ export const TripDataControls: React.FC<any> = (props) => {
     }
 
     let numberActivitiesFetched = 0;
-    console.log('--------- LINE 151 ----------', mytrip);
 
     for (const setOfChoices of trip.activityChoices) {
       const geometry = (mytrip.geometry && mytrip.geometry.length && mytrip.geometry[0]) || null;
