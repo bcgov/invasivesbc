@@ -20,7 +20,6 @@ import {
   Tooltip,
   Typography
 } from '@material-ui/core';
-import { lighten } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
@@ -32,9 +31,12 @@ import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import Spinner from '../../components/spinner/Spinner';
 import clsx from 'clsx';
 import { useDataAccess } from '../../hooks/useDataAccess';
+import RecordTableToolbar from './record-table/RecordTableToolbar';
+import RecordTableHead from './record-table/RecordTableHead';
+import RecordTableRow from './record-table/RecordTableRow';
 
-const ACTION_TIMEOUT = 1500; // 1.5s
-const ACTION_ERROR_TIMEOUT = 15000; // 15s
+export const ACTION_TIMEOUT = 1500; // 1.5s
+export const ACTION_ERROR_TIMEOUT = 15000; // 15s
 
 const snakeToPascal = (string, spaces = false) =>
   string
@@ -63,7 +65,7 @@ const arraysEqual = (a, b) => {
   return true;
 };
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
   component: {
     marginTop: '15px'
   },
@@ -146,42 +148,7 @@ const useStyles = makeStyles((theme) => ({
   dateCell: {}
 }));
 
-const useToolbarStyles = makeStyles((theme) => ({
-  root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1)
-  },
-  highlight:
-    theme.palette.type === 'light'
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
-  title: {
-    flex: '1 1 100%',
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightRegular,
-    whiteSpace: 'nowrap',
-    minWidth: 200
-  },
-  toolbar: {
-    justifyContent: 'start'
-  },
-  button: {
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 20,
-    marginBottom: 20,
-    whiteSpace: 'nowrap',
-    minWidth: 'max-content'
-  }
-}));
-
-const getValue = (row, header) => {
+export const getValue = (row, header) => {
   const cell = row[header.id];
   const valueMap = header.valueMap;
   const numeric = header.type === 'number';
@@ -339,33 +306,6 @@ export interface IRecordTableAction {
   //
 };
 
-// header: column behavior of 
-export interface IRecordTableHeader {
-  // GENERAL:
-  // id: the key the header is refered to as e.g. "activity_id"
-  id: string;
-  // title: english name of the column.  Will default to the id converted to Capitalized Case
-  title?: string;
-  // defaultOrder: order to sort the column by on first click (ASC or DESC). Default ASC
-  defaultOrder?: string;
-  // valueMap: key-value pairs mapping initial values to refined values, used for e.g. mapping short codes to their full names 
-  valueMap?: {
-    [key: string]: string
-  };
-  // tooltip: string description of the given header, displayed on mouseover if tooltips are enabled on the table
-  tooltip?: string;
-
-  // STYLE:
-  // className: style class
-  className?: any;
-  // type: if === 'number', will display values in the column with right-aligned style and decimal rounding.  'align' field overrides
-  type?: string;
-  // align: overrides 'type' and allows setting alignment of a column's contents
-  align?: string;
-  // padding: legacy padding override
-  padding?: any;
-};
-
 enum ActionStyle { dropdown = 'dropdown', start = 'start', end = 'end' };
 enum PaginationTypes { overlow = 'overflow', always = 'always' };
 enum DisplayInvalid {
@@ -383,6 +323,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
 
   const {
     // dropdown, // default none
+    actions,
     densePadding = false,
     dropdownLimit = true,
     enableFiltering = false,
@@ -396,80 +337,50 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     padEmptyRows = false, // whitespace added to make the table the same height (even on the last page with only e.g. 1 row)
     pagination = 'overflow', // by default, only shows paging options when more total rows than can fit on page 1
     rowActionStyle = 'dropdown', // || 'column'
-    rowsPerPageOptions = undefined, // disable ability to change rows per page by default
+    rowsPerPageOptions,
     startExpanded = true,
     startingOrder = 'asc',
+    startingOrderBy = props.headers.length && props.headers[0]?.id || 'id',
     startingRowsPerPage = 10,
     tableName = '',
+    tableSchemaType
   } = props;
 
-  const [rowsLoaded, setRowsLoaded] = useState(false);
-  const { startingOrderBy = props.headers.length ? props.headers[0].id : 'id' } = props; // defaults to the first header
+  // non-prop defaults:
+  const PAGES_LOADED_BUFFER = 2;
+  const startingPage = 0;
+  const startingRows = Array.isArray(props.rows) && props.rows || [];
+
+  // state declarations
+  const [rowsLoaded, setRowsLoaded] = useState(Array.isArray(props.rows));
   const [order, setOrder] = useState(startingOrder);
   const [orderBy, setOrderBy] = useState(startingOrderBy);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(startingPage);
   const [rowsPerPage, setRowsPerPage] = useState(startingRowsPerPage);
-
-  // Handle selective loading of only a portion of the total rows:
-  const [rows, setRows] = useState(Array.isArray(props.rows) && props.rows || []);
-  const [totalRows, setTotalRows] = useState(Array.isArray(props.rows) && rows.length || 0);
-  const [loadedRowsOffset, setLoadedRowsOffset] = useState(0);
+  const [rows, setRows] = useState(startingRows);
+  const [totalRows, setTotalRows] = useState(startingRows.length);
+  const [firstPageLoaded, setFirstPageLoaded] = useState(Math.max(0, page - PAGES_LOADED_BUFFER));
   const [toolbarErrorMessage, setToolbarErrorMessage] = useState();
-  const loadBuffer = 2;
-
-  useEffect(() => {
-    setRows(Array.isArray(props.rows) && props.rows || []);
-    setTotalRows(Array.isArray(props.rows) && props.rows?.length || 0);
-  }, [Array.isArray(props.rows) && props.rows?.length]);
-
-  /*
-  Function to populate "rows" in the table when props.rows is given as a function instead of a simple array
-  Pages data for the given order.  Will need to include filters in this as well in future iterations
-  */
-  const fetchRows = async () => {
-    // console.log('fetchRows start: ', tableName);
-    if (props.rows instanceof Function) {
-      if (
-        rows.slice(
-          // dont set loading indicator yet if you still have data visible
-          page * rowsPerPage - loadedRowsOffset,
-          (page + 1) * rowsPerPage - loadedRowsOffset
-        ).length < rowsPerPage
-      )
-        await setRowsLoaded(false);
-      const result = await props.rows({
-        page: Math.max(0, page - loadBuffer),
-        rowsPerPage: rowsPerPage,
-        order: [orderBy + ' ' + order]
-      });
-
-      // console.log('fetchRows: ', result);
-      if (result) {
-        await setRows(result.rows);
-        await setTotalRows(result.count);
-        // offset from a couple pages back to avoid
-        await setLoadedRowsOffset(Math.max(0, (page - loadBuffer) * rowsPerPage));
-      }
-    }
-    await setRowsLoaded(true);
-  };
-
-  useEffect(() => {
-    fetchRows();
-  }, [
-    Math.max(0, page - loadBuffer) * rowsPerPage <= loadedRowsOffset && page, // look two pages behind
-    Math.min(totalRows, page + 1 + loadBuffer) * rowsPerPage > loadedRowsOffset + rows.length && page, // look two pages ahead
-    rowsPerPage,
-    orderBy,
-    order,
-    loadedRowsOffset,
-    rows.length
-  ]);
-
-  const dropdown = useCallback((row) => !!props.dropdown && props.dropdown(row), [!!props.dropdown]);
-  const tableSchemaType = useMemo(() => props.tableSchemaType, [props.tableSchemaType?.length]);
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
   const [schemasLoaded, setSchemasLoaded] = useState(false);
+  const [expandedRows, setExpandedRows] = useState([]);
+  const [selected, setSelected] = useState(props.selected || []);
+
+  // derived variables:
+  const lastPageLoaded = Math.min(totalRows, page + 1 + PAGES_LOADED_BUFFER);
+  const loadedRowsFirstIndex = firstPageLoaded * rowsPerPage;
+  const loadedRowLastIndex = Math.min(lastPageLoaded * rowsPerPage, totalRows - 1);
+  const pageRowsFirstIndex = page * rowsPerPage;
+  const pageRowsLastIndex = (page + 1) * rowsPerPage;
+  const isLoading = (!schemasLoaded && tableSchemaType?.length > 0) || !rowsLoaded;
+  const selectedHash = JSON.stringify(selected);
+  const rowsHash = JSON.stringify(props.rows);
+
+
+  // HEADERS:
+
+  // converts headers prop into standardized format, using OpenApi schemas from api-docs to infer properties
+  // this is needed, in particular, to map values on the table from short codes to their full names
   const headers = useMemo(() => {
     let headers2;
     if (props.headers) headers2 = props.headers;
@@ -517,14 +428,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
       };
     });
   }, [rows, props.headers?.length, schemasLoaded]);
-  const actions = { ...props.actions };
-  const rowActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.rowAction);
-
-  const [expandedRows, setExpandedRows] = useState([]);
-  const [selected, setSelected] = useState(props.selected || []);
   
-  const selectedHash = JSON.stringify(selected);
-
+  // fetches the api spec from api-docs and pulls out the list of schemas we declare in tableSchemaInput
   const getApiSpec = useCallback(
     async (tableSchemaInput) => {
       const apiSpecResponse = await dataAccess.getCachedApiSpec();
@@ -554,65 +459,15 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     [tableSchemaType]
   );
 
-  useEffect(() => {
-    getApiSpec(tableSchemaType);
-  }, [tableSchemaType]);
-
-  useEffect(() => {
-    setSelected(props.selected || []);
-  }, [JSON.stringify(props.selected)]);
-
-  useEffect(() => {
-    if (props.setSelected) props.setSelected(selected);
-  }, [selectedHash]);
-
-  const selectedRows = useMemo(
-    () =>
-      selected
-        .map((id) => {
-          const matches = rows.find((row) => row[keyField] === id);
-          return matches ? matches : undefined;
-        })
-        .filter((row) => row),
-    [selectedHash, rows]
-  );
-
   // sort and limit the rows:
   const orderHeader = useMemo(() => headers.find((col) => col.id === orderBy), [headers, orderBy]);
-  const pageRows = useMemo(() => {
-    // Note: this is O(nlog(n)) so important that we cache this with useMemo
-    return stableSort(rows, orderHeader, order === 'asc').slice(
-      page * rowsPerPage - loadedRowsOffset,
-      page * rowsPerPage + rowsPerPage - loadedRowsOffset
-    );
-  }, [rows.length, orderHeader, order, page, rowsPerPage]);
-  // render all dropdowns on page
-  const renderedDropdowns = useMemo(
-    () => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)),
-    [pageRows, dropdown]
-  );
-  // search for any potential overflows (fields too long).
-  // This returns a list of booleans whether each row overflows
-  const verboseOverflows = useMemo(
-    () => pageRows.map((row) => headers.filter(({ id }) => overflowLimit && String(row[id]).length > overflowLimit).length > 0),
-    [pageRows, headers, overflowLimit]
-  );
-  // determine if any rows on the current page have a dropdown:
-  const pageHasDropdown = useMemo(
-    () =>
-      (!!dropdown && renderedDropdowns.filter((x) => x).length > 0) ||
-      (verboseOverflows.filter((x) => x).length > 0) ||
-      (rowActions?.length > 0 && rowActionStyle === 'dropdown'),
-    [dropdown, renderedDropdowns, verboseOverflows, rowActions?.length, rowActionStyle]
-  );
-  const showPagination = pagination === 'overflow' ? totalRows > rowsPerPage : !!pagination;
 
   const onRequestSort = useCallback(
     (event, property) => {
       const isAsc = orderBy === property && order === 'asc';
       setOrder(isAsc ? 'desc' : 'asc');
       setOrderBy(property);
-      setPage(0);
+      setPage(startingPage);
     },
     [orderBy, order]
   );
@@ -637,32 +492,74 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     [rows]
   );
 
-  const selectRow = useCallback((prevSelected, key) => {
-    const selectedIndex = prevSelected.indexOf(key);
-    let newSelected = [];
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(prevSelected, key);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(prevSelected.slice(1));
-    } else if (selectedIndex === prevSelected.length - 1) {
-      newSelected = newSelected.concat(prevSelected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(prevSelected.slice(0, selectedIndex), prevSelected.slice(selectedIndex + 1));
+  // ROWS
+
+  const pageRows = useMemo(() => {
+    // Note: this is O(nlog(n)) so important that we cache this with useMemo
+    return stableSort(rows, orderHeader, order === 'asc').slice(
+      page * rowsPerPage - loadedRowsFirstIndex,
+      page * rowsPerPage + rowsPerPage - loadedRowsFirstIndex
+    );
+  }, [rows.length, orderHeader, order, page, rowsPerPage]);
+  const isCurrentPageLoaded = rows.length - pageRowsFirstIndex >= rowsPerPage && loadedRowLastIndex < totalRows - 1;
+  const rowActions: Array<any> = Object.values(actions).filter((action: any) => action.enabled && action.rowAction);
+  const dropdown = useCallback((row) => !!props.dropdown && props.dropdown(row), [!!props.dropdown]);
+
+  // render all dropdowns on page
+  const renderedDropdowns = useMemo(() => pageRows.map((row) => (dropdown ? dropdown(row) : undefined)), [
+    pageRows,
+    dropdown
+  ]);
+
+  // search for any potential overflows (fields too long).
+  // This returns a list of booleans whether each row overflows
+  const verboseOverflows = useMemo(
+    () => pageRows.map((row) => headers.filter(({ id }) => overflowLimit && String(row[id]).length > overflowLimit).length > 0),
+    [pageRows, headers, overflowLimit]
+  );
+
+  // determine if any rows on the current page have a dropdown:
+  const pageHasDropdown = useMemo(
+    () =>
+      (!!dropdown && renderedDropdowns.filter((x) => x).length > 0) ||
+      (verboseOverflows.filter((x) => x).length > 0) ||
+      (rowActions?.length > 0 && rowActionStyle === 'dropdown'),
+    [dropdown, renderedDropdowns, verboseOverflows, rowActions?.length, rowActionStyle]
+  );
+
+  /*
+  Function to populate "rows" in the table when props.rows is given as a function instead of a simple array
+  Pages data for the given order.  Will need to include filters in this as well in future iterations
+  */
+  const fetchRows = async () => {
+    // console.log('fetchRows start: ', tableName);
+    if (props.rows instanceof Function) {
+      if (isCurrentPageLoaded)
+        await setRowsLoaded(false);
+      const result = await props.rows({
+        page: pageRowsFirstIndex,
+        rowsPerPage: rowsPerPage,
+        order: [orderBy + ' ' + order]
+      });
+
+      // console.log('fetchRows: ', result);
+      if (result) {
+        await setRows(result.rows);
+        await setTotalRows(result.count);
+        await setFirstPageLoaded(firstPageLoaded);
+      }
     }
-    setSelected(newSelected);
-  }, []);
-
-  const onPageChange = (event, newPage) => {
-    setPage(newPage);
+    await setRowsLoaded(true);
   };
 
-  const onRowsPerPageChange = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, totalRows - page * rowsPerPage);
+  const selectedRows = useMemo(
+    () =>
+      selected
+        .map((id) => rows.find((row) => row[keyField] === id) || undefined)
+        .filter((row) => row),
+    [selectedHash, rows]
+  );
 
   const toggleExpandedRow = useCallback(
     (key) => {
@@ -686,7 +583,115 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     [expandedRows?.length, JSON.stringify(expandedRows), dropdownLimit, selectedRows, pageRows]
   );
 
-  const loading = (!schemasLoaded && tableSchemaType?.length > 0) || !rowsLoaded;
+  const selectRow = useCallback((prevSelected, key) => {
+    const selectedIndex = prevSelected.indexOf(key);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(prevSelected, key);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(prevSelected.slice(1));
+    } else if (selectedIndex === prevSelected.length - 1) {
+      newSelected = newSelected.concat(prevSelected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(prevSelected.slice(0, selectedIndex), prevSelected.slice(selectedIndex + 1));
+    }
+    setSelected(newSelected);
+  }, []);
+
+  const RecordTableHeadRendered = () => <RecordTableHead
+    totalSelected={selected.length}
+    {...{ order, orderBy, onSelectAllClick, onRequestSort, totalRows, headers, enableSelection, enableTooltips, pageHasDropdown }}
+  />
+
+  const RecordTableRows = () => pageRows.map((row, index) => {
+    const key = row[keyField];
+    return (
+      <RecordTableRow
+        key={key}
+        hasOverflow={verboseOverflows[index]}
+        isExpanded={expandedRows.indexOf(key) !== -1}
+        isSelected={selected.indexOf(key) !== -1}
+        toggleExpanded={(event) => {
+          event.stopPropagation();
+          toggleExpandedRow(key);
+        }}
+        toggleSelected={(event) => {
+          event.stopPropagation();
+          selectRow(selected, key);
+        }}
+        actions={rowActions}
+        actionStyle={rowActionStyle}
+        {...{keyField, headers, row, dropdown, pageHasDropdown, enableSelection, databaseContext, fetchRows}}
+      />
+    );
+  });
+
+  // EMPTY ROWS
+  // if padEmptyRows, creates whitespace on the last page 
+  const emptyRowsCount = rowsPerPage - Math.min(rowsPerPage, totalRows - page * rowsPerPage);
+  const EmptyRows = () => padEmptyRows && emptyRowsCount > 0 && (
+    <TableRow style={{ height: (densePadding ? 33 : 53) * emptyRowsCount }}>
+      <TableCell colSpan={headers.length} />
+    </TableRow>
+  );
+
+
+  // PAGINATION:
+  const showPagination = pagination === 'overflow' ? totalRows > rowsPerPage : !!pagination;
+  const onPageChange = (event, newPage) => {
+    setPage(newPage);
+  };
+  const onRowsPerPageChange = (event) => {
+    setRowsPerPage(parseInt(event.target.value, startingRowsPerPage));
+    setPage(startingPage);
+  };
+  const RecordTablePagination = () => !!totalRows && showPagination && (
+    <TablePagination
+      component="div"
+      count={totalRows}
+      {...{rowsPerPageOptions, rowsPerPage, page, onPageChange, onRowsPerPageChange}}
+    />
+  );
+
+
+  // EFFECT LISTENERS:
+
+  useEffect(() => {
+    // listen for parent compnent changes to startingrows
+    setRows(startingRows);
+    setTotalRows(startingRows.length);
+  }, [rowsHash]);
+
+  useEffect(() => {
+    // listen for page changes which would cause a re-fetch from db
+    fetchRows();
+  }, [
+    page,
+    rowsPerPage,
+    orderBy,
+    order,
+    loadedRowsFirstIndex,
+    rows.length
+  ]);
+
+  useEffect(() => {
+    // fetch the api schemas to populate headers
+    getApiSpec(tableSchemaType);
+  }, [tableSchemaType]);
+
+  useEffect(() => {
+    // listen for parent component changes to selected
+    setSelected(props.selected || []);
+  }, [JSON.stringify(props.selected)]);
+
+  useEffect(() => {
+    // when local selected change, propagate to parent using provided hook
+    if (props.setSelected) props.setSelected(selected);
+  }, [selectedHash]);
+
+
+  // FINALLY, RENDER ALL:
 
   const rendered = useMemo(
     () => (
@@ -701,12 +706,12 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
             />
           )}
           <AccordionDetails className={classes.paper}>
-            {loading && (
+            {isLoading && (
               <div className={classes.emptyTable}>
                 <Spinner />
               </div>
             )}
-            {!loading && !totalRows && <div className={classes.emptyTable}>No data to display</div>}
+            {!isLoading && !totalRows && <div className={classes.emptyTable}>No data to display</div>}
             {!!totalRows && (
               <TableContainer>
                 <Table
@@ -714,53 +719,21 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
                   aria-labelledby="tableTitle"
                   size={densePadding ? 'small' : 'medium'}
                   aria-label="enhanced table">
-                  <RecordTableHead
-                    totalSelected={selected.length}
-                    {...{ classes, order, orderBy, onSelectAllClick, onRequestSort, totalRows, headers, enableSelection, enableTooltips, pageHasDropdown }}
-                  />
+                  <RecordTableHeadRendered />
                   <TableBody>
-                    {pageRows.map((row, index) => (
-                      <RecordTableRow
-                        key={row[keyField]}
-                        hasOverflow={verboseOverflows[index]}
-                        isExpanded={expandedRows.indexOf(row[keyField]) !== -1}
-                        isSelected={selected.indexOf(row[keyField]) !== -1}
-                        enableSelection={enableSelection}
-                        toggleExpanded={(event) => {
-                          event.stopPropagation();
-                          toggleExpandedRow(row[keyField]);
-                        }}
-                        toggleSelected={(event) => {
-                          event.stopPropagation();
-                          selectRow(selected, row[keyField]);
-                        }}
-                        actions={rowActions}
-                        actionStyle={rowActionStyle}
-                        {...{keyField, headers, row, dropdown, pageHasDropdown, enableSelection, databaseContext, fetchRows}}
-                      />
-                    ))}
-                    {padEmptyRows && emptyRows > 0 && (
-                      <TableRow style={{ height: (densePadding ? 33 : 53) * emptyRows }}>
-                        <TableCell colSpan={headers.length} />
-                      </TableRow>
-                    )}
+                    <RecordTableRows />
+                    <EmptyRows />
                   </TableBody>
                 </Table>
               </TableContainer>
             )}
-            {!!totalRows && showPagination && (
-              <TablePagination
-                component="div"
-                count={totalRows}
-                {...{rowsPerPageOptions, rowsPerPage, page, onPageChange, onRowsPerPageChange}}
-              />
-            )}
+            <RecordTablePagination />
           </AccordionDetails>
         </Accordion>
       </div>
     ),
     [
-      loading,
+      isLoading,
       JSON.stringify(pageRows),
       totalRows,
       schemasLoaded,
@@ -773,332 +746,9 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     ]
   );
 
-  if (hideEmpty && (!totalRows || loading)) return null
+  // hide render conditionally if hideEmpty feature is enabled
+  if (hideEmpty && (!totalRows || isLoading)) return null
   else return rendered;
-};
-
-function RecordTableHead(props) {
-  const {
-    classes,
-    onSelectAllClick,
-    order,
-    orderBy,
-    totalSelected,
-    totalRows,
-    onRequestSort,
-    headers,
-    pageHasDropdown,
-    enableSelection,
-    enableTooltips
-  } = props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
-
-  return (
-    <TableHead className={classes.header}>
-      <TableRow>
-        {(enableSelection || pageHasDropdown) && (
-          <TableCell padding="checkbox" className={classes.cell}>
-            {enableSelection && totalRows < DEFAULT_PAGE_SIZE && (
-              // disable Select-All for huge row counts (for now)
-              <Checkbox
-                indeterminate={totalSelected > 0 && totalSelected < totalRows}
-                checked={totalRows > 0 && totalSelected === totalRows}
-                onChange={onSelectAllClick}
-                inputProps={{ 'aria-label': 'select all' }}
-              />
-            )}
-            {pageHasDropdown && <IconButton aria-label="expand row" size="small" />}
-          </TableCell>
-        )}
-        {headers.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            padding={headCell.padding}
-            align={headCell.align}
-            sortDirection={orderBy === headCell.id ? order : false}
-            className={`${classes.cell} ${headCell.className}`}>
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : headCell.defaultOrder}
-              onClick={createSortHandler(headCell.id)}>
-              {enableTooltips && !!headCell.tooltip && (
-                <Tooltip title={headCell.tooltip} arrow>
-                  <div>{headCell.title}</div>
-                </Tooltip>
-              )}
-              {!headCell.tooltip && headCell.title}
-              {orderBy === headCell.id && (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              )}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
-
-const RecordTableToolbar = (props) => {
-  const classes = useToolbarStyles();
-  const { selectedRows, tableName, enableFiltering, actions, databaseContext, fetchRows, errorMessage, setErrorMessage } = props;
-  const totalSelected = selectedRows?.length || 0;
-
-  const bulkActions: Array<any> = Object.values(actions)
-    .filter((action: any) => action.enabled && action.bulkAction)
-    .map((action: any) => {
-      const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
-      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
-      return (
-        <Button
-          key={action.key}
-          variant="contained"
-          color="primary"
-          size="small"
-          disabled={action.displayInvalid === 'disable' && !isValid}
-          className={classes.button}
-          startIcon={action.icon}
-          onClick={async (e) => {
-            e.stopPropagation();
-            try {
-              if (
-                action.displayInvalid === 'error' &&
-                // error if bulk condition fails or if any row's condition fails
-                ((action.bulkCondition && !action.bulkCondition(selectedRows)) ||
-                  (action.rowCondition && selectedRows.filter((row) => !action.rowCondition(row))?.length)) &&
-                action.invalidError
-              )
-                throw new Error(action.invalidError);
-              await action.action(selectedRows);
-              if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
-            } catch (error) {
-              setErrorMessage(error?.message || error);
-              setTimeout(() => setErrorMessage(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error?.message || error || action.invalidError);
-            }
-          }}>
-          {action.label}
-        </Button>
-      );
-    })
-    .filter((button) => button); // remove hidden actions
-
-  const globalActions: Array<any> = Object.values(actions)
-    .filter((action: any) => action.enabled && action.globalAction)
-    .map((action: any) => {
-      const isValid = action.globalCondition ? action.globalCondition(selectedRows) : true;
-      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
-      return (
-        <Button
-          key={action.key}
-          variant="contained"
-          size="small"
-          disabled={action.displayInvalid === 'disable' && !isValid}
-          className={classes.button}
-          startIcon={action.icon}
-          onClick={async (e) => {
-            e.stopPropagation();
-            try {
-              if (
-                action.displayInvalid === 'error' &&
-                // error if bulk condition fails or if any row's condition fails
-                ((action.globalCondition && !action.globalCondition(selectedRows)) ||
-                  (action.bulkCondition && !action.bulkCondition(selectedRows)) ||
-                  (action.rowCondition && selectedRows.filter((row) => !action.rowCondition(row))?.length)) &&
-                action.invalidError
-              )
-                throw new Error(action.invalidError);
-              await action.action(selectedRows);
-              if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
-            } catch (error) {
-              setErrorMessage(error?.message || error);
-              setTimeout(() => setErrorMessage(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error?.message || error || action.invalidError);
-            }
-          }}>
-          {action.label}
-        </Button>
-      );
-    })
-    .filter((button) => button); // remove hidden actions
-
-  return (
-    <AccordionSummary
-      classes={{ content: classes.toolbar }}
-      expandIcon={<ExpandMore />}
-      aria-controls="panel-map-content"
-      id="panel-map-header">
-      <Toolbar
-        className={clsx(classes.root, {
-          [classes.highlight]: totalSelected > 0
-        })}>
-        <Box>
-          {totalSelected > 0 ? (
-            <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-              {totalSelected} selected
-            </Typography>
-          ) : (
-            <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-              {tableName}
-            </Typography>
-          )}
-          {totalSelected > 0 && bulkActions}
-        </Box>
-        {errorMessage}
-      </Toolbar>
-      {enableFiltering && !totalSelected && (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterList />
-          </IconButton>
-        </Tooltip>
-      )}
-      <Box>{globalActions}</Box>
-    </AccordionSummary>
-  );
-};
-
-const RecordTableCell = ({ row, header, className, valueMap }) => {
-  const ifApplicable = (val) => (typeof val === 'string' || (!isNaN(val) && String(val).trim().length) ? val : ' N/A');
-  const id = header.id;
-
-  let overrideProps;
-  if (typeof row[id] === 'object' && !Array.isArray(row[id])) overrideProps = row[id];
-  const value = getValue(row, header);
-
-  return (
-    <TableCell
-      component="th"
-      scope="row"
-      align={header.align}
-      padding={header.padding}
-      className={className}
-      {...overrideProps}>
-      {ifApplicable(value)}
-    </TableCell>
-  );
-};
-
-const RecordTableRow = (props) => {
-  const {
-    keyField,
-    headers,
-    row,
-    isExpanded,
-    toggleExpanded,
-    enableSelection,
-    isSelected,
-    toggleSelected,
-    pageHasDropdown,
-    dropdown,
-    hasOverflow,
-    actions,
-    actionStyle,
-    databaseContext,
-    fetchRows
-  } = props;
-  const classes = useStyles();
-
-  const [actionError, setActionError] = useState(props.actionError || '');
-
-  const key = row[keyField];
-  if (key === undefined) throw new Error('Error: table row has no matching key defined: ' + keyField);
-
-  const renderedDropdown = !!dropdown && dropdown(row);
-  const labelId = `record-table-checkbox-${key}`;
-  const rowActions = actions
-    .map((action: any) => {
-      const isValid = action.rowCondition ? action.rowCondition(row) : true;
-      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
-      return (
-        <Button
-          key={action.key}
-          variant="contained"
-          color="primary"
-          size="small"
-          disabled={action.displayInvalid === 'disable' && !isValid}
-          className={classes.button}
-          startIcon={action.icon}
-          onClick={async (e) => {
-            e.stopPropagation();
-            try {
-              if (
-                action.displayInvalid === 'error' &&
-                action.rowCondition &&
-                !action.rowCondition(row) &&
-                action.invalidError
-              )
-                throw new Error(action.invalidError);
-              await action.action([row]);
-              // await console.log('action ', action.key);
-              if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
-            } catch (error) {
-              setActionError(error?.message || error);
-              setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error?.message || error || action.invalidError);
-            }
-          }}>
-          {action.label}
-        </Button>
-      );
-    })
-    .filter((button) => button); // remove hidden actions
-  const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
-
-  return (
-    <React.Fragment key={key}>
-      <TableRow
-        hover
-        role="checkbox"
-        aria-checked={isSelected}
-        tabIndex={-1}
-        selected={isSelected}
-        onClick={toggleExpanded}>
-        {(enableSelection || pageHasDropdown) && (
-          <TableCell padding="checkbox" className={classes.cell}>
-            {enableSelection && (
-              <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
-            )}
-            {pageHasDropdown && (
-              <IconButton aria-label="expand row" size="small">
-                {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
-              </IconButton>
-            )}
-          </TableCell>
-        )}
-        {headers.map((header) => (
-          <RecordTableCell
-            header={header}
-            key={header.id}
-            row={row}
-            className={`
-            ${classes.cell}
-            ${header.className}
-            ${header.type === 'number' && classes.numberCell}
-            ${hasOverflow && (isExpanded ? classes.openRow : classes.closedRow)}
-          `}
-            valueMap={header.valueMap}
-          />
-        ))}
-      </TableRow>
-      {rowHasDropdown && (
-        <TableRow className={classes.tableRow}>
-          <TableCell className={classes.dropdown} colSpan={100}>
-            <Collapse in={isExpanded} timeout="auto">
-              <Box>
-                {actionStyle === 'dropdown' && rowActions?.length > 0 && rowActions}
-                <span style={{ color: '#ff9533' }}>{actionError}</span>
-              </Box>
-              <Box margin={2}>{renderedDropdown}</Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      )}
-    </React.Fragment>
-  );
 };
 
 export default RecordTable;
