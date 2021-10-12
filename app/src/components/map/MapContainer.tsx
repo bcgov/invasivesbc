@@ -5,7 +5,14 @@ import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer.css';
-import { MapContainer as ReactLeafletMapContainer, useMap, FeatureGroup, ZoomControl } from 'react-leaflet';
+import {
+  MapContainer as ReactLeafletMapContainer,
+  useMap,
+  FeatureGroup,
+  ZoomControl,
+  Marker,
+  Tooltip
+} from 'react-leaflet';
 import Spinner from '../../components/spinner/Spinner';
 
 // Offline dependencies
@@ -24,6 +31,7 @@ import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
 import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
 import { SetPointOnClick } from './Tools/InfoAreaDescription';
+import marker from './Icons/POImarker.png';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -116,8 +124,14 @@ export interface IMapContainerProps {
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
+  const [poiMarker, setPoiMarker] = useState(null);
   const [map, setMap] = useState<any>(null);
   const toolClass = toolStyles();
+
+  const markerIcon = L.icon({
+    iconUrl: marker,
+    iconSize: [24, 24]
+  });
 
   const Offline = () => {
     const mapOffline = useMap();
@@ -188,8 +202,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <MapRequestContextProvider>
         <div className={toolClass.toolBtnsLoc}>
-          <SetPointOnClick map={map} />
-          <DisplayPosition map={map} />
+          <SetPointOnClick map={map} setPoiMarker={setPoiMarker} />
+          <DisplayPosition map={map} setPoiMarker={setPoiMarker} />
           <MeasureTool />
           {props.showDrawControls && (
             <FeatureGroup>
@@ -208,6 +222,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         {/* Here are the editing tools */}
 
         <MapResizer />
+
+        {poiMarker && (
+          <Marker
+            position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
+            icon={markerIcon}>
+            <Tooltip direction="top" opacity={0.5} permanent>
+              <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
+                {poiMarker.species.map((s) => (
+                  <>{s} </>
+                ))}
+              </div>
+            </Tooltip>
+          </Marker>
+        )}
 
         {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
