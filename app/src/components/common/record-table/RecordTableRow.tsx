@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Checkbox,
-  Collapse,
-  IconButton,
-  TableCell,  
-  TableRow
-} from '@material-ui/core';
+import { Box, Button, Checkbox, Collapse, IconButton, TableCell, TableRow } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import { notifyError } from '../../../utils/NotificationUtils';
 import React, { useState } from 'react';

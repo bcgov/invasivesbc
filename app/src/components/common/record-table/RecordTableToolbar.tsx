@@ -1,13 +1,4 @@
-import {
-  AccordionSummary,
-  Box,
-  Button,
-  IconButton,
-  makeStyles,
-  Toolbar,
-  Tooltip,
-  Typography
-} from '@material-ui/core';
+import { AccordionSummary, Box, Button, IconButton, makeStyles, Toolbar, Tooltip, Typography } from '@material-ui/core';
 import { ExpandMore, FilterList } from '@material-ui/icons';
 import { lighten } from '@material-ui/core/styles';
 import { notifyError } from '../../../utils/NotificationUtils';
@@ -52,7 +43,16 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const RecordTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { selectedRows, tableName, enableFiltering, actions, databaseContext, fetchRows, errorMessage, setErrorMessage } = props;
+  const {
+    selectedRows,
+    tableName,
+    enableFiltering,
+    actions,
+    databaseContext,
+    fetchRows,
+    errorMessage,
+    setErrorMessage
+  } = props;
   const totalSelected = selectedRows?.length || 0;
 
   const bulkActions: Array<any> = Object.values(actions)
