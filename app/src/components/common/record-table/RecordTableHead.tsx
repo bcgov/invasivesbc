@@ -1,16 +1,7 @@
-import {
-  Checkbox,
-  IconButton,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  Tooltip
-} from '@material-ui/core';
+import { Checkbox, IconButton, TableCell, TableHead, TableRow, TableSortLabel, Tooltip } from '@material-ui/core';
 import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import { useStyles } from '../RecordTable';
 import React from 'react';
-
 
 // header: defines each header column in headers
 export interface IRecordTableHeader {
@@ -21,9 +12,9 @@ export interface IRecordTableHeader {
   title?: string;
   // defaultOrder: order to sort the column by on first click (ASC or DESC). Default ASC
   defaultOrder?: string;
-  // valueMap: key-value pairs mapping initial values to refined values, used for e.g. mapping short codes to their full names 
+  // valueMap: key-value pairs mapping initial values to refined values, used for e.g. mapping short codes to their full names
   valueMap?: {
-    [key: string]: string
+    [key: string]: string;
   };
   // tooltip: string description of the given header, displayed on mouseover if tooltips are enabled on the table
   tooltip?: string;
@@ -37,7 +28,7 @@ export interface IRecordTableHeader {
   align?: string;
   // padding: legacy padding override
   padding?: any;
-};
+}
 
 function RecordTableHead(props) {
   const {

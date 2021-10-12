@@ -181,21 +181,21 @@ function stableSort(rows, header, ascending) {
 }
 
 export interface IRecordTable {
-  // GENERAL 
+  // GENERAL
   // keyField: field to use in each row as a key
   keyField?: string;
   // tableName: title of the table
   tableName?: string;
 
   // HEADERS / COLUMNS
-  // headers: list of columns to display for a given table and their behavior definitions 
+  // headers: list of columns to display for a given table and their behavior definitions
   // can just be an array of string keys (which will be auto-interpretted into matching schema fields)
   // or object defining overrides to those default fields
   headers?: any[];
   // tableSchemaType: list of schema types to match against to auto-fill column definitions with api-docs schemas
   // Note: this behavior should probably be bumped up a level and defined outside of RecordTable, modifying the headers here
   tableSchemaType?: Array<string>;
-  
+
   // ROWS
   // rows: an array of row objects with column key-value pairs.
   // OR a function telling the table how to fetch those rows from the DB, given an object defining its particular page, rowsPerPage, and order (and filters once implemented)
@@ -205,16 +205,16 @@ export interface IRecordTable {
   // referenceData: mark whether the rows are references or not
   referenceData?: boolean;
   rerenderFlagSetter?: any;
-  
+
   // ACTIONS:
   // key-value pairs of definitions of various actions which can be used on the table. e.g. delete, edit, create, etc
   // OR boolean "false" to disable all actions
   actions?: any;
-  // rowActionStyle: whether to display row action buttons in a dropdown in each row, or to display inline in a column at the start or end of the row. (Inline not implemented yet) 
+  // rowActionStyle: whether to display row action buttons in a dropdown in each row, or to display inline in a column at the start or end of the row. (Inline not implemented yet)
   rowActionStyle?: ActionStyle;
-  
+
   // DROPDOWN / EXPAND ROW
-  // dropdown: AKA expand content. function outputting the component which is rendered by a particular row when it is clicked. 
+  // dropdown: AKA expand content. function outputting the component which is rendered by a particular row when it is clicked.
   //  If this returns undefined there will be no dropdown content.  Note that a row might still be expandable
   //  IF it has row action buttons (unless we're rendering them inline on the row, which isnt supported yet)
   //  OR if some column in the row has reached its overflow character limit (e.g. a very long description column)
@@ -235,7 +235,7 @@ export interface IRecordTable {
   selected?: Array<any>;
   // setSelected: override function to call when a row is selected, to pass to parent components
   setSelected?: (newSelected: Array<any>) => any;
-  
+
   // PAGINATION:
   // pagination: whether to always show pagination, or only when there are too many rows to fit in one page (overflow)
   // OR false to disable pagination
@@ -252,12 +252,12 @@ export interface IRecordTable {
   // FILTERING (under construction)
   // enableFiltering: not implemented yet, but will enable ability to access a filter menu
   enableFiltering?: boolean;
-  
+
   // GENERAL DISPLAY:
   // expandable: allow the entire RecordTable to be grown/shrunk on click of the title text.  Not to be confused with expandRow which allows grow/shrink for each row
   expandable?: boolean;
   // startExpanded: default starting expanded state
-  startExpanded?: boolean;  
+  startExpanded?: boolean;
   // enableTooltips: show/hide mouseover tooltips on each header, displaying detailed descriptions
   enableTooltips?: boolean;
   // hideEmpty: whether to display the table at all if it has no content
@@ -268,8 +268,7 @@ export interface IRecordTable {
   densePadding?: boolean;
 }
 
-
-// action: look and feel, context, and click effect definitions for a button (or other actions in future e.g. sliders)  
+// action: look and feel, context, and click effect definitions for a button (or other actions in future e.g. sliders)
 export interface IRecordTableAction {
   // key: self-reflection so an action object knows the key it's being refered as. e.g. "edit"
   key: string;
@@ -304,16 +303,22 @@ export interface IRecordTableAction {
   // displayInvalid determines behavior when it returns false.  Not needed if globalAction is false (disabled).
   globalCondition?: (selectedRows: Array<any>) => boolean;
   //
-};
+}
 
-enum ActionStyle { dropdown = 'dropdown', start = 'start', end = 'end' };
-enum PaginationTypes { overlow = 'overflow', always = 'always' };
+enum ActionStyle {
+  dropdown = 'dropdown',
+  start = 'start',
+  end = 'end'
+}
+enum PaginationTypes {
+  overlow = 'overflow',
+  always = 'always'
+}
 enum DisplayInvalid {
   disable = 'disable', // grey-out the action button and make it unclickable
   hidden = 'hidden', // hide the action button
   error = 'error' // show the action button as normal, but display an error on click
-};
-
+}
 
 const RecordTable: React.FC<IRecordTable> = (props) => {
   const classes = useStyles();
@@ -340,7 +345,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     rowsPerPageOptions,
     startExpanded = true,
     startingOrder = 'asc',
-    startingOrderBy = props.headers.length && props.headers[0]?.id || 'id',
+    startingOrderBy = (props.headers.length && props.headers[0]?.id) || 'id',
     startingRowsPerPage = 10,
     tableName = '',
     tableSchemaType
@@ -349,7 +354,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   // non-prop defaults:
   const PAGES_LOADED_BUFFER = 2;
   const startingPage = 0;
-  const startingRows = Array.isArray(props.rows) && props.rows || [];
+  const startingRows = (Array.isArray(props.rows) && props.rows) || [];
 
   // state declarations
   const [rowsLoaded, setRowsLoaded] = useState(Array.isArray(props.rows));
@@ -375,7 +380,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const isLoading = (!schemasLoaded && tableSchemaType?.length > 0) || !rowsLoaded;
   const selectedHash = JSON.stringify(selected);
   const rowsHash = JSON.stringify(props.rows);
-
 
   // HEADERS:
 
@@ -428,7 +432,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
       };
     });
   }, [rows, props.headers?.length, schemasLoaded]);
-  
+
   // fetches the api spec from api-docs and pulls out the list of schemas we declare in tableSchemaInput
   const getApiSpec = useCallback(
     async (tableSchemaInput) => {
@@ -492,7 +496,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     [rows]
   );
 
-
   // ROWS
 
   const pageRows = useMemo(() => {
@@ -515,7 +518,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   // search for any potential overflows (fields too long).
   // This returns a list of booleans whether each row overflows
   const verboseOverflows = useMemo(
-    () => pageRows.map((row) => headers.filter(({ id }) => overflowLimit && String(row[id]).length > overflowLimit).length > 0),
+    () =>
+      pageRows.map(
+        (row) => headers.filter(({ id }) => overflowLimit && String(row[id]).length > overflowLimit).length > 0
+      ),
     [pageRows, headers, overflowLimit]
   );
 
@@ -523,7 +529,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const pageHasDropdown = useMemo(
     () =>
       (!!dropdown && renderedDropdowns.filter((x) => x).length > 0) ||
-      (verboseOverflows.filter((x) => x).length > 0) ||
+      verboseOverflows.filter((x) => x).length > 0 ||
       (rowActions?.length > 0 && rowActionStyle === 'dropdown'),
     [dropdown, renderedDropdowns, verboseOverflows, rowActions?.length, rowActionStyle]
   );
@@ -535,8 +541,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const fetchRows = async () => {
     // console.log('fetchRows start: ', tableName);
     if (props.rows instanceof Function) {
-      if (isCurrentPageLoaded)
-        await setRowsLoaded(false);
+      if (isCurrentPageLoaded) await setRowsLoaded(false);
       const result = await props.rows({
         page: pageRowsFirstIndex,
         rowsPerPage: rowsPerPage,
@@ -554,10 +559,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   };
 
   const selectedRows = useMemo(
-    () =>
-      selected
-        .map((id) => rows.find((row) => row[keyField] === id) || undefined)
-        .filter((row) => row),
+    () => selected.map((id) => rows.find((row) => row[keyField] === id) || undefined).filter((row) => row),
     [selectedHash, rows]
   );
 
@@ -599,43 +601,57 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     setSelected(newSelected);
   }, []);
 
-  const RecordTableHeadRendered = () => <RecordTableHead
-    totalSelected={selected.length}
-    {...{ order, orderBy, onSelectAllClick, onRequestSort, totalRows, headers, enableSelection, enableTooltips, pageHasDropdown }}
-  />
-
-  const RecordTableRows = () => pageRows.map((row, index) => {
-    const key = row[keyField];
-    return (
-      <RecordTableRow
-        key={key}
-        hasOverflow={verboseOverflows[index]}
-        isExpanded={expandedRows.indexOf(key) !== -1}
-        isSelected={selected.indexOf(key) !== -1}
-        toggleExpanded={(event) => {
-          event.stopPropagation();
-          toggleExpandedRow(key);
-        }}
-        toggleSelected={(event) => {
-          event.stopPropagation();
-          selectRow(selected, key);
-        }}
-        actions={rowActions}
-        actionStyle={rowActionStyle}
-        {...{keyField, headers, row, dropdown, pageHasDropdown, enableSelection, databaseContext, fetchRows}}
-      />
-    );
-  });
-
-  // EMPTY ROWS
-  // if padEmptyRows, creates whitespace on the last page 
-  const emptyRowsCount = rowsPerPage - Math.min(rowsPerPage, totalRows - page * rowsPerPage);
-  const EmptyRows = () => padEmptyRows && emptyRowsCount > 0 && (
-    <TableRow style={{ height: (densePadding ? 33 : 53) * emptyRowsCount }}>
-      <TableCell colSpan={headers.length} />
-    </TableRow>
+  const RecordTableHeadRendered = () => (
+    <RecordTableHead
+      totalSelected={selected.length}
+      {...{
+        order,
+        orderBy,
+        onSelectAllClick,
+        onRequestSort,
+        totalRows,
+        headers,
+        enableSelection,
+        enableTooltips,
+        pageHasDropdown
+      }}
+    />
   );
 
+  const RecordTableRows = () =>
+    pageRows.map((row, index) => {
+      const key = row[keyField];
+      return (
+        <RecordTableRow
+          key={key}
+          hasOverflow={verboseOverflows[index]}
+          isExpanded={expandedRows.indexOf(key) !== -1}
+          isSelected={selected.indexOf(key) !== -1}
+          toggleExpanded={(event) => {
+            event.stopPropagation();
+            toggleExpandedRow(key);
+          }}
+          toggleSelected={(event) => {
+            event.stopPropagation();
+            selectRow(selected, key);
+          }}
+          actions={rowActions}
+          actionStyle={rowActionStyle}
+          {...{ keyField, headers, row, dropdown, pageHasDropdown, enableSelection, databaseContext, fetchRows }}
+        />
+      );
+    });
+
+  // EMPTY ROWS
+  // if padEmptyRows, creates whitespace on the last page
+  const emptyRowsCount = rowsPerPage - Math.min(rowsPerPage, totalRows - page * rowsPerPage);
+  const EmptyRows = () =>
+    padEmptyRows &&
+    emptyRowsCount > 0 && (
+      <TableRow style={{ height: (densePadding ? 33 : 53) * emptyRowsCount }}>
+        <TableCell colSpan={headers.length} />
+      </TableRow>
+    );
 
   // PAGINATION:
   const showPagination = pagination === 'overflow' ? totalRows > rowsPerPage : !!pagination;
@@ -646,14 +662,15 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     setRowsPerPage(parseInt(event.target.value, startingRowsPerPage));
     setPage(startingPage);
   };
-  const RecordTablePagination = () => !!totalRows && showPagination && (
-    <TablePagination
-      component="div"
-      count={totalRows}
-      {...{rowsPerPageOptions, rowsPerPage, page, onPageChange, onRowsPerPageChange}}
-    />
-  );
-
+  const RecordTablePagination = () =>
+    !!totalRows &&
+    showPagination && (
+      <TablePagination
+        component="div"
+        count={totalRows}
+        {...{ rowsPerPageOptions, rowsPerPage, page, onPageChange, onRowsPerPageChange }}
+      />
+    );
 
   // EFFECT LISTENERS:
 
@@ -666,14 +683,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   useEffect(() => {
     // listen for page changes which would cause a re-fetch from db
     fetchRows();
-  }, [
-    page,
-    rowsPerPage,
-    orderBy,
-    order,
-    loadedRowsFirstIndex,
-    rows.length
-  ]);
+  }, [page, rowsPerPage, orderBy, order, loadedRowsFirstIndex, rows.length]);
 
   useEffect(() => {
     // fetch the api schemas to populate headers
@@ -690,7 +700,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     if (props.setSelected) props.setSelected(selected);
   }, [selectedHash]);
 
-
   // FINALLY, RENDER ALL:
 
   const rendered = useMemo(
@@ -702,7 +711,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
               selectedRows={enableSelection ? selectedRows : []}
               errorMessage={toolbarErrorMessage}
               setErrorMessage={setToolbarErrorMessage}
-              {...{tableName, enableFiltering, actions, databaseContext, fetchRows}}
+              {...{ tableName, enableFiltering, actions, databaseContext, fetchRows }}
             />
           )}
           <AccordionDetails className={classes.paper}>
@@ -747,7 +756,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   );
 
   // hide render conditionally if hideEmpty feature is enabled
-  if (hideEmpty && (!totalRows || isLoading)) return null
+  if (hideEmpty && (!totalRows || isLoading)) return null;
   else return rendered;
 };
 

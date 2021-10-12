@@ -54,7 +54,13 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
     return (
       <RecordTable
         tableName="Points of Interest"
-        tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdiction', 'IAPP_Survey', ...arrayWrap(tableSchemaType)]}
+        tableSchemaType={[
+          'Point_Of_Interest',
+          'IAPP_Site',
+          'Jurisdiction',
+          'IAPP_Survey',
+          ...arrayWrap(tableSchemaType)
+        ]}
         startingOrderBy="site_id"
         startingOrder="desc"
         enableSelection
@@ -112,7 +118,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
 };
 
 // helper class with common functionality:
-export const IAPPTable: React.FC<IRecordTable> = (props) =>
+export const IAPPTable: React.FC<IRecordTable> = (props) => (
   <RecordTable
     enableSelection={false}
     hideEmpty
@@ -122,8 +128,9 @@ export const IAPPTable: React.FC<IRecordTable> = (props) =>
     tableSchemaType={['Point_Of_Interest', 'IAPP_Site', 'Jurisdiction']}
     {...props}
   />
+);
 
-export const IAPPSitesTable: React.FC<IRecordTable> = (props) =>
+export const IAPPSitesTable: React.FC<IRecordTable> = (props) => (
   <PointsOfInterestTable
     tableName="IAPP Points of Interest"
     startingOrderBy="site_id"
@@ -133,8 +140,9 @@ export const IAPPSitesTable: React.FC<IRecordTable> = (props) =>
     dropdown={(row) => <IAPPSite record={row} />}
     {...props}
   />
+);
 
-export const IAPPSurveyTable: React.FC<IRecordTable> = (props) =>
+export const IAPPSurveyTable: React.FC<IRecordTable> = (props) => (
   <IAPPTable
     tableName={'Survey Details'}
     keyField="survey_id"
@@ -165,8 +173,9 @@ export const IAPPSurveyTable: React.FC<IRecordTable> = (props) =>
     ]}
     {...props}
   />
+);
 
-export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) =>
+export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) => (
   <IAPPTable
     tableName="Monitoring"
     startingOrderBy="monitoring_id"
@@ -188,8 +197,9 @@ export const IAPPMonitoringTable: React.FC<IRecordTable> = (props) =>
     ]}
     {...props}
   />
+);
 
-export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) =>
+export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) => (
   <IAPPTable
     tableName="Mechanical Treatments and Efficacy Monitoring"
     keyField="treatment_id"
@@ -214,16 +224,12 @@ export const IAPPMechanicalTreatmentsTable: React.FC<IRecordTable> = (props) =>
       },
       'general_comment'
     ]}
-    dropdown={(row) => row.monitoring?.length &&
-      <IAPPMonitoringTable
-        startExpanded
-        rows={row.monitoring}
-      />
-    }
+    dropdown={(row) => row.monitoring?.length && <IAPPMonitoringTable startExpanded rows={row.monitoring} />}
     {...props}
   />
+);
 
-export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) =>
+export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) => (
   <IAPPTable
     tableName="Chemical Treatments and Efficacy Monitoring"
     keyField="treatment_id"
@@ -248,7 +254,7 @@ export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) =>
       },
       'general_comment'
     ]}
-    // Note:  this dropdown makes a good case for an "overflow" function which 
+    // Note:  this dropdown makes a good case for an "overflow" function which
     // automatically passes fields into dropdown when the table is too wide
     dropdown={(row) => (
       <React.Fragment key={row.treatment_id + '_expanded'}>
@@ -295,8 +301,9 @@ export const IAPPChemicalTreatmentsTable: React.FC<IRecordTable> = (props) =>
     )}
     {...props}
   />
+);
 
-export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) =>
+export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) => (
   <IAPPTable
     tableName="Biological Treatments and Efficacy Monitoring"
     keyField="treatment_id"
@@ -327,12 +334,15 @@ export const IAPPBiologicalTreatmentsTable: React.FC<IRecordTable> = (props) =>
       'general_comment'
     ]}
     dropdown={(row) =>
-      !row.monitoring?.length ? undefined : <IAPPBiologicalTreatmentsMonitoringTable startExpanded rows={row.monitoring} />
+      !row.monitoring?.length ? undefined : (
+        <IAPPBiologicalTreatmentsMonitoringTable startExpanded rows={row.monitoring} />
+      )
     }
     {...props}
   />
+);
 
-export const IAPPBiologicalDispersalsTable: React.FC<IRecordTable> = (props) =>
+export const IAPPBiologicalDispersalsTable: React.FC<IRecordTable> = (props) => (
   <IAPPTable
     tableName="Biological Dispersals"
     keyField="biological_dispersal_id"
@@ -368,8 +378,9 @@ export const IAPPBiologicalDispersalsTable: React.FC<IRecordTable> = (props) =>
     ]}
     {...props}
   />
+);
 
-export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (props) =>
+export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (props) => (
   <IAPPTable
     tableName="Monitoring"
     startExpanded
@@ -404,6 +415,7 @@ export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (
     ]}
     {...props}
   />
+);
 
 export default {
   PointsOfInterestTable,
@@ -416,4 +428,4 @@ export default {
   IAPPMonitoringTable,
   IAPPBiologicalTreatmentsMonitoringTable,
   IAPPBiologicalDispersalsTable
-}
+};

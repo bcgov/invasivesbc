@@ -15,7 +15,13 @@ import moment from 'moment';
 import React, { useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
-import { arrayWrap, uniqueArray, sanitizeRecord, generateDBActivityPayload, getShortActivityID } from 'utils/addActivity';
+import {
+  arrayWrap,
+  uniqueArray,
+  sanitizeRecord,
+  generateDBActivityPayload,
+  getShortActivityID
+} from 'utils/addActivity';
 
 export const PAGE_FETCH_BUFFER = 3; // fetches 3 pages before and after the current page of a Record Table (where page size is the current rowsPerPage)
 
@@ -60,44 +66,50 @@ export const activityStandardMapping = (doc) => {
 // which will then be called by the table's pagination to fetch from the DB appropriately
 // Future development should add geometry and filters search controls here so that a RecordTable can be passed
 // those to do the search itself.  Alternatively, if a paraent component handles those, it will need to re-implement the paging function in here
-export const defaultActivitiesFetch =
-  ({
+export const defaultActivitiesFetch = ({
+  databaseContext,
+  dataAccess,
+  activitySubtypes = [],
+  created_by = undefined,
+  review_status = [],
+  linked_id = undefined
+}) => async ({
+  page,
+  rowsPerPage,
+  order
+}: {
+  page: number;
+  rowsPerPage: number;
+  order: string[];
+}): Promise<{ rows: any[]; count: number }> => {
+  // Fetches fresh from the API
+  let dbPageSize = DEFAULT_PAGE_SIZE;
+  if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < PAGE_FETCH_BUFFER * rowsPerPage)
+    // if page is right near the db page limit
+    dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
+  const types = uniqueArray(arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]));
+  const result = await dataAccess.getActivities(
+    {
+      page: Math.floor((page * rowsPerPage) / dbPageSize),
+      limit: dbPageSize,
+      order: order,
+      // search_feature: geometry
+      activity_type: types,
+      activity_subtype: arrayWrap(activitySubtypes),
+      // filters: not implemented yet
+      // startDate, endDate can be filters
+      created_by: created_by, // my_keycloak_id
+      review_status: review_status,
+      linked_id: linked_id
+    },
     databaseContext,
-    dataAccess,
-    activitySubtypes = [],
-    created_by = undefined,
-    review_status = [],
-    linked_id = undefined
-  }) =>
-  async ({ page, rowsPerPage, order } : { page: number; rowsPerPage: number; order: string[]; }) : Promise<{ rows: any[]; count: number; }> => {
-    // Fetches fresh from the API
-    let dbPageSize = DEFAULT_PAGE_SIZE;
-    if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < PAGE_FETCH_BUFFER * rowsPerPage)
-      // if page is right near the db page limit
-      dbPageSize = (page * rowsPerPage) % dbPageSize; // set the limit to the current row count instead
-    const types = uniqueArray(arrayWrap(activitySubtypes).map((subtype: string) => String(subtype).split('_')[1]));
-    const result = await dataAccess.getActivities(
-      {
-        page: Math.floor((page * rowsPerPage) / dbPageSize),
-        limit: dbPageSize,
-        order: order,
-        // search_feature: geometry
-        activity_type: types,
-        activity_subtype: arrayWrap(activitySubtypes),
-        // filters: not implemented yet
-        // startDate, endDate can be filters
-        created_by: created_by, // my_keycloak_id
-        review_status: review_status,
-        linked_id: linked_id
-      },
-      databaseContext,
-      true
-    );
-    return {
-      rows: result?.rows?.map(activityStandardMapping) || [],
-      count: parseInt(result?.count) || 0
-    };
+    true
+  );
+  return {
+    rows: result?.rows?.map(activityStandardMapping) || [],
+    count: parseInt(result?.count) || 0
   };
+};
 
 export interface IActivitiesTable extends IRecordTable {
   workflow?: string;
@@ -153,7 +165,6 @@ export const activitesDefaultHeaders = [
   'general_comment'
 ];
 
-
 /* useActions:
 A handy list of "things which do things", usually accompanied by a button, and with behavior
 generalized into JSON definitions.  Primarily used for RecordTable components, but could work
@@ -187,13 +198,13 @@ export const useActions = (props) => {
     enabled: false,
     action: () => {},
     icon: null,
-    label: "",
+    label: '',
     bulkAction: false,
     rowAction: false,
     globalAction: false,
     triggerReload: false,
-    displayInvalid: 'error',
-  }
+    displayInvalid: 'error'
+  };
 
   // generate the default "create_activity_xyz" action buttons
   const createAction = (type: string, subtype: string) => ({
@@ -306,15 +317,13 @@ export const useActions = (props) => {
       displayInvalid: 'disable',
       triggerReload: true,
       rowCondition: (row) =>
-        row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL &&
-        row.form_status === FormValidationStatus.VALID,
+        row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID,
       bulkCondition: (
         selectedRows // only enable bulk sync if some field needs it
       ) =>
         selectedRows?.filter(
           (row) =>
-            row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL &&
-            row.form_status === FormValidationStatus.VALID
+            row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID
         )?.length > 0,
       action: async (selectedRows) => {
         try {
@@ -513,7 +522,7 @@ export const useActions = (props) => {
     },
     ...createActions
   };
-}
+};
 
 export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
@@ -541,6 +550,307 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 
   const defaultActions = useActions(props);
 
+  // generate the default "create_activity_xyz" action buttons
+  const createAction = (type: string, subtype: string) => ({
+    key: `create_activity_${subtype.toString().toLowerCase()}`,
+    enabled: true,
+    action: async (selectedRows) => {
+      // create record
+      const dbActivity = generateDBActivityPayload({}, null, type, subtype);
+      dbActivity.created_by = username;
+      await dataAccess.createActivity(dbActivity, databaseContext);
+
+      // Redirect to new record:
+      await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
+      history.push({ pathname: `/home/activity` });
+    },
+    icon: <Add />,
+    label: ActivitySubtypeShortLabels[subtype],
+    bulkAction: false,
+    rowAction: false,
+    globalAction: true,
+    triggerReload: true,
+    displayInvalid: 'error',
+    ...actions?.create_activity // allow prop overwrites by default
+  });
+
+  let createActions = {};
+  arrayWrap(activitySubtypes).forEach((subtype) => {
+    const action = createAction(subtype.toString().split('_')[1], subtype);
+    createActions = {
+      ...createActions,
+      [action.key]: {
+        ...action,
+        ...actions?.[action.key] // allow prop overwrites still
+      }
+    };
+  });
+
+  const defaultActions = {
+    ...actions,
+    edit: {
+      // NOTE: this might be a good candidate to be broken out to a parent class
+      // since it breaks generality of this multi-purpose table
+      key: 'edit',
+      enabled: enableSelection !== false,
+      action: async (allSelectedRows) => {
+        const selectedIds = allSelectedRows.map((row) => row[keyField]);
+        if (selectedIds.length === 1) {
+          await dataAccess.setAppState({ activeActivity: selectedIds[0] }, databaseContext);
+
+          // TODO switch by activity type, I guess...
+          history.push({ pathname: `/home/activity` });
+        } else {
+          history.push({
+            pathname: `/home/search/bulkedit`,
+            search: '?activities=' + selectedIds.join(','),
+            state: { activityIdsToEdit: selectedIds }
+          });
+        }
+      },
+      label: 'Edit',
+      icon: <Edit />,
+      bulkAction: true,
+      rowAction: true,
+      bulkCondition: (allSelectedRows) => allSelectedRows.every((a, _, [b]) => a.subtype === b.subtype),
+      rowCondition: undefined,
+      displayInvalid: 'error',
+      invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
+      ...actions?.edit
+    },
+    delete: {
+      key: 'delete',
+      enabled: enableSelection !== false,
+      action: async (allSelectedRows) => {
+        const selectedIds = allSelectedRows.map((row) => row[keyField]);
+        if (selectedIds.length) await dataAccess.deleteActivities(selectedIds, databaseContext);
+      },
+      label: 'Delete',
+      icon: <Delete />,
+      bulkAction: true,
+      rowAction: true,
+      bulkCondition: undefined, // TODO admin or author only
+      rowCondition: undefined,
+      displayInvalid: 'disable',
+      triggerReload: true,
+      ...actions?.delete
+    },
+    sync: {
+      key: 'sync',
+      enabled: true,
+      label: 'Save',
+      bulkAction: true,
+      rowAction: true,
+      displayInvalid: 'disable',
+      triggerReload: true,
+      rowCondition: (row) =>
+        row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID,
+      bulkCondition: (
+        selectedRows // only enable bulk sync if some field needs it
+      ) =>
+        selectedRows?.filter(
+          (row) =>
+            row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID
+        )?.length > 0,
+      action: async (selectedRows) => {
+        try {
+          selectedRows.map(async (activity) => {
+            if (
+              activity.form_status !== FormValidationStatus.VALID ||
+              activity.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
+            )
+              return;
+            const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+            await dataAccess.updateActivity(
+              sanitizeRecord({
+                ...dbActivity,
+                sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL
+              }),
+              databaseContext
+            );
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      icon: <Sync />,
+      ...actions?.sync
+    },
+    submit: {
+      key: 'submit',
+      enabled: true,
+      label: 'Submit For Review',
+      bulkAction: true,
+      rowAction: true,
+      displayInvalid: 'hidden',
+      triggerReload: true,
+      rowCondition: (row) =>
+        row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
+        row.form_status === FormValidationStatus.VALID &&
+        row.review_status !== ReviewStatus.UNDER_REVIEW,
+      bulkCondition: (
+        selectedRows // only enable bulk submit if some field needs it
+      ) =>
+        selectedRows?.filter(
+          (row) =>
+            row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
+            row.form_status === FormValidationStatus.VALID &&
+            row.review_status !== ReviewStatus.UNDER_REVIEW
+        )?.length > 0,
+      action: async (selectedRows) => {
+        try {
+          selectedRows.map(async (activity) => {
+            if (
+              activity.form_status !== FormValidationStatus.VALID ||
+              activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
+              activity.review_status === ReviewStatus.UNDER_REVIEW
+            )
+              return;
+            const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+            await dataAccess.updateActivity(
+              sanitizeRecord({
+                ...dbActivity,
+                review_status: ReviewStatus.UNDER_REVIEW
+              }),
+              databaseContext
+            );
+            // const typename = activity.activity_subtype?.split('_')[2];
+            //notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
+          });
+        } catch (error) {
+          // notifyError(databaseContext, JSON.stringify(error));
+        }
+      },
+      icon: <FindInPage />,
+      ...actions?.submit
+    },
+    approve: {
+      key: 'approve',
+      enabled: true,
+      label: 'Approve',
+      bulkAction: true,
+      rowAction: true,
+      displayInvalid: 'hidden',
+      triggerReload: true,
+      rowCondition: (row) =>
+        row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
+        row.form_status === FormValidationStatus.VALID &&
+        row.review_status === ReviewStatus.UNDER_REVIEW,
+      bulkCondition: (
+        selectedRows // only enable bulk submit if some field needs it
+      ) =>
+        selectedRows?.filter(
+          (row) =>
+            row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
+            row.form_status === FormValidationStatus.VALID &&
+            row.review_status === ReviewStatus.UNDER_REVIEW
+        )?.length > 0,
+      action: async (selectedRows) => {
+        try {
+          selectedRows.map(async (activity) => {
+            if (
+              activity.form_status !== FormValidationStatus.VALID ||
+              activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
+              activity.review_status !== ReviewStatus.UNDER_REVIEW
+            )
+              return;
+            const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+            await dataAccess.updateActivity(
+              sanitizeRecord({
+                ...dbActivity,
+                review_status: ReviewStatus.APPROVED,
+                reviewed_by: username, // latest reviewer
+                reviewed_at: moment(new Date()).format()
+              }),
+              databaseContext
+            );
+            // const typename = activity.activity_subtype?.split('_')[2];
+            // notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
+          });
+        } catch (error) {
+          // notifyError(databaseContext, JSON.stringify(error));
+        }
+      },
+      icon: <Check />,
+      ...actions?.approve
+    },
+    disapprove: {
+      key: 'disapprove',
+      enabled: true,
+      label: 'Disapprove',
+      bulkAction: true,
+      rowAction: true,
+      displayInvalid: 'hidden',
+      triggerReload: true,
+      rowCondition: (row) =>
+        row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
+        row.form_status === FormValidationStatus.VALID &&
+        row.review_status === ReviewStatus.UNDER_REVIEW,
+      bulkCondition: (
+        selectedRows // only enable bulk submit if some field needs it
+      ) =>
+        selectedRows?.filter(
+          (row) =>
+            row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
+            row.form_status === FormValidationStatus.VALID &&
+            row.review_status === ReviewStatus.UNDER_REVIEW
+        )?.length > 0,
+      action: async (selectedRows) => {
+        try {
+          selectedRows.map(async (activity) => {
+            if (
+              activity.form_status !== FormValidationStatus.VALID ||
+              activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
+              activity.review_status !== ReviewStatus.UNDER_REVIEW
+            )
+              return;
+            const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
+            await dataAccess.updateActivity(
+              sanitizeRecord({
+                ...dbActivity,
+                review_status: ReviewStatus.DISAPPROVED,
+                reviewed_by: username, // latest reviewer
+                reviewed_at: moment(new Date()).format()
+              }),
+              databaseContext
+            );
+            // const typename = activity.activity_subtype?.split('_')[2];
+            // notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
+          });
+        } catch (error) {
+          // notifyError(databaseContext, JSON.stringify(error));
+        }
+      },
+      icon: <Clear />,
+      ...actions?.disapprove
+    },
+    create_treatment: {
+      // Legacy, likely deprecated.
+      // Creates a new treatment out of a number of observations, linking their data
+      key: 'create_treatment',
+      enabled: false,
+      action: (selectedRows) => {
+        const ids = selectedRows.map((row: any) => row['activity_id']);
+        history.push({
+          pathname: `/home/activity/treatment`,
+          search: '?observations=' + ids.join(','),
+          state: { observations: ids }
+        });
+      },
+      label: 'Create Treatment',
+      bulkAction: true,
+      rowAction: true,
+      displayInvalid: 'error',
+      invalidError: 'Observation forms must be validated before they can be used to create a new Treatment',
+      // invalidError: 'All selected activities must be of the same SubType to create a Treatment',
+      bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
+      rowCondition: (row) => row.form_status === FormValidationStatus.VALID,
+      ...actions?.create_treatment
+    },
+    ...createActions
+  };
+>>>>>>> Prettier changes
+
   let rows = props.rows;
   if (Array.isArray(rows)) rows = rows.map(activityStandardMapping);
   if (typeof rows === 'undefined') {
@@ -562,12 +872,8 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
         startingOrder="desc"
         startExpanded
         headers={activitesDefaultHeaders} // overwritten by props.headers if present
-        actions={
-          actions === false
-            ? false
-            : defaultActions
-        }
-        {...{enableSelection, rows, keyField}}
+        actions={actions === false ? false : defaultActions}
+        {...{ enableSelection, rows, keyField }}
         {...otherProps}
       />
     ),
@@ -783,16 +1089,18 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
 
 export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
   const { headers, ...otherProps } = props;
-  return <ActivitiesTable
-    tableName="Transects"
-    activitySubtypes={[
-      ActivitySubtype.Transect_Vegetation,
-      ActivitySubtype.Transect_FireMonitoring,
-      ActivitySubtype.Transect_BiocontrolEfficacy
-    ]}
-    headers={[...headers, ...activitesDefaultHeaders]}
-    {...otherProps}
-  />
+  return (
+    <ActivitiesTable
+      tableName="Transects"
+      activitySubtypes={[
+        ActivitySubtype.Transect_Vegetation,
+        ActivitySubtype.Transect_FireMonitoring,
+        ActivitySubtype.Transect_BiocontrolEfficacy
+      ]}
+      headers={[...headers, ...activitesDefaultHeaders]}
+      {...otherProps}
+    />
+  );
 };
 
 export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
