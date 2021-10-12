@@ -121,7 +121,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     updateComponent();
   }, [getTrip]);
 
-  const fetchActivities = async (mytrip: any) => {
+  const fetchActivities = async () => {
     setProgressDialog((prevState) => {
       const itemsArr = prevState.items;
       itemsArr[2] = { ...itemsArr[2], state: 'in_progress' };
@@ -131,7 +131,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       };
     });
 
-    if (!mytrip || !mytrip.activityChoices || !mytrip.activityChoices.length) {
+    if (!trip || !trip.activityChoices || !trip.activityChoices.length) {
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
         itemsArr[2] = {
@@ -150,7 +150,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     let numberActivitiesFetched = 0;
 
     for (const setOfChoices of trip.activityChoices) {
-      const geometry = (mytrip.geometry && mytrip.geometry.length && mytrip.geometry[0]) || null;
+      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
 
       // a comment would be great here
       const activitySearchCriteria: IActivitySearchCriteria = {
@@ -841,7 +841,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     try {
       await fetchLeanActivitiesAndPoi();
       await fetchLayerData();
-      await fetchActivities(trip);
+      await fetchActivities();
       await fetchPointsOfInterest();
       await fetchMetabaseQueries();
       setProgressDialog((prevState) => ({
