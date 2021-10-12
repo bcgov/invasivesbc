@@ -129,6 +129,7 @@ const MeasureTool = (props: any) => {
   const [totalDistance, setTotalDistance] = useState(0);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [locArray, setLocArray] = useState([]);
+  const [finishDraw, setFinishDraw] = useState(false);
   const divRef = useRef(null);
   const geometry = { aGeoJSON, setGeoJSON };
   const polyObj = { polyArea, setPolyArea };
@@ -174,6 +175,7 @@ const MeasureTool = (props: any) => {
     setTotalDistance(0);
     setGeoJSON([]);
     setLocArray([]);
+    setFinishDraw(false);
   }
   const toggleMeasureDistance = () => {
     setIsMeasuringArea(false);
@@ -221,9 +223,9 @@ const MeasureTool = (props: any) => {
           </Grid>
 
           <Grid item xs={3}>
-            {totalDistance !== 0 ? (
+            {totalDistance !== 0 && (
               <Typography className={classes.typography}>{totalDistance.toFixed(2)} m</Typography>
-            ) : null}
+            )}
           </Grid>
 
           <Grid item xs={3}>
@@ -234,17 +236,20 @@ const MeasureTool = (props: any) => {
           </Grid>
 
           <Grid item xs={3}>
-            {polyArea !== 0 ? (
-              <Typography className={classes.typography}>{polyArea.toFixed(2)}m&#178;</Typography>
-            ) : null}
+            {polyArea !== 0 && <Typography className={classes.typography}>{polyArea.toFixed(2)}m&#178;</Typography>}
           </Grid>
 
           <Grid item xs={3}>
-            {isMeasuringArea ? (
-              <Button className={classes.button} onClick={() => finishPolygon(geometry, polyObj, locArray)}>
+            {isMeasuringArea && (
+              <Button
+                className={classes.button}
+                onClick={() => {
+                  finishPolygon(geometry, polyObj, locArray);
+                  setFinishDraw(true);
+                }}>
                 Finish Draw
               </Button>
-            ) : null}
+            )}
           </Grid>
 
           <Grid item xs={3}>
@@ -255,17 +260,18 @@ const MeasureTool = (props: any) => {
         </Grid>
       </Popover>
       <GeoJSON key={aKey} data={aGeoJSON as any} style={interactiveGeometryStyle}>
-        {isMeasuringDistance ? <Popup>{totalDistance.toFixed(1)} meters</Popup> : null}
-        {isMeasuringArea ? <Popup>{polyArea.toFixed(2)} meters&#178;</Popup> : null}
+        {isMeasuringDistance && <Popup>{totalDistance.toFixed(1)} meters</Popup>}
+        {isMeasuringArea && <Popup>{polyArea.toFixed(2)} meters&#178;</Popup>}
       </GeoJSON>
 
-      {isMeasuringArea ? (
+      {isMeasuringArea && (
         <>
-          {locArray.map((item: { lat: any; lng: any }) => (
-            <Marker position={[item.lat, item.lng]} icon={markerIcon}></Marker>
-          ))}
+          {!finishDraw &&
+            locArray.map((item: { lat: any; lng: any }) => (
+              <Marker position={[item.lat, item.lng]} icon={markerIcon}></Marker>
+            ))}
         </>
-      ) : null}
+      )}
     </>
   );
 };

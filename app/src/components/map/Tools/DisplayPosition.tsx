@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import { Marker } from 'react-leaflet';
+import { Marker, Tooltip } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { CircularProgress, IconButton } from '@material-ui/core';
 import proj4 from 'proj4';
@@ -11,6 +11,7 @@ import { GeneratePopup } from './InfoAreaDescription';
 import { createDataUTM } from './Helpers/StyledTable';
 import * as turf from '@turf/turf';
 import { getDataFromDataBC } from '../WFSConsumer';
+import POImarker from '../Icons/POImarker.png';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -43,7 +44,13 @@ export default function DisplayPosition({ map }) {
   const [startTimer, setStartTimer] = useState(false);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
+  const [poiMarker, setPoiMarker] = useState(null);
   const divRef = useRef(null);
+
+  const markerIcon = L.icon({
+    iconUrl: POImarker,
+    iconSize: [24, 24]
+  });
 
   const getLocation = async () => {
     setInitialTime(3);
@@ -83,6 +90,7 @@ export default function DisplayPosition({ map }) {
             map={map}
             lat={newPosition.coords.latitude}
             lng={newPosition.coords.longitude}
+            setPoiMarker={setPoiMarker}
           />
         </Marker>
       )}
@@ -94,6 +102,19 @@ export default function DisplayPosition({ map }) {
         onClick={getLocation}>
         {initialTime > 0 ? <CircularProgress size={24} /> : <LocationOnIcon />}
       </IconButton>
+      {poiMarker && (
+        <Marker
+          position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
+          icon={markerIcon}>
+          <Tooltip direction="top" opacity={0.5} permanent>
+            <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
+              {poiMarker.species.map((s) => (
+                <>{s} </>
+              ))}
+            </div>
+          </Tooltip>
+        </Marker>
+      )}
     </>
   );
 }

@@ -38,6 +38,10 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const [trip, setTrip] = useState(null);
 
+  useEffect(() => {
+    console.log('--------- TRIPDATACONTROLS ----------', trip);
+  }, [trip]);
+
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -111,7 +115,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   }, [databaseContext]);
 
   useEffect(() => {
-    const updateComponent = () => {
+    const updateComponent = async () => {
       getTrip();
     };
     updateComponent();
@@ -140,7 +144,7 @@ export const TripDataControls: React.FC<any> = (props) => {
           items: itemsArr
         };
       });
-      return;
+      // return;
     }
 
     let numberActivitiesFetched = 0;

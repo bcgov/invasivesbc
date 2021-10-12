@@ -24,6 +24,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 import * as turf from '@turf/turf';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { GeoJSON, Marker } from 'react-leaflet';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -211,7 +212,9 @@ const CreateAccordionTable = ({ row, response }) => {
 export const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
     body: {
-      fontSize: 12
+      fontSize: 12,
+      textAlign: 'left',
+      width: 100
     }
   })
 )(TableCell);
@@ -300,7 +303,7 @@ export const RenderTableActivity = ({ rows, setRows }) => {
   };
 
   return (
-    <Table size="small">
+    <Table padding="none" size="small">
       <CreateTableHead labels={labels} />
       <TableBody>
         {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
@@ -348,13 +351,13 @@ export const RenderTableActivity = ({ rows, setRows }) => {
   );
 };
 
-export const RenderTableDataBC = ({ records }) => {
+export const RenderTableDataBC = ({ rows }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, records?.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage);
 
-  const labels = ['AQUIFER ID', 'Coordinates', 'Street Address'];
+  const labels = ['AQUIFER ID', 'Coordinates   ', 'Street Address'];
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
@@ -366,29 +369,103 @@ export const RenderTableDataBC = ({ records }) => {
   };
 
   return (
-    <Table size="small">
+    <Table padding="none" size="small">
       <CreateTableHead labels={labels} />
       <TableBody>
         <>
-          {(rowsPerPage > 0 ? records?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : records).map(
-            (row) => (
-              <>
-                <StyledTableRow key={row?.properties.WELL_TAG_NUMBER}>
-                  <StyledTableCell component="th" scope="row">
-                    {row.properties.AQUIFER_ID}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    {row.geometry.coordinates[0].toFixed(2)},{row.geometry.coordinates[1].toFixed(2)}
-                  </StyledTableCell>
-                  <StyledTableCell>{row.properties.STREET_ADDRESS}</StyledTableCell>
-                </StyledTableRow>
-              </>
-            )
-          )}
+          {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
+            <>
+              <StyledTableRow key={row?.properties.WELL_TAG_NUMBER}>
+                <StyledTableCell component="th" scope="row">
+                  {row.properties.AQUIFER_ID}
+                </StyledTableCell>
+                <StyledTableCell>
+                  {row.geometry.coordinates[0].toFixed(2)}, {row.geometry.coordinates[1].toFixed(2)}
+                  <></>
+                </StyledTableCell>
+                <StyledTableCell>{row.properties.STREET_ADDRESS}</StyledTableCell>
+              </StyledTableRow>
+            </>
+          ))}
         </>
         {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
         <CreateTableFooter
-          records={records}
+          records={rows}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </TableBody>
+    </Table>
+  );
+};
+
+export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
+
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage);
+
+  const labels = ['SITE ID', 'SPECIES', 'JURISDICTION'];
+
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  return (
+    <Table padding="none" size="small">
+      <CreateTableHead labels={labels} />
+      <TableBody>
+        <>
+          {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
+            <>
+              <StyledTableRow key={row?.site_id}>
+                <StyledTableCell component="th" scope="row">
+                  <a
+                    onClick={() => {
+                      console.log(row);
+                      if (row.geometry)
+                        map.flyTo(
+                          [row.geometry[0].geometry.coordinates[1], row.geometry[0].geometry.coordinates[0]],
+                          17
+                        );
+                      setPoiMarker({
+                        geometry: row.geometry[0],
+                        species: row.species
+                      });
+                    }}>
+                    {row.site_id}
+                  </a>
+                </StyledTableCell>
+                <StyledTableCell>
+                  {row.species.map((s) => (
+                    <>
+                      {s}
+                      <br />
+                    </>
+                  ))}
+                </StyledTableCell>
+                <StyledTableCell>
+                  {row.jurisdictions.map((j) => (
+                    <>
+                      {j}
+                      <br />
+                    </>
+                  ))}
+                </StyledTableCell>
+              </StyledTableRow>
+            </>
+          ))}
+        </>
+        {emptyRows > 0 && <CreateEmptyRows emptyRows={emptyRows} />}
+        <CreateTableFooter
+          records={rows}
           rowsPerPage={rowsPerPage}
           page={page}
           handleChangePage={handleChangePage}
