@@ -119,10 +119,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (doc?.docType === DocType.REFERENCE_ACTIVITY) {
       return;
     }
-    console.log(' - - - -  update doc - ...doc');
-    console.log(doc);
-    console.log(' - - - -  update doc - ...updates');
-    console.log(updates);
     let updatedDoc = {
       ...doc,
       ...updates,
@@ -172,8 +168,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           ...oldActivity,
           ...mapDocToDBActivity(updated)
         };
-        console.log('***********NEW activity (line 180)');
-        console.log(newActivity);
 
         if (!oldActivity) await dataAccess.createActivity(newActivity, databaseContext);
         else await dataAccess.updateActivity(newActivity, databaseContext);
@@ -259,7 +253,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} extent The leaflet bounds object
    */
   const saveExtent = async (newExtent: any) => {
-    // await updateDoc({ extent: newExtent });
+     await updateDoc({ extent: newExtent });
   };
 
   /**
@@ -268,7 +262,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {IPhoto} photosArr An array of photo objects.
    */
   const savePhotos = async (photosArr: IPhoto[]) => {
-    // await updateDoc({ photos: photosArr, dateUpdated: new Date() });
+     await updateDoc({ photos: photosArr, dateUpdated: new Date() });
   };
 
   /*
@@ -372,12 +366,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * Update the doc (activity) with the latest form data and store it in DB
    */
   const pasteFormData = async () => {
-    // await updateDoc({
-    //   formData: retrieveFormDataFromSession(doc),
-    //   status: ActivityStatus.EDITED,
-    //   dateUpdated: new Date(),
-    //   formStatus: FormValidationStatus.NOT_VALIDATED
-    // });
+    await updateDoc({
+      formData: retrieveFormDataFromSession(doc),
+      status: ActivityStatus.EDITED,
+      dateUpdated: new Date(),
+      formStatus: FormValidationStatus.NOT_VALIDATED
+    });
   };
 
   /**
@@ -406,8 +400,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         databaseContext,
         false
       );
-      console.dir('activityResults - - -- -- ---');
-      console.dir(activityResults);
     } else {
       try {
         activityResults = await dataAccess.getActivityById(
