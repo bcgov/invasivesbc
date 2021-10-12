@@ -36,7 +36,7 @@ export const calc_utm = (longitude: number, latitude: number) => {
   return [utmZone, utmEasting, utmNorthing];
 };
 
-export default function DisplayPosition({ map }) {
+export default function DisplayPosition({ map, setPoiMarker }) {
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
   const [newPosition, setNewPosition] = useState(null);
@@ -44,13 +44,7 @@ export default function DisplayPosition({ map }) {
   const [startTimer, setStartTimer] = useState(false);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
-  const [poiMarker, setPoiMarker] = useState(null);
   const divRef = useRef(null);
-
-  const markerIcon = L.icon({
-    iconUrl: POImarker,
-    iconSize: [24, 24]
-  });
 
   const getLocation = async () => {
     setInitialTime(3);
@@ -102,19 +96,6 @@ export default function DisplayPosition({ map }) {
         onClick={getLocation}>
         {initialTime > 0 ? <CircularProgress size={24} /> : <LocationOnIcon />}
       </IconButton>
-      {poiMarker && (
-        <Marker
-          position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
-          icon={markerIcon}>
-          <Tooltip direction="top" opacity={0.5} permanent>
-            <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
-              {poiMarker.species.map((s) => (
-                <>{s} </>
-              ))}
-            </div>
-          </Tooltip>
-        </Marker>
-      )}
     </>
   );
 }

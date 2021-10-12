@@ -29,7 +29,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './Helpers/ToolBtnStyles';
-import POImarker from '../Icons/POImarker.png';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
@@ -212,21 +211,15 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker }) => {
   );
 };
 
-function SetPointOnClick({ map }: any) {
+function SetPointOnClick({ map, setPoiMarker }: any) {
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPoint, setGeoPoint] = useState(null);
   const [clickMode, setClickMode] = useState(false);
-  const [poiMarker, setPoiMarker] = useState(null);
   const [utm, setUTM] = useState(null);
   const [rows, setRows] = useState(null);
   const divRef = useRef();
   const themeContext = useContext(ThemeContext);
   const toolClass = toolStyles();
-
-  const markerIcon = L.icon({
-    iconUrl: POImarker,
-    iconSize: [24, 24]
-  });
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
@@ -263,19 +256,6 @@ function SetPointOnClick({ map }: any) {
         <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup utmRows={rows} map={map} lat={position.lat} lng={position.lng} setPoiMarker={setPoiMarker} />
         </GeoJSON>
-      )}
-      {poiMarker && (
-        <Marker
-          position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
-          icon={markerIcon}>
-          <Tooltip direction="top" opacity={0.5} permanent>
-            <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
-              {poiMarker.species.map((s) => (
-                <>{s} </>
-              ))}
-            </div>
-          </Tooltip>
-        </Marker>
       )}
     </>
   );
