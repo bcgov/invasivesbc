@@ -238,7 +238,7 @@ function SetPointOnClick({ map }: any) {
   });
 
   useEffect(() => {
-    if (isFinite(position?.lng) && isFinite(position?.lat)) {
+    if (isFinite(position?.lng) && isFinite(position?.lat) && clickMode) {
       setUTM(calc_utm(position?.lng as number, position?.lat as number));
       generateGeo(position.lat, position.lng, { setGeoPoint });
     }
@@ -259,7 +259,7 @@ function SetPointOnClick({ map }: any) {
         style={clickMode ? { backgroundColor: '#006ee6' } : null}>
         <SearchIcon />
       </IconButton>
-      {utm && clickMode && (
+      {utm && (
         <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup utmRows={rows} map={map} lat={position.lat} lng={position.lng} setPoiMarker={setPoiMarker} />
         </GeoJSON>
