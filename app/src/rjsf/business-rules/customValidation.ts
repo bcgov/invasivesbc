@@ -164,6 +164,39 @@ export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
 /*
   Function to validate that the total percent value of all jurisdictions combined = 100
 */
+export function getShorelineTypesPercentValidator(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.shoreline_types ||
+      formData.activity_subtype_data.shoreline_types.length < 1
+    ) {
+      return errors;
+    }
+
+    const { shoreline_types } = formData.activity_subtype_data;
+
+    let totalPercent = 0;
+
+    shoreline_types.forEach((shoreline_type: any) => {
+      totalPercent += shoreline_type.percent_covered;
+    });
+
+    errors.activity_subtype_data['shoreline_types'].__errors = [];
+    if (totalPercent !== 100) {
+      errors.activity_subtype_data['shoreline_types'].addError(
+        'Total percentage of area covered by jurisdictions must equal 100%'
+      );
+    }
+
+    return errors;
+  };
+}
+
+/*
+  Function to validate that the total percent value of all jurisdictions combined = 100
+*/
 export function getJurisdictionPercentValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (!formData || !formData.activity_data || !formData.activity_data.jurisdictions) {
@@ -221,7 +254,7 @@ export function getAreaValidator(activitySubtype: string): rjsfValidator {
       'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
       'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
       'Activity_Monitoring_BiologicalTerrestrialPlant',
-      'Activity_Dispersal_BiologicalDispersal',
+      'Activity_Monitoring_BiologicalDispersal',
       'Activity_AnimalActivity_AnimalTerrestrial',
       'Activity_AnimalActivity_AnimalAquatic',
       'Activity_Transect_FireMonitoring',
@@ -464,16 +497,18 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
     let invPlantIndex = 0;
     formData.activity_subtype_data.treatment_information.invasive_plants_information.forEach((invPlant: any) => {
       let herbicideIndex = 0;
-      invPlant.herbicide?.forEach((herbicide: any) => {
-        if (!herbicide.herbicide_information?.application_rate || !herbicide.herbicide_code) {
-          console.log('no herbicide information found');
+
+      const herbicideName = !invPlant.tank_mix ? 'herbicide' : 'herbicide_with_tank_volume';
+
+      invPlant[herbicideName].forEach((herbicide: any) => {
+        if (!herbicide.application_rate || !herbicide.herbicide_code) {
         } else if (
-          herbicide.herbicide_information.application_rate &&
-          herbicide.herbicide_information.application_rate > HerbicideApplicationRates[herbicide.herbicide_code]
+          herbicide.application_rate &&
+          herbicide.application_rate > HerbicideApplicationRates[herbicide.herbicide_code]
         ) {
           errors.activity_subtype_data['treatment_information']['invasive_plants_information'][invPlantIndex][
-            'herbicide'
-          ][herbicideIndex]['herbicide_information']['application_rate'].addError(
+            herbicideName
+          ][herbicideIndex]['application_rate'].addError(
             `Application rate exceeds maximum applicable rate of ${
               HerbicideApplicationRates[herbicide.herbicide_code]
             } L/ha for this herbicide`
@@ -482,8 +517,8 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
         //if user clicked proceed in the warning dialog, remove the error
         if (formData.forceNoValidationFields && formData.forceNoValidationFields.includes('application_rate')) {
           errors.activity_subtype_data['treatment_information']['invasive_plants_information'][invPlantIndex][
-            'herbicide'
-          ][herbicideIndex]['herbicide_information']['application_rate'].__errors.pop();
+            herbicideName
+          ][herbicideIndex]['application_rate'].__errors.pop();
         }
 
         herbicideIndex++;

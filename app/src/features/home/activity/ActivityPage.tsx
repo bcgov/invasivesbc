@@ -161,7 +161,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         const oldActivity = await dataAccess.getActivityById(
           updated._id,
           databaseContext,
-          true,
+          false,
           appStateResults.referenceData
         );
         const newActivity = {
@@ -253,7 +253,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} extent The leaflet bounds object
    */
   const saveExtent = async (newExtent: any) => {
-    await updateDoc({ extent: newExtent });
+     await updateDoc({ extent: newExtent });
   };
 
   /**
@@ -262,7 +262,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {IPhoto} photosArr An array of photo objects.
    */
   const savePhotos = async (photosArr: IPhoto[]) => {
-    await updateDoc({ photos: photosArr, dateUpdated: new Date() });
+     await updateDoc({ photos: photosArr, dateUpdated: new Date() });
   };
 
   /*
@@ -398,14 +398,14 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       activityResults = await dataAccess.getActivityById(
         activityId || (appStateResults.docs[0].activeActivity as string),
         databaseContext,
-        true
+        false
       );
     } else {
       try {
         activityResults = await dataAccess.getActivityById(
           activityId || appStateResults.activeActivity,
           databaseContext,
-          true,
+          false,
           appStateResults.referenceData
         );
       } catch (e) {
@@ -611,7 +611,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       let updatedFormData = getDefaultFormDataValues(activityResult);
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
-
       setGeometry(updatedDoc.geometry);
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);

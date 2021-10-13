@@ -101,14 +101,14 @@ const Activity_Transect_BiocontrolEfficacy = {
   'ui:order':['activity_data','activity_subtype_data']
 };
 
-const Activity_Dispersal_BiologicalDispersal = {
+const Activity_Monitoring_BiologicalDispersal = {
   'activity_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
   'activity_subtype_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Dispersal_BiologicalDispersal
+    ...BaseUISchemaComponents.Monitoring_BiologicalDispersal
   },
   'ui:order':['activity_data','activity_subtype_data']
 };
@@ -287,7 +287,7 @@ const RootUISchemas = {
   Activity_Transect_FireMonitoring,
   Activity_Transect_Vegetation,
   Activity_Transect_BiocontrolEfficacy,
-  Activity_Dispersal_BiologicalDispersal,
+  Activity_Monitoring_BiologicalDispersal,
   Activity_Treatment_ChemicalPlant,
   Activity_Treatment_ChemicalPlant_BulkEdit,
   Activity_Treatment_ChemicalPlantAquatic,

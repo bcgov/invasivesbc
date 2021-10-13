@@ -143,11 +143,6 @@ const Treatment_ChemicalPlantAquatic = {
     'invasive_plant_code': {
       'ui:widget': 'single-select-autocomplete'
     },
-    'herbicide': {
-      items: {
-        ...BaseUISchemaComponents.Herbicide
-      }
-    },
     'wind_speed': {
       validateOnBlur: true
     },
@@ -157,6 +152,7 @@ const Treatment_ChemicalPlantAquatic = {
     'pesticide_use_permit_PUP': {},
     'signage_on_site': {}
   },
+  'shoreline_types':{},
   'waterbody_data': {
     ...BaseUISchemaComponents.TwoColumnStyle
   },
@@ -169,6 +165,7 @@ const Treatment_ChemicalPlantAquatic = {
         'herbicide': {
           items: {
             herbicide_type: { 'ui:widget': 'single-select-autocomplete' },
+            
             herbicide_information: {
               ...BaseUISchemaComponents.TwoColumnStyle
             }
@@ -177,7 +174,7 @@ const Treatment_ChemicalPlantAquatic = {
       }
     }
   },
-  'ui:order':['treatment_chemicalplant_information','waterbody_data','water_quality','treatment_information']
+  'ui:order':['treatment_chemicalplant_information','shoreline_types','waterbody_data','water_quality','treatment_information']
 };
 
 const Activity = {

@@ -29,7 +29,7 @@ import MultiSelectAutoComplete from '../../rjsf/widgets/MultiSelectAutoComplete'
 import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
-
+// import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
   activity: any;
@@ -239,7 +239,6 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       let components = response.components;
       let uiSchema = RootUISchemas[subtype];
       const subtypeSchema = components?.schemas?.[subtype];
-
       // Handle activity_id linking fetches
       try {
         if (props.activity?.activityType === 'Monitoring') {
@@ -281,8 +280,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
                 properties: {
                   ...modifiedSchema?.properties,
                   linked_id: {
-                    ...modifiedSchema?.properties?.linked_id,
-                    anyOf: treatments
+                    ...modifiedSchema?.properties?.linked_id
+                    // anyOf: treatments
                   }
                 }
               };

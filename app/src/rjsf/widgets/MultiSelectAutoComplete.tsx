@@ -1,66 +1,15 @@
-import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { WidgetProps } from '@rjsf/core';
-import React from 'react';
+import chroma from 'chroma-js';
+import { ThemeContext } from 'contexts/themeContext';
+import React, { useContext, useState } from 'react';
+import { MultipleSelect } from 'react-select-material-ui';
 
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
-// Custom type to support this widget
-export type AutoCompleteMultiSelectOption = { label: string; value: any };
-
-/**
- * A widget that supports a multi-select dropdown field with search filtering.
- *
- * Example schemas:
- *
- * JSON-Schema:
- *
- * ```JSON
- * {
- *   type: 'array',
- *   title: 'Multi Select Field Title',
- *   items: {
- *     type: 'number',
- *     anyOf: [
- *       {
- *         type: 'number',
- *         title: 'Option 1',
- *         enum: [1]
- *       },
- *       {
- *         type: 'number',
- *         title: 'Option 2',
- *         enum: [2]
- *       },
- *       {
- *         type: 'number',
- *         title: 'Option 3',
- *         enum: [3]
- *       }
- *     ]
- *   },
- *   uniqueItems: true
- * }
- * ```
- *
- * uiSchema (assuming you register the widget as `multi-select-autocomplete`:
- *
- * ```JSON
- * {
- *   'ui:widget': 'multi-select-autocomplete'
- * }
- * ```
- *
- * @param {WidgetProps} props standard RJSF widget props
- * @return {*}
- */
 const MultiSelectAutoComplete = (props: WidgetProps) => {
-  const enumDisabled = props.options.enumDisabled;
-  const enumOptions = (props.options.enumOptions as AutoCompleteMultiSelectOption[]) || [];
+  const enumOptions = props.options.enumOptions as any[];
+  const [focused, setFocused] = useState(false);
+  const [hasValues, setHasValues] = useState(false);
+  const themeContext = useContext(ThemeContext);
+  const { themeType } = themeContext;
 
   /**
    * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the
@@ -69,82 +18,125 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
    * @param {React.ChangeEvent<{}>} event
    * @param {AutoCompleteMultiSelectOption[]} value
    */
-  const handleOnChange = (event: React.ChangeEvent<{}>, value: AutoCompleteMultiSelectOption[]): void => {
+  const handleOnChange = (value: any[]): void => {
     const newValue: any[] = [];
-    value.forEach((item) => newValue.push(item.value));
-    props.onChange(newValue.toString());
+    value.forEach((value) => {
+      newValue.push(value);
+    });
+    if (newValue.length < 1) {
+      setHasValues(false);
+      props.onChange(undefined);
+    } else {
+      setHasValues(true);
+      props.onChange(newValue.toString());
+    }
   };
 
-  /**
-   * Custom comparator to determine if a given option is selected.
-   *
-   * @param {AutoCompleteMultiSelectOption} option
-   * @param {AutoCompleteMultiSelectOption} value
-   * @return {*}  {boolean}
-   */
-  const handleGetOptionSelected = (
-    option: AutoCompleteMultiSelectOption,
-    value: AutoCompleteMultiSelectOption
-  ): boolean => {
-    if (!option?.value || !value?.value) {
-      return false;
+  let optionArr: any[] = [];
+  enumOptions.forEach(({ value, label }) => {
+    optionArr.push({ label: label, value: value, color: themeType ? '#FFF' : '#000' });
+  });
+
+  const colourStyles = {
+    container: (styles) => ({
+      ...styles,
+      borderStyle: 'solid',
+      borderWidth: !hasValues && focused ? '2px' : '1px',
+      boxSizing: 'border-box',
+      borderRadius: '4px',
+      zIndex: '1000',
+      borderColor: props.rawErrors.length > 0 ? 'red' : '#C4C4C4',
+      marginTop: '0px',
+      ':hover': {
+        ...styles[':hover'],
+        boxShadow: 'none'
+      },
+      ':active': {
+        ...styles[':active'],
+        boxShadow: props.rawErrors.length > 0 ? '0px 0px 3px #ff000' : '0px 0px 3px #C4C4C4'
+      }
+    }),
+    indicatorSeparator: (styles) => ({
+      ...styles,
+      display: 'none'
+    }),
+    control: (styles) => ({
+      ...styles,
+      border: 'none',
+      boxShadow: 'none',
+      outline: 'none',
+      justifyContent: 'center'
+    }),
+    valueContainer: (styles) => ({
+      ...styles,
+      padding: '12px 4px',
+      zIndex: '1000',
+      fontSize: '1.2rem',
+      lineHeight: '1.2rem'
+    }),
+    option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+      const color = chroma(data.color);
+      return {
+        ...styles,
+        backgroundColor: themeType ? '#424242' : '#FFF',
+        color: isDisabled ? '#ccc' : isSelected && data.color,
+        cursor: isDisabled ? 'not-allowed' : 'default',
+        ':active': {
+          ...styles[':active'],
+          backgroundColor: !isDisabled ? (isSelected ? data.color : color.alpha(0.3).css()) : undefined
+        }
+      };
+    },
+    multiValue: (styles, { data }) => {
+      return {
+        ...styles,
+        backgroundColor: themeType ? '#424242' : '#FFF'
+      };
+    },
+    multiValueLabel: (styles, { data }) => ({
+      ...styles,
+      color: themeType ? '#FFF' : '#000'
+    }),
+    multiValueRemove: (styles, { data }) => {
+      return {
+        ...styles,
+        color: themeType ? '#FFF' : '#000',
+        ':hover': {
+          backgroundColor: themeType ? '#FFF' : '#223f75',
+          color: themeType ? '#424242' : '#FFF'
+        }
+      };
     }
-
-    return option.value === value.value;
-  };
-
-  /**
-   * Parses an existing array of values into an array of options.
-   *
-   * @return {*}  {AutoCompleteMultiSelectOption[]}
-   */
-  const getExistingValue = (): AutoCompleteMultiSelectOption[] => {
-    if (!props.value) {
-      return [];
-    }
-
-    return enumOptions.filter((option) => props.value.includes(option.value));
   };
 
   return (
-    <Autocomplete
-      multiple
-      autoHighlight={true}
-      id={props.id}
-      value={getExistingValue()}
-      getOptionSelected={handleGetOptionSelected}
-      disabled={props.disabled}
-      options={enumOptions}
-      disableCloseOnSelect
-      filterOptions={createFilterOptions({ limit: 50 })}
-      getOptionLabel={(option) => option.label}
-      onChange={handleOnChange}
-      renderOption={(option, { selected }) => {
-        const disabled: any = enumDisabled && (enumDisabled as any).indexOf(option.value) !== -1;
-        return (
-          <>
-            <Checkbox
-              icon={icon}
-              checkedIcon={checkedIcon}
-              style={{ marginRight: 8 }}
-              checked={selected}
-              disabled={disabled}
-              value={option.value}
-            />
-            {option.label}
-          </>
-        );
-      }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          required={props.required}
-          label={props.label || props.schema.title}
-          placeholder={'Begin typing to filter results...'}
-        />
-      )}
-    />
+    <div id="custom-multi-select">
+      <MultipleSelect
+        id="custom-multi-select-field"
+        SelectProps={{ styles: colourStyles }}
+        InputLabelProps={{
+          style: {
+            transform: focused === true ? 'translate(12px, -5px) scale(0.7)' : 'translate(12px, 20px) scale(1)',
+            backgroundColor: themeType ? '#424242' : 'white',
+            paddingInline: focused === true ? '5px' : '0px',
+            zIndex: focused === true ? 1111111 : 0,
+            position: 'absolute'
+          }
+        }}
+        onChange={handleOnChange}
+        values={props.value ? props.value?.split(',') : undefined}
+        label={props.label}
+        onFocus={() => {
+          setFocused(true);
+        }}
+        onBlur={() => {
+          if (hasValues === false) {
+            setFocused(false);
+          }
+        }}
+        options={optionArr}
+      />
+    </div>
   );
 };
 

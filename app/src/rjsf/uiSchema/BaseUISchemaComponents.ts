@@ -65,10 +65,10 @@ const Weather_Conditions = {
 };
 
 const Herbicide = {
+    'herbicide_type':{},
   'herbicide_code':{
     'ui:widget': 'single-select-autocomplete'
   },
-  'herbicide_type':{},
   'tank_volume':{},
   'herbicide_information':{
     'area_treated':{},
@@ -85,7 +85,7 @@ const Herbicide = {
     },
     'ui:order':['area_treated','application_rate','herbicide_amount','mix_delivery_rate','dilution','specific_treatment_area']
   },
-  'ui:order':['herbicide_code','herbicide_type','tank_volume','herbicide_information']
+  'ui:order':['herbicide_type','herbicide_code','tank_volume','herbicide_information']
 };
 
 const ProjectCode = {
@@ -140,7 +140,6 @@ const TerrestrialPlants = {
     'enda_sample_information',
     'invasive_plant_density_code',
     'invasive_plant_distribution_code',
-    'plant_life_stage_code',
     'plant_life_stage_code',
     'voucher_specimen_collected',
     'voucher_specimen_collection_information']
@@ -1216,7 +1215,7 @@ const Observation_PlantAquatic = {
     'inflow_permanent':{},
     'inflow_other':{},
     'outflow':{},
-    'shoreline_types':{},
+    
     'comment': {
       'ui:widget': 'textarea'
     },
@@ -1233,10 +1232,10 @@ const Observation_PlantAquatic = {
       'inflow_permanent',
       'inflow_other',
       'outflow',
-      'shoreline_types',
       'comment'
     ]
   },
+  'shoreline_types':{},
   'water_quality':{},
   'invasive_plants': {
     items: {
@@ -1244,7 +1243,7 @@ const Observation_PlantAquatic = {
       ...AquaticPlants
     }
   },
-  'ui:order':['waterbody_data','water_quality','invasive_plants']
+  'ui:order':['waterbody_data','shoreline_types','water_quality','invasive_plants']
 };
 
 /* 
@@ -1275,8 +1274,12 @@ const Biocontrol_Collection_Details = {
   'collection_method': {
     'ui:widget': 'single-select-autocomplete'
   },
-  'start_time': {},
-  'stop_time': {},
+  'start_time': {
+    'ui:widget': 'datetime'
+  },
+  'stop_time': {
+    'ui:widget': 'datetime'
+  },
   'total_time': {
     'ui:readonly': true
   },
@@ -1472,10 +1475,10 @@ const Activity_AnimalAquatic = {
   Dispersal
 */
 
-const Dispersal_BiologicalDispersal = {
+const Monitoring_BiologicalDispersal = {
   'monitoring_organization': {},
   'biological_agent_presence_code': {
-    'ui:widget': 'single-select-autocomplete'
+    'ui:widget': 'multi-select-autocomplete'
   },
   'count_duration': {},
   'biological_agent_code': {
@@ -1517,7 +1520,7 @@ const Dispersal_BiologicalDispersal = {
   },
   'ui:order':[
     'invasive_plant_code',
-        'applicator1_name',
+    'applicator1_name',
     'applicator2_name',
     'monitoring_organization',
     'biological_agent_presence_code',
@@ -1774,7 +1777,7 @@ const BaseUISchemaComponents = {
   Transect_FireMonitoring,
   Transect_Vegetation,
   Transect_BiocontrolEfficacy,
-  Dispersal_BiologicalDispersal,
+  Monitoring_BiologicalDispersal,
   Treatment,
   Treatment_MechanicalPlant,
   Treatment_MechanicalPlantAquatic,

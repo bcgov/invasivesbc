@@ -908,7 +908,7 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
           ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant,
           ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant,
           ActivitySubtype.Monitoring_BiologicalTerrestrialPlant,
-          ActivitySubtype.Activity_BiologicalDispersal
+          ActivitySubtype.Monitoring_BiologicalDispersal
         ]}
         tableSchemaType={[
           'Monitoring',
@@ -996,7 +996,7 @@ export const GeneralBiologicalControlTable: React.FC<IActivitiesTable> = (props)
           ActivitySubtype.Treatment_BiologicalPlant,
           ActivitySubtype.Transect_BiocontrolEfficacy,
           ActivitySubtype.Monitoring_BiologicalTerrestrialPlant,
-          ActivitySubtype.Activity_BiologicalDispersal
+          ActivitySubtype.Monitoring_BiologicalDispersal
         ]}
         {...props}
       />
