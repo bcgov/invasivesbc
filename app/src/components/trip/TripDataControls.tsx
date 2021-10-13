@@ -10,7 +10,7 @@ import {
 } from '../../interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import geoData from '../../components/map/LayerPicker/GEO_DATA.json';
-import { getDataFromDataBC } from '../../components/map/WFSConsumer';
+import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
 const async = require('async');
@@ -565,6 +565,8 @@ export const TripDataControls: React.FC<any> = (props) => {
         '1'
       );
 
+      alert(JSON.stringify(largeGridResult));
+
       //get all the ids of large grid items
       const idArr = [];
       largeGridResult.forEach((row) => {
@@ -580,6 +582,21 @@ export const TripDataControls: React.FC<any> = (props) => {
       const layerNames = getLayerNamesFromJSON(geoData);
       //for each layer name, do...
       layerNames.forEach(async (layerName) => {
+        //get layer styles
+        getStylesDataFromBC(layerName).then(async (returnStyles) => {
+          await upsert(
+            [
+              {
+                type: UpsertType.RAW_SQL,
+                sql: `INSERT OR REPLACE INTO LAYER_STYLES (layerName,json) values ('${layerName}','${JSON.stringify(
+                  returnStyles
+                )}');`
+              }
+            ],
+            databaseContext
+          );
+        });
+
         //for each large grid item, do...
         largeGridResult.forEach(async (row) => {
           //insert large grid item into sqllite table

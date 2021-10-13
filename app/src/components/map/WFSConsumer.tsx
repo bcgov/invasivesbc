@@ -1,5 +1,6 @@
 import reproject from 'reproject';
 import proj4 from 'proj4';
+import SLDParser from 'geostyler-sld-parser';
 import '@capacitor-community/http';
 import { Http } from '@capacitor-community/http';
 const { stringify } = require('wkt');
@@ -32,8 +33,6 @@ const wktConvert = (input: any) => {
   return stringify(input);
 };
 
-const layerName = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
-
 const buildURLForDataBC = (layerName: string, geoJSON: Object, pageSize?: number, startIndex?: number) => {
   let baseURL =
     'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&outputFormat=json&typeName=pub:';
@@ -43,18 +42,13 @@ const buildURLForDataBC = (layerName: string, geoJSON: Object, pageSize?: number
   const reprojectedAsWKT = wktConvert(reprojected);
   const customCQL = '&CQL_FILTER=WITHIN(GEOMETRY,' + reprojectedAsWKT + ')';
   const encodedCQL = encodeURI(customCQL);
-  // return baseURL + layerName + projection + customCQL;
   return baseURL + layerName + paging + projection + encodedCQL;
 };
 
-/* 
-  const getHTTP = async (input: string) => {
-    console.log('attempting URL: ' + input)
-    let resp = await axios.get(input);
-    console.log('success')
-    return resp
-  };
-*/
+const buildStylesURLForDataBC = (layerName: string) => {
+  let baseURL = 'https://openmaps.gov.bc.ca/geo/pub/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&layers=';
+  return baseURL + layerName;
+};
 
 const albersToGeog = (featureCollection: Object[]) => {
   try {
@@ -66,6 +60,16 @@ const albersToGeog = (featureCollection: Object[]) => {
     console.log(JSON.stringify(e));
     console.log(e);
   }
+};
+
+export const getStylesDataFromBC: any = async (layerName: string) => {
+  let stylesURL = buildStylesURLForDataBC(layerName);
+  let resp = await getHTTP(stylesURL);
+  const sldParser = new SLDParser();
+  let sldString = resp.data;
+  let styles = await sldParser.readStyle(sldString);
+  console.log(styles);
+  return styles;
 };
 
 export const getDataFromDataBC: any = async (

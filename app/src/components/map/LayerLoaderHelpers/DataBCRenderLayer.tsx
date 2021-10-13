@@ -35,6 +35,7 @@ export const DataBCLayer = (props) => {
         <RenderWFSFeatures
           inputGeo={props.inputGeo}
           online={true}
+          opacity={props.opacity}
           dataBCLayerName={props.layerName}
           setWellIdandProximity={props.setWellIdandProximity}
         />
@@ -47,6 +48,7 @@ export const DataBCLayer = (props) => {
         <RenderWFSFeatures
           inputGeo={props.inputGeo}
           online={false}
+          opacity={props.opacity}
           dataBCLayerName={props.layerName}
           setWellIdandProximity={props.setWellIdandProximity}
         />
