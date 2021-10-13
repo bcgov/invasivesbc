@@ -166,13 +166,16 @@ export function getVegTransectPointsPercentCoverValidator(): rjsfValidator {
 */
 export function getShorelineTypesPercentValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.shoreline_types) {
+    if (
+      !formData ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.shoreline_types ||
+      formData.activity_subtype_data.shoreline_types.length < 1
+    ) {
       return errors;
     }
 
     const { shoreline_types } = formData.activity_subtype_data;
-
-    console.log('I shouldnt be here');
 
     let totalPercent = 0;
 
