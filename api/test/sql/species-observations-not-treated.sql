@@ -29,31 +29,11 @@ where
   p1.max_created_timestamp < p2.max_created_timestamp
 ;
 
+
 /**
-  This test test is trying to do the same as above
-  but keep things as simple as possible.
+This worked... But we now need to merge Treatments based on 
+an intersection with Observations.
 */
-drop table if exists area_to_treat2;
-create table area_to_treat2 as
-select
-  p1.species "Species",
-  case
-    when st_intersects(p1.geom,p2.geom)
-    then st_difference(p1.geom,p2.geom)
-    else p1.geom
-    end "geom"
-from
-  public.activities_by_species p1 left outer join -- Observations
-  public.activities_by_species p2 -- Treatments
-  on
-    st_intersects(p2.geom,p1.geom)
-where
-  p1.activity_type = 'Observation' and
-  p2.activity_type = 'Treatment'
-;
-
-
-
 drop table if exists area_to_treat2;
 create table area_to_treat2 as
 select
