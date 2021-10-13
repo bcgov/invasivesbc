@@ -6,11 +6,11 @@ import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 export const RenderVectorTilesOffline = (props) => {
   const databaseContext = useContext(DatabaseContext2);
   const [geosToRender, setGeosToRender] = useState(null);
-
-  const options = {
+  const [options, setOptions] = useState({
     maxZoom: 24,
     tolerance: 3,
     debug: 0,
+    layerStyles: {},
     style: {
       fillColor: '#00000',
       color: '#00000',
@@ -19,9 +19,20 @@ export const RenderVectorTilesOffline = (props) => {
       fillOpacity: props.opacity - 0.2,
       weight: 5
     }
-  };
-
+  });
   const getVectorTiles = async () => {
+    const styles = await databaseContext.asyncQueue({
+      asyncTask: () => {
+        return query(
+          {
+            type: QueryType.RAW_SQL,
+            sql: `SELECT json FROM LAYER_STYLES WHERE layerName='${props.dataBCLayerName}';`
+          },
+          databaseContext
+        );
+      }
+    });
+    setOptions((prevOptions) => ({ ...prevOptions, layerStyles: JSON.parse(styles[0].json) }));
     // first, selecting large grid items with well layer name
     const largeGridRes = await databaseContext.asyncQueue({
       asyncTask: () => {

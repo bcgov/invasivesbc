@@ -61,6 +61,7 @@
     "express": "^4.17.1",
     "fibers": "^5.0.0",
     "geojson-vt": "^3.2.1",
+    "geostyler-sld-parser": "^3.0.0",
     "ionicons": "^5.5.1",
     "js-yaml": "~3.14.0",
     "jszip": "^3.7.1",

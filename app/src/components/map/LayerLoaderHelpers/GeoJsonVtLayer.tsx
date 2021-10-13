@@ -65,6 +65,15 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
   drawFeature: function (ctx, feature) {
     const type = feature.type;
     ctx.beginPath();
+    this.options.layerStyles.output.rules.forEach((rule) => {
+      if (rule.filter) {
+        let filterProp = rule?.filter[1].toString();
+        if (rule?.filter[2].toString() === feature.tags[filterProp]?.toString()) {
+          this.options.style.color = rule.symbolizers[0].color;
+          this.options.style.fillColor = rule.symbolizers[0].color;
+        }
+      }
+    });
     if (this.options.style) {
       this.setStyle(ctx, this.options.style);
     }

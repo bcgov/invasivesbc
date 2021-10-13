@@ -184,6 +184,13 @@ export const DatabaseContext2Provider = (props) => {
               trip_ID NUMBER
             );\n`;
           break;
+        case 'LAYER_STYLES':
+          setupSQL += `create table if not exists ${DocType[value]} 
+             (
+              layerName TEXT UNIQUE,
+              json TEXT
+            );\n`;
+          break;
         default:
           setupSQL += `create table if not exists ${DocType[value]} 
              (

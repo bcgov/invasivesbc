@@ -11,12 +11,13 @@ import { WellMarker } from './WellMarker';
 import { q } from '../MapContainer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
-import { getDataFromDataBC } from '../WFSConsumer';
+import { getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
 
 interface IRenderWFSFeatures {
   inputGeo: Feature;
   dataBCLayerName;
   online: boolean;
+  opacity?: number;
   featureType?: string;
   memoHash?: string;
   customOnEachFeature?: any;
@@ -24,9 +25,9 @@ interface IRenderWFSFeatures {
 }
 
 export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
-  const [wellsWithClosest, setWellsWithClosest] = useState(null);
+  const [wellFeatures, setWellFeatures] = useState(null);
   const [wellIdandProximity, setWellIdandProximity] = useState(null);
-  const [geosToRender, setGeosToRender] = useState(null);
+  const [otherFeatures, setOtherFeatures] = useState(null);
   const databaseContext = useContext(DatabaseContext2);
   const map = useMap();
   const mapRequestContext = useContext(MapRequestContext);
@@ -88,6 +89,30 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     map.invalidateSize();
   };
 
+  const [layerStyles, setlayerStyles] = useState(null);
+
+  const getStyleForLayerFeature = (feature: any): any => {
+    let style = {};
+    if (!layerStyles) {
+      return style;
+    }
+    layerStyles.output.rules.forEach((rule) => {
+      if (rule.filter) {
+        let filterProp = rule?.filter[1].toString();
+        if (rule?.filter[2].toString() === feature.properties[filterProp].toString()) {
+          const colorRgb = rule.symbolizers[0].color.colorRgb();
+          style = {
+            fillColor: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',
+            color: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',
+            strokeColor: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',
+            zIndex: rule.symbolizers[0].zIndex && rule.symbolizers[0].zIndex
+          };
+        }
+      }
+    });
+    return style;
+  };
+
   //gets layer data based on the layer name
   const getLayerData = async () => {
     //get the map extent as geoJson polygon feature
@@ -96,12 +121,33 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
 
     //if online, just get data from WFSonline consumer
     if (props.online) {
-      getDataFromDataBC(props.dataBCLayerName, mapExtent).then((returnVal) => {
-        props.inputGeo ? setWellsWithClosest(getClosestWellToPolygon(returnVal)) : setWellsWithClosest(returnVal);
-      }, []);
+      getStylesDataFromBC(props.dataBCLayerName).then((returnStyles) => {
+        setlayerStyles(returnStyles);
+        getDataFromDataBC(props.dataBCLayerName, mapExtent).then((returnVal) => {
+          if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
+            props.inputGeo[0] ? setWellFeatures(getClosestWellToPolygon(returnVal)) : setWellFeatures(returnVal);
+          } else {
+            setOtherFeatures(returnVal);
+          }
+        }, []);
+      });
     }
     //if offline: try to get layer data from sqlite local storage
     else {
+      const returnStyles = await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.RAW_SQL,
+              sql: `SELECT json FROM LAYER_STYLES WHERE layerName='${props.dataBCLayerName}';`
+            },
+            databaseContext
+          );
+        }
+      });
+      // alert(returnStyles[0].json);
+      setlayerStyles(JSON.parse(returnStyles[0].json));
+
       //first, selecting large grid items
       const largeGridRes = await databaseContext.asyncQueue({
         asyncTask: () => {
@@ -153,9 +199,11 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
       //set useState var to display features
       if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
         //if there is a geometry drawn, get closest wells and wells inside and label them
-        props.inputGeo ? setWellsWithClosest(getClosestWellToPolygon(allFeatures)) : setWellsWithClosest(allFeatures);
+        props.inputGeo && (props.inputGeo as any).length > 0
+          ? setWellFeatures(getClosestWellToPolygon(allFeatures))
+          : setWellFeatures(allFeatures);
       } else {
-        setGeosToRender(allFeatures);
+        setOtherFeatures(allFeatures);
       }
     }
   };
@@ -214,9 +262,15 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
 
   return (
     <>
-      {geosToRender && <GeoJSON key={Math.random()} onEachFeature={onEachFeature} data={geosToRender}></GeoJSON>}
-      {wellsWithClosest &&
-        wellsWithClosest.map((feature) => {
+      {otherFeatures && layerStyles && (
+        <GeoJSON
+          key={Math.random() + otherFeatures.length}
+          onEachFeature={onEachFeature}
+          style={getStyleForLayerFeature}
+          data={otherFeatures}></GeoJSON>
+      )}
+      {wellFeatures &&
+        wellFeatures.map((feature) => {
           if (feature.geometry.type === 'Point') {
             return <WellMarker feature={feature} />;
           } else {

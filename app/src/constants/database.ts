@@ -15,7 +15,8 @@ export enum DocType {
   LARGE_GRID_LAYER_DATA = 'large_grid_layer_data',
   SMALL_GRID_LAYER_DATA = 'small_grid_layer_data',
   LEAN_ACTIVITIES = 'lean_activities',
-  LEAN_POI = 'lean_poi'
+  LEAN_POI = 'lean_poi',
+  LAYER_STYLES = 'layer_styles'
 }
 
 // max and default db page row limit
