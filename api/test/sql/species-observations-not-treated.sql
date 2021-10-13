@@ -33,6 +33,7 @@ where
 /**
 This worked... But we now need to merge Treatments based on 
 an intersection with Observations.
+Reference: https://gis.stackexchange.com/questions/213851/more-on-cutting-polygons-with-polygons-in-postgis
 */
 drop table if exists area_to_treat2;
 create table area_to_treat2 as
@@ -47,5 +48,9 @@ from
   (select * from public.activities_by_species where activity_type = 'Observation') p1 left outer join -- Observations
   (select * from public.activities_by_species where activity_type = 'Treatment') p2 -- Treatments
   on
-    st_intersects(p2.geom,p1.geom)
+    st_intersects(p2.geom,p1.geom) and
+    p1.species = p2.species and
+    p1.max_created_timestamp < p2.max_created_timestamp
+where
+  date_part('year', p1.max_created_timestamp) = date_part('year', CURRENT_DATE)
 ;
