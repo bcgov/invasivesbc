@@ -98,6 +98,7 @@
     "react-leaflet-cluster": "^1.0.3",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
+    "react-select-material-ui": "^8.0.0",
     "react-sortable-hoc": "^2.0.0",
     "reproject": "^1.2.6",
     "rxjs": "^6.6.7",
