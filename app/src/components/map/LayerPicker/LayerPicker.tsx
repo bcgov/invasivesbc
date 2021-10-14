@@ -144,6 +144,9 @@ export function LayerPicker(props: any, { position }) {
   const [layers, setLayers] = useState([]);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
+  // ---------- READ THIS ---------- //
+  // Using newLayers useState
+  // ------ layers useState is old way ------
   const [newLayers, setNewLayers] = useState([]);
 
   useEffect(() => {
@@ -418,6 +421,8 @@ export function LayerPicker(props: any, { position }) {
   return (
     <LayersControlProvider value={null}>
       {newLayers.map((layer) => {
+        // Using newLayers useState
+        // ------ layers useState is old way ------
         return (
           <DataBCLayer opacity={layer.opacity} layerName={layer.name} mode={layer.type} inputGeo={props.inputGeo} />
         );
