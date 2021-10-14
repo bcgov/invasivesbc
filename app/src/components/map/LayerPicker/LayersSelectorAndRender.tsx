@@ -1,4 +1,4 @@
-import { Accordion, AccordionSummary, Checkbox, FormControlLabel } from '@material-ui/core';
+import { Accordion, AccordionSummary, Checkbox, FormControlLabel, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { updateChild } from './LayerPicker';
 import { getChild } from './SortLayerOrder';
@@ -36,14 +36,7 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
       {/* Vector Tiles */}
       <Accordion expanded={server.expanded} onChange={onServerAccordionChange}>
         <AccordionSummary>
-          <FormControlLabel
-            label="Server"
-            control={
-              <Checkbox
-                checked={server.wms && server.vector_tile && server.rendered_geojson && server.activities && server.poi}
-              />
-            }
-          />
+          <Typography>Server</Typography>
         </AccordionSummary>
         <FormControlLabel
           label="WMS"
@@ -222,14 +215,7 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
       {/* Vector Tiles */}
       <Accordion expanded={local.expanded} onChange={onLocalAccordionChange}>
         <AccordionSummary>
-          <FormControlLabel
-            label="Local"
-            control={
-              <Checkbox
-                checked={local.wms && local.vector_tile && local.rendered_geojson && local.activities && local.poi}
-              />
-            }
-          />
+          <Typography>Local</Typography>
         </AccordionSummary>
         <FormControlLabel
           label="vector_tile"
