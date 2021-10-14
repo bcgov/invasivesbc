@@ -360,11 +360,25 @@ export function LayerPicker(props: any, { position }) {
         // Using newLayers useState
         // ------ layers useState is old way ------
         return (
+<<<<<<< HEAD
           <>
             {layer.enabled && (
               <DataBCLayer opacity={layer.opacity} layerName={layer.name} mode={layer.type} inputGeo={props.inputGeo} />
             )}
           </>
+=======
+<<<<<<< HEAD
+          <DataBCLayer opacity={layer.opacity} layerName={layer.name} mode={layer.type} inputGeo={props.inputGeo} />
+=======
+          <DataBCLayer
+            opacity={layer.opacity}
+            layerName={layer.BCGWcode}
+            mode={layer.type}
+            inputGeo={props.inputGeo}
+            setWellIdandProximity={props.setWellIdandProximity}
+          />
+>>>>>>> 6404a78 (wellIdAndProximity fix)
+>>>>>>> 5fa0ab6 (wellIdAndProximity fix)
         );
       })}
       <div className={positionClass}>
