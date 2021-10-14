@@ -236,8 +236,8 @@ export const TripDataControls: React.FC<any> = (props) => {
       if (!trip || !trip.pointOfInterestChoices || !trip.pointOfInterestChoices.length) {
         setProgressDialog((prevState) => {
           const itemsArr = prevState.items;
-          itemsArr[2] = {
-            ...itemsArr[2],
+          itemsArr[3] = {
+            ...itemsArr[3],
             state: 'complete',
             description: `The step is skipped as there were no point of interest choices entered.`
           };
@@ -369,8 +369,8 @@ export const TripDataControls: React.FC<any> = (props) => {
       if (!trip || !trip.metabaseChoices || !trip.metabaseChoices.length) {
         setProgressDialog((prevState) => {
           const itemsArr = prevState.items;
-          itemsArr[2] = {
-            ...itemsArr[2],
+          itemsArr[4] = {
+            ...itemsArr[4],
             state: 'complete',
             description: `The step is skipped as there were no metabase choices entered.`
           };
@@ -510,10 +510,6 @@ export const TripDataControls: React.FC<any> = (props) => {
   /*
    *  Both of the queues are for caching layers data
    */
-
-  const fetchDataQueue = async.queue(function (task, callback) {
-    callback();
-  }, 1);
 
   //queue for managing api requests to WFS consumer
   const apiRequestsQueue = async.queue(function (task, callback) {

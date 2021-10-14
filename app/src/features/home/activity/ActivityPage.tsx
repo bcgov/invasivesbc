@@ -253,7 +253,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} extent The leaflet bounds object
    */
   const saveExtent = async (newExtent: any) => {
-     await updateDoc({ extent: newExtent });
+    await updateDoc({ extent: newExtent });
   };
 
   /**
@@ -262,7 +262,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {IPhoto} photosArr An array of photo objects.
    */
   const savePhotos = async (photosArr: IPhoto[]) => {
-     await updateDoc({ photos: photosArr, dateUpdated: new Date() });
+    await updateDoc({ photos: photosArr, dateUpdated: new Date() });
   };
 
   /*
@@ -405,7 +405,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         activityResults = await dataAccess.getActivityById(
           activityId || appStateResults.activeActivity,
           databaseContext,
-          false,
+          true,
           appStateResults.referenceData
         );
       } catch (e) {
@@ -615,6 +615,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
       setDoc(updatedDoc);
+
+      await updateDoc(updatedDoc);
 
       setIsLoading(false);
     };
