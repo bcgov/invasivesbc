@@ -53,7 +53,7 @@ import DragHandleIcon from '@material-ui/icons/DragHandle';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import InfoIcon from '@material-ui/icons/Info';
-import { OfflineLayersSelector, OnlineLayersSelector } from './LayersSelectorAndRender';
+import { OfflineLayersSelector, OnlineLayersSelector, getAllEnabledLayerModes } from './LayersSelectorAndRender';
 
 const useStyles = makeStyles((theme) => ({
   root: {

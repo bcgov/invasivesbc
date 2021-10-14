@@ -3,6 +3,55 @@ import React, { useEffect, useState } from 'react';
 import { updateChild } from './LayerPicker';
 import { getChild } from './SortLayerOrder';
 
+const getChildLayerModes = (geoData: Object[], parentID: string, childID: string) => {
+  const server = getChild(geoData, parentID, childID).layers.server;
+  const local = getChild(geoData, parentID, childID).layers.local;
+  var tempArr = [];
+
+  Object.entries(server).forEach(([key, value]) => {
+    switch (key) {
+      case 'expanded':
+        break;
+      default:
+        if (value === true) tempArr.push({ layer_type: key });
+        break;
+    }
+  });
+  Object.entries(local).forEach(([key, value]) => {
+    switch (key) {
+      case 'expanded':
+        break;
+      default:
+        if (value === true) tempArr.push({ layer_type: key });
+        break;
+    }
+  });
+
+  return tempArr;
+};
+
+export const getAllEnabledLayerModes = (geoData: Object[], parent: Object, child: Object) => {
+  var tempArr = [];
+  geoData.map((parent: any) => {
+    var children = [];
+    parent.children.map((child: any) => {
+      var layers = getChildLayerModes(geoData, parent.id, child.id);
+      if (layers.length > 0)
+        children.push({
+          id: child.id,
+          layers: getChildLayerModes(geoData, parent.id, child.id)
+        });
+    });
+    if (children.length > 0)
+      tempArr.push({
+        id: parent.id,
+        children: children
+      });
+  });
+  if (tempArr.length > 0) return tempArr;
+  return null;
+};
+
 export const OnlineLayersSelector = ({ parent, child, objectState, setObjectState }) => {
   const [server, setServer] = useState(child.layers.server);
 

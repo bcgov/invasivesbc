@@ -27,15 +27,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -57,15 +57,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -87,15 +87,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -117,15 +117,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -162,15 +162,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -192,15 +192,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -222,15 +222,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -252,15 +252,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -282,15 +282,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -312,15 +312,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -342,15 +342,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -372,15 +372,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -417,15 +417,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -447,15 +447,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -477,15 +477,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -507,15 +507,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -537,15 +537,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -567,15 +567,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -597,15 +597,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -642,15 +642,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
@@ -672,15 +672,15 @@
         "layers": {
           "server": {
             "expanded": false,
-            "wms": false,
-            "vector_tile": false,
+            "wms_online": false,
+            "vector_tiles_online": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
           },
           "local": {
             "expanded": false,
-            "vector_tile": false,
+            "vector_tiles_offline": false,
             "rendered_geojson": false,
             "activities": false,
             "poi": false
