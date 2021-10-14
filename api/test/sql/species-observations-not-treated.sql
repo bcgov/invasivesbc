@@ -46,11 +46,41 @@ select
     end "geom"
 from
   (select * from public.activities_by_species where activity_type = 'Observation') p1 left outer join -- Observations
-  (select * from public.activities_by_species where activity_type = 'Treatment') p2 -- Treatments
+  (
+    select
+      species,
+      st_union(geom),
+      max(max_created_timestamp) "max_created_timestamp"
+    from
+      public.activities_by_species i1,
+      public.activities_by_species i2
+    where
+      i1.activity_type = 'Treatment' and
+      i2.activity_type = 'Observation' and
+      st_intersects(i1.geom,i2.geom)
+    group by
+      i1.species
+  ) p2 -- Treatments
   on
     st_intersects(p2.geom,p1.geom) and
     p1.species = p2.species and
     p1.max_created_timestamp < p2.max_created_timestamp
 where
   date_part('year', p1.max_created_timestamp) = date_part('year', CURRENT_DATE)
+;
+
+drop table if exists area_to_treat2;
+create table area_to_treat2 as
+select
+  i1.species "species",
+  st_union(i1.geom) "geom",
+  max(i1.max_created_timestamp) "max_created_timestamp"
+from
+  (select * from public.activities_by_species where activity_type = 'Treatment') i1,
+  (select * from public.activities_by_species where activity_type = 'Observation') i2
+where
+  st_intersects(i2.geom,i1.geom) and
+  i1.species = i2.species
+group by
+  i1.species
 ;
