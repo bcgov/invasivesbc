@@ -1,72 +1,52 @@
-/*
-  Query observations that have not been treated this year.
-  TODO:
-    1. Add geometry to output so we can debug with qGIS.
-    2. Strip out the species code join to lower complexity
+/** Query observations that have not been treated this year.
+  Requirements:
+  1. Species for Treatments and Observations must match.
+  2. Treatments must proceed Observations.
+  3. Must occur in the current calendar year.
 */
 drop table if exists area_to_treat;
 create table area_to_treat as
 select
-  c.code_description "Species",
-  case
-    when st_intersects(p1.geom,p2.geom)
-    then st_difference(p1.geom,p2.geom)
-    else p1.geom
+  c.code_description "Species", -- Species name
+  case -- Geometry conditional subtractions
+    when st_intersects(p1.geom,p2.geom) -- If treatment overlaps observation
+    then st_difference(p1.geom,p2.geom) -- Subtract the treatment area from observations
+    else p1.geom -- Otherwise allow the observation to pass through
     end "geom"
 from
-  code c,
-  public.activities_by_species p1 left outer join -- Observations
-  public.activities_by_species p2 -- Treatments
-  on
-    st_intersects(p1.geom,p2.geom)
-where
-  date_part('year', p1.max_created_timestamp) = date_part('year', CURRENT_DATE) and
-  p1.species = c.code_name and
-  p1.activity_type = 'Observation' and
-  p2.activity_type = 'Treatment'  and
-  c.code_header_id = 30 and -- Invasive plant id
-  p1.species = p2.species and
-  p1.max_created_timestamp < p2.max_created_timestamp
-;
-
-
-/**
-This worked... But we now need to merge Treatments based on 
-an intersection with Observations.
-Reference: https://gis.stackexchange.com/questions/213851/more-on-cutting-polygons-with-polygons-in-postgis
-*/
-drop table if exists area_to_treat2;
-create table area_to_treat2 as
-select
-  c.code_description "Species",
-  case
-    when st_intersects(p1.geom,p2.geom)
-    then st_difference(p1.geom,p2.geom)
-    else p1.geom
-    end "geom"
-from
-  code c,
-  (select * from public.activities_by_species where activity_type = 'Observation') p1 left outer join -- Observations
-  (
+  code c, -- The code to species name table
+  ( -- Select observations
     select
-      i1.species "species",
-      st_union(i1.geom) "geom",
+      *
+    from
+      public.activities_by_species
+    where
+      activity_type = 'Observation'
+  ) p1 left outer join
+  /**
+    Outer Join so observation that don't touch treatments
+    still make it through to be counted
+  **/
+  ( -- Select treatments
+    select
+      i1.species "species", 
+      st_union(i1.geom) "geom", -- Merge treatments touching the same observations
       max(i1.max_created_timestamp) "max_created_timestamp"
     from
-      public.activities_by_species i1,
-      public.activities_by_species i2
+      public.activities_by_species i1, -- For Treatments
+      public.activities_by_species i2  -- For Observations
     where
       i1.activity_type = 'Treatment' and
       i2.activity_type = 'Observation' and
-      st_intersects(i2.geom,i1.geom) and
+      st_intersects(i2.geom,i1.geom) and -- Where treatments touch an observations
       i1.species = i2.species
     group by
       i1.species
-  ) p2 -- Treatments
+  ) p2
   on
-    st_intersects(p2.geom,p1.geom) and
-    p1.species = p2.species and
-    p1.max_created_timestamp < p2.max_created_timestamp
+    st_intersects(p2.geom,p1.geom) and -- Where treatments touch observations
+    p1.species = p2.species and -- Same species
+    p1.max_created_timestamp < p2.max_created_timestamp -- observation older then treatment
 where
   c.code_header_id = 30 and -- Invasive plant id
   p1.species = c.code_name and
