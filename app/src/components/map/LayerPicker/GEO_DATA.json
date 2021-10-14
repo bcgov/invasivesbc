@@ -29,16 +29,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -59,16 +59,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -89,16 +89,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -119,16 +119,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       }
@@ -164,16 +164,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -194,16 +194,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -224,16 +224,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -254,16 +254,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -284,16 +284,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -314,16 +314,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -344,16 +344,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -374,16 +374,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       }
@@ -419,16 +419,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -449,16 +449,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -479,16 +479,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -509,16 +509,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -539,16 +539,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -569,16 +569,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -599,16 +599,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       }
@@ -644,16 +644,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       },
@@ -674,16 +674,16 @@
             "expanded": false,
             "wms_online": false,
             "vector_tiles_online": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_online": false,
+            "activities_online": false,
+            "poi_offline": false
           },
           "local": {
             "expanded": false,
             "vector_tiles_offline": false,
-            "rendered_geojson": false,
-            "activities": false,
-            "poi": false
+            "rendered_geojson_offline": false,
+            "activities_online": false,
+            "poi_offline": false
           }
         }
       }
