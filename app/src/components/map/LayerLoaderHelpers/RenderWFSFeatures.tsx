@@ -12,6 +12,7 @@ import { q } from '../MapContainer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
 import { getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
+import { isFilterSatisfied } from './GeoJsonVtLayer';
 
 interface IRenderWFSFeatures {
   inputGeo: Feature;
@@ -98,8 +99,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     }
     layerStyles.output.rules.forEach((rule) => {
       if (rule.filter) {
-        let filterProp = rule?.filter[1].toString();
-        if (rule?.filter[2].toString() === feature.properties[filterProp].toString()) {
+        if (isFilterSatisfied(rule?.filter, feature.properties)) {
           const colorRgb = rule.symbolizers[0].color.colorRgb();
           style = {
             fillColor: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',

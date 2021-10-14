@@ -5,6 +5,22 @@ import geojsonvt from 'geojson-vt';
 // eslint-disable-next-line import/first
 import {} from 'leaflet-geojson-vt/src/leaflet-geojson-vt.js';
 
+export const isFilterSatisfied = (filter, featureProps): boolean => {
+  let filterProp = filter[1].toString();
+  switch (filter[0]) {
+    case '>':
+      console.log('>');
+      return parseInt(filter[2]) > parseInt(featureProps[filterProp]);
+
+    case '<':
+      console.log('<');
+      return parseInt(filter[2]) < parseInt(featureProps[filterProp]);
+
+    case '==':
+      return filter[2].toString() === featureProps[filterProp].toString();
+  }
+};
+
 export interface TileLayerProps extends TileLayerOptions, LayerProps {
   geoJSON: any;
   options: any;
@@ -67,8 +83,7 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
     ctx.beginPath();
     this.options.layerStyles.output.rules.forEach((rule) => {
       if (rule.filter) {
-        let filterProp = rule?.filter[1].toString();
-        if (rule?.filter[2].toString() === feature.tags[filterProp]?.toString()) {
+        if (isFilterSatisfied(rule?.filter, feature.tags)) {
           this.options.style.color = rule.symbolizers[0].color;
           this.options.style.fillColor = rule.symbolizers[0].color;
         }
