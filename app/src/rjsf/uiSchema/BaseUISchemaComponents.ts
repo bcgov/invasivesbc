@@ -1205,16 +1205,18 @@ const Observation_PlantAquatic = {
     ...ThreeColumnStyle,
     ...WaterbodyData,
     'water_level_management': {
-      'ui:widget': 'single-select-autocomplete'
+      'ui:widget': 'multi-select-autocomplete'
     },
     'substrate_type': {
-      'ui:widget': 'single-select-autocomplete'
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'adjacent_land_use':{
+      'ui:widget': 'multi-select-autocomplete'
     },
     'tidal_influence': {},
-    'adjacent_land_use':{},
-    'inflow_permanent':{},
-    'inflow_other':{},
-    'outflow':{},
+    'inflow_permanent':{'ui:widget': 'multi-select-autocomplete'},
+    'inflow_other':{'ui:widget': 'multi-select-autocomplete'},
+    'outflow':{'ui:widget': 'multi-select-autocomplete'},
     
     'comment': {
       'ui:widget': 'textarea'
@@ -1593,52 +1595,11 @@ const Treatment_MechanicalPlant = {
 };
 
 const Treatment_MechanicalPlantAquatic = {
-    'waterbody_data': {
-    ...ThreeColumnStyle,
-    ...WaterbodyData,
-    'water_level_management': {
-      'ui:widget': 'single-select-autocomplete'
-    },
-    'substrate_type': {
-      'ui:widget': 'single-select-autocomplete'
-    },
-    'tidal_influence': {},
-    'adjacent_land_use':{},
-    'inflow_permanent':{},
-    'inflow_other':{},
-    'outflow':{},
-    'ui:order':[
-      'waterbody_type',
-      'waterbody_name_gazetted',
-      'waterbody_name_local',
-      'waterbody_access',
-      'waterbody_use',
-      'water_level_management',
-      'substrate_type',
-      'tidal_influence',
-      'adjacent_land_use',
-      'inflow_permanent',
-      'inflow_other',
-      'outflow',
-    ]
-  },
   'shoreline_types':{},
-  'water_quality': {
-    ...ThreeColumnStyle,
-    ...WaterQuality,
-    'water_flow_rate':{},
-    'ui:order':[
-      'water_sample_depth',
-      'secchi_depth',
-      'water_colour',
-      'water_flow_rate'
-    ]
-  },
   'mechanical_treatment_information': {
     ...Treatment_MechanicalPlant
   },
-  
-  'ui:order':['waterbody_data','shoreline_types','water_quality']
+  'ui:order':['shoreline_types']
 }
 
 const Treatment_MechanicalPlant_BulkEdit = {

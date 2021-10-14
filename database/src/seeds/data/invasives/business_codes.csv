@@ -1634,3 +1634,22 @@ shoreline_type_code,T,Turf,5
 shoreline_type_code,F,Fence,6
 shoreline_type_code,LGA,Livestock Grazing Access,7
 shoreline_type_code,O,Other,8
+outflow_code,N,None,0
+outflow_code,CUL,Culvert,1
+outflow_code,CRE,Creek,2
+outflow_code,WET,Wetland,3
+outflow_code,RIV,River,4
+outflow_code,TID,Tidal,5
+outflow_code,U,Unknown,6
+inflow_permanent_code,N,None,0
+inflow_permanent_code,CUL,Culvert,1
+inflow_permanent_code,CRE,Creek,2
+inflow_permanent_code,WET,Wetland,3
+inflow_permanent_code,RIV,River,4
+inflow_permanent_code,U,Unknown,5
+inflow_temporary_code,N,None,0
+inflow_temporary_code,SEAC,Seasonal creek,1
+inflow_temporary_code,OFL,Overland Flow,2
+inflow_temporary_code,WET,Wetland,3
+inflow_temporary_code,DISP,Discharge pipes,4
+inflow_temporary_code,U,Unknown,5

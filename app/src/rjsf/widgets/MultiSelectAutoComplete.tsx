@@ -45,7 +45,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
       boxSizing: 'border-box',
       borderRadius: '4px',
       zIndex: '1000',
-      borderColor: props.rawErrors.length > 0 ? 'red' : '#C4C4C4',
+      borderColor: props.rawErrors?.length > 0 ? 'red' : '#C4C4C4',
       marginTop: '0px',
       ':hover': {
         ...styles[':hover'],
@@ -53,7 +53,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
       },
       ':active': {
         ...styles[':active'],
-        boxShadow: props.rawErrors.length > 0 ? '0px 0px 3px #ff000' : '0px 0px 3px #C4C4C4'
+        boxShadow: props.rawErrors?.length > 0 ? '0px 0px 3px #ff000' : '0px 0px 3px #C4C4C4'
       }
     }),
     indicatorSeparator: (styles) => ({

@@ -153,12 +153,6 @@ const Treatment_ChemicalPlantAquatic = {
     'signage_on_site': {}
   },
   'shoreline_types':{},
-  'waterbody_data': {
-    ...BaseUISchemaComponents.TwoColumnStyle
-  },
-  'water_quality': {
-    ...BaseUISchemaComponents.TwoColumnStyle
-  },
   'treatment_information': {
     'invasive_plants_information': {
       items: {
@@ -174,7 +168,7 @@ const Treatment_ChemicalPlantAquatic = {
       }
     }
   },
-  'ui:order':['treatment_chemicalplant_information','shoreline_types','waterbody_data','water_quality','treatment_information']
+  'ui:order':['treatment_chemicalplant_information','shoreline_types','treatment_information']
 };
 
 const Activity = {
