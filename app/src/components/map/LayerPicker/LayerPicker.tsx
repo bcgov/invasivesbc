@@ -53,7 +53,12 @@ import DragHandleIcon from '@material-ui/icons/DragHandle';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import InfoIcon from '@material-ui/icons/Info';
-import { OfflineLayersSelector, OnlineLayersSelector } from './LayersSelectorAndRender';
+import {
+  getAllEnabledLayerModes,
+  OfflineLayersSelector,
+  OnlineLayersSelector,
+  sanitizedLayers
+} from './LayersSelectorAndRender';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -139,6 +144,18 @@ export function LayerPicker(props: any, { position }) {
   const [layers, setLayers] = useState([]);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
+  // ---------- READ THIS ---------- //
+  // Using newLayers useState
+  // ------ layers useState is old way ------
+  const [newLayers, setNewLayers] = useState([]);
+
+  useEffect(() => {
+    if (objectState) setNewLayers(sanitizedLayers(objectState));
+  }, [objectState]);
+
+  useEffect(() => {
+    if (newLayers) console.log('newLayers', newLayers);
+  }, [newLayers]);
 
   function getErrorIcon(time: any) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
@@ -403,14 +420,11 @@ export function LayerPicker(props: any, { position }) {
 
   return (
     <LayersControlProvider value={null}>
-      {layers.map((layer) => {
+      {newLayers.map((layer) => {
+        // Using newLayers useState
+        // ------ layers useState is old way ------
         return (
-          <DataBCLayer
-            opacity={layer.opacity}
-            layerName={layer.bcgw_code}
-            mode={layer.type}
-            inputGeo={props.inputGeo}
-          />
+          <DataBCLayer opacity={layer.opacity} layerName={layer.name} mode={layer.type} inputGeo={props.inputGeo} />
         );
       })}
       <div className={positionClass}>

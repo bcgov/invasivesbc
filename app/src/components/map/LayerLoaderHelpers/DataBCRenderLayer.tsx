@@ -53,5 +53,7 @@ export const DataBCLayer = (props) => {
           setWellIdandProximity={props.setWellIdandProximity}
         />
       );
+    default:
+      return <></>;
   }
 };
