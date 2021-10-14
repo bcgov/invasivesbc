@@ -76,9 +76,11 @@ select
   st_union(i1.geom) "geom",
   max(i1.max_created_timestamp) "max_created_timestamp"
 from
-  (select * from public.activities_by_species where activity_type = 'Treatment') i1,
-  (select * from public.activities_by_species where activity_type = 'Observation') i2
+  public.activities_by_species i1,
+  public.activities_by_species i2
 where
+  i1.activity_type = 'Treatment' and
+  i2.activity_type = 'Observation' and
   st_intersects(i2.geom,i1.geom) and
   i1.species = i2.species
 group by
