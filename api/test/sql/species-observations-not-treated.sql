@@ -24,7 +24,7 @@ from
       activity_type = 'Observation'
   ) p1 left outer join
   /**
-    Outer Join so observation that don't touch treatments
+    Outer Join so observations that don't touch treatments
     still make it through to be counted
   **/
   ( -- Select treatments
