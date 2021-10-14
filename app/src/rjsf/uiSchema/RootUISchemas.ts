@@ -175,7 +175,7 @@ const Activity_Treatment_MechanicalPlantAquatic = {
   },
   'activity_subtype_data': {
     ...BaseUISchemaComponents.Treatment_MechanicalPlantAquatic,
-    'ui:order':['waterbody_data','shoreline_types','water_quality','mechanical_treatment_information']
+    'ui:order':['shoreline_types','mechanical_treatment_information']
   },
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };

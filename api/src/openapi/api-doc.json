@@ -414,51 +414,6 @@
         "type": "object",
         "title": " ",
         "properties": {
-          "waterbody_data": {
-            "type": "object",
-            "title": "Waterbody Data",
-            "allOf": [
-              { "$ref": "#/components/schemas/WaterbodyData" },
-              {
-                "properties": {
-                  "water_level_management": {
-                    "type": "string",
-                    "title": "Water Level Management",
-                    "enum": ["None", "Weir", "Pump Station", "Dam", "Other"],
-                    "x-tooltip-text": "Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field"
-                  },
-                  "substrate_type": {
-                    "type": "string",
-                    "title": "Substrate Type",
-                    "enum": ["Silt/Organic", "Clay", "Sand", "Gravel", "Cobble", "Rip-rap"],
-                    "x-tooltip-text": "Select the most prevalent substrate composition"
-                  },
-                  "tidal_influence": {
-                    "type": "string",
-                    "title": "Tidal Influence",
-                    "enum": ["Yes", "No", "Unknown"],
-                    "x-tooltip-text": "Indicate if the water level at the observation point is influenced by tides"
-                  },
-                  "inflow_permanent": {
-                    "type": "string",
-                    "title": "Inflow (Permanent)",
-                    "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
-                  },
-                  "inflow_other": {
-                    "type": "string",
-                    "title": "Inflow (Temp. or seasonal)",
-                    "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
-                  },
-                  "outflow": {
-                    "type": "string",
-                    "title": "Outflow",
-                    "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
-                  }
-                },
-                "required": ["substrate_type", "tidal_influence"]
-              }
-            ]
-          },
           "shoreline_types": {
             "type": "array",
             "title": "Shoreline Types",
@@ -467,26 +422,6 @@
               "$ref": "#/components/schemas/ShorelineTypes"
             },
             "x-tooltip-text": "Specify shoreline types with their respective percentages"
-          },
-          "water_quality": {
-            "type": "object",
-            "title": "Water Quality",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WaterQuality"
-              },
-              {
-                "properties": {
-                  "water_flow_rate": {
-                    "type": "number",
-                    "title": "Water flow rate (m/sec)",
-                    "minimum": 0,
-                    "x-tooltip-text": " Indicates average rate of water flow across treatment area, this affects herbicide dispersion and efficacy."
-                  }
-                },
-                "required": ["water_flow_rate"]
-              }
-            ]
           },
           "mechanical_treatment_information": {
             "$ref": "#/components/schemas/Treatment_MechanicalPlant"
@@ -862,7 +797,7 @@
       "Observation": {
         "title": "Observation Information",
         "type": "object",
-        "required": ["observation_type_code", "observation_persons", "survey_type"],
+        "required": ["observation_type_code", "observation_persons"],
         "properties": {
           "observation_type_code": {
             "type": "string",
@@ -886,12 +821,6 @@
               "$ref": "#/components/schemas/Persons"
             },
             "x-tooltip-text": "Name of person(s) doing the observation"
-          },
-          "survey_type": {
-            "type": "string",
-            "title": "Survey Type",
-            "enum": ["Presence Survey", "Extent Survey"],
-            "x-tooltip-text": "Presence survey used to determine general presence of invasive species in waterbody. Extent survey used to delineate each point and polygon of a target species prior to treatment"
           }
         }
       },
@@ -963,17 +892,38 @@
                   "inflow_permanent": {
                     "type": "string",
                     "title": "Inflow (Permanent)",
-                    "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "inflow_permanent_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Select one or more inflow types (aka upstream source) and indicate details or name of source water in the comments if known."
                   },
                   "inflow_other": {
                     "type": "string",
                     "title": "Inflow (Temp. or seasonal)",
-                    "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "inflow_temporary_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Select one or more temporary inflow types and indicate details or name of source water in the comments if known."
                   },
                   "outflow": {
                     "type": "string",
                     "title": "Outflow",
-                    "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
+                    "x-enum-code": {
+                      "x-enum-code-category-name": "invasives",
+                      "x-enum-code-header-name": "outflow_code",
+                      "x-enum-code-name": "code_name",
+                      "x-enum-code-text": "code_description",
+                      "x-enum-code-sort-order": "code_sort_order"
+                    },
+                    "x-tooltip-text": "Select one or more outflow types (downstream) and indicate details or name of outflow water in the comments if known."
                   },
                   "comment": {
                     "type": "string",
@@ -982,7 +932,7 @@
                     "x-tooltip-text": "Add a comment"
                   }
                 },
-                "required": ["substrate_type", "tidal_influence"]
+                "required": ["substrate_type", "tidal_influence", "inflow_permanent", "inflow_other", "outflow"]
               }
             ]
           },
@@ -1810,51 +1760,6 @@
         "title": " ",
         "type": "object",
         "properties": {
-          "waterbody_data": {
-            "type": "object",
-            "title": "Waterbody Data",
-            "allOf": [
-              { "$ref": "#/components/schemas/WaterbodyData" },
-              {
-                "properties": {
-                  "water_level_management": {
-                    "type": "string",
-                    "title": "Water Level Management",
-                    "enum": ["None", "Weir", "Pump Station", "Dam", "Other"],
-                    "x-tooltip-text": "Select existing infrastructure, if any, that could allow water level management. If other, specify in comment field"
-                  },
-                  "substrate_type": {
-                    "type": "string",
-                    "title": "Substrate Type",
-                    "enum": ["Silt/Organic", "Clay", "Sand", "Gravel", "Cobble", "Rip-rap"],
-                    "x-tooltip-text": "Select the most prevalent substrate composition"
-                  },
-                  "tidal_influence": {
-                    "type": "string",
-                    "title": "Tidal Influence",
-                    "enum": ["Yes", "No", "Unknown"],
-                    "x-tooltip-text": "Indicate if the water level at the observation point is influenced by tides"
-                  },
-                  "inflow_permanent": {
-                    "type": "string",
-                    "title": "Inflow (Permanent)",
-                    "x-tooltip-text": "Permanent, year round water inflow(s) adjacent to observation (e.g. river)"
-                  },
-                  "inflow_other": {
-                    "type": "string",
-                    "title": "Inflow (Temp. or seasonal)",
-                    "x-tooltip-text": "Temporary or seasonal water inflow(s) adjacent to observation (e.g. overland flow)"
-                  },
-                  "outflow": {
-                    "type": "string",
-                    "title": "Outflow",
-                    "x-tooltip-text": "Permanent, year-round water outflow(s) adjacent to observation (e.g. river, downstream culvert, etc)"
-                  }
-                },
-                "required": ["substrate_type", "tidal_influence"]
-              }
-            ]
-          },
           "shoreline_types": {
             "type": "array",
             "default": [{}],
@@ -1863,26 +1768,6 @@
               "$ref": "#/components/schemas/ShorelineTypes"
             },
             "x-tooltip-text": "Specify shoreline types with their respective percentages"
-          },
-          "water_quality": {
-            "type": "object",
-            "title": "Water Quality",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WaterQuality"
-              },
-              {
-                "properties": {
-                  "water_flow_rate": {
-                    "type": "number",
-                    "title": "Water flow rate (m/sec)",
-                    "minimum": 0,
-                    "x-tooltip-text": " Indicates average rate of water flow across treatment area, this affects herbicide dispersion and efficacy."
-                  }
-                },
-                "required": ["water_flow_rate"]
-              }
-            ]
           },
           "treatment_chemicalplant_information": {
             "type": "object",
@@ -3581,7 +3466,9 @@
                               },
                               "control_sample_taken": {
                                 "title": "Control sample taken",
-                                "type": "boolean"
+                                "type": "string",
+                                "enum": ["Yes", "No"],
+                                "default": ["No"]
                               }
                             },
                             "required": ["edna_sample_id", "sample_type"]
