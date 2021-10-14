@@ -38,13 +38,14 @@ Reference: https://gis.stackexchange.com/questions/213851/more-on-cutting-polygo
 drop table if exists area_to_treat2;
 create table area_to_treat2 as
 select
-  p1.species "Species",
+  c.code_description "Species",
   case
     when st_intersects(p1.geom,p2.geom)
     then st_difference(p1.geom,p2.geom)
     else p1.geom
     end "geom"
 from
+  code c,
   (select * from public.activities_by_species where activity_type = 'Observation') p1 left outer join -- Observations
   (
     select
@@ -67,5 +68,7 @@ from
     p1.species = p2.species and
     p1.max_created_timestamp < p2.max_created_timestamp
 where
+  c.code_header_id = 30 and -- Invasive plant id
+  p1.species = c.code_name and
   date_part('year', p1.max_created_timestamp) = date_part('year', CURRENT_DATE)
 ;
