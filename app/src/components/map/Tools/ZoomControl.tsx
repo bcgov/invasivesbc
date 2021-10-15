@@ -1,5 +1,5 @@
-import { Button, IconButton } from '@mui/material';
-import React, { useContext, useEffect, useRef } from 'react';
+import { Button, IconButton } from '@material-ui/core';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { toolStyles } from './Helpers/ToolBtnStyles';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
@@ -19,12 +19,16 @@ export const ZoomControl = (props) => {
     L.DomEvent.disableScrollPropagation(divRef?.current);
   });
 
+  const [isHighRes, setIsHighRes] = useState(false);
+
   //onclick
   const toggle = () => {
     props.setMapMaxNativeZoom((prevState) => {
       if (prevState === LOW_RES) {
+        setIsHighRes(true);
         return HIGH_RES;
       } else {
+        setIsHighRes(false);
         return LOW_RES;
       }
     });
@@ -38,7 +42,7 @@ export const ZoomControl = (props) => {
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         aria-label="toggle max zoom resolution"
         onClick={toggle}>
-        {props.maxNativeZoom === HIGH_RES ? <HdIcon /> : <SdIcon />}
+        {isHighRes ? <HdIcon fontSize={'large'} /> : <SdIcon fontSize={'large'} />}
       </IconButton>
     </>
   );
