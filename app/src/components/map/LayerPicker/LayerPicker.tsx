@@ -141,21 +141,13 @@ export function LayerPicker(props: any, { position }) {
   //used to run a timer const timeLeft = WithCounter();
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
-  const [layers, setLayers] = useState([]);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
-  // ---------- READ THIS ---------- //
-  // Using newLayers useState
-  // ------ layers useState is old way ------
   const [newLayers, setNewLayers] = useState([]);
 
   useEffect(() => {
     if (objectState) setNewLayers(sanitizedLayers(objectState));
   }, [objectState]);
-
-  useEffect(() => {
-    if (newLayers) console.log('newLayers', newLayers);
-  }, [newLayers]);
 
   function getErrorIcon(time: any) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
@@ -174,8 +166,8 @@ export function LayerPicker(props: any, { position }) {
 
   //update context on ObjectState change
   useEffect(() => {
-    setLayersSelected(layers);
-  }, [layers]);
+    setLayersSelected(newLayers);
+  }, [newLayers]);
 
   useEffect(() => {
     if (divref?.current) {
@@ -188,24 +180,6 @@ export function LayerPicker(props: any, { position }) {
     return `${value.toFixed(1)}`;
   };
 
-  const updateLayer = (child, fieldsToUpdate: Object) => {
-    var arrLen = layers.length;
-    if (arrLen > 0) {
-      var temp;
-      for (let i in layers) {
-        if (layers[i].bcgw_code === child.bcgw_code) {
-          temp = i;
-        }
-      }
-      const layersBefore = [...layers.slice(0, temp)];
-      const layersAfter = [...layers.slice(temp)];
-      const oldLayer = layers[temp];
-      const updatedLayer = { ...oldLayer, ...fieldsToUpdate };
-      layersAfter[0] = updatedLayer;
-      setLayers([...layersBefore, ...layersAfter] as any);
-    }
-  };
-
   const updateParent = (parentType: string, fieldsToUpdate: Object) => {
     let pIndex = getParentIndex(objectState, parentType);
     let parentsBefore: Object[] = getObjectsBeforeIndex(objectState, pIndex);
@@ -213,39 +187,6 @@ export function LayerPicker(props: any, { position }) {
     const oldParent = getParent(objectState, parentType);
     const updatedParent = { ...oldParent, ...fieldsToUpdate };
     setObjectState([...parentsBefore, updatedParent, ...parentsAfter] as any);
-  };
-
-  const updateRenderedLayers = (parent, child) => {
-    if (child.enabled) {
-      var index;
-      for (let i in layers) {
-        if (layers[i].bcgw_code === child.bcgw_code) {
-          index = i;
-        }
-      }
-      var tempCopy = [...layers];
-      tempCopy.splice(index, 1);
-      var layersBefore = [...tempCopy.slice(0, index)];
-      var layersAfter = [...tempCopy.slice(index)];
-      setLayers([...layersBefore, ...layersAfter]);
-    } else if (!child.enabled) {
-      setLayers([...layers, { bcgw_code: child.bcgw_code, opacity: child.opacity, type: child.type }]);
-    }
-    updateChild(
-      parent.id,
-      child.id,
-      {
-        enabled: !getChild(objectState, parent.id, child.id).enabled
-      },
-      { objectState, setObjectState }
-    );
-  };
-
-  const updateChildAndLayer = (parent, child, fieldsToUpdate: Object) => {
-    if (child.enabled) {
-      updateLayer(child, fieldsToUpdate);
-    }
-    updateChild(parent.id, child.id, fieldsToUpdate, { objectState, setObjectState });
   };
 
   const toggleChildDialog = (parent, child) => {
@@ -330,7 +271,14 @@ export function LayerPicker(props: any, { position }) {
                   <Checkbox
                     checked={child.enabled}
                     name={child.id}
-                    onChange={() => updateRenderedLayers(parent, child)}
+                    onChange={() =>
+                      updateChild(
+                        parent.id,
+                        child.id,
+                        { enabled: !getChild(objectState, parent.id, child.id).enabled },
+                        { objectState, setObjectState }
+                      )
+                    }
                   />
                 </Grid>
                 <Grid item xs={5}>
@@ -346,22 +294,6 @@ export function LayerPicker(props: any, { position }) {
                   <Dialog open={child.dialog_open} onClose={() => toggleChildDialog(parent, child)}>
                     <DialogTitle>{child.name}</DialogTitle>
                     <DialogContent>
-                      {/* old code not sure if will remove
-                      <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
-                        <InputLabel>Layer</InputLabel>
-                        <NativeSelect
-                          id="layer-menu"
-                          defaultValue={child.type}
-                          onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                            updateChildAndLayer(parent, child, { type: event.target.value });
-                          }}>
-                          <option value={LayerMode.ActivitiesAndPOI}>{LayerMode.ActivitiesAndPOI}</option>
-                          <option value={LayerMode.WMSOnline}>{LayerMode.WMSOnline}</option>
-                          <option value={LayerMode.WFSOnline}>{LayerMode.WFSOnline}</option>
-                          <option value={LayerMode.VectorTilesOffline}>{LayerMode.VectorTilesOffline}</option>
-                          <option value={LayerMode.RegularFeaturesOffline}>{LayerMode.RegularFeaturesOffline}</option>
-                        </NativeSelect>
-                      </FormControl>*/}
                       <OnlineLayersSelector
                         parent={parent}
                         child={child}
@@ -379,7 +311,12 @@ export function LayerPicker(props: any, { position }) {
                         <Slider
                           defaultValue={child.opacity}
                           onChangeCommitted={(event: any, newOpacity: number | number[]) => {
-                            updateChildAndLayer(parent, child, { opacity: newOpacity as number });
+                            updateChild(
+                              parent.id,
+                              child.id,
+                              { opacity: newOpacity as number },
+                              { objectState, setObjectState }
+                            );
                           }}
                           getAriaValueText={opacityText}
                           step={0.0001}
@@ -399,7 +336,6 @@ export function LayerPicker(props: any, { position }) {
               </Grid>
             ))}
           </Accordion>
-          {/*<ListItemSecondaryAction style={{ width: 32 }}></ListItemSecondaryAction>*/}
         </Grid>
       </ListItem>
     );
@@ -424,7 +360,11 @@ export function LayerPicker(props: any, { position }) {
         // Using newLayers useState
         // ------ layers useState is old way ------
         return (
-          <DataBCLayer opacity={layer.opacity} layerName={layer.name} mode={layer.type} inputGeo={props.inputGeo} />
+          <>
+            {layer.enabled && (
+              <DataBCLayer opacity={layer.opacity} layerName={layer.name} mode={layer.type} inputGeo={props.inputGeo} />
+            )}
+          </>
         );
       })}
       <div className={positionClass}>

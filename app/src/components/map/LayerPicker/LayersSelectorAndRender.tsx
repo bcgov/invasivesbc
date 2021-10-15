@@ -11,22 +11,10 @@ const getChildLayerModes = (geoData: Object[], parentID: string, childID: string
   var tempArr = [];
 
   Object.entries(server).forEach(([key, value]) => {
-    switch (key) {
-      case 'expanded':
-        break;
-      default:
-        if (value === true) tempArr.push({ layer_type: key });
-        break;
-    }
+    if (key !== 'expanded' && value === true) tempArr.push({ layer_type: key });
   });
   Object.entries(local).forEach(([key, value]) => {
-    switch (key) {
-      case 'expanded':
-        break;
-      default:
-        if (value === true) tempArr.push({ layer_type: key });
-        break;
-    }
+    if (key !== 'expanded' && value === true) tempArr.push({ layer_type: key });
   });
 
   return tempArr;
@@ -35,20 +23,22 @@ const getChildLayerModes = (geoData: Object[], parentID: string, childID: string
 export const getAllEnabledLayerModes = (geoData: any[]) => {
   var tempArr = [];
   geoData.map((parent: any) => {
-    var children = [];
+    var layerObj = [];
     parent.children.map((child: any) => {
       var layers = getChildLayerModes(geoData, parent.id, child.id);
-      if (layers.length > 0)
-        children.push({
+      if (layers.length > 0) {
+        layerObj.push({
           bcgw_code: child.bcgw_code,
-          layers: getChildLayerModes(geoData, parent.id, child.id),
+          enabled: child.enabled,
+          layers: layers,
           opacity: child.opacity
         });
+      }
     });
-    if (children.length > 0)
+    if (layerObj.length > 0)
       tempArr.push({
         id: parent.id,
-        children: children
+        children: layerObj
       });
   });
   return tempArr;
@@ -63,6 +53,7 @@ export const sanitizedLayers = (geoData: any[]) => {
       child.layers.map((layer) => {
         tempArr.push({
           name: child.bcgw_code,
+          enabled: child.enabled,
           type: layer.layer_type,
           opacity: child.opacity
         });
@@ -90,8 +81,8 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
           server: {
             expanded: expanded,
             wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
+            wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
             vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server.vector_tiles_online,
-            rendered_geojson_online: getChild(objectState, parent.id, child.id).layers.server.rendered_geojson_online,
             activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
             poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
           }
@@ -123,10 +114,9 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                       server: {
                         expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
                         wms_online: !getChild(objectState, parent.id, child.id).layers.server.wms_online,
+                        wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
                         vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
                           .vector_tiles_online,
-                        rendered_geojson_online: getChild(objectState, parent.id, child.id).layers.server
-                          .rendered_geojson_online,
                         activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
                         poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
                       }
@@ -153,10 +143,9 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                       server: {
                         expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
                         wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
+                        wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
                         vector_tiles_online: !getChild(objectState, parent.id, child.id).layers.server
                           .vector_tiles_online,
-                        rendered_geojson_online: getChild(objectState, parent.id, child.id).layers.server
-                          .rendered_geojson_online,
                         activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
                         poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
                       }
@@ -169,10 +158,10 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
           }
         />
         <FormControlLabel
-          label="Rendered GeoJSON"
+          label="WFS"
           control={
             <Checkbox
-              checked={server.rendered_geojson_online}
+              checked={server.wfs_online}
               onChange={() =>
                 updateChild(
                   parent.id,
@@ -183,10 +172,9 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                       server: {
                         expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
                         wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
+                        wfs_online: !getChild(objectState, parent.id, child.id).layers.server.wfs_online,
                         vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
                           .vector_tiles_online,
-                        rendered_geojson_online: !getChild(objectState, parent.id, child.id).layers.server
-                          .rendered_geojson_online,
                         activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
                         poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
                       }
@@ -213,10 +201,9 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                       server: {
                         expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
                         wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
+                        wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
                         vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
                           .vector_tiles_online,
-                        rendered_geojson_online: getChild(objectState, parent.id, child.id).layers.server
-                          .rendered_geojson_online,
                         activities_online: !getChild(objectState, parent.id, child.id).layers.server.activities_online,
                         poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
                       }
@@ -243,10 +230,9 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                       server: {
                         expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
                         wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
+                        wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
                         vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
                           .vector_tiles_online,
-                        rendered_geojson_online: getChild(objectState, parent.id, child.id).layers.server
-                          .rendered_geojson_online,
                         activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
                         poi_online: !getChild(objectState, parent.id, child.id).layers.server.poi_online
                       }
@@ -279,8 +265,8 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
           ...getChild(objectState, parent.id, child.id).layers,
           local: {
             expanded: expanded,
+            wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
             vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local.vector_tiles_offline,
-            rendered_geojson_offline: getChild(objectState, parent.id, child.id).layers.local.rendered_geojson_offline,
             activities_offline: getChild(objectState, parent.id, child.id).layers.local.activities_offline,
             poi_offline: getChild(objectState, parent.id, child.id).layers.local.poi_offline
           }
@@ -311,10 +297,9 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
                       ...getChild(objectState, parent.id, child.id).layers,
                       local: {
                         expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
+                        wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
                         vector_tiles_offline: !getChild(objectState, parent.id, child.id).layers.local
                           .vector_tiles_offline,
-                        rendered_geojson_offline: getChild(objectState, parent.id, child.id).layers.local
-                          .rendered_geojson_offline,
                         activities_offline: getChild(objectState, parent.id, child.id).layers.local.activities_offline,
                         poi_offline: getChild(objectState, parent.id, child.id).layers.local.poi_offline
                       }
@@ -327,10 +312,10 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
           }
         />
         <FormControlLabel
-          label="Rendered GeoJSON"
+          label="WFS"
           control={
             <Checkbox
-              checked={local.rendered_geojson_offline}
+              checked={local.wfs_offline}
               onChange={() =>
                 updateChild(
                   parent.id,
@@ -340,10 +325,9 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
                       ...getChild(objectState, parent.id, child.id).layers,
                       local: {
                         expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
+                        wfs_offline: !getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
                         vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local
                           .vector_tiles_offline,
-                        rendered_geojson_offline: !getChild(objectState, parent.id, child.id).layers.local
-                          .rendered_geojson_offline,
                         activities_offline: getChild(objectState, parent.id, child.id).layers.local.activities_offline,
                         poi_offline: getChild(objectState, parent.id, child.id).layers.local.poi_offline
                       }
@@ -369,10 +353,9 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
                       ...getChild(objectState, parent.id, child.id).layers,
                       local: {
                         expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
+                        wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
                         vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local
                           .vector_tiles_offline,
-                        rendered_geojson_offline: getChild(objectState, parent.id, child.id).layers.local
-                          .rendered_geojson_offline,
                         activities_offline: !getChild(objectState, parent.id, child.id).layers.local.activities_offline,
                         poi_offline: getChild(objectState, parent.id, child.id).layers.local.poi_offline
                       }
@@ -398,10 +381,9 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
                       ...getChild(objectState, parent.id, child.id).layers,
                       local: {
                         expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
+                        wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
                         vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local
                           .vector_tiles_offline,
-                        rendered_geojson_offline: getChild(objectState, parent.id, child.id).layers.local
-                          .rendered_geojson_offline,
                         activities_offline: getChild(objectState, parent.id, child.id).layers.local.activities_offline,
                         poi_offline: !getChild(objectState, parent.id, child.id).layers.local.poi_offline
                       }
