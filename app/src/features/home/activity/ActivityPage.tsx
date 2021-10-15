@@ -57,6 +57,7 @@ import bcArea from '../../../components/map/BC_AREA.json';
 import { calc_utm } from 'components/map/Tools/DisplayPosition';
 import { GetUserAccessLevel } from 'utils/getAccessLevel';
 import { DocType } from 'constants/database';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -599,6 +600,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
+  const invasivesApi = useInvasivesApi();
+
   useEffect(() => {
     const getActivityData = async () => {
       const activityResult = await getActivityResultsFromDB(props.activityId || null);
@@ -617,6 +620,12 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       setDoc(updatedDoc);
 
       await updateDoc(updatedDoc);
+
+      if (updatedDoc.geometry) {
+        const res = await invasivesApi.getJurisdictions({ search_feature: updatedDoc.geometry[0] });
+        alert(JSON.stringify(updatedDoc.geometry[0]));
+        alert(JSON.stringify(res));
+      }
 
       setIsLoading(false);
     };

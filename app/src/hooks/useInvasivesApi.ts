@@ -5,6 +5,7 @@ import {
   IActivitySearchCriteria,
   ICreateMetabaseQuery,
   ICreateOrUpdateActivity,
+  IJurisdictionSearchCriteria,
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
@@ -120,6 +121,23 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + `/api/activities-lean/`,
       data: activitiesSearchCriteria
+    });
+
+    return data;
+  };
+
+  /**
+   * Fetch*
+   jurisdictions by search criteria.
+   * @param {jurisdictionsSearchCriteria} jurisdictionsSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getJurisdictions = async (jurisdictionsSearchCriteria: IJurisdictionSearchCriteria): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'POST',
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
+      url: options.baseUrl + `/api/jurisdictions/`,
+      data: jurisdictionsSearchCriteria
     });
 
     return data;
@@ -532,6 +550,7 @@ export const useInvasivesApi = () => {
     createMetabaseQuery,
     getBatchUploads,
     postBatchUpload,
-    downloadTemplate
+    downloadTemplate,
+    getJurisdictions
   };
 };
