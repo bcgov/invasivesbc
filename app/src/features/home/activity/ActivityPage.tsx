@@ -729,11 +729,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">Activity ID: {doc.activityId ? doc.activityId : 'unknown'}</Typography>
-            <Typography align="center">
-              {/*
-              Date created: {doc.dateCreated ? doc.dateCreated : 'unknown'}*/}
-            </Typography>
+            <Typography align="center">Activity ID: {doc.shortId ? doc.shortId : 'unknown'}</Typography>
+            <Typography align="center">Date created: {doc.dateCreated ? doc.dateCreated : 'unknown'}</Typography>
           </Box>
           <ActivityComponent
             customValidation={getCustomValidator([
