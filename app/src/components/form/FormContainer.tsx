@@ -307,7 +307,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     };
 
     getApiSpec();
-  }, [props.activity.activitySubtype]);
+  }, [props.activity.activitySubtype, props.activity.activity_subtype]);
 
   if (!schemas.schema || !schemas.uiSchema) {
     return <CircularProgress />;

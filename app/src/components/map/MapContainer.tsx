@@ -217,7 +217,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <Offline />
 
         <ZoomControl position="bottomright" />
-        <LayerPicker position="topright" map={map} data={data} inputGeo={props.geometryState.geometry} />
+        <LayerPicker
+          position="topright"
+          map={map}
+          data={data}
+          inputGeo={props.geometryState.geometry}
+          setWellIdandProximity={props.setWellIdandProximity}
+        />
 
         {/* Here are the editing tools */}
 

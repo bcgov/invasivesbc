@@ -500,6 +500,9 @@ export function getHerbicideApplicationRateValidator(): rjsfValidator {
 
       const herbicideName = !invPlant.tank_mix ? 'herbicide' : 'herbicide_with_tank_volume';
 
+      if (!invPlant || !invPlant[herbicideName] || invPlant[herbicideName]?.length < 1) {
+        return errors;
+      }
       invPlant[herbicideName].forEach((herbicide: any) => {
         if (!herbicide.application_rate || !herbicide.herbicide_code) {
         } else if (

@@ -253,7 +253,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {*} extent The leaflet bounds object
    */
   const saveExtent = async (newExtent: any) => {
-     await updateDoc({ extent: newExtent });
+    await updateDoc({ extent: newExtent });
   };
 
   /**
@@ -262,7 +262,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    * @param {IPhoto} photosArr An array of photo objects.
    */
   const savePhotos = async (photosArr: IPhoto[]) => {
-     await updateDoc({ photos: photosArr, dateUpdated: new Date() });
+    await updateDoc({ photos: photosArr, dateUpdated: new Date() });
   };
 
   /*
@@ -405,7 +405,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
         activityResults = await dataAccess.getActivityById(
           activityId || appStateResults.activeActivity,
           databaseContext,
-          false,
+          true,
           appStateResults.referenceData
         );
       } catch (e) {
@@ -616,6 +616,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       setPhotos(updatedDoc.photos || []);
       setDoc(updatedDoc);
 
+      await updateDoc(updatedDoc);
+
       setIsLoading(false);
     };
 
@@ -727,11 +729,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
-            <Typography align="center">Activity ID: {doc.activityId ? doc.activityId : 'unknown'}</Typography>
-            <Typography align="center">
-              {/*
-              Date created: {doc.dateCreated ? doc.dateCreated : 'unknown'}*/}
-            </Typography>
+            <Typography align="center">Activity ID: {doc.shortId ? doc.shortId : 'unknown'}</Typography>
+            <Typography align="center">Date created: {doc.dateCreated ? doc.dateCreated : 'unknown'}</Typography>
           </Box>
           <ActivityComponent
             customValidation={getCustomValidator([

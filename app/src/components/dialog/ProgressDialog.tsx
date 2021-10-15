@@ -61,7 +61,7 @@ export const ProgressDialog = (props: IProgressDialog) => {
           </ListItem>
         ))}
       </List>
-      <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '7px' }}>
         <Button
           onClick={() => {
             setOpen(false);
