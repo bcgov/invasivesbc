@@ -561,8 +561,6 @@ export const TripDataControls: React.FC<any> = (props) => {
         '1'
       );
 
-      alert(JSON.stringify(largeGridResult));
-
       //get all the ids of large grid items
       const idArr = [];
       largeGridResult.forEach((row) => {
@@ -847,6 +845,10 @@ export const TripDataControls: React.FC<any> = (props) => {
       ...prevState,
       dialogOpen: true
     }));
+    //NOSONAR
+    props.setCacheMapTilesFlag({
+      flag: Math.random() * 100
+    });
     //get the trip again cause it prob changed
     await getTrip();
 

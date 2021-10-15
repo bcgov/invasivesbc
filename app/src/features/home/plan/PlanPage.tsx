@@ -250,6 +250,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
 
     setNewTripID(newID);
   };
+  const [cacheMapTilesFlag, setCacheMapTilesFlag] = useState({});
 
   const trashTrip = async (trip_ID, tripName) => {
     setNewTripID(Math.random()); //NOSONAR
@@ -262,6 +263,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
           {...props}
           classes={classes.map}
           showDrawControls={true}
+          cacheMapTilesFlag={cacheMapTilesFlag}
           mapId={'TODO_this_needs_to_be_a_globally_uniqe_id_per_map_instance'}
           isPlanPage={true}
           geometryState={{ geometry, setGeometry }}
@@ -271,7 +273,7 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         />
       </Paper>
     );
-  }, [geometry, interactiveGeometry, tripsLoaded]);
+  }, [geometry, interactiveGeometry, tripsLoaded, cacheMapTilesFlag]);
 
   return (
     <IonContent>
@@ -343,7 +345,14 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                   }))
             }
             dropdown={(row) => {
-              return <SingleTrip trip_ID={row.trip_ID} classes={classes} setTripDeleted={seTripDeleted} />;
+              return (
+                <SingleTrip
+                  trip_ID={row.trip_ID}
+                  classes={classes}
+                  setTripDeleted={seTripDeleted}
+                  setCacheMapTilesFlag={setCacheMapTilesFlag}
+                />
+              );
             }}></RecordTable>
         )}
       </Container>
