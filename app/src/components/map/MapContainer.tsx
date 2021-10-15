@@ -1,10 +1,6 @@
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-=======
 import React, { useState, useRef, useEffect } from 'react';
->>>>>>> dd02ba9 (hd / sd zoom toggle works - needs style)
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -138,16 +134,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   });
 
   const Offline = (props) => {
-<<<<<<< HEAD
-=======
-    useEffect(() => {
-      console.log('max zoom: ', mapMaxZoom);
-      console.log('max native zoom: ', mapMaxNativeZoom);
-      console.log('map zoom: ', mapZoom);
-      console.dir(props);
-    }, [mapMaxNativeZoom, mapMaxZoom, props]);
-
->>>>>>> dd02ba9 (hd / sd zoom toggle works - needs style)
     const mapOffline = useMap();
     const offlineLayer = (L.tileLayer as any).offline(
       // 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -246,7 +232,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         </div>
 
         {/* Here is the offline component */}
-        <Offline {...props} maxNativeZoom={mapMaxNativeZoom}  />
+        <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
 
         <LayerPicker
           position="topright"
