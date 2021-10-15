@@ -1,19 +1,13 @@
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer.css';
-import {
-  MapContainer as ReactLeafletMapContainer,
-  useMap,
-  FeatureGroup,
-  ZoomControl,
-  Marker,
-  Tooltip
-} from 'react-leaflet';
+import { MapContainer as ReactLeafletMapContainer, useMap, FeatureGroup, Marker, Tooltip } from 'react-leaflet';
 import Spinner from '../../components/spinner/Spinner';
+import ZoomControl from 'components/map/Tools/ZoomControl';
 
 // Offline dependencies
 import 'leaflet.offline';
@@ -125,6 +119,11 @@ export interface IMapContainerProps {
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
+  //to support the zoom control component controlling the parent map container:
+  const [mapZoom, setMapZoom] = useState<number>(5);
+  const [mapMaxZoom, setMapMaxZoom] = useState<number>(25);
+  const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(20);
+
   const [poiMarker, setPoiMarker] = useState(null);
   const [map, setMap] = useState<any>(null);
   const toolClass = toolStyles();
@@ -145,6 +144,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         subdomains: 'abc',
         // minZoom: 13,
         // maxZoom: 19,
+        maxZoom: mapMaxZoom,
+        //maxZoom: 25,
+        maxNativeZoom: props.maxNativeZoom,
+        //maxNativeZoom: 20,
         crossOrigin: true
       }
     );
@@ -205,7 +208,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   return (
     <ReactLeafletMapContainer
       center={[55, -128]}
-      zoom={5}
+      zoom={mapZoom}
+      bounceAtZoomLimits={true}
+      maxZoom={mapMaxZoom}
+      //maxZoom={25}
       style={{ height: '100%', width: '100%' }}
       zoomControl={false}
       whenCreated={setMap}
@@ -216,6 +222,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           <SetPointOnClick map={map} setPoiMarker={setPoiMarker} />
           <DisplayPosition map={map} setPoiMarker={setPoiMarker} />
           <MeasureTool />
+          <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
           {props.showDrawControls && (
             <FeatureGroup>
               <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
@@ -225,9 +232,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         </div>
 
         {/* Here is the offline component */}
-        <Offline {...props} />
+        <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
 
-        <ZoomControl position="bottomright" />
         <LayerPicker
           position="topright"
           map={map}
