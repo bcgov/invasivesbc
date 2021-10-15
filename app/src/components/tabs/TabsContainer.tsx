@@ -104,14 +104,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   toolbar: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     padding: theme.spacing(1, 1),
+    paddingLeft: theme.spacing(3),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3)
+  },
+  themeSwitch: {
+    paddingLeft: theme.spacing(3)
   }
 }));
 
@@ -402,10 +406,30 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           variant="permanent">
           _{/* removed style component with paddingTop */}
           <div className={classes.toolbar}>
+            <Grid xs={1} container justifyContent="center" alignItems="center" item>
+              <IconButton onClick={handleClick} size="small">
+                {userInfo ? <Avatar>{userInfo.name.match(/\b(\w)/g).join('')}</Avatar> : <Avatar />}
+              </IconButton>
+            </Grid>
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />
             </IconButton>
           </div>
+          {keycloak.obj?.authenticated ? (
+            <MenuItem onClick={logoutUser}>
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              Logout
+            </MenuItem>
+          ) : (
+            <MenuItem onClick={loginUser}>
+              <ListItemIcon>
+                <LoginIcon />
+              </ListItemIcon>
+              Log In
+            </MenuItem>
+          )}
           <Divider />
           <List>
             {tabConfig.map((tab) => (
