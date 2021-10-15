@@ -222,8 +222,7 @@ chemical_method_code,CIN,Cut and Insert,6
 chemical_method_code,CSP,Cut Stump / Cut and Paint,7
 chemical_method_code,FBO,Fixed Boom,8
 chemical_method_code,HGU,Hand Gun,9
-chemical_method_code,SPR,Spread,10
-chemical_method_code,WCK,Wick,11
+chemical_method_code,WCK,Wick,10
 efficacy_code,1,90% - 100%,1
 efficacy_code,2,80% - 89%,2
 efficacy_code,3,70% - 79%,3

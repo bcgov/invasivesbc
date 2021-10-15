@@ -214,7 +214,11 @@ export const SingleTrip: React.FC<any> = (props) => {
               doneButtonCallBack={() => {
                 helperStepDoneOrSkip(6);
               }}>
-              <TripDataControls setTripDeleted={props.setTripDeleted} trip_ID={props.trip_ID} />
+              <TripDataControls
+                setCacheMapTilesFlag={props.setCacheMapTilesFlag}
+                setTripDeleted={props.setTripDeleted}
+                trip_ID={props.trip_ID}
+              />
             </TripStep>
           </Grid>
         ) : (

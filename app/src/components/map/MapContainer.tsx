@@ -1,6 +1,6 @@
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -109,6 +109,7 @@ export interface IMapContainerProps {
   mapId: string;
   showDrawControls: boolean;
   isPlanPage?: boolean;
+  cacheMapTilesFlag?: any;
   pointOfInterestFilter?: IPointOfInterestSearchCriteria;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
   interactiveGeometryState?: {
@@ -133,7 +134,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     iconSize: [24, 24]
   });
 
-  const Offline = () => {
+  const Offline = (props) => {
     const mapOffline = useMap();
     const offlineLayer = (L.tileLayer as any).offline(
       // 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -148,6 +149,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     );
     offlineLayer.addTo(mapOffline);
+
+    useEffect(() => {
+      const cacheMapTiles = async () => {
+        await storeLayers();
+      };
+
+      if (props.cacheMapTilesFlag?.flag && props.cacheMapTilesFlag?.flag !== 0) {
+        cacheMapTiles();
+      }
+    }, [props.cacheMapTilesFlag]);
 
     const [offlineing, setOfflineing] = useState(false);
 
@@ -214,7 +225,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         </div>
 
         {/* Here is the offline component */}
-        <Offline />
+        <Offline {...props} />
 
         <ZoomControl position="bottomright" />
         <LayerPicker
