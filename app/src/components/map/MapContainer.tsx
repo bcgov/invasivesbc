@@ -121,8 +121,8 @@ export interface IMapContainerProps {
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   //to support the zoom control component controlling the parent map container:
   const [mapZoom, setMapZoom] = useState<number>(5);
-  const [mapMaxZoom, setMapMaxZoom] = useState<number>(25);
-  const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(20);
+  const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
+  const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
 
   const [poiMarker, setPoiMarker] = useState(null);
   const [map, setMap] = useState<any>(null);

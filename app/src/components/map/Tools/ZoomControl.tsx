@@ -8,7 +8,7 @@ import SdIcon from '@mui/icons-material/Sd';
 
 export const ZoomControl = (props) => {
   const LOW_RES = 17;
-  const HIGH_RES = 25;
+  const HIGH_RES = 21;
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
   const divRef = useRef(null);
