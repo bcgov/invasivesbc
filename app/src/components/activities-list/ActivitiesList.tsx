@@ -30,9 +30,7 @@ import {
   MyTreatmentsTable,
   ReviewActivitiesTable
 } from '../../components/common/record-tables/MyRecordsTables';
-import {
-  IAPPSitesTable
-} from '../../components/common/record-tables/PointOfInterestTables';
+import { IAPPSitesTable } from '../../components/common/record-tables/PointOfInterestTables';
 import { DatabaseContext2, query, QueryType } from '../../contexts/DatabaseContext2';
 import BatchUpload from '../../components/batch-upload/BatchUpload';
 import { RolesContext } from '../../contexts/RolesContext';

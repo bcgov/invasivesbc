@@ -456,7 +456,7 @@ export const getOverlappingBCGridCellsSQL = (
       break;
     case '0':
       if (grid_item_ids.length < 1) {
-        throw 'Error: looking for small grid items but the large grid item id array wasn\'t provided';
+        throw "Error: looking for small grid items but the large grid item id array wasn't provided";
       } else {
         return SQL` 
         SELECT id, public.st_asGeoJSON(geo) as geo, large_grid_item_id 
