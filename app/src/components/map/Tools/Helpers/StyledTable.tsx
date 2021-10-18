@@ -24,7 +24,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 import * as turf from '@turf/turf';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { GeoJSON, Marker } from 'react-leaflet';
+import { GeoJSON, Marker, useMapEvents } from 'react-leaflet';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -142,7 +142,16 @@ const getArea = (shape) => {
   }
 };
 
-const CreateAccordionTable = ({ row, response }) => {
+const getCenter = (shape) => {
+  if (shape.geometry.type === 'Polygon') {
+    var polygon = turf.polygon(shape.geometry.coordinates);
+    return turf.center(polygon).geometry.coordinates;
+  } else {
+    return shape.geometry.coordinates;
+  }
+};
+
+const CreateAccordionTable = ({ map, row, response }) => {
   const [open, setOpen] = useState(false);
   const handleTooltipClose = () => {
     setOpen(false);
@@ -158,6 +167,8 @@ const CreateAccordionTable = ({ row, response }) => {
   // for species name
   var codes = getPlantCodes(activity_payload);
   var area = getArea(shape);
+  var center = getCenter(shape);
+  console.log('center', center);
   var jurisdictions = form_data.activity_data.jurisdictions;
   var subtype = ActivitySubtypeShortLabels[row.obj.activity_subtype];
 
@@ -203,7 +214,18 @@ const CreateAccordionTable = ({ row, response }) => {
       )}
       <StyledTableRow>
         <StyledTableCell>Area</StyledTableCell>
-        <StyledTableCell>{area || area > 0 ? area.toFixed(2) : <>NWF</>}</StyledTableCell>
+        <StyledTableCell>
+          {area || area > 0 ? (
+            <a
+              onClick={() => {
+                map.flyTo([center[1], center[0]], 17);
+              }}>
+              {area.toFixed(2)}
+            </a>
+          ) : (
+            <>NWF</>
+          )}
+        </StyledTableCell>
       </StyledTableRow>
     </>
   );
@@ -249,7 +271,7 @@ export const RenderTablePosition = ({ rows }) => {
   );
 };
 
-export const RenderTableActivity = ({ rows, setRows }) => {
+export const RenderTableActivity = ({ map, rows, setRows }) => {
   // invasivesApi
   const invasivesAccess = useInvasivesApi();
   const [response, setResponse] = useState(null);
@@ -274,6 +296,12 @@ export const RenderTableActivity = ({ rows, setRows }) => {
     };
     getApiSpec();
   }, [rows]);
+
+  const activityPage = async (row) => {
+    var id = row.obj.activity_id;
+    await dataAccess.setAppState({ activeActivity: id }, databaseContext);
+    history.push({ pathname: `/home/activity` });
+  };
 
   const updateRow = (row, fieldsToUpdate: Object) => {
     var arrLen = rows.length;
@@ -316,13 +344,7 @@ export const RenderTableActivity = ({ rows, setRows }) => {
                 <IconButton size="small" onClick={() => updateRow(row, { open: !row.open })}>
                   {row?.open ? <KeyboardArrowDown /> : <KeyboardArrowRight />}
                 </IconButton>
-                <Button
-                  size="small"
-                  onClick={async () => {
-                    var id = row.obj.activity_id;
-                    await dataAccess.setAppState({ activeActivity: id }, databaseContext);
-                    history.push({ pathname: `/home/activity` });
-                  }}>
+                <Button size="small" onClick={() => activityPage(row)}>
                   {row?.obj.activity_payload.short_id}
                 </Button>
               </StyledTableCell>
@@ -334,7 +356,7 @@ export const RenderTableActivity = ({ rows, setRows }) => {
               {/*<StyledTableCell>{row?.obj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>*/}
             </StyledTableRow>
             <Collapse in={row?.open} timeout="auto" unmountOnExit>
-              <CreateAccordionTable row={row} response={response} />
+              <CreateAccordionTable map={map} row={row} response={response} />
             </Collapse>
           </>
         ))}

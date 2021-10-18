@@ -195,7 +195,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker }) => {
         </div>
         <TableContainer>
           {section == 'position' && <RenderTablePosition rows={utmRows} />}
-          {section == 'activity' && <RenderTableActivity rows={rows} setRows={setRows} />}
+          {section == 'activity' && <RenderTableActivity map={map} rows={rows} setRows={setRows} />}
           {section == 'databc' && <RenderTableDataBC rows={databc} />}
           {section == 'poi' && <RenderTablePOI map={map} rows={poiTableRows} setPoiMarker={setPoiMarker} />}
         </TableContainer>
