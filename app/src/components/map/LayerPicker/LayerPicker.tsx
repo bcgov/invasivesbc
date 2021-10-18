@@ -150,7 +150,9 @@ export function LayerPicker(props: any, { position }) {
   const [newLayers, setNewLayers] = useState([]);
 
   useEffect(() => {
-    if (objectState) setNewLayers(sanitizedLayers(objectState));
+    if (objectState) {
+      setNewLayers(sanitizedLayers(objectState));
+    }
   }, [objectState]);
 
   useEffect(() => {
@@ -458,6 +460,18 @@ export function LayerPicker(props: any, { position }) {
                   useDragHandle={true}
                   lockAxis="y"
                 />
+                <Button
+                  onClick={() => {
+                    localStorage.setItem('mySave', JSON.stringify(objectState));
+                  }}>
+                  Save
+                </Button>
+                <Button
+                  onClick={() => {
+                    setObjectState(JSON.parse(localStorage.getItem('mySave')));
+                  }}>
+                  Load
+                </Button>
               </Popover>
             </div>
           )}
