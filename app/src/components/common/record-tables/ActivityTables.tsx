@@ -1,26 +1,18 @@
-import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@material-ui/icons';
-import { useKeycloak } from '@react-keycloak/web';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
 import {
   ActivitySubtype,
   ActivitySubtypeShortLabels,
-  ActivitySyncStatus,
-  FormValidationStatus,
   ReviewStatus
 } from 'constants/activities';
-import { DEFAULT_PAGE_SIZE, DocType } from 'constants/database';
+import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { useActions } from 'hooks/useActions';
-import moment from 'moment';
-import React, { useContext, useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
+import React, { useContext, useMemo } from 'react';
 import {
   arrayWrap,
   uniqueArray,
   sanitizeRecord,
-  generateDBActivityPayload,
   getShortActivityID
 } from 'utils/addActivity';
 
@@ -38,12 +30,14 @@ export const activityStandardMapping = (doc) => {
     ...record.activity_payload?.form_data?.activity_subtype_data,
     ...record
   };
+  console.log(555, flattened)
+
   return {
     ...flattened,
     short_id: getShortActivityID(flattened),
     activity_id: flattened.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
-    jurisdiction_code: flattened.activity_payload?.form_data?.activity_data?.jurisdictions?.reduce(
-      (output, jurisdiction) => [
+    jurisdiction_code: flattened.jurisdictions?.reduce(
+      (output, jurisdiction) => jurisdiction && [
         ...output,
         jurisdiction.jurisdiction_code,
         '(',
@@ -167,11 +161,8 @@ export const activitesDefaultHeaders = [
 ];
 
 export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext2);
-  const { keycloak } = useKeycloak();
-  const username = useKeycloakWrapper().preferred_username;
 
   const {
     actions,

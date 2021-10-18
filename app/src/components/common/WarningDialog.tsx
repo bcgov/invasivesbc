@@ -10,7 +10,17 @@ interface IWarningDialog {
 }
 
 const WarningDialog: React.FC<IWarningDialog> = (props) => {
-  const { isOpen = true, heading = '', message = '', handleAgree = () => {}, handleDisagree = () => {} } = props;
+  const {
+    isOpen = true,
+    heading = '',
+    message = '',
+    handleAgree = () => {
+      // filler do-nothing function for when dialog is closed/hidden
+    },
+    handleDisagree = () => {
+      // filler do-nothing function for when dialog is closed/hidden
+    }
+  } = props;
 
   return (
     <Dialog

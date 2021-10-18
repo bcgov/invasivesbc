@@ -1,6 +1,5 @@
-import { Box, Button, Checkbox, Collapse, IconButton, TableCell, TableRow } from '@material-ui/core';
+import { Box, Checkbox, Collapse, IconButton, TableCell, TableRow } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
-import { notifyError } from '../../../utils/NotificationUtils';
 import React, { useState } from 'react';
 import { getValue, useStyles } from '../RecordTable';
 import { getRecordTableActions } from './RecordTableAction';
@@ -41,7 +40,6 @@ const RecordTableRow = (props) => {
     hasOverflow,
     actions,
     actionStyle,
-    databaseContext,
     fetchRows,
     setErrorMessage,
     setWarningDialog
