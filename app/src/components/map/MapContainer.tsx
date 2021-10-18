@@ -5,8 +5,14 @@ import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer.css';
-import { MapContainer as ReactLeafletMapContainer, useMap, FeatureGroup, Marker, Tooltip } from 'react-leaflet';
-import { GeoJSON } from 'react-leaflet';
+import {
+  MapContainer as ReactLeafletMapContainer,
+  useMap,
+  FeatureGroup,
+  Marker,
+  Tooltip,
+  GeoJSON
+} from 'react-leaflet';
 import Spinner from '../../components/spinner/Spinner';
 import ZoomControl from 'components/map/Tools/ZoomControl';
 

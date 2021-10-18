@@ -24,7 +24,6 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { ActivitySubtypeShortLabels } from 'constants/activities';
 import * as turf from '@turf/turf';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { GeoJSON, Marker, useMapEvents } from 'react-leaflet';
 
 const CreateTableHead = ({ labels }) => {
   return (
