@@ -25,6 +25,7 @@ import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
 import { notifyError } from '../../utils/NotificationUtils';
 import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
+import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 import { DatabaseContext } from '../../contexts/DatabaseContext';
 import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
@@ -34,9 +35,6 @@ import { useDataAccess } from '../../hooks/useDataAccess';
 import RecordTableToolbar from './record-table/RecordTableToolbar';
 import RecordTableHead from './record-table/RecordTableHead';
 import RecordTableRow from './record-table/RecordTableRow';
-
-export const ACTION_TIMEOUT = 1500; // 1.5s
-export const ACTION_ERROR_TIMEOUT = 15000; // 15s
 
 const snakeToPascal = (string, spaces = false) =>
   string
@@ -180,6 +178,23 @@ function stableSort(rows, header, ascending) {
   return valueIndexPairs.map((row) => row[2]);
 }
 
+const defaultWarningDialog = {
+  dialogOpen: false,
+  dialogTitle: 'Are you sure?',
+  dialogContentText: '',
+  dialogActions: [
+    {
+      actionName: 'No',
+      actionOnClick: () => {}
+    },
+    {
+      actionName: 'Yes',
+      actionOnClick: () => {},
+      autoFocus: true
+    }
+  ]
+};
+
 export interface IRecordTable {
   // GENERAL
   // keyField: field to use in each row as a key
@@ -205,7 +220,7 @@ export interface IRecordTable {
   // referenceData: mark whether the rows are references or not
   referenceData?: boolean;
   rerenderFlagSetter?: any;
-
+  
   // ACTIONS:
   // key-value pairs of definitions of various actions which can be used on the table. e.g. delete, edit, create, etc
   // OR boolean "false" to disable all actions
@@ -267,44 +282,6 @@ export interface IRecordTable {
   // densePadding: legacy passthrough setting enabling a more condensed css look
   densePadding?: boolean;
 }
-
-// action: look and feel, context, and click effect definitions for a button (or other actions in future e.g. sliders)
-export interface IRecordTableAction {
-  // key: self-reflection so an action object knows the key it's being refered as. e.g. "edit"
-  key: string;
-  // enabled: if false, will hide action entirely.  Useful for defining actions generally for all RecordTable instances but only enabling them in appropriate contexts
-  enabled?: boolean;
-  // label: english text to display on buttons. e.g. "Edit Activity"
-  label: string;
-  // icon: icon to accompany label in button content
-  icon?: any;
-  // action: function to call when an action is clicked.  If it's a "bulk" or "global" action, it will apply to all currently-selected rows in the table.
-  // If it's a "row" action, it will apply to only the current row being clicked and "selectedRows" will be length 1.
-  // This single-definiton is useful since usually what you want to do for all selected rows is the same as a single row.
-  action: (selectedRows: Array<any>) => any;
-  // displayInvalid: what to do when an action is invalid (e.g. it fails its rowCondition check)
-  displayInvalid?: DisplayInvalid;
-  // invalidError: default message to display when the action is invalid and displayInvalid = 'error'.
-  // Note that customized errors can be thrown by the actual action() function which may be more descriptive to what went wrong
-  invalidError?: string;
-  // rowAction: whether to present this action as a button in each row
-  rowAction?: boolean;
-  // rowCondition: function determining whether the action is valid in a row.  e.g. if only some rows allow this particular action.
-  // displayInvalid determines behavior when it returns false.   Not needed if rowAction is false (disabled).
-  rowCondition?: (selectedRows: Array<any>) => boolean;
-  // bulkAction: whether to present this action as a button when a user has selected one or more rows (e.g. bulk edits/deletes)
-  bulkAction?: boolean;
-  // rowCondition: function determining whether the action is valid for the given selected rows.  e.g. if they must all be a certain type
-  // displayInvalid determines behavior when it returns false.  Not needed if bulkAction is false (disabled).
-  bulkCondition?: (selectedRows: Array<any>) => boolean;
-  // globalAction: whether to present this action as a button in the toolbar, regardless of selected rows (usually used for "create" actions)
-  globalAction?: boolean;
-  // rowCondition: function determining whether the action is valid in the toolbar.
-  // displayInvalid determines behavior when it returns false.  Not needed if globalAction is false (disabled).
-  globalCondition?: (selectedRows: Array<any>) => boolean;
-  //
-}
-
 enum ActionStyle {
   dropdown = 'dropdown',
   start = 'start',
@@ -313,11 +290,6 @@ enum ActionStyle {
 enum PaginationTypes {
   overlow = 'overflow',
   always = 'always'
-}
-enum DisplayInvalid {
-  disable = 'disable', // grey-out the action button and make it unclickable
-  hidden = 'hidden', // hide the action button
-  error = 'error' // show the action button as normal, but display an error on click
 }
 
 const RecordTable: React.FC<IRecordTable> = (props) => {
@@ -370,6 +342,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [schemasLoaded, setSchemasLoaded] = useState(false);
   const [expandedRows, setExpandedRows] = useState([]);
   const [selected, setSelected] = useState(props.selected || []);
+  const [warningDialog, setWarningDialog] = useState(defaultWarningDialog);
 
   // derived variables:
   const lastPageLoaded = Math.min(totalRows, page + 1 + PAGES_LOADED_BUFFER);
@@ -637,7 +610,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
           }}
           actions={rowActions}
           actionStyle={rowActionStyle}
-          {...{ keyField, headers, row, dropdown, pageHasDropdown, enableSelection, databaseContext, fetchRows }}
+          {...{ keyField, headers, row, dropdown, pageHasDropdown, enableSelection, databaseContext, fetchRows, setWarningDialog }}
         />
       );
     });
@@ -711,7 +684,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
               selectedRows={enableSelection ? selectedRows : []}
               errorMessage={toolbarErrorMessage}
               setErrorMessage={setToolbarErrorMessage}
-              {...{ tableName, enableFiltering, actions, databaseContext, fetchRows }}
+              {...{ tableName, enableFiltering, actions, databaseContext, fetchRows, setWarningDialog }}
             />
           )}
           <AccordionDetails className={classes.paper}>
@@ -737,6 +710,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
               </TableContainer>
             )}
             <RecordTablePagination />
+            <WarningDialog {...warningDialog} />
           </AccordionDetails>
         </Accordion>
       </div>
@@ -751,7 +725,8 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
       selectedHash,
       JSON.stringify(expandedRows),
       order,
-      orderBy
+      orderBy,
+      warningDialog
     ]
   );
 

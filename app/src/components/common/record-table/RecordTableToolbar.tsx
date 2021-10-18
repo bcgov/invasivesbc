@@ -4,7 +4,7 @@ import { lighten } from '@material-ui/core/styles';
 import { notifyError } from '../../../utils/NotificationUtils';
 import clsx from 'clsx';
 import React from 'react';
-import { ACTION_TIMEOUT, ACTION_ERROR_TIMEOUT } from '../RecordTable';
+import { getRecordTableActions } from './RecordTableAction';
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -51,87 +51,28 @@ const RecordTableToolbar = (props) => {
     databaseContext,
     fetchRows,
     errorMessage,
-    setErrorMessage
+    setErrorMessage,
+    setWarningDialog
   } = props;
   const totalSelected = selectedRows?.length || 0;
 
-  const bulkActions: Array<any> = Object.values(actions)
-    .filter((action: any) => action.bulkAction)
-    .map((action: any) => {
-      const isValid = action.bulkCondition ? action.bulkCondition(selectedRows) : true;
-      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
-      return (
-        <Button
-          key={action.key}
-          variant="contained"
-          color="primary"
-          size="small"
-          disabled={action.displayInvalid === 'disable' && !isValid}
-          className={classes.button}
-          startIcon={action.icon}
-          onClick={async (e) => {
-            e.stopPropagation();
-            try {
-              if (
-                action.displayInvalid === 'error' &&
-                // error if bulk condition fails or if any row's condition fails
-                ((action.bulkCondition && !action.bulkCondition(selectedRows)) ||
-                  (action.rowCondition && selectedRows.filter((row) => !action.rowCondition(row))?.length)) &&
-                action.invalidError
-              )
-                throw new Error(action.invalidError);
-              await action.action(selectedRows);
-              if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
-            } catch (error) {
-              setErrorMessage(error?.message || error);
-              setTimeout(() => setErrorMessage(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error?.message || error || action.invalidError);
-            }
-          }}>
-          {action.label}
-        </Button>
-      );
-    })
-    .filter((button) => button); // remove hidden actions
+  const bulkActions = getRecordTableActions({
+    context: 'bulk',
+    actions,
+    affectedRows: selectedRows,
+    fetchRows,
+    setErrorMessage,
+    setWarningDialog
+  });
 
-  const globalActions: Array<any> = Object.values(actions)
-    .filter((action: any) => action.globalAction)
-    .map((action: any) => {
-      const isValid = action.globalCondition ? action.globalCondition(selectedRows) : true;
-      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
-      return (
-        <Button
-          key={action.key}
-          variant="contained"
-          size="small"
-          disabled={action.displayInvalid === 'disable' && !isValid}
-          className={classes.button}
-          startIcon={action.icon}
-          onClick={async (e) => {
-            e.stopPropagation();
-            try {
-              if (
-                action.displayInvalid === 'error' &&
-                // error if bulk condition fails or if any row's condition fails
-                ((action.globalCondition && !action.globalCondition(selectedRows)) ||
-                  (action.bulkCondition && !action.bulkCondition(selectedRows)) ||
-                  (action.rowCondition && selectedRows.filter((row) => !action.rowCondition(row))?.length)) &&
-                action.invalidError
-              )
-                throw new Error(action.invalidError);
-              await action.action(selectedRows);
-              if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
-            } catch (error) {
-              setErrorMessage(error?.message || error);
-              setTimeout(() => setErrorMessage(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error?.message || error || action.invalidError);
-            }
-          }}>
-          {action.label}
-        </Button>
-      );
-    })
-    .filter((button) => button); // remove hidden actions
+  const globalActions = getRecordTableActions({
+    context: 'global',
+    actions,
+    affectedRows: selectedRows,
+    fetchRows,
+    setErrorMessage,
+    setWarningDialog
+  });
 
   return (
     <AccordionSummary

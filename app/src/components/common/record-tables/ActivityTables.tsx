@@ -176,12 +176,6 @@ export const useActions = (props) => {
   const databaseContext = useContext(DatabaseContext2);
   const { keycloak } = useKeycloak();
   const username = useKeycloakWrapper().preferred_username;
-  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
-    dialogActions: [],
-    dialogOpen: false,
-    dialogTitle: '',
-    dialogContentText: null
-  });
 
   const {
     actions, // overrides
@@ -209,8 +203,9 @@ export const useActions = (props) => {
   // generate the default "create_activity_xyz" action buttons
   const createAction = (type: string, subtype: string) => ({
     ...actionDefaults,
-    key: `create_activity_${subtype.toString().toLowerCase()}`,
+    id: `create_activity_${subtype.toString().toLowerCase()}`,
     enabled: true,
+    globalAction: true,
     action: async (selectedRows) => {
       // create record
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
@@ -231,9 +226,9 @@ export const useActions = (props) => {
     const action = createAction(subtype.toString().split('_')[1], subtype);
     createActions = {
       ...createActions,
-      [action.key]: {
+      [action.id]: {
         ...action,
-        ...actions?.[action.key] // allow individual prop overwrites still
+        ...actions?.[action.id] // allow individual prop overwrites still
       }
     };
   });
@@ -243,7 +238,7 @@ export const useActions = (props) => {
     edit: {
       // NOTE: this might be a good candidate to be broken out to a parent class
       // since it breaks generality of this multi-purpose table
-      key: 'edit',
+      id: 'edit',
       enabled: enableSelection !== false,
       action: async (allSelectedRows) => {
         const selectedIds = allSelectedRows.map((row) => row[keyField]);
@@ -270,33 +265,14 @@ export const useActions = (props) => {
       ...actions?.edit
     },
     delete: {
-      key: 'delete',
+      id: 'delete',
       enabled: enableSelection !== false,
+      hasWarningDialog: true,
+      warningDialogMessage: (affectedRows) => affectedRows.length === 1 ? 'Do you want to delete this activity?' : `Do you want to delete these ${affectedRows.length} activities?`,
       action: async (allSelectedRows) => {
-        setWarningDialog({
-          dialogOpen: true,
-          dialogTitle: 'Are you sure?',
-          dialogContentText: 'You are about to delete this activity. Are you sure you want to do this?',
-          dialogActions: [
-            {
-              actionName: 'No',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-              }
-            },
-            {
-              actionName: 'Yes',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-
-                const selectedIds = allSelectedRows.map((row) => row[keyField]);
-                if (selectedIds.length)
-                  await dataAccess.deleteActivities(selectedIds, databaseContext);
-              },
-              autoFocus: true
-            }
-          ]
-        });
+        const selectedIds = allSelectedRows.map((row) => row[keyField]);
+        if (selectedIds.length)
+          await dataAccess.deleteActivities(selectedIds, databaseContext);
       },
       label: 'Delete',
       icon: <Delete />,
@@ -309,7 +285,7 @@ export const useActions = (props) => {
       ...actions?.delete
     },
     sync: {
-      key: 'sync',
+      id: 'sync',
       enabled: true,
       label: 'Save',
       bulkAction: true,
@@ -350,7 +326,7 @@ export const useActions = (props) => {
       ...actions?.sync
     },
     submit: {
-      key: 'submit',
+      id: 'submit',
       enabled: true,
       label: 'Submit For Review',
       bulkAction: true,
@@ -398,7 +374,7 @@ export const useActions = (props) => {
       ...actions?.submit
     },
     approve: {
-      key: 'approve',
+      id: 'approve',
       enabled: true,
       label: 'Approve',
       bulkAction: true,
@@ -448,7 +424,7 @@ export const useActions = (props) => {
       ...actions?.approve
     },
     disapprove: {
-      key: 'disapprove',
+      id: 'disapprove',
       enabled: true,
       label: 'Disapprove',
       bulkAction: true,
@@ -500,7 +476,7 @@ export const useActions = (props) => {
     create_treatment: {
       // Legacy, likely deprecated.
       // Creates a new treatment out of a number of observations, linking their data
-      key: 'create_treatment',
+      id: 'create_treatment',
       enabled: false,
       action: (selectedRows) => {
         const ids = selectedRows.map((row: any) => row['activity_id']);
@@ -530,12 +506,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
   const { keycloak } = useKeycloak();
   const username = useKeycloakWrapper().preferred_username;
-  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
-    dialogActions: [],
-    dialogOpen: false,
-    dialogTitle: '',
-    dialogContentText: null
-  });
 
   const {
     actions,
@@ -549,307 +519,6 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   } = props;
 
   const defaultActions = useActions(props);
-
-  // generate the default "create_activity_xyz" action buttons
-  const createAction = (type: string, subtype: string) => ({
-    key: `create_activity_${subtype.toString().toLowerCase()}`,
-    enabled: true,
-    action: async (selectedRows) => {
-      // create record
-      const dbActivity = generateDBActivityPayload({}, null, type, subtype);
-      dbActivity.created_by = username;
-      await dataAccess.createActivity(dbActivity, databaseContext);
-
-      // Redirect to new record:
-      await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
-      history.push({ pathname: `/home/activity` });
-    },
-    icon: <Add />,
-    label: ActivitySubtypeShortLabels[subtype],
-    bulkAction: false,
-    rowAction: false,
-    globalAction: true,
-    triggerReload: true,
-    displayInvalid: 'error',
-    ...actions?.create_activity // allow prop overwrites by default
-  });
-
-  let createActions = {};
-  arrayWrap(activitySubtypes).forEach((subtype) => {
-    const action = createAction(subtype.toString().split('_')[1], subtype);
-    createActions = {
-      ...createActions,
-      [action.key]: {
-        ...action,
-        ...actions?.[action.key] // allow prop overwrites still
-      }
-    };
-  });
-
-  const defaultActions = {
-    ...actions,
-    edit: {
-      // NOTE: this might be a good candidate to be broken out to a parent class
-      // since it breaks generality of this multi-purpose table
-      key: 'edit',
-      enabled: enableSelection !== false,
-      action: async (allSelectedRows) => {
-        const selectedIds = allSelectedRows.map((row) => row[keyField]);
-        if (selectedIds.length === 1) {
-          await dataAccess.setAppState({ activeActivity: selectedIds[0] }, databaseContext);
-
-          // TODO switch by activity type, I guess...
-          history.push({ pathname: `/home/activity` });
-        } else {
-          history.push({
-            pathname: `/home/search/bulkedit`,
-            search: '?activities=' + selectedIds.join(','),
-            state: { activityIdsToEdit: selectedIds }
-          });
-        }
-      },
-      label: 'Edit',
-      icon: <Edit />,
-      bulkAction: true,
-      rowAction: true,
-      bulkCondition: (allSelectedRows) => allSelectedRows.every((a, _, [b]) => a.subtype === b.subtype),
-      rowCondition: undefined,
-      displayInvalid: 'error',
-      invalidError: 'All selected rows must be of the same SubType to Bulk Edit',
-      ...actions?.edit
-    },
-    delete: {
-      key: 'delete',
-      enabled: enableSelection !== false,
-      action: async (allSelectedRows) => {
-        const selectedIds = allSelectedRows.map((row) => row[keyField]);
-        if (selectedIds.length) await dataAccess.deleteActivities(selectedIds, databaseContext);
-      },
-      label: 'Delete',
-      icon: <Delete />,
-      bulkAction: true,
-      rowAction: true,
-      bulkCondition: undefined, // TODO admin or author only
-      rowCondition: undefined,
-      displayInvalid: 'disable',
-      triggerReload: true,
-      ...actions?.delete
-    },
-    sync: {
-      key: 'sync',
-      enabled: true,
-      label: 'Save',
-      bulkAction: true,
-      rowAction: true,
-      displayInvalid: 'disable',
-      triggerReload: true,
-      rowCondition: (row) =>
-        row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID,
-      bulkCondition: (
-        selectedRows // only enable bulk sync if some field needs it
-      ) =>
-        selectedRows?.filter(
-          (row) =>
-            row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID
-        )?.length > 0,
-      action: async (selectedRows) => {
-        try {
-          selectedRows.map(async (activity) => {
-            if (
-              activity.form_status !== FormValidationStatus.VALID ||
-              activity.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
-            )
-              return;
-            const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
-            await dataAccess.updateActivity(
-              sanitizeRecord({
-                ...dbActivity,
-                sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL
-              }),
-              databaseContext
-            );
-          });
-        } catch (error) {
-          console.log(error);
-        }
-      },
-      icon: <Sync />,
-      ...actions?.sync
-    },
-    submit: {
-      key: 'submit',
-      enabled: true,
-      label: 'Submit For Review',
-      bulkAction: true,
-      rowAction: true,
-      displayInvalid: 'hidden',
-      triggerReload: true,
-      rowCondition: (row) =>
-        row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-        row.form_status === FormValidationStatus.VALID &&
-        row.review_status !== ReviewStatus.UNDER_REVIEW,
-      bulkCondition: (
-        selectedRows // only enable bulk submit if some field needs it
-      ) =>
-        selectedRows?.filter(
-          (row) =>
-            row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-            row.form_status === FormValidationStatus.VALID &&
-            row.review_status !== ReviewStatus.UNDER_REVIEW
-        )?.length > 0,
-      action: async (selectedRows) => {
-        try {
-          selectedRows.map(async (activity) => {
-            if (
-              activity.form_status !== FormValidationStatus.VALID ||
-              activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
-              activity.review_status === ReviewStatus.UNDER_REVIEW
-            )
-              return;
-            const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
-            await dataAccess.updateActivity(
-              sanitizeRecord({
-                ...dbActivity,
-                review_status: ReviewStatus.UNDER_REVIEW
-              }),
-              databaseContext
-            );
-            // const typename = activity.activity_subtype?.split('_')[2];
-            //notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
-          });
-        } catch (error) {
-          // notifyError(databaseContext, JSON.stringify(error));
-        }
-      },
-      icon: <FindInPage />,
-      ...actions?.submit
-    },
-    approve: {
-      key: 'approve',
-      enabled: true,
-      label: 'Approve',
-      bulkAction: true,
-      rowAction: true,
-      displayInvalid: 'hidden',
-      triggerReload: true,
-      rowCondition: (row) =>
-        row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-        row.form_status === FormValidationStatus.VALID &&
-        row.review_status === ReviewStatus.UNDER_REVIEW,
-      bulkCondition: (
-        selectedRows // only enable bulk submit if some field needs it
-      ) =>
-        selectedRows?.filter(
-          (row) =>
-            row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-            row.form_status === FormValidationStatus.VALID &&
-            row.review_status === ReviewStatus.UNDER_REVIEW
-        )?.length > 0,
-      action: async (selectedRows) => {
-        try {
-          selectedRows.map(async (activity) => {
-            if (
-              activity.form_status !== FormValidationStatus.VALID ||
-              activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
-              activity.review_status !== ReviewStatus.UNDER_REVIEW
-            )
-              return;
-            const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
-            await dataAccess.updateActivity(
-              sanitizeRecord({
-                ...dbActivity,
-                review_status: ReviewStatus.APPROVED,
-                reviewed_by: username, // latest reviewer
-                reviewed_at: moment(new Date()).format()
-              }),
-              databaseContext
-            );
-            // const typename = activity.activity_subtype?.split('_')[2];
-            // notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
-          });
-        } catch (error) {
-          // notifyError(databaseContext, JSON.stringify(error));
-        }
-      },
-      icon: <Check />,
-      ...actions?.approve
-    },
-    disapprove: {
-      key: 'disapprove',
-      enabled: true,
-      label: 'Disapprove',
-      bulkAction: true,
-      rowAction: true,
-      displayInvalid: 'hidden',
-      triggerReload: true,
-      rowCondition: (row) =>
-        row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-        row.form_status === FormValidationStatus.VALID &&
-        row.review_status === ReviewStatus.UNDER_REVIEW,
-      bulkCondition: (
-        selectedRows // only enable bulk submit if some field needs it
-      ) =>
-        selectedRows?.filter(
-          (row) =>
-            row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-            row.form_status === FormValidationStatus.VALID &&
-            row.review_status === ReviewStatus.UNDER_REVIEW
-        )?.length > 0,
-      action: async (selectedRows) => {
-        try {
-          selectedRows.map(async (activity) => {
-            if (
-              activity.form_status !== FormValidationStatus.VALID ||
-              activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
-              activity.review_status !== ReviewStatus.UNDER_REVIEW
-            )
-              return;
-            const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
-            await dataAccess.updateActivity(
-              sanitizeRecord({
-                ...dbActivity,
-                review_status: ReviewStatus.DISAPPROVED,
-                reviewed_by: username, // latest reviewer
-                reviewed_at: moment(new Date()).format()
-              }),
-              databaseContext
-            );
-            // const typename = activity.activity_subtype?.split('_')[2];
-            // notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
-          });
-        } catch (error) {
-          // notifyError(databaseContext, JSON.stringify(error));
-        }
-      },
-      icon: <Clear />,
-      ...actions?.disapprove
-    },
-    create_treatment: {
-      // Legacy, likely deprecated.
-      // Creates a new treatment out of a number of observations, linking their data
-      key: 'create_treatment',
-      enabled: false,
-      action: (selectedRows) => {
-        const ids = selectedRows.map((row: any) => row['activity_id']);
-        history.push({
-          pathname: `/home/activity/treatment`,
-          search: '?observations=' + ids.join(','),
-          state: { observations: ids }
-        });
-      },
-      label: 'Create Treatment',
-      bulkAction: true,
-      rowAction: true,
-      displayInvalid: 'error',
-      invalidError: 'Observation forms must be validated before they can be used to create a new Treatment',
-      // invalidError: 'All selected activities must be of the same SubType to create a Treatment',
-      bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
-      rowCondition: (row) => row.form_status === FormValidationStatus.VALID,
-      ...actions?.create_treatment
-    },
-    ...createActions
-  };
->>>>>>> Prettier changes
 
   let rows = props.rows;
   if (Array.isArray(rows)) rows = rows.map(activityStandardMapping);

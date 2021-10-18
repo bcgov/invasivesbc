@@ -2,7 +2,8 @@ import { Box, Button, Checkbox, Collapse, IconButton, TableCell, TableRow } from
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import { notifyError } from '../../../utils/NotificationUtils';
 import React, { useState } from 'react';
-import { getValue, useStyles, ACTION_TIMEOUT, ACTION_ERROR_TIMEOUT } from '../RecordTable';
+import { getValue, useStyles } from '../RecordTable';
+import { getRecordTableActions } from './RecordTableAction';
 
 const RecordTableCell = ({ row, header, className, valueMap }) => {
   const ifApplicable = (val) => (typeof val === 'string' || (!isNaN(val) && String(val).trim().length) ? val : ' N/A');
@@ -41,7 +42,9 @@ const RecordTableRow = (props) => {
     actions,
     actionStyle,
     databaseContext,
-    fetchRows
+    fetchRows,
+    setErrorMessage,
+    setWarningDialog
   } = props;
   const classes = useStyles();
 
@@ -52,43 +55,15 @@ const RecordTableRow = (props) => {
 
   const renderedDropdown = !!dropdown && dropdown(row);
   const labelId = `record-table-checkbox-${key}`;
-  const rowActions = actions
-    .map((action: any) => {
-      const isValid = action.rowCondition ? action.rowCondition(row) : true;
-      if ((!action.displayInvalid || action.displayInvalid === 'hidden') && !isValid) return;
-      return (
-        <Button
-          key={action.key}
-          variant="contained"
-          color="primary"
-          size="small"
-          disabled={action.displayInvalid === 'disable' && !isValid}
-          className={classes.button}
-          startIcon={action.icon}
-          onClick={async (e) => {
-            e.stopPropagation();
-            try {
-              if (
-                action.displayInvalid === 'error' &&
-                action.rowCondition &&
-                !action.rowCondition(row) &&
-                action.invalidError
-              )
-                throw new Error(action.invalidError);
-              await action.action([row]);
-              // await console.log('action ', action.key);
-              if (action.triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
-            } catch (error) {
-              setActionError(error?.message || error);
-              setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error?.message || error || action.invalidError);
-            }
-          }}>
-          {action.label}
-        </Button>
-      );
-    })
-    .filter((button) => button); // remove hidden actions
+
+  const rowActions = getRecordTableActions({
+    context: 'row',
+    actions,
+    affectedRows: [row],
+    fetchRows,
+    setErrorMessage,
+    setWarningDialog
+  });
   const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
 
   return (
