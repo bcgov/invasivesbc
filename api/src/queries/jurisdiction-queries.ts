@@ -12,15 +12,7 @@ export const getJurisdictionsSQL = (searchCriteria: JurisdictionSearchCriteria):
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
   sqlStatement.append(SQL`
-    jsonb_build_object (
-      'type', 'Feature',
-      'properties', json_build_object(
-        'jurisdiction_id', gid,
-        'jurisdiction_name', jurisdictn
-      ),
-      'geom', public.st_asGeoJSON(geom)::jsonb
-    ) as "geojson",
-    COUNT(*) OVER() AS "total_rows_count"
+     code_name,jurisdictn,name
   `);
 
   // include the total count of results that would be returned if the limit and offset constraints weren't applied
