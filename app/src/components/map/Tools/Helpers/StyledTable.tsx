@@ -151,7 +151,7 @@ const getCenter = (shape) => {
   }
 };
 
-const CreateAccordionTable = ({ map, row, response }) => {
+const CreateAccordionTable = ({ map, row, response, setActivityGeo }) => {
   const [open, setOpen] = useState(false);
   const handleTooltipClose = () => {
     setOpen(false);
@@ -168,7 +168,6 @@ const CreateAccordionTable = ({ map, row, response }) => {
   var codes = getPlantCodes(activity_payload);
   var area = getArea(shape);
   var center = getCenter(shape);
-  console.log('center', center);
   var jurisdictions = form_data.activity_data.jurisdictions;
   var subtype = ActivitySubtypeShortLabels[row.obj.activity_subtype];
 
@@ -218,6 +217,7 @@ const CreateAccordionTable = ({ map, row, response }) => {
           {area || area > 0 ? (
             <a
               onClick={() => {
+                setActivityGeo(shape);
                 map.flyTo([center[1], center[0]], 17);
               }}>
               {area.toFixed(2)}
@@ -271,7 +271,7 @@ export const RenderTablePosition = ({ rows }) => {
   );
 };
 
-export const RenderTableActivity = ({ map, rows, setRows }) => {
+export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
   // invasivesApi
   const invasivesAccess = useInvasivesApi();
   const [response, setResponse] = useState(null);
@@ -356,7 +356,7 @@ export const RenderTableActivity = ({ map, rows, setRows }) => {
               {/*<StyledTableCell>{row?.obj.activity_payload.activity_subtype.split('_')[2]}</StyledTableCell>*/}
             </StyledTableRow>
             <Collapse in={row?.open} timeout="auto" unmountOnExit>
-              <CreateAccordionTable map={map} row={row} response={response} />
+              <CreateAccordionTable map={map} row={row} response={response} setActivityGeo={setActivityGeo} />
             </Collapse>
           </>
         ))}
