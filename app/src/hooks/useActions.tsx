@@ -1,5 +1,4 @@
 import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@material-ui/icons';
-import { useKeycloak } from '@react-keycloak/web';
 import {
   ActivitySubtypeShortLabels,
   ActivitySyncStatus,
@@ -12,6 +11,7 @@ import moment from 'moment';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
+import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import {
   arrayWrap,
   sanitizeRecord,
@@ -29,7 +29,6 @@ export const useActions = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext2);
-  const { keycloak } = useKeycloak();
   const username = useKeycloakWrapper().preferred_username;
 
   const {
@@ -37,13 +36,14 @@ export const useActions = (props) => {
     activitySubtypes,
     created_by,
     enableSelection = true,
-    keyField = 'activity_id',
-    ...otherProps
+    keyField = 'activity_id'
   } = props;
 
   const actionDefaults = {
     enabled: false,
-    action: () => {},
+    action: () => {
+      // do nothing by default
+    },
     icon: null,
     label: '',
     bulkAction: false,
@@ -86,6 +86,17 @@ export const useActions = (props) => {
     };
   });
 
+  const isSyncable = (row) =>
+    row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID;
+  const isSubmitable = (row) =>
+    row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
+    row.form_status === FormValidationStatus.VALID &&
+    row.review_status !== ReviewStatus.UNDER_REVIEW;
+  const isReviewable = (row) =>
+    row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
+    row.form_status === FormValidationStatus.VALID &&
+    row.review_status === ReviewStatus.UNDER_REVIEW;
+
   return {
     ...actions,
     edit: {
@@ -100,7 +111,6 @@ export const useActions = (props) => {
             { activeActivity: selectedIds[0], referenceData: props.referenceData },
             databaseContext
           );
-          // TODO switch by activity type, I guess...
           history.push({ pathname: `/home/activity` });
         } else {
           history.push({
@@ -136,7 +146,7 @@ export const useActions = (props) => {
       icon: <Delete />,
       bulkAction: true,
       rowAction: true,
-      bulkCondition: undefined, // TODO admin or author only
+      bulkCondition: undefined,
       rowCondition: undefined,
       displayInvalid: 'disable',
       triggerReload: true,
@@ -150,22 +160,15 @@ export const useActions = (props) => {
       rowAction: true,
       displayInvalid: 'disable',
       triggerReload: true,
-      rowCondition: (row) =>
-        row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID,
+      rowCondition: isSyncable,
       bulkCondition: (
         selectedRows // only enable bulk sync if some field needs it
       ) =>
-        selectedRows?.filter(
-          (row) =>
-            row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID
-        )?.length > 0,
+        selectedRows?.filter(isSyncable)?.length > 0,
       action: async (selectedRows) => {
         try {
           selectedRows.map(async (activity) => {
-            if (
-              activity.form_status !== FormValidationStatus.VALID ||
-              activity.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
-            )
+            if (!isSyncable)
               return;
             const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
             await dataAccess.updateActivity(
@@ -191,27 +194,15 @@ export const useActions = (props) => {
       rowAction: true,
       displayInvalid: 'hidden',
       triggerReload: true,
-      rowCondition: (row) =>
-        row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-        row.form_status === FormValidationStatus.VALID &&
-        row.review_status !== ReviewStatus.UNDER_REVIEW,
+      rowCondition: isSubmitable,
       bulkCondition: (
         selectedRows // only enable bulk submit if some field needs it
       ) =>
-        selectedRows?.filter(
-          (row) =>
-            row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-            row.form_status === FormValidationStatus.VALID &&
-            row.review_status !== ReviewStatus.UNDER_REVIEW
-        )?.length > 0,
+        selectedRows?.filter(isSubmitable)?.length > 0,
       action: async (selectedRows) => {
         try {
           selectedRows.map(async (activity) => {
-            if (
-              activity.form_status !== FormValidationStatus.VALID ||
-              activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
-              activity.review_status === ReviewStatus.UNDER_REVIEW
-            )
+            if (!isSubmitable)
               return;
             const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
             await dataAccess.updateActivity(
@@ -221,11 +212,11 @@ export const useActions = (props) => {
               }),
               databaseContext
             );
-            // const typename = activity.activity_subtype?.split('_')[2];
-            //notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
+            const typename = activity.activity_subtype?.split('_')[2];
+            notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
           });
         } catch (error) {
-          // notifyError(databaseContext, JSON.stringify(error));
+          notifyError(databaseContext, JSON.stringify(error));
         }
       },
       icon: <FindInPage />,
@@ -239,27 +230,15 @@ export const useActions = (props) => {
       rowAction: true,
       displayInvalid: 'hidden',
       triggerReload: true,
-      rowCondition: (row) =>
-        row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-        row.form_status === FormValidationStatus.VALID &&
-        row.review_status === ReviewStatus.UNDER_REVIEW,
+      rowCondition: isReviewable,
       bulkCondition: (
         selectedRows // only enable bulk submit if some field needs it
       ) =>
-        selectedRows?.filter(
-          (row) =>
-            row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-            row.form_status === FormValidationStatus.VALID &&
-            row.review_status === ReviewStatus.UNDER_REVIEW
-        )?.length > 0,
+        selectedRows?.filter(isReviewable)?.length > 0,
       action: async (selectedRows) => {
         try {
           selectedRows.map(async (activity) => {
-            if (
-              activity.form_status !== FormValidationStatus.VALID ||
-              activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
-              activity.review_status !== ReviewStatus.UNDER_REVIEW
-            )
+            if (!isReviewable)
               return;
             const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
             await dataAccess.updateActivity(
@@ -271,11 +250,11 @@ export const useActions = (props) => {
               }),
               databaseContext
             );
-            // const typename = activity.activity_subtype?.split('_')[2];
-            // notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
+            const typename = activity.activity_subtype?.split('_')[2];
+            notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
           });
         } catch (error) {
-          // notifyError(databaseContext, JSON.stringify(error));
+          notifyError(databaseContext, JSON.stringify(error));
         }
       },
       icon: <Check />,
@@ -289,27 +268,15 @@ export const useActions = (props) => {
       rowAction: true,
       displayInvalid: 'hidden',
       triggerReload: true,
-      rowCondition: (row) =>
-        row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-        row.form_status === FormValidationStatus.VALID &&
-        row.review_status === ReviewStatus.UNDER_REVIEW,
+      rowCondition: isReviewable,
       bulkCondition: (
         selectedRows // only enable bulk submit if some field needs it
       ) =>
-        selectedRows?.filter(
-          (row) =>
-            row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
-            row.form_status === FormValidationStatus.VALID &&
-            row.review_status === ReviewStatus.UNDER_REVIEW
-        )?.length > 0,
+        selectedRows?.filter(isReviewable)?.length > 0,
       action: async (selectedRows) => {
         try {
           selectedRows.map(async (activity) => {
-            if (
-              activity.form_status !== FormValidationStatus.VALID ||
-              activity.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL ||
-              activity.review_status !== ReviewStatus.UNDER_REVIEW
-            )
+            if (!isReviewable)
               return;
             const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
             await dataAccess.updateActivity(
@@ -321,11 +288,11 @@ export const useActions = (props) => {
               }),
               databaseContext
             );
-            // const typename = activity.activity_subtype?.split('_')[2];
-            // notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
+            const typename = activity.activity_subtype?.split('_')[2];
+            notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
           });
         } catch (error) {
-          // notifyError(databaseContext, JSON.stringify(error));
+          notifyError(databaseContext, JSON.stringify(error));
         }
       },
       icon: <Clear />,

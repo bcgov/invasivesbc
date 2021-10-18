@@ -93,7 +93,7 @@ export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
           'general_comment'
         ]}
         rows={async ({ page, rowsPerPage, order }) => {
-          // Fetches fresh from the API (web).  TODO fetch from SQLite
+          // Fetches fresh from the API
           let dbPageSize = DEFAULT_PAGE_SIZE;
           if (dbPageSize - ((page * rowsPerPage) % dbPageSize) < 3 * rowsPerPage)
             // if page is right near the db page limit

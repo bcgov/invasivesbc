@@ -1,36 +1,21 @@
 import {
   Accordion,
   AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Checkbox,
-  Collapse,
-  IconButton,
   makeStyles,
   Table,
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TablePagination,
-  TableRow,
-  TableSortLabel,
-  Toolbar,
-  Tooltip,
-  Typography
+  TableRow
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { DEFAULT_PAGE_SIZE } from 'constants/database';
-import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
-import { notifyError } from '../../utils/NotificationUtils';
 import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
-import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
+import { WarningDialog } from 'components/dialog/WarningDialog';
 import { DatabaseContext } from '../../contexts/DatabaseContext';
 import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import Spinner from '../../components/spinner/Spinner';
-import clsx from 'clsx';
 import { useDataAccess } from '../../hooks/useDataAccess';
 import RecordTableToolbar from './record-table/RecordTableToolbar';
 import RecordTableHead from './record-table/RecordTableHead';
@@ -185,11 +170,15 @@ const defaultWarningDialog = {
   dialogActions: [
     {
       actionName: 'No',
-      actionOnClick: () => {}
+      actionOnClick: () => {
+        // do nothing
+      }
     },
     {
       actionName: 'Yes',
-      actionOnClick: () => {},
+      actionOnClick: () => {
+        // do nothing
+      },
       autoFocus: true
     }
   ]
@@ -349,7 +338,6 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const loadedRowsFirstIndex = firstPageLoaded * rowsPerPage;
   const loadedRowLastIndex = Math.min(lastPageLoaded * rowsPerPage, totalRows - 1);
   const pageRowsFirstIndex = page * rowsPerPage;
-  const pageRowsLastIndex = (page + 1) * rowsPerPage;
   const isLoading = (!schemasLoaded && tableSchemaType?.length > 0) || !rowsLoaded;
   const selectedHash = JSON.stringify(selected);
   const rowsHash = JSON.stringify(props.rows);

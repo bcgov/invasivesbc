@@ -1,7 +1,6 @@
-import { AccordionSummary, Box, Button, IconButton, makeStyles, Toolbar, Tooltip, Typography } from '@material-ui/core';
+import { AccordionSummary, Box, IconButton, makeStyles, Toolbar, Tooltip, Typography } from '@material-ui/core';
 import { ExpandMore, FilterList } from '@material-ui/icons';
 import { lighten } from '@material-ui/core/styles';
-import { notifyError } from '../../../utils/NotificationUtils';
 import clsx from 'clsx';
 import React from 'react';
 import { getRecordTableActions } from './RecordTableAction';
@@ -48,7 +47,6 @@ const RecordTableToolbar = (props) => {
     tableName,
     enableFiltering,
     actions,
-    databaseContext,
     fetchRows,
     errorMessage,
     setErrorMessage,

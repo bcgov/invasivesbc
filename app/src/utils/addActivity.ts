@@ -168,6 +168,7 @@ export const sanitizeRecord = (input: any) => {
       reviewed_by,
       reviewed_at,
       review_status,
+      jurisdictions,
       ...otherKeys
     } = flattened;
 
@@ -201,6 +202,7 @@ export const sanitizeRecord = (input: any) => {
       reviewed_by,
       reviewed_at,
       review_status,
+      jurisdictions,
 
       // db-field overrides:
       created_timestamp: created_timestamp || flattened.date_created || now,
