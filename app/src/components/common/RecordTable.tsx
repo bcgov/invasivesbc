@@ -220,7 +220,7 @@ export interface IRecordTable {
   // referenceData: mark whether the rows are references or not
   referenceData?: boolean;
   rerenderFlagSetter?: any;
-  
+
   // ACTIONS:
   // key-value pairs of definitions of various actions which can be used on the table. e.g. delete, edit, create, etc
   // OR boolean "false" to disable all actions
@@ -610,7 +610,17 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
           }}
           actions={rowActions}
           actionStyle={rowActionStyle}
-          {...{ keyField, headers, row, dropdown, pageHasDropdown, enableSelection, databaseContext, fetchRows, setWarningDialog }}
+          {...{
+            keyField,
+            headers,
+            row,
+            dropdown,
+            pageHasDropdown,
+            enableSelection,
+            databaseContext,
+            fetchRows,
+            setWarningDialog
+          }}
         />
       );
     });

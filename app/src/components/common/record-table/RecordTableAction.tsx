@@ -7,7 +7,6 @@ import { useStyles } from '../RecordTable';
 export const ACTION_TIMEOUT = 1500; // 1.5s
 export const ACTION_ERROR_TIMEOUT = 15000; // 15s
 
-
 // action: look and feel, context, and click effect definitions for a button (or other actions in future e.g. sliders)
 export interface IRecordTableAction {
   // id: self-reflection so an action object knows the key it's being refered as. e.g. "edit"
@@ -42,7 +41,7 @@ export interface IRecordTableAction {
   // rowCondition: function determining whether the action is valid in the toolbar.
   // displayInvalid determines behavior when it returns false.  Not needed if globalAction is false (disabled).
   globalCondition?: (selectedRows: Array<any>) => boolean;
-  
+
   // warningDialog: whether to display a warning dialog before confirming an action
   hasWarningDialog?: boolean;
   // warningDialogMessage: function generating a string message
@@ -57,21 +56,24 @@ enum DisplayInvalid {
 export const getRecordTableActions = (props) => {
   const { context, actions, affectedRows, fetchRows, setErrorMessage, setWarningDialog } = props;
   return Object.values(actions)
-  .filter((action: any) => {
-    switch(context) {
-      case 'row':
-        if (action.rowAction) return true; break;
-      case 'bulk':
-        if (action.bulkAction) return true; break;
-      case 'global':
-        if (action.globalAction) return true; break;
-  }})
-  .map((action: any) => <RecordTableAction
-    {...action}
-    {...{context, affectedRows, fetchRows, setErrorMessage, setWarningDialog}}
-  />)
-  .filter((action) => action); // remove hidden actions
-}
+    .filter((action: any) => {
+      switch (context) {
+        case 'row':
+          if (action.rowAction) return true;
+          break;
+        case 'bulk':
+          if (action.bulkAction) return true;
+          break;
+        case 'global':
+          if (action.globalAction) return true;
+          break;
+      }
+    })
+    .map((action: any) => (
+      <RecordTableAction {...action} {...{ context, affectedRows, fetchRows, setErrorMessage, setWarningDialog }} />
+    ))
+    .filter((action) => action); // remove hidden actions
+};
 
 export const RecordTableAction = (props) => {
   const {
@@ -98,22 +100,17 @@ export const RecordTableAction = (props) => {
   const databaseContext = useContext(DatabaseContext);
 
   let isValid = true;
-  switch(context) {
+  switch (context) {
     case 'row':
-      if (rowCondition)
-        isValid = rowCondition(affectedRows);
+      if (rowCondition) isValid = rowCondition(affectedRows);
       break;
     case 'bulk':
-      if (bulkCondition)
-        isValid = bulkCondition(affectedRows);
+      if (bulkCondition) isValid = bulkCondition(affectedRows);
       break;
     case 'global':
-      if (globalCondition)
-        isValid = globalCondition(affectedRows)
-      if (bulkCondition)
-        isValid = isValid && bulkCondition(affectedRows)
-      if (rowCondition)
-        isValid = isValid && affectedRows.filter((row) => !rowCondition([row]))?.length > 0;
+      if (globalCondition) isValid = globalCondition(affectedRows);
+      if (bulkCondition) isValid = isValid && bulkCondition(affectedRows);
+      if (rowCondition) isValid = isValid && affectedRows.filter((row) => !rowCondition([row]))?.length > 0;
       break;
   }
 
@@ -123,29 +120,30 @@ export const RecordTableAction = (props) => {
       id={id}
       variant="contained"
       size="small"
-      color={context !== 'global' && "primary" || undefined}
+      color={(context !== 'global' && 'primary') || undefined}
       disabled={displayInvalid === 'disable' && !isValid}
       className={classes.button}
       startIcon={icon}
       onClick={async (e) => {
         e.stopPropagation();
         try {
-          if (displayInvalid === 'error' && !isValid && invalidError)
-            throw new Error(invalidError);
+          if (displayInvalid === 'error' && !isValid && invalidError) throw new Error(invalidError);
           if (hasWarningDialog) {
             setWarningDialog({
               dialogOpen: true,
               dialogTitle: 'Are you sure?',
-              dialogContentText: warningDialogMessage && warningDialogMessage(affectedRows) || '',
+              dialogContentText: (warningDialogMessage && warningDialogMessage(affectedRows)) || '',
               dialogActions: [
                 {
                   actionName: 'No',
-                  actionOnClick: async () => { setWarningDialog({dialogOpen: false})}
+                  actionOnClick: async () => {
+                    setWarningDialog({ dialogOpen: false });
+                  }
                 },
                 {
                   actionName: 'Yes',
-                  actionOnClick: async () => { 
-                    setWarningDialog({dialogOpen: false});
+                  actionOnClick: async () => {
+                    setWarningDialog({ dialogOpen: false });
                     await action(affectedRows);
                     if (triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
                   },
@@ -166,7 +164,6 @@ export const RecordTableAction = (props) => {
       {label}
     </Button>
   );
-}
-    
+};
 
 export default RecordTableAction;

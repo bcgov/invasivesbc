@@ -243,7 +243,10 @@ export const useActions = (props) => {
       action: async (allSelectedRows) => {
         const selectedIds = allSelectedRows.map((row) => row[keyField]);
         if (selectedIds.length === 1) {
-          await dataAccess.setAppState({ activeActivity: selectedIds[0], referenceData: props.referenceData }, databaseContext);
+          await dataAccess.setAppState(
+            { activeActivity: selectedIds[0], referenceData: props.referenceData },
+            databaseContext
+          );
           // TODO switch by activity type, I guess...
           history.push({ pathname: `/home/activity` });
         } else {
@@ -268,11 +271,13 @@ export const useActions = (props) => {
       id: 'delete',
       enabled: enableSelection !== false,
       hasWarningDialog: true,
-      warningDialogMessage: (affectedRows) => affectedRows.length === 1 ? 'Do you want to delete this activity?' : `Do you want to delete these ${affectedRows.length} activities?`,
+      warningDialogMessage: (affectedRows) =>
+        affectedRows.length === 1
+          ? 'Do you want to delete this activity?'
+          : `Do you want to delete these ${affectedRows.length} activities?`,
       action: async (allSelectedRows) => {
         const selectedIds = allSelectedRows.map((row) => row[keyField]);
-        if (selectedIds.length)
-          await dataAccess.deleteActivities(selectedIds, databaseContext);
+        if (selectedIds.length) await dataAccess.deleteActivities(selectedIds, databaseContext);
       },
       label: 'Delete',
       icon: <Delete />,

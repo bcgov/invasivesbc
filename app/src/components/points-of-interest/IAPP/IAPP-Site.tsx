@@ -51,8 +51,7 @@ export interface IAPPSitePropType {
 export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
   const classes = useStyles();
   const form_data = props?.record?.point_of_interest_payload?.form_data;
-  if (!form_data)
-    return null;
+  if (!form_data) return null;
   const site = {
     ...form_data?.point_of_interest_data,
     ...form_data?.point_of_interest_type_data
