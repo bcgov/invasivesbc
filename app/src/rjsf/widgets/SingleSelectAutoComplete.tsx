@@ -3,7 +3,6 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { WidgetProps } from '@rjsf/core';
 import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
-import { setISODay } from 'date-fns/esm';
 import { Box, Typography } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 // Custom type to support this widget
@@ -97,14 +96,6 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   const [value, setValue] = useState(startingValue);
   const [inputValue, setInputValue] = useState(startingValue ? optionValueLabels[startingValue] : '');
   const [event, setEvent] = useState(null);
-
-  // useEffect(() => {
-  //   optionValues = Object.values(enumOptions).map((option) => {
-  //     optionValueLabels[option.value] = option.label || option.title || option.value;
-  //     optionValueSuggested[option.value] = (option as any).suggested || false;
-  //     return option.value;
-  //   });
-  // }, []);
 
   useEffect(() => {
     if (!lastFieldChanged['id']) {
