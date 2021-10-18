@@ -2,23 +2,23 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import React from 'react';
 
 interface IWarningDialog {
-  isOpen: boolean;
-  handleDisagree: Function;
-  handleAgree: Function;
-  message: string;
-  heading: string;
+  isOpen?: boolean;
+  handleDisagree?: Function;
+  handleAgree?: Function;
+  message?: string;
+  heading?: string;
 }
 
 const WarningDialog: React.FC<IWarningDialog> = (props) => {
-  const { isOpen, heading, message, handleAgree, handleDisagree } = props;
+  const { isOpen = true, heading = '', message = '', handleAgree = () => {}, handleDisagree = () => {} } = props;
 
   return (
     <Dialog
-      open={isOpen}
+      open={isOpen || false}
       onClose={() => handleDisagree()}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
-      <DialogTitle id="alert-dialog-title">{heading}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">{heading}</DialogTitle>-+
       <DialogContent>
         <DialogContentText id="alert-dialog-description">{message}</DialogContentText>
       </DialogContent>

@@ -2,10 +2,10 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import React from 'react';
 
 export interface IWarningDialog {
-  dialogTitle: String;
+  dialogTitle?: String;
   dialogContentText?: String;
-  dialogOpen: boolean;
-  dialogActions: IDialogAction[];
+  dialogOpen?: boolean;
+  dialogActions?: IDialogAction[];
 }
 
 interface IDialogAction {
@@ -18,7 +18,7 @@ export const WarningDialog = (props: IWarningDialog) => {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    setOpen(props.dialogOpen);
+    setOpen(props.dialogOpen || false);
   }, [props.dialogOpen]);
 
   return (
@@ -30,7 +30,7 @@ export const WarningDialog = (props: IWarningDialog) => {
         </DialogContent>
       )}
       <DialogActions>
-        {props.dialogActions.map((action) => {
+        {props.dialogActions?.map((action) => {
           return (
             <Button
               onClick={action.actionOnClick}

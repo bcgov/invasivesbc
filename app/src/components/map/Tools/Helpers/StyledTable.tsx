@@ -70,7 +70,7 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
 
 const getPlantName = (subtype, invasivePlantCode, response) => {
   try {
-    if (subtype === 'Terrestrial Invasive Plant Chemical Treatment:')
+    if (subtype === 'Terrestrial Invasive Plant Chemical Treatment')
       subtype = subtype.substring(0, subtype.length - 1);
     var plantType;
     switch (subtype) {
