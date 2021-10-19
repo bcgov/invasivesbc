@@ -20,19 +20,6 @@ const getChildLayerModes = (geoData: Object[], parentID: string, childID: string
   return tempArr;
 };
 
-const checkServerSection = ({ parent, child, objectState }) => {
-  const server = getChild(objectState, parent.id, child.id).layers.server;
-  var flag = 0;
-  console.log(server);
-  if (server) {
-    Object.entries(server).every(([key, value]) => {
-      console.log(key, value);
-    });
-  }
-
-  return flag;
-};
-
 export const getAllEnabledLayerModes = (geoData: any[]) => {
   var tempArr = [];
   geoData.forEach((parent: any) => {
@@ -94,21 +81,19 @@ export const sanitizedLayers = (geoData: any[]) => {
 };
 
 export const OnlineLayersSelector = ({ parent, child, objectState, setObjectState }) => {
-  const [server, setServer] = useState(child.layers.server);
+  const [server, setServer] = useState(getChild(objectState, parent.id, child.id).layers.server);
 
   useEffect(() => {
-    setServer(child.layers.server);
+    setServer(getChild(objectState, parent.id, child.id).layers.server);
   }, [child]);
 
   useEffect(() => {
-    var flag = checkServerSection({ parent, child, objectState });
-    console.log('flag', flag);
-    //if (flag === 1) {
-    //updateChild(parent.id, child.id, { enabled: true }, { objectState, setObjectState });
-    //} else {
-    //updateChild(parent.id, child.id, { enabled: false }, { objectState, setObjectState });
-    //}
-  }, [server]);
+    console.log('Rerender happened');
+    console.log('parent', parent);
+    console.log('child', child);
+  }, []);
+
+
 
   const onServerAccordionChange = (event: any, expanded: any) => {
     updateChild(
@@ -141,7 +126,7 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
           control={
             <Checkbox
               checked={server.wms_online}
-              onChange={() =>
+              onChange={() => {
                 updateChild(
                   parent.id,
                   child.id,
@@ -158,8 +143,8 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                     }
                   },
                   { objectState, setObjectState }
-                )
-              }
+                );
+              }}
             />
           }
         />
@@ -168,7 +153,7 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
           control={
             <Checkbox
               checked={server.vector_tiles_online}
-              onChange={() =>
+              onChange={() => {
                 updateChild(
                   parent.id,
                   child.id,
@@ -185,8 +170,8 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                     }
                   },
                   { objectState, setObjectState }
-                )
-              }
+                );
+              }}
             />
           }
         />
@@ -195,7 +180,7 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
           control={
             <Checkbox
               checked={server.wfs_online}
-              onChange={() =>
+              onChange={() => {
                 updateChild(
                   parent.id,
                   child.id,
@@ -212,8 +197,7 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                     }
                   },
                   { objectState, setObjectState }
-                )
-              }
+                );              }}
             />
           }
         />

@@ -606,12 +606,14 @@
       {
         "id": "activities",
         "bcgw_code": "LEAN_ACTIVITIES",
-        "enabled": false
+        "enabled": false,
+        "dialog_open": false
       },
       {
         "id": "poi",
         "bcgw_code": "LEAN_POI",
-        "enabled": false
+        "enabled": false,
+        "dialog_open": false
       }
     ]
   }
