@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
+import React, { useState } from 'react';
+import { useMap, useMapEvent } from 'react-leaflet';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
-import { Feature, Geometry } from 'geojson';
-import { Layer } from 'leaflet';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 
