@@ -387,8 +387,7 @@ export function LayerPicker(props: any, { position }) {
         // ------ layers useState is old way ------
         return (
           <>
-            {
-              //layer.enabled && (
+            {layer.enabled && (
               <DataBCLayer
                 opacity={layer.opacity}
                 layerName={layer.name}
@@ -396,8 +395,7 @@ export function LayerPicker(props: any, { position }) {
                 inputGeo={props.inputGeo}
                 setWellIdandProximity={props.setWellIdandProximity}
               />
-              //)
-            }
+            )}
           </>
         );
       })}
