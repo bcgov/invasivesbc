@@ -149,6 +149,10 @@ export function LayerPicker(props: any, { position }) {
   const [newLayers, setNewLayers] = useState([]);
 
   useEffect(() => {
+    console.log('layers', newLayers);
+  }, [newLayers]);
+
+  useEffect(() => {
     if (objectState) {
       setNewLayers(sanitizedLayers(objectState));
     }
@@ -382,13 +386,17 @@ export function LayerPicker(props: any, { position }) {
         // Using newLayers useState
         // ------ layers useState is old way ------
         return (
-          <DataBCLayer
-            opacity={layer.opacity}
-            layerName={layer.name}
-            mode={layer.type}
-            inputGeo={props.inputGeo}
-            setWellIdandProximity={props.setWellIdandProximity}
-          />
+          <>
+            {layer.enabled && (
+              <DataBCLayer
+                opacity={layer.opacity}
+                layerName={layer.name}
+                mode={layer.type}
+                inputGeo={props.inputGeo}
+                setWellIdandProximity={props.setWellIdandProximity}
+              />
+            )}
+          </>
         );
       })}
       <div className={positionClass}>

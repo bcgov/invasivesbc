@@ -29,16 +29,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -59,16 +55,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -89,16 +81,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -119,16 +107,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       }
@@ -164,16 +148,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -194,16 +174,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -224,16 +200,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -254,16 +226,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -284,16 +252,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -314,16 +278,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -344,16 +304,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -374,16 +330,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       }
@@ -419,16 +371,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -449,16 +397,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -479,16 +423,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -509,16 +449,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -539,16 +475,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -569,16 +501,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -599,16 +527,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       }
@@ -644,16 +568,12 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
       },
@@ -674,18 +594,24 @@
             "expanded": false,
             "wms_online": false,
             "wfs_online": false,
-            "vector_tiles_online": false,
-            "activities_online": false,
-            "poi_online": false
+            "vector_tiles_online": false
           },
           "local": {
             "expanded": false,
             "wfs_offline": false,
-            "vector_tiles_offline": false,
-            "activities_offline": false,
-            "poi_offline": false
+            "vector_tiles_offline": false
           }
         }
+      },
+      {
+        "id": "activities",
+        "bcgw_code": "LEAN_ACTIVITIES",
+        "enabled": false
+      },
+      {
+        "id": "poi",
+        "bcgw_code": "LEAN_POI",
+        "enabled": false
       }
     ]
   }
