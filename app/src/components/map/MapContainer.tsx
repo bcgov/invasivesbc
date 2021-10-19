@@ -268,7 +268,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           </Marker>
         )}
 
-        {activityGeo && <GeoJSON data={activityGeo} key={Math.random()} />}
+        {activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> /*//NOSONAR*/}
 
         {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">

@@ -70,8 +70,7 @@ export const sanitizedLayers = (geoData: any[]) => {
       if (child.bcgw_code === 'LEAN_ACTIVITIES' || child.bcgw_code === 'LEAN_POI') {
         tempArr.push({
           name: child.bcgw_code,
-          enabled: child.enabled,
-          opacity: child.opacity
+          enabled: child.enabled
         });
       }
     });
