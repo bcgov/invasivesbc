@@ -268,9 +268,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           </Marker>
         )}
 
-        {activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> /*//NOSONAR*/}
+        {
+          activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
 
-        {/*<LayersControl position="topright">
+          /*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
             <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
           </LayersControl.BaseLayer>
@@ -280,7 +281,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> }
           </LayersControl.Overlay>
-        </LayersControl>*/}
+        </LayersControl>*/
+        }
       </MapRequestContextProvider>
     </ReactLeafletMapContainer>
   );
