@@ -1,28 +1,28 @@
 import { Accordion, AccordionSummary, Checkbox, FormControlLabel, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { WMSTileLayer } from 'react-leaflet';
-import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
 import { updateChild } from './LayerPicker';
 import { getChild } from './SortLayerOrder';
 
 const getChildLayerModes = (geoData: Object[], parentID: string, childID: string) => {
-  const server = getChild(geoData, parentID, childID).layers.server;
-  const local = getChild(geoData, parentID, childID).layers.local;
+  const server = getChild(geoData, parentID, childID).layers?.server;
+  const local = getChild(geoData, parentID, childID).layers?.local;
   var tempArr = [];
 
-  Object.entries(server).forEach(([key, value]) => {
-    if (key !== 'expanded' && value === true) tempArr.push({ layer_type: key });
-  });
-  Object.entries(local).forEach(([key, value]) => {
-    if (key !== 'expanded' && value === true) tempArr.push({ layer_type: key });
-  });
+  if (server && local) {
+    Object.entries(server).forEach(([key, value]) => {
+      if (key !== 'expanded' && value === true) tempArr.push({ layer_type: key });
+    });
+    Object.entries(local).forEach(([key, value]) => {
+      if (key !== 'expanded' && value === true) tempArr.push({ layer_type: key });
+    });
+  }
 
   return tempArr;
 };
 
 export const getAllEnabledLayerModes = (geoData: any[]) => {
   var tempArr = [];
-  geoData.map((parent: any) => {
+  geoData.forEach((parent: any) => {
     var layerObj = [];
     parent.children.map((child: any) => {
       var layers = getChildLayerModes(geoData, parent.id, child.id);
@@ -31,6 +31,12 @@ export const getAllEnabledLayerModes = (geoData: any[]) => {
           bcgw_code: child.bcgw_code,
           enabled: child.enabled,
           layers: layers,
+          opacity: child.opacity
+        });
+      } else {
+        layerObj.push({
+          bcgw_code: child.bcgw_code,
+          enabled: child.enabled,
           opacity: child.opacity
         });
       }
@@ -48,16 +54,26 @@ export const sanitizedLayers = (geoData: any[]) => {
   var layerModes = getAllEnabledLayerModes(geoData);
   var tempArr = [];
 
-  layerModes.map((parent) => {
+  layerModes.forEach((parent) => {
     parent.children.map((child) => {
-      child.layers.map((layer) => {
+      if (child.layers?.length > 0) {
+        child.layers.map((layer) => {
+          tempArr.push({
+            name: child.bcgw_code,
+            enabled: child.enabled,
+            type: layer.layer_type,
+            opacity: child.opacity
+          });
+        });
+      }
+
+      if (child.bcgw_code === 'LEAN_ACTIVITIES' || child.bcgw_code === 'LEAN_POI') {
         tempArr.push({
           name: child.bcgw_code,
           enabled: child.enabled,
-          type: layer.layer_type,
           opacity: child.opacity
         });
-      });
+      }
     });
   });
 
@@ -65,10 +81,10 @@ export const sanitizedLayers = (geoData: any[]) => {
 };
 
 export const OnlineLayersSelector = ({ parent, child, objectState, setObjectState }) => {
-  const [server, setServer] = useState(child.layers.server);
+  const [server, setServer] = useState(getChild(objectState, parent.id, child.id).layers.server);
 
   useEffect(() => {
-    setServer(child.layers.server);
+    setServer(getChild(objectState, parent.id, child.id).layers.server);
   }, [child]);
 
   const onServerAccordionChange = (event: any, expanded: any) => {
@@ -82,9 +98,7 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
             expanded: expanded,
             wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
             wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
-            vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server.vector_tiles_online,
-            activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
-            poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
+            vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server.vector_tiles_online
           }
         }
       },
@@ -104,7 +118,7 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
           control={
             <Checkbox
               checked={server.wms_online}
-              onChange={() =>
+              onChange={() => {
                 updateChild(
                   parent.id,
                   child.id,
@@ -116,15 +130,13 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                         wms_online: !getChild(objectState, parent.id, child.id).layers.server.wms_online,
                         wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
                         vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
-                          .vector_tiles_online,
-                        activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
-                        poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
+                          .vector_tiles_online
                       }
                     }
                   },
                   { objectState, setObjectState }
-                )
-              }
+                );
+              }}
             />
           }
         />
@@ -133,7 +145,7 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
           control={
             <Checkbox
               checked={server.vector_tiles_online}
-              onChange={() =>
+              onChange={() => {
                 updateChild(
                   parent.id,
                   child.id,
@@ -145,15 +157,13 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                         wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
                         wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
                         vector_tiles_online: !getChild(objectState, parent.id, child.id).layers.server
-                          .vector_tiles_online,
-                        activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
-                        poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
+                          .vector_tiles_online
                       }
                     }
                   },
                   { objectState, setObjectState }
-                )
-              }
+                );
+              }}
             />
           }
         />
@@ -162,7 +172,7 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
           control={
             <Checkbox
               checked={server.wfs_online}
-              onChange={() =>
+              onChange={() => {
                 updateChild(
                   parent.id,
                   child.id,
@@ -174,73 +184,13 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                         wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
                         wfs_online: !getChild(objectState, parent.id, child.id).layers.server.wfs_online,
                         vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
-                          .vector_tiles_online,
-                        activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
-                        poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
+                          .vector_tiles_online
                       }
                     }
                   },
                   { objectState, setObjectState }
-                )
-              }
-            />
-          }
-        />
-        <FormControlLabel
-          label="Activities"
-          control={
-            <Checkbox
-              checked={server.activities_online}
-              onChange={() =>
-                updateChild(
-                  parent.id,
-                  child.id,
-                  {
-                    layers: {
-                      ...getChild(objectState, parent.id, child.id).layers,
-                      server: {
-                        expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
-                        wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
-                        wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
-                        vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
-                          .vector_tiles_online,
-                        activities_online: !getChild(objectState, parent.id, child.id).layers.server.activities_online,
-                        poi_online: getChild(objectState, parent.id, child.id).layers.server.poi_online
-                      }
-                    }
-                  },
-                  { objectState, setObjectState }
-                )
-              }
-            />
-          }
-        />
-        <FormControlLabel
-          label="Point of Interest"
-          control={
-            <Checkbox
-              checked={server.poi_online}
-              onChange={() =>
-                updateChild(
-                  parent.id,
-                  child.id,
-                  {
-                    layers: {
-                      ...getChild(objectState, parent.id, child.id).layers,
-                      server: {
-                        expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
-                        wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
-                        wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
-                        vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
-                          .vector_tiles_online,
-                        activities_online: getChild(objectState, parent.id, child.id).layers.server.activities_online,
-                        poi_online: !getChild(objectState, parent.id, child.id).layers.server.poi_online
-                      }
-                    }
-                  },
-                  { objectState, setObjectState }
-                )
-              }
+                );
+              }}
             />
           }
         />
@@ -266,9 +216,7 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
           local: {
             expanded: expanded,
             wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
-            vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local.vector_tiles_offline,
-            activities_offline: getChild(objectState, parent.id, child.id).layers.local.activities_offline,
-            poi_offline: getChild(objectState, parent.id, child.id).layers.local.poi_offline
+            vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local.vector_tiles_offline
           }
         }
       },
@@ -299,9 +247,7 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
                         expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
                         wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
                         vector_tiles_offline: !getChild(objectState, parent.id, child.id).layers.local
-                          .vector_tiles_offline,
-                        activities_offline: getChild(objectState, parent.id, child.id).layers.local.activities_offline,
-                        poi_offline: getChild(objectState, parent.id, child.id).layers.local.poi_offline
+                          .vector_tiles_offline
                       }
                     }
                   },
@@ -327,65 +273,7 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
                         expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
                         wfs_offline: !getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
                         vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local
-                          .vector_tiles_offline,
-                        activities_offline: getChild(objectState, parent.id, child.id).layers.local.activities_offline,
-                        poi_offline: getChild(objectState, parent.id, child.id).layers.local.poi_offline
-                      }
-                    }
-                  },
-                  { objectState, setObjectState }
-                )
-              }
-            />
-          }
-        />
-        <FormControlLabel
-          label="Activities"
-          control={
-            <Checkbox
-              checked={local.activities_offline}
-              onChange={() =>
-                updateChild(
-                  parent.id,
-                  child.id,
-                  {
-                    layers: {
-                      ...getChild(objectState, parent.id, child.id).layers,
-                      local: {
-                        expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
-                        wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
-                        vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local
-                          .vector_tiles_offline,
-                        activities_offline: !getChild(objectState, parent.id, child.id).layers.local.activities_offline,
-                        poi_offline: getChild(objectState, parent.id, child.id).layers.local.poi_offline
-                      }
-                    }
-                  },
-                  { objectState, setObjectState }
-                )
-              }
-            />
-          }
-        />
-        <FormControlLabel
-          label="Point of Interest"
-          control={
-            <Checkbox
-              checked={local.poi_offline}
-              onChange={() =>
-                updateChild(
-                  parent.id,
-                  child.id,
-                  {
-                    layers: {
-                      ...getChild(objectState, parent.id, child.id).layers,
-                      local: {
-                        expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
-                        wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
-                        vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local
-                          .vector_tiles_offline,
-                        activities_offline: getChild(objectState, parent.id, child.id).layers.local.activities_offline,
-                        poi_offline: !getChild(objectState, parent.id, child.id).layers.local.poi_offline
+                          .vector_tiles_offline
                       }
                     }
                   },
