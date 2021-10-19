@@ -87,14 +87,6 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
     setServer(getChild(objectState, parent.id, child.id).layers.server);
   }, [child]);
 
-  useEffect(() => {
-    console.log('Rerender happened');
-    console.log('parent', parent);
-    console.log('child', child);
-  }, []);
-
-
-
   const onServerAccordionChange = (event: any, expanded: any) => {
     updateChild(
       parent.id,
@@ -197,7 +189,8 @@ export const OnlineLayersSelector = ({ parent, child, objectState, setObjectStat
                     }
                   },
                   { objectState, setObjectState }
-                );              }}
+                );
+              }}
             />
           }
         />

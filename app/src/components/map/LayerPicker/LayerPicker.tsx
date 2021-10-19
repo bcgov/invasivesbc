@@ -104,46 +104,11 @@ const POSITION_CLASSES = {
   topright: 'leaflet-top leaflet-right'
 };
 
-export const checkLayersSection = ({ parent, child, objectState }) => {
-  const server = getChild(objectState, parent.id, child.id).layers.server;
-  const local = getChild(objectState, parent.id, child.id).layers.local;
-
-  var flag = 0;
-
-  if (server && local) {
-    for (let [key, value] of Object.entries(server)) {
-      if (key !== 'expanded' && value) {
-        flag = 1;
-        break;
-      }
-    }
-    for (let [key, value] of Object.entries(local)) {
-      if (key !== 'expanded' && value) {
-        flag = 1;
-        break;
-      }
-    }
-  }
-
-  return flag;
-};
-
-export const modeChangeHandler = (parent, child, { objectState, setObjectState }) => {
-  var flag = checkLayersSection({ parent, child, objectState });
-  if (flag === 1) {
-    console.log('in if');
-    updateChild(parent.id, child.id, { enabled: true }, { objectState, setObjectState }, true);
-  } else {
-    console.log('in else');
-  }
-};
-
 export const updateChild = (
   parentType: string,
   childType: string,
   fieldsToUpdate: Object,
-  { objectState, setObjectState },
-  fromModeChangeHandler?: boolean
+  { objectState, setObjectState }
 ) => {
   // sort parents, get index of parent
   let pIndex = getParentIndex(objectState, parentType);
@@ -167,10 +132,6 @@ export const updateChild = (
   };
 
   setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
-
-  if (!fromModeChangeHandler) {
-    modeChangeHandler(newParent, updatedChild, { objectState, setObjectState });
-  }
 };
 
 export function LayerPicker(props: any, { position }) {
@@ -237,12 +198,12 @@ export function LayerPicker(props: any, { position }) {
     setObjectState([...parentsBefore, updatedParent, ...parentsAfter] as any);
   };
 
-  const toggleChildDialog = (parent, child, changeTo) => {
+  const toggleChildDialog = (parent, child) => {
     updateChild(
       parent.id,
       child.id,
       {
-        dialog_open: changeTo
+        dialog_open: !getChild(objectState, parent.id, child.id).dialog_open
       },
       { objectState, setObjectState }
     );
@@ -319,14 +280,13 @@ export function LayerPicker(props: any, { position }) {
                   <Checkbox
                     checked={child.enabled}
                     name={child.id}
-                    onChange={
-                      () => null
-                      // updateChild(
-                      //   parent.id,
-                      //   child.id,
-                      //   { enabled: !getChild(objectState, parent.id, child.id).enabled },
-                      //   { objectState, setObjectState }
-                      // )
+                    onChange={() =>
+                      updateChild(
+                        parent.id,
+                        child.id,
+                        { enabled: !getChild(objectState, parent.id, child.id).enabled },
+                        { objectState, setObjectState }
+                      )
                     }
                   />
                 </Grid>
@@ -337,10 +297,10 @@ export function LayerPicker(props: any, { position }) {
                 </Grid>
                 {/* Child Dialog Box */}
                 <Grid item xs={2}>
-                  <IconButton onClick={() => toggleChildDialog(parent, child, true)}>
+                  <IconButton onClick={() => toggleChildDialog(parent, child)}>
                     <SettingsIcon />
                   </IconButton>
-                  <Dialog open={child.dialog_open} onClose={() => toggleChildDialog(parent, child, false)}>
+                  <Dialog open={child.dialog_open} onClose={() => toggleChildDialog(parent, child)}>
                     <DialogTitle>{child.name}</DialogTitle>
                     <DialogContent>
                       {/* old code not sure if will remove
@@ -391,7 +351,7 @@ export function LayerPicker(props: any, { position }) {
                       </div>
                     </DialogContent>
                     <DialogActions>
-                      <Button onClick={() => toggleChildDialog(parent, child, false)}>Close</Button>
+                      <Button onClick={() => toggleChildDialog(parent, child)}>Close</Button>
                     </DialogActions>
                   </Dialog>
                 </Grid>
