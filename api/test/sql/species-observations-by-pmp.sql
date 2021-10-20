@@ -8,9 +8,12 @@ select
     sum(
       public.st_area(
         case
-          when st_within(p.geom,r.geom)
+          when public.st_within(p.geom,r.geom)
           then p.geom
-          else st_intersection(p.geom,st_transform(r.geom,3005))
+          else public.st_intersection(
+            p.geom,
+            public.st_transform(r.geom,3005)
+          )
           end
       )
     )
@@ -18,14 +21,14 @@ select
 from
   code c,
   public.activities_by_species p join
-  regional_invasive_species_organization_areas r on
-  st_intersects(p.geom,st_transform(r.geom,3005))
+  public.regional_invasive_species_organization_areas r on
+  public.st_intersects(p.geom,public.st_transform(r.geom,3005))
 where
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   p.species = c.code_name and
   p.activity_type = 'Observation' and
-  c.code_header_id = 30 and -- Invasive plant id
-  p.species = 'BL'
+  c.code_header_id = 30 -- Invasive plant id
+  [[and r.agent = {{agent}}]] -- TODO: Still debugging this
 group by
   c.code_description,
   r.agency
