@@ -12,7 +12,7 @@ import { q } from '../MapContainer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
 import { getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
-import { isFilterSatisfied } from './GeoJsonVtLayer';
+import { getStyleForLayerFeature } from './AdditionalHelperFunctions';
 
 interface IRenderWFSFeatures {
   inputGeo: Feature;
@@ -91,27 +91,6 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   };
 
   const [layerStyles, setlayerStyles] = useState(null);
-
-  const getStyleForLayerFeature = (feature: any): any => {
-    let style = {};
-    if (!layerStyles) {
-      return style;
-    }
-    layerStyles.output.rules.forEach((rule) => {
-      if (rule.filter) {
-        if (isFilterSatisfied(rule?.filter, feature.properties)) {
-          const colorRgb = rule.symbolizers[0].color.colorRgb();
-          style = {
-            fillColor: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',
-            color: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',
-            strokeColor: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',
-            zIndex: rule.symbolizers[0].zIndex && rule.symbolizers[0].zIndex
-          };
-        }
-      }
-    });
-    return style;
-  };
 
   //gets layer data based on the layer name
   const getLayerData = async () => {
@@ -266,7 +245,9 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
         <GeoJSON
           key={Math.random() + otherFeatures.length}
           onEachFeature={onEachFeature}
-          style={getStyleForLayerFeature}
+          style={function (geoJsonFeature) {
+            return getStyleForLayerFeature(geoJsonFeature, layerStyles, props.opacity);
+          }}
           data={otherFeatures}></GeoJSON>
       )}
       {wellFeatures &&
