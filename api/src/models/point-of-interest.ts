@@ -83,7 +83,7 @@ export class PointOfInterestSearchCriteria {
   date_range_start: Date;
   date_range_end: Date;
 
-  pointOfInterest_ids: string[];
+  point_of_interest_ids: string[];
   species_positive: string[];
 
   search_feature: GeoJSON.Feature;
@@ -107,7 +107,7 @@ export class PointOfInterestSearchCriteria {
     this.pointOfInterest_subtype = (obj && obj.pointOfInterest_subtype) || null;
     this.iappType = (obj && obj.iappType) || null;
     this.iappSiteID = (obj && obj.iappSiteID) || null;
-    this.pointOfInterest_ids = (obj && obj.pointOfInterest_ids) || [];
+    this.point_of_interest_ids = (obj && obj.point_of_interest_ids) || [];
     this.species_positive = obj?.species_positive || [];
 
     this.date_range_start = (obj && obj.date_range_start) || null;
