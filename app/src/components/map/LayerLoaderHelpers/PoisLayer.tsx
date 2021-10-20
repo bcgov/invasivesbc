@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
-import { useMap, useMapEvent } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
+import { Marker, useMap, useMapEvent } from 'react-leaflet';
+import L from 'leaflet';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
+import marker from '../Icons/POImarker.png';
 
 export const PoisLayer = (props) => {
   const map = useMap();
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [pois, setPois] = useState(null);
+  const [things, setThings] = useState([]);
   const dataAccess = useDataAccess();
+
+  useEffect(() => {
+    console.log(things);
+  }, [things]);
+
+  const markerIcon = L.icon({
+    iconUrl: marker,
+    iconSize: [16, 16]
+  });
   const options = {
     maxZoom: 24,
     tolerance: 3,
@@ -30,20 +42,36 @@ export const PoisLayer = (props) => {
   const fetchData = async () => {
     const poisData = await dataAccess.getPointsOfInterestLean({ search_feature: mapBounds });
     const poisFeatureArray = [];
+    const poisIDArray = [];
+    console.log(poisData);
 
     poisData?.rows.forEach((row) => {
       poisFeatureArray.push(row.geojson);
+      poisIDArray.push(row.geojson.properties.point_of_interest_id.toString());
     });
 
+    setThings(poisIDArray);
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
   };
 
-  console.log('pois', pois);
+  const fetchPOIs = async () => {
+    const pois = await dataAccess.getPointsOfInterest({ point_of_interest_ids: things });
+    console.log(pois);
+  };
 
   return (
     <>
       {
-        pois && <GeoJSONVtLayer geoJSON={pois} options={options} /> //NOSONAR
+        //pois && <GeoJSONVtLayer geoJSON={pois} options={options} /> //NOSONAR
+        pois &&
+          pois.features.map((feature) => {
+            var coords = feature.geometry.coordinates;
+            if (things.length > 0) {
+              console.log(things.length);
+              fetchPOIs();
+            }
+            return <Marker position={[coords[1], coords[0]]} icon={markerIcon}></Marker>;
+          })
       }
     </>
   );
