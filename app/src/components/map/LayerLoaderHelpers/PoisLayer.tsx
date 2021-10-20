@@ -31,12 +31,14 @@ export const PoisLayer = (props) => {
     const poisData = await dataAccess.getPointsOfInterestLean({ search_feature: mapBounds });
     const poisFeatureArray = [];
 
-    poisData.rows.forEach((row) => {
+    poisData?.rows.forEach((row) => {
       poisFeatureArray.push(row.geojson);
     });
 
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
   };
+
+  console.log('pois', pois);
 
   return (
     <>

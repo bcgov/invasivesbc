@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import { Marker, Tooltip } from 'react-leaflet';
+import { Marker, GeoJSON, Tooltip } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { CircularProgress, IconButton } from '@material-ui/core';
 import proj4 from 'proj4';
@@ -9,9 +9,7 @@ import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './Helpers/ToolBtnStyles';
 import { GeneratePopup } from './InfoAreaDescription';
 import { createDataUTM } from './Helpers/StyledTable';
-import * as turf from '@turf/turf';
-import { getDataFromDataBC } from '../WFSConsumer';
-import POImarker from '../Icons/POImarker.png';
+import marker from '../Icons/POImarker.png';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -36,22 +34,17 @@ export const calc_utm = (longitude: number, latitude: number) => {
   return [utmZone, utmEasting, utmNorthing];
 };
 
-export default function DisplayPosition({ map, setPoiMarker, setActivityGeo }) {
+export default function DisplayPosition({ map }) {
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
   const [newPosition, setNewPosition] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
+  const [activityGeo, setActivityGeo] = useState(null);
+  const [poiMarker, setPoiMarker] = useState(null);
   const [startTimer, setStartTimer] = useState(false);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
   const divRef = useRef(null);
-
-  const getLocation = async () => {
-    setInitialTime(3);
-    setStartTimer(true);
-    const position = await Geolocation.getCurrentPosition();
-    setNewPosition(position);
-  };
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
@@ -75,8 +68,36 @@ export default function DisplayPosition({ map, setPoiMarker, setActivityGeo }) {
     }
   }, [newPosition]);
 
+  const markerIcon = L.icon({
+    iconUrl: marker,
+    iconSize: [24, 24]
+  });
+
+  const getLocation = async () => {
+    setInitialTime(3);
+    setStartTimer(true);
+    const position = await Geolocation.getCurrentPosition();
+    setNewPosition(position);
+  };
+
   return (
     <>
+      {
+        activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
+      }
+      {poiMarker && (
+        <Marker
+          position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
+          icon={markerIcon}>
+          <Tooltip direction="top" opacity={0.5} permanent>
+            <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
+              {poiMarker.species.map((s) => (
+                <>{s} </>
+              ))}
+            </div>
+          </Tooltip>
+        </Marker>
+      )}
       {newPosition && (
         <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
           <GeneratePopup
