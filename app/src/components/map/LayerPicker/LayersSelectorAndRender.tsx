@@ -37,7 +37,8 @@ export const getAllEnabledLayerModes = (geoData: any[]) => {
         layerObj.push({
           bcgw_code: child.bcgw_code,
           enabled: child.enabled,
-          opacity: child.opacity
+          opacity: child.opacity,
+          color: child.color_code ? child.color_code : null
         });
       }
     });
@@ -70,7 +71,9 @@ export const sanitizedLayers = (geoData: any[]) => {
       if (child.bcgw_code === 'LEAN_ACTIVITIES' || child.bcgw_code === 'LEAN_POI') {
         tempArr.push({
           name: child.bcgw_code,
-          enabled: child.enabled
+          enabled: child.enabled,
+          opacity: child.opacity,
+          color: child.color
         });
       }
     });

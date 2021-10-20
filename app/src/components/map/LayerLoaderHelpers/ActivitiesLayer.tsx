@@ -14,8 +14,8 @@ export const ActivitiesLayer = (props) => {
     tolerance: 3,
     debug: 0,
     style: {
-      fillColor: '#00000',
-      color: '#00000',
+      fillColor: props.color,
+      color: props.color,
       stroke: true,
       opacity: props.opacity,
       fillOpacity: props.opacity - 0.2,

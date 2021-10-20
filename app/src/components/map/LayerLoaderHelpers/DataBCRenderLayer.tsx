@@ -14,9 +14,9 @@ export enum LayerMode {
 
 export const DataBCLayer = (props) => {
   if (props.layerName === 'LEAN_ACTIVITIES') {
-    return <ActivitiesLayer opacity={props.opacity} />;
+    return <ActivitiesLayer opacity={props.opacity} color={props.color_code} />;
   } else if (props.layerName === 'LEAN_POI') {
-    return <PoisLayer opacity={props.opacity} />;
+    return <PoisLayer opacity={props.opacity} color={props.color_code} />;
   }
 
   if (!props.mode) {
