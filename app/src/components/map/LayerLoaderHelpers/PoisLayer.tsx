@@ -14,7 +14,10 @@ export const PoisLayer = (props) => {
   const dataAccess = useDataAccess();
 
   useEffect(() => {
-    console.log(things);
+    if (things.length > 0) {
+      console.log(things);
+      fetchPOIs();
+    }
   }, [things]);
 
   const markerIcon = L.icon({
@@ -43,7 +46,6 @@ export const PoisLayer = (props) => {
     const poisData = await dataAccess.getPointsOfInterestLean({ search_feature: mapBounds });
     const poisFeatureArray = [];
     const poisIDArray = [];
-    console.log(poisData);
 
     poisData?.rows.forEach((row) => {
       poisFeatureArray.push(row.geojson);
@@ -55,8 +57,8 @@ export const PoisLayer = (props) => {
   };
 
   const fetchPOIs = async () => {
-    const pois = await dataAccess.getPointsOfInterest({ point_of_interest_ids: things });
-    console.log(pois);
+    console.log('fetching');
+    console.log(await dataAccess.getPointsOfInterest({ point_of_interest_ids: things, limit: 50 }));
   };
 
   return (
@@ -66,10 +68,6 @@ export const PoisLayer = (props) => {
         pois &&
           pois.features.map((feature) => {
             var coords = feature.geometry.coordinates;
-            if (things.length > 0) {
-              console.log(things.length);
-              fetchPOIs();
-            }
             return <Marker position={[coords[1], coords[0]]} icon={markerIcon}></Marker>;
           })
       }
