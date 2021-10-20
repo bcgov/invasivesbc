@@ -5,7 +5,14 @@ import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer.css';
-import { MapContainer as ReactLeafletMapContainer, useMap, FeatureGroup, Marker, Tooltip } from 'react-leaflet';
+import {
+  MapContainer as ReactLeafletMapContainer,
+  useMap,
+  FeatureGroup,
+  Marker,
+  Tooltip,
+  GeoJSON
+} from 'react-leaflet';
 import Spinner from '../../components/spinner/Spinner';
 import ZoomControl from 'components/map/Tools/ZoomControl';
 
@@ -125,6 +132,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
 
   const [poiMarker, setPoiMarker] = useState(null);
+  const [activityGeo, setActivityGeo] = useState(null);
   const [map, setMap] = useState<any>(null);
   const toolClass = toolStyles();
 
@@ -219,8 +227,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <MapRequestContextProvider>
         <div className={toolClass.toolBtnsLoc}>
-          <SetPointOnClick map={map} setPoiMarker={setPoiMarker} />
-          <DisplayPosition map={map} setPoiMarker={setPoiMarker} />
+          <SetPointOnClick map={map} setPoiMarker={setPoiMarker} setActivityGeo={setActivityGeo} />
+          <DisplayPosition map={map} setPoiMarker={setPoiMarker} setActivityGeo={setActivityGeo} />
           <MeasureTool />
           <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
           {props.showDrawControls && (
@@ -260,7 +268,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           </Marker>
         )}
 
-        {/*<LayersControl position="topright">
+        {
+          activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
+
+          /*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
             <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
           </LayersControl.BaseLayer>
@@ -270,7 +281,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> }
           </LayersControl.Overlay>
-        </LayersControl>*/}
+        </LayersControl>*/
+        }
       </MapRequestContextProvider>
     </ReactLeafletMapContainer>
   );

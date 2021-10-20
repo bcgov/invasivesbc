@@ -48,7 +48,7 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
   }
 };
 
-export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker }) => {
+export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivityGeo }) => {
   const [bufferedGeo, setBufferedGeo] = useState(null);
   const [poiTableRows, setPoiTableRows] = useState([]);
   const [section, setSection] = useState('position');
@@ -195,7 +195,9 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker }) => {
         </div>
         <TableContainer>
           {section == 'position' && <RenderTablePosition rows={utmRows} />}
-          {section == 'activity' && <RenderTableActivity rows={rows} setRows={setRows} />}
+          {section == 'activity' && (
+            <RenderTableActivity setActivityGeo={setActivityGeo} map={map} rows={rows} setRows={setRows} />
+          )}
           {section == 'databc' && <RenderTableDataBC rows={databc} />}
           {section == 'poi' && <RenderTablePOI map={map} rows={poiTableRows} setPoiMarker={setPoiMarker} />}
         </TableContainer>
@@ -211,7 +213,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker }) => {
   );
 };
 
-function SetPointOnClick({ map, setPoiMarker }: any) {
+function SetPointOnClick({ map, setPoiMarker, setActivityGeo }: any) {
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPoint, setGeoPoint] = useState(null);
   const [clickMode, setClickMode] = useState(false);
@@ -254,7 +256,14 @@ function SetPointOnClick({ map, setPoiMarker }: any) {
       </IconButton>
       {utm && (
         <GeoJSON data={geoPoint} key={Math.random()}>
-          <GeneratePopup utmRows={rows} map={map} lat={position.lat} lng={position.lng} setPoiMarker={setPoiMarker} />
+          <GeneratePopup
+            utmRows={rows}
+            map={map}
+            lat={position.lat}
+            lng={position.lng}
+            setPoiMarker={setPoiMarker}
+            setActivityGeo={setActivityGeo}
+          />
         </GeoJSON>
       )}
     </>

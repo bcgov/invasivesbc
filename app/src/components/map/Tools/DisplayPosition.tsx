@@ -36,7 +36,7 @@ export const calc_utm = (longitude: number, latitude: number) => {
   return [utmZone, utmEasting, utmNorthing];
 };
 
-export default function DisplayPosition({ map, setPoiMarker }) {
+export default function DisplayPosition({ map, setPoiMarker, setActivityGeo }) {
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
   const [newPosition, setNewPosition] = useState(null);
@@ -85,6 +85,7 @@ export default function DisplayPosition({ map, setPoiMarker }) {
             lat={newPosition.coords.latitude}
             lng={newPosition.coords.longitude}
             setPoiMarker={setPoiMarker}
+            setActivityGeo={setActivityGeo}
           />
         </Marker>
       )}

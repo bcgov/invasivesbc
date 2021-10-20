@@ -37,7 +37,8 @@ export const getAllEnabledLayerModes = (geoData: any[]) => {
         layerObj.push({
           bcgw_code: child.bcgw_code,
           enabled: child.enabled,
-          opacity: child.opacity
+          opacity: child.opacity,
+          color: child.color_code ? child.color_code : null
         });
       }
     });
@@ -71,7 +72,8 @@ export const sanitizedLayers = (geoData: any[]) => {
         tempArr.push({
           name: child.bcgw_code,
           enabled: child.enabled,
-          opacity: child.opacity
+          opacity: child.opacity,
+          color: child.color
         });
       }
     });

@@ -138,19 +138,11 @@ export function LayerPicker(props: any, { position }) {
   const classes = useStyles();
   const toolClass = toolStyles();
   const mapLayersContext = useContext(MapRequestContext);
-  //used to run a timer const timeLeft = WithCounter();
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
-  // ---------- READ THIS ---------- //
-  // Using newLayers useState
-  // ------ layers useState is old way ------
   const [newLayers, setNewLayers] = useState([]);
-
-  useEffect(() => {
-    console.log('layers', newLayers);
-  }, [newLayers]);
 
   useEffect(() => {
     if (objectState) {
@@ -319,18 +311,33 @@ export function LayerPicker(props: any, { position }) {
                           <option value={LayerMode.RegularFeaturesOffline}>{LayerMode.RegularFeaturesOffline}</option>
                         </NativeSelect>
                       </FormControl>*/}
-                      <OnlineLayersSelector
-                        parent={parent}
-                        child={child}
-                        objectState={objectState}
-                        setObjectState={setObjectState}
-                      />
-                      <OfflineLayersSelector
-                        parent={parent}
-                        child={child}
-                        objectState={objectState}
-                        setObjectState={setObjectState}
-                      />
+                      {child.layers && (
+                        <>
+                          <OnlineLayersSelector
+                            parent={parent}
+                            child={child}
+                            objectState={objectState}
+                            setObjectState={setObjectState}
+                          />
+                          <OfflineLayersSelector
+                            parent={parent}
+                            child={child}
+                            objectState={objectState}
+                            setObjectState={setObjectState}
+                          />
+                        </>
+                      )}
+                      {child.id === 'activities' && (
+                        <DialogContent style={{ height: 300 }}>
+                          <ColorPicker
+                            name="color"
+                            defaultValue={child.color_code}
+                            onChange={(color: any) => {
+                              updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
+                            }}
+                          />
+                        </DialogContent>
+                      )}
                       <div className={toolClass.toolSlider}>
                         <Typography style={{ marginRight: 10 }}>Opacity</Typography>
                         <Slider
@@ -394,6 +401,7 @@ export function LayerPicker(props: any, { position }) {
                 mode={layer.type}
                 inputGeo={props.inputGeo}
                 setWellIdandProximity={props.setWellIdandProximity}
+                color_code={layer.name === 'LEAN_ACTIVITIES' ? layer.color : null}
               />
             )}
           </>
