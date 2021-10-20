@@ -1,5 +1,3 @@
-import { IMediaItem } from './media';
-
 /**
  * Jurisdiction post request body.
  *
@@ -29,13 +27,7 @@ export class JurisdictionPostRequestBody {
     this.jurisdictionPostBody = {
       ...obj,
       // Strip out any media base64 strings which would convolute the record
-      media:
-        (obj.media &&
-          obj.media.map((item: IMediaItem) => {
-            delete item.encoded_file;
-            return item;
-          })) ||
-        []
+      media: []
     };
 
     this.jurisdiction_id = (obj && obj.jurisdiction_id) || null;
