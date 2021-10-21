@@ -101,6 +101,10 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
     updateActivityRecords();
   }, [bufferedGeo]);
 
+  useEffect(() => {
+    updatePOIRecords();
+  }, [bufferedGeo]);
+
   const getSpecies = (arrSpecies, poi) => {
     if (poi.species_negative) {
       poi.species_negative.map((species) => arrSpecies.push(species));
@@ -140,11 +144,6 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
       activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
-      var pointsofinterest = await dataAccess.getPointsOfInterest({
-        search_feature: bufferedGeo,
-        limit: 1000,
-        page: 0
-      });
       if (activities) {
         var tempArr = [];
         for (let i in activities.rows) {
@@ -157,9 +156,19 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
           }
         }
         setRows(tempArr);
-
-        setPOIs(pointsofinterest);
       } else setRows([]);
+    }
+  }, [bufferedGeo]);
+
+  const updatePOIRecords = useCallback(async () => {
+    if (bufferedGeo) {
+      var pointsofinterest = await dataAccess.getPointsOfInterest({
+        search_feature: bufferedGeo,
+        limit: 500,
+        page: 0
+      });
+
+      setPOIs(pointsofinterest);
     }
   }, [bufferedGeo]);
 

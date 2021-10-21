@@ -281,6 +281,8 @@ export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
   const dataAccess = useDataAccess();
   const history = useHistory();
 
+  console.log(rows);
+
   const labels = ['ID', 'Species'];
 
   useEffect(() => {
@@ -450,7 +452,6 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
                 <StyledTableCell component="th" scope="row">
                   <a
                     onClick={() => {
-                      console.log(row);
                       if (row.geometry)
                         map.flyTo(
                           [row.geometry[0].geometry.coordinates[1], row.geometry[0].geometry.coordinates[0]],
