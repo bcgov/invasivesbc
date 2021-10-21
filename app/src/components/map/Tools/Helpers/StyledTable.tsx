@@ -281,8 +281,6 @@ export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
   const dataAccess = useDataAccess();
   const history = useHistory();
 
-  console.log(rows);
-
   const labels = ['ID', 'Species'];
 
   useEffect(() => {
