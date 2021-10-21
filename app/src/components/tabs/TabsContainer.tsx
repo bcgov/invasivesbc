@@ -43,6 +43,7 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
+import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 
 const drawerWidth = 240;
 
@@ -143,6 +144,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const userInfo = keycloak?.userInfo;
   const [open, setOpen] = React.useState(false);
 
+  const wrapper = useKeycloakWrapper();
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -155,8 +158,18 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   /*
     Function to logout current user by wiping their keycloak access token
   */
-  const logoutUser = () => {
-    keycloak.obj.logout();
+  const logoutUser = async () => {
+    console.log('Logout hit');
+    console.log('keycloak here: ', keycloak);
+    try {
+      if (Capacitor.getPlatform() !== 'web') {
+        keycloak.obj.login();
+      } else {
+        keycloak.obj.logout();
+      }
+    } catch (err) {
+      console.log('Error: ', err);
+    }
     handleClose();
   };
 
