@@ -16,7 +16,7 @@
         "id": "FW Wells",
         "name": "Freshwater Wells",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW",
         "color_code": "#000",
         "order": 0,
@@ -24,25 +24,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "FWAS",
         "name": "Fish Watershed Atlas Streams",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP",
         "color_code": "#000",
         "order": 1,
@@ -50,25 +39,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "FWAW",
         "name": "Fish Watershed Atlas Wetlands",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_BASEMAPPING.FWA_WETLANDS_POLY",
         "color_code": "#000",
         "order": 2,
@@ -76,25 +54,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "FSWB",
         "name": "Fish Sensitive Watershed Boundaries",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_WILDLIFE_MANAGEMENT.WCP_FISH_SENSITIVE_WS_POLY",
         "color_code": "#000",
         "order": 3,
@@ -102,19 +69,8 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       }
     ]
   },
@@ -135,7 +91,7 @@
         "id": "Land Own.",
         "name": "Land Ownership",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_TANTALIS.TA_SURFACE_OWNERSHIP_SVW",
         "color_code": "#000",
         "order": 0,
@@ -143,25 +99,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "Fed. Parks",
         "name": "Federal Parks",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_ADMIN_BOUNDARIES.CLAB_NATIONAL_PARKS",
         "color_code": "#000",
         "order": 1,
@@ -169,25 +114,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "Bio. Zones",
         "name": "Biogeoclimatic Zones",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
         "color_code": "#000",
         "order": 2,
@@ -195,25 +129,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "RISOA",
         "name": "Regional Invasive Species Organization Areas",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "regional_invasive_species_organization_areas",
         "color_code": "#000",
         "order": 3,
@@ -221,25 +144,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "Tenures",
         "name": "Aggregate (gravel) Tennures",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "aggregate_tenures",
         "color_code": "#000",
         "order": 4,
@@ -247,25 +159,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "IPMA",
         "name": "Invasive Plant Management Areas",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "invasive_plant_management_areas",
         "color_code": "#000",
         "order": 5,
@@ -273,25 +174,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "Wildlife",
         "name": "Wildlife Habitat Areas",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY",
         "color_code": "#000",
         "order": 6,
@@ -299,25 +189,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "FN Reserves",
         "name": "First Nation Reserves",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
         "color_code": "#000",
         "order": 7,
@@ -325,19 +204,8 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       }
     ]
   },
@@ -358,7 +226,7 @@
         "id": "NRD",
         "name": "Natural Resource District",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG",
         "color_code": "#000",
         "order": 0,
@@ -366,25 +234,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "MTD (District)",
         "name": "Ministry of Transportations Districts",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY",
         "color_code": "#000",
         "order": 1,
@@ -392,25 +249,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "MTD (Regional)",
         "name": "Ministry of Transportations Districts",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_ADMIN_BOUNDARIES.TADM_MOT_REGIONAL_BNDRY_POLY",
         "color_code": "#000",
         "order": 2,
@@ -418,25 +264,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "MTRI",
         "name": "Ministry of Transportation Road Inventory",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_IMAGERY_AND_BASE_MAPS",
         "color_code": "#000",
         "order": 3,
@@ -444,25 +279,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "ADMSRD",
         "name": "Access and Directory Management Services Regional Districts",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP",
         "color_code": "#000",
         "order": 4,
@@ -470,25 +294,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "ADMSM",
         "name": "Access and Directory Management Services Municipalities",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_LEGAL_ADMIN_BOUNDARIES",
         "color_code": "#000",
         "order": 5,
@@ -496,25 +309,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "Jurisdictions",
         "name": "Jurisdictions",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "jurisdiction",
         "color_code": "#000",
         "order": 6,
@@ -522,19 +324,8 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       }
     ]
   },
@@ -555,7 +346,7 @@
         "id": "OGMU",
         "name": "Old Growth Management Units",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_LAND_USE_PLANNING.RMP_OGMA_LEGAL_CURRENT_SVW",
         "color_code": "#000",
         "order": 0,
@@ -563,25 +354,14 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "Ungulate Winter Ranges",
-        "name": "null",
+        "name": "Ungulate Winter Ranges",
         "source": "null",
-        "type": "wms_online",
+        "layer_mode": "wms_online",
         "bcgw_code": "WHSE_WILDLIFE_MANAGEMENT.WCP_UNGULATE_WINTER_RANGE_SP",
         "color_code": "#000",
         "order": 1,
@@ -589,19 +369,8 @@
         "loaded": 70,
         "enabled": false,
         "dialog_open": false,
-        "layers": {
-          "server": {
-            "expanded": false,
-            "wms_online": false,
-            "wfs_online": false,
-            "vector_tiles_online": false
-          },
-          "local": {
-            "expanded": false,
-            "wfs_offline": false,
-            "vector_tiles_offline": false
-          }
-        }
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
       },
       {
         "id": "activities",

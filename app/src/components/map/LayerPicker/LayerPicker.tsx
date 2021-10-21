@@ -53,12 +53,7 @@ import DragHandleIcon from '@material-ui/icons/DragHandle';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import InfoIcon from '@material-ui/icons/Info';
-import {
-  getAllEnabledLayerModes,
-  OfflineLayersSelector,
-  OnlineLayersSelector,
-  sanitizedLayers
-} from './LayersSelectorAndRender';
+import { LayersSelector, addOrRemoveLayer, updateLayer } from './LayersSelectorAndRender';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -143,12 +138,6 @@ export function LayerPicker(props: any, { position }) {
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
   const [newLayers, setNewLayers] = useState([]);
-
-  useEffect(() => {
-    if (objectState) {
-      setNewLayers(sanitizedLayers(objectState));
-    }
-  }, [objectState]);
 
   function getErrorIcon(time: any) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
@@ -272,14 +261,15 @@ export function LayerPicker(props: any, { position }) {
                   <Checkbox
                     checked={child.enabled}
                     name={child.id}
-                    onChange={() =>
+                    onChange={() => {
+                      addOrRemoveLayer(child, newLayers, setNewLayers);
                       updateChild(
                         parent.id,
                         child.id,
                         { enabled: !getChild(objectState, parent.id, child.id).enabled },
                         { objectState, setObjectState }
-                      )
-                    }
+                      );
+                    }}
                   />
                 </Grid>
                 <Grid item xs={5}>
@@ -311,22 +301,14 @@ export function LayerPicker(props: any, { position }) {
                           <option value={LayerMode.RegularFeaturesOffline}>{LayerMode.RegularFeaturesOffline}</option>
                         </NativeSelect>
                       </FormControl>*/}
-                      {child.layers && (
-                        <>
-                          <OnlineLayersSelector
-                            parent={parent}
-                            child={child}
-                            objectState={objectState}
-                            setObjectState={setObjectState}
-                          />
-                          <OfflineLayersSelector
-                            parent={parent}
-                            child={child}
-                            objectState={objectState}
-                            setObjectState={setObjectState}
-                          />
-                        </>
-                      )}
+                      <LayersSelector
+                        parent={parent}
+                        child={child}
+                        objectState={objectState}
+                        setObjectState={setObjectState}
+                        layers={newLayers}
+                        setLayers={setNewLayers}
+                      />
                       {child.id === 'activities' && (
                         <DialogContent style={{ height: 300 }}>
                           <ColorPicker
@@ -334,6 +316,7 @@ export function LayerPicker(props: any, { position }) {
                             defaultValue={child.color_code}
                             onChange={(color: any) => {
                               updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
+                              updateLayer({ color_code: color }, child, newLayers, setNewLayers);
                             }}
                           />
                         </DialogContent>
@@ -342,14 +325,15 @@ export function LayerPicker(props: any, { position }) {
                         <Typography style={{ marginRight: 10 }}>Opacity</Typography>
                         <Slider
                           defaultValue={child.opacity}
-                          onChangeCommitted={(event: any, newOpacity: number | number[]) =>
+                          onChangeCommitted={(event: any, newOpacity: number | number[]) => {
                             updateChild(
                               parent.id,
                               child.id,
                               { opacity: newOpacity as number },
                               { objectState, setObjectState }
-                            )
-                          }
+                            );
+                            updateLayer({ opacity: newOpacity as number }, child, newLayers, setNewLayers);
+                          }}
                           getAriaValueText={opacityText}
                           step={0.0001}
                           min={0.0}
@@ -389,24 +373,16 @@ export function LayerPicker(props: any, { position }) {
 
   return (
     <LayersControlProvider value={null}>
-      {newLayers.map((layer) => {
-        // Using newLayers useState
-        // ------ layers useState is old way ------
-        return (
-          <>
-            {layer.enabled && (
-              <DataBCLayer
-                opacity={layer.opacity}
-                layerName={layer.name}
-                mode={layer.type}
-                inputGeo={props.inputGeo}
-                setWellIdandProximity={props.setWellIdandProximity}
-                color_code={layer.name === 'LEAN_ACTIVITIES' ? layer.color : null}
-              />
-            )}
-          </>
-        );
-      })}
+      {newLayers.map((layer) => (
+        <DataBCLayer
+          opacity={layer.opacity}
+          layerName={layer.bcgw_code}
+          mode={layer.layer_mode}
+          inputGeo={props.inputGeo}
+          setWellIdandProximity={props.setWellIdandProximity}
+          color_code={layer.color_code}
+        />
+      ))}
       <div className={positionClass}>
         <PopupState variant="popover" popupId="layerPicker">
           {(popupState) => (
