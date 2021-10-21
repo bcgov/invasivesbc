@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import SLDParser from 'geostyler-sld-parser';
 import { JurisdictionSLD } from '../SldStyles/jurisdiction_sld';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 
 export const JurisdictionsLayer = (props) => {
   const map = useMap();
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [jurisdictions, setJurisdictions] = useState(null);
-  const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
+  const databaseContext = useContext(DatabaseContext2);
   const [options, setOptions] = useState({
     maxZoom: 24,
     tolerance: 3,
@@ -43,7 +45,7 @@ export const JurisdictionsLayer = (props) => {
   });
 
   const fetchData = async () => {
-    const jurisdictionsData = await invasivesApi.getJurisdictions({ search_feature: mapBounds });
+    const jurisdictionsData = await dataAccess.getJurisdictions({ search_feature: mapBounds }, databaseContext);
     const jurisdictionsFeatureArray = [];
     jurisdictionsData.rows.forEach((row) => {
       jurisdictionsFeatureArray.push({

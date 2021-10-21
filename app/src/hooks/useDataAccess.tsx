@@ -1,6 +1,7 @@
 import {
   IActivitySearchCriteria,
   ICreateOrUpdateActivity,
+  IJurisdictionSearchCriteria,
   IPointOfInterestSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 import { useInvasivesApi } from './useInvasivesApi';
@@ -10,6 +11,7 @@ import { DocType } from '../constants/database';
 import { Capacitor } from '@capacitor/core';
 import { DatabaseContext } from '../contexts/DatabaseContext';
 import { Network } from '@capacitor/network';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 /**
  * Returns a set of supported api methods.
@@ -22,6 +24,8 @@ export const useDataAccess = () => {
   const databaseContext = useContext(DatabaseContext2);
   const databaseContextPouch = useContext(DatabaseContext);
   const platform = Capacitor.getPlatform();
+  const networkContext = useContext(NetworkContext);
+
   /**
    * Fetch points of interest by search criteria.
    *
@@ -36,11 +40,10 @@ export const useDataAccess = () => {
     },
     forceCache = false
   ): Promise<any> => {
-    const networkStatus = await Network.getStatus();
     if (platform === 'web') {
       return api.getPointsOfInterest(pointsOfInterestSearchCriteria);
     } else {
-      if (forceCache === true || !networkStatus.connected) {
+      if (forceCache === true || !networkContext.connected) {
         const dbcontext = context;
         return dbcontext.asyncQueue({
           asyncTask: () => {
@@ -74,11 +77,10 @@ export const useDataAccess = () => {
       ready: boolean;
     }
   ): Promise<any> => {
-    const networkStatus = await Network.getStatus();
     if (platform === 'web') {
       return api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
     } else {
-      if (!networkStatus.connected) {
+      if (!networkContext.connected) {
         const dbcontext = context;
 
         let sql = `SELECT * FROM lean_poi WHERE public.ST_INTERSECTS(
@@ -116,6 +118,49 @@ export const useDataAccess = () => {
   };
 
   /**
+   * Fetch jurisdictions by search criteria.
+   *
+   * @param {jurisdictionSearchCriteria} jurisdictionSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getJurisdictions = async (
+    jurisdictionSearchCriteria: IJurisdictionSearchCriteria,
+    context?: {
+      asyncQueue: (request: DBRequest) => Promise<any>;
+      ready: boolean;
+    }
+  ): Promise<any> => {
+    if (platform === 'web') {
+      return api.getJurisdictions(jurisdictionSearchCriteria);
+    } else {
+      if (!networkContext.connected) {
+        const dbcontext = context;
+
+        let sql = `SELECT * FROM jurisdictions;`;
+
+        const asyncReturnVal = await dbcontext.asyncQueue({
+          asyncTask: () => {
+            return query(
+              {
+                type: QueryType.RAW_SQL,
+                sql: sql
+              },
+              databaseContext
+            );
+          }
+        });
+
+        return {
+          rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
+          count: asyncReturnVal.length
+        };
+      } else {
+        return api.getJurisdictions(jurisdictionSearchCriteria);
+      }
+    }
+  };
+
+  /**
    * Fetch a signle activity by its id.
    *
    * @param {string} activityId
@@ -131,11 +176,10 @@ export const useDataAccess = () => {
     referenceData = false
   ): Promise<any> => {
     try {
-      const networkStatus = await Network.getStatus();
       if (Capacitor.getPlatform() === 'web') {
         return api.getActivityById(activityId);
       } else {
-        if (forceCache === true || !networkStatus.connected) {
+        if (forceCache === true || !networkContext.connected) {
           const dbcontext = context;
           // Removed for now due to not being able to open cached activity
           const res = await dbcontext.asyncQueue({
@@ -247,11 +291,10 @@ export const useDataAccess = () => {
     forceCache = false,
     referenceCache = false
   ): Promise<any> => {
-    const networkStatus = await Network.getStatus();
     if (Capacitor.getPlatform() === 'web') {
       return api.getActivities(activitiesSearchCriteria);
     } else {
-      if (forceCache === true || !networkStatus.connected) {
+      if (forceCache === true || !networkContext.connected) {
         const dbcontext = context;
         const table = referenceCache ? 'reference_activity' : 'activity';
         const typeClause = activitiesSearchCriteria.activity_type
@@ -298,11 +341,10 @@ export const useDataAccess = () => {
     activitiesSearchCriteria: IActivitySearchCriteria,
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
-    const networkStatus = await Network.getStatus();
     if (Capacitor.getPlatform() === 'web') {
       return api.getActivitiesLean(activitiesSearchCriteria);
     } else {
-      if (!networkStatus.connected) {
+      if (!networkContext.connected) {
         const dbcontext = context;
 
         let sql = `SELECT * FROM lean_activities WHERE public.ST_INTERSECTS(
@@ -482,6 +524,7 @@ export const useDataAccess = () => {
     createActivity,
     deleteActivities,
     getAppState,
-    setAppState
+    setAppState,
+    getJurisdictions
   };
 };

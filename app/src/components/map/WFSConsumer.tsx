@@ -3,6 +3,7 @@ import proj4 from 'proj4';
 import SLDParser from 'geostyler-sld-parser';
 import '@capacitor-community/http';
 import { Http } from '@capacitor-community/http';
+import { IndependentLayers } from './LayerLoaderHelpers/DataBCRenderLayer';
 const { stringify } = require('wkt');
 
 const getHTTP = async (url) => {
@@ -53,7 +54,6 @@ const buildStylesURLForDataBC = (layerName: string) => {
 const albersToGeog = (featureCollection: Object[]) => {
   try {
     const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
-    console.log('converted objects');
     return reprojected;
   } catch (e) {
     console.log('error converting back to geog from albers:');
@@ -63,6 +63,9 @@ const albersToGeog = (featureCollection: Object[]) => {
 };
 
 export const getStylesDataFromBC: any = async (layerName: string) => {
+  if (Object.values(IndependentLayers).includes(layerName as any)) {
+    return {};
+  }
   let stylesURL = buildStylesURLForDataBC(layerName);
   let resp = await getHTTP(stylesURL);
   const sldParser = new SLDParser();
@@ -80,16 +83,19 @@ export const getDataFromDataBC: any = async (
   let totalInBox = 0;
   let index = startIndex ? startIndex : 0;
 
+  if (Object.values(IndependentLayers).includes(layerName as any)) {
+    return [];
+  }
   let URL = buildURLForDataBC(layerName, geoJSON);
   let resp = await getHTTP(URL);
   totalInBox = resp.data.numberMatched;
-  console.log('***features found: ' + resp.data.numberMatched);
-  console.log('***converting to geog from albers:');
+  // console.log('***features found: ' + resp.data.numberMatched);
+  // console.log('***converting to geog from albers:');
   if (!resp.data.numberMatched) {
     return [];
   }
   let returnVal = albersToGeog(resp.data).features;
-  console.log('***features converted: ' + returnVal.length);
+  // console.log('***features converted: ' + returnVal.length);
   if (!pageSize && !startIndex) {
     console.log('no page provided');
     return returnVal;

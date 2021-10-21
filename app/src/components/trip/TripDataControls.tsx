@@ -13,6 +13,7 @@ import geoData from '../../components/map/LayerPicker/GEO_DATA.json';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
+import { IndependentLayers } from 'components/map/LayerLoaderHelpers/DataBCRenderLayer';
 const async = require('async');
 
 const useStyles = makeStyles((theme) => ({
@@ -72,6 +73,10 @@ export const TripDataControls: React.FC<any> = (props) => {
       {
         name: 'Metabase Queries',
         state: 'none'
+      },
+      {
+        name: 'Jurisdictions',
+        state: 'none'
       }
     ]
   });
@@ -81,7 +86,9 @@ export const TripDataControls: React.FC<any> = (props) => {
     const layerNamesArr = [];
     geoDataJSON.forEach((pLayer) => {
       pLayer.children.forEach((cLayer) => {
-        layerNamesArr.push(cLayer.BCGWcode);
+        if (cLayer.bcgw_code) {
+          layerNamesArr.push(cLayer.bcgw_code);
+        }
       });
     });
     return layerNamesArr;
@@ -144,7 +151,7 @@ export const TripDataControls: React.FC<any> = (props) => {
           items: itemsArr
         };
       });
-      // return;
+      return;
     }
 
     let numberActivitiesFetched = 0;
@@ -840,6 +847,75 @@ export const TripDataControls: React.FC<any> = (props) => {
     });
   };
 
+  const fetchJurisdictions = async () => {
+    console.log('started fetching jurisdictions...');
+
+    setProgressDialog((prevState) => {
+      const itemsArr = prevState.items;
+      itemsArr[5] = { ...itemsArr[5], state: 'in_progress' };
+      return {
+        ...prevState,
+        items: itemsArr
+      };
+    });
+
+    try {
+      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
+
+      if (!geometry) {
+        return;
+      }
+
+      const jurisdictionsData = await invasivesApi.getJurisdictions({ search_feature: geometry });
+      const jurisdictionsFeatureArray = [];
+
+      alert(JSON.stringify(jurisdictionsData));
+
+      jurisdictionsData.rows.forEach((row) => {
+        jurisdictionsFeatureArray.push({
+          type: 'Feature',
+          properties: { type: row.jurisdictn, layer: 'jurisdiction' },
+          geometry: row.geom
+        });
+      });
+
+      const jurisdictionsGeoJSON = { type: 'FeatureCollection', features: jurisdictionsFeatureArray };
+
+      await databaseContext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.RAW_SQL,
+                sql: `INSERT INTO jurisdictions (json, trip_ID) VALUES ('${JSON.stringify(jurisdictionsGeoJSON)}',${
+                  props.trip_ID
+                })`
+              }
+            ],
+            databaseContext
+          );
+        }
+      });
+    } catch (e) {
+      setProgressDialog((prevState) => {
+        const itemsArr = prevState.items;
+        itemsArr[5] = { ...itemsArr[5], state: 'error', description: `Error: ${e}` };
+        return {
+          ...prevState,
+          items: itemsArr
+        };
+      });
+    }
+    setProgressDialog((prevState) => {
+      const itemsArr = prevState.items;
+      itemsArr[5] = { ...itemsArr[5], state: 'complete' };
+      return {
+        ...prevState,
+        items: itemsArr
+      };
+    });
+  };
+
   const deleteTripAndFetch = async () => {
     setProgressDialog((prevState) => ({
       ...prevState,
@@ -859,6 +935,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       await fetchActivities();
       await fetchPointsOfInterest();
       await fetchMetabaseQueries();
+      await fetchJurisdictions();
       setProgressDialog((prevState) => ({
         dialogOpen: false,
         done: true,

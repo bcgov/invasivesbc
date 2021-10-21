@@ -196,6 +196,22 @@ export interface IMedia {
  * PointOfInterest search filter criteria.
  *
  * @export
+ * @interface IJurisdictionSearchCriteria
+ */
+export interface IJurisdictionSearchCriteria {
+  /**
+   * GeoJSON feature (of type polygon) to search in.
+   *
+   * @type {Feature}
+   * @memberof IJurisdictionSearchCriteria
+   */
+  search_feature?: Feature;
+}
+
+/**
+ * PointOfInterest search filter criteria.
+ *
+ * @export
  * @interface IPointOfInterestSearchCriteria
  */
 export interface IPointOfInterestSearchCriteria {
