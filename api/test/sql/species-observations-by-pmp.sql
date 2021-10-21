@@ -2,7 +2,7 @@
   Species observations by planning unit.
   Metabase doesn't support the insertion of 
   table aliases. So if Metabase needs to query against
-  an attribute, make sure that you don't use an table
+  an attribute, make sure that you don't use a table
   alias for that attribute.
 */
 select
@@ -25,7 +25,7 @@ select
 from
   code c,
   public.activities_by_species p join
-  public.regional_invasive_species_organization_areas r on
+  public.regional_invasive_species_organization_areas on
   public.st_intersects(p.geom,public.st_transform(public.regional_invasive_species_organization_areas.geom,3005))
 where
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
