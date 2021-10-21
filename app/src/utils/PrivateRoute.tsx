@@ -1,7 +1,8 @@
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React, { useContext } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 import { NetworkContext } from 'contexts/NetworkContext';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { CircularProgress } from '@mui/material';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -18,7 +19,7 @@ interface IPrivateRouteProps extends RouteProps {
  * @return {*}
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const keycloak = useKeycloakWrapper();
+  const { keycloak } = useContext(AuthStateContext);
   const networkContext = useContext(NetworkContext);
   let { component: Component, layout: Layout, ...rest } = props;
 
@@ -36,21 +37,16 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
           ) {
             console.log('unauthenticated');
             return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
-          } else {
-            console.log('authenticated');
-            return (
-              <Layout>
-                <Component {...renderProps} {...rest.componentProps} />
-              </Layout>
-            );
           }
-        } else {
-          return (
-            <Layout>
-              <Component {...renderProps} {...rest.componentProps} />
-            </Layout>
-          );
         }
+        if (keycloak?.authenticated && !keycloak.userInfo) {
+          return <CircularProgress />;
+        }
+        return (
+          <Layout>
+            <Component {...renderProps} {...rest.componentProps} />
+          </Layout>
+        );
       }}
     />
   );

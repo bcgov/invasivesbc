@@ -13,9 +13,12 @@ import { RolesContextProvider } from './contexts/RolesContext';
 import { NetworkContextProvider } from 'contexts/NetworkContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
+import { KeycloakProvider } from '@react-keycloak/web';
 import CustomThemeProvider from './utils/CustomThemeProvider';
+import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 
 import AppRouter from './AppRouter';
+import { AuthStateContextProvider } from 'contexts/authStateContext';
 
 interface IAppProps {
   deviceInfo: DeviceInfo;
@@ -54,11 +57,10 @@ const App: React.FC<IAppProps> = (props) => {
     keycloakConfig = {
       flow: 'hybrid',
       redirectUri: 'http://127.0.0.1',
-      checkLoginIframe: false,
-      onLoad: 'login-required'
+      checkLoginIframe: false
     };
   } else {
-    keycloakConfig = { onLoad: 'login-required', checkLoginIframe: false };
+    keycloakConfig = { checkLoginIframe: false };
   }
 
   const appRouterProps = {
@@ -69,40 +71,44 @@ const App: React.FC<IAppProps> = (props) => {
 
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
-      <ThemeContextProvider>
-        <RolesContextProvider>
-          <NetworkContextProvider>
-            <CustomThemeProvider>
-              <IonReactRouter>
-                <DatabaseContext2Provider>
-                  <DatabaseContextProvider>
-                    <DatabaseContext.Consumer>
-                      {(databaseContext: IDatabaseContext) => {
-                        if (Capacitor.getPlatform() === 'ios') {
-                          return (
-                            <DatabaseChangesContextProvider>
-                              <AppRouter {...appRouterProps} />
-                            </DatabaseChangesContextProvider>
-                          );
-                        }
-                        if (databaseContext.database) {
-                          // database not ready, delay loading app
-                          return (
-                            <DatabaseChangesContextProvider>
-                              <AppRouter {...appRouterProps} />
-                            </DatabaseChangesContextProvider>
-                          );
-                        }
-                        return <CircularProgress />;
-                      }}
-                    </DatabaseContext.Consumer>
-                  </DatabaseContextProvider>
-                </DatabaseContext2Provider>
-              </IonReactRouter>
-            </CustomThemeProvider>
-          </NetworkContextProvider>
-        </RolesContextProvider>
-      </ThemeContextProvider>
+      <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
+        <AuthStateContextProvider>
+          <ThemeContextProvider>
+            <RolesContextProvider>
+              <NetworkContextProvider>
+                <CustomThemeProvider>
+                  <IonReactRouter>
+                    <DatabaseContext2Provider>
+                      <DatabaseContextProvider>
+                        <DatabaseContext.Consumer>
+                          {(databaseContext: IDatabaseContext) => {
+                            if (Capacitor.getPlatform() === 'ios') {
+                              return (
+                                <DatabaseChangesContextProvider>
+                                  <AppRouter {...appRouterProps} />
+                                </DatabaseChangesContextProvider>
+                              );
+                            }
+                            if (databaseContext.database) {
+                              // database not ready, delay loading app
+                              return (
+                                <DatabaseChangesContextProvider>
+                                  <AppRouter {...appRouterProps} />
+                                </DatabaseChangesContextProvider>
+                              );
+                            }
+                            return <CircularProgress />;
+                          }}
+                        </DatabaseContext.Consumer>
+                      </DatabaseContextProvider>
+                    </DatabaseContext2Provider>
+                  </IonReactRouter>
+                </CustomThemeProvider>
+              </NetworkContextProvider>
+            </RolesContextProvider>
+          </ThemeContextProvider>
+        </AuthStateContextProvider>
+      </KeycloakProvider>
     </Box>
   );
 };

@@ -8,6 +8,7 @@ import {
   Grid,
   makeStyles,
   Theme,
+  Button,
   FormGroup,
   FormControlLabel,
   Switch,
@@ -15,6 +16,9 @@ import {
   ListItemIcon,
   ListItemText,
   Drawer,
+  Avatar,
+  Menu,
+  MenuItem,
   List,
   createStyles,
   IconButton,
@@ -26,9 +30,11 @@ import clsx from 'clsx';
 import { Assignment, Bookmarks, Explore, HomeWork, Map, Search, Home } from '@material-ui/icons';
 import { ALL_ROLES } from 'constants/roles';
 import { ThemeContext } from 'contexts/themeContext';
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import React, { useCallback, useLayoutEffect, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
@@ -36,6 +42,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { NetworkContext } from 'contexts/NetworkContext';
+import { AuthStateContext } from 'contexts/authStateContext';
 
 const drawerWidth = 240;
 
@@ -123,12 +130,36 @@ export interface ITabsContainerProps {
 //const invbclogo = require('InvasivesBC_Icon.svg');
 
 const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
-  const keycloak = useKeycloakWrapper();
-
+  const { keycloak } = useContext(AuthStateContext);
   const classes = useStyles();
   const history = useHistory();
-
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
+  const authContext = useContext(AuthStateContext);
+  const userInfo = keycloak?.userInfo;
   const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    console.log('keycloak: ', keycloak);
+    console.log('AuthContext: ', authContext.keycloak);
+    setAnchorEl(event.currentTarget);
+  };
+
+  /*
+    Function to logout current user by wiping their keycloak access token
+  */
+  const logoutUser = () => {
+    keycloak.obj.logout();
+    handleClose();
+  };
+
+  const loginUser = () => {
+    keycloak?.obj?.login();
+    handleClose();
+  };
 
   useEffect(() => {
     function handleResize() {
@@ -196,14 +227,20 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
 
-        if (keycloak.hasRole(ALL_ROLES) || props.isMobileNoNetwork) {
-          tabsUserHasAccessTo.push({
-            label: 'Home',
-            path: '/home/landing',
-            icon: <Home />
-          });
+        tabsUserHasAccessTo.push({
+          label: 'Home',
+          path: '/home/landing',
+          icon: <Home />
+        });
 
-          if (process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        tabsUserHasAccessTo.push({
+          label: 'Map',
+          path: '/home/map',
+          icon: <Map />
+        });
+
+        if (keycloak.hasRole(ALL_ROLES) || props.isMobileNoNetwork) {
+          if (keycloak.obj?.authenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'Search',
               path: '/home/search',
@@ -211,7 +248,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (Capacitor.getPlatform() !== 'web') {
+          if (keycloak.obj?.authenticated && Capacitor.getPlatform() !== 'web') {
             tabsUserHasAccessTo.push({
               label: 'Plan My Trip',
               path: '/home/plan',
@@ -219,7 +256,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (Capacitor.getPlatform() != 'web') {
+          if (keycloak.obj?.authenticated && Capacitor.getPlatform() != 'web') {
             tabsUserHasAccessTo.push({
               label: 'Cached Records',
               path: '/home/references',
@@ -228,7 +265,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          if (keycloak.obj?.authenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'My Records',
               path: '/home/activities',
@@ -236,13 +273,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          tabsUserHasAccessTo.push({
-            label: 'Map',
-            path: '/home/map',
-            icon: <Map />
-          });
-
-          if (process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          if (keycloak.obj?.authenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'Current Activity',
               path: '/home/activity',
@@ -313,19 +344,45 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
                 </Tabs>
               </Grid>
               <Grid xs={1} container justifyContent="center" alignItems="center" item>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={themeType}
-                      checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
-                      onChange={() => {
-                        setThemeType(!themeType);
-                      }}
-                    />
-                  }
-                  label="Theme Mode"
-                />
+                <IconButton onClick={handleClick} size="small">
+                  {userInfo ? <Avatar>{userInfo.name.match(/\b(\w)/g).join('')}</Avatar> : <Avatar />}
+                </IconButton>
               </Grid>
+              <Menu
+                anchorEl={anchorEl}
+                open={openMenu}
+                onClose={handleClose}
+                PaperProps={{
+                  elevation: 3
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
+                <MenuItem>
+                  <Switch
+                    color="secondary"
+                    checked={themeType}
+                    checkedIcon={themeType ? <Brightness2Icon /> : <WbSunnyIcon />}
+                    onChange={() => {
+                      setThemeType(!themeType);
+                    }}
+                  />
+                  Theme
+                </MenuItem>
+                {keycloak.obj?.authenticated ? (
+                  <MenuItem onClick={logoutUser}>
+                    <ListItemIcon>
+                      <LogoutIcon />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                ) : (
+                  <MenuItem onClick={loginUser}>
+                    <ListItemIcon>
+                      <LoginIcon />
+                    </ListItemIcon>
+                    Log In
+                  </MenuItem>
+                )}
+              </Menu>
             </Hidden>
           </Grid>
         </Toolbar>

@@ -3,7 +3,6 @@ import { CircularProgress } from '@material-ui/core';
 import React, { useEffect, useState, useContext } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import HomeRouter from './features/home/HomeRouter';
-import AuthLayout from './layouts/AuthLayout';
 import PublicLayout from './layouts/PublicLayout';
 import AccessDenied from './pages/misc/AccessDenied';
 import { NotFoundPage } from './pages/misc/NotFoundPage';
@@ -37,7 +36,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
   useEffect(() => {
     // If on mobile and have no internet connection, then bypass keycloak
     // removed network check for now - can't use current version of capactior network as context
-    setLayout(() => AuthLayout);
+    setLayout(() => PublicLayout);
   });
 
   if (!layout) {
@@ -53,11 +52,7 @@ const AppRouter: React.FC<IAppRouterProps> = (props) => {
         path="/home"
         title={getTitle('Home')}
         component={HomeRouter}
-        layout={
-          !networkContext.connected || process.env.REACT_APP_REAL_NODE_ENV === 'production' ? PublicLayout : AuthLayout
-        }
-        keycloak={props.keycloak}
-        keycloakConfig={props.keycloakConfig}
+        layout={PublicLayout}
         isMobileNoNetwork={isMobileNoNetwork}
       />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />

@@ -2,9 +2,10 @@ import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { Capacitor } from '@capacitor/core';
 import { GeoJSONObject } from '@turf/turf';
 import { DocType } from 'constants/database';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import PQueue from 'p-queue/dist';
 import { useSQLite } from 'react-sqlite-hook/dist';
+import { AuthStateContext } from './authStateContext';
 // Singleton SQLite Hook
 export let sqlite: any;
 // Existing Connections Store
@@ -26,6 +27,7 @@ export const DatabaseContext2 = React.createContext({
 });
 
 export const DatabaseContext2Provider = (props) => {
+  const { keycloak } = useContext(AuthStateContext);
   const message = useRef('');
   const [databaseIsSetup, setDatabaseIsSetup] = useState(false);
   const dbRequestQueue = new PQueue({ concurrency: 1 });
@@ -101,6 +103,34 @@ export const DatabaseContext2Provider = (props) => {
     if (Capacitor.getPlatform() !== 'web') createSqliteTables(sqlite);
     // a bunch of one time stuff
   }, []);
+
+  useEffect(() => {
+    const saveUserInfo = async () => {
+      const user = keycloak?.userInfo;
+      if (!user) {
+        return;
+      }
+      if (Capacitor.getPlatform() !== 'web' && databaseIsSetup && sqlite) {
+        await processRequest({
+          asyncTask: () => {
+            return upsert(
+              [
+                {
+                  type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
+                  docType: DocType.KEYCLOAK,
+                  ID: '1',
+                  json: user
+                }
+              ],
+              DatabaseContext2
+            );
+          }
+        });
+      }
+    };
+    saveUserInfo();
+  }, [keycloak?.obj, keycloak?.userInfo, processRequest, databaseIsSetup]);
+
   const createSqliteTables = async (sqliteDB) => {
     // initialize the connection
     let db = await getConnection();
