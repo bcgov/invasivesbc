@@ -60,6 +60,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   const [poiTableRows, setPoiTableRows] = useState([]);
   const [section, setSection] = useState('position');
   const [pointMode, setPointMode] = useState(false);
+  const [showRadius, setShowRadius] = useState(false);
   const [databc, setDataBC] = useState(null);
   const [radius, setRadius] = useState(3);
   const [pois, setPOIs] = useState([]);
@@ -234,7 +235,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
             </Typography>
           </Stack>
           {!pointMode && (
-            <>
+            <Grid container>
               <Grid item style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -30 }}>
                 <Typography>{radius} km</Typography>
                 <Slider
@@ -251,13 +252,22 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
                   max={10}
                 />
               </Grid>
-            </>
+              <Grid item style={{ marginTop: -30 }}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Show Area</Typography>
+                  <Switch onChange={(event: any) => setShowRadius(event.target.checked)} color="primary" />
+                </Stack>
+              </Grid>
+            </Grid>
           )}
           <Grid item>
             <Button onClick={hideElement}>Close</Button>
           </Grid>
         </Grid>
       </Popup>
+      {
+        bufferedGeo && showRadius && <GeoJSON data={bufferedGeo} key={Math.random()} /> //NOSONAR
+      }
     </>
   );
 };
