@@ -7,45 +7,17 @@ import { Capacitor } from '@capacitor/core';
 
 export interface IAuthState {
   ready?: boolean;
+  keycloak?: any;
 }
 
 export const AuthStateContext = React.createContext<IAuthState>({
-  ready: false
+  ready: false,
+  keycloak: {}
 });
 
 export const AuthStateContextProvider: React.FC = (props) => {
   const keycloak = useKeycloakWrapper();
   const invasivesApi = useInvasivesApi();
-
-  const [userInfo, setUserInfo] = React.useState<any>(null);
-  const databaseContext = React.useContext(DatabaseContext2);
-
-  React.useEffect(() => {
-    const loadUserInfo = async () => {
-      console.log(keycloak.obj + 'keycloak is here');
-      const user = await keycloak.obj?.loadUserInfo();
-      if (Capacitor.getPlatform() !== 'web' && databaseContext.ready) {
-        await databaseContext.asyncQueue({
-          asyncTask: () => {
-            return upsert(
-              [
-                {
-                  type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-                  docType: DocType.KEYCLOAK,
-                  ID: '1',
-                  json: user
-                }
-              ],
-              databaseContext
-            );
-          }
-        });
-      }
-      setUserInfo(user);
-    };
-
-    loadUserInfo();
-  }, [keycloak.obj]);
 
   React.useEffect(() => {
     const getApiSpec = async () => {
@@ -55,9 +27,5 @@ export const AuthStateContextProvider: React.FC = (props) => {
     getApiSpec();
   }, []);
 
-  return (
-    <AuthStateContext.Provider value={{ ready: keycloak.obj?.authenticated && !!userInfo }}>
-      {props.children}
-    </AuthStateContext.Provider>
-  );
+  return <AuthStateContext.Provider value={{ keycloak: keycloak }}>{props.children}</AuthStateContext.Provider>;
 };

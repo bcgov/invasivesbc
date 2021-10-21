@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   Container,
   Box,
@@ -18,6 +18,7 @@ import {
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import { useHistory } from 'react-router-dom';
 import planTripGIF from '../../../gifs/Plan Page.gif';
+import { AuthStateContext } from 'contexts/authStateContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   userInfoItemGrid: {
@@ -48,29 +49,10 @@ interface ILandingPage {
 }
 
 const LandingPage: React.FC<ILandingPage> = (props) => {
-  const keycloak = useKeycloakWrapper();
+  const { keycloak } = useContext(AuthStateContext);
   const classes = useStyles();
   const history = useHistory();
-
-  const [userInfo, setUserInfo] = useState<any>(null);
-
-  useEffect(() => {
-    const loadUserInfo = async () => {
-      const user = await keycloak.obj?.loadUserInfo();
-      setUserInfo(user);
-    };
-
-    if (!window['cordova']) {
-      loadUserInfo();
-    }
-  }, [keycloak.obj]);
-
-  /*
-    Function to logout current user by wiping their keycloak access token
-  */
-  const logoutUser = () => {
-    keycloak.obj.logout();
-  };
+  const userInfo = keycloak?.userInfo;
 
   /*
     Generate reusable card component with info to guide users through the app
@@ -108,11 +90,6 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
     <Container className={props.classes.container}>
       <Box display="flex" justifyContent="space-between">
         <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
-        {userInfo && (
-          <Button variant="contained" color="primary" size="large" onClick={logoutUser}>
-            Logout
-          </Button>
-        )}
       </Box>
 
       {userInfo && (

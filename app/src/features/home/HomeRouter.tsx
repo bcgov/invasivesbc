@@ -16,6 +16,7 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
+import PublicRoute from 'utils/PublicRoute';
 
 interface IHomeRouterProps {
   classes: any;
@@ -29,6 +30,22 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
   return (
     <Switch>
       <Redirect exact from="/home" to="/home/landing" />
+      <PublicRoute
+        exact
+        layout={HomeLayout}
+        path="/home/map"
+        title={getTitle('Map')}
+        component={MapPage}
+        componentProps={props}
+      />
+      <PublicRoute
+        exact
+        layout={HomeLayout}
+        path="/home/landing"
+        title={getTitle('Welcome')}
+        component={LandingPage}
+        componentProps={props}
+      />
       <PrivateRoute
         exact
         layout={HomeLayout}
@@ -111,28 +128,10 @@ const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
       <PrivateRoute
         exact
         layout={HomeLayout}
-        path="/home/map"
-        title={getTitle('Map')}
-        roles={ALL_ROLES}
-        component={MapPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={HomeLayout}
         path="/home/activity"
         title={getTitle('Activity')}
         roles={ALL_ROLES}
         component={ActivityPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={HomeLayout}
-        path="/home/landing"
-        title={getTitle('Welcome')}
-        roles={ALL_ROLES}
-        component={LandingPage}
         componentProps={props}
       />
       {/*  Catch any unknown routes, and re-direct to the not found page */}

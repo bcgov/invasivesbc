@@ -1,5 +1,5 @@
 import { useKeycloak } from '@react-keycloak/web';
-
+import { useEffect, useState } from 'react';
 /**
  * Represents the userinfo provided by keycloak.
  *
@@ -29,6 +29,7 @@ export interface IUserInfo {
  */
 export interface IKeycloak {
   obj: any;
+  userInfo: IUserInfo;
   displayName?: string;
   username: string;
   name?: string;
@@ -46,8 +47,20 @@ export interface IKeycloak {
  */
 function useKeycloakWrapper(): IKeycloak {
   const { keycloak } = useKeycloak();
+  const authenticated = keycloak?.authenticated;
 
-  const userInfo = keycloak?.userInfo as IUserInfo;
+  const [userInfo, setUserInfo] = useState<any>(null);
+
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      const user = await keycloak?.loadUserInfo();
+      setUserInfo(user);
+    };
+    if (!authenticated || userInfo) {
+      return;
+    }
+    loadUserInfo();
+  }, [authenticated, keycloak, userInfo]);
 
   /**
    * Determine if the user belongs to the specified role(s).
@@ -126,6 +139,7 @@ function useKeycloakWrapper(): IKeycloak {
 
   return {
     obj: keycloak,
+    userInfo: userInfo,
     username: getUsername(),
     preferred_username: getPreferredUsername(),
     displayName: getDisplayName(),
