@@ -6,6 +6,67 @@ import qs from 'qs';
 import moment from 'moment';
 import meow from 'meow';
 
+const BATCH_IMPORT_SIZE = 1000;
+
+/*
+
+IAPP Migrator Instructions:
+
+This is a roughly-coded tool intended for 1-3 time usage in the early IAPP
+import, so bear with us here.
+
+- clean up prospective import CSV files to match the property names referenced
+  in here (or vice versa).  Initially this was written to accommodate the CSV
+  naming conventions (including capitalization, e.g. `siteRecord.BEC_ID`) but
+  that may change on future imports. You might want to console.log some of the
+  mapped data for a sanity check, and make sure it's not incorrectly named or
+  just being defaulted.  I stored mine in a sister to the /invasivesbc repo
+- in terminal (on a WSL Windows setup at least), navigate to the tools folder
+- check that the `urlstring` (line 710-ish) is set to the database you're
+  using.  If local or port-forwarded to dev, make sure the port matches your
+  setup.  (I always just did this with a port-forwarded oc
+  connection, so used the localhost line)
+- it's possible the keycloak authentication token fetch on this works at the
+  time of use, but if not (and you dont feel like fixing it), this was my
+  workaround:
+  - get a page load of the app with a working db and api, then go to your
+    Network tab in the debugger and find a successful API request.  Copy
+    the "Authentication" header's token
+  - comment out lines 1300ish `const tokenResp = await getToken(); const token
+    = tokenResp.data.access_token;`
+  - replace the token in the next line `postconfig`
+- make sure that BATCH_IMPORT_SIZE is reasonable.  1000 seems about the sweet
+  spot.  Too large and you run into string size issues, too small and this
+  can take hours/days instead of minutes.  Small 1-5 sizes are recommended
+  for initial debugging though to ensure youre connecting right.
+- you will want to comment out any logs which call on every API query request.
+  e.g. the /api/src/paths/media.ts UploadMedia() log will try and send for
+  every record regardless of batch size, slowing you down to days if you let
+  it and probably crashing the server.  At time of writing that was the only
+  one needing commenting-out.
+- if the database crashes by running out of disk space, it's probably because
+  it generates logs of each query and repeated calls to this add a lot, even
+  with large batch sizes (basically it doubles the data you see on the DB).
+  You can clear these in the logs directory via the DB terminal, though I
+  forget exactly where (and probably best to nudge Mike if that happens)
+- make the above changes and test out your connection with a small batch size.
+  If you're adding new rows to the DB, success!
+- now truncate the point_of_interest_incoming_data table you're importing to
+  and repeat the above steps for real (which we do at the end so we dont
+  accidentally destroy the database without a working importer lol)
+- should take around 15 minutes of runtime when working right with a reasonable
+  batch size.  Your API terminal should be clearly stop-starting as each batch
+  completes.  If it's just endlessly streaming you're probably printing too many
+  logs and need to disable, or something else is wrong (good luck!)
+- final note: if the Code Tables have changed somehow (they're not supposed to!)
+  you'll want to change these hardcoded mappings in here too.  (It was easier than
+  implementing a database-tool-side live code table mapper at the time)
+
+Example Call (on Windows) ts-node
+IAPP_Migrator.ts --si ../../../../IMPORTS/sites2.csv --su ../../../../IMPORTS/surveys2.csv --mt ../../../../IMPORTS/mechtreatments2.csv --mm ../../../../IMPORTS/mechmonitoring2.csv --ct ../../../../IMPORTS/chemtreatments2.csv --cm ../../../../IMPORTS/chemmonitoring2.csv --bt ../../../../IMPORTS/biotreatments2.csv --bm ../../../../IMPORTS/biomonitoring2.csv --d ../../../../IMPORTS/dispersals2.csv http://localhost:3002/api/point-of-interest
+
+*/
+
 // HELPER FUNCTIONS (TODO move somewhere more general):
 
 const formatDateToISO = (dateString: string) => {
@@ -688,7 +749,6 @@ const main = async () => {
   const IAPPData = await loadAllData();
 
   let siteCount = 0;
-  const batchSize = 1000;
   let surveyMissedMatchCount = 0;
   const speciesMatches = {
     // OVERRIDES:
@@ -745,7 +805,7 @@ const main = async () => {
     let batch = 0;
     const pois: Array<object> = [];
 
-    while (batch < batchSize) {
+    while (batch < BATCH_IMPORT_SIZE) {
       const siteRecord = IAPPData.siteData[siteCount];
       if (!IAPPData.siteData[siteCount]) break;
       const siteRecordID = siteRecord['SiteID'];
