@@ -1,226 +1,112 @@
-import { Accordion, AccordionSummary, Checkbox, FormControlLabel, Typography } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import {
+  Accordion,
+  AccordionSummary,
+  FormControlLabel,
+  Typography,
+  RadioGroup,
+  Radio,
+  FormControl
+} from '@material-ui/core';
+import React from 'react';
 import { updateChild } from './LayerPicker';
 import { getChild } from './SortLayerOrder';
 
-const getChildLayerModes = (geoData: Object[], parentID: string, childID: string) => {
-  const server = getChild(geoData, parentID, childID).layers?.server;
-  const local = getChild(geoData, parentID, childID).layers?.local;
-  var tempArr = [];
-
-  if (server && local) {
-    Object.entries(server).forEach(([key, value]) => {
-      if (key !== 'expanded' && value === true) tempArr.push({ layer_type: key });
-    });
-    Object.entries(local).forEach(([key, value]) => {
-      if (key !== 'expanded' && value === true) tempArr.push({ layer_type: key });
-    });
+const getIndex = (child, layers) => {
+  for (let i in layers) {
+    if (layers[i].bcgw_code === child.bcgw_code) {
+      return parseInt(i);
+    }
   }
-
-  return tempArr;
+  return -1;
 };
 
-export const getAllEnabledLayerModes = (geoData: any[]) => {
-  var tempArr = [];
-  geoData.forEach((parent: any) => {
-    var layerObj = [];
-    parent.children.map((child: any) => {
-      var layers = getChildLayerModes(geoData, parent.id, child.id);
-      if (layers.length > 0) {
-        layerObj.push({
-          bcgw_code: child.bcgw_code,
-          enabled: child.enabled,
-          layers: layers,
-          opacity: child.opacity
-        });
-      } else {
-        layerObj.push({
-          bcgw_code: child.bcgw_code,
-          enabled: child.enabled,
-          opacity: child.opacity,
-          color: child.color_code ? child.color_code : null
-        });
-      }
-    });
-    if (layerObj.length > 0)
-      tempArr.push({
-        id: parent.id,
-        children: layerObj
-      });
-  });
-  return tempArr;
+export const updateLayer = (fieldsToUpdate, child, layers, setLayers) => {
+  if (child.enabled) {
+    var index = getIndex(child, layers);
+    if (index > -1) {
+      var oldLayer = layers[index];
+      var layersBefore = [...layers.slice(0, index)];
+      var layersAfter = [...layers.slice(index)];
+      var updatedLayer = { ...oldLayer, ...fieldsToUpdate };
+      layersAfter[0] = updatedLayer;
+      setLayers([...layersBefore, ...layersAfter]);
+    }
+  }
 };
 
-export const sanitizedLayers = (geoData: any[]) => {
-  var layerModes = getAllEnabledLayerModes(geoData);
-  var tempArr = [];
-
-  layerModes.forEach((parent) => {
-    parent.children.map((child) => {
-      if (child.layers?.length > 0) {
-        child.layers.map((layer) => {
-          tempArr.push({
-            name: child.bcgw_code,
-            enabled: child.enabled,
-            type: layer.layer_type,
+export const addOrRemoveLayer = (child, layers, setLayers) => {
+  if (child.enabled) {
+    var index = getIndex(child, layers);
+    if (index > -1) {
+      var layersCopy = [...layers];
+      layersCopy.splice(index, 1);
+      var layersBefore = [...layersCopy.slice(0, index)];
+      var layersAfter = [...layersCopy.slice(index)];
+      setLayers([...layersBefore, ...layersAfter]);
+    }
+  } else if (!child.enabled) {
+    switch (child.bcgw_code) {
+      case 'LEAN_ACTIVITIES':
+        setLayers([
+          ...layers,
+          {
+            bcgw_code: child.bcgw_code,
+            color_code: child.color_code,
+            layer_mode: null,
+            layer_name: child.id,
             opacity: child.opacity
-          });
-        });
-      }
-
-      if (child.bcgw_code === 'LEAN_ACTIVITIES' || child.bcgw_code === 'LEAN_POI') {
-        tempArr.push({
-          name: child.bcgw_code,
-          enabled: child.enabled,
-          opacity: child.opacity,
-          color: child.color
-        });
-      }
-    });
-  });
-
-  return tempArr;
+          }
+        ]);
+        break;
+      case 'jurisdiction':
+      case 'LEAN_POI':
+        setLayers([
+          ...layers,
+          {
+            bcgw_code: child.bcgw_code,
+            color_code: '#000',
+            layer_mode: null,
+            layer_name: child.id,
+            opacity: child.opacity
+          }
+        ]);
+        break;
+      default:
+        setLayers([
+          ...layers,
+          {
+            bcgw_code: child.bcgw_code,
+            color_code: '#000',
+            layer_mode: child.layer_mode,
+            layer_name: child.id,
+            opacity: child.opacity
+          }
+        ]);
+        break;
+    }
+  }
 };
 
-export const OnlineLayersSelector = ({ parent, child, objectState, setObjectState }) => {
-  const [server, setServer] = useState(getChild(objectState, parent.id, child.id).layers.server);
-
-  useEffect(() => {
-    setServer(getChild(objectState, parent.id, child.id).layers.server);
-  }, [child]);
-
+export const LayersSelector = ({ parent, child, objectState, setObjectState, layers, setLayers }) => {
   const onServerAccordionChange = (event: any, expanded: any) => {
     updateChild(
       parent.id,
       child.id,
       {
-        layers: {
-          ...getChild(objectState, parent.id, child.id).layers,
-          server: {
-            expanded: expanded,
-            wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
-            wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
-            vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server.vector_tiles_online
-          }
-        }
+        accordion_local_expanded: false,
+        accordion_server_expanded: !getChild(objectState, parent.id, child.id).accordion_server_expanded
       },
       { objectState, setObjectState }
     );
   };
-
-  return (
-    <>
-      {/* Vector Tiles */}
-      <Accordion expanded={server.expanded} onChange={onServerAccordionChange}>
-        <AccordionSummary>
-          <Typography>Server</Typography>
-        </AccordionSummary>
-        <FormControlLabel
-          label="WMS"
-          control={
-            <Checkbox
-              checked={server.wms_online}
-              onChange={() => {
-                updateChild(
-                  parent.id,
-                  child.id,
-                  {
-                    layers: {
-                      ...getChild(objectState, parent.id, child.id).layers,
-                      server: {
-                        expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
-                        wms_online: !getChild(objectState, parent.id, child.id).layers.server.wms_online,
-                        wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
-                        vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
-                          .vector_tiles_online
-                      }
-                    }
-                  },
-                  { objectState, setObjectState }
-                );
-              }}
-            />
-          }
-        />
-        <FormControlLabel
-          label="Vector Tile"
-          control={
-            <Checkbox
-              checked={server.vector_tiles_online}
-              onChange={() => {
-                updateChild(
-                  parent.id,
-                  child.id,
-                  {
-                    layers: {
-                      ...getChild(objectState, parent.id, child.id).layers,
-                      server: {
-                        expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
-                        wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
-                        wfs_online: getChild(objectState, parent.id, child.id).layers.server.wfs_online,
-                        vector_tiles_online: !getChild(objectState, parent.id, child.id).layers.server
-                          .vector_tiles_online
-                      }
-                    }
-                  },
-                  { objectState, setObjectState }
-                );
-              }}
-            />
-          }
-        />
-        <FormControlLabel
-          label="WFS"
-          control={
-            <Checkbox
-              checked={server.wfs_online}
-              onChange={() => {
-                updateChild(
-                  parent.id,
-                  child.id,
-                  {
-                    layers: {
-                      ...getChild(objectState, parent.id, child.id).layers,
-                      server: {
-                        expanded: getChild(objectState, parent.id, child.id).layers.server.expanded,
-                        wms_online: getChild(objectState, parent.id, child.id).layers.server.wms_online,
-                        wfs_online: !getChild(objectState, parent.id, child.id).layers.server.wfs_online,
-                        vector_tiles_online: getChild(objectState, parent.id, child.id).layers.server
-                          .vector_tiles_online
-                      }
-                    }
-                  },
-                  { objectState, setObjectState }
-                );
-              }}
-            />
-          }
-        />
-      </Accordion>
-    </>
-  );
-};
-
-export const OfflineLayersSelector = ({ parent, child, objectState, setObjectState }) => {
-  const [local, setLocal] = useState(child.layers.local);
-
-  useEffect(() => {
-    setLocal(child.layers.local);
-  }, [child]);
 
   const onLocalAccordionChange = (event: any, expanded: any) => {
     updateChild(
       parent.id,
       child.id,
       {
-        layers: {
-          ...getChild(objectState, parent.id, child.id).layers,
-          local: {
-            expanded: expanded,
-            wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
-            vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local.vector_tiles_offline
-          }
-        }
+        accordion_local_expanded: !getChild(objectState, parent.id, child.id).accordion_local_expanded,
+        accordion_server_expanded: false
       },
       { objectState, setObjectState }
     );
@@ -228,63 +114,45 @@ export const OfflineLayersSelector = ({ parent, child, objectState, setObjectSta
 
   return (
     <>
-      {/* Vector Tiles */}
-      <Accordion expanded={local.expanded} onChange={onLocalAccordionChange}>
+      {/* Local Accordion */}
+      <Accordion expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
+        <AccordionSummary>
+          <Typography>Server</Typography>
+        </AccordionSummary>
+        {child.accordion_server_expanded && (
+          <FormControl>
+            <RadioGroup
+              defaultValue={child.layer_mode}
+              onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
+                updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
+              }}>
+              <FormControlLabel value="wms_online" control={<Radio />} label="WMS" />
+              <FormControlLabel value="vector_tiles_online" control={<Radio />} label="Vector Tiles" />
+              <FormControlLabel value="wfs_online" control={<Radio />} label="WFS" />
+            </RadioGroup>
+          </FormControl>
+        )}
+      </Accordion>
+      {/* Server Accordion */}
+
+      <Accordion expanded={child.accordion_local_expanded} onChange={onLocalAccordionChange}>
         <AccordionSummary>
           <Typography>Local</Typography>
         </AccordionSummary>
-        <FormControlLabel
-          label="vector_tile"
-          control={
-            <Checkbox
-              checked={local.vector_tiles_offline}
-              onChange={() =>
-                updateChild(
-                  parent.id,
-                  child.id,
-                  {
-                    layers: {
-                      ...getChild(objectState, parent.id, child.id).layers,
-                      local: {
-                        expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
-                        wfs_offline: getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
-                        vector_tiles_offline: !getChild(objectState, parent.id, child.id).layers.local
-                          .vector_tiles_offline
-                      }
-                    }
-                  },
-                  { objectState, setObjectState }
-                )
-              }
-            />
-          }
-        />
-        <FormControlLabel
-          label="WFS"
-          control={
-            <Checkbox
-              checked={local.wfs_offline}
-              onChange={() =>
-                updateChild(
-                  parent.id,
-                  child.id,
-                  {
-                    layers: {
-                      ...getChild(objectState, parent.id, child.id).layers,
-                      local: {
-                        expanded: getChild(objectState, parent.id, child.id).layers.local.expanded,
-                        wfs_offline: !getChild(objectState, parent.id, child.id).layers.local.wfs_offline,
-                        vector_tiles_offline: getChild(objectState, parent.id, child.id).layers.local
-                          .vector_tiles_offline
-                      }
-                    }
-                  },
-                  { objectState, setObjectState }
-                )
-              }
-            />
-          }
-        />
+        {child.accordion_local_expanded && (
+          <FormControl>
+            <RadioGroup
+              defaultValue={child.layer_mode}
+              onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
+                updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
+              }}>
+              <FormControlLabel value="vector_tiles_offline" control={<Radio />} label="Vector Tiles" />
+              <FormControlLabel value="wfs_offline" control={<Radio />} label="WFS" />
+            </RadioGroup>
+          </FormControl>
+        )}
       </Accordion>
     </>
   );
