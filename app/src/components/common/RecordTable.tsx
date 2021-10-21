@@ -333,14 +333,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   const [selected, setSelected] = useState(props.selected || []);
   const [warningDialog, setWarningDialog] = useState(defaultWarningDialog);
 
-  // derived variables:
-  const lastPageLoaded = Math.min(totalRows, page + 1 + PAGES_LOADED_BUFFER);
-  const loadedRowsFirstIndex = firstPageLoaded * rowsPerPage;
-  const loadedRowLastIndex = Math.min(lastPageLoaded * rowsPerPage, totalRows - 1);
-  const pageRowsFirstIndex = page * rowsPerPage;
   const isLoading = (!schemasLoaded && tableSchemaType?.length > 0) || !rowsLoaded;
-  const selectedHash = JSON.stringify(selected);
-  const rowsHash = JSON.stringify(props.rows);
 
   // HEADERS:
 
@@ -421,7 +414,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
       });
       setSchemasLoaded(true);
     },
-    [tableSchemaType]
+    [JSON.stringify(tableSchemaType)]
   );
 
   // sort and limit the rows:
@@ -459,6 +452,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
 
   // ROWS
 
+  const lastPageLoaded = Math.min(totalRows, page + 1 + PAGES_LOADED_BUFFER);
+  const loadedRowsFirstIndex = firstPageLoaded * rowsPerPage;
+  const loadedRowLastIndex = Math.min(lastPageLoaded * rowsPerPage, totalRows - 1);
+  const pageRowsFirstIndex = page * rowsPerPage;
   const pageRows = useMemo(() => {
     // Note: this is O(nlog(n)) so important that we cache this with useMemo
     return stableSort(rows, orderHeader, order === 'asc').slice(
@@ -519,6 +516,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
     await setRowsLoaded(true);
   };
 
+  const selectedHash = JSON.stringify(selected);
   const selectedRows = useMemo(
     () => selected.map((id) => rows.find((row) => row[keyField] === id) || undefined).filter((row) => row),
     [selectedHash, rows]
@@ -646,10 +644,10 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   // EFFECT LISTENERS:
 
   useEffect(() => {
-    // listen for parent compnent changes to startingrows
+    // listen for parent component changes to startingrows
     setRows(startingRows);
     setTotalRows(startingRows.length);
-  }, [rowsHash]);
+  }, [JSON.stringify(props.rows)]);
 
   useEffect(() => {
     // listen for page changes which would cause a re-fetch from db
@@ -659,7 +657,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
   useEffect(() => {
     // fetch the api schemas to populate headers
     getApiSpec(tableSchemaType);
-  }, [tableSchemaType]);
+  }, [JSON.stringify(tableSchemaType)]);
 
   useEffect(() => {
     // listen for parent component changes to selected

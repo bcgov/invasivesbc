@@ -77,23 +77,23 @@ export const getRecordTableActions = (props) => {
 
 export const RecordTableAction = (props) => {
   const {
-    context,
+    action, // the actual function call
     affectedRows,
+    bulkCondition,
+    context,
+    displayInvalid,
     fetchRows,
+    globalCondition,
+    hasWarningDialog,
+    icon,
+    id,
+    invalidError,
+    label,
+    rowCondition,
     setErrorMessage,
     setWarningDialog,
-    rowCondition,
-    bulkCondition,
-    globalCondition,
-    displayInvalid,
-    id,
-    icon,
-    invalidError,
-    action, // the actual function call
-    hasWarningDialog,
-    warningDialogMessage,
     triggerReload,
-    label
+    warningDialogMessage,
   } = props;
 
   const classes = useStyles();
@@ -112,6 +112,10 @@ export const RecordTableAction = (props) => {
       if (bulkCondition) isValid = isValid && bulkCondition(affectedRows);
       if (rowCondition) isValid = isValid && affectedRows.filter((row) => !rowCondition([row]))?.length > 0;
       break;
+  }
+
+  const reload = () => {
+    setTimeout(fetchRows, ACTION_TIMEOUT);
   }
 
   if ((!displayInvalid || displayInvalid === 'hidden') && !isValid) return null;
@@ -145,7 +149,7 @@ export const RecordTableAction = (props) => {
                   actionOnClick: async () => {
                     setWarningDialog({ dialogOpen: false });
                     await action(affectedRows);
-                    if (triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
+                    if (triggerReload) reload();
                   },
                   autoFocus: true
                 }
@@ -153,7 +157,7 @@ export const RecordTableAction = (props) => {
             });
           } else {
             await action(affectedRows);
-            if (triggerReload) setTimeout(fetchRows, ACTION_TIMEOUT);
+            if (triggerReload) reload();
           }
         } catch (error) {
           setErrorMessage(error?.message || error);

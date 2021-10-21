@@ -11,7 +11,6 @@ import moment from 'moment';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
-import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { arrayWrap, sanitizeRecord, generateDBActivityPayload } from 'utils/addActivity';
 
 /* useActions:
@@ -81,13 +80,13 @@ export const useActions = (props) => {
     };
   });
 
-  const isSyncable = (row) =>
+  const isSyncable = ([row]) =>
     row.sync_status !== ActivitySyncStatus.SAVE_SUCCESSFUL && row.form_status === FormValidationStatus.VALID;
-  const isSubmitable = (row) =>
+  const isSubmitable = ([row]) =>
     row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
     row.form_status === FormValidationStatus.VALID &&
     row.review_status !== ReviewStatus.UNDER_REVIEW;
-  const isReviewable = (row) =>
+  const isReviewable = ([row]) =>
     row.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL &&
     row.form_status === FormValidationStatus.VALID &&
     row.review_status === ReviewStatus.UNDER_REVIEW;
@@ -156,6 +155,11 @@ export const useActions = (props) => {
       displayInvalid: 'disable',
       triggerReload: true,
       rowCondition: isSyncable,
+      hasWarningDialog: true,
+      warningDialogMessage: (affectedRows) =>
+        affectedRows.length === 1
+          ? 'Saving this activity will make it no longer editable, but it will be accessible on the InvasivesBC server once you connect.  You will have options to mark the form for review after saving.  Are you sure you want to save?'
+          : `Saving these activities will make them no longer editable, but they will be accessible on the InvasivesBC server once you connect.  You will have options to mark these forms for review after saving. Are you sure you want to save?  (Note: only valid forms will be saved)`,
       bulkCondition: (
         selectedRows // only enable bulk sync if some field needs it
       ) => selectedRows?.filter(isSyncable)?.length > 0,
@@ -203,11 +207,8 @@ export const useActions = (props) => {
               }),
               databaseContext
             );
-            const typename = activity.activity_subtype?.split('_')[2];
-            notifySuccess(databaseContext, `${typename} activity has been marked for review.`);
           });
         } catch (error) {
-          notifyError(databaseContext, JSON.stringify(error));
         }
       },
       icon: <FindInPage />,
@@ -239,11 +240,8 @@ export const useActions = (props) => {
               }),
               databaseContext
             );
-            const typename = activity.activity_subtype?.split('_')[2];
-            notifySuccess(databaseContext, `${typename} activity has been reviewed and approved.`);
           });
         } catch (error) {
-          notifyError(databaseContext, JSON.stringify(error));
         }
       },
       icon: <Check />,
@@ -275,11 +273,8 @@ export const useActions = (props) => {
               }),
               databaseContext
             );
-            const typename = activity.activity_subtype?.split('_')[2];
-            notifySuccess(databaseContext, `${typename} activity has been reviewed and disapproved.`);
           });
         } catch (error) {
-          notifyError(databaseContext, JSON.stringify(error));
         }
       },
       icon: <Clear />,

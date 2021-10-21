@@ -59,7 +59,7 @@ const RecordTableRow = (props) => {
     actions,
     affectedRows: [row],
     fetchRows,
-    setErrorMessage,
+    setErrorMessage: setActionError,
     setWarningDialog
   });
   const rowHasDropdown = !!renderedDropdown || (actionStyle === 'dropdown' && rowActions?.length > 0);
