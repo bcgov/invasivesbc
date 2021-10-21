@@ -1,18 +1,11 @@
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer.css';
-import {
-  MapContainer as ReactLeafletMapContainer,
-  useMap,
-  FeatureGroup,
-  Marker,
-  Tooltip,
-  GeoJSON
-} from 'react-leaflet';
+import { MapContainer as ReactLeafletMapContainer, useMap, FeatureGroup } from 'react-leaflet';
 import Spinner from '../../components/spinner/Spinner';
 import ZoomControl from 'components/map/Tools/ZoomControl';
 
@@ -32,7 +25,6 @@ import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
 import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
 import { SetPointOnClick } from './Tools/InfoAreaDescription';
-import marker from './Icons/POImarker.png';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -131,15 +123,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
 
-  const [poiMarker, setPoiMarker] = useState(null);
-  const [activityGeo, setActivityGeo] = useState(null);
   const [map, setMap] = useState<any>(null);
   const toolClass = toolStyles();
-
-  const markerIcon = L.icon({
-    iconUrl: marker,
-    iconSize: [24, 24]
-  });
 
   const Offline = (props) => {
     const mapOffline = useMap();
@@ -227,8 +212,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <MapRequestContextProvider>
         <div className={toolClass.toolBtnsLoc}>
-          <SetPointOnClick map={map} setPoiMarker={setPoiMarker} setActivityGeo={setActivityGeo} />
-          <DisplayPosition map={map} setPoiMarker={setPoiMarker} setActivityGeo={setActivityGeo} />
+          <SetPointOnClick map={map} />
+          <DisplayPosition map={map} />
           <MeasureTool />
           <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
           {props.showDrawControls && (
@@ -254,24 +239,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
         <MapResizer />
 
-        {poiMarker && (
-          <Marker
-            position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
-            icon={markerIcon}>
-            <Tooltip direction="top" opacity={0.5} permanent>
-              <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
-                {poiMarker.species.map((s) => (
-                  <>{s} </>
-                ))}
-              </div>
-            </Tooltip>
-          </Marker>
-        )}
-
-        {
-          activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
-
-          /*<LayersControl position="topright">
+        {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
             <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
           </LayersControl.BaseLayer>
@@ -281,8 +249,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <GeoJSON data={props.interactiveGeometryState?.interactiveGeometry} style={interactiveGeometryStyle} />
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> }
           </LayersControl.Overlay>
-        </LayersControl>*/
-        }
+        </LayersControl>*/}
       </MapRequestContextProvider>
     </ReactLeafletMapContainer>
   );

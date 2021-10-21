@@ -214,11 +214,11 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
     }
   }
 
-  if (searchCriteria.pointOfInterest_ids && searchCriteria.pointOfInterest_ids.length) {
+  if (searchCriteria.point_of_interest_ids && searchCriteria.point_of_interest_ids.length) {
     sqlStatement.append(SQL` AND point_of_interest_id IN (`);
-    sqlStatement.append(SQL`${searchCriteria.pointOfInterest_ids[0]}`);
-    for (let idx = 1; idx < searchCriteria.pointOfInterest_ids.length; idx++) {
-      sqlStatement.append(SQL`, ${searchCriteria.pointOfInterest_ids[idx]}`);
+    sqlStatement.append(SQL`${searchCriteria.point_of_interest_ids[0]}`);
+    for (let idx = 1; idx < searchCriteria.point_of_interest_ids.length; idx++) {
+      sqlStatement.append(SQL`, ${searchCriteria.point_of_interest_ids[idx]}`);
     }
     sqlStatement.append(SQL`)`);
   }
@@ -340,12 +340,11 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
       sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
     }
   }
-
-  if (searchCriteria.pointOfInterest_ids && searchCriteria.pointOfInterest_ids.length) {
+  if (searchCriteria.point_of_interest_ids && searchCriteria.point_of_interest_ids.length) {
     sqlStatement.append(SQL` AND point_of_interest_id IN (`);
-    sqlStatement.append(SQL`${searchCriteria.pointOfInterest_ids[0]}`);
-    for (let idx = 1; idx < searchCriteria.pointOfInterest_ids.length; idx++) {
-      sqlStatement.append(SQL`, ${searchCriteria.pointOfInterest_ids[idx]}`);
+    sqlStatement.append(SQL`${searchCriteria.point_of_interest_ids[0]}`);
+    for (let idx = 1; idx < searchCriteria.point_of_interest_ids.length; idx++) {
+      sqlStatement.append(SQL`, ${searchCriteria.point_of_interest_ids[idx]}`);
     }
     sqlStatement.append(SQL`)`);
   }

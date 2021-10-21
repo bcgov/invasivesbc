@@ -1,17 +1,23 @@
 import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
+//Material UI
 import {
   BottomNavigation,
   BottomNavigationAction,
   Button,
   Slider,
   TableContainer,
-  Typography
+  Typography,
+  IconButton
 } from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
 import StorageIcon from '@material-ui/icons/Storage';
 import AdjustIcon from '@material-ui/icons/Adjust';
+import SearchIcon from '@material-ui/icons/Search';
+// Leaflet and React-Leaflet
 import { useMapEvent, GeoJSON, Popup, Marker, Tooltip } from 'react-leaflet';
+import L, { DomEvent } from 'leaflet';
+// App Imports
 import { calc_utm } from './DisplayPosition';
 import {
   createDataUTM,
@@ -22,13 +28,10 @@ import {
 } from './Helpers/StyledTable';
 import { getDataFromDataBC } from '../WFSConsumer';
 import * as turf from '@turf/turf';
-import { DomEvent } from 'leaflet';
 import { useDataAccess } from '../../../hooks/useDataAccess';
-import { IconButton } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './Helpers/ToolBtnStyles';
+import marker from '../Icons/POImarker.png';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
@@ -213,10 +216,12 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   );
 };
 
-function SetPointOnClick({ map, setPoiMarker, setActivityGeo }: any) {
+function SetPointOnClick({ map }: any) {
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPoint, setGeoPoint] = useState(null);
   const [clickMode, setClickMode] = useState(false);
+  const [activityGeo, setActivityGeo] = useState(null);
+  const [poiMarker, setPoiMarker] = useState(null);
   const [utm, setUTM] = useState(null);
   const [rows, setRows] = useState(null);
   const divRef = useRef();
@@ -245,8 +250,30 @@ function SetPointOnClick({ map, setPoiMarker, setActivityGeo }: any) {
     }
   }, [utm]);
 
+  const markerIcon = L.icon({
+    iconUrl: marker,
+    iconSize: [24, 24]
+  });
+
   return (
     <>
+      {
+        activityGeo && <GeoJSON data={activityGeo} key={Math.random()} /> //NOSONAR
+      }
+      {poiMarker && (
+        <Marker
+          position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
+          icon={markerIcon}>
+          <Tooltip direction="top" opacity={0.5} permanent>
+            <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
+              {poiMarker.species.map((s) => (
+                <>{s} </>
+              ))}
+            </div>
+          </Tooltip>
+        </Marker>
+      )}
+
       <IconButton
         ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
