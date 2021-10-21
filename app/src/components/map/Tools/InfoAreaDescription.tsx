@@ -7,7 +7,10 @@ import {
   Slider,
   TableContainer,
   Typography,
-  IconButton
+  IconButton,
+  Grid,
+  FormControlLabel,
+  Switch
 } from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -32,6 +35,7 @@ import { useDataAccess } from '../../../hooks/useDataAccess';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './Helpers/ToolBtnStyles';
 import marker from '../Icons/POImarker.png';
+import { Stack } from '@mui/material';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
@@ -55,6 +59,8 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   const [bufferedGeo, setBufferedGeo] = useState(null);
   const [poiTableRows, setPoiTableRows] = useState([]);
   const [section, setSection] = useState('position');
+  const [pointMode, setPointMode] = useState(false);
+  const [showRadius, setShowRadius] = useState(false);
   const [databc, setDataBC] = useState(null);
   const [radius, setRadius] = useState(3);
   const [pois, setPOIs] = useState([]);
@@ -73,9 +79,13 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   useEffect(() => {
     if (lat && lng) {
       var point = turf.point([lng, lat]);
-      setBufferedGeo(turf.buffer(point, radius, { units: 'kilometers' }));
+      if (pointMode) {
+        setBufferedGeo(point);
+      } else {
+        setBufferedGeo(turf.buffer(point, radius, { units: 'kilometers' }));
+      }
     }
-  }, [radius]);
+  }, [radius, pointMode]);
 
   useEffect(() => {
     if (bufferedGeo) {
@@ -99,6 +109,10 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
 
   useEffect(() => {
     updateActivityRecords();
+  }, [bufferedGeo]);
+
+  useEffect(() => {
+    updatePOIRecords();
   }, [bufferedGeo]);
 
   const getSpecies = (arrSpecies, poi) => {
@@ -140,11 +154,6 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
       activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
-      var pointsofinterest = await dataAccess.getPointsOfInterest({
-        search_feature: bufferedGeo,
-        limit: 1000,
-        page: 0
-      });
       if (activities) {
         var tempArr = [];
         for (let i in activities.rows) {
@@ -157,9 +166,19 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
           }
         }
         setRows(tempArr);
-
-        setPOIs(pointsofinterest);
       } else setRows([]);
+    }
+  }, [bufferedGeo]);
+
+  const updatePOIRecords = useCallback(async () => {
+    if (bufferedGeo) {
+      var pointsofinterest = await dataAccess.getPointsOfInterest({
+        search_feature: bufferedGeo,
+        limit: 500,
+        page: 0
+      });
+
+      setPOIs(pointsofinterest);
     }
   }, [bufferedGeo]);
 
@@ -179,23 +198,6 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   return (
     <>
       <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
-        <Typography>Radius</Typography>
-        <div style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -40 }}>
-          <Typography>{radius} km</Typography>
-          <Slider
-            style={{ width: 225, alignSelf: 'center', marginLeft: 10 }}
-            aria-label="Kilometers"
-            defaultValue={radius}
-            onChange={(event: any, newRadius: number) => {
-              setRadius(newRadius);
-            }}
-            getAriaValueText={valueText}
-            step={1}
-            marks
-            min={1}
-            max={10}
-          />
-        </div>
         <TableContainer>
           {section == 'position' && <RenderTablePosition rows={utmRows} />}
           {section == 'activity' && (
@@ -204,14 +206,68 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
           {section == 'databc' && <RenderTableDataBC rows={databc} />}
           {section == 'poi' && <RenderTablePOI map={map} rows={poiTableRows} setPoiMarker={setPoiMarker} />}
         </TableContainer>
-        <BottomNavigation value={section} onChange={handleChange}>
-          <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
-          <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
-          <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
-          <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
-        </BottomNavigation>
-        <Button onClick={hideElement}>Close</Button>
+        <Grid container>
+          <BottomNavigation value={section} onChange={handleChange}>
+            <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
+            <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
+            <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
+            <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
+          </BottomNavigation>
+        </Grid>
+        <Grid container>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography
+              style={
+                !pointMode
+                  ? { padding: 3, color: '#2196f3', backgroundColor: 'rgba(0, 0, 0, 0.04)', borderRadius: 5 }
+                  : null
+              }>
+              Within Radius
+            </Typography>
+            <Switch onChange={(event: any) => setPointMode(event.target.checked)} color="primary" />
+            <Typography
+              style={
+                pointMode
+                  ? { padding: 3, color: '#2196f3', backgroundColor: 'rgba(0, 0, 0, 0.04)', borderRadius: 5 }
+                  : null
+              }>
+              This Location
+            </Typography>
+          </Stack>
+          {!pointMode && (
+            <Grid container>
+              <Grid item style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -30 }}>
+                <Typography>{radius} km</Typography>
+                <Slider
+                  style={{ width: 225, alignSelf: 'center', marginLeft: 10 }}
+                  aria-label="Kilometers"
+                  defaultValue={radius}
+                  onChange={(event: any, newRadius: number) => {
+                    setRadius(newRadius);
+                  }}
+                  getAriaValueText={valueText}
+                  step={1}
+                  marks
+                  min={1}
+                  max={10}
+                />
+              </Grid>
+              <Grid item style={{ marginTop: -30 }}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Show Area</Typography>
+                  <Switch onChange={(event: any) => setShowRadius(event.target.checked)} color="primary" />
+                </Stack>
+              </Grid>
+            </Grid>
+          )}
+          <Grid item>
+            <Button onClick={hideElement}>Close</Button>
+          </Grid>
+        </Grid>
       </Popup>
+      {
+        bufferedGeo && showRadius && <GeoJSON data={bufferedGeo} key={Math.random()} /> //NOSONAR
+      }
     </>
   );
 };

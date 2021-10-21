@@ -36,7 +36,6 @@ export const useDataAccess = () => {
     },
     forceCache = false
   ): Promise<any> => {
-    console.log(pointsOfInterestSearchCriteria);
     const networkStatus = await Network.getStatus();
     if (platform === 'web') {
       return api.getPointsOfInterest(pointsOfInterestSearchCriteria);

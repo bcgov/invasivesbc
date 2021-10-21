@@ -450,7 +450,6 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
                 <StyledTableCell component="th" scope="row">
                   <a
                     onClick={() => {
-                      console.log(row);
                       if (row.geometry)
                         map.flyTo(
                           [row.geometry[0].geometry.coordinates[1], row.geometry[0].geometry.coordinates[0]],

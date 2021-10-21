@@ -30,11 +30,11 @@ export const ActivitiesLayer = (props) => {
   const fetchData = async () => {
     const activitiesData = await dataAccess.getActivitiesLean({ search_feature: mapBounds });
     const activitiesFeatureArray = [];
-
-    activitiesData?.rows.forEach((row) => {
-      activitiesFeatureArray.push(row.geojson);
-    });
-
+    if (activitiesData) {
+      activitiesData?.rows.forEach((row) => {
+        activitiesFeatureArray.push(row.geojson);
+      });
+    }
     setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
   };
 
