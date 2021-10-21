@@ -34,7 +34,6 @@ export const useActions = (props) => {
   const {
     actions, // overrides
     activitySubtypes,
-    created_by,
     enableSelection = true,
     keyField = 'activity_id'
   } = props;
@@ -297,29 +296,6 @@ export const useActions = (props) => {
       },
       icon: <Clear />,
       ...actions?.disapprove
-    },
-    create_treatment: {
-      // Legacy, likely deprecated.
-      // Creates a new treatment out of a number of observations, linking their data
-      id: 'create_treatment',
-      enabled: false,
-      action: (selectedRows) => {
-        const ids = selectedRows.map((row: any) => row['activity_id']);
-        history.push({
-          pathname: `/home/activity/treatment`,
-          search: '?observations=' + ids.join(','),
-          state: { observations: ids }
-        });
-      },
-      label: 'Create Treatment',
-      bulkAction: true,
-      rowAction: true,
-      displayInvalid: 'error',
-      invalidError: 'Observation forms must be validated before they can be used to create a new Treatment',
-      // invalidError: 'All selected activities must be of the same SubType to create a Treatment',
-      bulkCondition: (selectedRows) => selectedRows.every((a, _, [b]) => a.subtype === b.subtype),
-      rowCondition: (row) => row.form_status === FormValidationStatus.VALID,
-      ...actions?.create_treatment
     },
     ...createActions
   };
