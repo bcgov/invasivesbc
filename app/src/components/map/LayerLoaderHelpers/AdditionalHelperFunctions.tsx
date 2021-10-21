@@ -25,15 +25,12 @@ export const isFilterSatisfied = (filter, featureProps): boolean => {
   if (!filter[0] || !filter[1] || !filter[2] || !featureProps[filterProp]) {
     return false;
   }
-  console.log(filterProp);
 
   switch (filter[0]) {
     case '>':
-      console.log('>');
       return parseInt(filter[2]) > parseInt(featureProps[filterProp]);
 
     case '<':
-      console.log('<');
       return parseInt(filter[2]) < parseInt(featureProps[filterProp]);
 
     case '==':

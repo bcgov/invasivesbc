@@ -68,7 +68,6 @@ export const getStylesDataFromBC: any = async (layerName: string) => {
   const sldParser = new SLDParser();
   let sldString = resp.data;
   let styles = await sldParser.readStyle(sldString);
-  console.log(styles);
   return styles;
 };
 
