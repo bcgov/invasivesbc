@@ -12,11 +12,7 @@ import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import {
-  arrayWrap,
-  sanitizeRecord,
-  generateDBActivityPayload
-} from 'utils/addActivity';
+import { arrayWrap, sanitizeRecord, generateDBActivityPayload } from 'utils/addActivity';
 
 /* useActions:
 A handy list of "things which do things", usually accompanied by a button, and with behavior
@@ -162,13 +158,11 @@ export const useActions = (props) => {
       rowCondition: isSyncable,
       bulkCondition: (
         selectedRows // only enable bulk sync if some field needs it
-      ) =>
-        selectedRows?.filter(isSyncable)?.length > 0,
+      ) => selectedRows?.filter(isSyncable)?.length > 0,
       action: async (selectedRows) => {
         try {
           selectedRows.map(async (activity) => {
-            if (!isSyncable)
-              return;
+            if (!isSyncable) return;
             const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
             await dataAccess.updateActivity(
               sanitizeRecord({
@@ -196,13 +190,11 @@ export const useActions = (props) => {
       rowCondition: isSubmitable,
       bulkCondition: (
         selectedRows // only enable bulk submit if some field needs it
-      ) =>
-        selectedRows?.filter(isSubmitable)?.length > 0,
+      ) => selectedRows?.filter(isSubmitable)?.length > 0,
       action: async (selectedRows) => {
         try {
           selectedRows.map(async (activity) => {
-            if (!isSubmitable)
-              return;
+            if (!isSubmitable) return;
             const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
             await dataAccess.updateActivity(
               sanitizeRecord({
@@ -232,13 +224,11 @@ export const useActions = (props) => {
       rowCondition: isReviewable,
       bulkCondition: (
         selectedRows // only enable bulk submit if some field needs it
-      ) =>
-        selectedRows?.filter(isReviewable)?.length > 0,
+      ) => selectedRows?.filter(isReviewable)?.length > 0,
       action: async (selectedRows) => {
         try {
           selectedRows.map(async (activity) => {
-            if (!isReviewable)
-              return;
+            if (!isReviewable) return;
             const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
             await dataAccess.updateActivity(
               sanitizeRecord({
@@ -270,13 +260,11 @@ export const useActions = (props) => {
       rowCondition: isReviewable,
       bulkCondition: (
         selectedRows // only enable bulk submit if some field needs it
-      ) =>
-        selectedRows?.filter(isReviewable)?.length > 0,
+      ) => selectedRows?.filter(isReviewable)?.length > 0,
       action: async (selectedRows) => {
         try {
           selectedRows.map(async (activity) => {
-            if (!isReviewable)
-              return;
+            if (!isReviewable) return;
             const dbActivity: any = await dataAccess.getActivityById(activity.activity_id, databaseContext);
             await dataAccess.updateActivity(
               sanitizeRecord({

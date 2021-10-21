@@ -1,20 +1,11 @@
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
-import {
-  ActivitySubtype,
-  ActivitySubtypeShortLabels,
-  ReviewStatus
-} from 'constants/activities';
+import { ActivitySubtype, ActivitySubtypeShortLabels, ReviewStatus } from 'constants/activities';
 import { DEFAULT_PAGE_SIZE } from 'constants/database';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { useActions } from 'hooks/useActions';
 import React, { useContext, useMemo } from 'react';
-import {
-  arrayWrap,
-  uniqueArray,
-  sanitizeRecord,
-  getShortActivityID
-} from 'utils/addActivity';
+import { arrayWrap, uniqueArray, sanitizeRecord, getShortActivityID } from 'utils/addActivity';
 
 export const PAGE_FETCH_BUFFER = 3; // fetches 3 pages before and after the current page of a Record Table (where page size is the current rowsPerPage)
 
@@ -30,20 +21,14 @@ export const activityStandardMapping = (doc) => {
     ...record.activity_payload?.form_data?.activity_subtype_data,
     ...record
   };
-  console.log(555, flattened)
 
   return {
     ...flattened,
     short_id: getShortActivityID(flattened),
     activity_id: flattened.activity_id, // NOTE: activity_subtype_data.activity_id is overwriting this incorrectly
     jurisdiction_code: flattened.jurisdictions?.reduce(
-      (output, jurisdiction) => jurisdiction && [
-        ...output,
-        jurisdiction.jurisdiction_code,
-        '(',
-        jurisdiction.percent_covered + '%',
-        ')'
-      ],
+      (output, jurisdiction) =>
+        jurisdiction && [...output, jurisdiction.jurisdiction_code, '(', jurisdiction.percent_covered + '%', ')'],
       []
     ),
     invasive_plant_code: doc.species_positive, // array
