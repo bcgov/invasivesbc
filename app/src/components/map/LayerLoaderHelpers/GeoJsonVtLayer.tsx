@@ -2,9 +2,32 @@ import L, { TileLayer as LeafletTileLayer, TileLayerOptions } from 'leaflet';
 import { createTileLayerComponent, LayerProps, updateGridLayer, withPane } from '@react-leaflet/core';
 import { isFilterSatisfied } from './AdditionalHelperFunctions';
 import geojsonvt from 'geojson-vt';
+import markerpng from '../Icons/POImarker.png';
+
 (window as any).geojsonvt = geojsonvt;
 // eslint-disable-next-line import/first
 import {} from 'leaflet-geojson-vt/src/leaflet-geojson-vt.js';
+
+const markerIcon = L.icon({
+  iconUrl: markerpng,
+  iconSize: [16, 16]
+});
+
+export const isFilterSatisfied = (filter, featureProps): boolean => {
+  let filterProp = filter[1].toString();
+  switch (filter[0]) {
+    case '>':
+      console.log('>');
+      return parseInt(filter[2]) > parseInt(featureProps[filterProp]);
+
+    case '<':
+      console.log('<');
+      return parseInt(filter[2]) < parseInt(featureProps[filterProp]);
+
+    case '==':
+      return filter[2].toString() === featureProps[filterProp].toString();
+  }
+};
 
 export interface TileLayerProps extends TileLayerOptions, LayerProps {
   geoJSON: any;

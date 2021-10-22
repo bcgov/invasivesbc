@@ -17,6 +17,12 @@ export const PoisLayer = (props) => {
   const databaseContext = useContext(DatabaseContext2);
   /*
   useEffect(() => {
+  const [poiIDs, setPoiIDs] = useState(null);
+  const [pois, setPois] = useState(null);
+  const [poiToRender, setPoiToRender] = useState([]);
+  const dataAccess = useDataAccess();
+
+  /*useEffect(() => {
     if (poiIDs.length > 0) {
       fetchPOIs();
     }
@@ -26,7 +32,6 @@ export const PoisLayer = (props) => {
     iconUrl: marker,
     iconSize: [16, 16]
   });
-
   const options = {
     maxZoom: 24,
     tolerance: 3,

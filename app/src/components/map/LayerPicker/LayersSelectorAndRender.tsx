@@ -1,3 +1,4 @@
+import { NetworkContext } from 'contexts/NetworkContext';
 import {
   Accordion,
   AccordionSummary,
@@ -7,7 +8,7 @@ import {
   Radio,
   FormControl
 } from '@material-ui/core';
-import React from 'react';
+import React, { useContext } from 'react';
 import { updateChild } from './LayerPicker';
 import { getChild } from './SortLayerOrder';
 
@@ -88,6 +89,12 @@ export const addOrRemoveLayer = (child, layers, setLayers) => {
 };
 
 export const LayersSelector = ({ parent, child, objectState, setObjectState, layers, setLayers }) => {
+  const networkContext = useContext(NetworkContext);
+
+  if (!networkContext.connected) {
+    updateChild(parent.id, child.id, { layer_mode: 'wms_offline' }, { objectState, setObjectState });
+  }
+
   const onServerAccordionChange = (event: any, expanded: any) => {
     updateChild(
       parent.id,
@@ -114,27 +121,37 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
 
   return (
     <>
-      {/* Local Accordion */}
+      {/* Server Accordion */}
       <Accordion expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
-        <AccordionSummary>
-          <Typography>Server</Typography>
-        </AccordionSummary>
-        {child.accordion_server_expanded && (
-          <FormControl>
-            <RadioGroup
-              defaultValue={child.layer_mode}
-              onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
-                updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
-              }}>
-              <FormControlLabel value="wms_online" control={<Radio />} label="WMS" />
-              <FormControlLabel value="vector_tiles_online" control={<Radio />} label="Vector Tiles" />
-              <FormControlLabel value="wfs_online" control={<Radio />} label="WFS" />
-            </RadioGroup>
-          </FormControl>
+        {networkContext.connected && (
+          <>
+            <AccordionSummary>
+              <Typography>Server</Typography>
+            </AccordionSummary>
+            {child.accordion_server_expanded && (
+              <FormControl>
+                <RadioGroup
+                  defaultValue={child.layer_mode}
+                  onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                    updateChild(
+                      parent.id,
+                      child.id,
+                      { layer_mode: event.target.value },
+                      { objectState, setObjectState }
+                    );
+                    updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
+                  }}>
+                  <FormControlLabel value="wms_online" control={<Radio />} label="WMS" />
+                  <FormControlLabel value="vector_tiles_online" control={<Radio />} label="Vector Tiles" />
+                  <FormControlLabel value="wfs_online" control={<Radio />} label="WFS" />
+                </RadioGroup>
+              </FormControl>
+            )}
+          </>
         )}
       </Accordion>
-      {/* Server Accordion */}
+
+      {/* Local Accordion */}
 
       <Accordion expanded={child.accordion_local_expanded} onChange={onLocalAccordionChange}>
         <AccordionSummary>
