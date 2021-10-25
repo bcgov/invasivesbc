@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+import { ExpandMore, PermDeviceInformationSharp } from '@material-ui/icons';
 import moment from 'moment';
 import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
@@ -17,6 +17,8 @@ import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import 'gridfix.css';
 import { sanitizeRecord } from 'utils/addActivity';
 import { useKeycloak } from '@react-keycloak/web';
+import { calc_lat_long_from_utm } from 'components/map/Tools/DisplayPosition';
+import { Feature } from '@turf/turf';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -75,6 +77,45 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       console.log('unable to start watch');
     }
     notifySuccess(databaseContext, JSON.stringify('Starting track.'));
+  };
+
+  const manualUTMEntry = () => {
+    let validZone = false;
+    let zone;
+    let validNorthing = false;
+    let northing;
+    let validEasting = false;
+    let easting;
+
+    while (!validZone) {
+      zone = prompt('Enter a valid UTM Zone');
+      if (!isNaN(Number(zone))) {
+        break;
+      }
+    }
+    while (!validNorthing) {
+      northing = prompt('Enter a valid UTM Northing');
+      if (!isNaN(Number(northing))) {
+        break;
+      }
+    }
+    while (!validEasting) {
+      easting = prompt('Enter a valid UTM Easting');
+      if (!isNaN(Number(easting))) {
+        break;
+      }
+    }
+
+    let result = calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing));
+    const geo: any = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [result[0], result[1]]
+      },
+      properties: {}
+    };
+    props.geometryState.setGeometry([geo]);
   };
 
   const endTrack = async () => {
@@ -287,6 +328,11 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         </AccordionSummary>
         <AccordionDetails>
           <Grid alignItems="flex-start" container>
+            <Grid xs={2} item>
+              <Button disabled={false} variant="contained" color="primary" onClick={manualUTMEntry}>
+                Enter UTM Manually
+              </Button>
+            </Grid>
             <Grid xs={2} item>
               <Button disabled={true} variant="contained" color="primary" onClick={startTrack}>
                 Record a Polygon!
