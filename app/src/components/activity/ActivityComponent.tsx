@@ -27,6 +27,7 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
   customValidation?: any;
   customErrorTransformer?: any;
   pasteFormData?: Function;
+  suggestedJurisdictions: any[];
   copyFormData?: Function;
   cloneActivityButton?: Function;
   setParentFormRef?: Function;
@@ -36,8 +37,6 @@ export interface IActivityComponentProps extends IMapContainerProps, IFormContai
 const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const [currentPosition, setCurrentPosition] = useState(null);
   const watchPosition = Geolocation.watchPosition;
-  const startWatch = watchPosition;
-  const clearWatch = Geolocation.clearWatch;
   const [workingPolyline, setWorkingPolyline] = useState([]);
   const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();

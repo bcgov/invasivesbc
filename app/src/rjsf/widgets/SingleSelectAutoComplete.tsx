@@ -3,8 +3,8 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { WidgetProps } from '@rjsf/core';
 import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
-import { setISODay } from 'date-fns/esm';
-
+import { Box, Typography } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
 // Custom type to support this widget
 export type AutoCompleteSelectOption = { label: string; value: any; title: any };
 
@@ -58,11 +58,38 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
 const SingleSelectAutoComplete = (props: WidgetProps) => {
   let enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
   if (!enumOptions) enumOptions = [];
+  if (props.id.toString().includes('jurisdiction_code')) {
+    const suggestedJurisdictions = props.formContext.suggestedJurisdictions;
+    const additionalEnumOptions = [];
+    suggestedJurisdictions.forEach((jurisdiction) => {
+      additionalEnumOptions.push({
+        label: jurisdiction.jurisdictn.toString(),
+        value: jurisdiction.code_name.toString(),
+        title: jurisdiction.name.toString(),
+        suggested: true
+      } as AutoCompleteSelectOption);
+    });
+    let enumOptionsIndex = 0;
+    enumOptions.forEach((option) => {
+      additionalEnumOptions.forEach((addOption) => {
+        if (option.value === addOption.value) {
+          enumOptions[enumOptionsIndex] = addOption;
+        }
+        return option;
+      });
+      enumOptionsIndex++;
+    });
+    enumOptions.sort(function (left, right) {
+      return left.hasOwnProperty('suggested') ? -1 : right.hasOwnProperty('suggested') ? 1 : 0;
+    });
+  }
   const selectAutoCompleteContext = useContext(SelectAutoCompleteContext);
   const { setLastFieldChanged, lastFieldChanged } = selectAutoCompleteContext;
   let optionValueLabels = {};
+  let optionValueSuggested = {};
   let optionValues = Object.values(enumOptions).map((option) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
+    optionValueSuggested[option.value] = (option as any).suggested || false;
     return option.value;
   });
   const startingValue = props.value || '';
@@ -102,6 +129,17 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         autoSelect={props.required}
         blurOnSelect
         openOnFocus
+        renderOption={(option, props) => {
+          return (
+            <Box style={{ display: 'flex', flexDirection: 'row' }}>
+              {optionValueSuggested[option] && <StarIcon style={{ fontSize: 15, marginRight: 7 }} color="warning" />}
+              <Typography>
+                {option ? optionValueLabels[option] : ''}
+                {optionValueSuggested[option] && <i> - Suggested based on location</i>}
+              </Typography>
+            </Box>
+          );
+        }}
         selectOnFocus
         onFocus={(event) => {
           props.onFocus(event.target.id, event.target.nodeValue);

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { WMSTileLayer } from 'react-leaflet';
 import { RenderWFSFeatures } from './RenderWFSFeatures';
 import { RenderVectorTilesOffline } from './RenderVectorTilesOffline';
 import { ActivitiesLayer } from './ActivitiesLayer';
 import { PoisLayer } from './PoisLayer';
+import { JurisdictionsLayer } from './JurisdictionsLayer';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',
@@ -12,11 +14,26 @@ export enum LayerMode {
   RegularFeaturesOffline = 'regular_features_offline'
 }
 
+export enum IndependentLayers {
+  Activities = 'LEAN_ACTIVITIES',
+  POI = 'LEAN_POI',
+  Jurisdictions = 'jurisdiction'
+}
+
 export const DataBCLayer = (props) => {
-  if (props.layerName === 'LEAN_ACTIVITIES') {
-    return <ActivitiesLayer opacity={props.opacity} color={props.color_code} />;
-  } else if (props.layerName === 'LEAN_POI') {
-    return <PoisLayer opacity={props.opacity} color={props.color_code} />;
+  const networkContext = useContext(NetworkContext);
+
+  if (Object.values(IndependentLayers).includes(props.layerName)) {
+    switch (props.layerName) {
+      case 'LEAN_ACTIVITIES':
+        return <ActivitiesLayer online={networkContext.connected} opacity={props.opacity} />;
+      case 'LEAN_POI':
+        return <PoisLayer online={networkContext.connected} opacity={props.opacity} />;
+      case 'jurisdiction':
+        return <JurisdictionsLayer online={networkContext.connected} opacity={props.opacity} />;
+      default:
+        return <></>;
+    }
   }
 
   if (!props.mode) {

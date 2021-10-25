@@ -1,25 +1,10 @@
 import L, { TileLayer as LeafletTileLayer, TileLayerOptions } from 'leaflet';
 import { createTileLayerComponent, LayerProps, updateGridLayer, withPane } from '@react-leaflet/core';
+import { isFilterSatisfied } from './AdditionalHelperFunctions';
 import geojsonvt from 'geojson-vt';
 (window as any).geojsonvt = geojsonvt;
 // eslint-disable-next-line import/first
 import {} from 'leaflet-geojson-vt/src/leaflet-geojson-vt.js';
-
-export const isFilterSatisfied = (filter, featureProps): boolean => {
-  let filterProp = filter[1].toString();
-  switch (filter[0]) {
-    case '>':
-      console.log('>');
-      return parseInt(filter[2]) > parseInt(featureProps[filterProp]);
-
-    case '<':
-      console.log('<');
-      return parseInt(filter[2]) < parseInt(featureProps[filterProp]);
-
-    case '==':
-      return filter[2].toString() === featureProps[filterProp].toString();
-  }
-};
 
 export interface TileLayerProps extends TileLayerOptions, LayerProps {
   geoJSON: any;
@@ -80,15 +65,31 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
 
   drawFeature: function (ctx, feature) {
     const type = feature.type;
+
     ctx.beginPath();
-    this.options.layerStyles?.output.rules.forEach((rule) => {
-      if (rule.filter) {
-        if (isFilterSatisfied(rule?.filter, feature.tags)) {
+
+    if (
+      this.options.layerStyles?.output.name
+        .toString()
+        .toLowerCase()
+        .includes(feature.tags.layer.toString().toLowerCase())
+    ) {
+      this.options.layerStyles?.output.rules.forEach((rule) => {
+        if (rule.name && feature.tags.type.toString().toLowerCase() === rule.name?.toString().toLowerCase()) {
           this.options.style.color = rule.symbolizers[0].color;
           this.options.style.fillColor = rule.symbolizers[0].color;
         }
-      }
-    });
+      });
+    } else {
+      this.options.layerStyles?.output.rules.forEach((rule) => {
+        if (rule.filter) {
+          if (isFilterSatisfied(rule?.filter, feature.tags)) {
+            this.options.style.color = rule.symbolizers[0].color;
+            this.options.style.fillColor = rule.symbolizers[0].color;
+          }
+        }
+      });
+    }
     if (this.options.style) {
       this.setStyle(ctx, this.options.style);
     }

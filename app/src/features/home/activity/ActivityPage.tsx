@@ -57,6 +57,7 @@ import bcArea from '../../../components/map/BC_AREA.json';
 import { calc_utm } from 'components/map/Tools/DisplayPosition';
 import { GetUserAccessLevel } from 'utils/getAccessLevel';
 import { DocType } from 'constants/database';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -86,8 +87,6 @@ interface IActivityPageProps {
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
-  console.log(GetUserAccessLevel());
-
   const databaseContextPouch = useContext(DatabaseContext);
   const databaseContext = useContext(DatabaseContext2);
 
@@ -98,7 +97,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   // "is it open?", "what coordinates of the mouse?", that kind of thing:
   const initialContextMenuState: MapContextMenuData = { isOpen: false, lat: 0, lng: 0 };
   const [contextMenuState, setContextMenuState] = useState(initialContextMenuState);
-
+  const [suggestedJurisdictions, setSuggestedJurisdictions] = useState();
   /* commented out for sonar cloud, but this will be needed to close the context menu for this page:
     const handleContextMenuClose = () => {
       setContextMenuState({ ...contextMenuState, isOpen: false });
@@ -206,7 +205,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       const { latitude, longitude } = calculateLatLng(geom) || {};
       var utm = calc_utm(longitude, latitude);
       let utm_zone = utm[0];
-      console.dir('activityPage', utm_zone);
       let utm_easting = utm[1];
       let utm_northing = utm[2];
       /*****exported DisplayPosition utm_zone function
@@ -599,6 +597,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
   };
 
+  const invasivesApi = useInvasivesApi();
+
   useEffect(() => {
     const getActivityData = async () => {
       const activityResult = await getActivityResultsFromDB(props.activityId || null);
@@ -617,6 +617,11 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       setDoc(updatedDoc);
 
       await updateDoc(updatedDoc);
+
+      if (updatedDoc.geometry) {
+        const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] });
+        setSuggestedJurisdictions(res.rows);
+      }
 
       setIsLoading(false);
     };
@@ -730,7 +735,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           </Box>
           <Box display="flex" flexDirection="row" justifyContent="space-between" padding={1} mb={3}>
             <Typography align="center">Activity ID: {doc.shortId ? doc.shortId : 'unknown'}</Typography>
-            <Typography align="center">Date created: {doc.dateCreated ? doc.dateCreated : 'unknown'}</Typography>
+            <Typography align="center">
+              Date created: {doc.dateCreated ? new Date(doc.dateCreated).toString() : 'unknown'}
+            </Typography>
           </Box>
           <ActivityComponent
             customValidation={getCustomValidator([
@@ -753,6 +760,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             customErrorTransformer={getCustomErrorTransformer()}
             classes={classes}
             activity={doc}
+            suggestedJurisdictions={suggestedJurisdictions}
             linkedActivity={linkedActivity}
             onFormChange={onFormChange}
             onFormSubmitSuccess={onFormSubmitSuccess}

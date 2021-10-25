@@ -12,7 +12,7 @@ import { q } from '../MapContainer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
 import { getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
-import { isFilterSatisfied } from './GeoJsonVtLayer';
+import { fetchLayerDataFromLocal, getStyleForLayerFeature } from './AdditionalHelperFunctions';
 
 interface IRenderWFSFeatures {
   inputGeo: Feature;
@@ -92,27 +92,6 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
 
   const [layerStyles, setlayerStyles] = useState(null);
 
-  const getStyleForLayerFeature = (feature: any): any => {
-    let style = {};
-    if (!layerStyles) {
-      return style;
-    }
-    layerStyles.output.rules.forEach((rule) => {
-      if (rule.filter) {
-        if (isFilterSatisfied(rule?.filter, feature.properties)) {
-          const colorRgb = rule.symbolizers[0].color.colorRgb();
-          style = {
-            fillColor: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',
-            color: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',
-            strokeColor: 'rgba(' + colorRgb[0] + ',' + colorRgb[1] + ',' + colorRgb[2] + ',' + props.opacity + ')',
-            zIndex: rule.symbolizers[0].zIndex && rule.symbolizers[0].zIndex
-          };
-        }
-      }
-    });
-    return style;
-  };
-
   //gets layer data based on the layer name
   const getLayerData = async () => {
     //get the map extent as geoJson polygon feature
@@ -148,54 +127,8 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
       // alert(returnStyles[0].json);
       setlayerStyles(JSON.parse(returnStyles[0].json));
 
-      //first, selecting large grid items
-      const largeGridRes = await databaseContext.asyncQueue({
-        asyncTask: () => {
-          return query(
-            {
-              type: QueryType.RAW_SQL,
-              sql: `SELECT * FROM LARGE_GRID_LAYER_DATA;`
-            },
-            databaseContext
-          );
-        }
-      });
+      const allFeatures = await fetchLayerDataFromLocal(props.dataBCLayerName, mapExtent, databaseContext);
 
-      //create a string containing all large grid item ids that we got
-      let largeGridItemIdString = '(';
-      let largeGridResIndex = 0;
-      largeGridRes.forEach((gridItem) => {
-        if (largeGridResIndex === largeGridRes.length - 1) {
-          largeGridItemIdString += gridItem.id + ')';
-        } else {
-          largeGridItemIdString += gridItem.id + ',';
-        }
-        largeGridResIndex++;
-      });
-
-      //select small grid items with particular layer name and large grid items id
-      const smallGridRes = await databaseContext.asyncQueue({
-        asyncTask: () => {
-          return query(
-            {
-              type: QueryType.RAW_SQL,
-              sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('${props.dataBCLayerName}') AND largeGridID IN ${largeGridItemIdString};`
-            },
-            databaseContext
-          );
-        }
-      });
-
-      //foreach small grid item that we got, if grid item intersects with map extent,
-      //add it to the array of grid items
-      let allFeatures = [];
-      smallGridRes.forEach((row) => {
-        const featureArea = JSON.parse(row.featureArea).geometry;
-        const featuresInArea = JSON.parse(row.featuresInArea);
-        if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
-          allFeatures = allFeatures.concat(featuresInArea);
-        }
-      });
       //set useState var to display features
       if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
         //if there is a geometry drawn, get closest wells and wells inside and label them
@@ -266,7 +199,9 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
         <GeoJSON
           key={Math.random() + otherFeatures.length}
           onEachFeature={onEachFeature}
-          style={getStyleForLayerFeature}
+          style={function (geoJsonFeature) {
+            return getStyleForLayerFeature(geoJsonFeature, layerStyles, props.opacity);
+          }}
           data={otherFeatures}></GeoJSON>
       )}
       {wellFeatures &&
