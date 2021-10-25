@@ -197,6 +197,7 @@ export interface IRecordTable {
   // or object defining overrides to those default fields
   headers?: any[];
   // tableSchemaType: list of schema types to match against to auto-fill column definitions with api-docs schemas
+  // Priority of multiple schema properties with the same key is determined by [lowest ... highest]
   // Note: this behavior should probably be bumped up a level and defined outside of RecordTable, modifying the headers here
   tableSchemaType?: Array<string>;
 

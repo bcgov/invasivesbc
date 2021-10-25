@@ -27,9 +27,6 @@ const useStyles = makeStyles((theme) => ({
     //todo more spacing, above doesnt work
     textAlign: 'center'
   },
-  tripList: {
-    width: '100%'
-  },
   tripAccordionGridItem: {
     textAlign: 'left'
   },
@@ -294,7 +291,6 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
         )}
         {tripsLoaded && (
           <RecordTable
-            className={classes.tripList}
             tableName={'My Trips'}
             onToggleExpandRow={(row) => {
               setCurrentTripId(row.trip_ID);
@@ -353,7 +349,8 @@ const PlanPage: React.FC<IPlanPageProps> = (props) => {
                   setCacheMapTilesFlag={setCacheMapTilesFlag}
                 />
               );
-            }}></RecordTable>
+            }}
+          />
         )}
       </Container>
     </IonContent>
