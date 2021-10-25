@@ -90,7 +90,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX IF NOT EXISTS jurisdiction_geom_idx ON public.jurisdiction USING gist (geom);
 
     ALTER TABLE jurisdiction
-    ADD COLUMN code_name varchar(10);
+    ADD COLUMN IF NOT EXISTS code_name varchar(10);
 
     update public.jurisdiction set code_name='CPR' where jurisdictn='CP Rail';
     update public.jurisdiction set code_name='GRVM' where jurisdictn='Gravel - MOTI';
