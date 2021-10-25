@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 
 export const ActivitiesLayer = (props) => {
   const map = useMap();
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [activities, setActivities] = useState(null);
+  const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();
   const options = {
     maxZoom: 24,
@@ -28,13 +30,13 @@ export const ActivitiesLayer = (props) => {
   });
 
   const fetchData = async () => {
-    const activitiesData = await dataAccess.getActivitiesLean({ search_feature: mapBounds });
+    const activitiesData = await dataAccess.getActivitiesLean({ search_feature: mapBounds }, databaseContext);
     const activitiesFeatureArray = [];
-    if (activitiesData) {
-      activitiesData?.rows.forEach((row) => {
-        activitiesFeatureArray.push(row.geojson);
-      });
-    }
+
+    activitiesData?.rows.forEach((row) => {
+      activitiesFeatureArray.push(row.geojson ? row.geojson : row);
+    });
+
     setActivities({ type: 'FeatureCollection', features: activitiesFeatureArray });
   };
 

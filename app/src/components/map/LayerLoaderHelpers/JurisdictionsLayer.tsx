@@ -34,29 +34,21 @@ export const JurisdictionsLayer = (props) => {
     return styles;
   };
 
-  useEffect(() => {
+  useMapEvent('moveend', () => {
     getSldStylesFromLocalFile().then((res) => {
       setOptions((prevOptions) => ({ ...prevOptions, layerStyles: res }));
+      fetchData();
     });
-  }, []);
-
-  useMapEvent('moveend', () => {
-    fetchData();
   });
 
   const fetchData = async () => {
     const jurisdictionsData = await dataAccess.getJurisdictions({ search_feature: mapBounds }, databaseContext);
-    const jurisdictionsFeatureArray = [];
-    jurisdictionsData.rows.forEach((row) => {
-      jurisdictionsFeatureArray.push({
-        type: 'Feature',
-        properties: { type: row.jurisdictn, layer: 'jurisdiction' },
-        geometry: row.geom
-      });
+
+    let jurisdictionsFeatureArray = [];
+    jurisdictionsData?.rows.forEach((row) => {
+      jurisdictionsFeatureArray.push(row.geojson ? row.geojson : row);
     });
 
-    console.log(options);
-    console.log(jurisdictionsFeatureArray);
     setJurisdictions({ type: 'FeatureCollection', features: jurisdictionsFeatureArray });
   };
 

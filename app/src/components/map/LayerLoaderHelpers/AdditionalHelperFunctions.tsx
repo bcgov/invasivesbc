@@ -1,3 +1,6 @@
+import { query, QueryType } from 'contexts/DatabaseContext2';
+import * as turf from '@turf/turf';
+
 export const getStyleForLayerFeature = (feature: any, layerStyles: any, opacity: number): any => {
   let style = {};
   if (!layerStyles) {
@@ -36,4 +39,57 @@ export const isFilterSatisfied = (filter, featureProps): boolean => {
     case '==':
       return filter[2].toString() === featureProps[filterProp].toString();
   }
+};
+
+export const fetchLayerDataFromLocal = async (layerName: string, mapExtent: any, databaseContext: any) => {
+  //first, selecting large grid items
+  const largeGridRes = await databaseContext.asyncQueue({
+    asyncTask: () => {
+      return query(
+        {
+          type: QueryType.RAW_SQL,
+          sql: `SELECT * FROM LARGE_GRID_LAYER_DATA;`
+        },
+        databaseContext
+      );
+    }
+  });
+
+  //create a string containing all large grid item ids that we got
+  let largeGridItemIdString = '(';
+  let largeGridResIndex = 0;
+  largeGridRes.forEach((gridItem) => {
+    if (largeGridResIndex === largeGridRes.length - 1) {
+      largeGridItemIdString += gridItem.id + ')';
+    } else {
+      largeGridItemIdString += gridItem.id + ',';
+    }
+    largeGridResIndex++;
+  });
+
+  //select small grid items with particular layer name and large grid items id
+  const smallGridRes = await databaseContext.asyncQueue({
+    asyncTask: () => {
+      return query(
+        {
+          type: QueryType.RAW_SQL,
+          sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('${layerName}') AND largeGridID IN ${largeGridItemIdString};`
+        },
+        databaseContext
+      );
+    }
+  });
+
+  //foreach small grid item that we got, if grid item intersects with map extent,
+  //add it to the array of grid items
+  let allFeatures = [];
+  smallGridRes.forEach((row) => {
+    const featureArea = JSON.parse(row.featureArea).geometry;
+    const featuresInArea = JSON.parse(row.featuresInArea);
+    if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
+      allFeatures = allFeatures.concat(featuresInArea);
+    }
+  });
+
+  return allFeatures;
 };

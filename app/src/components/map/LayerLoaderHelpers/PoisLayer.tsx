@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Marker, useMap, useMapEvent } from 'react-leaflet';
 import L from 'leaflet';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import marker from '../Icons/POImarker.png';
+import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 
 export const PoisLayer = (props) => {
   const map = useMap();
@@ -12,6 +13,7 @@ export const PoisLayer = (props) => {
   const [pois, setPois] = useState(null);
   const [things, setThings] = useState([]);
   const dataAccess = useDataAccess();
+  const databaseContext = useContext(DatabaseContext2);
 
   useEffect(() => {
     if (things.length > 0) {
@@ -43,13 +45,17 @@ export const PoisLayer = (props) => {
   });
 
   const fetchData = async () => {
-    const poisData = await dataAccess.getPointsOfInterestLean({ search_feature: mapBounds });
+    const poisData = await dataAccess.getPointsOfInterestLean({ search_feature: mapBounds }, databaseContext);
     const poisFeatureArray = [];
     const poisIDArray = [];
-
+    console.log(poisData?.rows);
     poisData?.rows.forEach((row) => {
-      poisFeatureArray.push(row.geojson);
-      poisIDArray.push(row.geojson.properties.point_of_interest_id.toString());
+      poisFeatureArray.push(row.geojson ? row.geojson : row);
+      poisIDArray.push(
+        row.geojson
+          ? row.geojson.properties.point_of_interest_id.toString()
+          : row.properties.point_of_interest_id.toString()
+      );
     });
 
     setThings(poisIDArray);
@@ -58,7 +64,7 @@ export const PoisLayer = (props) => {
 
   const fetchPOIs = async () => {
     console.log('fetching');
-    console.log(await dataAccess.getPointsOfInterest({ point_of_interest_ids: things, limit: 50 }));
+    console.log(await dataAccess.getPointsOfInterest({ point_of_interest_ids: things, limit: 50 }, databaseContext));
   };
 
   return (

@@ -10,8 +10,8 @@ import { useContext } from 'react';
 import { DocType } from '../constants/database';
 import { Capacitor } from '@capacitor/core';
 import { DatabaseContext } from '../contexts/DatabaseContext';
-import { Network } from '@capacitor/network';
 import { NetworkContext } from 'contexts/NetworkContext';
+import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
 
 /**
  * Returns a set of supported api methods.
@@ -72,7 +72,7 @@ export const useDataAccess = () => {
    */
   const getPointsOfInterestLean = async (
     pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria,
-    context?: {
+    context: {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
     }
@@ -81,35 +81,14 @@ export const useDataAccess = () => {
       return api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
     } else {
       if (!networkContext.connected) {
-        const dbcontext = context;
-
-        let sql = `SELECT * FROM lean_poi WHERE public.ST_INTERSECTS(
-              json,
-              public.geography(
-                public.ST_Force2D(
-                  public.ST_SetSRID(
-                    public.ST_GeomFromGeoJSON(${pointsOfInterestSearchCriteria.search_feature}),
-                    4326
-                  )
-                )
-              )
-            )`;
-
-        const asyncReturnVal = await dbcontext.asyncQueue({
-          asyncTask: () => {
-            return query(
-              {
-                type: QueryType.RAW_SQL,
-                sql: sql
-              },
-              databaseContext
-            );
-          }
-        });
-
+        const featuresArray = await fetchLayerDataFromLocal(
+          'LEAN_POI',
+          pointsOfInterestSearchCriteria.search_feature,
+          context
+        );
         return {
-          rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
-          count: asyncReturnVal.length
+          rows: featuresArray,
+          count: featuresArray.length
         };
       } else {
         return api.getPointsOfInterestLean(pointsOfInterestSearchCriteria);
@@ -125,7 +104,7 @@ export const useDataAccess = () => {
    */
   const getJurisdictions = async (
     jurisdictionSearchCriteria: IJurisdictionSearchCriteria,
-    context?: {
+    context: {
       asyncQueue: (request: DBRequest) => Promise<any>;
       ready: boolean;
     }
@@ -134,25 +113,15 @@ export const useDataAccess = () => {
       return api.getJurisdictions(jurisdictionSearchCriteria);
     } else {
       if (!networkContext.connected) {
-        const dbcontext = context;
-
-        let sql = `SELECT * FROM jurisdictions;`;
-
-        const asyncReturnVal = await dbcontext.asyncQueue({
-          asyncTask: () => {
-            return query(
-              {
-                type: QueryType.RAW_SQL,
-                sql: sql
-              },
-              databaseContext
-            );
-          }
-        });
+        const featuresArray = await fetchLayerDataFromLocal(
+          'jurisdiction',
+          jurisdictionSearchCriteria.search_feature,
+          context
+        );
 
         return {
-          rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
-          count: asyncReturnVal.length
+          rows: featuresArray,
+          count: featuresArray.length
         };
       } else {
         return api.getJurisdictions(jurisdictionSearchCriteria);
@@ -339,40 +308,21 @@ export const useDataAccess = () => {
    */
   const getActivitiesLean = async (
     activitiesSearchCriteria: IActivitySearchCriteria,
-    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+    context: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       return api.getActivitiesLean(activitiesSearchCriteria);
     } else {
       if (!networkContext.connected) {
-        const dbcontext = context;
+        const featuresArray = await fetchLayerDataFromLocal(
+          'LEAN_ACTIVITIES',
+          activitiesSearchCriteria.search_feature,
+          context
+        );
 
-        let sql = `SELECT * FROM lean_activities WHERE public.ST_INTERSECTS(
-              json,
-              public.geography(
-                public.ST_Force2D(
-                  public.ST_SetSRID(
-                    public.ST_GeomFromGeoJSON(${activitiesSearchCriteria.search_feature}),
-                    4326
-                  )
-                )
-              )
-            )`;
-
-        const asyncReturnVal = await dbcontext.asyncQueue({
-          asyncTask: () => {
-            return query(
-              {
-                type: QueryType.RAW_SQL,
-                sql: sql
-              },
-              dbcontext
-            );
-          }
-        });
         return {
-          rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
-          count: asyncReturnVal.length
+          rows: featuresArray,
+          count: featuresArray.length
         };
       } else {
         return api.getActivitiesLean(activitiesSearchCriteria);

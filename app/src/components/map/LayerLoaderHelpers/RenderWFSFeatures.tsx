@@ -12,7 +12,7 @@ import { q } from '../MapContainer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
 import { getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
-import { getStyleForLayerFeature } from './AdditionalHelperFunctions';
+import { fetchLayerDataFromLocal, getStyleForLayerFeature } from './AdditionalHelperFunctions';
 
 interface IRenderWFSFeatures {
   inputGeo: Feature;
@@ -127,54 +127,8 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
       // alert(returnStyles[0].json);
       setlayerStyles(JSON.parse(returnStyles[0].json));
 
-      //first, selecting large grid items
-      const largeGridRes = await databaseContext.asyncQueue({
-        asyncTask: () => {
-          return query(
-            {
-              type: QueryType.RAW_SQL,
-              sql: `SELECT * FROM LARGE_GRID_LAYER_DATA;`
-            },
-            databaseContext
-          );
-        }
-      });
+      const allFeatures = await fetchLayerDataFromLocal(props.dataBCLayerName, mapExtent, databaseContext);
 
-      //create a string containing all large grid item ids that we got
-      let largeGridItemIdString = '(';
-      let largeGridResIndex = 0;
-      largeGridRes.forEach((gridItem) => {
-        if (largeGridResIndex === largeGridRes.length - 1) {
-          largeGridItemIdString += gridItem.id + ')';
-        } else {
-          largeGridItemIdString += gridItem.id + ',';
-        }
-        largeGridResIndex++;
-      });
-
-      //select small grid items with particular layer name and large grid items id
-      const smallGridRes = await databaseContext.asyncQueue({
-        asyncTask: () => {
-          return query(
-            {
-              type: QueryType.RAW_SQL,
-              sql: `SELECT * FROM SMALL_GRID_LAYER_DATA WHERE layerName IN ('${props.dataBCLayerName}') AND largeGridID IN ${largeGridItemIdString};`
-            },
-            databaseContext
-          );
-        }
-      });
-
-      //foreach small grid item that we got, if grid item intersects with map extent,
-      //add it to the array of grid items
-      let allFeatures = [];
-      smallGridRes.forEach((row) => {
-        const featureArea = JSON.parse(row.featureArea).geometry;
-        const featuresInArea = JSON.parse(row.featuresInArea);
-        if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
-          allFeatures = allFeatures.concat(featuresInArea);
-        }
-      });
       //set useState var to display features
       if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
         //if there is a geometry drawn, get closest wells and wells inside and label them

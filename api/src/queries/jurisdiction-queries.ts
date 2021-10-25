@@ -13,19 +13,28 @@ export const getJurisdictionsSQL = (searchCriteria: JurisdictionSearchCriteria):
 
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
-      with inputData(geom) as (
-      select 
-                public.ST_Force2D(
-                  public.ST_SetSRID(
-                    public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
-                    4326
-                  )
-                ) 
-              )
-      select  code_name,jurisdictn,name, public.st_asGeoJSON(j.geom)::jsonb  as geom
-      FROM jurisdiction j , inputData i
-      where public.st_intersects2(j.geom, i.geom)
-    `);
+    with inputData(geom) as (
+      select
+        public.ST_Force2D(
+          public.ST_SetSRID(
+            public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
+            4326
+          )
+        )
+    )
+    SELECT jsonb_build_object (
+    'type', 'Feature',
+    'properties', json_build_object(
+      'code_name', code_name,
+      'type', jurisdictn,
+      'name', name,
+      'layer', 'jurisdiction'
+    ),
+    'geometry', public.st_asGeoJSON(j.geom)::jsonb
+  ) as "geojson", COUNT(*) OVER() AS "total_rows_count" 
+    FROM jurisdiction j , inputData i
+    where public.st_intersects2(j.geom, i.geom);
+  `);
   }
 
   sqlStatement.append(SQL`;`);
