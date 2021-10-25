@@ -105,7 +105,6 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
 };
 
 export interface IPutActivitySQL {
-  updateSQL: SQLStatement;
   createSQL: SQLStatement;
 }
 
@@ -120,18 +119,10 @@ export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivityS
     return null;
   }
 
-  // update existing activity record
-  const updateSQLStatement: SQLStatement = SQL`
-    UPDATE activity_incoming_data
-    SET deleted_timestamp = ${new Date().toISOString()}
-    WHERE activity_id = ${activity.activity_id}
-    AND deleted_timestamp IS NULL;
-  `;
-
   // create new activity record
   const createSQLStatement: SQLStatement = postActivitySQL(activity);
 
-  return { updateSQL: updateSQLStatement, createSQL: createSQLStatement };
+  return { createSQL: createSQLStatement };
 };
 
 /**

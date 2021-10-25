@@ -689,6 +689,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   return (
     <Container className={props.classes.container}>
+      {/*
       <Paper style={{ width: '100%' }} elevation={5}>
         <Typography align="center" style={{ paddingTop: 50, paddingBottom: 30 }} variant="h3">
           How to test this page:
@@ -709,6 +710,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
           </Typography>
         </Box>
       </Paper>
+      */}
       {!doc && (
         <>
           <Box mb={3}>
