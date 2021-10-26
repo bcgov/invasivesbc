@@ -12,7 +12,7 @@ const markerIcon = L.icon({
   iconUrl: markerpng,
   iconSize: [16, 16]
 });
-
+/*
 export const isFilterSatisfied = (filter, featureProps): boolean => {
   let filterProp = filter[1].toString();
   switch (filter[0]) {
@@ -28,7 +28,7 @@ export const isFilterSatisfied = (filter, featureProps): boolean => {
       return filter[2].toString() === featureProps[filterProp].toString();
   }
 };
-
+*/
 export interface TileLayerProps extends TileLayerOptions, LayerProps {
   geoJSON: any;
   options: any;
