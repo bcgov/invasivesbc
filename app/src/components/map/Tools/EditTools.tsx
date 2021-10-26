@@ -78,16 +78,17 @@ const EditTools = (props: any) => {
     }
   }, [props.geometryState]);
 
-  useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef?.current);
-    L.DomEvent.disableScrollPropagation(divRef?.current);
-  });
+  // useEffect(() => {
+  //   L.DomEvent.disableClickPropagation(divRef?.current);
+  //   L.DomEvent.disableScrollPropagation(divRef?.current);
+  // });
   const context = useLeafletContext();
   const [geoKeys, setGeoKeys] = useState({});
   const drawRef = useRef();
 
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
+    console.log('e', e);
     var newLayer = e.layer;
 
     context.layerContainer.addLayer(newLayer);
@@ -138,7 +139,8 @@ const EditTools = (props: any) => {
   // Grab the map object
   let map = useMapEvent('draw:created' as any, onDrawCreate);
 
-  useMapEvent('draw:drawstart' as any, () => {
+  useMapEvent('draw:drawstart' as any, (e) => {
+    console.log(e);
     if (!multiMode) {
       (context.layerContainer as any).clearLayers();
     }
@@ -153,7 +155,6 @@ const EditTools = (props: any) => {
   });
 
   const convertLineStringToPoly = (aGeo: any) => {
-    console.log(aGeo);
     if (aGeo.geometry.type === 'LineString') {
       const buffer = prompt('Enter buffer width (total) in meters', '1');
       const buffered = turf.buffer(aGeo.geometry, parseInt(buffer, 10) / 1000, { units: 'kilometers', steps: 1 });
@@ -275,9 +276,7 @@ const EditTools = (props: any) => {
       });
     }
     // Drawing step:
-    console.log('before', newGeoKeys);
     drawingStep(newGeoKeys, context);
-    console.log('after', newGeoKeys);
     // update stored geos, mapped by key
     setGeoKeys(newGeoKeys);
   };
@@ -320,7 +319,7 @@ const EditTools = (props: any) => {
 
   return (
     <IconButton
-      ref={divRef}
+      //ref={divRef}
       className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
       onClick={toggleMode}>
       {multiMode ? (
