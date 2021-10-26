@@ -59,7 +59,9 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   let enumOptions = props.options.enumOptions as AutoCompleteSelectOption[];
   if (!enumOptions) enumOptions = [];
   if (props.id.toString().includes('jurisdiction_code')) {
-    const suggestedJurisdictions = props.formContext.suggestedJurisdictions;
+    const suggestedJurisdictions = props.formContext.suggestedJurisdictions
+      ? props.formContext.suggestedJurisdictions
+      : [];
     const additionalEnumOptions = [];
     suggestedJurisdictions.forEach((jurisdiction) => {
       additionalEnumOptions.push({
