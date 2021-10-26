@@ -10,6 +10,7 @@ import multi from '../Icons/trim.png';
 import { async } from 'q';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './Helpers/ToolBtnStyles';
+import { Capacitor } from '@capacitor/core';
 
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
@@ -111,18 +112,26 @@ const EditTools = (props: any) => {
   const onEditStop = (e: any) => {
     let updatedGeoJSON = [];
     (context.layerContainer as any).eachLayer((layer) => {
-      //console.dir(layer)
       let aGeo = layer.toGeoJSON();
       if (layer.feature.properties.radius) {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer._mRadius } };
-      } //else if (e.layerType === 'rectangle') {
-      //aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
-      //}
+      }
       aGeo = convertLineStringToPoly(aGeo);
 
       updatedGeoJSON.push(aGeo);
     });
 
+    props.geometryState.setGeometry(updatedGeoJSON);
+  };
+
+  const onDeleteStop = (e: any) => {
+    let updatedGeoJSON = [];
+    (context.layerContainer as any).eachLayer((layer) => {
+      let aGeo = layer.toGeoJSON();
+      aGeo = convertLineStringToPoly(aGeo);
+      updatedGeoJSON.push(aGeo);
+    });
+    (context.layerContainer as any).clearLayers();
     props.geometryState.setGeometry(updatedGeoJSON);
   };
 
@@ -137,19 +146,14 @@ const EditTools = (props: any) => {
   useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
   });
-  useMapEvent('draw:deletestop' as any, () => {
-    let updatedGeoJSON = [];
-    (context.layerContainer as any).eachLayer((layer) => {
-      let aGeo = layer.toGeoJSON();
-      aGeo = convertLineStringToPoly(aGeo);
-      updatedGeoJSON.push(aGeo);
-    });
-    (context.layerContainer as any).clearLayers();
-    props.geometryState.setGeometry(updatedGeoJSON);
-  });
+  useMapEvent('draw:deletestop' as any, () => onDeleteStop);
   useMapEvent('draw:edited' as any, onEditStop);
+  useMapEvent('draw:drawstop' as any, () => {
+    console.log('here');
+  });
 
   const convertLineStringToPoly = (aGeo: any) => {
+    console.log(aGeo);
     if (aGeo.geometry.type === 'LineString') {
       const buffer = prompt('Enter buffer width (total) in meters', '1');
       const buffered = turf.buffer(aGeo.geometry, parseInt(buffer, 10) / 1000, { units: 'kilometers', steps: 1 });
@@ -271,8 +275,9 @@ const EditTools = (props: any) => {
       });
     }
     // Drawing step:
+    console.log('before', newGeoKeys);
     drawingStep(newGeoKeys, context);
-
+    console.log('after', newGeoKeys);
     // update stored geos, mapped by key
     setGeoKeys(newGeoKeys);
   };
