@@ -39,10 +39,6 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const [trip, setTrip] = useState(null);
 
-  useEffect(() => {
-    console.log('--------- TRIPDATACONTROLS ----------', trip);
-  }, [trip]);
-
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -835,9 +831,9 @@ export const TripDataControls: React.FC<any> = (props) => {
     //fetch what is selected here:
     try {
       await fetchLayerData();
-      // await fetchActivities();
-      // await fetchPointsOfInterest();
-      // await fetchMetabaseQueries();
+      await fetchActivities();
+      await fetchPointsOfInterest();
+      await fetchMetabaseQueries();
     } catch (error) {
       setProgressDialog((prevState) => ({
         dialogOpen: true,
