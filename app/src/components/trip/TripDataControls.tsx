@@ -39,10 +39,6 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const [trip, setTrip] = useState(null);
 
-  useEffect(() => {
-    console.log('--------- TRIPDATACONTROLS ----------', trip);
-  }, [trip]);
-
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -55,11 +51,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     dialogTitle: 'Caching data for the trip',
     items: [
       {
-        name: 'Activities and Points of Interest for selected geometry',
-        state: 'none'
-      },
-      {
-        name: 'Layer data for selected geometry',
+        name: 'Map Layers',
         state: 'none'
       },
       {
@@ -131,7 +123,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   const fetchActivities = async () => {
     setProgressDialog((prevState) => {
       const itemsArr = prevState.items;
-      itemsArr[2] = { ...itemsArr[2], state: 'in_progress' };
+      itemsArr[1] = { ...itemsArr[1], state: 'in_progress' };
       return {
         ...prevState,
         items: itemsArr
@@ -141,8 +133,8 @@ export const TripDataControls: React.FC<any> = (props) => {
     if (!trip || !trip.activityChoices || !trip.activityChoices.length) {
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
-        itemsArr[2] = {
-          ...itemsArr[2],
+        itemsArr[1] = {
+          ...itemsArr[1],
           state: 'complete',
           description: `The step is skipped as there were no activity choices entered.`
         };
@@ -206,8 +198,8 @@ export const TripDataControls: React.FC<any> = (props) => {
         console.log('Error with inserting Activities into database: ' + error);
         setProgressDialog((prevState) => {
           const itemsArr = prevState.items;
-          itemsArr[2] = {
-            ...itemsArr[2],
+          itemsArr[1] = {
+            ...itemsArr[1],
             state: 'error',
             description: `There was an error inserting Activities into database: ${error}`
           };
@@ -220,7 +212,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     }
     setProgressDialog((prevState) => {
       const itemsArr = prevState.items;
-      itemsArr[2] = { ...itemsArr[2], state: 'complete', description: `Cached ${numberActivitiesFetched} activities.` };
+      itemsArr[1] = { ...itemsArr[1], state: 'complete', description: `Cached ${numberActivitiesFetched} activities.` };
       return {
         ...prevState,
         items: itemsArr
@@ -232,7 +224,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   const fetchPointsOfInterest = async () => {
     setProgressDialog((prevState) => {
       const itemsArr = prevState.items;
-      itemsArr[3] = { ...itemsArr[3], state: 'in_progress' };
+      itemsArr[2] = { ...itemsArr[2], state: 'in_progress' };
       return {
         ...prevState,
         items: itemsArr
@@ -243,8 +235,8 @@ export const TripDataControls: React.FC<any> = (props) => {
       if (!trip || !trip.pointOfInterestChoices || !trip.pointOfInterestChoices.length) {
         setProgressDialog((prevState) => {
           const itemsArr = prevState.items;
-          itemsArr[3] = {
-            ...itemsArr[3],
+          itemsArr[2] = {
+            ...itemsArr[2],
             state: 'complete',
             description: `The step is skipped as there were no point of interest choices entered.`
           };
@@ -335,8 +327,8 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
-        itemsArr[3] = {
-          ...itemsArr[3],
+        itemsArr[2] = {
+          ...itemsArr[2],
           state: 'complete',
           description: `Cached ${numberPointsOfInterestFetched} points of interest.`
         };
@@ -349,8 +341,8 @@ export const TripDataControls: React.FC<any> = (props) => {
     } catch (e) {
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
-        itemsArr[3] = {
-          ...itemsArr[3],
+        itemsArr[2] = {
+          ...itemsArr[2],
           state: 'error',
           description: `Error: ${e}`
         };
@@ -365,7 +357,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   const fetchMetabaseQueries = async () => {
     setProgressDialog((prevState) => {
       const itemsArr = prevState.items;
-      itemsArr[4] = { ...itemsArr[4], state: 'in_progress' };
+      itemsArr[3] = { ...itemsArr[3], state: 'in_progress' };
       return {
         ...prevState,
         items: itemsArr
@@ -376,8 +368,8 @@ export const TripDataControls: React.FC<any> = (props) => {
       if (!trip || !trip.metabaseChoices || !trip.metabaseChoices.length) {
         setProgressDialog((prevState) => {
           const itemsArr = prevState.items;
-          itemsArr[4] = {
-            ...itemsArr[4],
+          itemsArr[3] = {
+            ...itemsArr[3],
             state: 'complete',
             description: `The step is skipped as there were no metabase choices entered.`
           };
@@ -490,7 +482,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       }
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
-        itemsArr[4] = { ...itemsArr[4], state: 'complete' };
+        itemsArr[3] = { ...itemsArr[3], state: 'complete' };
         return {
           ...prevState,
           items: itemsArr
@@ -505,7 +497,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     } catch (e) {
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
-        itemsArr[4] = { ...itemsArr[4], state: 'error', description: `Error: ${e}` };
+        itemsArr[3] = { ...itemsArr[3], state: 'error', description: `Error: ${e}` };
         return {
           ...prevState,
           items: itemsArr
@@ -533,7 +525,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   const fetchLayerData = async () => {
     setProgressDialog((prevState) => {
       const itemsArr = prevState.items;
-      itemsArr[1] = { ...itemsArr[1], state: 'in_progress' };
+      itemsArr[0] = { ...itemsArr[0], state: 'in_progress' };
       return {
         ...prevState,
         items: itemsArr
@@ -580,6 +572,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         '0',
         idArr
       );
+
       const layerNames = getLayerNamesFromJSON(geoData);
       //for each layer name, do...
       layerNames.forEach(async (layerName) => {
@@ -621,6 +614,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         });
 
         let smallGridResLength = smallGridResult.length;
+
         //for each small grid item, do...
         smallGridResult.forEach(async (gridResult) => {
           const feature = JSON.parse(gridResult.geo);
@@ -636,17 +630,59 @@ export const TripDataControls: React.FC<any> = (props) => {
               largeGridId: gridResult.large_grid_item_id
             },
             async () => {
-              //callback function responsible for fetching all the features in area from WFS api.
-              const featuresInArea = await getDataFromDataBC(layerName, bufferedGeo);
+              //callback function responsible for fetching all the features in area.
+              let featuresInArea;
+              //If there are custom api endpoints, use them, if not, use WFS consumer.
+              switch (layerName) {
+                case 'LEAN_POI':
+                  const poiRes = await invasivesApi.getPointsOfInterestLean({ search_feature: bufferedGeo });
+                  if (poiRes) {
+                    const filteredArr = poiRes.rows.map((res) => {
+                      return res.geojson;
+                    });
+                    featuresInArea = filteredArr;
+                  } else {
+                    featuresInArea = [];
+                  }
+                  break;
+                case 'LEAN_ACTIVITIES':
+                  const actRes = await invasivesApi.getActivitiesLean({ search_feature: bufferedGeo });
+                  if (actRes) {
+                    const filteredArr = actRes.rows.map((res) => {
+                      return res.geojson;
+                    });
+                    featuresInArea = filteredArr;
+                  } else {
+                    featuresInArea = [];
+                  }
+                  break;
+                case 'jurisdiction':
+                  const jurRes = await invasivesApi.getJurisdictions({ search_feature: bufferedGeo });
+                  if (jurRes) {
+                    const filteredArr = jurRes.rows.map((res) => {
+                      return res.geojson;
+                    });
+                    featuresInArea = filteredArr;
+                  } else {
+                    featuresInArea = [];
+                  }
+                  break;
+                default:
+                  featuresInArea = await getDataFromDataBC(layerName, bufferedGeo);
+              }
+
               //pushing complete grid item with features inside to the array
-              gridItemsArr.push({
-                id: gridId,
-                bufferedGeo: bufferedGeo,
-                featureArea: JSON.stringify(bufferedGeo).split(`'`).join(`''`),
-                layerName: layerName,
-                featuresInArea: JSON.stringify(featuresInArea).split(`'`).join(`''`),
-                largeGridID: gridResult.large_grid_item_id
-              });
+
+              if (featuresInArea?.length > 0) {
+                gridItemsArr.push({
+                  id: gridId,
+                  bufferedGeo: bufferedGeo,
+                  featureArea: JSON.stringify(bufferedGeo).split(`'`).join(`''`),
+                  layerName: layerName,
+                  featuresInArea: JSON.stringify(featuresInArea).split(`'`).join(`''`),
+                  largeGridID: gridResult.large_grid_item_id
+                });
+              }
               //if there are 50 items in array, do batch upsert to sqlite
               //by pushing array and callback function to upserts queue
               if (gridItemsArr.length > 49 || smallGridResLength < 50) {
@@ -694,16 +730,33 @@ export const TripDataControls: React.FC<any> = (props) => {
                   //emptying the array to fill it with 50 items on next iteration
                   smallGridResLength -= 50;
                   gridItemsArr = [];
+                  setProgressDialog((prevState) => {
+                    const itemsArr = prevState.items;
+                    itemsArr[0] = { ...itemsArr[0], description: `${smallGridResLength} items Left ` };
+                    return {
+                      ...prevState,
+                      items: itemsArr
+                    };
+                  });
+                  if (smallGridResLength === 0) {
+                    setProgressDialog((prevState) => {
+                      const itemsArr = prevState.items;
+                      itemsArr[0] = { ...itemsArr[0], state: 'complete' };
+                      return {
+                        ...prevState,
+                        items: itemsArr
+                      };
+                    });
+                  }
                 });
               }
             }
           );
         });
       });
-      console.log('finished fetching layer data.');
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
-        itemsArr[1] = { ...itemsArr[1], state: 'complete' };
+        itemsArr[0] = { ...itemsArr[0], state: 'complete' };
         return {
           ...prevState,
           items: itemsArr
@@ -712,7 +765,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     } catch (e) {
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
-        itemsArr[1] = { ...itemsArr[1], state: 'error', description: `Error: ${e}` };
+        itemsArr[0] = { ...itemsArr[0], state: 'error', description: `Error: ${e}` };
         return {
           ...prevState,
           items: itemsArr
@@ -763,159 +816,6 @@ export const TripDataControls: React.FC<any> = (props) => {
     return null;
   };
 
-  const fetchLeanActivitiesAndPoi = async () => {
-    console.log('started to fetch lean activities and poi');
-
-    setProgressDialog((prevState) => {
-      const itemsArr = prevState.items;
-      itemsArr[0] = { ...itemsArr[0], state: 'in_progress' };
-      return {
-        ...prevState,
-        items: itemsArr
-      };
-    });
-
-    try {
-      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
-
-      if (!geometry) {
-        return;
-      }
-
-      const activitiesData = await invasivesApi.getActivitiesLean({ search_feature: geometry });
-      const poisData = await invasivesApi.getPointsOfInterestLean({ search_feature: geometry });
-      const activitiesFeatureArray = [];
-      const poisFeatureArray = [];
-
-      activitiesData.rows.forEach((row) => {
-        activitiesFeatureArray.push(row.geojson);
-      });
-
-      poisData.rows.forEach((row) => {
-        poisFeatureArray.push(row.geojson);
-      });
-
-      const actvitiesGeoJSON = { type: 'FeatureCollection', features: activitiesFeatureArray };
-      const poiGeoJSON = { type: 'FeatureCollection', features: poisFeatureArray };
-      await databaseContext.asyncQueue({
-        asyncTask: () => {
-          return upsert(
-            [
-              {
-                type: UpsertType.RAW_SQL,
-                sql: `INSERT INTO lean_activities (json, trip_ID) VALUES ('${JSON.stringify(actvitiesGeoJSON)}',${
-                  props.trip_ID
-                })`
-              }
-            ],
-            databaseContext
-          );
-        }
-      });
-      await databaseContext.asyncQueue({
-        asyncTask: () => {
-          return upsert(
-            [
-              {
-                type: UpsertType.RAW_SQL,
-                sql: `INSERT INTO lean_poi (json, trip_ID) VALUES ('${JSON.stringify(poiGeoJSON)}',${props.trip_ID})`
-              }
-            ],
-            databaseContext
-          );
-        }
-      });
-
-      console.log('finished fetching lean activities and poi');
-    } catch (e) {
-      setProgressDialog((prevState) => {
-        const itemsArr = prevState.items;
-        itemsArr[0] = { ...itemsArr[0], state: 'error', description: `Error: ${e}` };
-        return {
-          ...prevState,
-          items: itemsArr
-        };
-      });
-    }
-    setProgressDialog((prevState) => {
-      const itemsArr = prevState.items;
-      itemsArr[0] = { ...itemsArr[0], state: 'complete' };
-      return {
-        ...prevState,
-        items: itemsArr
-      };
-    });
-  };
-
-  const fetchJurisdictions = async () => {
-    console.log('started fetching jurisdictions...');
-
-    setProgressDialog((prevState) => {
-      const itemsArr = prevState.items;
-      itemsArr[5] = { ...itemsArr[5], state: 'in_progress' };
-      return {
-        ...prevState,
-        items: itemsArr
-      };
-    });
-
-    try {
-      const geometry = (trip.geometry && trip.geometry.length && trip.geometry[0]) || null;
-
-      if (!geometry) {
-        return;
-      }
-
-      const jurisdictionsData = await invasivesApi.getJurisdictions({ search_feature: geometry });
-      const jurisdictionsFeatureArray = [];
-
-      alert(JSON.stringify(jurisdictionsData));
-
-      jurisdictionsData.rows.forEach((row) => {
-        jurisdictionsFeatureArray.push({
-          type: 'Feature',
-          properties: { type: row.jurisdictn, layer: 'jurisdiction' },
-          geometry: row.geom
-        });
-      });
-
-      const jurisdictionsGeoJSON = { type: 'FeatureCollection', features: jurisdictionsFeatureArray };
-
-      await databaseContext.asyncQueue({
-        asyncTask: () => {
-          return upsert(
-            [
-              {
-                type: UpsertType.RAW_SQL,
-                sql: `INSERT INTO jurisdictions (json, trip_ID) VALUES ('${JSON.stringify(jurisdictionsGeoJSON)}',${
-                  props.trip_ID
-                })`
-              }
-            ],
-            databaseContext
-          );
-        }
-      });
-    } catch (e) {
-      setProgressDialog((prevState) => {
-        const itemsArr = prevState.items;
-        itemsArr[5] = { ...itemsArr[5], state: 'error', description: `Error: ${e}` };
-        return {
-          ...prevState,
-          items: itemsArr
-        };
-      });
-    }
-    setProgressDialog((prevState) => {
-      const itemsArr = prevState.items;
-      itemsArr[5] = { ...itemsArr[5], state: 'complete' };
-      return {
-        ...prevState,
-        items: itemsArr
-      };
-    });
-  };
-
   const deleteTripAndFetch = async () => {
     setProgressDialog((prevState) => ({
       ...prevState,
@@ -930,17 +830,10 @@ export const TripDataControls: React.FC<any> = (props) => {
 
     //fetch what is selected here:
     try {
-      await fetchLeanActivitiesAndPoi();
       await fetchLayerData();
       await fetchActivities();
       await fetchPointsOfInterest();
       await fetchMetabaseQueries();
-      await fetchJurisdictions();
-      setProgressDialog((prevState) => ({
-        dialogOpen: false,
-        done: true,
-        ...prevState
-      }));
     } catch (error) {
       setProgressDialog((prevState) => ({
         dialogOpen: true,
