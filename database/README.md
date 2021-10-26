@@ -78,7 +78,7 @@ Run from database/src/: npx knex --knexfile ./knexfile.ts migrate:make <insert n
 
 ```bash
 cd database/src
-knex seed:run --env local --specific 05_riso.ts.ts
+knex seed:run --env local --specific 05_riso.ts
 ```
 
 # Managing data in S3
