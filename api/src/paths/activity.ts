@@ -362,7 +362,7 @@ function updateActivity(): RequestHandler {
     try {
       const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData);
 
-      if (!sqlStatements || !sqlStatements.updateSQL || !sqlStatements.createSQL) {
+      if (!sqlStatements || !sqlStatements.createSQL) {
         throw {
           status: 400,
           message: 'Failed to build SQL statements'
@@ -375,7 +375,6 @@ function updateActivity(): RequestHandler {
         // Perform both update and create operations as a single transaction
         await connection.query('BEGIN');
 
-        await connection.query(sqlStatements.updateSQL.text, sqlStatements.updateSQL.values);
         createResponse = await connection.query(sqlStatements.createSQL.text, sqlStatements.createSQL.values);
 
         await connection.query('COMMIT');
