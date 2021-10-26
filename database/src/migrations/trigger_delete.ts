@@ -19,7 +19,7 @@ export async function up(knex: Knex): Promise<void> {
           update invasivesbc.activity_incoming_data
           set deleted_timestamp = NOW()
           where activity_id = new.activity_id
-          and deleted_timestamp = null;
+          and deleted_timestamp is null;
           RETURN NEW;
       END;
       $$;
