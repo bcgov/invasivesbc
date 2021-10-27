@@ -311,6 +311,10 @@ const getConnection = async (databaseName?: string) => {
 
   try {
     oldConnection = await sqlite.retrieveConnection(dbname);
+    console.log('reusing connection ');
+    if (!oldConnection.isDBOpen()) {
+      await oldConnection.open();
+    }
     return oldConnection;
   } catch (e) {
     console.log('error retrieving existing connection');
@@ -318,6 +322,10 @@ const getConnection = async (databaseName?: string) => {
 
   try {
     newConnection = await sqlite.createConnection(dbname, false, 'no-encryption', 1);
+    if (!newConnection.isDBOpen()) {
+      await newConnection.open();
+    }
+    console.log('creating new connection ');
     return newConnection;
   } catch (e) {
     console.log('error making new connection');
@@ -330,7 +338,6 @@ const getConnection = async (databaseName?: string) => {
 export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any) => {
   let batchUpdate = '';
   let db = await getConnection();
-  await db.open();
 
   let totalRecordsChanged = 0;
 
@@ -572,7 +579,6 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
     // alert('made it here');
     let ret;
     let db = await getConnection();
-    await db.open();
 
     switch (queryConfig.type) {
       case QueryType.DOC_TYPE_AND_ID:
