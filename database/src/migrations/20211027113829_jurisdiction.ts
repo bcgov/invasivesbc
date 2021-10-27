@@ -21,6 +21,7 @@ export async function up(knex: Knex): Promise<void> {
 
       CREATE INDEX ON "jurisdiction" USING GIST ("geom");
     `;
+    await knex.raw(sql);
   } catch (e) {
     console.error('Error loading jurisdictions', e);
   }
@@ -36,6 +37,7 @@ export async function down(knex: Knex): Promise<void> {
 
       drop table if exists jurisdiction;
     `;
+    await knex.raw(sql);
   } catch (e) {
     console.error('Error deleting jurisdictions', e);
   }

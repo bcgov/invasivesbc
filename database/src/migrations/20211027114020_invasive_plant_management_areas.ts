@@ -22,6 +22,7 @@ export async function up(knex: Knex): Promise<void> {
       SELECT AddGeometryColumn('','invasive_plant_management_areas','geom','4326','MULTIPOLYGON',2);
       CREATE INDEX ON "invasive_plant_management_areas" USING GIST ("geom");
     `;
+    await knex.raw(sql);
   } catch (e) {
     console.error('Error loading IPMAs', e);
   }
@@ -37,6 +38,7 @@ export async function down(knex: Knex): Promise<void> {
 
       drop table if exists invasive_plant_management_areas;
     `;
+    await knex.raw(sql);
   } catch (e) {
     console.error('Error deleting IPMAs', e);
   }
