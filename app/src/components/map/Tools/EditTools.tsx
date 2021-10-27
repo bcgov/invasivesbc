@@ -56,6 +56,7 @@ const formulateTable = (feature) => {
 const EditTools = (props: any) => {
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
+  const [flag, setFlag] = useState(0);
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
   const toggleMode = () => {
@@ -140,18 +141,24 @@ const EditTools = (props: any) => {
   let map = useMapEvent('draw:created' as any, onDrawCreate);
 
   useMapEvent('draw:drawstart' as any, (e) => {
-    console.log(e);
+    console.log('drawstart', e);
+    if (e.layerType === 'polyline') {
+      setFlag(1);
+    }
     if (!multiMode) {
       (context.layerContainer as any).clearLayers();
     }
+  });
+  useMapEvent('draw:drawvertex' as any, (e) => {
+    console.log('vertex', e);
   });
   useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
   });
   useMapEvent('draw:deletestop' as any, () => onDeleteStop);
   useMapEvent('draw:edited' as any, onEditStop);
-  useMapEvent('draw:drawstop' as any, () => {
-    console.log('here');
+  useMapEvent('draw:drawstop' as any, (e) => {
+    console.log('drawstop', e);
   });
 
   const convertLineStringToPoly = (aGeo: any) => {
