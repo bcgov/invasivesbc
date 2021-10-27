@@ -1318,10 +1318,93 @@ const Collection_BioControll = {
 */
 
 const Activity_AnimalTerrestrial = {
-  'comment': {
-    'ui:widget': 'textarea'
+  'terrestrial_animal_information': {
+    'invasive_animal_species': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'occurrence': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'sex': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'condition': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'behaviour': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'station_id': {},
+    'captured': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'detection_distance': {},
+    'specimen_id': {},
+    'sample_collected': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'sample_id': {},
+    'edna_sample': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'edna_sample_id': {},
+    'disposal_method': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'comment': {},
+    'ui:order':[
+      'invasive_animal_species',
+      'occurrence',
+      'number',
+      'life_stage',
+      'sex',
+      'condition',
+      'behaviour',
+      'station_id',
+      'captured',
+      'detection_distance',
+      'specimen_id',
+      'sample_collected',
+      'sample_id',
+      'edna_sample',
+      'edna_sample_id',
+      'disposal_method',
+      'comment'
+    ]
   },
-  'ui:order':['activity_type','observation_type','observation_method','treatment_type','comment']
+  'animal_measurements': {
+    'length': {},
+    'length_method': {},
+    'weight': {},
+    'ui:order': [
+      'length',
+      'length_method',
+      'weight'
+    ]
+  },
+  'microhabitat': {
+    'habitat': {},
+    'primary_vegetation_layer': {},
+    'primary_vegetation_layer_percent_cover': {},
+    'secondary_vegetation_layer': {},
+    'secondary_vegetation_layer_percent_cover': {},
+    'substrate_type': {},
+    'air_temperature': {},
+    'ui:order':[
+      'habitat',
+      'primary_vegetation_layer',
+      'primary_vegetation_layer_percent_cover',
+      'secondary_vegetation_layer',
+      'secondary_vegetation_layer_percent_cover',
+      'substrate_type',
+      'air_temperature'
+    ]
+  },
+  'ui:order':['terrestrial_animal_information','animal_measurements','microhabitat']
 };
 
 const Activity_AnimalAquatic = {

@@ -26,6 +26,26 @@ animal_life_stage_code,E,Egg,2
 animal_life_stage_code,N,Neonate,3
 animal_life_stage_code,J,Juvenile,4
 animal_life_stage_code,A,Adult,5
+animal_sex_code,F,Female,1
+animal_sex_code,M,Male,2
+animal_sex_code,U,Unknown,3
+animal_condition_code,A,Alive,1
+animal_condition_code,D,Dead,2
+animal_condition_code,I,Injured,3
+animal_condition_code,S,Sick,4
+animal_captured_code,Y,Yes,1
+animal_captured_code,N,No,2
+animal_sample_collected_code,Y,Yes,1
+animal_sample_collected_code,N,No,2
+animal_edna_sample_code,Y,Yes,1
+animal_edna_sample_code,N,No,2,
+animal_behaviour_code,M,Moving,1
+animal_behaviour_code,F,Feeding,2
+animal_behaviour_code,B,Basking,3
+animal_behaviour_code,Fl,Fleeing,4
+animal_behaviour_code,R,Resting,5
+animal_behaviour_code,D,Deceased,6
+animal_behaviour_code,O,Other,7
 plant_health_code,unknown,unknown,1
 plant_health_code,GH,Green and healthy looking plants,2
 plant_health_code,HA,Plants appear herbicide affected,3
@@ -481,131 +501,153 @@ invasive_plant_code,HS,Yellow hawkweed species (HIER PILO SPP Hieracium / Pilose
 invasive_plant_code,YN,Yellow nutsedge (CYPE ESC Cyperus esculentus),201
 invasive_plant_code,YS,Yellow starthistle (CENT SOL Centaurea solstitialis),202
 invasive_plant_code,YT,Yellow/common toadflax (LINA VUL Linaria vulgaris),203
-invasive_animal_code,ABD,American black duck [Anas rubripes],1
-invasive_animal_code,ABF,American bullfrog [Lithobates catesbeiana],2
-invasive_animal_code,ASD,American shad [Alosa sapidissima],3
-invasive_animal_code,AGB,Amur goby [Rhinogobius brunneus],4
-invasive_animal_code,ASN,Apple snail [Ampullariidae],5
-invasive_animal_code,AAN,Argentine ant [Linepithema humile],6
-invasive_animal_code,ACM,Asian clam [Corbicula fluminea],7
-invasive_animal_code,ANA,Asian needle ant [Pachycondyla chinensis],8
-invasive_animal_code,AOY,Atlantic oyster [Crassostrea virginica],9
-invasive_animal_code,ARM,Atlantic ribbed mussel [Geukensia demissa],10
-invasive_animal_code,ASA,Atlantic salmon [Salmo salar],11
-invasive_animal_code,BHC,Bighead carp [Hypophthalmichthys nobilis],12
-invasive_animal_code,BIT,Bitterling [Rhodius species],13
-invasive_animal_code,BBH,Black bullhead [Ameiurus melas],14
-invasive_animal_code,BCA,Black carp [Mylopharyngodon piceus],15
-invasive_animal_code,BCR,Black crappie [Pomoxis nigromaculatus],16
-invasive_animal_code,BRT,Black rat [Rattus rattus],17
-invasive_animal_code,BRS,Bloody red shrimp (red mysid) [Hemimysis anomala],18
-invasive_animal_code,BSK,Blotched snakehead [Channa maculata],19
-invasive_animal_code,BSN,Bluegill sunfish [Lepomis macrochirus],20
-invasive_animal_code,BNB,Brown bullhead [Ameiurus nebulosus],21
-invasive_animal_code,BNR,Brown/Norway rat [Rattus norvegicus],22
-invasive_animal_code,CQU,California quail [Callipepla californica],23
-invasive_animal_code,CCF,Channel catfish [Ictalurus Punctatus],24
-invasive_animal_code,CMC,Chinese mitten crab [Eriocheir sinensis],25
-invasive_animal_code,CMS,Chinese mystery snail [Cipangopaludina chinensis],26
-invasive_animal_code,CPT,Chukar partridge [Alectoris chukar],27
-invasive_animal_code,CTU,Colonial tunicate [Botrylloides violaceus],28
-invasive_animal_code,CCP,Common carp [Cyprinus carpio],29
-invasive_animal_code,CWL,Common wall lizard [Podarcis muralis],30
-invasive_animal_code,CSS,Compound sea squirt [Didemnum vexillum],31
-invasive_animal_code,CFM,Conrad's false mussel [Mytilopsis leucophaeata],32
-invasive_animal_code,DKA,Drumming katydid [Meconema thalassinum],33
-invasive_animal_code,ECR,Eastern cottontail rabbit [Sylvilagus floridanus],34
-invasive_animal_code,EFS,Eastern fox squirrel [Sciurus niger],35
-invasive_animal_code,EGS,Eastern grey squirrel [Sciurus carolinensis],36
-invasive_animal_code,EOD,Eastern oyster drill [Urosalpinx cinerea],37
-invasive_animal_code,ESC,Eastern soft-shell clam [Mya arenaria],38
-invasive_animal_code,ECD,Eurasian collard dove [Streptopelia decaocto],39
-invasive_animal_code,EBG,European brown garden snail [Cornu aspersum],40
-invasive_animal_code,EFA,European fire ant [Myrmica rubra],41
-invasive_animal_code,EGC,European green crab [Carcinus maenas],42
-invasive_animal_code,EHS,European house sparrow [Passer domesticus],43
-invasive_animal_code,EPW,European paper wasp [Polistes dominula],44
-invasive_animal_code,ERB,European rabbit [Oryctolagus cuniculus],45
-invasive_animal_code,EST,European Starling [Sturnus vulgaris],46
-invasive_animal_code,FDR,Fallow deer [Dama dama],47
-invasive_animal_code,FMW,Fathead minnow [Pimephales promelas],48
-invasive_animal_code,FSW,Feral swine [Sus scrofa],49
-invasive_animal_code,FJF,Freshwater jellyfish [Craspedacusta sowerbyi],50
-invasive_animal_code,GFY,Garden soldier fly [Exaireta spinigera],51
-invasive_animal_code,GAH,Giant Asian hornet [Vespa mandarinia],52
-invasive_animal_code,GGS,Giant garden slug [Limax maximus],53
-invasive_animal_code,GST,Golden star tunicate [Botryllus schlosseri],54
-invasive_animal_code,GLD,Goldfish [Carassius auratus],55
-invasive_animal_code,GCP,Grass carp [Ctenopharyngodon idella],56
-invasive_animal_code,GFG,Green frog [Lithobates clamitans],57
-invasive_animal_code,GSF,Green sunfish [Lepomis cyanellus],58
-invasive_animal_code,GMT,Gypsy moth [Lymantria dispar],59
-invasive_animal_code,HMC,Harris mud crab [Rhithropanopeus harrisii],60
-invasive_animal_code,HMS,House mouse [Mus musculus],61
-invasive_animal_code,IFA,Impressive fire ant [Myrmica specioides],62
-invasive_animal_code,JBE,Japanese bettle [Popillia japonica],63
-invasive_animal_code,JMS,Japanese mussel / Asian date mussel [Musculista senhousia],64
-invasive_animal_code,JOD,Japanese oyster drill [Ocinebrellus inornatus],65
-invasive_animal_code,JSC,Japanese shore crab [Hemigrapsus sanguineus],66
-invasive_animal_code,LSA,Land slugs [Arion spp.],67
-invasive_animal_code,LSD,Land slugs [Deroceras spp],68
-invasive_animal_code,LRS,Large red slug [Arion rufus],69
-invasive_animal_code,LYU,Large yellow underwing [Noctua pronuba],70
-invasive_animal_code,LBA,Largemouth bass [Micropterus salmoides],71
-invasive_animal_code,LBS,Larger branded snail [Cepaea nemoralis],72
-invasive_animal_code,LFA,Little fire ant [Wasmannia auropunctata],73
-invasive_animal_code,MGB,Monkey goby [Neogobius fluviatilis],74
-invasive_animal_code,MSK,Muskellunge [Esox masquinongy],75
-invasive_animal_code,MSW,Mute swan [Cygnus olor],76
-invasive_animal_code,NZG,New Zealand green-lipped mussel [Perna species],77
-invasive_animal_code,NZM,New Zealand mudsnail [Potamopyrgus antipodarum],78
-invasive_animal_code,NPK,Northern pike [Esox lucius],79
-invasive_animal_code,NQC,Northern quahog clam [Mercenaria mercenaria],80
-invasive_animal_code,NSH,Northern snakehead [Channa argus],81
-invasive_animal_code,NUT,Nutria [Myocastor coypus],82
-invasive_animal_code,OWF,Oriental weatherfish [Misgurnus anguillicaudatus],83
-invasive_animal_code,PMT,Praying mantis [Mantis religiosa],84
-invasive_animal_code,PCP,Prussian carp [Carassius gibelio],85
-invasive_animal_code,PSF,Pumpkinseed sunfish [Lepomis gibbosus],86
-invasive_animal_code,QM,Quagga mussel [Dreissena rostriformis bugensis],87
-invasive_animal_code,RBS,Rainbow snakehead [Channa bleheri],88
-invasive_animal_code,RBP,Red bellied pacu [Piaractus brachypomus],89
-invasive_animal_code,RSH,Red shiner [Cyprinella lutrensis],90
-invasive_animal_code,RSC,Red swamp crayfish [Procambarus clarkii],91
-invasive_animal_code,RES,Red-eared slider [Trachemys scripta],92
-invasive_animal_code,RCF,Ringed crayfish [Orconectes neglectus],93
-invasive_animal_code,RBA,Rock bass [Ambloplites rupestris],94
-invasive_animal_code,RPG,Rock pigeon [Columba livia],95
-invasive_animal_code,RGB,Round goby [Neogobius melanostomus],96
-invasive_animal_code,RUS,Rusty crayfish [Orconectes rusticus],97
-invasive_animal_code,SSQ,Sea squirts [Molgula manhattensis],98
-invasive_animal_code,SSL,Seven-spotted ladybug [Coccinella septempunctata],99
-invasive_animal_code,SCP,Silver carp [Hypophthalmichthys molitrix],100
-invasive_animal_code,SBA,Smallmouth bass [Micropterus dolomieu],101
-invasive_animal_code,SNT,Snapping turtle [Chelydra serpentina],102
-invasive_animal_code,SOT,Softshell turtle [Apalone species],103
-invasive_animal_code,SWF,Spiny waterflea [Bythotrephes longimanus],104
-invasive_animal_code,SSH,Spottail shiner [Notropis hudsonius],105
-invasive_animal_code,SSS,Stalked sea squirt [Styela clava],106
-invasive_animal_code,TEN,Tench [Tinca tinca],107
-invasive_animal_code,TSA,Tropical stinging ant [Hypoponera punctatissima],108
-invasive_animal_code,TGB,Tubenose goby [Proterorhinus semilunaris],109
-invasive_animal_code,TCB,Tui chub [Gila bicolor],110
-invasive_animal_code,VCM,Varnish clam [Nuttallia obsurata],111
-invasive_animal_code,VOP,Virginia opossum [Didelphis virginiana],112
-invasive_animal_code,VCF,Virile crayfish [Orconectes virilis],113
-invasive_animal_code,WAL,Walleye [Sander vitreus],114
-invasive_animal_code,WAR,Warmouth [Lepomis gulosus],115
-invasive_animal_code,WFL,Western fence lizard [Sceloporus occidentalis],116
-invasive_animal_code,WM,Western mosquitofish [Gambusia affinis],117
-invasive_animal_code,WCM,White cloud mountain minnow [Tanichthys albonubes],118
-invasive_animal_code,WTK,Wild turkey [Meleagris gallopavo],119
-invasive_animal_code,WMT,Winter moth [Operophtera brumata],120
-invasive_animal_code,WSP,Woodlouse spider [Dysdera crocata],121
-invasive_animal_code,YBH,Yellow bullhead [Ameiurus natalis],122
-invasive_animal_code,YPC,Yellow perch [Perca flavescens],123
-invasive_animal_code,YSS,Yellow sea squirt [Ciona intestinalis],124
-invasive_animal_code,ZMS,Zebra mussel [Dreissena polymorpha],125
+invasive_animal_code_aquatic,ABF,American bullfrog [Lithobates catesbeiana],1
+invasive_animal_code_aquatic,ASD,American shad [Alosa sapidissima],2
+invasive_animal_code_aquatic,AGB,Amur goby [Rhinogobius brunneus],3
+invasive_animal_code_aquatic,ASN,Apple snail [Ampullariidae],4
+invasive_animal_code_aquatic,ACM,Asian clam [Corbicula fluminea],5
+invasive_animal_code_aquatic,JMS,Asian date mussel [Brachidontes (Musculista) senhousia],6
+invasive_animal_code_aquatic,ASA,Atlantic salmon [Salmo salar],7
+invasive_animal_code_aquatic,BHC,Bighead carp [Hypophthalmichthys nobilis],8
+invasive_animal_code_aquatic,BIT,Bitterling [Rhodeus species],9
+invasive_animal_code_aquatic,BBH,Black bullhead [Ameiurus melas],10
+invasive_animal_code_aquatic,BCA,Black carp [Mylopharyngodon piceus],11
+invasive_animal_code_aquatic,BCR,Black crappie [Pomoxis nigromaculatus],12
+invasive_animal_code_aquatic,BRS,Bloody red shrimp (red mysid) [Hemimysis anomala],13
+invasive_animal_code_aquatic,BSK,Blotched snakehead [Channa maculata],14
+invasive_animal_code_aquatic,BSN,Bluegill sunfish [Lepomis macrochirus],15
+invasive_animal_code_aquatic,BNB,Brown bullhead [Ameiurus nebulosus],16
+invasive_animal_code_aquatic,CCF,Channel catfish [Ictalurus Punctatus],17
+invasive_animal_code_aquatic,CMC,Chinese mitten crab [Eriocheir sinensis],18
+invasive_animal_code_aquatic,CMS,Chinese mystery snail [Cipangopaludina chinensis],19
+invasive_animal_code_aquatic,TEMP1,Clubbed tunicate (Styela clava),20
+invasive_animal_code_aquatic,CCP,Common carp [Cyprinus carpio],21
+invasive_animal_code_aquatic,CSS,Compound sea squirt [Diplosoma listerianum],22
+invasive_animal_code_aquatic,CFM,Conrad's false mussel [Mytilopsis leucophaeata],23
+invasive_animal_code_aquatic,TEMP2,Eastern brook trout (Salvelinus fontinalis),24
+invasive_animal_code_aquatic,AOY,Eastern oyster [Crassostrea virginica],25
+invasive_animal_code_aquatic,EOD,Eastern oyster drill [Urosalpinx cinerea],26
+invasive_animal_code_aquatic,EGC,European green crab [Carcinus maenas],27
+invasive_animal_code_aquatic,FMW,Fathead minnow (rosy red minnow) [Pimephales promelas],28
+invasive_animal_code_aquatic,FJF,Freshwater jellyfish [Craspedacusta sowerbyi],29
+invasive_animal_code_aquatic,GST,Golden star tunicate [Botryllus schlosseri],30
+invasive_animal_code_aquatic,GLD,Goldfish [Carassius auratus],31
+invasive_animal_code_aquatic,GCP,Grass carp [Ctenopharyngodon idella],32
+invasive_animal_code_aquatic,GFG,Green frog [Lithobates clamitans],33
+invasive_animal_code_aquatic,GSF,Green sunfish [Lepomis cyanellus],34
+invasive_animal_code_aquatic,HMC,Harris mud crab [Rhithropanopeus harrisii],35
+invasive_animal_code_aquatic,JOD,Japanese oyster drill [Ocinebrellus inornatus],36
+invasive_animal_code_aquatic,JSC,Japanese shore crab [Hemigrapsus sanguineus],37
+invasive_animal_code_aquatic,LBA,Largemouth bass [Micropterus salmoides],38
+invasive_animal_code_aquatic,TEMP3,Marbled crayfish (Procambarus virginalis),39
+invasive_animal_code_aquatic,MGB,Monkey goby [Neogobius fluviatilis],40
+invasive_animal_code_aquatic,MSK,Muskellunge [Esox masquinongy],41
+invasive_animal_code_aquatic,NZG,New Zealand green-lipped mussel [Perna species],42
+invasive_animal_code_aquatic,NZM,New Zealand mudsnail [Potamopyrgus antipodarum],43
+invasive_animal_code_aquatic,NPK,Northern pike [Esox lucius],44
+invasive_animal_code_aquatic,NQC,Northern quahog clam [Mercenaria mercenaria],45
+invasive_animal_code_aquatic,NSH,Northern snakehead [Channa argus],46
+invasive_animal_code_aquatic,NUT,Nutria [Myocastor coypus],47
+invasive_animal_code_aquatic,OWF,Oriental weatherfish (Oriental weather loach) [Misgurnus anguillicaudatus],48
+invasive_animal_code_aquatic,TEMP4,Pancake batter tunicate (Didemnum vexillum),49
+invasive_animal_code_aquatic,PCP,Prussian carp [Carassius gibelio],50
+invasive_animal_code_aquatic,PSF,Pumpkinseed sunfish [Lepomis gibbosus],51
+invasive_animal_code_aquatic,QM,Quagga mussel [Dreissena rostriformis bugensis],52
+invasive_animal_code_aquatic,RBS,Rainbow snakehead [Channa bleheri],53
+invasive_animal_code_aquatic,RBP,Red bellied pacu [Piaractus brachypomus],54
+invasive_animal_code_aquatic,RSH,Red shiner [Cyprinella lutrensis],55
+invasive_animal_code_aquatic,RSC,Red swamp crayfish [Procambarus clarkii],56
+invasive_animal_code_aquatic,RES,Red-eared slider [Trachemys scripta],57
+invasive_animal_code_aquatic,ARM,Ribbed mussel [Geukensia demissa],58
+invasive_animal_code_aquatic,RCF,Ringed crayfish [Faxonius neglectus],59
+invasive_animal_code_aquatic,RBA,Rock bass [Ambloplites rupestris],60
+invasive_animal_code_aquatic,RGB,Round goby [Neogobius melanostomus],61
+invasive_animal_code_aquatic,RUS,Rusty crayfish [Faxonius rusticus],62
+invasive_animal_code_aquatic,SCP,Silver carp [Hypophthalmichthys molitrix],63
+invasive_animal_code_aquatic,SBA,Smallmouth bass [Micropterus dolomieu],64
+invasive_animal_code_aquatic,SNT,Snapping turtle [Chelydra serpentina],65
+invasive_animal_code_aquatic,ESC,Soft-shell clam [Mya arenaria],66
+invasive_animal_code_aquatic,SOT,Softshell turtle [Apalone spinifera],67
+invasive_animal_code_aquatic,SWF,Spiny waterflea [Bythotrephes longimanus],68
+invasive_animal_code_aquatic,SSH,Spottail shiner [Notropis hudsonius],69
+invasive_animal_code_aquatic,SSS,Stalked sea squirt [Styela clava],70
+invasive_animal_code_aquatic,TEN,Tench [Tinca tinca],71
+invasive_animal_code_aquatic,TGB,Tubenose goby [Proterorhinus semilunaris],72
+invasive_animal_code_aquatic,TCB,Tui chub [Siphateles bicolor],73
+invasive_animal_code_aquatic,VCM,Varnish clam [Nuttallia obscurata],74
+invasive_animal_code_aquatic,YSS,Vase tunicate [Ciona intestinalis],75
+invasive_animal_code_aquatic,CTU,Violet tunicate [Botrylloides violaceus],76
+invasive_animal_code_aquatic,VCF,Virile crayfish [Faxonius virilis],77
+invasive_animal_code_aquatic,WAL,Walleye [Sander vitreus],78
+invasive_animal_code_aquatic,WAR,Warmouth [Lepomis gulosus],79
+invasive_animal_code_aquatic,WM,Western mosquitofish [Gambusia affinis],80
+invasive_animal_code_aquatic,WCM,White cloud mountain minnow [Tanichthys albonubes],81
+invasive_animal_code_aquatic,YBH,Yellow bullhead [Ameiurus natalis],82
+invasive_animal_code_aquatic,YPC,Yellow perch [Perca flavescens],83
+invasive_animal_code_aquatic,ZMS,Zebra mussel [Dreissena polymorpha],84
+invasive_animal_code_terrestrial,ABD,American black duck [Anas rubripes],1
+invasive_animal_code_terrestrial,ABF,American bullfrog [Lithobates catesbeiana],2
+invasive_animal_code_terrestrial,TEMP5,Amphibian chytrid fungus [Batrachochytrium dendrobatidis],3
+invasive_animal_code_terrestrial,TEMP6,Apple maggot [Rhagoletis pomonella],4
+invasive_animal_code_terrestrial,AAN,Argentine ant [Linepithema humile],5
+invasive_animal_code_terrestrial,GAH,Asian giant hornet [Vespa mandarinia],6
+invasive_animal_code_terrestrial,TEMP7,Asian longhorned beetle [Anoplophora glabripennis],7
+invasive_animal_code_terrestrial,ANA,Asian needle ant [Brachyponera chinensis],8
+invasive_animal_code_terrestrial,TEMP8,Balsam woolly adelgid [Adelges piceae],9
+invasive_animal_code_terrestrial,BRT,Black rat [Rattus rattus],10
+invasive_animal_code_terrestrial,TEMP9,Black slug [Arion ater],11
+invasive_animal_code_terrestrial,TEMP10,Brown marmorated stinkbug [Halyomorpha halys],12
+invasive_animal_code_terrestrial,BNR,Brown/Norway rat [Rattus norvegicus],13
+invasive_animal_code_terrestrial,CQU,California quail [Callipepla californica],14
+invasive_animal_code_terrestrial,CPT,Chukar partridge [Alectoris chukar],15
+invasive_animal_code_terrestrial,CWL,Common wall lizard [Podarcis muralis],16
+invasive_animal_code_terrestrial,DKA,Drumming katydid [Meconema thalassinum],17
+invasive_animal_code_terrestrial,ECR,Eastern cottontail [Sylvilagus floridanus],18
+invasive_animal_code_terrestrial,EFS,Eastern fox squirrel [Sciurus niger],19
+invasive_animal_code_terrestrial,EGS,Eastern grey squirrel [Sciurus carolinensis],20
+invasive_animal_code_terrestrial,ECD,Eurasian collard dove [Streptopelia decaocto],21
+invasive_animal_code_terrestrial,EBG,European brown garden snail [Cornu aspersum],22
+invasive_animal_code_terrestrial,TEMP11,European chafer [Amphimallon majalis],23
+invasive_animal_code_terrestrial,EFA,European fire ant [Myrmica rubra],24
+invasive_animal_code_terrestrial,EHS,European house sparrow [Passer domesticus],25
+invasive_animal_code_terrestrial,PMT,European mantis [Mantis religiosa],26
+invasive_animal_code_terrestrial,EPW,European paper wasp [Polistes dominula],27
+invasive_animal_code_terrestrial,ERB,European rabbit [Oryctolagus cuniculus],28
+invasive_animal_code_terrestrial,EST,European Starling [Sturnus vulgaris],29
+invasive_animal_code_terrestrial,FDR,Fallow deer [Dama dama],30
+invasive_animal_code_terrestrial,FSW,Feral swine [Sus scrofa],31
+invasive_animal_code_terrestrial,GFY,Garden soldier fly [Exaireta spinigera],32
+invasive_animal_code_terrestrial,GGS,Giant garden slug [Limax maximus],33
+invasive_animal_code_terrestrial,TEMP12,Gray field slug [Deroceras reticulatum],34
+invasive_animal_code_terrestrial,GFG,Green frog [Lithobates clamitans],35
+invasive_animal_code_terrestrial,HMS,House mouse [Mus musculus],36
+invasive_animal_code_terrestrial,IFA,Impressive fire ant [Myrmica specioides],37
+invasive_animal_code_terrestrial,TEMP13,Italian wall lizard [Podarcis siculus],38
+invasive_animal_code_terrestrial,JBE,Japanese bettle [Popillia japonica],39
+invasive_animal_code_terrestrial,LRS,Large red slug [Arion rufus],40
+invasive_animal_code_terrestrial,LYU,Large yellow underwing [Noctua pronuba],41
+invasive_animal_code_terrestrial,LBS,Larger banded snail [Cepaea nemoralis],42
+invasive_animal_code_terrestrial,LFA,Little fire ant [Wasmannia auropunctata],43
+invasive_animal_code_terrestrial,TEMP14,Lymantria moth [Lymantria dispar],44
+invasive_animal_code_terrestrial,TEMP15,Marsh slug [Deroceras laeve],45
+invasive_animal_code_terrestrial,MSW,Mute swan [Cygnus olor],46
+invasive_animal_code_terrestrial,NUT,Nutria [Myocastor coypus],47
+invasive_animal_code_terrestrial,TEMP16,Ranavirus [family Iridoviridae],48
+invasive_animal_code_terrestrial,TEMP17,Red slug [Arion rufus],49
+invasive_animal_code_terrestrial,RES,Red-eared slider [Trachemys scripta],50
+invasive_animal_code_terrestrial,RPG,Rock pigeon [Columba livia],51
+invasive_animal_code_terrestrial,TSA,Roger's ant [Hypoponera punctatissima],52
+invasive_animal_code_terrestrial,SSL,Seven-spotted ladybug [Coccinella septempunctata],53
+invasive_animal_code_terrestrial,SNT,Snapping turtle [Chelydra serpentina],54
+invasive_animal_code_terrestrial,SOT,Softshell turtle [Apalone spinifera],55
+invasive_animal_code_terrestrial,TEMP18,Spotted wing drosophila [Drosophila suzukii],56
+invasive_animal_code_terrestrial,TEMP19,Tramp slug [Deroceras invadens],57
+invasive_animal_code_terrestrial,VOP,Virginia opossum [Didelphis virginiana],58
+invasive_animal_code_terrestrial,WFL,Western fence lizard [Sceloporus occidentalis],59
+invasive_animal_code_terrestrial,TEMP20,White nose syndrome [Pseudogymnoascus destructans],60
+invasive_animal_code_terrestrial,WTK,Wild turkey [Meleagris gallopavo],61
+invasive_animal_code_terrestrial,WMT,Winter moth [Operophtera brumata],62
+invasive_animal_code_terrestrial,WSP,Woodlouse spider [Dysdera crocata],63
 biological_agent_code,ACERGEN,ACERGEN [Aceria genistae],1
 biological_agent_code,ACERMAL,ACERMAL [Aceria malherbae (Nuzzaci)],2
 biological_agent_code,AGAPZOE,AGAPZOE [Agapeta zoegana (L.)],3
