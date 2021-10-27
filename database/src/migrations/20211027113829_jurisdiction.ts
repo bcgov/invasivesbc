@@ -1,7 +1,6 @@
 import * as Knex from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
-const NODE_ENV = process.env.NODE_ENV;
 
 export async function up(knex: Knex): Promise<void> {
   try {
@@ -38,6 +37,6 @@ export async function down(knex: Knex): Promise<void> {
       drop table if exists jurisdiction;
     `;
   } catch (e) {
-    console.error('Error loading jurisdictions', e);
+    console.error('Error deleting jurisdictions', e);
   }
 }

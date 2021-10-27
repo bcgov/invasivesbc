@@ -37,6 +37,6 @@ export async function down(knex: Knex): Promise<void> {
       drop table if exists aggregate;
     `;
   } catch (e) {
-    console.error('Error loading jurisdictions', e);
+    console.error('Error deleting aggregate', e);
   }
 }
