@@ -572,7 +572,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         '0',
         idArr
       );
-
+      console.log(smallGridResult);
       const layerNames = getLayerNamesFromJSON(geoData);
       //for each layer name, do...
       layerNames.forEach(async (layerName) => {
