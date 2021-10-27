@@ -15,6 +15,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Chip,
   Drawer,
   Avatar,
   Menu,
@@ -43,7 +44,6 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const drawerWidth = 240;
@@ -118,6 +118,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   themeSwitch: {
     paddingLeft: theme.spacing(3)
+  },
+  chip: {
+    margin: theme.spacing(1)
   }
 }));
 
@@ -145,7 +148,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const userInfo = keycloak?.userInfo;
   const [open, setOpen] = React.useState(false);
   const api = useInvasivesApi();
-  const wrapper = useKeycloakWrapper();
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -164,7 +166,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     console.log('keycloak here: ', keycloak);
     try {
       if (Capacitor.getPlatform() !== 'web') {
-        keycloak.obj.login();
+        //TODO: Update tabs on logout
+        await api.clearUserInfoFromCache();
       } else {
         keycloak.obj.logout();
       }
@@ -176,8 +179,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   const loginUser = async () => {
     await keycloak?.obj?.login();
-    const cachedUser = await api.getUserInfoFromCache();
-    console.log('Cached user: ', cachedUser);
     handleClose();
   };
 
@@ -243,9 +244,15 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   }, [history.location.pathname, getActiveTab]);
 
   useEffect(() => {
-    const setTabConfigBasedOnRoles = () => {
-      setTabConfig(() => {
+    const setTabConfigBasedOnRoles = async () => {
+      let cachedUser;
+      await api.getUserInfoFromCache().then((res: any) => {
+        console.log('user info from cache (tabscontainer): ', res);
+        cachedUser = res;
+      });
+      await setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
+        console.log('Cached user: ', cachedUser);
 
         tabsUserHasAccessTo.push({
           label: 'Home',
@@ -259,8 +266,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Map />
         });
 
-        if (keycloak.hasRole(ALL_ROLES) || props.isMobileNoNetwork) {
-          if (keycloak.obj?.authenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if ((keycloak.hasRole(ALL_ROLES) || props.isMobileNoNetwork) && cachedUser) {
+          if (cachedUser?.roles?.length > 0 && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'Search',
               path: '/home/search',
@@ -268,7 +275,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (keycloak.obj?.authenticated && Capacitor.getPlatform() !== 'web') {
+          if (cachedUser?.roles?.length > 0 && Capacitor.getPlatform() !== 'web') {
             tabsUserHasAccessTo.push({
               label: 'Plan My Trip',
               path: '/home/plan',
@@ -276,7 +283,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (keycloak.obj?.authenticated && Capacitor.getPlatform() != 'web') {
+          if (cachedUser?.roles?.length > 0 && Capacitor.getPlatform() != 'web') {
             tabsUserHasAccessTo.push({
               label: 'Cached Records',
               path: '/home/references',
@@ -285,7 +292,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (keycloak.obj?.authenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          if (cachedUser?.roles?.length > 0 && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'My Records',
               path: '/home/activities',
@@ -293,7 +300,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (keycloak.obj?.authenticated && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          if (cachedUser?.roles?.length > 0 && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'Current Activity',
               path: '/home/activity',
@@ -309,7 +316,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     if (!tabConfig || !tabConfig.length) {
       setTabConfigBasedOnRoles();
     }
-  }, [keycloak]);
+  }, [keycloak, userInfo]);
 
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
@@ -431,20 +438,26 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <ChevronLeftIcon />
             </IconButton>
           </div>
-          {keycloak.obj?.authenticated ? (
-            <MenuItem onClick={logoutUser}>
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              Logout
-            </MenuItem>
+          {networkContext.connected ? (
+            <div>
+              {keycloak.obj?.authenticated || userInfo ? (
+                <MenuItem onClick={logoutUser}>
+                  <ListItemIcon>
+                    <LogoutIcon />
+                  </ListItemIcon>
+                  Logout
+                </MenuItem>
+              ) : (
+                <MenuItem onClick={loginUser}>
+                  <ListItemIcon>
+                    <LoginIcon />
+                  </ListItemIcon>
+                  Log In
+                </MenuItem>
+              )}
+            </div>
           ) : (
-            <MenuItem onClick={loginUser}>
-              <ListItemIcon>
-                <LoginIcon />
-              </ListItemIcon>
-              Log In
-            </MenuItem>
+            <Chip className={classes.chip} color="primary" label="Offline Mode" />
           )}
           <Divider />
           <List>

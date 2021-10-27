@@ -472,13 +472,39 @@ export const useInvasivesApi = () => {
         });
         return true;
       } catch (e) {
-        alert('unable to cache api spec');
+        alert('Unable to cache user info and roles');
+        console.log('ERROR: ', e);
       }
     }
     return false;
   };
 
+  const clearUserInfoFromCache = async () => {
+    console.log('Clearing user info from cache...');
+    try {
+      await databaseContext.asyncQueue({
+        asyncTask: async () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_DELETE,
+                ID: '1',
+                docType: DocType.USER_INFO
+              }
+            ],
+            databaseContext
+          );
+        }
+      });
+      return true;
+    } catch (e) {
+      alert('unable to remove user info from cache');
+    }
+    return false;
+  };
+
   const getUserInfoFromCache = async () => {
+    console.log('getUserInfoFromCache hit', databaseContext);
     let data = await databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
@@ -489,14 +515,16 @@ export const useInvasivesApi = () => {
           },
           databaseContext
         );
+        console.log('query: ', res);
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
         return res;
       }
     });
-
-    if (data?.length > 0) {
-      data = JSON.parse(data[0].json);
-      return data;
+    if (data) {
+      console.log('data: ', data);
+      return JSON.parse(JSON.stringify(data));
+    } else {
+      console.log('no data');
     }
   };
 
@@ -602,6 +630,7 @@ export const useInvasivesApi = () => {
     downloadTemplate,
     getJurisdictions,
     cacheUserInfo,
-    getUserInfoFromCache
+    getUserInfoFromCache,
+    clearUserInfoFromCache
   };
 };

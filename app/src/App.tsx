@@ -71,14 +71,14 @@ const App: React.FC<IAppProps> = (props) => {
 
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
-      <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
-        <AuthStateContextProvider>
-          <ThemeContextProvider>
-            <RolesContextProvider>
-              <NetworkContextProvider>
-                <CustomThemeProvider>
-                  <IonReactRouter>
-                    <DatabaseContext2Provider>
+      <NetworkContextProvider>
+        <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
+          <DatabaseContext2Provider>
+            <AuthStateContextProvider>
+              <ThemeContextProvider>
+                <RolesContextProvider>
+                  <CustomThemeProvider>
+                    <IonReactRouter>
                       <DatabaseContextProvider>
                         <DatabaseContext.Consumer>
                           {(databaseContext: IDatabaseContext) => {
@@ -101,14 +101,14 @@ const App: React.FC<IAppProps> = (props) => {
                           }}
                         </DatabaseContext.Consumer>
                       </DatabaseContextProvider>
-                    </DatabaseContext2Provider>
-                  </IonReactRouter>
-                </CustomThemeProvider>
-              </NetworkContextProvider>
-            </RolesContextProvider>
-          </ThemeContextProvider>
-        </AuthStateContextProvider>
-      </KeycloakProvider>
+                    </IonReactRouter>
+                  </CustomThemeProvider>
+                </RolesContextProvider>
+              </ThemeContextProvider>
+            </AuthStateContextProvider>
+          </DatabaseContext2Provider>
+        </KeycloakProvider>
+      </NetworkContextProvider>
     </Box>
   );
 };

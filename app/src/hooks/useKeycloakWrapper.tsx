@@ -1,5 +1,7 @@
 import { useKeycloak } from '@react-keycloak/web';
-import { useEffect, useState } from 'react';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { useEffect, useState, useContext } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { useInvasivesApi } from './useInvasivesApi';
 /**
  * Represents the userinfo provided by keycloak.
@@ -48,21 +50,56 @@ export interface IKeycloak {
  */
 function useKeycloakWrapper(): IKeycloak {
   const api = useInvasivesApi();
+  const network = useContext(NetworkContext);
   const { keycloak } = useKeycloak();
   const authenticated = keycloak?.authenticated;
-
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
-    const loadUserInfo = async () => {
-      const user = await keycloak?.loadUserInfo();
-      setUserInfo(user);
-      await api.cacheUserInfo(user);
+    console.log('USER INFO HERE: ', userInfo);
+    const loadUserInfoFromCache = async () => {
+      console.log('loadUserInfoFromCache hit');
+      // Grab the user info object from the cache
+      await api.getUserInfoFromCache().then((res: any) => {
+        console.log('res from getUserInfoFromCache: ', res);
+        if (res) {
+          // If cache returned an entry set user info
+          console.log('Got user info from cache: ', res.userInfo);
+          setUserInfo(res.userInfo);
+        }
+      });
     };
-    if (!authenticated || userInfo) {
+    const loadUserInfoFromKeycloak = async () => {
+      // Load user from keycloak
+      const user = await keycloak?.loadUserInfo();
+      // Set user in state
+      setUserInfo(user);
+      // Grab roles from keycloak
+      const roles = await keycloak?.resourceAccess['invasives-bc'].roles;
+      const userInfoAndRoles = {
+        userInfo: user,
+        roles: roles
+      };
+      // Cache user info and roles for offline use
+      await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {
+        console.log('User info cached successfully');
+      });
+    };
+    // Do not run either function if we already have userinfo
+    if (userInfo) {
       return;
     }
-    loadUserInfo();
+    // For offline mobile usage, grab info from cache
+    console.log('Platform: ', Capacitor.getPlatform());
+    console.log('Network connected? ', network.connected);
+    if (Capacitor.getPlatform() !== 'web' && !network.connected) {
+      console.log('Loading user info from cache...');
+      loadUserInfoFromCache();
+    } else {
+      // If online or on web, grab user info from keycloak and cache it
+      console.log('Loading user info from keycloak...');
+      loadUserInfoFromKeycloak();
+    }
   }, [authenticated, keycloak, userInfo]);
 
   /**

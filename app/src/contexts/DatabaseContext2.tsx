@@ -288,6 +288,7 @@ export function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O):
 /* db query wrapper interface to hide db implementation */
 export enum UpsertType {
   DOC_TYPE_AND_ID = 'docType and ID',
+  DOC_TYPE_AND_ID_DELETE = 'docType and ID delete',
   DOC_TYPE_AND_ID_FAST_JSON_PATCH = 'docType and ID - FAST JSON PATCH', // uses sqlitejson1 extension when I get it working
   DOC_TYPE_AND_ID_SLOW_JSON_PATCH = 'docType and ID - SLOW JSON PATCH', // workaround, all of these need to have same doctype
   DOC_TYPE = 'docType',
@@ -397,6 +398,9 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
             `') on conflict(id) do update set json_patch(json,excluded.json);\n`;
           break;
         // no ID present therefore these are inserts
+        case UpsertType.DOC_TYPE_AND_ID_DELETE:
+          batchUpdate += `delete from ` + upsertConfig.docType + ` where id=` + upsertConfig.ID;
+          break;
         case UpsertType.DOC_TYPE:
           batchUpdate +=
             `insert into ` +

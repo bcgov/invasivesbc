@@ -15,7 +15,6 @@ import {
   AccordionDetails,
   AccordionSummary
 } from '@material-ui/core';
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import { useHistory } from 'react-router-dom';
 import planTripGIF from '../../../gifs/Plan Page.gif';
 import { AuthStateContext } from 'contexts/authStateContext';
@@ -52,6 +51,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const { keycloak } = useContext(AuthStateContext);
   const classes = useStyles();
   const history = useHistory();
+  //TODO: Update landing page info on logout with empty cache data
   const userInfo = keycloak?.userInfo;
 
   /*
