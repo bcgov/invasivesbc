@@ -26,6 +26,7 @@ import EditTools from './Tools/EditTools';
 import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
 import { SetPointOnClick } from './Tools/InfoAreaDescription';
 import JumpControl, { JumpToTrip } from './Tools/JumpToTrip';
+import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -211,37 +212,38 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       whenCreated={setMap}
       tap={false}>
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
-      <MapRequestContextProvider>
-        <div className={toolClass.toolBtnsLoc}>
-          <SetPointOnClick map={map} />
-          <DisplayPosition map={map} />
-          <MeasureTool />
-          <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
-          <JumpToTrip />
-          {props.showDrawControls && (
-            <FeatureGroup>
-              <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
-            </FeatureGroup>
-          )}
-          {/*<LayerPicker data={data} />*/}
-        </div>
+      <FlyToAndFadeContextProvider>
+        <MapRequestContextProvider>
+          <div className={toolClass.toolBtnsLoc}>
+            <SetPointOnClick map={map} />
+            <DisplayPosition map={map} />
+            <MeasureTool />
+            <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
+            <JumpToTrip />
+            {props.showDrawControls && (
+              <FeatureGroup>
+                <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
+              </FeatureGroup>
+            )}
+            {/*<LayerPicker data={data} />*/}
+          </div>
 
-        {/* Here is the offline component */}
-        <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
+          {/* Here is the offline component */}
+          <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
 
-        <LayerPicker
-          position="topright"
-          map={map}
-          data={data}
-          inputGeo={props.geometryState.geometry}
-          setWellIdandProximity={props.setWellIdandProximity}
-        />
+          <LayerPicker
+            position="topright"
+            map={map}
+            data={data}
+            inputGeo={props.geometryState.geometry}
+            setWellIdandProximity={props.setWellIdandProximity}
+          />
 
-        {/* Here are the editing tools */}
+          {/* Here are the editing tools */}
 
-        <MapResizer />
+          <MapResizer />
 
-        {/*<LayersControl position="topright">
+          {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
             <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
           </LayersControl.BaseLayer>
@@ -252,7 +254,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             {/* <GeoJSON data={vanIsland} style={interactiveGeometryStyle} onEachFeature={setupFeature} /> }
           </LayersControl.Overlay>
         </LayersControl>*/}
-      </MapRequestContextProvider>
+        </MapRequestContextProvider>
+      </FlyToAndFadeContextProvider>
     </ReactLeafletMapContainer>
   );
 };

@@ -1,13 +1,139 @@
-import React, { createContext, useContext } from 'react';
-import { useMap } from 'react-leaflet';
+import React, { createContext, useContext, useState } from 'react';
+import { useMap, GeoJSON, Circle } from 'react-leaflet';
+import bbox from '@turf/bbox';
+import union from '@turf/union';
+import buffer from '@turf/buffer';
+import circle from '@turf/circle';
+import { BBox, Geometries } from '@turf/turf';
+import L, { LatLngBoundsExpression, LatLngExpression } from 'leaflet';
+import { createPolygonFromBounds2 } from '../LayerLoaderHelpers/LtlngBoundsToPoly';
 
-export const FlyToAndFadeContext = createContext({});
+export const FlyToAndFadeContext = createContext({
+  go: (input: any) => {}
+});
+
+export interface IFlyToAndFadeItem {
+  name: string;
+  bounds?: L.LatLngBounds;
+  geometries?: any;
+  colour?: string;
+  transitionType: FlyToAndFadeItemTransitionType;
+}
+
+export enum FlyToAndFadeItemTransitionType {
+  zoomToBounds = 'ZOOM_TO_BOUNDS',
+  zoomToGeometries = 'ZOOM_TO_GEOS',
+  zoomToBoundsAndShowGeometries = 'ZOOM_TO_BOTH'
+}
+
+export const bboxToLtlngExpression = (aBbox: BBox) => {
+  //let ltlngExpression: L.LatLngBounds = new L.LatLngBounds(aBbox.));
+  let southWest: LatLngExpression = [aBbox[1], aBbox[0]];
+  let northEast: LatLngExpression = [aBbox[3], aBbox[2]];
+  return new L.LatLngBounds(northEast, southWest);
+};
+
+export const getBoundsOfCircle = (circle: any) => {
+  const asLtLng: L.LatLng = new L.LatLng(circle.geometry.coordinates[1], circle.geometry.coordinates[0]);
+  const result = asLtLng.toBounds(circle.properties.radius);
+  return result;
+};
 
 export const FlyToAndFadeContextProvider: React.FC = (props) => {
   const map = useMap();
-  const go = (geometries: Array<any>) => {};
+  const [displayPolygons, setDisplayPolygons] = useState<Array<any>>();
+  const go = (items: Array<IFlyToAndFadeItem>, delayToNext?: number) => {
+    if (!items) {
+      return;
+    }
+    for (const item of items) {
+      switch (item.transitionType) {
+        case FlyToAndFadeItemTransitionType.zoomToBounds:
+          try {
+            map.flyToBounds(item.bounds);
+          } catch (e) {
+            console.log('unable to zoom to bounds');
+            console.log(JSON.stringify(e));
+          }
+          break;
+        case FlyToAndFadeItemTransitionType.zoomToGeometries:
+          try {
+            var reprocessedForCircles = item.geometries.map((geo) => {
+              if (geo.properties.radius) {
+                return createPolygonFromBounds2(getBoundsOfCircle(geo));
+              } else {
+                return geo;
+              }
+            });
+            var geosAsOne = union(...reprocessedForCircles);
+            var buffered = buffer(geosAsOne, 100);
+            var aBbox = bbox(buffered);
 
-  return <FlyToAndFadeContext.Provider value={{ go }}>{props.children}</FlyToAndFadeContext.Provider>;
+            //@#$%'n circles again:
+            const withCircles = item.geometries.map((geo) => {
+              if (geo.properties.radius) {
+                try {
+                  return circle(
+                    [geo.geometry.coordinates[0], geo.geometry.coordinates[1]],
+                    geo.properties.radius / 1000
+                  );
+                } catch (e) {
+                  console.log('turf error');
+                }
+              } else {
+                return geo;
+              }
+            });
+
+            //add colour to props to make it easy to pass to react-leaflet
+            const coloured = withCircles.map((geo) => {
+              return { ...geo, properties: { ...geo.properties, colour: item.colour } };
+            });
+
+            map.flyToBounds(bboxToLtlngExpression(aBbox));
+            setDisplayPolygons([...coloured]);
+          } catch (e) {
+            console.log('unable to zoom to geometries');
+            console.log(JSON.stringify(e));
+          }
+          break;
+        case FlyToAndFadeItemTransitionType.zoomToBoundsAndShowGeometries:
+          // to use for things like setting the bounds to a regional district etc
+          map.flyToBounds(item.bounds);
+          break;
+      }
+    }
+  };
+
+  // Fade-in function for Leaflet
+  function fadeOutLayerLeaflet(feature, lyr, startOpacity, finalOpacity, opacityStep, delay) {
+    if (lyr) {
+      let opacity = startOpacity;
+      let timer = setTimeout(function changeOpacity() {
+        if (opacity > finalOpacity) {
+          lyr.setStyle({
+            color: feature.properties.colour,
+            opacity: opacity,
+            fillOpacity: opacity
+          });
+          opacity = opacity - opacityStep;
+        }
+
+        timer = setTimeout(changeOpacity, delay);
+      }, delay);
+    }
+  }
+
+  const fade = (feature, layer) => {
+    fadeOutLayerLeaflet(feature, layer, 0.6, 0, 0.02, 200);
+  };
+
+  return (
+    <FlyToAndFadeContext.Provider value={{ go }}>
+      {props.children}
+      <GeoJSON key={Math.random()} onEachFeature={fade} data={displayPolygons as unknown as Geometries}></GeoJSON>
+    </FlyToAndFadeContext.Provider>
+  );
 };
 
 export function useFlyToAndFadeContext() {

@@ -24,4 +24,25 @@ function createPolygonFromBounds(latLngBounds, map) {
 
   return L.polygon(latlngs);
 }
-export { createPolygonFromBounds };
+function createPolygonFromBounds2(latLngBounds) {
+  let latlngs = [];
+  try {
+    var center = latLngBounds.getCenter();
+
+    latlngs.push(latLngBounds.getSouthWest()); //bottom left
+    latlngs.push({ lat: latLngBounds.getSouth(), lng: center.lng }); //bottom center
+    latlngs.push(latLngBounds.getSouthEast()); //bottom right
+    latlngs.push({ lat: center.lat, lng: latLngBounds.getEast() }); // center right
+    latlngs.push(latLngBounds.getNorthEast()); //top right
+    latlngs.push({ lat: latLngBounds.getNorth(), lng: center.lng }); //top center
+    latlngs.push(latLngBounds.getNorthWest()); //top left
+    latlngs.push({ lat: center.lat, lng: latLngBounds.getWest() }); //center left
+    console.log('all good');
+  } catch (e) {
+    console.log('crashed converting latlngbounds to polygon');
+    console.log(e);
+  }
+
+  return L.polygon(latlngs).toGeoJSON();
+}
+export { createPolygonFromBounds, createPolygonFromBounds2 };

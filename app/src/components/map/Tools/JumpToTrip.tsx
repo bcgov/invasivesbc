@@ -8,6 +8,7 @@ import { Capacitor } from '@capacitor/core';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 import { useMapEvent } from 'react-leaflet';
+import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
 
 export const JumpToTrip = (props) => {
   // style
@@ -21,6 +22,8 @@ export const JumpToTrip = (props) => {
   const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();
 
+  const flyToContext = useFlyToAndFadeContext();
+
   // initial setup & events to block:
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
@@ -30,11 +33,6 @@ export const JumpToTrip = (props) => {
 
   // What the button cycles through.
 
-  interface IFlyToAndFadeItem {
-    name: string;
-    bounds?: L.LatLngBounds;
-    geometry?: any;
-  }
   const [IFlyToAndFadeItems, setIFlyToAndFadeItems] = useState<Array<IFlyToAndFadeItem>>([]);
   const [index, setIndex] = useState<number>(0);
 
@@ -52,8 +50,10 @@ export const JumpToTrip = (props) => {
 
   //
   useEffect(() => {
-    console.log('call fly to component here');
-    console.dir([IFlyToAndFadeItems][index]);
+    if (!(IFlyToAndFadeItems.length > 0)) {
+      return;
+    }
+    flyToContext.go([IFlyToAndFadeItems[index]]);
   }, [index]);
 
   // can be replaced with a menu (later):
@@ -62,6 +62,9 @@ export const JumpToTrip = (props) => {
     //mobile only
     if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
       const queryResults = await dataAccess.getTrips(databaseContext);
+      if (!queryResults.length) {
+        return;
+      }
       tripObjects = queryResults.map((rawRecord) => {
         return JSON.parse(rawRecord.json);
       });
@@ -72,12 +75,22 @@ export const JumpToTrip = (props) => {
     let items = new Array<IFlyToAndFadeItem>();
 
     //add current position as bounds to zoom to
-    items.push({ name: 'Original Position', bounds: map.getBounds() });
-
+    items.push({
+      name: 'Original Position',
+      bounds: map.getBounds(),
+      colour: 'red',
+      transitionType: FlyToAndFadeItemTransitionType.zoomToBounds
+    });
     //then add trips as geometries to show
     for (const trip of tripObjects.sort((a, b) => (a.id < b.id ? 1 : -1))) {
-      console.log(trip);
-      items.push({ name: 'TRIP: ' + trip.name, geometry: trip.geometry });
+      if (trip.geometry.length > 0) {
+        items.push({
+          name: 'TRIP: ' + trip.name,
+          geometries: trip.geometry,
+          colour: 'red',
+          transitionType: FlyToAndFadeItemTransitionType.zoomToGeometries
+        });
+      }
     }
 
     setIFlyToAndFadeItems([...items]);
