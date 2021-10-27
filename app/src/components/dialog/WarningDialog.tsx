@@ -30,9 +30,10 @@ export const WarningDialog = (props: IWarningDialog) => {
         </DialogContent>
       )}
       <DialogActions>
-        {props.dialogActions?.map((action) => {
+        {props.dialogActions?.map((action, i) => {
           return (
             <Button
+              key={i}
               onClick={action.actionOnClick}
               color="primary"
               autoFocus={action.autoFocus ? action.autoFocus : false}>

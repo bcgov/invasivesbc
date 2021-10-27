@@ -70,7 +70,7 @@ export const getRecordTableActions = (props) => {
       }
     })
     .map((action: any) => (
-      <RecordTableAction {...action} {...{ context, affectedRows, fetchRows, setErrorMessage, setWarningDialog }} />
+      <RecordTableAction key={action.id} {...action} {...{ context, affectedRows, fetchRows, setErrorMessage, setWarningDialog }} />
     ))
     .filter((action) => action); // remove hidden actions
 };

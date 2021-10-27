@@ -26,8 +26,7 @@ const myRecordsTableDefaults = {
     {
       id: 'review_status_rendered',
       title: 'Review Status'
-    },
-    ...activitesDefaultHeaders
+    }
   ]
 };
 

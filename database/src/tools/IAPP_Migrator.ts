@@ -62,8 +62,8 @@ import, so bear with us here.
   you'll want to change these hardcoded mappings in here too.  (It was easier than
   implementing a database-tool-side live code table mapper at the time)
 
-Example Call (on Windows) ts-node
-IAPP_Migrator.ts --si ../../../../IMPORTS/sites2.csv --su ../../../../IMPORTS/surveys2.csv --mt ../../../../IMPORTS/mechtreatments2.csv --mm ../../../../IMPORTS/mechmonitoring2.csv --ct ../../../../IMPORTS/chemtreatments2.csv --cm ../../../../IMPORTS/chemmonitoring2.csv --bt ../../../../IMPORTS/biotreatments2.csv --bm ../../../../IMPORTS/biomonitoring2.csv --d ../../../../IMPORTS/dispersals2.csv http://localhost:3002/api/point-of-interest
+Example Call (on Windows)
+ts-node IAPP_Migrator.ts --si ../../../../IMPORTS/sites2.csv --su ../../../../IMPORTS/surveys2.csv --mt ../../../../IMPORTS/mechtreatments2.csv --mm ../../../../IMPORTS/mechmonitoring2.csv --ct ../../../../IMPORTS/chemtreatments2.csv --cm ../../../../IMPORTS/chemmonitoring2.csv --bt ../../../../IMPORTS/biotreatments2.csv --bm ../../../../IMPORTS/biomonitoring2.csv --d ../../../../IMPORTS/dispersals2.csv http://localhost:3002/api/point-of-interest
 
 */
 
