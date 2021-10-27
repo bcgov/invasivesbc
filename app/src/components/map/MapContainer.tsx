@@ -25,6 +25,7 @@ import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
 import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
 import { SetPointOnClick } from './Tools/InfoAreaDescription';
+import JumpControl from './Tools/Jump';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -216,6 +217,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           <DisplayPosition map={map} />
           <MeasureTool />
           <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
+          <JumpControl />
           {props.showDrawControls && (
             <FeatureGroup>
               <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
