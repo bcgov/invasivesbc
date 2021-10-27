@@ -35,7 +35,7 @@ export async function down(knex: Knex): Promise<void> {
       set client_encoding to utf8;
       set standard_conforming_strings to on;
 
-      drop table jurisdiction;
+      drop table if exists jurisdiction;
     `;
   } catch (e) {
     console.error('Error loading jurisdictions', e);
