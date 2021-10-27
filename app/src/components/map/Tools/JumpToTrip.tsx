@@ -9,7 +9,7 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import { DatabaseContext2 } from 'contexts/DatabaseContext2';
 import { useMapEvent } from 'react-leaflet';
 
-export const JumpControl = (props) => {
+export const JumpToTrip = (props) => {
   // style
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
@@ -26,7 +26,7 @@ export const JumpControl = (props) => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
     getTripGeosAndInitialPosition();
-  });
+  }, []);
 
   // What the button cycles through.
 
@@ -76,6 +76,7 @@ export const JumpControl = (props) => {
 
     //then add trips as geometries to show
     for (const trip of tripObjects.sort((a, b) => (a.id < b.id ? 1 : -1))) {
+      console.log(trip);
       items.push({ name: 'TRIP: ' + trip.name, geometry: trip.geometry });
     }
 
@@ -95,4 +96,4 @@ export const JumpControl = (props) => {
   );
 };
 
-export default JumpControl;
+export default JumpToTrip;
