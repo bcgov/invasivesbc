@@ -244,6 +244,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   }, [history.location.pathname, getActiveTab]);
 
   useEffect(() => {
+    // TODO: Incorporate cached user into this - after cache clear, should display guest tabs, no initials in avatar, and login button
     const setTabConfigBasedOnRoles = async () => {
       let cachedUser;
       await api.getUserInfoFromCache().then((res: any) => {
@@ -312,11 +313,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         return tabsUserHasAccessTo;
       });
     };
-
-    if (!tabConfig || !tabConfig.length) {
-      setTabConfigBasedOnRoles();
-    }
-  }, [keycloak, userInfo]);
+    setTabConfigBasedOnRoles();
+  }, [keycloak, userInfo, cachedUser]);
 
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
