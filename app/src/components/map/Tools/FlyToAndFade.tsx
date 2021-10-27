@@ -36,9 +36,6 @@ export const bboxToLtlngExpression = (aBbox: BBox) => {
 export const getBoundsOfCircle = (circle: any) => {
   const asLtLng: L.LatLng = new L.LatLng(circle.geometry.coordinates[1], circle.geometry.coordinates[0]);
   const result = asLtLng.toBounds(circle.properties.radius);
-  console.log('getboundsofcircle');
-  console.log(asLtLng);
-  console.log(result);
   return result;
 };
 
@@ -69,14 +66,20 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
               }
             });
             var geosAsOne = union(...reprocessedForCircles);
-            var buffered = buffer(geosAsOne, 1);
+            var buffered = buffer(geosAsOne, 100);
             var aBbox = bbox(buffered);
-            map.flyToBounds(bboxToLtlngExpression(aBbox));
 
             //@#$%'n circles again:
             const withCircles = item.geometries.map((geo) => {
               if (geo.properties.radius) {
-                return circle(geo.coordinates, geo.properties.radius).geometry;
+                try {
+                  return circle(
+                    [geo.geometry.coordinates[0], geo.geometry.coordinates[1]],
+                    geo.properties.radius / 1000
+                  );
+                } catch (e) {
+                  console.log('turf error');
+                }
               } else {
                 return geo;
               }
@@ -87,6 +90,7 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
               return { ...geo, properties: { ...geo.properties, colour: item.colour } };
             });
 
+            map.flyToBounds(bboxToLtlngExpression(aBbox));
             setDisplayPolygons([...coloured]);
           } catch (e) {
             console.log('unable to zoom to geometries');
@@ -121,9 +125,7 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
   }
 
   const fade = (feature, layer) => {
-    console.log(feature);
-    console.log(layer);
-    fadeOutLayerLeaflet(feature, layer, 0.6, 0, 0.02, 100);
+    fadeOutLayerLeaflet(feature, layer, 0.6, 0, 0.02, 200);
   };
 
   return (

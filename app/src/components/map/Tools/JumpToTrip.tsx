@@ -50,8 +50,6 @@ export const JumpToTrip = (props) => {
 
   //
   useEffect(() => {
-    console.log('call fly to component here');
-    console.dir(IFlyToAndFadeItems[index]);
     if (!(IFlyToAndFadeItems.length > 0)) {
       return;
     }
@@ -85,7 +83,6 @@ export const JumpToTrip = (props) => {
     });
     //then add trips as geometries to show
     for (const trip of tripObjects.sort((a, b) => (a.id < b.id ? 1 : -1))) {
-      //console.log(trip);
       if (trip.geometry.length > 0) {
         items.push({
           name: 'TRIP: ' + trip.name,
