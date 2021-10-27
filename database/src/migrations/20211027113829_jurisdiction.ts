@@ -1,10 +1,43 @@
-import * as Knex from "knex";
+import * as Knex from 'knex';
 
+const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
+const NODE_ENV = process.env.NODE_ENV;
 
 export async function up(knex: Knex): Promise<void> {
-}
+  try {
+    const sql = `
+      set schema '${DB_SCHEMA}';
+      set search_path = ${DB_SCHEMA},public;
+      set client_encoding to utf8;
+      set standard_conforming_strings to on;
 
+      CREATE TABLE "jurisdiction" (gid serial,
+        "type" varchar(30),
+        "name" varchar(74),
+        "jurisdictn" varchar(75),
+        "draworder" int4),
+        "code_name" varchar(10);
+      ALTER TABLE "jurisdiction" ADD PRIMARY KEY (gid);
+      SELECT AddGeometryColumn('','jurisdiction','geom','4326','MULTIPOLYGON',2);
+
+      CREATE INDEX ON "jurisdiction" USING GIST ("geom");
+    `;
+  } catch (e) {
+    console.error('Error loading jurisdictions', e);
+  }
+}
 
 export async function down(knex: Knex): Promise<void> {
-}
+  try {
+    const sql = `
+      set schema '${DB_SCHEMA}';
+      set search_path = ${DB_SCHEMA},public;
+      set client_encoding to utf8;
+      set standard_conforming_strings to on;
 
+      drop table jurisdiction;
+    `;
+  } catch (e) {
+    console.error('Error loading jurisdictions', e);
+  }
+}
