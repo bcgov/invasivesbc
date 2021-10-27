@@ -89,20 +89,33 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     while (!validZone) {
       zone = prompt('Enter a valid UTM Zone');
       if (!isNaN(Number(zone))) {
+        validZone = true;
         break;
       }
+    }
+    if (!validZone) {
+      return; // allow for cancel
     }
     while (!validNorthing) {
       northing = prompt('Enter a valid UTM Northing');
       if (!isNaN(Number(northing))) {
+        validNorthing = true;
         break;
       }
+    }
+    if (!validNorthing) {
+      return; // allow for cancel
     }
     while (!validEasting) {
       easting = prompt('Enter a valid UTM Easting');
       if (!isNaN(Number(easting))) {
+        validEasting = true;
         break;
       }
+    }
+    if (!validEasting) {
+      //allow for cancel
+      return;
     }
 
     let result = calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing));
@@ -114,6 +127,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
       },
       properties: {}
     };
+    // let the page validate the utm:
     props.geometryState.setGeometry([geo]);
   };
 
