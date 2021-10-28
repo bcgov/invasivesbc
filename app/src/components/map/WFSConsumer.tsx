@@ -11,7 +11,6 @@ const getHTTP = async (url) => {
   // Destructure as close to usage as possible for web plugin to work correctly
   // when running in the browser
   let ret;
-  console.log('attempting http: ' + url);
   try {
     ret = await Http.request({
       method: 'GET',
