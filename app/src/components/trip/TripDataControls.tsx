@@ -13,8 +13,6 @@ import geoData from '../../components/map/LayerPicker/GEO_DATA.json';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
-import { IndependentLayers } from 'components/map/LayerLoaderHelpers/DataBCRenderLayer';
-const async = require('async');
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -64,10 +62,6 @@ export const TripDataControls: React.FC<any> = (props) => {
       },
       {
         name: 'Metabase Queries',
-        state: 'none'
-      },
-      {
-        name: 'Jurisdictions',
         state: 'none'
       }
     ]
@@ -506,22 +500,6 @@ export const TripDataControls: React.FC<any> = (props) => {
     }
   };
 
-  /*
-   *  Both of the queues are for caching layers data
-   */
-
-  //queue for managing api requests to WFS consumer
-  const apiRequestsQueue = async.queue(function (task, callback) {
-    callback();
-  }, 1);
-
-  //queue for doing batch upserts to sqlite
-  const dbUpsertsQueue = async.queue(function (task, callback) {
-    callback();
-  }, 1);
-
-  let gridItemsArr = [];
-
   const fetchLayerData = async () => {
     setProgressDialog((prevState) => {
       const itemsArr = prevState.items;
@@ -572,10 +550,12 @@ export const TripDataControls: React.FC<any> = (props) => {
         '0',
         idArr
       );
-      console.log(smallGridResult);
+
       const layerNames = getLayerNamesFromJSON(geoData);
-      //for each layer name, do...
-      layerNames.forEach(async (layerName) => {
+      // for each layer name, do...
+      for (let layerNamesIndex = 0; layerNamesIndex < layerNames.length; layerNamesIndex++) {
+        let itemsPushedForLayer = 0;
+        const layerName = layerNames[layerNamesIndex];
         //get layer styles
         getStylesDataFromBC(layerName).then(async (returnStyles) => {
           await upsert(
@@ -592,18 +572,19 @@ export const TripDataControls: React.FC<any> = (props) => {
         });
 
         //for each large grid item, do...
-        largeGridResult.forEach(async (row) => {
+        for (let largeGridResultIndex = 0; largeGridResultIndex < largeGridResult.length; largeGridResultIndex++) {
+          const row = largeGridResult[largeGridResultIndex];
           //insert large grid item into sqllite table
-          databaseContext.asyncQueue({
+          await databaseContext.asyncQueue({
             asyncTask: () => {
               return upsert(
                 [
                   {
                     type: UpsertType.RAW_SQL,
-                    sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea) VALUES 
+                    sql: `INSERT INTO LARGE_GRID_LAYER_DATA (id, featureArea) VALUES
                   (${row.id},
                   '${JSON.stringify(row.geo).split(`'`).join(`''`)}')
-                  ON CONFLICT(id) DO UPDATE SET 
+                  ON CONFLICT(id) DO UPDATE SET
                       featureArea='${JSON.stringify(row.geo).split(`'`).join(`''`)}';`
                   }
                 ],
@@ -611,152 +592,138 @@ export const TripDataControls: React.FC<any> = (props) => {
               );
             }
           });
-        });
-
-        let smallGridResLength = smallGridResult.length;
-
+        }
+        let gridItemsArr = [];
         //for each small grid item, do...
-        smallGridResult.forEach(async (gridResult) => {
+        for (let smallGridResultIndex = 0; smallGridResultIndex < smallGridResult.length; smallGridResultIndex++) {
+          const gridResult = smallGridResult[smallGridResultIndex];
           const feature = JSON.parse(gridResult.geo);
           const gridId = gridResult.id;
           const bufferedGeo = turf.buffer(feature, 0);
+
           //push gridItem and callback function to the queue
-          apiRequestsQueue.push(
-            {
+
+          //callback function responsible for fetching all the features in area.
+          let featuresInArea;
+          //If there are custom api endpoints, use them, if not, use WFS consumer.
+          switch (layerName) {
+            case 'LEAN_POI':
+              const poiRes = await invasivesApi.getPointsOfInterestLean({ search_feature: bufferedGeo });
+              if (poiRes) {
+                const filteredArr = poiRes.rows.map((res) => {
+                  return res.geojson;
+                });
+                featuresInArea = filteredArr;
+              } else {
+                featuresInArea = [];
+              }
+              break;
+            case 'LEAN_ACTIVITIES':
+              const actRes = await invasivesApi.getActivitiesLean({ search_feature: bufferedGeo });
+              if (actRes) {
+                const filteredArr = actRes.rows.map((res) => {
+                  return res.geojson;
+                });
+                featuresInArea = filteredArr;
+              } else {
+                featuresInArea = [];
+              }
+              break;
+            case 'jurisdiction':
+              const jurRes = await invasivesApi.getJurisdictions({ search_feature: bufferedGeo });
+              if (jurRes && jurRes.name !== 'error') {
+                const filteredArr = jurRes.rows.map((res) => {
+                  return res.geojson;
+                });
+                featuresInArea = filteredArr;
+              } else {
+                featuresInArea = [];
+              }
+              break;
+            default:
+              featuresInArea = await getDataFromDataBC(layerName, bufferedGeo);
+              break;
+          }
+
+          //pushing complete grid item with features inside to the array
+          if (featuresInArea?.length > 0) {
+            gridItemsArr.push({
               id: gridId,
               bufferedGeo: bufferedGeo,
               featureArea: JSON.stringify(bufferedGeo).split(`'`).join(`''`),
               layerName: layerName,
-              largeGridId: gridResult.large_grid_item_id
-            },
-            async () => {
-              //callback function responsible for fetching all the features in area.
-              let featuresInArea;
-              //If there are custom api endpoints, use them, if not, use WFS consumer.
-              switch (layerName) {
-                case 'LEAN_POI':
-                  const poiRes = await invasivesApi.getPointsOfInterestLean({ search_feature: bufferedGeo });
-                  if (poiRes) {
-                    const filteredArr = poiRes.rows.map((res) => {
-                      return res.geojson;
-                    });
-                    featuresInArea = filteredArr;
-                  } else {
-                    featuresInArea = [];
-                  }
-                  break;
-                case 'LEAN_ACTIVITIES':
-                  const actRes = await invasivesApi.getActivitiesLean({ search_feature: bufferedGeo });
-                  if (actRes) {
-                    const filteredArr = actRes.rows.map((res) => {
-                      return res.geojson;
-                    });
-                    featuresInArea = filteredArr;
-                  } else {
-                    featuresInArea = [];
-                  }
-                  break;
-                case 'jurisdiction':
-                  const jurRes = await invasivesApi.getJurisdictions({ search_feature: bufferedGeo });
-                  if (jurRes) {
-                    const filteredArr = jurRes.rows.map((res) => {
-                      return res.geojson;
-                    });
-                    featuresInArea = filteredArr;
-                  } else {
-                    featuresInArea = [];
-                  }
-                  break;
-                default:
-                  featuresInArea = await getDataFromDataBC(layerName, bufferedGeo);
-              }
+              featuresInArea: JSON.stringify(featuresInArea).split(`'`).join(`''`),
+              largeGridID: gridResult.large_grid_item_id
+            });
+            itemsPushedForLayer++;
+          }
+          if (
+            gridItemsArr.length > 0 &&
+            (gridItemsArr.length > 49 || smallGridResultIndex === smallGridResult.length - 1)
+          ) {
+            let insertValuesString = '';
+            //constructing insert string (values)
+            for (let gridItemsIndex = 0; gridItemsIndex <= gridItemsArr.length - 1; gridItemsIndex++) {
+              const gridItem = gridItemsArr[gridItemsIndex];
 
-              //pushing complete grid item with features inside to the array
-
-              if (featuresInArea?.length > 0) {
-                gridItemsArr.push({
-                  id: gridId,
-                  bufferedGeo: bufferedGeo,
-                  featureArea: JSON.stringify(bufferedGeo).split(`'`).join(`''`),
-                  layerName: layerName,
-                  featuresInArea: JSON.stringify(featuresInArea).split(`'`).join(`''`),
-                  largeGridID: gridResult.large_grid_item_id
-                });
-              }
-              //if there are 50 items in array, do batch upsert to sqlite
-              //by pushing array and callback function to upserts queue
-              if (gridItemsArr.length > 49 || smallGridResLength < 50) {
-                dbUpsertsQueue.push({ gridItemsArray: gridItemsArr }, () => {
-                  let insertValuesString = '';
-                  let gridItemsIndex = 0;
-                  //constructing insert string (values)
-                  gridItemsArr.forEach((gridItem) => {
-                    if (gridItemsIndex < gridItemsArr.length - 1) {
-                      insertValuesString += `(
+              if (gridItemsIndex === gridItemsArr.length - 1) {
+                insertValuesString += `(
                           ${gridItem.id},
                           '${gridItem.featureArea}',
                           '${gridItem.featuresInArea}',
                           '${gridItem.layerName}',
-                          ${gridItem.largeGridID}),`;
-                    } else {
-                      insertValuesString += `(
+                          ${gridItem.largeGridID})`;
+              } else {
+                insertValuesString += `(
                           ${gridItem.id},
                           '${gridItem.featureArea}',
                           '${gridItem.featuresInArea}',
                           '${gridItem.layerName}',
-                          ${gridItem.largeGridID}) `;
-                    }
-                    gridItemsIndex++;
-                  });
-                  //performing batch upsert of 50 items
-                  databaseContext.asyncQueue({
-                    asyncTask: () => {
-                      return upsert(
-                        [
-                          {
-                            type: UpsertType.RAW_SQL,
-                            sql: `INSERT INTO SMALL_GRID_LAYER_DATA (id, featureArea, featuresInArea, layerName, largeGridID) VALUES ${insertValuesString}
+                          ${gridItem.largeGridID}), `;
+              }
+            }
+
+            //performing batch upsert
+            await databaseContext.asyncQueue({
+              // eslint-disable-next-line
+              asyncTask: () => {
+                return upsert(
+                  [
+                    {
+                      type: UpsertType.RAW_SQL,
+                      sql: `INSERT INTO SMALL_GRID_LAYER_DATA (id, featureArea, featuresInArea, layerName, largeGridID) VALUES ${insertValuesString}
                           ON CONFLICT(id, layerName) DO
                           UPDATE SET
                             featureArea=excluded.featureArea,
                             featuresInArea=excluded.featuresInArea,
                             largeGridID=excluded.largeGridID;`
-                          }
-                        ],
-                        databaseContext
-                      );
                     }
-                  });
-                  //emptying the array to fill it with 50 items on next iteration
-                  smallGridResLength -= 50;
-                  gridItemsArr = [];
-                  setProgressDialog((prevState) => {
-                    const itemsArr = prevState.items;
-                    itemsArr[0] = { ...itemsArr[0], description: `${smallGridResLength} items Left ` };
-                    return {
-                      ...prevState,
-                      items: itemsArr
-                    };
-                  });
-                  if (smallGridResLength === 0) {
-                    setProgressDialog((prevState) => {
-                      const itemsArr = prevState.items;
-                      itemsArr[0] = { ...itemsArr[0], state: 'complete' };
-                      return {
-                        ...prevState,
-                        items: itemsArr
-                      };
-                    });
-                  }
-                });
+                  ],
+                  databaseContext
+                );
               }
-            }
-          );
+            });
+
+            //emptying the array to fill it with 50 items on next iteration
+            gridItemsArr = [];
+          }
+        }
+        setProgressDialog((prevState) => {
+          const itemsArr = prevState.items;
+          itemsArr[0] = {
+            ...itemsArr[0],
+            description: `Cached ${itemsPushedForLayer} features of ${layerName}.`
+          };
+          return {
+            ...prevState,
+            items: itemsArr
+          };
         });
-      });
+        itemsPushedForLayer = 0;
+      }
       setProgressDialog((prevState) => {
         const itemsArr = prevState.items;
-        itemsArr[0] = { ...itemsArr[0], state: 'complete' };
+        itemsArr[0] = { ...itemsArr[0], state: 'complete', description: '' };
         return {
           ...prevState,
           items: itemsArr

@@ -35,7 +35,6 @@ export const DatabaseContext2Provider = (props) => {
 
   const processRequest = async (dbRequest: DBRequest) => {
     const returnPromise = dbRequestQueue.add(dbRequest.asyncTask);
-    console.log('pushing to queue... queue length: ' + dbRequestQueue.size);
     return returnPromise;
   };
 
@@ -195,30 +194,6 @@ export const DatabaseContext2Provider = (props) => {
              (
               id TEXT PRIMARY KEY,
               json TEXT
-            );\n`;
-          break;
-        case 'LEAN_ACTIVITIES':
-          setupSQL += `create table if not exists ${DocType[value]} 
-             (
-              id TEXT PRIMARY KEY,
-              json TEXT,
-              trip_ID NUMBER
-            );\n`;
-          break;
-        case 'LEAN_POI':
-          setupSQL += `create table if not exists ${DocType[value]} 
-             (
-              id TEXT PRIMARY KEY,
-              json TEXT,
-              trip_ID NUMBER
-            );\n`;
-          break;
-        case 'JURISDICTIONS':
-          setupSQL += `create table if not exists ${DocType[value]} 
-             (
-              id TEXT PRIMARY KEY,
-              json TEXT,
-              trip_ID NUMBER
             );\n`;
           break;
         case 'LAYER_STYLES':
