@@ -25,7 +25,7 @@ export async function up(knex: Knex): Promise<void> {
       $$;
 
   CREATE TRIGGER activity_deleted
-  AFTER insert on invasivesbc.activity_incoming_data
+  BEFORE insert on invasivesbc.activity_incoming_data
   FOR EACH  ROW 
       EXECUTE PROCEDURE delete_last_activity();
 
