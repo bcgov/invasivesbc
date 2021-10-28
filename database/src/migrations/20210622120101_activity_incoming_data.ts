@@ -24,18 +24,18 @@ export async function up(knex: Knex): Promise<void> {
     
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.sync_status IS 'Sync/Save status of the activity form';
 
-    -- ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
-    -- ADD COLUMN review_status VARCHAR(100) DEFAULT 'Not Reviewed';
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
+    ADD COLUMN review_status VARCHAR(100) DEFAULT 'Not Reviewed';
     
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.review_status IS 'Indicator of whether the activity is up for review by administrators';
 
-    -- ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
-    -- ADD COLUMN reviewed_by VARCHAR(100);
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
+    ADD COLUMN reviewed_by VARCHAR(100);
     
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.reviewed_by IS 'Identifier of the latest reviewer approving an activity for wide usage';
   
-    -- ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
-    -- ADD COLUMN reviewed_at timestamp without time zone;
+    ALTER TABLE ${DB_SCHEMA}.activity_incoming_data
+    ADD COLUMN reviewed_at timestamp without time zone;
     
     COMMENT ON COLUMN ${DB_SCHEMA}.activity_incoming_data.reviewed_at IS 'Timestamp of when the activity was last reviewed';
   `);
