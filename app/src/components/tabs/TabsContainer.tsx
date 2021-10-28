@@ -201,7 +201,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         console.log('Attempting to clear cache from tabs...');
         await api.clearUserInfoFromCache().then((res: any) => {
           setUserInfoLoaded(false);
-          setUserInfo({ username: '', email: '', groups: [], roles: [] });
+          setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
           console.log('Cache clear successful.');
         });
       } catch (err) {
@@ -211,7 +211,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       try {
         await keycloak?.obj?.logout();
         setUserInfoLoaded(false);
-        setUserInfo({ username: '', email: '', groups: [], roles: [] });
+        setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
       } catch (err) {
         console.log('Error logging out: ', err);
       }
@@ -224,6 +224,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     const user = await keycloak?.obj?.loadUserInfo();
     const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     await setUserRoles(roles);
+    console.log('User on login: ', user);
     await setUserInfo(user);
     if (isMobile()) {
       // Cache user info and roles
@@ -303,6 +304,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const isAuthenticated = () => {
     return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && userInfoLoaded);
   };
+
+  useEffect(() => {
+    console.log('TABSCONTAINER UserInfo Changed: ', userInfo);
+    console.log('TABSCONTAINER UserInfoLoaded Changed: ', userInfoLoaded);
+  }, [userInfo, userInfoLoaded]);
 
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;

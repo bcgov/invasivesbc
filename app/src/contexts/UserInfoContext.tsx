@@ -5,7 +5,16 @@ import { DatabaseContext2, upsert, UpsertType } from './DatabaseContext2';
 import { DocType } from '../constants/database';
 import { Capacitor } from '@capacitor/core';
 import { NetworkContext } from './NetworkContext';
+import { useEffect } from 'react';
 
+export const info: IUserInfo = {
+  username: 'provider :)',
+  email: '',
+  groups: [],
+  roles: []
+};
+
+export const infoLoaded: boolean = false;
 export interface IUserInfoState {
   userInfo: IUserInfo;
   userInfoLoaded: boolean;
@@ -15,7 +24,7 @@ export interface IUserInfoState {
 
 export const UserInfoContext = React.createContext<IUserInfoState>({
   userInfo: {
-    username: '',
+    username: 'no provider :(',
     email: '',
     groups: [],
     roles: []
@@ -26,15 +35,13 @@ export const UserInfoContext = React.createContext<IUserInfoState>({
 });
 
 export const UserInfoContextProvider: React.FC = (props) => {
-  let infoLoaded = false;
-  let info: IUserInfo = {
-    username: '',
-    email: '',
-    groups: [],
-    roles: []
-  };
   const [userInfoLoaded, setUserInfoLoaded] = React.useState(infoLoaded);
   const [userInfo, setUserInfo] = React.useState(info);
+  // console.log(userInfo);
+  useEffect(() => {
+    console.log('UserInfo Changed: ', userInfo);
+    console.log('UserInfoLoaded Changed: ', userInfoLoaded);
+  }, [userInfo, userInfoLoaded]);
   return (
     <UserInfoContext.Provider
       value={{

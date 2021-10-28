@@ -16,6 +16,8 @@ import React, { useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { sanitizeRecord, generateDBActivityPayload, getShortActivityID } from 'utils/addActivity';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { UserInfoContext } from 'contexts/UserInfoContext';
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);
