@@ -135,7 +135,9 @@ const MobilePolylineDrawButton = ({ convertLineStringToPoly, setGeometry, contex
           </div>
         </Popover>
       </div>
-      {geoToConvert && <GeoJSON key={Math.random()} data={geoToConvert} style={interactiveGeometryStyle} />}
+      {
+        geoToConvert && <GeoJSON key={Math.random()} data={geoToConvert} style={interactiveGeometryStyle} /> //NOSONAR
+      }
     </LayersControlProvider>
   );
 };
