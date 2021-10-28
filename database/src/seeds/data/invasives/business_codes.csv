@@ -38,7 +38,7 @@ animal_captured_code,N,No,2
 animal_sample_collected_code,Y,Yes,1
 animal_sample_collected_code,N,No,2
 animal_edna_sample_code,Y,Yes,1
-animal_edna_sample_code,N,No,2,
+animal_edna_sample_code,N,No,2
 animal_behaviour_code,M,Moving,1
 animal_behaviour_code,F,Feeding,2
 animal_behaviour_code,B,Basking,3

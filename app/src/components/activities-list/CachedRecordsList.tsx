@@ -11,8 +11,8 @@ import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
 import {
   ObservationsTable,
-  TreatmentsTable,
-  MonitoringTable,
+  PlantTreatmentsTable,
+  PlantMonitoringTable,
   PointsOfInterestTable
 } from '../../components/common/RecordTables';
 import { useDataAccess } from '../../hooks/useDataAccess';
@@ -328,13 +328,13 @@ const CachedRecordsList: React.FC = (props) => {
             setSelected={setSelectedGeneralized(setSelectedObservations)}
             referenceData={true}
           />
-          <TreatmentsTable
+          <PlantTreatmentsTable
             rows={treatments}
             selected={selectedTreatments}
             setSelected={setSelectedGeneralized(setSelectedTreatments)}
             referenceData={true}
           />
-          <MonitoringTable
+          <PlantMonitoringTable
             rows={monitorings}
             selected={selectedMonitorings}
             setSelected={setSelectedGeneralized(setSelectedMonitorings)}

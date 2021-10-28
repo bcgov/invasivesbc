@@ -27,11 +27,15 @@ export enum ActivitySubtype {
   Treatment_MechanicalPlantAquatic = 'Activity_Treatment_MechanicalPlantAquatic',
   Treatment_BiologicalPlant = 'Activity_Treatment_BiologicalPlant',
   Treatment_BiologicalPlant_BulkEdit = 'Activity_Treatment_BiologicalPlant_BulkEdit',
+  Treatment_ChemicalAnimalTerrestrial = 'Activity_Treatment_ChemicalAnimalTerrestrial',
+  Treatment_MechanicalAnimalTerrestrial = 'Activity_Treatment_MechanicalAnimalTerrestrial',
 
   Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
   Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
   Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
   Monitoring_BiologicalDispersal = 'Activity_Monitoring_BiologicalDispersal',
+  Monitoring_ChemicalAnimalTerrestrial = 'Activity_Monitoring_ChemicalAnimalTerrestrial',
+  Monitoring_MechanicalAnimalTerrestrial = 'Activity_Monitoring_MechanicalAnimalTerrestrial',
 
   Transect_FireMonitoring = 'Activity_Transect_FireMonitoring',
   Transect_Vegetation = 'Activity_Transect_Vegetation',
@@ -57,12 +61,16 @@ export enum ActivitySubtypeShortLabels {
   Activity_Treatment_MechanicalPlantAquatic = 'Aquatic Invasive Plant Mechanical Treatment',
   Activity_Treatment_BiologicalPlant = 'Biocontrol Release',
   Activity_Treatment_BiologicalPlant_BulkEdit = 'Biocontrol Release',
+  Activity_Treatment_ChemicalAnimalTerrestrial = 'Terrestrial Animal Chemical Treatment',
+  Activity_Treatment_MechanicalAnimalTerrestrial = 'Terrestrial Animal Mechanical Treatment',
 
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical',
   Activity_Monitoring_BiologicalTerrestrialPlant = 'Biocontrol Release Monitoring',
   Activity_Monitoring_BiologicalDispersal = 'Biocontrol Dispersal Monitoring',
+  Activity_Monitoring_ChemicalAnimalTerrestrial = 'Chemical',
+  Activity_Monitoring_MechanicalAnimalTerrestrial = 'Mechanical',
 
   // Transects:
   Activity_Transect_FireMonitoring = 'Wildfire & Prescribed Burn Monitoring',
@@ -78,11 +86,15 @@ export enum ActivityMonitoringLinks {
   Activity_Treatment_ChemicalPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
   Activity_Treatment_MechanicalPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
   Activity_Treatment_BiologicalPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
+  Activity_Treatment_ChemicalAnimalTerrestrial = 'Activity_Monitoring_ChemicalAnimalTerrestrial',
+  Activity_Treatment_MechanicalAnimalTerrestrial = 'Activity_Monitoring_MechanicalAnimalTerrestrial',
 
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Treatment_ChemicalPlant',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Treatment_MechanicalPlant',
   Activity_Monitoring_BiologicalTerrestrialPlant = 'Activity_Treatment_BiologicalPlant',
+  Activity_Monitoring_ChemicalAnmialTerrestrial = 'Activity_Treatment_ChemicalAnimalTerrestrial',
+  Activity_Monitoring_MechanicalAnimalTerrestrial = 'Activity_Treatment_MechanicalAnimalTerrestrial',
 
   Activity_Monitoring_BiologicalDispersal = 'Activity_Collection_Biocontrol',
   Activity_Collection_Biocontrol = 'Activity_Collection_Biocontrol'
@@ -114,12 +126,16 @@ export enum ActivityLetter {
   Activity_Treatment_MechanicalPlantAquatic = 'A',
   Activity_Treatment_BiologicalPlant = 'R',
   Activity_Treatment_BiologicalPlant_BulkEdit = 'R',
+  Activity_Treatment_ChemicalAnimalTerrestrial = 'A',
+  Activity_Treatment_MechanicalAnimalTerrestrial = 'A',
 
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'C',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'P', // Aquatic?
   Activity_Monitoring_BiologicalTerrestrialPlant = 'P',
   Activity_Monitoring_BiologicalDispersal = 'D',
+  Activity_Monitoring_ChemicalAnimalTerrestrial = 'C',
+  Activity_Monitoring_MechanicalAnimalTerrestrial = 'A',
 
   // Transects:
   Activity_Transect_FireMonitoring = 'T',

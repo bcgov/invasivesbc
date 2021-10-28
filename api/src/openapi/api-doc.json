@@ -710,383 +710,480 @@
           }
         }
       },
+      "Treatment_ChemicalAnimalTerrestrial": {
+        "title": "Terrestrial Animal Chemical Treatment",
+        "type": "object",
+        "properties": {
+          "terrestrial_animal_information": {
+            "title": "Animal Information",
+            "properties": {
+              "invasive_animal_species": {
+                "type": "string",
+                "title": "Invasive Animal Species",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "invasive_animal_code_terrestrial",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The species of the invasive animal"
+              }
+            }
+          },
+          "number": {
+            "type": "number",
+            "title": "Number",
+            "x-tooltip-text": "The number of animals observed"
+          },
+          "life_stage": {
+            "type": "string",
+            "title": "Life Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_life_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The life stage of the animal"
+          },
+          "sex": {
+            "type": "string",
+            "title": "Sex",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_sex_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The sex of the animal"
+          },
+          "condition": {
+            "type": "string",
+            "title": "Condition",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_condition_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The condition of the animal"
+          }
+        }
+      },
+      "Treatment_MechanicalAnimalTerrestrial": {
+        "title": "Terrestrial Animal Mechanical Treatment",
+        "type": "object",
+        "properties": {
+          "terrestrial_animal_information": {
+            "title": "Animal Information",
+            "properties": {
+              "invasive_animal_species": {
+                "type": "string",
+                "title": "Invasive Animal Species",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "invasive_animal_code_terrestrial",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The species of the invasive animal"
+              }
+            }
+          },
+          "number": {
+            "type": "number",
+            "title": "Number",
+            "x-tooltip-text": "The number of animals observed"
+          },
+          "life_stage": {
+            "type": "string",
+            "title": "Life Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_life_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The life stage of the animal"
+          },
+          "sex": {
+            "type": "string",
+            "title": "Sex",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_sex_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The sex of the animal"
+          },
+          "condition": {
+            "type": "string",
+            "title": "Condition",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_condition_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The condition of the animal"
+          }
+        }
+      },
+      "Monitoring_ChemicalAnimalTerrestrial": {
+        "title": "Terrestrial Animal Chemical Monitoring",
+        "type": "object",
+        "properties": {
+          "terrestrial_animal_information": {
+            "title": "Animal Information",
+            "properties": {
+              "invasive_animal_species": {
+                "type": "string",
+                "title": "Invasive Animal Species",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "invasive_animal_code_terrestrial",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The species of the invasive animal"
+              }
+            }
+          },
+          "number": {
+            "type": "number",
+            "title": "Number",
+            "x-tooltip-text": "The number of animals observed"
+          },
+          "life_stage": {
+            "type": "string",
+            "title": "Life Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_life_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The life stage of the animal"
+          },
+          "sex": {
+            "type": "string",
+            "title": "Sex",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_sex_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The sex of the animal"
+          },
+          "condition": {
+            "type": "string",
+            "title": "Condition",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_condition_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The condition of the animal"
+          }
+        }
+      },
+      "Monitoring_MechanicalAnimalTerrestrial": {
+        "title": "Terrestrial Animal Mechanical Monitoring",
+        "type": "object",
+        "properties": {
+          "terrestrial_animal_information": {
+            "title": "Animal Information",
+            "properties": {
+              "invasive_animal_species": {
+                "type": "string",
+                "title": "Invasive Animal Species",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "invasive_animal_code_terrestrial",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The species of the invasive animal"
+              }
+            }
+          },
+          "number": {
+            "type": "number",
+            "title": "Number",
+            "x-tooltip-text": "The number of animals observed"
+          },
+          "life_stage": {
+            "type": "string",
+            "title": "Life Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_life_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The life stage of the animal"
+          },
+          "sex": {
+            "type": "string",
+            "title": "Sex",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_sex_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The sex of the animal"
+          },
+          "condition": {
+            "type": "string",
+            "title": "Condition",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "animal_condition_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The condition of the animal"
+          }
+        }
+      },
       "Activity_AnimalTerrestrial": {
         "title": "Terrestrial Animal Information",
         "type": "object",
-        "required": ["activity_type"],
         "properties": {
-          "activity_type": {
-            "type": "string",
-            "title": "Activity Type",
-            "enum": ["Observation", "Treatment", "Efficacy Monitoring"]
-          }
-        },
-        "dependencies": {
-          "activity_type": {
-            "oneOf": [
-              {
-                "properties": {
-                  "activity_type": {
-                    "enum": ["Observation"]
-                  },
-                  "terrestrial_animal_information": {
-                    "title": "Animal Information",
-                    "properties": {
-                      "invasive_animal_species": {
-                        "type": "string",
-                        "title": "Invasive Animal Species",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "invasive_animal_code_terrestrial",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The species of the invasive animal"
-                      },
-                      "occurrence": {
-                        "type": "string",
-                        "title": "Occurrence",
-                        "enum": ["Positive occurrence", "Negative occurrence"],
-                        "default": "Positive occurrence",
-                        "x-tooltip-text": "The observation describes the presence or absence of target invasive animals within a defined area"
-                      },
-                      "number": {
-                        "type": "number",
-                        "title": "Number",
-                        "x-tooltip-text": "The number of animals observed"
-                      },
-                      "life_stage": {
-                        "type": "string",
-                        "title": "Life Stage",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_life_stage_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The life stage of the animal"
-                      },
-                      "sex": {
-                        "type": "string",
-                        "title": "Sex",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_sex_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The sex of the animal"
-                      },
-                      "condition": {
-                        "type": "string",
-                        "title": "Condition",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_condition_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The condition of the animal"
-                      },
-                      "behaviour": {
-                        "type": "string",
-                        "title": "Behaviour",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_behaviour_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The behaviour of the animal"
-                      },
-                      "station_id": {
-                        "type": "string",
-                        "title": "Trap/Station ID",
-                        "x-tooltip-text": "The station ID of the animal"
-                      },
-                      "captured": {
-                        "type": "string",
-                        "title": "Captured",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_captured_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Was the animal captured?"
-                      },
-                      "detection_distance": {
-                        "type": "number",
-                        "title": "Detection Distance",
-                        "x-tooltip-text": "The distance from the animal to the trap/station"
-                      },
-                      "specimen_id": {
-                        "type": "string",
-                        "title": "Specimen ID",
-                        "x-tooltip-text": "The specimen ID of the animal"
-                      },
-                      "sample_collected": {
-                        "type": "string",
-                        "title": "Sample Collected",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_sample_collected_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Was the sample collected?"
-                      },
-                      "sample_id": {
-                        "type": "string",
-                        "title": "Sample ID",
-                        "x-tooltip-text": "The sample ID of the animal"
-                      },
-                      "edna_sample": {
-                        "type": "string",
-                        "title": "EDNA Sample",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_edna_sample_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "Was the sample collected using EDNA?"
-                      },
-                      "edna_sample_id": {
-                        "type": "string",
-                        "title": "EDNA Sample ID",
-                        "x-tooltip-text": "The EDNA sample ID of the animal"
-                      },
-                      "disposal_method": {
-                        "type": "string",
-                        "title": "Disposal Method",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "mechanical_disposal_method",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The disposal method of the animal"
-                      },
-                      "comment": {
-                        "type": "string",
-                        "title": "Comment",
-                        "x-tooltip-text": "Any additional information about the animal"
-                      }
-                    }
-                  },
-                  "animal_measurements": {
-                    "title": "Animal Measurements",
-                    "properties": {
-                      "length": {
-                        "type": "number",
-                        "title": "Length",
-                        "x-tooltip-text": "The length of the animal"
-                      },
-                      "length_method": {
-                        "type": "string",
-                        "title": "Comment",
-                        "x-tooltip-text": "What method was used to measure the length?"
-                      },
-                      "weight": {
-                        "type": "number",
-                        "title": "Weight",
-                        "x-tooltip-text": "The weight of the animal"
-                      }
-                    }
-                  },
-                  "microhabitat": {
-                    "title": "Microhabitat",
-                    "properties": {
-                      "habitat": {
-                        "type": "string",
-                        "title": "Habitat",
-                        "x-tooltip-text": "The habitat of the animal"
-                      },
-                      "primary_vegetation_layer": {
-                        "type": "string",
-                        "title": "Primary Vegetation Layer",
-                        "x-tooltip-text": "The primary vegetation layer of the animal"
-                      },
-                      "primary_vegetation_layer_percent_cover": {
-                        "type": "number",
-                        "title": "Primary Vegetation Layer Percent Cover",
-                        "x-tooltip-text": "The percent cover of the primary vegetation layer of the animal"
-                      },
-                      "secondary_vegetation_layer": {
-                        "type": "string",
-                        "title": "Secondary Vegetation Layer",
-                        "x-tooltip-text": "The secondary vegetation layer of the animal"
-                      },
-                      "secondary_vegetation_layer_percent_cover": {
-                        "type": "number",
-                        "title": "Secondary Vegetation Layer Percent Cover",
-                        "x-tooltip-text": "The percent cover of the secondary vegetation layer of the animal"
-                      },
-                      "substrate_type": {
-                        "type": "string",
-                        "title": "Substrate Type",
-                        "x-tooltip-text": "The substrate type of the animal"
-                      },
-                      "air_temperature": {
-                        "type": "number",
-                        "title": "Air Temperature",
-                        "x-tooltip-text": "The air temperature during observation"
-                      }
-                    }
-                  }
-                }
+          "terrestrial_animal_information": {
+            "title": "Animal Information",
+            "properties": {
+              "invasive_animal_species": {
+                "type": "string",
+                "title": "Invasive Animal Species",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "invasive_animal_code_terrestrial",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The species of the invasive animal"
               },
-              {
-                "properties": {
-                  "activity_type": {
-                    "enum": ["Treatment"]
-                  },
-                  "animal_information": {
-                    "title": "Animal Information",
-                    "properties": {
-                      "invasive_animal_species": {
-                        "type": "string",
-                        "title": "Invasive Animal Species",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "invasive_animal_code_terrestrial",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The species of the invasive animal"
-                      },
-                      "number": {
-                        "type": "number",
-                        "title": "Number",
-                        "x-tooltip-text": "The number of animals observed"
-                      },
-                      "life_stage": {
-                        "type": "string",
-                        "title": "Life Stage",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_life_stage_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The life stage of the animal"
-                      },
-                      "sex": {
-                        "type": "string",
-                        "title": "Sex",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_sex_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The sex of the animal"
-                      },
-                      "condition": {
-                        "type": "string",
-                        "title": "Condition",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_condition_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The condition of the animal"
-                      },
-                      "comment": {
-                        "type": "string",
-                        "title": "Comment",
-                        "x-tooltip-text": "Any additional information about the animal"
-                      }
-                    }
-                  }
-                }
+              "occurrence": {
+                "type": "string",
+                "title": "Occurrence",
+                "enum": ["Positive occurrence", "Negative occurrence"],
+                "default": "Positive occurrence",
+                "x-tooltip-text": "The observation describes the presence or absence of target invasive animals within a defined area"
               },
-              {
-                "properties": {
-                  "activity_type": {
-                    "enum": ["Efficacy Monitoring"]
-                  },
-                  "animal_information": {
-                    "title": "Animal Information",
-                    "properties": {
-                      "invasive_animal_species": {
-                        "type": "string",
-                        "title": "Invasive Animal Species",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "invasive_animal_code_terrestrial",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The species of the invasive animal"
-                      },
-                      "number": {
-                        "type": "number",
-                        "title": "Number",
-                        "x-tooltip-text": "The number of animals observed"
-                      },
-                      "life_stage": {
-                        "type": "string",
-                        "title": "Life Stage",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_life_stage_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The life stage of the animal"
-                      },
-                      "sex": {
-                        "type": "string",
-                        "title": "Sex",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_sex_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The sex of the animal"
-                      },
-                      "condition": {
-                        "type": "string",
-                        "title": "Condition",
-                        "x-enum-code": {
-                          "x-enum-code-category-name": "invasives",
-                          "x-enum-code-header-name": "animal_condition_code",
-                          "x-enum-code-name": "code_name",
-                          "x-enum-code-text": "code_description",
-                          "x-enum-code-sort-order": "code_sort_order"
-                        },
-                        "x-tooltip-text": "The condition of the animal"
-                      },
-                      "comment": {
-                        "type": "string",
-                        "title": "Comment",
-                        "x-tooltip-text": "Any additional information about the animal"
-                      }
-                    }
-                  }
-                }
+              "number": {
+                "type": "number",
+                "title": "Number",
+                "x-tooltip-text": "The number of animals observed"
+              },
+              "life_stage": {
+                "type": "string",
+                "title": "Life Stage",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "animal_life_stage_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The life stage of the animal"
+              },
+              "sex": {
+                "type": "string",
+                "title": "Sex",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "animal_sex_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The sex of the animal"
+              },
+              "condition": {
+                "type": "string",
+                "title": "Condition",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "animal_condition_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The condition of the animal"
+              },
+              "behaviour": {
+                "type": "string",
+                "title": "Behaviour",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "animal_behaviour_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The behaviour of the animal"
+              },
+              "station_id": {
+                "type": "string",
+                "title": "Trap/Station ID",
+                "x-tooltip-text": "The station ID of the animal"
+              },
+              "captured": {
+                "type": "string",
+                "title": "Captured",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "animal_captured_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Was the animal captured?"
+              },
+              "detection_distance": {
+                "type": "number",
+                "title": "Detection Distance",
+                "x-tooltip-text": "The distance from the animal to the trap/station"
+              },
+              "specimen_id": {
+                "type": "string",
+                "title": "Specimen ID",
+                "x-tooltip-text": "The specimen ID of the animal"
+              },
+              "sample_collected": {
+                "type": "string",
+                "title": "Sample Collected",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "animal_sample_collected_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Was the sample collected?"
+              },
+              "sample_id": {
+                "type": "string",
+                "title": "Sample ID",
+                "x-tooltip-text": "The sample ID of the animal"
+              },
+              "edna_sample": {
+                "type": "string",
+                "title": "EDNA Sample",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "animal_edna_sample_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Was the sample collected using EDNA?"
+              },
+              "edna_sample_id": {
+                "type": "string",
+                "title": "EDNA Sample ID",
+                "x-tooltip-text": "The EDNA sample ID of the animal"
+              },
+              "disposal_method": {
+                "type": "string",
+                "title": "Disposal Method",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "mechanical_disposal_method",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "The disposal method of the animal"
+              },
+              "comment": {
+                "type": "string",
+                "title": "Comment",
+                "x-tooltip-text": "Any additional information about the animal"
               }
-            ]
+            }
+          },
+          "animal_measurements": {
+            "title": "Animal Measurements",
+            "properties": {
+              "length": {
+                "type": "number",
+                "title": "Length",
+                "x-tooltip-text": "The length of the animal"
+              },
+              "length_method": {
+                "type": "string",
+                "title": "Comment",
+                "x-tooltip-text": "What method was used to measure the length?"
+              },
+              "weight": {
+                "type": "number",
+                "title": "Weight",
+                "x-tooltip-text": "The weight of the animal"
+              }
+            }
+          },
+          "microhabitat": {
+            "title": "Microhabitat",
+            "properties": {
+              "habitat": {
+                "type": "string",
+                "title": "Habitat",
+                "x-tooltip-text": "The habitat of the animal"
+              },
+              "primary_vegetation_layer": {
+                "type": "string",
+                "title": "Primary Vegetation Layer",
+                "x-tooltip-text": "The primary vegetation layer of the animal"
+              },
+              "primary_vegetation_layer_percent_cover": {
+                "type": "number",
+                "title": "Primary Vegetation Layer Percent Cover",
+                "x-tooltip-text": "The percent cover of the primary vegetation layer of the animal"
+              },
+              "secondary_vegetation_layer": {
+                "type": "string",
+                "title": "Secondary Vegetation Layer",
+                "x-tooltip-text": "The secondary vegetation layer of the animal"
+              },
+              "secondary_vegetation_layer_percent_cover": {
+                "type": "number",
+                "title": "Secondary Vegetation Layer Percent Cover",
+                "x-tooltip-text": "The percent cover of the secondary vegetation layer of the animal"
+              },
+              "substrate_type": {
+                "type": "string",
+                "title": "Substrate Type",
+                "x-tooltip-text": "The substrate type of the animal"
+              },
+              "air_temperature": {
+                "type": "number",
+                "title": "Air Temperature",
+                "x-tooltip-text": "The air temperature during observation"
+              }
+            }
           }
         }
       },

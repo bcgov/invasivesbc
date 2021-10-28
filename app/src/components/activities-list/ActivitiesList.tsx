@@ -23,11 +23,13 @@ import { GetUserAccessLevel } from 'utils/getAccessLevel';
 import {
   MyBiocontrolTable,
   MyAnimalActivitiesTable,
-  MyMonitoringTable,
+  MyPlantMonitoringTable,
+  MyAnimalMonitoringTable,
+  MyAnimalTreatmentsTable,
   MyObservationsTable,
   MyPastActivitiesTable,
   MyTransectsTable,
-  MyTreatmentsTable,
+  MyPlantTreatmentsTable,
   ReviewActivitiesTable
 } from '../../components/common/RecordTables';
 import { DatabaseContext2, query, QueryType } from '../../contexts/DatabaseContext2';
@@ -306,15 +308,17 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Plant' && (
             <Box>
               <MyObservationsTable />
-              <MyTreatmentsTable />
+              <MyPlantTreatmentsTable />
               <MyBiocontrolTable />
-              <MyMonitoringTable />
+              <MyPlantMonitoringTable />
               <MyTransectsTable />
             </Box>
           )}
           {workflowFunction === 'Animal' && (
             <Box>
               <MyAnimalActivitiesTable />
+              <MyAnimalTreatmentsTable />
+              <MyAnimalMonitoringTable />
             </Box>
           )}
           {workflowFunction === 'Review' && (
