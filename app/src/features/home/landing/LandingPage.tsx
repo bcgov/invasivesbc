@@ -18,6 +18,9 @@ import {
 import { useHistory } from 'react-router-dom';
 import planTripGIF from '../../../gifs/Plan Page.gif';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { UserInfoContext } from 'contexts/UserInfoContext';
+import { Capacitor } from '@capacitor/core';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const useStyles = makeStyles((theme: Theme) => ({
   userInfoItemGrid: {
@@ -48,11 +51,34 @@ interface ILandingPage {
 }
 
 const LandingPage: React.FC<ILandingPage> = (props) => {
-  const { keycloak } = useContext(AuthStateContext);
   const classes = useStyles();
   const history = useHistory();
-  //TODO: Update landing page info on logout with empty cache data
-  const userInfo = keycloak?.userInfo;
+  const api = useInvasivesApi();
+  const { userInfo, userInfoLoaded, setUserInfo, setUserInfoLoaded } = useContext(UserInfoContext);
+
+  const loadUserFromCache = async () => {
+    try {
+      // Try to fetch user info from cache and set it to userInfo
+      console.log('Attempting to get user info from cache in context...');
+      api.getUserInfoFromCache().then((res: any) => {
+        if (res) {
+          console.log('User info found in cache from context');
+          setUserInfo(res.userInfo);
+          setUserInfoLoaded(true);
+        } else {
+          console.log('No cached user info');
+        }
+      });
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
+
+  useEffect(() => {
+    if (Capacitor.getPlatform() !== 'web' && !userInfoLoaded) {
+      loadUserFromCache();
+    }
+  }, [userInfoLoaded]);
 
   /*
     Generate reusable card component with info to guide users through the app
@@ -92,7 +118,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
         <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
       </Box>
 
-      {userInfo && (
+      {userInfoLoaded && (
         <Box mt={2}>
           <Typography variant="h5">User Information</Typography>
           <br />

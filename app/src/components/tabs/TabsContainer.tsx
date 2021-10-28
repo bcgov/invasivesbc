@@ -44,7 +44,10 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { UserInfoContext } from 'contexts/UserInfoContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { RolesContext } from 'contexts/RolesContext';
+import { IonAlert } from '@ionic/react';
 
 const drawerWidth = 240;
 
@@ -145,12 +148,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
   const authContext = useContext(AuthStateContext);
-  const userInfo = keycloak?.userInfo;
   const [open, setOpen] = React.useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const api = useInvasivesApi();
-
+  const { userInfo, setUserInfo, userInfoLoaded, setUserInfoLoaded } = useContext(UserInfoContext);
+  const { userRoles, setUserRoles } = useContext(RolesContext);
   const handleClose = () => {
     setAnchorEl(null);
+    setOpen(false);
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     console.log('keycloak: ', keycloak);
@@ -158,28 +163,85 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setAnchorEl(event.currentTarget);
   };
 
+  const showLogoutAlert = () => {
+    setShowAlert(true);
+  };
+
+  const loadUserFromCache = async () => {
+    try {
+      // Try to fetch user info from cache and set it to userInfo
+      console.log('Attempting to get user info from cache in context...');
+      api.getUserInfoFromCache().then((res: any) => {
+        if (res) {
+          console.log('User info found in cache from context');
+          setUserInfo(res.userInfo);
+          setUserInfoLoaded(true);
+        } else {
+          console.log('No cached user info');
+        }
+      });
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isMobile() && !userInfoLoaded) {
+      loadUserFromCache();
+    }
+  }, [userInfoLoaded]);
+  // loadUserFromCache();
   /*
     Function to logout current user by wiping their keycloak access token
   */
   const logoutUser = async () => {
-    console.log('Logout hit');
-    console.log('keycloak here: ', keycloak);
-    try {
-      if (Capacitor.getPlatform() !== 'web') {
-        //TODO: Update tabs on logout
-        await api.clearUserInfoFromCache();
-      } else {
-        keycloak.obj.logout();
+    // Reset user info object
+    if (isMobile()) {
+      try {
+        console.log('Attempting to clear cache from tabs...');
+        await api.clearUserInfoFromCache().then((res: any) => {
+          setUserInfoLoaded(false);
+          setUserInfo({ username: '', email: '', groups: [], roles: [] });
+          console.log('Cache clear successful.');
+        });
+      } catch (err) {
+        console.log('Error clearing cache: ', err);
       }
-    } catch (err) {
-      console.log('Error: ', err);
+    } else {
+      try {
+        await keycloak?.obj?.logout();
+        setUserInfoLoaded(false);
+        setUserInfo({ username: '', email: '', groups: [], roles: [] });
+      } catch (err) {
+        console.log('Error logging out: ', err);
+      }
     }
     handleClose();
   };
 
   const loginUser = async () => {
     await keycloak?.obj?.login();
+    const user = await keycloak?.obj?.loadUserInfo();
+    const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
+    await setUserRoles(roles);
+    await setUserInfo(user);
+    if (isMobile()) {
+      // Cache user info and roles
+      const userInfoAndRoles = {
+        userInfo: user,
+        userRoles: roles
+      };
+      try {
+        console.log('Attempting to cache user info: ', userInfoAndRoles);
+        await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {
+          console.log('User info and roles cached successfully.');
+        });
+      } catch (err) {
+        console.log('Error caching user roles: ', err);
+      }
+    }
     handleClose();
+    setUserInfoLoaded(true);
   };
 
   useEffect(() => {
@@ -234,6 +296,14 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     setActiveTab(newValue);
   };
 
+  const isMobile = () => {
+    return Capacitor.getPlatform() !== 'web';
+  };
+
+  const isAuthenticated = () => {
+    return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && userInfoLoaded);
+  };
+
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;
   const networkContext = useContext(NetworkContext);
@@ -244,17 +314,9 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   }, [history.location.pathname, getActiveTab]);
 
   useEffect(() => {
-    // TODO: Incorporate cached user into this - after cache clear, should display guest tabs, no initials in avatar, and login button
     const setTabConfigBasedOnRoles = async () => {
-      let cachedUser;
-      await api.getUserInfoFromCache().then((res: any) => {
-        console.log('user info from cache (tabscontainer): ', res);
-        cachedUser = res;
-      });
       await setTabConfig(() => {
         const tabsUserHasAccessTo: ITabConfig[] = [];
-        console.log('Cached user: ', cachedUser);
-
         tabsUserHasAccessTo.push({
           label: 'Home',
           path: '/home/landing',
@@ -267,8 +329,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Map />
         });
 
-        if ((keycloak.hasRole(ALL_ROLES) || props.isMobileNoNetwork) && cachedUser) {
-          if (cachedUser?.roles?.length > 0 && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+        if (keycloak.hasRole(ALL_ROLES) || props.isMobileNoNetwork) {
+          if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'Search',
               path: '/home/search',
@@ -276,7 +338,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (cachedUser?.roles?.length > 0 && Capacitor.getPlatform() !== 'web') {
+          if (isAuthenticated() && isMobile()) {
             tabsUserHasAccessTo.push({
               label: 'Plan My Trip',
               path: '/home/plan',
@@ -284,7 +346,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (cachedUser?.roles?.length > 0 && Capacitor.getPlatform() != 'web') {
+          if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'Cached Records',
               path: '/home/references',
@@ -293,7 +355,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (cachedUser?.roles?.length > 0 && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'My Records',
               path: '/home/activities',
@@ -301,7 +363,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (cachedUser?.roles?.length > 0 && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'Current Activity',
               path: '/home/activity',
@@ -309,12 +371,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
         }
-
         return tabsUserHasAccessTo;
       });
     };
     setTabConfigBasedOnRoles();
-  }, [keycloak, userInfo, cachedUser]);
+  }, [keycloak, userInfo, userInfoLoaded]);
 
   if (!tabConfig || !tabConfig.length) {
     return <CircularProgress />;
@@ -322,6 +383,28 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
 
   return (
     <>
+      <IonAlert
+        isOpen={showAlert}
+        onDidDismiss={() => setShowAlert(false)}
+        header={'Are you sure?'}
+        message={
+          'If you log out while you are offline, you will not be able to access the app until you reconnect to a network.'
+        }
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {}
+          },
+          {
+            text: 'Okay',
+            handler: () => {
+              logoutUser();
+            }
+          }
+        ]}
+      />
       <AppBar
         className={clsx(classes.appBar, {
           [classes.appBarShift]: open
@@ -370,7 +453,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               </Grid>
               <Grid xs={1} container justifyContent="center" alignItems="center" item>
                 <IconButton onClick={handleClick} size="small">
-                  {userInfo ? <Avatar>{userInfo.name.match(/\b(\w)/g).join('')}</Avatar> : <Avatar />}
+                  {userInfoLoaded ? <Avatar>{userInfo.name.match(/\b(\w)/g).join('')}</Avatar> : <Avatar />}
                 </IconButton>
               </Grid>
               <Menu
@@ -429,7 +512,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           <div className={classes.toolbar}>
             <Grid xs={1} container justifyContent="center" alignItems="center" item>
               <IconButton onClick={handleClick} size="small">
-                {userInfo ? <Avatar>{userInfo.name.match(/\b(\w)/g).join('')}</Avatar> : <Avatar />}
+                {userInfoLoaded ? <Avatar>{userInfo.name.match(/\b(\w)/g).join('')}</Avatar> : <Avatar />}
               </IconButton>
             </Grid>
             <IconButton onClick={handleDrawerClose}>
@@ -438,8 +521,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           </div>
           {networkContext.connected ? (
             <div>
-              {keycloak.obj?.authenticated || userInfo ? (
-                <MenuItem onClick={logoutUser}>
+              {userInfoLoaded ? (
+                <MenuItem onClick={showLogoutAlert}>
                   <ListItemIcon>
                     <LogoutIcon />
                   </ListItemIcon>

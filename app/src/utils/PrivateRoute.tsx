@@ -3,6 +3,7 @@ import { Redirect, Route, RouteProps } from 'react-router-dom';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { CircularProgress } from '@mui/material';
+import { UserInfoContext } from 'contexts/UserInfoContext';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -38,9 +39,6 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
             console.log('unauthenticated');
             return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
           }
-        }
-        if (keycloak?.authenticated && !keycloak.userInfo) {
-          return <CircularProgress />;
         }
         return (
           <Layout>

@@ -4,6 +4,8 @@ import { Redirect, Route, RouteProps } from 'react-router-dom';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { CircularProgress } from '@material-ui/core';
+import { UserInfoContext } from 'contexts/UserInfoContext';
+import { useEffect } from 'react-transition-group/node_modules/@types/react';
 
 interface IPublicRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -20,12 +22,6 @@ interface IPublicRouteProps extends RouteProps {
  */
 const PublicRoute: React.FC<IPublicRouteProps> = (props) => {
   let { component: Component, layout: Layout, ...rest } = props;
-  const { keycloak } = useContext(AuthStateContext);
-
-  if (keycloak?.obj?.authenticated && !keycloak?.userInfo) {
-    return <CircularProgress />;
-  }
-
   document.title = props.title;
 
   return (

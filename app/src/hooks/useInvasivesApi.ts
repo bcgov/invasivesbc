@@ -453,7 +453,7 @@ export const useInvasivesApi = () => {
 
   const cacheUserInfo = async (data) => {
     if (data) {
-      console.log('caching user info');
+      console.log('Attempting to cachce user info...');
       try {
         await databaseContext.asyncQueue({
           asyncTask: () => {
@@ -504,7 +504,6 @@ export const useInvasivesApi = () => {
   };
 
   const getUserInfoFromCache = async () => {
-    console.log('getUserInfoFromCache hit', databaseContext);
     let data = await databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
@@ -515,16 +514,14 @@ export const useInvasivesApi = () => {
           },
           databaseContext
         );
-        console.log('query: ', res);
         res = res?.length > 0 ? JSON.parse(res[0].json) : null;
         return res;
       }
     });
     if (data) {
-      console.log('data: ', data);
       return JSON.parse(JSON.stringify(data));
     } else {
-      console.log('no data');
+      console.log('No information found when attempting to fetch cached user');
     }
   };
 
