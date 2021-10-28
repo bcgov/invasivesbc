@@ -2,6 +2,7 @@ import L, { TileLayer as LeafletTileLayer, TileLayerOptions } from 'leaflet';
 import { createTileLayerComponent, LayerProps, updateGridLayer, withPane } from '@react-leaflet/core';
 import { isFilterSatisfied } from './AdditionalHelperFunctions';
 import geojsonvt from 'geojson-vt';
+
 (window as any).geojsonvt = geojsonvt;
 // eslint-disable-next-line import/first
 import {} from 'leaflet-geojson-vt/src/leaflet-geojson-vt.js';

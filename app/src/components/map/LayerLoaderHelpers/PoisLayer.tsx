@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Marker, useMap, useMapEvent } from 'react-leaflet';
+import React, { useState, useContext } from 'react';
+import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import L from 'leaflet';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { useDataAccess } from 'hooks/useDataAccess';
@@ -11,16 +11,22 @@ export const PoisLayer = (props) => {
   const map = useMap();
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [pois, setPois] = useState(null);
-  const [things, setThings] = useState([]);
+  //const [poiIDs, setPoiIDs] = useState(null);
+  const [poiToRender, setPoiToRender] = useState([]);
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext2);
-
+  /*
   useEffect(() => {
-    if (things.length > 0) {
-      console.log(things);
+  const [poiIDs, setPoiIDs] = useState(null);
+  const [pois, setPois] = useState(null);
+  const [poiToRender, setPoiToRender] = useState([]);
+  const dataAccess = useDataAccess();
+
+  /*useEffect(() => {
+    if (poiIDs.length > 0) {
       fetchPOIs();
     }
-  }, [things]);
+  }, [poiIDs]);*/
 
   const markerIcon = L.icon({
     iconUrl: marker,
@@ -58,24 +64,35 @@ export const PoisLayer = (props) => {
       );
     });
 
-    setThings(poisIDArray);
+    // removed for now: setPoiIDs(poisIDArray);
     setPois({ type: 'FeatureCollection', features: poisFeatureArray });
   };
-
+  /*
   const fetchPOIs = async () => {
     console.log('fetching');
     console.log(await dataAccess.getPointsOfInterest({ point_of_interest_ids: things, limit: 50 }, databaseContext));
-  };
+  };*/
 
   return (
     <>
       {
-        //pois && <GeoJSONVtLayer geoJSON={pois} options={options} /> //NOSONAR
-        pois &&
-          pois.features.map((feature) => {
-            var coords = feature.geometry.coordinates;
-            return <Marker position={[coords[1], coords[0]]} icon={markerIcon}></Marker>;
-          })
+        pois && <GeoJSONVtLayer geoJSON={pois} options={options} /> //NOSONAR
+        /*poiToRender &&
+          poiToRender.map((poi) => {
+            var coords = poi.point_of_interest_payload.geometry[0].geometry.coordinates;
+            var species_positive = poi.point_of_interest_payload.species_positive;
+            var species_negative = poi.point_of_interest_payload.species_negative;
+            return (
+              <Marker position={[coords[1], coords[0]]} icon={markerIcon}>
+                <Tooltip direction="top" opacity={0.7}>
+                  <div style={{ display: 'flex ', flexFlow: 'row nowrap' }}>
+                    {species_positive && species_positive.map((s) => <>{s} </>)}
+                    {species_negative && species_negative.map((s) => <>{s} </>)}
+                  </div>
+                </Tooltip>
+              </Marker>
+            );
+          })*/
       }
     </>
   );

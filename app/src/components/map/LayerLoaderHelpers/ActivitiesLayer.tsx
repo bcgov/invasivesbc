@@ -44,6 +44,17 @@ export const ActivitiesLayer = (props) => {
     <>
       {
         activities && <GeoJSONVtLayer geoJSON={activities} options={options} /> //NOSONAR
+        /*activities &&
+          activities.features.map((activity) => (
+            <GeoJSON data={activity} style={options.style} key={Math.random()}>
+              {console.log(activity)}
+              <Tooltip>
+                <Typography>{activity.properties.created}</Typography>
+                <Typography>{activity.properties.subtype}</Typography>
+                <Typography>{activity.properties.id}</Typography>
+              </Tooltip>
+            </GeoJSON>
+          ))*/
       }
     </>
   );

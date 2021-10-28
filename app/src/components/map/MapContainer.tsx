@@ -1,11 +1,17 @@
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer.css';
-import { MapContainer as ReactLeafletMapContainer, useMap, FeatureGroup } from 'react-leaflet';
+import {
+  MapContainer as ReactLeafletMapContainer,
+  ZoomControl as ZoomButtons,
+  useMap,
+  FeatureGroup,
+  ScaleControl
+} from 'react-leaflet';
 import Spinner from '../../components/spinner/Spinner';
 import ZoomControl from 'components/map/Tools/ZoomControl';
 
@@ -27,6 +33,8 @@ import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
 import { SetPointOnClick } from './Tools/InfoAreaDescription';
 import JumpControl, { JumpToTrip } from './Tools/JumpToTrip';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
+import { ZoomBar } from './Tools/ZoomBar';
+//Added comment
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -124,6 +132,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const [mapZoom, setMapZoom] = useState<number>(5);
   const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
+  const divref = useRef(null);
 
   const [map, setMap] = useState<any>(null);
   const toolClass = toolStyles();
@@ -207,7 +216,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       bounceAtZoomLimits={true}
       maxZoom={mapMaxZoom}
       //maxZoom={25}
-      style={{ height: '100%', width: '100%' }}
+      style={{ height: 'calc(100% - 20px)', width: '100%' }}
       zoomControl={false}
       whenCreated={setMap}
       tap={false}>
@@ -218,7 +227,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <SetPointOnClick map={map} />
             <DisplayPosition map={map} />
             <MeasureTool />
+            <ZoomButtons position="bottomleft" />
             <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
+            <ScaleControl position="bottomright" imperial={false} />
             <JumpToTrip />
             {props.showDrawControls && (
               <FeatureGroup>
@@ -238,7 +249,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             inputGeo={props.geometryState.geometry}
             setWellIdandProximity={props.setWellIdandProximity}
           />
-
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'flex-end',
+              height: '45vh',
+              marginLeft: 50
+            }}>
+            <ZoomBar style={{ display: 'flex', justify: 'flex-start' }} map={map} />
+          </div>
           {/* Here are the editing tools */}
 
           <MapResizer />
