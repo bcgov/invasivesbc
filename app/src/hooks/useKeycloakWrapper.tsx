@@ -1,5 +1,6 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { useEffect, useState } from 'react';
+import { useInvasivesApi } from './useInvasivesApi';
 /**
  * Represents the userinfo provided by keycloak.
  *
@@ -46,6 +47,7 @@ export interface IKeycloak {
  * Provides extension methods to interact with the `keycloak` object.
  */
 function useKeycloakWrapper(): IKeycloak {
+  const api = useInvasivesApi();
   const { keycloak } = useKeycloak();
   const authenticated = keycloak?.authenticated;
 
@@ -55,6 +57,7 @@ function useKeycloakWrapper(): IKeycloak {
     const loadUserInfo = async () => {
       const user = await keycloak?.loadUserInfo();
       setUserInfo(user);
+      await api.cacheUserInfo(user);
     };
     if (!authenticated || userInfo) {
       return;

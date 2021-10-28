@@ -44,6 +44,7 @@ import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const drawerWidth = 240;
 
@@ -143,7 +144,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const authContext = useContext(AuthStateContext);
   const userInfo = keycloak?.userInfo;
   const [open, setOpen] = React.useState(false);
-
+  const api = useInvasivesApi();
   const wrapper = useKeycloakWrapper();
 
   const handleClose = () => {
@@ -173,8 +174,10 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     handleClose();
   };
 
-  const loginUser = () => {
-    keycloak?.obj?.login();
+  const loginUser = async () => {
+    await keycloak?.obj?.login();
+    const cachedUser = await api.getUserInfoFromCache();
+    console.log('Cached user: ', cachedUser);
     handleClose();
   };
 

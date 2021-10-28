@@ -451,6 +451,55 @@ export const useInvasivesApi = () => {
     }
   };
 
+  const cacheUserInfo = async (data) => {
+    if (data) {
+      console.log('caching user info');
+      try {
+        await databaseContext.asyncQueue({
+          asyncTask: () => {
+            return upsert(
+              [
+                {
+                  type: UpsertType.DOC_TYPE_AND_ID,
+                  docType: DocType.USER_INFO,
+                  json: data,
+                  ID: '1'
+                }
+              ],
+              databaseContext
+            );
+          }
+        });
+        return true;
+      } catch (e) {
+        alert('unable to cache api spec');
+      }
+    }
+    return false;
+  };
+
+  const getUserInfoFromCache = async () => {
+    let data = await databaseContext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE_AND_ID,
+            docType: DocType.USER_INFO,
+            ID: '1'
+          },
+          databaseContext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        return res;
+      }
+    });
+
+    if (data?.length > 0) {
+      data = JSON.parse(data[0].json);
+      return data;
+    }
+  };
+
   const cacheSpec = async (data) => {
     if (data.components) {
       console.log('caching spec');
@@ -551,6 +600,8 @@ export const useInvasivesApi = () => {
     getBatchUploads,
     postBatchUpload,
     downloadTemplate,
-    getJurisdictions
+    getJurisdictions,
+    cacheUserInfo,
+    getUserInfoFromCache
   };
 };

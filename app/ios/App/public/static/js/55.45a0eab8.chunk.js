@@ -1,0 +1,2 @@
+(this["webpackJsonpinvasivesbci-app"]=this["webpackJsonpinvasivesbci-app"]||[]).push([[55],{1093:function(n,t,i){"use strict";i.r(t),i.d(t,"startStatusTap",(function(){return o}));var e=i(60),o=function(){var n=window;n.addEventListener("statusTap",(function(){Object(e.h)((function(){var t=n.innerWidth,i=n.innerHeight,o=document.elementFromPoint(t/2,i/2);if(o){var c=o.closest("ion-content");c&&c.componentOnReady().then((function(){Object(e.f)((function(){return c.scrollToTop(300)}))}))}}))}))}}}]);
+//# sourceMappingURL=55.45a0eab8.chunk.js.map
