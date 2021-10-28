@@ -716,6 +716,7 @@
         "properties": {
           "terrestrial_animal_information": {
             "title": "Animal Information",
+            "required": ["invasive_animal_species"],
             "properties": {
               "invasive_animal_species": {
                 "type": "string",
@@ -780,6 +781,7 @@
         "properties": {
           "terrestrial_animal_information": {
             "title": "Animal Information",
+            "required": ["invasive_animal_species"],
             "properties": {
               "invasive_animal_species": {
                 "type": "string",
@@ -844,6 +846,7 @@
         "properties": {
           "terrestrial_animal_information": {
             "title": "Animal Information",
+            "required": ["invasive_animal_species"],
             "properties": {
               "invasive_animal_species": {
                 "type": "string",
@@ -908,6 +911,7 @@
         "properties": {
           "terrestrial_animal_information": {
             "title": "Animal Information",
+            "required": ["invasive_animal_species"],
             "properties": {
               "invasive_animal_species": {
                 "type": "string",

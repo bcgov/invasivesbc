@@ -1317,10 +1317,91 @@ const Collection_BioControll = {
   Animal Activity
 */
 
+const Treatment_ChemicalAnimalTerrestrial = {
+  'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
+    'invasive_animal_species': {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': { 'ui:widget': 'single-select-autocomplete' },
+    'sex': { 'ui:widget': 'single-select-autocomplete' },
+    'condition': { 'ui:widget': 'single-select-autocomplete' },
+    'ui:order': [
+      'invasive_animal_species',
+      'number',
+      'life_stage',
+      'sex',
+      'condition'
+    ]
+  }
+}
+
+const Treatment_MechanicalAnimalTerrestrial = {
+  'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
+    'invasive_animal_species': {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': { 'ui:widget': 'single-select-autocomplete' },
+    'sex': { 'ui:widget': 'single-select-autocomplete' },
+    'condition': { 'ui:widget': 'single-select-autocomplete' },
+    'ui:order': [
+      'invasive_animal_species',
+      'number',
+      'life_stage',
+      'sex',
+      'condition'
+    ]
+  }
+}
+
+const Monitoring_ChemicalAnimalTerrestrial = {
+  'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
+    'invasive_animal_species': {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': { 'ui:widget': 'single-select-autocomplete' },
+    'sex': { 'ui:widget': 'single-select-autocomplete' },
+    'condition': { 'ui:widget': 'single-select-autocomplete' },
+    'ui:order': [
+      'invasive_animal_species',
+      'number',
+      'life_stage',
+      'sex',
+      'condition'
+    ]
+  }
+}
+
+const Monitoring_MechanicalAnimalTerrestrial = {
+  'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
+    'invasive_animal_species': {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': { 'ui:widget': 'single-select-autocomplete' },
+    'sex': { 'ui:widget': 'single-select-autocomplete' },
+    'condition': { 'ui:widget': 'single-select-autocomplete' },
+    'ui:order': [
+      'invasive_animal_species',
+      'number',
+      'life_stage',
+      'sex',
+      'condition'
+    ]
+  }
+}
+
 const Activity_AnimalTerrestrial = {
   'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
     'invasive_animal_species': {
-      'ui:widget': 'single-select-autocomplete'
+      'ui:widget': 'multi-select-autocomplete'
     },
     'occurrence': {
       'ui:widget': 'single-select-autocomplete'
@@ -1822,12 +1903,16 @@ const BaseUISchemaComponents = {
   Transect_Vegetation,
   Transect_BiocontrolEfficacy,
   Monitoring_BiologicalDispersal,
+  Monitoring_ChemicalAnimalTerrestrial,
+  Monitoring_MechanicalAnimalTerrestrial,
   Treatment,
   Treatment_MechanicalPlant,
   Treatment_MechanicalPlantAquatic,
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
+  Treatment_MechanicalAnimalTerrestrial,
+  Treatment_ChemicalAnimalTerrestrial,
   Monitoring,
   Monitoring_BiologicalTerrestrialPlant,
   Collection,
