@@ -10,21 +10,21 @@ export async function up(knex: Knex): Promise<void> {
       set client_encoding to utf8;
       set standard_conforming_strings to on;
 
-      CREATE TABLE "jurisdiction" (
-        "gid" serial,
-        "type" varchar(30),
-        "name" varchar(74),
-        "jurisdictn" varchar(75),
-        "draworder" int4,
-        "code_name" varchar(10));
-      ALTER TABLE "jurisdiction" ADD PRIMARY KEY (gid);
-      SELECT AddGeometryColumn('','jurisdiction','geom','4326','MULTIPOLYGON',2);
+      CREATE TABLE "invasive_plant_management_areas" (gid serial,
+        "ogc_fid" int4,
+        "objectid" int4,
+        "ipma" varchar(50),
+        "agency_cd" varchar(8),
+        "dropdown_n" varchar(60),
+        "agency" varchar(60));
 
-      CREATE INDEX ON "jurisdiction" USING GIST ("geom");
+      ALTER TABLE "invasive_plant_management_areas" ADD PRIMARY KEY (gid);
+      SELECT AddGeometryColumn('','invasive_plant_management_areas','geom','4326','MULTIPOLYGON',2);
+      CREATE INDEX ON "invasive_plant_management_areas" USING GIST ("geom");
     `;
     await knex.raw(sql);
   } catch (e) {
-    console.error('Error loading jurisdictions', e);
+    console.error('Error loading IPMAs', e);
   }
 }
 
@@ -36,10 +36,10 @@ export async function down(knex: Knex): Promise<void> {
       set client_encoding to utf8;
       set standard_conforming_strings to on;
 
-      drop table if exists jurisdiction;
+      drop table if exists invasive_plant_management_areas;
     `;
     await knex.raw(sql);
   } catch (e) {
-    console.error('Error deleting jurisdictions', e);
+    console.error('Error deleting IPMAs', e);
   }
 }
