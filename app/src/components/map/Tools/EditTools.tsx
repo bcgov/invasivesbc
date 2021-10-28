@@ -28,7 +28,7 @@ const interactiveGeometryStyle = () => {
   };
 };
 
-const MobilePolylineDrawButton = ({ convertLineStringToPoly, setGeometry }) => {
+const MobilePolylineDrawButton = ({ convertLineStringToPoly, setGeometry, context }) => {
   const positionClass = POSITION_CLASSES.topleft;
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [drawMode, setDrawMode] = useState(false);
@@ -94,6 +94,7 @@ const MobilePolylineDrawButton = ({ convertLineStringToPoly, setGeometry }) => {
       setLocArray([]);
     }
     if (!drawMode) {
+      context.clearLayers();
       setGeoToConvert(null);
     }
   };
@@ -442,6 +443,7 @@ const EditTools = (props: any) => {
         <MobilePolylineDrawButton
           convertLineStringToPoly={convertLineStringToPoly}
           setGeometry={props.geometryState.setGeometry}
+          context={context.layerContainer}
         />
       )}
       {/*<IconButton
