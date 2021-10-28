@@ -7,9 +7,9 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import './MapContainer.css';
 import {
   MapContainer as ReactLeafletMapContainer,
+  ZoomControl as ZoomButtons,
   useMap,
   FeatureGroup,
-  ZoomControl as ZoomButtons,
   ScaleControl
 } from 'react-leaflet';
 import Spinner from '../../components/spinner/Spinner';
@@ -226,6 +226,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <SetPointOnClick map={map} />
             <DisplayPosition map={map} />
             <MeasureTool />
+            <ZoomButtons position="bottomleft" />
             <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
             <ScaleControl position="bottomright" imperial={false} />
             <JumpToTrip />
