@@ -37,11 +37,19 @@ export const UserInfoContext = React.createContext<IUserInfoState>({
 export const UserInfoContextProvider: React.FC = (props) => {
   const [userInfoLoaded, setUserInfoLoaded] = React.useState(infoLoaded);
   const [userInfo, setUserInfo] = React.useState(info);
-  // console.log(userInfo);
+  const keycloak = useKeycloakWrapper();
+
   useEffect(() => {
-    console.log('UserInfo Changed: ', userInfo);
-    console.log('UserInfoLoaded Changed: ', userInfoLoaded);
-  }, [userInfo, userInfoLoaded]);
+    if (keycloak?.obj?.authenticated) {
+      keycloak?.obj?.loadUserInfo().then((info) => {
+        if (info) {
+          setUserInfo(info);
+          setUserInfoLoaded(true);
+        }
+      });
+    }
+  }, [keycloak?.obj?.authenticated]);
+
   return (
     <UserInfoContext.Provider
       value={{

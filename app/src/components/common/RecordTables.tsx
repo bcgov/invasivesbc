@@ -16,7 +16,6 @@ import React, { useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { sanitizeRecord, generateDBActivityPayload, getShortActivityID } from 'utils/addActivity';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { UserInfoContext } from 'contexts/UserInfoContext';
 
 export const activityStandardMapping = (doc) => {
@@ -229,8 +228,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext2);
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(UserInfoContext);
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -604,8 +602,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(UserInfoContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -729,8 +726,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(UserInfoContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -873,7 +869,7 @@ export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 
 export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(UserInfoContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1098,8 +1094,7 @@ export const PlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyPlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(UserInfoContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1185,8 +1180,7 @@ export const AnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyAnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(UserInfoContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1249,8 +1243,7 @@ export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(UserInfoContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1357,7 +1350,7 @@ export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
 
 export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(UserInfoContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
