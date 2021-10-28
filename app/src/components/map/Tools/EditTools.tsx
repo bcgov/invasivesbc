@@ -1,16 +1,149 @@
-import { IconButton } from '@material-ui/core';
+import { Button, IconButton, Paper, Popover } from '@material-ui/core';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useLeafletContext } from '@react-leaflet/core';
-import { useMapEvent } from 'react-leaflet';
+import { useMapEvent, GeoJSON } from 'react-leaflet';
 import * as turf from '@turf/turf';
 import L from 'leaflet';
 import React from 'react';
 import single from '../Icons/square.png';
 import multi from '../Icons/trim.png';
 import { async } from 'q';
-import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './Helpers/ToolBtnStyles';
 import { Capacitor } from '@capacitor/core';
+import { LayersControlProvider } from '../LayerPicker/layerControlContext';
+
+const POSITION_CLASSES = {
+  bottomleft: 'leaflet-bottom leaflet-left',
+  bottomright: 'leaflet-bottom leaflet-right',
+  topleft: 'leaflet-top leaflet-left',
+  topright: 'leaflet-top leaflet-right'
+};
+const interactiveGeometryStyle = () => {
+  return {
+    color: '#3388ff',
+    weight: 5,
+    opacity: 0.5,
+    stroke: true,
+    clickable: true,
+    fill: false
+  };
+};
+
+const MobilePolylineDrawButton = ({ convertLineStringToPoly, setGeometry }) => {
+  const positionClass = POSITION_CLASSES.topleft;
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const [drawMode, setDrawMode] = useState(false);
+  const [locArray, setLocArray] = useState([]);
+  const divRef = useRef();
+  const open = Boolean(anchorEl);
+  const id = open ? 'polylineDraw' : undefined;
+
+  const [geoToConvert, setGeoToConvert] = useState(null);
+
+  useEffect(() => {
+    if (locArray.length > 1) {
+      setGeoToConvert({
+        type: 'Feature',
+        geometry: {
+          coordinates: locArray,
+          type: 'LineString'
+        },
+        properties: {}
+      });
+    }
+  }, [locArray]);
+
+  useEffect(() => {
+    if (divRef?.current) L.DomEvent.disableClickPropagation(divRef?.current);
+  });
+
+  useMapEvent('click', (e) => {
+    const loc = e.latlng;
+    if (drawMode) {
+      setLocArray([...locArray, [loc.lng, loc.lat]]);
+    }
+  });
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const deleteLastPoint = () => {
+    if (locArray.length > 1) {
+      const tempArr = [];
+      for (var i = 0; i < locArray.length - 1; i++) {
+        tempArr.push(locArray[i]);
+      }
+      setLocArray(tempArr);
+    }
+    if (locArray.length === 1) {
+      setLocArray([]);
+    }
+  };
+
+  return (
+    <LayersControlProvider value={null}>
+      <div ref={divRef} className={positionClass}>
+        <Paper>
+          <IconButton
+            className="leaflet-control leaflet-bar"
+            style={{
+              borderRadius: 5,
+              height: 46,
+              width: 46,
+              position: 'absolute',
+              marginTop: 76
+            }}
+            onClick={handleClick}></IconButton>
+        </Paper>
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          disableEnforceFocus={true}
+          disableRestoreFocus={true}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left'
+          }}>
+          <div style={{ display: 'flex', flexFlow: 'row nowrap', backgroundColor: '#a0a098', borderRadius: 5 }}>
+            <Button
+              onClick={() => {
+                setDrawMode(!drawMode);
+                handleClose();
+                if (drawMode) {
+                  setGeometry(convertLineStringToPoly(geoToConvert));
+                  setGeoToConvert(null);
+                }
+              }}>
+              {drawMode ? <>Finish</> : <>Start</>}
+            </Button>
+            <Button
+              onClick={() => {
+                deleteLastPoint();
+              }}>
+              Delete last point
+            </Button>
+            <Button
+              onClick={() => {
+                handleClose();
+              }}>
+              Cancel
+            </Button>
+          </div>
+        </Popover>
+      </div>
+      {geoToConvert && <GeoJSON key={Math.random()} data={geoToConvert as any} style={interactiveGeometryStyle} />}
+    </LayersControlProvider>
+  );
+};
 
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
@@ -54,9 +187,6 @@ const formulateTable = (feature) => {
 };
 
 const EditTools = (props: any) => {
-  const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
-  const [flag, setFlag] = useState(0);
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
   const toggleMode = () => {
@@ -67,7 +197,6 @@ const EditTools = (props: any) => {
       props.geometryState.setGeometry([temp]);
     }
   };
-  const divRef = useRef();
 
   useEffect(() => {
     if (props.isPlanPage) {
@@ -78,23 +207,19 @@ const EditTools = (props: any) => {
       }
     }
   }, [props.geometryState]);
-
-  // useEffect(() => {
-  //   L.DomEvent.disableClickPropagation(divRef?.current);
-  //   L.DomEvent.disableScrollPropagation(divRef?.current);
-  // });
   const context = useLeafletContext();
   const [geoKeys, setGeoKeys] = useState({});
   const drawRef = useRef();
 
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
-    console.log('e', e);
     var newLayer = e.layer;
+    console.log(newLayer);
 
     context.layerContainer.addLayer(newLayer);
 
     let aGeo = newLayer.toGeoJSON();
+    console.log('263', aGeo);
     if (e.layerType === 'circle') {
       aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: newLayer.getRadius() } };
     }
@@ -141,28 +266,21 @@ const EditTools = (props: any) => {
   let map = useMapEvent('draw:created' as any, onDrawCreate);
 
   useMapEvent('draw:drawstart' as any, (e) => {
-    console.log('drawstart', e);
-    if (e.layerType === 'polyline') {
-      setFlag(1);
-    }
     if (!multiMode) {
       (context.layerContainer as any).clearLayers();
     }
   });
-  useMapEvent('draw:drawvertex' as any, (e) => {
-    console.log('vertex', e);
-  });
+  useMapEvent('draw:drawvertex' as any, (e) => {});
   useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
   });
   useMapEvent('draw:deletestop' as any, () => onDeleteStop);
   useMapEvent('draw:edited' as any, onEditStop);
-  useMapEvent('draw:drawstop' as any, (e) => {
-    console.log('drawstop', e);
-  });
+  useMapEvent('draw:drawstop' as any, (e) => {});
 
   const convertLineStringToPoly = (aGeo: any) => {
-    if (aGeo.geometry.type === 'LineString') {
+    console.log('323', aGeo);
+    if (aGeo?.geometry.type === 'LineString') {
       const buffer = prompt('Enter buffer width (total) in meters', '1');
       const buffered = turf.buffer(aGeo.geometry, parseInt(buffer, 10) / 1000, { units: 'kilometers', steps: 1 });
       const result = turf.featureCollection([buffered, aGeo.geometry]);
@@ -309,7 +427,10 @@ const EditTools = (props: any) => {
      */
     const options = {
       draw: {
-        circlemarker: false
+        circlemarker: false,
+        polyline: {
+          disabled: true
+        }
       },
       edit: {
         featureGroup: context.layerContainer,
@@ -325,16 +446,22 @@ const EditTools = (props: any) => {
   }
 
   return (
-    <IconButton
-      //ref={divRef}
-      className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-      onClick={toggleMode}>
-      {multiMode ? (
-        <img src={multi} style={{ width: 32, height: 32 }} />
-      ) : (
-        <img src={single} style={{ width: 32, height: 32 }} />
-      )}
-    </IconButton>
+    <div style={{}}>
+      {/*<MobilePolylineDrawButton
+        convertLineStringToPoly={convertLineStringToPoly}
+        setGeometry={props.geometryState.setGeometry}
+      />
+      {/*<IconButton
+        //ref={divRef}
+        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+        onClick={toggleMode}>
+        {multiMode ? (
+          <img src={multi} style={{ width: 32, height: 32 }} />
+        ) : (
+          <img src={single} style={{ width: 32, height: 32 }} />
+        )}
+        </IconButton>*/}
+    </div>
   );
 };
 

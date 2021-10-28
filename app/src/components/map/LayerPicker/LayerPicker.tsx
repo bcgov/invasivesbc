@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { LayersControlProvider } from './layerControlContext';
-import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
+import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { Capacitor } from '@capacitor/core';
