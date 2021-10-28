@@ -1096,7 +1096,8 @@ export const PlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyPlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const { userInfo } = useContext(UserInfoContext);
+  const { keycloak } = useKeycloak();
+  const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1182,7 +1183,8 @@ export const AnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyAnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const { userInfo } = useContext(UserInfoContext);
+  const { keycloak } = useKeycloak();
+  const userInfo: any = keycloak?.userInfo;
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
