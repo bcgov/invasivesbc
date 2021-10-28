@@ -84,6 +84,20 @@ const MobilePolylineDrawButton = ({ convertLineStringToPoly, setGeometry }) => {
     }
   };
 
+  const drawModeChange = () => {
+    setDrawMode(!drawMode);
+    handleClose();
+    if (drawMode) {
+      const poly = convertLineStringToPoly(geoToConvert);
+      setGeometry([poly]);
+      setGeoToConvert(null);
+      setLocArray([]);
+    }
+    if (!drawMode) {
+      setGeoToConvert(null);
+    }
+  };
+
   return (
     <LayersControlProvider value={null}>
       <div ref={divRef} className={positionClass}>
@@ -114,33 +128,13 @@ const MobilePolylineDrawButton = ({ convertLineStringToPoly, setGeometry }) => {
             horizontal: 'left'
           }}>
           <div style={{ display: 'flex', flexFlow: 'row nowrap', backgroundColor: '#a0a098', borderRadius: 5 }}>
-            <Button
-              onClick={() => {
-                setDrawMode(!drawMode);
-                handleClose();
-                if (drawMode) {
-                  setGeometry(convertLineStringToPoly(geoToConvert));
-                  setGeoToConvert(null);
-                }
-              }}>
-              {drawMode ? <>Finish</> : <>Start</>}
-            </Button>
-            <Button
-              onClick={() => {
-                deleteLastPoint();
-              }}>
-              Delete last point
-            </Button>
-            <Button
-              onClick={() => {
-                handleClose();
-              }}>
-              Cancel
-            </Button>
+            <Button onClick={drawModeChange}>{drawMode ? <>Finish</> : <>Start</>}</Button>
+            <Button onClick={deleteLastPoint}>Delete last point</Button>
+            <Button onClick={handleClose}>Cancel</Button>
           </div>
         </Popover>
       </div>
-      {geoToConvert && <GeoJSON key={Math.random()} data={geoToConvert as any} style={interactiveGeometryStyle} />}
+      {geoToConvert && <GeoJSON key={Math.random()} data={geoToConvert} style={interactiveGeometryStyle} />}
     </LayersControlProvider>
   );
 };
@@ -189,6 +183,7 @@ const formulateTable = (feature) => {
 const EditTools = (props: any) => {
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
+  /* Removed toggling multimode for now:
   const toggleMode = () => {
     setMultiMode(!multiMode);
     var len = props.geometryState.geometry.length;
@@ -196,7 +191,7 @@ const EditTools = (props: any) => {
       var temp = props.geometryState.geometry[len - 1];
       props.geometryState.setGeometry([temp]);
     }
-  };
+  };*/
 
   useEffect(() => {
     if (props.isPlanPage) {
@@ -219,7 +214,6 @@ const EditTools = (props: any) => {
     context.layerContainer.addLayer(newLayer);
 
     let aGeo = newLayer.toGeoJSON();
-    console.log('263', aGeo);
     if (e.layerType === 'circle') {
       aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: newLayer.getRadius() } };
     }
@@ -270,16 +264,13 @@ const EditTools = (props: any) => {
       (context.layerContainer as any).clearLayers();
     }
   });
-  useMapEvent('draw:drawvertex' as any, (e) => {});
   useMapEvent('draw:deleted' as any, () => {
     props.geometryState.setGeometry([]);
   });
   useMapEvent('draw:deletestop' as any, () => onDeleteStop);
   useMapEvent('draw:edited' as any, onEditStop);
-  useMapEvent('draw:drawstop' as any, (e) => {});
 
   const convertLineStringToPoly = (aGeo: any) => {
-    console.log('323', aGeo);
     if (aGeo?.geometry.type === 'LineString') {
       const buffer = prompt('Enter buffer width (total) in meters', '1');
       const buffered = turf.buffer(aGeo.geometry, parseInt(buffer, 10) / 1000, { units: 'kilometers', steps: 1 });
@@ -447,10 +438,12 @@ const EditTools = (props: any) => {
 
   return (
     <div style={{}}>
-      {/*<MobilePolylineDrawButton
-        convertLineStringToPoly={convertLineStringToPoly}
-        setGeometry={props.geometryState.setGeometry}
-      />
+      {Capacitor.getPlatform() === 'ios' && (
+        <MobilePolylineDrawButton
+          convertLineStringToPoly={convertLineStringToPoly}
+          setGeometry={props.geometryState.setGeometry}
+        />
+      )}
       {/*<IconButton
         //ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
