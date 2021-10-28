@@ -34,6 +34,7 @@ import { SetPointOnClick } from './Tools/InfoAreaDescription';
 import JumpControl, { JumpToTrip } from './Tools/JumpToTrip';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
 import { ZoomBar } from './Tools/ZoomBar';
+//Added comment
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
