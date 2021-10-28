@@ -19,6 +19,7 @@ import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 
 import AppRouter from './AppRouter';
 import { AuthStateContextProvider } from 'contexts/authStateContext';
+import { UserInfoContextProvider } from 'contexts/UserInfoContext';
 
 interface IAppProps {
   deviceInfo: DeviceInfo;
@@ -71,44 +72,46 @@ const App: React.FC<IAppProps> = (props) => {
 
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
-      <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
-        <AuthStateContextProvider>
-          <ThemeContextProvider>
-            <RolesContextProvider>
-              <NetworkContextProvider>
-                <CustomThemeProvider>
-                  <IonReactRouter>
-                    <DatabaseContext2Provider>
-                      <DatabaseContextProvider>
-                        <DatabaseContext.Consumer>
-                          {(databaseContext: IDatabaseContext) => {
-                            if (Capacitor.getPlatform() === 'ios') {
-                              return (
-                                <DatabaseChangesContextProvider>
-                                  <AppRouter {...appRouterProps} />
-                                </DatabaseChangesContextProvider>
-                              );
-                            }
-                            if (databaseContext.database) {
-                              // database not ready, delay loading app
-                              return (
-                                <DatabaseChangesContextProvider>
-                                  <AppRouter {...appRouterProps} />
-                                </DatabaseChangesContextProvider>
-                              );
-                            }
-                            return <CircularProgress />;
-                          }}
-                        </DatabaseContext.Consumer>
-                      </DatabaseContextProvider>
-                    </DatabaseContext2Provider>
-                  </IonReactRouter>
-                </CustomThemeProvider>
-              </NetworkContextProvider>
-            </RolesContextProvider>
-          </ThemeContextProvider>
-        </AuthStateContextProvider>
-      </KeycloakProvider>
+      <NetworkContextProvider>
+        <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
+          <DatabaseContext2Provider>
+            <AuthStateContextProvider>
+              <UserInfoContextProvider>
+                <ThemeContextProvider>
+                  <RolesContextProvider>
+                    <CustomThemeProvider>
+                      <IonReactRouter>
+                        <DatabaseContextProvider>
+                          <DatabaseContext.Consumer>
+                            {(databaseContext: IDatabaseContext) => {
+                              if (Capacitor.getPlatform() === 'ios') {
+                                return (
+                                  <DatabaseChangesContextProvider>
+                                    <AppRouter {...appRouterProps} />
+                                  </DatabaseChangesContextProvider>
+                                );
+                              }
+                              if (databaseContext.database) {
+                                // database not ready, delay loading app
+                                return (
+                                  <DatabaseChangesContextProvider>
+                                    <AppRouter {...appRouterProps} />
+                                  </DatabaseChangesContextProvider>
+                                );
+                              }
+                              return <CircularProgress />;
+                            }}
+                          </DatabaseContext.Consumer>
+                        </DatabaseContextProvider>
+                      </IonReactRouter>
+                    </CustomThemeProvider>
+                  </RolesContextProvider>
+                </ThemeContextProvider>
+              </UserInfoContextProvider>
+            </AuthStateContextProvider>
+          </DatabaseContext2Provider>
+        </KeycloakProvider>
+      </NetworkContextProvider>
     </Box>
   );
 };

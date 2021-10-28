@@ -451,6 +451,80 @@ export const useInvasivesApi = () => {
     }
   };
 
+  const cacheUserInfo = async (data) => {
+    if (data) {
+      console.log('Attempting to cachce user info...');
+      try {
+        await databaseContext.asyncQueue({
+          asyncTask: () => {
+            return upsert(
+              [
+                {
+                  type: UpsertType.DOC_TYPE_AND_ID,
+                  docType: DocType.USER_INFO,
+                  json: data,
+                  ID: '1'
+                }
+              ],
+              databaseContext
+            );
+          }
+        });
+        return true;
+      } catch (e) {
+        alert('Unable to cache user info and roles');
+        console.log('ERROR: ', e);
+      }
+    }
+    return false;
+  };
+
+  const clearUserInfoFromCache = async () => {
+    console.log('Clearing user info from cache...');
+    try {
+      await databaseContext.asyncQueue({
+        asyncTask: async () => {
+          return upsert(
+            [
+              {
+                type: UpsertType.DOC_TYPE_AND_ID_DELETE,
+                ID: '1',
+                docType: DocType.USER_INFO
+              }
+            ],
+            databaseContext
+          );
+        }
+      });
+      return true;
+    } catch (e) {
+      alert('unable to remove user info from cache');
+    }
+    return false;
+  };
+
+  const getUserInfoFromCache = async () => {
+    let data = await databaseContext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE_AND_ID,
+            docType: DocType.USER_INFO,
+            ID: '1'
+          },
+          databaseContext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        return res;
+      }
+    });
+    if (data) {
+      return JSON.parse(JSON.stringify(data));
+    } else {
+      console.log('No information found when attempting to fetch cached user');
+    }
+  };
+
   const cacheSpec = async (data) => {
     if (data.components) {
       console.log('caching spec');
@@ -551,6 +625,9 @@ export const useInvasivesApi = () => {
     getBatchUploads,
     postBatchUpload,
     downloadTemplate,
-    getJurisdictions
+    getJurisdictions,
+    cacheUserInfo,
+    getUserInfoFromCache,
+    clearUserInfoFromCache
   };
 };

@@ -1,5 +1,8 @@
 import { useKeycloak } from '@react-keycloak/web';
-import { useEffect, useState } from 'react';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { useEffect, useState, useContext } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { useInvasivesApi } from './useInvasivesApi';
 /**
  * Represents the userinfo provided by keycloak.
  *
@@ -46,21 +49,11 @@ export interface IKeycloak {
  * Provides extension methods to interact with the `keycloak` object.
  */
 function useKeycloakWrapper(): IKeycloak {
+  const api = useInvasivesApi();
+  const network = useContext(NetworkContext);
   const { keycloak } = useKeycloak();
   const authenticated = keycloak?.authenticated;
-
   const [userInfo, setUserInfo] = useState<any>(null);
-
-  useEffect(() => {
-    const loadUserInfo = async () => {
-      const user = await keycloak?.loadUserInfo();
-      setUserInfo(user);
-    };
-    if (!authenticated || userInfo) {
-      return;
-    }
-    loadUserInfo();
-  }, [authenticated, keycloak, userInfo]);
 
   /**
    * Determine if the user belongs to the specified role(s).
