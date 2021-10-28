@@ -10,12 +10,13 @@ export async function up(knex: Knex): Promise<void> {
       set client_encoding to utf8;
       set standard_conforming_strings to on;
 
-      CREATE TABLE "jurisdiction" (gid serial,
+      CREATE TABLE "jurisdiction" (
+        "gid" serial,
         "type" varchar(30),
         "name" varchar(74),
         "jurisdictn" varchar(75),
-        "draworder" int4),
-        "code_name" varchar(10);
+        "draworder" int4,
+        "code_name" varchar(10));
       ALTER TABLE "jurisdiction" ADD PRIMARY KEY (gid);
       SELECT AddGeometryColumn('','jurisdiction','geom','4326','MULTIPOLYGON',2);
 
