@@ -1400,6 +1400,7 @@ const Monitoring_MechanicalAnimalTerrestrial = {
 const Activity_AnimalTerrestrial = {
   ...OneColumnStyle,
   'location_information': {
+    ...ThreeColumnStyle,
     'land_use': {},
     'biogeoclimatic_zone': {},
     'management_unit': {},
@@ -1416,6 +1417,7 @@ const Activity_AnimalTerrestrial = {
     ]
   },
   'methods': {
+    ...ThreeColumnStyle,
     'survey_or_research_observation': {
       'ui:widget': 'single-select-autocomplete'
     },
@@ -1532,7 +1534,7 @@ const Activity_AnimalTerrestrial = {
       'air_temperature'
     ]
   },
-  'ui:order':['terrestrial_animal_information','animal_measurements','microhabitat']
+  'ui:order':['location_information', 'methods', 'terrestrial_animal_information','animal_measurements','microhabitat']
 };
 
 const Activity_AnimalAquatic = {
