@@ -1,6 +1,6 @@
 import * as Knex from 'knex';
 
-const DB_SCHEMA = process.env.DB_SCHEMA || 'invasivesbc';
+const DB_SCHEMA = 'public';
 
 export async function up(knex: Knex): Promise<void> {
   try {
@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<void> {
 	      "ogc_fid" SERIAL,
         CONSTRAINT "pest_management_plan_areas_pk" PRIMARY KEY ("ogc_fid")
       );
-      SELECT AddGeometryColumn('invasivesbc','pest_management_plan_areas','wkb_geometry',3005,'MULTIPOLYGON',2);
+      SELECT AddGeometryColumn('public','pest_management_plan_areas','wkb_geometry',3005,'MULTIPOLYGON',2);
       CREATE INDEX "pest_management_plan_areas_wkb_geometry_geom_idx" ON "pest_management_plan_areas" USING GIST ("wkb_geometry");
       ALTER TABLE "pest_management_plan_areas" ADD COLUMN "objectid" NUMERIC(10,0);
       ALTER TABLE "pest_management_plan_areas" ADD COLUMN "pmp_name" VARCHAR(254);

@@ -1,6 +1,7 @@
 import * as Knex from 'knex';
 import axios from 'axios';
 import { ungzip } from 'node-gzip';
+import { join } from 'path';
 
 export async function seed(knex: Knex): Promise<void> {
   const url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction.sql.gz';
@@ -13,9 +14,16 @@ export async function seed(knex: Knex): Promise<void> {
    * This file is too big to run all at once.
    * Split up by lines and run separately
    */
+  const chunk = 1000; // Run 1000 transactions at a time
   const lines = sql.toString().split(/\r?\n/);
 
-  for (const line of lines) {
-    await knex.raw(line);
+  let cluster: Array<String>;
+  for (let i = 0, j = lines.length; i < j; i += chunk) {
+    cluster = lines.slice(i, i + chunk);
+    await knex.raw(cluster.join(' '));
   }
+
+  // for (const line of lines) {
+  //   await knex.raw(line);
+  // }
 }
