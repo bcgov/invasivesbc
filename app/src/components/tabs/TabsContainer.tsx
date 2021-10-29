@@ -348,7 +348,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'Cached Records',
               path: '/home/references',
