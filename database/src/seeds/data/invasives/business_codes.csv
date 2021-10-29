@@ -21,7 +21,7 @@ plant_life_stage_code,MFD,Mature: fading,13
 plant_life_stage_code,MDF,Mature: dispersing fruit,14
 plant_life_stage_code,D,Dead,15
 plant_life_stage_code,OTH,Other - Add notes in comments,16
-animal_life_stage_code,U,unknown,1
+animal_life_stage_code,U,Unknown,1
 animal_life_stage_code,E,Egg,2
 animal_life_stage_code,N,Neonate,3
 animal_life_stage_code,J,Juvenile,4
@@ -192,6 +192,8 @@ mechanical_disposal_code,B,Burned,4
 mechanical_disposal_code,II,Industrial Incineration,5
 mechanical_disposal_code,LR,Landfill Regular,6
 mechanical_disposal_code,LDB,Landfill deep Burial,7
+survey_or_research_observation_code,Y,Yes,1
+survey_or_research_observation_code,N,No,2
 mechanical_method_code,DIG,Digging,1
 mechanical_method_code,BRY,Bury,2
 mechanical_method_code,BUR,Controlled Burning,3
