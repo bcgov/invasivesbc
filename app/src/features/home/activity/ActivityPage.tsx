@@ -37,7 +37,8 @@ import {
   getJurisdictionPercentValidator,
   getSlopeAspectBothFlatValidator,
   getInvasivePlantsValidator,
-  getDuplicateInvasivePlantsValidator
+  getDuplicateInvasivePlantsValidator,
+  getPlotIdentificatiomTreesValidator
 } from '../../../rjsf/business-rules/customValidation';
 import { getCustomErrorTransformer } from '../../../rjsf/business-rules/customErrorTransformer';
 import {
@@ -333,6 +334,30 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     }
     return formData;
   };
+
+  const autoFillTreeNumbers = (activitySubtypeData: any) => {
+    if (activitySubtypeData.form_b) {
+      activitySubtypeData.form_b.forEach((FormB: any) => {
+        if (FormB.form_a) {
+          FormB.form_a.forEach((FormA: any) => {
+            if (FormA.stand_table) {
+              for (let tree_index = 0; tree_index < FormA.stand_table.length; tree_index++) {
+                FormA.stand_table[tree_index].tree_num = tree_index + 1;
+              }
+            }
+            if (FormA.plot_information && FormA.plot_information.log) {
+              for (let log_index = 0; log_index < FormA.plot_information.log.length; log_index++) {
+                FormA.plot_information.log[log_index].log_num = log_index + 1;
+              }
+            }
+          });
+        }
+      });
+    }
+
+    return activitySubtypeData;
+  };
+
   /**
    * Save the form whenever it changes.
    *
@@ -345,6 +370,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
     updatedFormData.activity_subtype_data = populateHerbicideDilutionAndArea(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
+    updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
 
     //auto fills slope or aspect to flat if other is chosen flat (plant terrastrial observation activity)
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
@@ -756,7 +782,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getDurationCountAndPlantCountValidation(),
               getPersonNameNoNumbersValidator(),
               getJurisdictionPercentValidator(),
-              getInvasivePlantsValidator(linkedActivity)
+              getInvasivePlantsValidator(linkedActivity),
+              getPlotIdentificatiomTreesValidator(doc.activitySubtype)
             ])}
             customErrorTransformer={getCustomErrorTransformer()}
             classes={classes}
