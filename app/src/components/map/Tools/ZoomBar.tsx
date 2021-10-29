@@ -52,7 +52,7 @@ export const ZoomBar = (props) => {
       }}>
       <Slider
         style={{
-          zIndex: 1500,
+          zIndex: 1000,
           width: 270
         }}
         step={1}
