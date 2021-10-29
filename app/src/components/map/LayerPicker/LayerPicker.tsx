@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { LayersControlProvider } from './layerControlContext';
-import { DataBCLayer, LayerMode } from '../LayerLoaderHelpers/DataBCRenderLayer';
+import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { Capacitor } from '@capacitor/core';
@@ -179,12 +179,12 @@ export function LayerPicker(props: any, { position }) {
     setObjectState([...parentsBefore, updatedParent, ...parentsAfter] as any);
   };
 
-  const toggleChildDialog = (parent, child) => {
+  const toggleChildDialog = (parent, child, open: boolean) => {
     updateChild(
       parent.id,
       child.id,
       {
-        dialog_open: !getChild(objectState, parent.id, child.id).dialog_open
+        dialog_open: open
       },
       { objectState, setObjectState }
     );
@@ -279,49 +279,45 @@ export function LayerPicker(props: any, { position }) {
                 </Grid>
                 {/* Child Dialog Box */}
                 <Grid item xs={2}>
-                  <IconButton onClick={() => toggleChildDialog(parent, child)}>
+                  <IconButton onClick={() => toggleChildDialog(parent, child, true)}>
                     <SettingsIcon />
                   </IconButton>
-                  <Dialog open={child.dialog_open} onClose={() => toggleChildDialog(parent, child)}>
-                    <DialogTitle>{child.name}</DialogTitle>
-                    <DialogContent>
-                      {/* old code not sure if will remove
-                      <FormControl style={{ marginTop: 10, marginLeft: 10, display: 'flex', flexFlow: 'row nowrap' }}>
-                        <InputLabel>Layer</InputLabel>
-                        <NativeSelect
-                          id="layer-menu"
-                          defaultValue={child.type}
-                          onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                            updateChildAndLayer(parent, child, { type: event.target.value });
-                          }}>
-                          <option value={LayerMode.ActivitiesAndPOI}>{LayerMode.ActivitiesAndPOI}</option>
-                          <option value={LayerMode.WMSOnline}>{LayerMode.WMSOnline}</option>
-                          <option value={LayerMode.WFSOnline}>{LayerMode.WFSOnline}</option>
-                          <option value={LayerMode.VectorTilesOffline}>{LayerMode.VectorTilesOffline}</option>
-                          <option value={LayerMode.RegularFeaturesOffline}>{LayerMode.RegularFeaturesOffline}</option>
-                        </NativeSelect>
-                      </FormControl>*/}
-                      <LayersSelector
-                        parent={parent}
-                        child={child}
-                        objectState={objectState}
-                        setObjectState={setObjectState}
-                        layers={newLayers}
-                        setLayers={setNewLayers}
-                      />
-                      {child.id === 'activities' && (
-                        <DialogContent style={{ height: 300 }}>
-                          <ColorPicker
-                            name="color"
-                            defaultValue={child.color_code}
-                            onChange={(color: any) => {
-                              updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
-                              updateLayer({ color_code: color }, child, newLayers, setNewLayers);
-                            }}
-                          />
-                        </DialogContent>
-                      )}
-                      <div className={toolClass.toolSlider}>
+                  <Dialog open={child.dialog_open} onClose={() => toggleChildDialog(parent, child, false)}>
+                    <DialogTitle>{child.name ? <>{child.name}</> : child.id}</DialogTitle>
+                    {child.id === 'activities' && (
+                      <DialogContent style={{ height: 300 }}>
+                        <ColorPicker
+                          name="color"
+                          defaultValue={child.color_code}
+                          onChange={(color: any) => {
+                            updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
+                            updateLayer({ color_code: color }, child, newLayers, setNewLayers);
+                          }}
+                        />
+                      </DialogContent>
+                    )}
+                    {child.id === 'poi' && (
+                      <DialogContent style={{ height: 300, width: 300 }}>
+                        <ColorPicker
+                          name="color"
+                          defaultValue={child.color_code}
+                          onChange={(color: any) => {
+                            updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
+                            updateLayer({ color_code: color }, child, newLayers, setNewLayers);
+                          }}
+                        />
+                      </DialogContent>
+                    )}
+                    {child.id !== 'activities' && child.id !== 'poi' && (
+                      <DialogContent style={{ height: 300, width: 300 }}>
+                        <LayersSelector
+                          parent={parent}
+                          child={child}
+                          objectState={objectState}
+                          setObjectState={setObjectState}
+                          layers={newLayers}
+                          setLayers={setNewLayers}
+                        />
                         <Typography style={{ marginRight: 10 }}>Opacity</Typography>
                         <Slider
                           defaultValue={child.opacity}
@@ -339,10 +335,22 @@ export function LayerPicker(props: any, { position }) {
                           min={0.0}
                           max={1.0}
                         />
-                      </div>
-                    </DialogContent>
+                      </DialogContent>
+                    )}
                     <DialogActions>
-                      <Button onClick={() => toggleChildDialog(parent, child)}>Close</Button>
+                      <Button
+                        onClick={() =>
+                          updateChild(
+                            parent.id,
+                            child.id,
+                            {
+                              dialog_open: false
+                            },
+                            { objectState, setObjectState }
+                          )
+                        }>
+                        Close
+                      </Button>
                     </DialogActions>
                   </Dialog>
                 </Grid>

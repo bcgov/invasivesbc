@@ -1,4 +1,3 @@
-import { IconButton } from '@material-ui/core';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useLeafletContext } from '@react-leaflet/core';
 import { useMapEvent } from 'react-leaflet';
@@ -8,8 +7,8 @@ import React from 'react';
 import single from '../Icons/square.png';
 import multi from '../Icons/trim.png';
 import { async } from 'q';
-import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './Helpers/ToolBtnStyles';
+import { Capacitor } from '@capacitor/core';
+import { MobileDrawCancel, MobilePolylineDrawButton } from './Helpers/MobileDrawBtns';
 
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
@@ -53,10 +52,10 @@ const formulateTable = (feature) => {
 };
 
 const EditTools = (props: any) => {
-  const toolClass = toolStyles();
-  const themeContext = useContext(ThemeContext);
   // This should get the 'FeatureGroup' connected to the tools
   const [multiMode, setMultiMode] = useState(false);
+  const [openCancel, setOpenCancel] = useState(false);
+  /* Removed toggling multimode for now:
   const toggleMode = () => {
     setMultiMode(!multiMode);
     var len = props.geometryState.geometry.length;
@@ -64,8 +63,7 @@ const EditTools = (props: any) => {
       var temp = props.geometryState.geometry[len - 1];
       props.geometryState.setGeometry([temp]);
     }
-  };
-  const divRef = useRef();
+  };*/
 
   useEffect(() => {
     if (props.isPlanPage) {
@@ -76,11 +74,6 @@ const EditTools = (props: any) => {
       }
     }
   }, [props.geometryState]);
-
-  useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef?.current);
-    L.DomEvent.disableScrollPropagation(divRef?.current);
-  });
   const context = useLeafletContext();
   const [geoKeys, setGeoKeys] = useState({});
   const drawRef = useRef();
@@ -88,6 +81,7 @@ const EditTools = (props: any) => {
   // Put new feature into the FeatureGroup
   const onDrawCreate = (e: any) => {
     var newLayer = e.layer;
+    console.log(newLayer);
 
     context.layerContainer.addLayer(newLayer);
 
@@ -111,13 +105,10 @@ const EditTools = (props: any) => {
   const onEditStop = (e: any) => {
     let updatedGeoJSON = [];
     (context.layerContainer as any).eachLayer((layer) => {
-      //console.dir(layer)
       let aGeo = layer.toGeoJSON();
       if (layer.feature.properties.radius) {
         aGeo = { ...aGeo, properties: { ...aGeo.properties, radius: layer._mRadius } };
-      } //else if (e.layerType === 'rectangle') {
-      //aGeo = { ...aGeo, properties: { ...aGeo.properties, isRectangle: true } };
-      //}
+      }
       aGeo = convertLineStringToPoly(aGeo);
 
       updatedGeoJSON.push(aGeo);
@@ -126,18 +117,7 @@ const EditTools = (props: any) => {
     props.geometryState.setGeometry(updatedGeoJSON);
   };
 
-  // Grab the map object
-  let map = useMapEvent('draw:created' as any, onDrawCreate);
-
-  useMapEvent('draw:drawstart' as any, () => {
-    if (!multiMode) {
-      (context.layerContainer as any).clearLayers();
-    }
-  });
-  useMapEvent('draw:deleted' as any, () => {
-    props.geometryState.setGeometry([]);
-  });
-  useMapEvent('draw:deletestop' as any, () => {
+  const onDeleteStop = (e: any) => {
     let updatedGeoJSON = [];
     (context.layerContainer as any).eachLayer((layer) => {
       let aGeo = layer.toGeoJSON();
@@ -146,11 +126,25 @@ const EditTools = (props: any) => {
     });
     (context.layerContainer as any).clearLayers();
     props.geometryState.setGeometry(updatedGeoJSON);
+  };
+
+  // Grab the map object
+  let map = useMapEvent('draw:created' as any, onDrawCreate);
+
+  useMapEvent('draw:drawstart' as any, (e) => {
+    if (!multiMode) {
+      (context.layerContainer as any).clearLayers();
+    }
+    setOpenCancel(true);
   });
+  useMapEvent('draw:deleted' as any, () => {
+    props.geometryState.setGeometry([]);
+  });
+  useMapEvent('draw:deletestop' as any, onDeleteStop);
   useMapEvent('draw:edited' as any, onEditStop);
 
   const convertLineStringToPoly = (aGeo: any) => {
-    if (aGeo.geometry.type === 'LineString') {
+    if (aGeo?.geometry.type === 'LineString') {
       const buffer = prompt('Enter buffer width (total) in meters', '1');
       const buffered = turf.buffer(aGeo.geometry, parseInt(buffer, 10) / 1000, { units: 'kilometers', steps: 1 });
       const result = turf.featureCollection([buffered, aGeo.geometry]);
@@ -272,7 +266,6 @@ const EditTools = (props: any) => {
     }
     // Drawing step:
     drawingStep(newGeoKeys, context);
-
     // update stored geos, mapped by key
     setGeoKeys(newGeoKeys);
   };
@@ -298,7 +291,10 @@ const EditTools = (props: any) => {
      */
     const options = {
       draw: {
-        circlemarker: false
+        circlemarker: false,
+        polyline: {
+          disabled: true
+        }
       },
       edit: {
         featureGroup: context.layerContainer,
@@ -314,16 +310,26 @@ const EditTools = (props: any) => {
   }
 
   return (
-    <IconButton
-      ref={divRef}
-      className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-      onClick={toggleMode}>
-      {multiMode ? (
-        <img src={multi} style={{ width: 32, height: 32 }} />
-      ) : (
-        <img src={single} style={{ width: 32, height: 32 }} />
+    <div style={{}}>
+      {Capacitor.getPlatform() === 'ios' && (
+        <MobilePolylineDrawButton
+          convertLineStringToPoly={convertLineStringToPoly}
+          setGeometry={props.geometryState.setGeometry}
+          context={context.layerContainer}
+        />
       )}
-    </IconButton>
+      {openCancel && Capacitor.getPlatform() === 'ios' && <MobileDrawCancel setOpenCancel={setOpenCancel} />}
+      {/*<IconButton
+        //ref={divRef}
+        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+        onClick={toggleMode}>
+        {multiMode ? (
+          <img src={multi} style={{ width: 32, height: 32 }} />
+        ) : (
+          <img src={single} style={{ width: 32, height: 32 }} />
+        )}
+        </IconButton>*/}
+    </div>
   );
 };
 
