@@ -801,6 +801,12 @@ export const TripDataControls: React.FC<any> = (props) => {
       await fetchActivities();
       await fetchPointsOfInterest();
       await fetchMetabaseQueries();
+      setProgressDialog((prevState) => {
+        return {
+          ...prevState,
+          done: true
+        };
+      });
     } catch (error) {
       setProgressDialog((prevState) => ({
         dialogOpen: true,
