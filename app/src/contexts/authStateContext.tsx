@@ -1,23 +1,57 @@
 import * as React from 'react';
-import useKeycloakWrapper from '../hooks/useKeycloakWrapper';
+import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';
 import { useInvasivesApi } from '../hooks/useInvasivesApi';
-import { DatabaseContext2, upsert, UpsertType } from './DatabaseContext2';
-import { DocType } from '../constants/database';
-import { Capacitor } from '@capacitor/core';
 
+export const info: IUserInfo = {
+  username: '',
+  email: '',
+  groups: [],
+  roles: []
+};
+export const infoLoaded: boolean = false;
 export interface IAuthState {
-  ready?: boolean;
   keycloak?: any;
+  userInfo: IUserInfo;
+  userInfoLoaded: boolean;
+  userRoles: any[];
+  setUserInfo: React.Dispatch<React.SetStateAction<Object>>;
+  setUserInfoLoaded: React.Dispatch<React.SetStateAction<Boolean>>;
+  setUserRoles: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const AuthStateContext = React.createContext<IAuthState>({
-  ready: false,
-  keycloak: {}
+  keycloak: {},
+  userInfo: {
+    username: '',
+    email: '',
+    groups: [],
+    roles: []
+  },
+  userInfoLoaded: false,
+  userRoles: [],
+  setUserInfo: () => {},
+  setUserInfoLoaded: () => {},
+  setUserRoles: () => {}
 });
 
 export const AuthStateContextProvider: React.FC = (props) => {
   const keycloak = useKeycloakWrapper();
   const invasivesApi = useInvasivesApi();
+  const [userInfoLoaded, setUserInfoLoaded] = React.useState(infoLoaded);
+  const [userInfo, setUserInfo] = React.useState(info);
+  const [userRoles, setUserRoles] = React.useState([]);
+
+  React.useEffect(() => {
+    if (keycloak?.obj?.authenticated) {
+      keycloak?.obj?.loadUserInfo().then((info) => {
+        if (info) {
+          setUserRoles(info?.roles);
+          setUserInfo(info);
+          setUserInfoLoaded(true);
+        }
+      });
+    }
+  }, [keycloak?.obj?.authenticated]);
 
   React.useEffect(() => {
     const getApiSpec = async () => {
@@ -27,5 +61,10 @@ export const AuthStateContextProvider: React.FC = (props) => {
     getApiSpec();
   }, []);
 
-  return <AuthStateContext.Provider value={{ keycloak: keycloak }}>{props.children}</AuthStateContext.Provider>;
+  return (
+    <AuthStateContext.Provider
+      value={{ keycloak, userInfoLoaded, userInfo, userRoles, setUserInfo, setUserInfoLoaded, setUserRoles }}>
+      {props.children}
+    </AuthStateContext.Provider>
+  );
 };

@@ -44,9 +44,7 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { UserInfoContext } from 'contexts/UserInfoContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { RolesContext } from 'contexts/RolesContext';
 import { IonAlert } from '@ionic/react';
 
 const drawerWidth = 240;
@@ -147,19 +145,17 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
-  const authContext = useContext(AuthStateContext);
   const [open, setOpen] = React.useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const api = useInvasivesApi();
-  const { userInfo, setUserInfo, userInfoLoaded, setUserInfoLoaded } = useContext(UserInfoContext);
-  const { userRoles, setUserRoles } = useContext(RolesContext);
+  const { userInfo, setUserInfo, userInfoLoaded, setUserInfoLoaded, userRoles, setUserRoles } =
+    useContext(AuthStateContext);
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     console.log('keycloak: ', keycloak);
-    console.log('AuthContext: ', authContext.keycloak);
     setAnchorEl(event.currentTarget);
   };
 
@@ -201,7 +197,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         console.log('Attempting to clear cache from tabs...');
         await api.clearUserInfoFromCache().then((res: any) => {
           setUserInfoLoaded(false);
-          setUserInfo({ username: '', email: '', groups: [], roles: [] });
+          setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
           console.log('Cache clear successful.');
         });
       } catch (err) {
@@ -211,7 +207,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
       try {
         await keycloak?.obj?.logout();
         setUserInfoLoaded(false);
-        setUserInfo({ username: '', email: '', groups: [], roles: [] });
+        setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
       } catch (err) {
         console.log('Error logging out: ', err);
       }
@@ -224,6 +220,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     const user = await keycloak?.obj?.loadUserInfo();
     const roles = await keycloak?.obj?.resourceAccess['invasives-bc'].roles;
     await setUserRoles(roles);
+    console.log('User on login: ', user);
     await setUserInfo(user);
     if (isMobile()) {
       // Cache user info and roles
@@ -304,6 +301,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && userInfoLoaded);
   };
 
+  useEffect(() => {
+    console.log('TABSCONTAINER UserInfo Changed: ', userInfo);
+    console.log('TABSCONTAINER UserInfoLoaded Changed: ', userInfoLoaded);
+  }, [userInfo, userInfoLoaded]);
+
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;
   const networkContext = useContext(NetworkContext);
@@ -346,7 +348,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
             });
           }
 
-          if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
+          if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
             tabsUserHasAccessTo.push({
               label: 'Cached Records',
               path: '/home/references',

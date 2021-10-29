@@ -23,16 +23,17 @@ import { GetUserAccessLevel } from 'utils/getAccessLevel';
 import {
   MyBiocontrolTable,
   MyAnimalActivitiesTable,
-  MyMonitoringTable,
+  MyPlantMonitoringTable,
+  MyAnimalMonitoringTable,
+  MyAnimalTreatmentsTable,
   MyObservationsTable,
   MyPastActivitiesTable,
   MyTransectsTable,
-  MyTreatmentsTable,
+  MyPlantTreatmentsTable,
   ReviewActivitiesTable
 } from '../../components/common/RecordTables';
 import { DatabaseContext2, query, QueryType } from '../../contexts/DatabaseContext2';
 import BatchUpload from '../../components/batch-upload/BatchUpload';
-import { RolesContext } from '../../contexts/RolesContext';
 import { ALL_ROLES, PLANT_ROLES, ANIMAL_ROLES, USER_ACCESS, User_Access } from 'constants/roles';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -84,7 +85,6 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
   const classes = useStyles();
 
   const databaseContext = useContext(DatabaseContext);
-  const rolesContext = useContext(RolesContext);
   const invasivesApi = useInvasivesApi();
   const [species, setSpecies] = useState(null);
 
@@ -188,9 +188,7 @@ const ActivitiesList: React.FC = () => {
   let hasAnimalAccess = false;
 
   const databaseContext = useContext(DatabaseContext2);
-  const rolesContext = useContext(RolesContext);
   const { keycloak } = useKeycloak();
-  console.log(rolesContext.userRoles);
   let accessLevel = GetUserAccessLevel();
   if (accessLevel.hasPlantAccess) {
     hasPlantAccess = true;
@@ -306,15 +304,17 @@ const ActivitiesList: React.FC = () => {
           {workflowFunction === 'Plant' && (
             <Box>
               <MyObservationsTable />
-              <MyTreatmentsTable />
+              <MyPlantTreatmentsTable />
               <MyBiocontrolTable />
-              <MyMonitoringTable />
+              <MyPlantMonitoringTable />
               <MyTransectsTable />
             </Box>
           )}
           {workflowFunction === 'Animal' && (
             <Box>
               <MyAnimalActivitiesTable />
+              <MyAnimalTreatmentsTable />
+              <MyAnimalMonitoringTable />
             </Box>
           )}
           {workflowFunction === 'Review' && (

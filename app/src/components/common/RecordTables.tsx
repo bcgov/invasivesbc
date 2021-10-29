@@ -16,6 +16,7 @@ import React, { useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { sanitizeRecord, generateDBActivityPayload, getShortActivityID } from 'utils/addActivity';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
+import { AuthStateContext } from 'contexts/authStateContext';
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);
@@ -227,8 +228,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
   const databaseContext = useContext(DatabaseContext2);
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(AuthStateContext);
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
     dialogOpen: false,
@@ -602,8 +602,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -636,7 +635,7 @@ export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { tableSchemaType, ...otherProps } = props;
   return (
     <ActivitiesTable
-      tableName="Animal Activities"
+      tableName="Animal Observations"
       activitySubtypes={[ActivitySubtype.Activity_AnimalTerrestrial, ActivitySubtype.Activity_AnimalAquatic]}
       tableSchemaType={[
         'Observation',
@@ -654,7 +653,7 @@ export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   return useMemo(() => {
     return (
       <MyActivitiesTable
-        tableName="Animal Activities"
+        tableName="Animal Observations"
         activitySubtypes={[ActivitySubtype.Activity_AnimalTerrestrial, ActivitySubtype.Activity_AnimalAquatic]}
         tableSchemaType={[
           'Observation',
@@ -727,8 +726,7 @@ export const ObservationsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -755,7 +753,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
   }, [headers?.length]);
 };
 
-export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
+export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const databaseContext = useContext(DatabaseContext2);
   const dataAccess = useDataAccess();
   const { tableSchemaType, headers = [], ...otherProps } = props;
@@ -845,7 +843,7 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
               actions={false}
             />
 
-            <MonitoringTable
+            <PlantMonitoringTable
               tableName="Linked Monitoring"
               key={row._id + '_monitoring'}
               rows={defaultActivitiesFetch({
@@ -869,13 +867,13 @@ export const TreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   }, [props.rows?.length, props.selected?.length]);
 };
 
-export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
+export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
-      <TreatmentsTable
+      <PlantTreatmentsTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
@@ -898,7 +896,144 @@ export const MyTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
   }, [headers?.length]);
 };
 
-export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
+export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
+  const databaseContext = useContext(DatabaseContext2);
+  const dataAccess = useDataAccess();
+  const { tableSchemaType, headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <ActivitiesTable
+        tableName="Treatments"
+        activitySubtypes={[
+          ActivitySubtype.Treatment_MechanicalAnimalTerrestrial,
+          ActivitySubtype.Treatment_ChemicalAnimalTerrestrial
+        ]}
+        tableSchemaType={[
+          'Treatment',
+          'Treatment_ChemicalAnimalTerrestrial',
+          'Treatment_MechanicalAnimalTerrestrial',
+          ...arrayWrap(tableSchemaType)
+        ]}
+        headers={[
+          ...headers,
+          {
+            id: 'short_id',
+            title: 'Activity ID'
+          },
+          {
+            id: 'activity_subtype',
+            valueMap: {
+              ...ActivitySubtypeShortLabels,
+              Activity_Observation_AnimalTerrestrial: 'Terrestrial Animal' // TODO remove when our data isn't awful
+            }
+          },
+          'date_created',
+          'invasive_plant_code',
+          'invasive_species_agency_code',
+          'chemical_method_code',
+          {
+            id: 'reported_area',
+            title: 'Area (m\u00B2)'
+          },
+          {
+            id: 'latitude',
+            title: 'Latitude',
+            type: 'number'
+          },
+          {
+            id: 'longitude',
+            title: 'Longitude',
+            type: 'number'
+          },
+          'elevation',
+          {
+            id: 'activity_id',
+            title: 'Full ID'
+          }
+        ]}
+        dropdown={(row) => (
+          <>
+            <ActivitiesTable
+              tableName=""
+              key={row._id}
+              tableSchemaType={[
+                'Treatment',
+                'Treatment_ChemicalAnimalTerrestrial',
+                'Treatment_MechanicalAnimalTerrestrial',
+                ...arrayWrap(tableSchemaType)
+              ]}
+              enableSelection={false}
+              headers={[
+                'jurisdiction_code',
+                'biogeoclimatic_zones',
+                {
+                  id: 'flnro_districts',
+                  title: 'FLNRO Districts'
+                },
+                'ownership',
+                'regional_districts',
+                'access_description',
+                'general_comment'
+              ]}
+              rows={[row]}
+              pagination={false}
+              actions={false}
+            />
+
+            <AnimalMonitoringTable
+              tableName="Linked Monitoring"
+              key={row._id + '_monitoring'}
+              rows={defaultActivitiesFetch({
+                databaseContext,
+                dataAccess,
+                linked_id: row._id
+              })}
+              hideEmpty
+              actions={{
+                create_activity: {
+                  // disable create buttons
+                  enabled: false
+                }
+              }}
+            />
+          </>
+        )}
+        {...otherProps}
+      />
+    );
+  }, [props.rows?.length, props.selected?.length]);
+};
+
+export const MyAnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
+  const { keycloak } = useKeycloak();
+  const userInfo: any = keycloak?.userInfo;
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <AnimalTreatmentsTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
+          'form_status',
+          {
+            id: 'review_status_rendered',
+            title: 'Review Status'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
+};
+
+export const PlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
   const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -958,13 +1093,98 @@ export const MonitoringTable: React.FC<IActivitiesTable> = (props) => {
   }, [props.rows?.length, props.selected?.length]);
 };
 
-export const MyMonitoringTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+export const MyPlantMonitoringTable: React.FC<IActivitiesTable> = (props) => {
+  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
-      <MonitoringTable
+      <PlantMonitoringTable
+        startingOrderBy="created_timestamp"
+        startingOrder="asc"
+        headers={[
+          ...headers,
+          {
+            id: 'sync_status',
+            title: 'Save Status'
+          },
+          'form_status',
+          {
+            id: 'review_status_rendered',
+            title: 'Review Status'
+          }
+        ]}
+        created_by={userInfo?.preferred_username}
+        review_status={[ReviewStatus.DISAPPROVED, ReviewStatus.PREAPPROVED, ReviewStatus.NOT_REVIEWED]}
+        {...otherProps}
+      />
+    );
+  }, [headers?.length]);
+};
+
+export const AnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
+  const { tableSchemaType, headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <ActivitiesTable
+        tableName="Treatment Monitoring"
+        activitySubtypes={[
+          ActivitySubtype.Monitoring_ChemicalAnimalTerrestrial,
+          ActivitySubtype.Monitoring_MechanicalAnimalTerrestrial
+        ]}
+        tableSchemaType={[
+          'Monitoring',
+          'Monitoring_ChemicalAnimalTerrestrial',
+          'Monitoring_MechanicalAnimalTerrestrial',
+          ...arrayWrap(tableSchemaType)
+        ]}
+        headers={[
+          ...headers,
+          {
+            id: 'short_id',
+            title: 'Activity ID'
+          },
+          {
+            id: 'activity_subtype',
+            valueMap: {
+              ...ActivitySubtypeShortLabels,
+              Activity_Observation_AnimalTerrestrial: 'Terrestrial Animal' // TODO remove when our data isn't awful
+            }
+          },
+          'date_created',
+          'invasive_plant_code',
+          'invasive_species_agency_code',
+          {
+            id: 'reported_area',
+            title: 'Area (m\u00B2)'
+          },
+          {
+            id: 'latitude',
+            title: 'Latitude',
+            type: 'number'
+          },
+          {
+            id: 'longitude',
+            title: 'Longitude',
+            type: 'number'
+          },
+          'elevation',
+          {
+            id: 'activity_id',
+            title: 'Full ID'
+          }
+        ]}
+        {...otherProps}
+      />
+    );
+  }, [props.rows?.length, props.selected?.length]);
+};
+
+export const MyAnimalMonitoringTable: React.FC<IActivitiesTable> = (props) => {
+  const { userInfo } = useContext(AuthStateContext);
+  const { headers = [], ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <AnimalMonitoringTable
         startingOrderBy="created_timestamp"
         startingOrder="asc"
         headers={[
@@ -1023,8 +1243,7 @@ export const TransectsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const MyTransectsTable: React.FC<IActivitiesTable> = (props) => {
-  const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (
@@ -1131,7 +1350,7 @@ export const BiocontrolTable: React.FC<IActivitiesTable> = (props) => {
 
 export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
   const { keycloak } = useKeycloak();
-  const userInfo: any = keycloak?.userInfo;
+  const { userInfo } = useContext(AuthStateContext);
   const { headers = [], ...otherProps } = props;
   return useMemo(() => {
     return (

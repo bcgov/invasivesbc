@@ -1317,11 +1317,224 @@ const Collection_BioControll = {
   Animal Activity
 */
 
+const Treatment_ChemicalAnimalTerrestrial = {
+  'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
+    'invasive_animal_species': {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': { 'ui:widget': 'single-select-autocomplete' },
+    'sex': { 'ui:widget': 'single-select-autocomplete' },
+    'condition': { 'ui:widget': 'single-select-autocomplete' },
+    'ui:order': [
+      'invasive_animal_species',
+      'number',
+      'life_stage',
+      'sex',
+      'condition'
+    ]
+  }
+}
+
+const Treatment_MechanicalAnimalTerrestrial = {
+  'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
+    'invasive_animal_species': {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': { 'ui:widget': 'single-select-autocomplete' },
+    'sex': { 'ui:widget': 'single-select-autocomplete' },
+    'condition': { 'ui:widget': 'single-select-autocomplete' },
+    'ui:order': [
+      'invasive_animal_species',
+      'number',
+      'life_stage',
+      'sex',
+      'condition'
+    ]
+  }
+}
+
+const Monitoring_ChemicalAnimalTerrestrial = {
+  'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
+    'invasive_animal_species': {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': { 'ui:widget': 'single-select-autocomplete' },
+    'sex': { 'ui:widget': 'single-select-autocomplete' },
+    'condition': { 'ui:widget': 'single-select-autocomplete' },
+    'ui:order': [
+      'invasive_animal_species',
+      'number',
+      'life_stage',
+      'sex',
+      'condition'
+    ]
+  }
+}
+
+const Monitoring_MechanicalAnimalTerrestrial = {
+  'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
+    'invasive_animal_species': {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': { 'ui:widget': 'single-select-autocomplete' },
+    'sex': { 'ui:widget': 'single-select-autocomplete' },
+    'condition': { 'ui:widget': 'single-select-autocomplete' },
+    'ui:order': [
+      'invasive_animal_species',
+      'number',
+      'life_stage',
+      'sex',
+      'condition'
+    ]
+  }
+}
+
 const Activity_AnimalTerrestrial = {
-  'comment': {
-    'ui:widget': 'textarea'
+  ...OneColumnStyle,
+  'location_information': {
+    ...ThreeColumnStyle,
+    'land_use': {},
+    'biogeoclimatic_zone': {},
+    'management_unit': {},
+    'wildlife_habitat_area': {},
+    'additional_site_features': {},
+    'comment': {},
+    'ui:order': [
+      'land_use',
+      'biogeoclimatic_zone',
+      'management_unit',
+      'wildlife_habitat_area',
+      'additional_site_features',
+      'comment'
+    ]
   },
-  'ui:order':['activity_type','observation_type','observation_method','treatment_type','comment']
+  'methods': {
+    ...ThreeColumnStyle,
+    'survey_or_research_observation': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'survey_method': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'survey_design': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'survey_start_date_time': {},
+    'survey_end_date_time': {},
+    "survey_details": {},
+    'observation_method': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'comments': {},
+    'ui:order': [
+      'survey_or_research_observation',
+      'survey_method',
+      'survey_design',
+      'survey_start_date_time',
+      'survey_end_date_time',
+      'survey_details',
+      'observation_method',
+      'comments'
+    ]
+  },
+  'terrestrial_animal_information': {
+    ...ThreeColumnStyle,
+    'invasive_animal_species': {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    'occurrence': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'number': {},
+    'life_stage': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'sex': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'condition': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'behaviour': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'station_id': {},
+    'captured': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'detection_distance': {},
+    'specimen_id': {},
+    'sample_collected': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'sample_id': {},
+    'edna_sample': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'edna_sample_id': {},
+    'disposal_method': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'comment': {},
+    'ui:order':[
+      'invasive_animal_species',
+      'occurrence',
+      'number',
+      'life_stage',
+      'sex',
+      'condition',
+      'behaviour',
+      'station_id',
+      'captured',
+      'detection_distance',
+      'specimen_id',
+      'sample_collected',
+      'sample_id',
+      'edna_sample',
+      'edna_sample_id',
+      'disposal_method',
+      'comment'
+    ]
+  },
+  'animal_measurements': {
+    ...ThreeColumnStyle,
+    'length': {},
+    'length_method': {},
+    'weight': {},
+    'ui:order': [
+      'length',
+      'length_method',
+      'weight'
+    ]
+  },
+  'microhabitat': {
+    ...ThreeColumnStyle,
+    'habitat': {},
+    'primary_vegetation_layer': {},
+    'primary_vegetation_layer_percent_cover': {},
+    'secondary_vegetation_layer': {},
+    'secondary_vegetation_layer_percent_cover': {},
+    'substrate_type': {},
+    'air_temperature': {},
+    'ui:order':[
+      'habitat',
+      'primary_vegetation_layer',
+      'primary_vegetation_layer_percent_cover',
+      'secondary_vegetation_layer',
+      'secondary_vegetation_layer_percent_cover',
+      'substrate_type',
+      'air_temperature'
+    ]
+  },
+  'ui:order':['location_information', 'methods', 'terrestrial_animal_information','animal_measurements','microhabitat']
 };
 
 const Activity_AnimalAquatic = {
@@ -1739,12 +1952,16 @@ const BaseUISchemaComponents = {
   Transect_Vegetation,
   Transect_BiocontrolEfficacy,
   Monitoring_BiologicalDispersal,
+  Monitoring_ChemicalAnimalTerrestrial,
+  Monitoring_MechanicalAnimalTerrestrial,
   Treatment,
   Treatment_MechanicalPlant,
   Treatment_MechanicalPlantAquatic,
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
   Treatment_BiologicalPlant_BulkEdit,
+  Treatment_MechanicalAnimalTerrestrial,
+  Treatment_ChemicalAnimalTerrestrial,
   Monitoring,
   Monitoring_BiologicalTerrestrialPlant,
   Collection,

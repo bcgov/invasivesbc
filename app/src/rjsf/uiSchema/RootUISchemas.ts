@@ -50,11 +50,15 @@ const Activity_AnimalActivity_AnimalTerrestrial = {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
+  'activity_type_data': {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.Observation
+  },
   'activity_subtype_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Activity_AnimalTerrestrial
   },
-  'ui:order':['activity_data','activity_type','activity_subtype_data']
+  'ui:order':['activity_data','activity_type_data', 'activity_subtype_data']
 };
 
 const Activity_AnimalActivity_AnimalAquatic = {
@@ -62,10 +66,14 @@ const Activity_AnimalActivity_AnimalAquatic = {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...UISchemaComponents.Activity
   },
+  'activity_type_data': {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.Observation
+  },
   'activity_subtype_data': {
     ...BaseUISchemaComponents.Activity_AnimalAquatic
   },
-  'ui:order':['activity_data','activity_subtype_data']
+  'ui:order':['activity_data','activity_type_data', 'activity_subtype_data']
 };
 
 const Activity_Transect_FireMonitoring = {
