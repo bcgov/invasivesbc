@@ -1,12 +1,5 @@
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
-import React, { useContext } from 'react';
-import { Redirect, Route, RouteProps } from 'react-router-dom';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { CircularProgress } from '@material-ui/core';
-import { UserInfoContext } from 'contexts/UserInfoContext';
-import { useEffect } from 'react-transition-group/node_modules/@types/react';
-
+import React from 'react';
+import { Route, RouteProps } from 'react-router-dom';
 interface IPublicRouteProps extends RouteProps {
   component: React.ComponentType<any>;
   layout: React.ComponentType<any>;

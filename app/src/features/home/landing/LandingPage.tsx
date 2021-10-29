@@ -18,7 +18,6 @@ import {
 import { useHistory } from 'react-router-dom';
 import planTripGIF from '../../../gifs/Plan Page.gif';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { UserInfoContext } from 'contexts/UserInfoContext';
 import { Capacitor } from '@capacitor/core';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
@@ -54,7 +53,7 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const api = useInvasivesApi();
-  const { userInfo, userInfoLoaded, setUserInfo, setUserInfoLoaded } = useContext(UserInfoContext);
+  const { userInfo, userInfoLoaded, setUserInfo, setUserInfoLoaded } = useContext(AuthStateContext);
 
   const loadUserFromCache = async () => {
     try {

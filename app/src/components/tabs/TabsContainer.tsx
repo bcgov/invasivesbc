@@ -44,7 +44,6 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { UserInfoContext } from 'contexts/UserInfoContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { IonAlert } from '@ionic/react';
 
@@ -150,7 +149,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const [showAlert, setShowAlert] = useState(false);
   const api = useInvasivesApi();
   const { userInfo, setUserInfo, userInfoLoaded, setUserInfoLoaded, userRoles, setUserRoles } =
-    useContext(UserInfoContext);
+    useContext(AuthStateContext);
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);

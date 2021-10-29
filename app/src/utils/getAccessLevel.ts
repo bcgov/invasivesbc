@@ -1,5 +1,5 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { useContext } from 'react';
-import { RolesContext } from '../contexts/RolesContext';
 
 export enum recordLevel {
   OWN = 'own',
@@ -10,11 +10,11 @@ export enum recordLevel {
 }
 
 export const GetUserAccessLevel = function (organizationId?, agencyId?) {
-  const rolesContext = useContext(RolesContext);
+  const { userRoles, setUserRoles } = useContext(AuthStateContext);
   let hasAnimalAccess = false;
   let hasPlantAccess = false;
 
-  rolesContext.userRoles.forEach((role) => {
+  userRoles.forEach((role) => {
     if (
       role.includes('animals') ||
       role.includes('both') ||
