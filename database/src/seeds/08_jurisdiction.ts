@@ -7,8 +7,6 @@ export async function seed(knex: Knex): Promise<void> {
   const { data } = await axios.get(url, { responseType: 'arraybuffer' });
   const sql = await ungzip(data);
 
-  //await knex.raw('drop table if exists jurisdiction');
-
   /**
    * This file is too big to run all at once.
    * Split up by lines, join in groups then run separately
