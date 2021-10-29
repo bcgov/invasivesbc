@@ -46,7 +46,6 @@ import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { UserInfoContext } from 'contexts/UserInfoContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { RolesContext } from 'contexts/RolesContext';
 import { IonAlert } from '@ionic/react';
 
 const drawerWidth = 240;
@@ -151,8 +150,8 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const [open, setOpen] = React.useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const api = useInvasivesApi();
-  const { userInfo, setUserInfo, userInfoLoaded, setUserInfoLoaded } = useContext(UserInfoContext);
-  const { userRoles, setUserRoles } = useContext(RolesContext);
+  const { userInfo, setUserInfo, userInfoLoaded, setUserInfoLoaded, userRoles, setUserRoles } =
+    useContext(UserInfoContext);
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);

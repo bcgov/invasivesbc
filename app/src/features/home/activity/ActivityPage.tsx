@@ -52,7 +52,6 @@ import { useDataAccess } from '../../../hooks/useDataAccess';
 import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
 import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
-import { RolesContext } from '../../../contexts/RolesContext';
 import bcArea from '../../../components/map/BC_AREA.json';
 import { calc_utm } from 'components/map/Tools/DisplayPosition';
 import { GetUserAccessLevel } from 'utils/getAccessLevel';
