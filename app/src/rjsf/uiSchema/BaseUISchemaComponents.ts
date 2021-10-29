@@ -1398,6 +1398,51 @@ const Monitoring_MechanicalAnimalTerrestrial = {
 }
 
 const Activity_AnimalTerrestrial = {
+  ...OneColumnStyle,
+  'location_information': {
+    'land_use': {},
+    'biogeoclimatic_zone': {},
+    'management_unit': {},
+    'wildlife_habitat_area': {},
+    'additional_site_features': {},
+    'comment': {},
+    'ui:order': [
+      'land_use',
+      'biogeoclimatic_zone',
+      'management_unit',
+      'wildlife_habitat_area',
+      'additional_site_features',
+      'comment'
+    ]
+  },
+  'methods': {
+    'survey_or_research_observation': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'survey_method': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'survey_design': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'survey_start_date_time': {},
+    'survey_end_date_time': {},
+    "survey_details": {},
+    'observation_method': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'comments': {},
+    'ui:order': [
+      'survey_or_research_observation',
+      'survey_method',
+      'survey_design',
+      'survey_start_date_time',
+      'survey_end_date_time',
+      'survey_details',
+      'observation_method',
+      'comments'
+    ]
+  },
   'terrestrial_animal_information': {
     ...ThreeColumnStyle,
     'invasive_animal_species': {
@@ -1458,6 +1503,7 @@ const Activity_AnimalTerrestrial = {
     ]
   },
   'animal_measurements': {
+    ...ThreeColumnStyle,
     'length': {},
     'length_method': {},
     'weight': {},
@@ -1468,6 +1514,7 @@ const Activity_AnimalTerrestrial = {
     ]
   },
   'microhabitat': {
+    ...ThreeColumnStyle,
     'habitat': {},
     'primary_vegetation_layer': {},
     'primary_vegetation_layer_percent_cover': {},

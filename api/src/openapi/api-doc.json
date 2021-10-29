@@ -197,6 +197,9 @@
           "activity_data": {
             "$ref": "#/components/schemas/Activity"
           },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Observation"
+          },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Activity_AnimalTerrestrial"
           }
@@ -207,6 +210,9 @@
         "properties": {
           "activity_data": {
             "$ref": "#/components/schemas/Activity"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Observation"
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Activity_AnimalAquatic"
@@ -974,6 +980,119 @@
         "title": "Terrestrial Animal Information",
         "type": "object",
         "properties": {
+          "location_information": {
+            "title": "Location Information",
+            "properties": {
+              "land_use": {
+                "type": "string",
+                "title": "Adjacent Land Use",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "adjacent_land_use_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Select all adjacent land uses that apply and add details in the comment box."
+              },
+              "biogeoclimatic_zone": {
+                "type": "string",
+                "title": "Biogeoclimatic Zone"
+              },
+              "management_unit": {
+                "type": "string",
+                "title": "Management Unit"
+              },
+              "wildlife_habitat_area": {
+                "type": "string",
+                "title": "Wildlife Habitat Area"
+              },
+              "additional_site_features": {
+                "type": "string",
+                "title": "Additional Site Features"
+              },
+              "comment": {
+                "type": "string",
+                "title": "Comment"
+              }
+            }
+          },
+          "methods": {
+            "title": "Methods",
+            "properties": {
+              "survey_or_research_observation": {
+                "type": "string",
+                "title": "Survey or Research Observation",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "survey_or_research_observation_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Was there a survey or research observation?"
+              },
+              "survey_method": {
+                "type": "string",
+                "title": "Survey Method",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "survey_method_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Select the method used to obtain the observation"
+              },
+              "survey_design": {
+                "type": "string",
+                "title": "Survey Design",
+                "x-enum-code": {
+                  "x-enum-code-category-name": "invasives",
+                  "x-enum-code-header-name": "survey_design_code",
+                  "x-enum-code-name": "code_name",
+                  "x-enum-code-text": "code_description",
+                  "x-enum-code-sort-order": "code_sort_order"
+                },
+                "x-tooltip-text": "Select the design used to obtain the observation"
+              },
+              "survey_start_date_time": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Survey Start Date and Time"
+              },
+              "survey_end_date_time": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Survey End Date and Time"
+              },
+              "survey_details": {
+                "type": "string",
+                "title": "Additional Survey Details",
+                "maxLength": 300
+              },
+              "observation_method": {
+                "type": "string",
+                "title": "Observation Method",
+                "enum": [
+                  "Net/Trap",
+                  "Electrofishing",
+                  "Plankton Tow",
+                  "Substrate Sample",
+                  "Shoreline Surveys",
+                  "eDNA",
+                  "Habitat Alteration",
+                  "Chemical",
+                  "Biological"
+                ]
+              },
+              "comments": {
+                "type": "string",
+                "title": "Comments",
+                "maxLength": 300
+              }
+            }
+          },
           "terrestrial_animal_information": {
             "title": "Animal Information",
             "properties": {
@@ -1115,7 +1234,7 @@
                 "title": "Disposal Method",
                 "x-enum-code": {
                   "x-enum-code-category-name": "invasives",
-                  "x-enum-code-header-name": "mechanical_disposal_method",
+                  "x-enum-code-header-name": "mechanical_disposal_code",
                   "x-enum-code-name": "code_name",
                   "x-enum-code-text": "code_description",
                   "x-enum-code-sort-order": "code_sort_order"
