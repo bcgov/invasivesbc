@@ -11,7 +11,7 @@ export async function seed(knex: Knex): Promise<void> {
    * This file is too big to run all at once.
    * Split up by lines, join in groups then run separately
    */
-  const chunk = 1000; // Run 1000 transactions at a time
+  const chunk = 100; // Run 100 transactions at a time
   const lines = sql.toString().split(/\r?\n/);
 
   let cluster: Array<String>;
