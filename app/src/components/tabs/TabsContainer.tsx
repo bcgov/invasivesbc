@@ -146,7 +146,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
-  const authContext = useContext(AuthStateContext);
   const [open, setOpen] = React.useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const api = useInvasivesApi();
@@ -158,7 +157,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     console.log('keycloak: ', keycloak);
-    console.log('AuthContext: ', authContext.keycloak);
     setAnchorEl(event.currentTarget);
   };
 
