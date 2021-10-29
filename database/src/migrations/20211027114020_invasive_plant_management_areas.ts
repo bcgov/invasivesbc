@@ -5,12 +5,11 @@ const DB_SCHEMA = 'public';
 export async function up(knex: Knex): Promise<void> {
   try {
     const sql = `
-      set search_path = ${DB_SCHEMA},public;
       set schema '${DB_SCHEMA}';
       set client_encoding to utf8;
       set standard_conforming_strings to on;
 
-      CREATE TABLE "invasive_plant_management_areas" (gid serial,
+      CREATE TABLE if not exists "invasive_plant_management_areas" (gid serial,
         "ogc_fid" int4,
         "objectid" int4,
         "ipma" varchar(50),
@@ -31,7 +30,6 @@ export async function up(knex: Knex): Promise<void> {
 export async function down(knex: Knex): Promise<void> {
   try {
     const sql = `
-      set search_path = ${DB_SCHEMA},public;
       set schema '${DB_SCHEMA}';
       set client_encoding to utf8;
       set standard_conforming_strings to on;
