@@ -286,6 +286,49 @@ const Activity_Collection_Biocontrol = {
   'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
 
+const Activity_FREP_FormA = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_type_data: {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.FREP
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.FourColumnStyle,
+    ...BaseUISchemaComponents.FREP_FormA
+  }
+};
+
+const Activity_FREP_FormB = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_type_data: {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.FREP
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.TwoColumnStyle,
+    ...BaseUISchemaComponents.FREP_FormB
+  }
+};
+
+const Activity_FREP_FormC = {
+  activity_data: {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...UISchemaComponents.Activity
+  },
+  activity_type_data: {
+    ...BaseUISchemaComponents.FREP
+  },
+  activity_subtype_data: {
+    ...BaseUISchemaComponents.FREP_FormC
+  }
+};
+
 const RootUISchemas = {
   Activity_Observation_PlantTerrestrial,
   Activity_Observation_PlantTerrestrial_BulkEdit,
@@ -307,7 +350,10 @@ const RootUISchemas = {
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant,
   Activity_Monitoring_BiologicalTerrestrialPlant,
-  Activity_Collection_Biocontrol
+  Activity_Collection_Biocontrol,
+  Activity_FREP_FormA,
+  Activity_FREP_FormB,
+  Activity_FREP_FormC
 };
 
 export default RootUISchemas;

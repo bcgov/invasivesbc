@@ -14,9 +14,9 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import moment from 'moment';
 import React, { useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { sanitizeRecord, generateDBActivityPayload, getShortActivityID } from 'utils/addActivity';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { generateDBActivityPayload, getShortActivityID, sanitizeRecord } from 'utils/addActivity';
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);
@@ -630,22 +630,31 @@ export const MyActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   }, [headers?.length]);
 };
 
-export const AnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
+export const FREPActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const { tableSchemaType, ...otherProps } = props;
   return (
     <ActivitiesTable
-      tableName="Animal Observations"
-      activitySubtypes={[ActivitySubtype.Activity_AnimalTerrestrial, ActivitySubtype.Activity_AnimalAquatic]}
-      tableSchemaType={[
-        'Observation',
-        'Activity_AnimalTerrestrial',
-        'Activity_AnimalAquatic',
-        ...arrayWrap(tableSchemaType)
-      ]}
+      tableName="FREP Forms"
+      activitySubtypes={[ActivitySubtype.Activity_FREP_FormC]}
+      tableSchemaType={['Observation', 'FREP_FormC', ...arrayWrap(tableSchemaType)]}
       {...otherProps}
     />
   );
+};
+
+export const MyFREPTable: React.FC<IActivitiesTable> = (props) => {
+  const { tableSchemaType, ...otherProps } = props;
+  return useMemo(() => {
+    return (
+      <MyActivitiesTable
+        tableName="FREP Forms"
+        activitySubtypes={[ActivitySubtype.Activity_FREP_FormC]}
+        tableSchemaType={['Observation', 'FREP_FormC', ...arrayWrap(tableSchemaType)]}
+        {...otherProps}
+      />
+    );
+  }, []);
 };
 
 export const MyAnimalActivitiesTable: React.FC<IActivitiesTable> = (props) => {
