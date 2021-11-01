@@ -145,6 +145,8 @@ export const MobileDrawCancel = ({ setOpenCancel }) => {
         className="leaflet-control leaflet-bar"
         style={{ backgroundColor: 'red' }}
         onClick={() => {
+          dispatchEvent(new KeyboardEvent('keydown', { key: 'Esc' }));
+          dispatchEvent(new KeyboardEvent('keyup', { key: 'Esc' }));
           setOpenCancel(false);
         }}></Button>
     </div>

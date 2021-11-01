@@ -312,13 +312,15 @@ const EditTools = (props: any) => {
   return (
     <div style={{}}>
       {Capacitor.getPlatform() === 'ios' && (
-        <MobilePolylineDrawButton
-          convertLineStringToPoly={convertLineStringToPoly}
-          setGeometry={props.geometryState.setGeometry}
-          context={context.layerContainer}
-        />
+        <>
+          <MobilePolylineDrawButton
+            convertLineStringToPoly={convertLineStringToPoly}
+            setGeometry={props.geometryState.setGeometry}
+            context={context.layerContainer}
+          />
+          {openCancel && <MobileDrawCancel setOpenCancel={setOpenCancel} />}
+        </>
       )}
-      {openCancel && Capacitor.getPlatform() === 'ios' && <MobileDrawCancel setOpenCancel={setOpenCancel} />}
       {/*<IconButton
         //ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}

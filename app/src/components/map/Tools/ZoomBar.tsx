@@ -26,8 +26,8 @@ export const ZoomBar = (props) => {
         props?.map.doubleClickZoom.disable();
       }}
       onTouchEnd={() => {
-        props?.map.dragging.disable();
-        props?.map.doubleClickZoom.disable();
+        props?.map.dragging.enable();
+        props?.map.doubleClickZoom.enable();
       }}
       onMouseOver={() => {
         if (Capacitor.getPlatform() == 'web') {
