@@ -644,7 +644,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       await updateDoc(updatedDoc);
 
       if (updatedDoc.geometry) {
-        const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] });
+        const res = await dataAccess.getJurisdictions({ search_feature: updatedDoc.geometry[0] }, databaseContext);
         setSuggestedJurisdictions(res.rows);
       }
 
