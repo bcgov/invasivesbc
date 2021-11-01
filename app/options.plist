@@ -14,10 +14,5 @@
 	<true/>
 	<key>uploadSymbols</key>
 	<true/>
-	<key>provisioningProfiles</key>
-	<dict>
-		<key>ca.bc.gov.invasive-species</key>
-		<string>8b08d256-d8e9-43e9-8bec-6c2d53a76ccf</string>
-	</dict>
 </dict>
 </plist>
