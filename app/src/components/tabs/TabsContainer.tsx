@@ -331,47 +331,45 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
           icon: <Map />
         });
 
-        if (keycloak.hasRole(ALL_ROLES) || props.isMobileNoNetwork) {
-          if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
-            tabsUserHasAccessTo.push({
-              label: 'Search',
-              path: '/home/search',
-              icon: <Search />
-            });
-          }
+        if (isAuthenticated()) {
+          tabsUserHasAccessTo.push({
+            label: 'Search',
+            path: '/home/search',
+            icon: <Search />
+          });
+        }
 
-          if (isAuthenticated() && isMobile()) {
-            tabsUserHasAccessTo.push({
-              label: 'Plan My Trip',
-              path: '/home/plan',
-              icon: <Explore />
-            });
-          }
+        if (isAuthenticated() && isMobile()) {
+          tabsUserHasAccessTo.push({
+            label: 'Plan My Trip',
+            path: '/home/plan',
+            icon: <Explore />
+          });
+        }
 
-          if (isAuthenticated() && isMobile() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
-            tabsUserHasAccessTo.push({
-              label: 'Cached Records',
-              path: '/home/references',
-              childPaths: ['/home/references/activity'],
-              icon: <Bookmarks />
-            });
-          }
+        if (isAuthenticated() && isMobile()) {
+          tabsUserHasAccessTo.push({
+            label: 'Cached Records',
+            path: '/home/references',
+            childPaths: ['/home/references/activity'],
+            icon: <Bookmarks />
+          });
+        }
 
-          if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
-            tabsUserHasAccessTo.push({
-              label: 'My Records',
-              path: '/home/activities',
-              icon: <HomeWork />
-            });
-          }
+        if (isAuthenticated()) {
+          tabsUserHasAccessTo.push({
+            label: 'My Records',
+            path: '/home/activities',
+            icon: <HomeWork />
+          });
+        }
 
-          if (isAuthenticated() && process.env.REACT_APP_REAL_NODE_ENV !== 'production') {
-            tabsUserHasAccessTo.push({
-              label: 'Current Activity',
-              path: '/home/activity',
-              icon: <Assignment />
-            });
-          }
+        if (isAuthenticated()) {
+          tabsUserHasAccessTo.push({
+            label: 'Current Activity',
+            path: '/home/activity',
+            icon: <Assignment />
+          });
         }
         return tabsUserHasAccessTo;
       });
