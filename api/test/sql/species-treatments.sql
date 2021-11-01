@@ -12,7 +12,14 @@ where
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   p.species = c.code_name and
   p.activity_type = 'Treatment' and
-  c.code_header_id = 30 -- Invasive plant id
+  c.code_header_id = ( -- Invasive plant id
+    select
+      code_header_id
+    from
+      code_header
+    where
+      code_header_name = 'invasive_plant_code'
+  )
 group by
   c.code_description
 order by

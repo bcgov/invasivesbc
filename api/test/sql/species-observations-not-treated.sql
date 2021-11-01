@@ -50,7 +50,14 @@ from
     p1.species = p2.species and -- Same species
     p1.max_created_timestamp < p2.max_created_timestamp -- observation older then treatment
 where
-  c.code_header_id = 30 and -- Invasive plant id
+  c.code_header_id = ( -- Invasive plant id
+    select
+      code_header_id
+    from
+      code_header
+    where
+      code_header_name = 'invasive_plant_code'
+  ) and
   p1.species = c.code_name and
   date_part('year', p1.max_created_timestamp) = date_part('year', CURRENT_DATE)
 group by
