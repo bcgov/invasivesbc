@@ -109,8 +109,7 @@ export const mSpecie_sLHerb_spray_usingProdAppRate = (
     return resultObj;
   }
 
-  const dilution = Number(((product_application_rate_lha / delivery_rate_of_mix) * 100).toFixed(2));
-
+  let dilution: number = (product_application_rate_lha / delivery_rate_of_mix) * 100;
   let amounts_of_mix_used: number[] = [];
   let areas_treated_hectares: number[] = [];
   let areas_treated_sqm: number[] = [];
@@ -132,8 +131,9 @@ export const mSpecie_sLHerb_spray_usingProdAppRate = (
     amounts_of_undiluted_herbicide_used[i] = parseToRightFormat(amounts_of_undiluted_herbicide_used[i], 4);
   }
 
+  dilution = parseToRightFormat(dilution, 1);
   resultObj = {
-    dilution: parseToRightFormat(dilution, 1),
+    dilution: dilution,
     amounts_of_mix_used: amounts_of_mix_used,
     areas_treated_hectares: areas_treated_hectares,
     areas_treated_sqm: areas_treated_sqm,
@@ -409,46 +409,45 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
     return resultObj;
   }
 
-  species.forEach((specie) => {
+  const newSpecies = species.map((specie) => {
     if (!specie.herbicides || specie.herbicides.length < 2) {
       return {};
     }
-    const newSpecie = specie;
+    const newSpecie = { ...specie };
     newSpecie.amount_of_mix_used = amount_of_mix * (specie.area_of_specie / 100);
     newSpecie.area_treated_ha = (amount_of_mix / delivery_rate_of_mix) * (specie.area_of_specie / 100);
     newSpecie.area_treated_sqm = newSpecie.area_treated_ha * 10000;
     newSpecie.percent_area_covered = (newSpecie.area_treated_sqm / area) * 100;
 
-    newSpecie.herbicides.forEach((herb) => {
+    const newHerbArr: any[] = newSpecie.herbicides.map((herb) => {
       if (!herb.product_application_rate_lha) {
         return {};
       }
-      const newHerbicide = herb;
+      const newHerbicide = { ...herb };
       newHerbicide.dilution = (herb.product_application_rate_lha / delivery_rate_of_mix) * 100;
-      console.log(specie.area_of_specie);
       newHerbicide.amount_of_undiluted_herbicide_used =
         ((newHerbicide.dilution / 100) * amount_of_mix * specie.area_of_specie) / 100;
-      console.log(newHerbicide.amount_of_undiluted_herbicide_used);
 
       newHerbicide.dilution = parseToRightFormat(newHerbicide.dilution, 1);
       newHerbicide.amount_of_undiluted_herbicide_used = parseToRightFormat(
         newHerbicide.amount_of_undiluted_herbicide_used,
         4
       );
-      console.log(newHerbicide.amount_of_undiluted_herbicide_used);
 
-      herb = { ...newHerbicide };
-      console.log(herb);
+      return newHerbicide;
     });
 
+    newSpecie.herbicides = [...newHerbArr];
     newSpecie.amount_of_mix_used = parseToRightFormat(newSpecie.amount_of_mix_used, 2);
     newSpecie.area_treated_ha = parseToRightFormat(newSpecie.area_treated_ha, 4);
     newSpecie.area_treated_sqm = parseToRightFormat(newSpecie.area_treated_sqm, 2);
     newSpecie.percent_area_covered = parseToRightFormat(newSpecie.percent_area_covered, 1);
-
-    specie = { ...newSpecie };
-    console.log(specie);
+    return newSpecie;
   });
 
-  return species;
+  return newSpecies;
 };
+
+/**
+ * ------------------------Helper Functions-----------------------------------
+ */
