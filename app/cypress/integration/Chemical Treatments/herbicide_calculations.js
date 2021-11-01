@@ -29,7 +29,7 @@ describe('can test for weed poison', function () {
       expect(sSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400).dilution).to.eq(0.5);
       expect(sSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400).area_treated_hectares).to.eq(0.0125);
       expect(sSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400).area_treated_sqm).to.eq(125);
-      expect(sSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400).percent_area_covered).to.eq(75.8);
+      expect(sSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400).percent_area_covered).to.eq(75.7576);
       expect(sSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400).amount_of_undiluted_herbicide_used).to.eq(0.025);
     });
 
@@ -41,8 +41,12 @@ describe('can test for weed poison', function () {
       expect(mSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400, [75, 25]).areas_treated_hectares[1]).to.eq(0.0031);
       expect(mSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400, [75, 25]).areas_treated_sqm[0]).to.eq(93.75);
       expect(mSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400, [75, 25]).areas_treated_sqm[1]).to.eq(31.25);
-      expect(mSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400, [75, 25]).percentages_area_covered[0]).to.eq(56.8);
-      expect(mSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400, [75, 25]).percentages_area_covered[1]).to.eq(18.9);
+      expect(mSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400, [75, 25]).percentages_area_covered[0]).to.eq(
+        56.8182
+      );
+      expect(mSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400, [75, 25]).percentages_area_covered[1]).to.eq(
+        18.9394
+      );
       expect(
         mSpecie_sLHerb_spray_usingProdAppRate(area, 2, 5, 400, [75, 25]).amounts_of_undiluted_herbicide_used[0]
       ).to.eq(0.0188);
@@ -53,7 +57,7 @@ describe('can test for weed poison', function () {
 
     it('passed scenario #3', function () {
       expect(sSpecie_sLHerb_spray_usingDilutionPercent(area, 5, 2, 125).area_treated_hectares).to.eq(0.0125);
-      expect(sSpecie_sLHerb_spray_usingDilutionPercent(area, 5, 2, 125).percent_area_covered).to.eq(75.8);
+      expect(sSpecie_sLHerb_spray_usingDilutionPercent(area, 5, 2, 125).percent_area_covered).to.eq(75.7576);
       expect(sSpecie_sLHerb_spray_usingDilutionPercent(area, 5, 2, 125).amount_of_undiluted_herbicide_used).to.eq(0.1);
     });
 
@@ -62,10 +66,10 @@ describe('can test for weed poison', function () {
       expect(mSpecie_sLHerb_spray_usingDilutionPercent(area, 5, 2, 125, [75, 25]).areas_treated_sqm[0]).to.eq(93.75);
       expect(mSpecie_sLHerb_spray_usingDilutionPercent(area, 5, 2, 125, [75, 25]).areas_treated_sqm[1]).to.eq(31.25);
       expect(mSpecie_sLHerb_spray_usingDilutionPercent(area, 5, 2, 125, [75, 25]).percentages_area_covered[0]).to.eq(
-        56.8
+        56.8182
       );
       expect(mSpecie_sLHerb_spray_usingDilutionPercent(area, 5, 2, 125, [75, 25]).percentages_area_covered[1]).to.eq(
-        18.9
+        18.9394
       );
       expect(
         mSpecie_sLHerb_spray_usingDilutionPercent(area, 5, 2, 125, [75, 25]).amounts_of_undiluted_herbicide_used[0]
@@ -77,33 +81,24 @@ describe('can test for weed poison', function () {
 
     it('passed scenario #5', function () {
       expect(sSpecie_sGHerb_spray_usingProdAppRate(area, 230, 5, 400).product_application_rate_lha).to.eq(0.23);
-      expect(sSpecie_sGHerb_spray_usingProdAppRate(area, 230, 5, 400).dilution).to.eq(0.06);
+      expect(sSpecie_sGHerb_spray_usingProdAppRate(area, 230, 5, 400).dilution).to.eq(0.0575);
       expect(sSpecie_sGHerb_spray_usingProdAppRate(area, 230, 5, 400).area_treated_hectares).to.eq(0.0125);
       expect(sSpecie_sGHerb_spray_usingProdAppRate(area, 230, 5, 400).area_treated_sqm).to.eq(125);
-      expect(sSpecie_sGHerb_spray_usingProdAppRate(area, 230, 5, 400).percent_area_covered).to.eq(75.8);
-      expect(sSpecie_sGHerb_spray_usingProdAppRate(area, 230, 5, 400).amount_of_undiluted_herbicide_used).to.eq(
-        0.00287
-      );
+      expect(sSpecie_sGHerb_spray_usingProdAppRate(area, 230, 5, 400).percent_area_covered).to.eq(75.7576);
+      expect(sSpecie_sGHerb_spray_usingProdAppRate(area, 230, 5, 400).amount_of_undiluted_herbicide_used).to.eq(0.0029);
     });
 
     it('passed scenario #6', function () {
       expect(sSpecie_sGHerb_spray_usingDilutionPercent(area, 5, 0.023, 100).area_treated_hectares).to.eq(0.01);
-      expect(sSpecie_sGHerb_spray_usingDilutionPercent(area, 5, 0.023, 100).percent_area_covered).to.eq(60.6);
+      expect(sSpecie_sGHerb_spray_usingDilutionPercent(area, 5, 0.023, 100).percent_area_covered).to.eq(60.6061);
       expect(sSpecie_sGHerb_spray_usingDilutionPercent(area, 5, 0.023, 100).amount_of_undiluted_herbicide_used).to.eq(
-        0.00115
+        0.0011
       );
     });
 
     it('passed scenario #7', function () {
-      expect(JSON.stringify(sSpecie_sLHerb_direct_usingDilutionPercent(area, 1, 50, 30))).to.eq(
-        JSON.stringify({
-          area_treated_hectares: 0.003,
-          percent_area_covered: 18.2,
-          amount_of_undiluted_herbicide_used: 0.5
-        })
-      );
       expect(sSpecie_sLHerb_direct_usingDilutionPercent(area, 1, 50, 30).area_treated_hectares).to.eq(0.003);
-      expect(sSpecie_sLHerb_direct_usingDilutionPercent(area, 1, 50, 30).percent_area_covered).to.eq(18.2);
+      expect(sSpecie_sLHerb_direct_usingDilutionPercent(area, 1, 50, 30).percent_area_covered).to.eq(18.1818);
       expect(sSpecie_sLHerb_direct_usingDilutionPercent(area, 1, 50, 30).amount_of_undiluted_herbicide_used).to.eq(0.5);
     });
 
@@ -131,7 +126,7 @@ describe('can test for weed poison', function () {
       expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].area_of_specie).to.eq(75);
       expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].area_treated_ha).to.eq(0.0094);
       expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].area_treated_sqm).to.eq(93.75);
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].percent_area_covered).to.eq(56.8);
+      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].percent_area_covered).to.eq(56.8182);
       expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].amount_of_mix_used).to.eq(3.75);
       expect(
         mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].herbicides[0].product_application_rate_lha
@@ -144,7 +139,7 @@ describe('can test for weed poison', function () {
       expect(
         mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].herbicides[1].product_application_rate_lha
       ).to.eq(0.64);
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].herbicides[1].dilution).to.eq(0.2);
+      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].herbicides[1].dilution).to.eq(0.16);
       expect(
         mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[0].herbicides[1]
           .amount_of_undiluted_herbicide_used
@@ -153,7 +148,7 @@ describe('can test for weed poison', function () {
       expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].area_of_specie).to.eq(25);
       expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].area_treated_ha).to.eq(0.0031);
       expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].area_treated_sqm).to.eq(31.25);
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].percent_area_covered).to.eq(18.9);
+      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].percent_area_covered).to.eq(18.9394);
       expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].amount_of_mix_used).to.eq(1.25);
       expect(
         mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].herbicides[0].product_application_rate_lha
@@ -166,7 +161,7 @@ describe('can test for weed poison', function () {
       expect(
         mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].herbicides[1].product_application_rate_lha
       ).to.eq(0.64);
-      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].herbicides[1].dilution).to.eq(0.2);
+      expect(mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].herbicides[1].dilution).to.eq(0.16);
       expect(
         mSpecie_mLGHerb_spray_usingProdAppRate(area, 5, 400, speciesArr)[1].herbicides[1]
           .amount_of_undiluted_herbicide_used
