@@ -12,6 +12,8 @@ const defaultLog = getLogger('app');
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
 
+export { HOST, PORT };
+
 // Get initial express app
 const app: express.Express = express();
 
