@@ -25,9 +25,6 @@ export async function up(knex: Knex): Promise<void> {
       RETURNS boolean
       AS 'SELECT $1 && $2 AND _ST_Intersects($1,$2)'
       LANGUAGE 'sql' IMMUTABLE;
-
-      ALTER TABLE jurisdiction
-      ADD COLUMN code_name varchar(10);
     `;
     await knex.raw(sql);
   } catch (e) {

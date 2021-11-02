@@ -227,7 +227,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         formData.forceNoValidationFields.splice(index, 1);
       }
       $this.setState({ formData: formData }, () => {
-        props.onFormChange(formRef.state.formData, formRef);
+        props.onFormChange({ formData: formData }, formRef);
       });
     }
   };

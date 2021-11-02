@@ -640,7 +640,6 @@ export function getTransectOffsetDistanceValidator(): rjsfValidator {
  */
 export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    console.log(formData);
     if (!formData || !formData.activity_subtype_data) {
       return errors;
     }
@@ -655,7 +654,6 @@ export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rj
             // Check if plot identification trees section is valid
             if (formA.plot_identification_trees) {
               let form = formA.plot_identification_trees;
-              console.log('form[' + form_b_index + '][' + form_a_index + ']: ', form);
               errors.activity_subtype_data['form_b'][form_b_index].form_a[
                 form_a_index
               ].plot_identification_trees.__errors = [];
