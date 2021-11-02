@@ -20,6 +20,14 @@ export async function up(knex: Knex): Promise<void> {
       SELECT AddGeometryColumn('','jurisdiction','geom','4326','MULTIPOLYGON',2);
 
       CREATE INDEX ON "jurisdiction" USING GIST ("geom");
+
+      CREATE OR REPLACE FUNCTION public.ST_Intersects2(geom1 geometry, geom2 geometry)
+      RETURNS boolean
+      AS 'SELECT $1 && $2 AND _ST_Intersects($1,$2)'
+      LANGUAGE 'sql' IMMUTABLE;
+
+      ALTER TABLE jurisdiction
+      ADD COLUMN code_name varchar(10);
     `;
     await knex.raw(sql);
   } catch (e) {

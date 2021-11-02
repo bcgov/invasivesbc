@@ -1178,6 +1178,21 @@ liquid_herbicide_code,26980,Vanquish [Vanquish] 26980,45
 liquid_herbicide_code,27615,VantagePMs [Vantage Plus Max / VPM II] 27615,46
 liquid_herbicide_code,29994,VantageXRT [Vantage XRT] 29994,47
 liquid_herbicide_code,28840,VP480 [VP480] 28840,48
+granular_herbicide_code,29752,Clearview [aminopyralid/metsulfuron-methyl Clearview] (G)  29752,1
+granular_herbicide_code,23005,Escort [metsulfuron methyl Escort] (G) 23005,2
+granular_herbicide_code,33128,LongRun [flazasulfuron LongRun] (G) 33128,3
+granular_herbicide_code,30917,Method50SG [aminocyclopyrachlor Method 50SG] (G) 30917,4
+granular_herbicide_code,31382,NaviusVM [metsulfuron-methyl/Aminocyclopyrachlor Navius VM] (G) 31382,5
+granular_herbicide_code,30922,Navius Flex [  metsulfuron-methyl 12.6% aminocyclopyrachlor 39.5%  ] G 30922,6
+granular_herbicide_code,30065,Overdrive [diflufenzopyr Overdrive] (G) 30065,7
+granular_herbicide_code,30062,ReclaimIIA [aminopyralid/metsulfuron-methyl Reclaim II A] (G) 30062,8
+granular_herbicide_code,31209,Sandea [halosulfuron Sandea] (G) 31209,9
+granular_herbicide_code,31559,Torpedo [flumioxazin and pyroxasulfone Torpedo] (G) 31559,10
+granular_herbicide_code,30920,Truvist [chlorsulfuron/aminocyclopyrachlor Truvist] (G) 30920,11
+calculation_type_code,PAR,Product Application Rate,1
+calculation_type_code,D,Dilution,2
+herbicide_type_code,G,granular,1
+herbicide_type_code,L,liquid,2
 research_trial_code,NA,Unknown or indeterminant,1
 research_trial_code,Y,Yes,2
 research_trial_code,N,No,3
@@ -2145,3 +2160,13 @@ decay_class_code,1,Hard; firm; elevated; hard branches,1
 decay_class_code,2,Hard; loose bark; sagging; soft branches,2
 decay_class_code,3,Soft; advanced decay; sagging to settled on ground; branches stubs/absent,3
 decay_class_code,4,Soft; extensive decay; fully settled on ground; no branches,4
+chemical_method_spray,BPA,Back Pack,1
+chemical_method_spray,ATV,ATV,2
+chemical_method_spray,BNO,Boomless Nozzle,3
+chemical_method_spray,FBO,Fixed Boom,4
+chemical_method_spray,HGU,Hand Gun,5
+chemical_method_direct,SIN,Stem Injection,1
+chemical_method_direct,BBA,Basal Bark,2
+chemical_method_direct,CIN,Cut and Insert,3
+chemical_method_direct,CSP,Cut Stump / Cut and Paint,4
+chemical_method_direct,WCK,Wick,5

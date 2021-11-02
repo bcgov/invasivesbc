@@ -86,7 +86,6 @@ export async function up(knex: Knex): Promise<void> {
     const sql = `
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
-
   `;
 
     await knex.raw(sql);

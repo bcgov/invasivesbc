@@ -65,9 +65,9 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     const additionalEnumOptions = [];
     suggestedJurisdictions.forEach((jurisdiction) => {
       additionalEnumOptions.push({
-        label: jurisdiction.jurisdictn.toString(),
-        value: jurisdiction.code_name.toString(),
-        title: jurisdiction.name.toString(),
+        label: jurisdiction.geojson.properties.type.toString(),
+        value: jurisdiction.geojson.properties.code_name.toString(),
+        title: jurisdiction.geojson.properties.name.toString(),
         suggested: true
       } as AutoCompleteSelectOption);
     });
