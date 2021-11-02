@@ -8,57 +8,9 @@
 /*
   Function that calculates the herbicide dilution rate and specific treatment area
 */
-export function populateHerbicideDilutionAndArea(newSubtypeData: any): any {
-  let updatedActivitySubtypeData = { ...newSubtypeData };
-
-  // If herbicide field is not edited at all just return existing activity subtype data
-  if (!newSubtypeData || !newSubtypeData.herbicide || JSON.stringify(newSubtypeData.herbicide[0]) === '{}') {
-    return newSubtypeData;
-  }
-
-  /*
-    Otherwise, check to see if herbicide fields have been populated
-    If yes, calculate the overall specific treatment area and dilution rate
-  */
-  const herbicides = [...newSubtypeData.herbicide];
-  const updatedHerbicides = [];
-
-  herbicides.forEach((herbicide: any) => {
-    const herbicideToUpdate = { ...herbicide };
-
-    if (
-      herbicideToUpdate.application_rate &&
-      herbicideToUpdate.herbicide_amount &&
-      herbicideToUpdate.liquid_herbicide_code &&
-      herbicideToUpdate.mix_delivery_rate
-    ) {
-      herbicideToUpdate.specific_treatment_area = parseFloat(
-        (herbicideToUpdate.herbicide_amount / herbicideToUpdate.mix_delivery_rate).toFixed(4)
-      );
-      herbicideToUpdate.dilution = parseFloat(
-        ((herbicideToUpdate.application_rate * 100) / herbicideToUpdate.mix_delivery_rate).toFixed(4)
-      );
-      herbicideToUpdate.tank_volume = parseFloat(
-        ((herbicideToUpdate.herbicide_amount * 100) / herbicideToUpdate.dilution).toFixed(4)
-      );
-    } else {
-      delete herbicideToUpdate.specific_treatment_area;
-      delete herbicideToUpdate.dilution;
-      delete herbicideToUpdate.tank_volume;
-    }
-
-    updatedHerbicides.push(herbicideToUpdate);
-  });
-
-  /*
-    Update the activity subtype data with the new herbicide values
-  */
-  updatedActivitySubtypeData = {
-    ...newSubtypeData,
-    herbicide: (JSON.stringify(updatedHerbicides[0]) !== '{}' && updatedHerbicides) || newSubtypeData.herbicide
-  };
-
-  return updatedActivitySubtypeData;
+export function populateHerbicideCalculatedFields(newSubtypeData: any): any {
+  const subTypeData = { ...newSubtypeData };
+  return subTypeData;
 }
 
 /*
@@ -211,14 +163,8 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
           If biocontrol dispersal, need to calculate sum of all phen levels for total %
         */
         if (isBiocontrolDispersal) {
-          const {
-            phen_level_se,
-            phen_level_ro,
-            phen_level_bo,
-            phen_level_fl,
-            phen_level_sf,
-            phen_level_sc
-          } = transectPointToUpdate;
+          const { phen_level_se, phen_level_ro, phen_level_bo, phen_level_fl, phen_level_sf, phen_level_sc } =
+            transectPointToUpdate;
 
           if (phen_level_se && phen_level_ro && phen_level_bo && phen_level_fl && phen_level_sf && phen_level_sc) {
             transectPointToUpdate.phen_total_percentage =

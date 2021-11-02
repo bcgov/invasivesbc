@@ -196,7 +196,6 @@ describe('can test for weed poison', function () {
       herbicides: herbicideArr,
       area_of_specie: 25
     };
-
     const speciesArr = [specie1, specie2];
 
     it('passed scenario #8', function () {

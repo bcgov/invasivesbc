@@ -37,7 +37,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   customErrorTransformer?: any;
   isDisabled?: boolean;
   pasteFormData?: Function;
-  suggestedJurisdictions: any[];
+  suggestedJurisdictions?: any[];
   copyFormData?: Function;
   setParentFormRef?: Function;
   hideCheckFormForErrors?: boolean;
@@ -336,7 +336,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               onFocus={focusHandler}
               onBlur={blurHandler}
               uiSchema={schemas.uiSchema}
-              formContext={{ suggestedJurisdictions: props.suggestedJurisdictions }}
+              formContext={{ suggestedJurisdictions: props.suggestedJurisdictions || [] }}
               liveValidate={true}
               showErrorList={true}
               validate={props.customValidation}

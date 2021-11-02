@@ -12,7 +12,7 @@ import { MapContextMenuData } from '../map/MapContextMenu';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import {
-  populateHerbicideDilutionAndArea,
+  populateHerbicideCalculatedFields,
   populateTransectLineAndPointData
 } from 'rjsf/business-rules/populateCalculatedFields';
 import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
@@ -149,7 +149,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
-      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      let updatedActivitySubtypeData = populateHerbicideCalculatedFields(event.formData.activity_subtype_data);
       updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
       return setActivity({
