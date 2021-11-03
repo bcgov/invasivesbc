@@ -42,7 +42,7 @@ import {
 } from '../../../rjsf/business-rules/customValidation';
 import { getCustomErrorTransformer } from '../../../rjsf/business-rules/customErrorTransformer';
 import {
-  populateHerbicideDilutionAndArea,
+  populateHerbicideCalculatedFields,
   populateTransectLineAndPointData
 } from '../../../rjsf/business-rules/populateCalculatedFields';
 import { notifySuccess, notifyError } from '../../../utils/NotificationUtils';
@@ -368,7 +368,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any) => {
     let updatedFormData = event.formData;
 
-    updatedFormData.activity_subtype_data = populateHerbicideDilutionAndArea(updatedFormData.activity_subtype_data);
+    updatedFormData.activity_subtype_data = populateHerbicideCalculatedFields(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = autoFillTreeNumbers(updatedFormData.activity_subtype_data);
 

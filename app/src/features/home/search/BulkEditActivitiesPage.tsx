@@ -12,7 +12,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { notifySuccess, notifyError } from 'utils/NotificationUtils';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import {
-  populateHerbicideDilutionAndArea,
+  populateHerbicideCalculatedFields,
   populateTransectLineAndPointData
 } from 'rjsf/business-rules/populateCalculatedFields';
 import {
@@ -101,7 +101,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
    */
   const onFormChange = useCallback(
     debounced(100, (event: any) => {
-      let updatedActivitySubtypeData = populateHerbicideDilutionAndArea(event.formData.activity_subtype_data);
+      let updatedActivitySubtypeData = populateHerbicideCalculatedFields(event.formData.activity_subtype_data);
       updatedActivitySubtypeData = populateTransectLineAndPointData(updatedActivitySubtypeData);
 
       return setActivity({
