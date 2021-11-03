@@ -64,12 +64,21 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
       : [];
     const additionalEnumOptions = [];
     suggestedJurisdictions.forEach((jurisdiction) => {
-      additionalEnumOptions.push({
-        label: jurisdiction.geojson.properties.type.toString(),
-        value: jurisdiction.geojson.properties.code_name.toString(),
-        title: jurisdiction.geojson.properties.name.toString(),
-        suggested: true
-      } as AutoCompleteSelectOption);
+      if (jurisdiction.geojson) {
+        additionalEnumOptions.push({
+          label: jurisdiction.geojson.properties.type.toString(),
+          value: jurisdiction.geojson.properties.code_name.toString(),
+          title: jurisdiction.geojson.properties.name.toString(),
+          suggested: true
+        } as AutoCompleteSelectOption);
+      } else if (jurisdiction.properties) {
+        additionalEnumOptions.push({
+          label: jurisdiction.properties.type.toString(),
+          value: jurisdiction.properties.code_name.toString(),
+          title: jurisdiction.properties.name.toString(),
+          suggested: true
+        } as AutoCompleteSelectOption);
+      }
     });
     let enumOptionsIndex = 0;
     enumOptions.forEach((option) => {
