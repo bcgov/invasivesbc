@@ -254,6 +254,11 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       const dbActivity = generateDBActivityPayload({}, null, type, subtype);
       dbActivity.created_by = userInfo?.preferred_username;
       await dataAccess.createActivity(dbActivity, databaseContext);
+
+      await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
+      await setTimeout(() => {}, 500);
+      // TODO switch by activity type, I guess...
+      history.push({ pathname: `/home/activity` });
     },
     icon: <Add />,
     label: ActivitySubtypeShortLabels[subtype],
@@ -262,7 +267,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
     globalAction: true,
     triggerReload: true,
     displayInvalid: 'error',
-    ...actions?.create_activity // allow prop overwrites by default
+    ...actions?.create_activity // allow prop overwrites by defaulto
   });
 
   let createActions = {};
@@ -319,6 +324,7 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                           ? { activeActivity: selectedIds[0], referenceData: true }
                           : { activeActivity: selectedIds[0], referenceData: false };
                         await dataAccess.setAppState(appState, databaseContext);
+                        await setTimeout(() => {}, 500);
                         // TODO switch by activity type, I guess...
                         history.push({ pathname: `/home/activity` });
                       } else {
