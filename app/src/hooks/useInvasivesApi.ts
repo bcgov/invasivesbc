@@ -14,6 +14,7 @@ import { Http } from '@capacitor-community/http';
 import { useContext, useMemo } from 'react';
 import { DocType } from '../constants/database';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
+import { AuthStateContext } from 'contexts/authStateContext';
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
@@ -53,11 +54,11 @@ console.log('API_URL', API_URL);
  * @return {*}
  */
 const useRequestOptions = () => {
-  const { keycloak } = useKeycloak();
+  const { keycloak } = useContext(AuthStateContext); //useKeycloak();
   const instance = useMemo(() => {
     return {
       baseUrl: API_URL,
-      headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.token}` }
+      headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.obj?.token}` }
     };
   }, [keycloak]);
 

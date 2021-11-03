@@ -51,6 +51,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
         }
       });
     }
+    //}, [keycloak?.obj?.authenticated]);
   }, [keycloak?.obj?.authenticated]);
 
   React.useEffect(() => {
