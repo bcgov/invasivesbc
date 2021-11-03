@@ -256,9 +256,9 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
       await dataAccess.createActivity(dbActivity, databaseContext);
 
       await dataAccess.setAppState({ activeActivity: dbActivity.activity_id }, databaseContext);
-      await setTimeout(() => {}, 500);
-      // TODO switch by activity type, I guess...
-      history.push({ pathname: `/home/activity` });
+      setTimeout(() => {
+        history.push({ pathname: `/home/activity` });
+      }, 500);
     },
     icon: <Add />,
     label: ActivitySubtypeShortLabels[subtype],
@@ -324,9 +324,10 @@ export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
                           ? { activeActivity: selectedIds[0], referenceData: true }
                           : { activeActivity: selectedIds[0], referenceData: false };
                         await dataAccess.setAppState(appState, databaseContext);
-                        await setTimeout(() => {}, 500);
+                        setTimeout(() => {
+                          history.push({ pathname: `/home/activity` });
+                        }, 500);
                         // TODO switch by activity type, I guess...
-                        history.push({ pathname: `/home/activity` });
                       } else {
                         history.push({
                           pathname: `/home/search/bulkedit`,
