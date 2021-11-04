@@ -34,6 +34,7 @@ import { SetPointOnClick } from './Tools/InfoAreaDescription';
 import JumpControl, { JumpToTrip } from './Tools/JumpToTrip';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
 import { ZoomBar } from './Tools/ZoomBar';
+import JumpToActivity from './Tools/JumpToActivity';
 //Added comment
 
 const DefaultIcon = L.icon({
@@ -112,6 +113,7 @@ export interface IMapContainerProps {
   mapId: string;
   showDrawControls: boolean;
   isPlanPage?: boolean;
+  activityId?: string;
   cacheMapTilesFlag?: any;
   pointOfInterestFilter?: IPointOfInterestSearchCriteria;
   geometryState: { geometry: any[]; setGeometry: (geometry: Feature[]) => void };
@@ -231,6 +233,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
             <ScaleControl position="bottomright" imperial={false} />
             <JumpToTrip />
+            <JumpToActivity id={props.activityId} />
             {props.showDrawControls && (
               <FeatureGroup>
                 <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />

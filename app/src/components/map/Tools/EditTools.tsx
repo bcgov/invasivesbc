@@ -279,7 +279,7 @@ const EditTools = (props: any) => {
       return;
     }
 
-    setGeometryMapBounds();
+    //setGeometryMapBounds();
     updateMapOnGeometryChange();
   }, [props.geometryState.geometry, props?.interactiveGeometryState?.interactiveGeometry]);
 

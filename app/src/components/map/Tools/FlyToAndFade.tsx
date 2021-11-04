@@ -13,7 +13,7 @@ export const FlyToAndFadeContext = createContext({
 });
 
 export interface IFlyToAndFadeItem {
-  name: string;
+  name?: string;
   bounds?: L.LatLngBounds;
   geometries?: any;
   colour?: string;
@@ -43,18 +43,16 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
   const map = useMap();
   const [displayPolygons, setDisplayPolygons] = useState<Array<any>>();
   const go = (items: Array<IFlyToAndFadeItem>, delayToNext?: number) => {
-    if (!items) {
+    if (!items || items.length === 0) {
       return;
+    } else {
     }
     for (const item of items) {
       switch (item.transitionType) {
         case FlyToAndFadeItemTransitionType.zoomToBounds:
           try {
             map.flyToBounds(item.bounds);
-          } catch (e) {
-            console.log('unable to zoom to bounds');
-            console.log(JSON.stringify(e));
-          }
+          } catch (e) {}
           break;
         case FlyToAndFadeItemTransitionType.zoomToGeometries:
           try {
@@ -110,7 +108,7 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
     if (lyr) {
       let opacity = startOpacity;
       let timer = setTimeout(function changeOpacity() {
-        if (opacity > finalOpacity) {
+        if (opacity > finalOpacity && feature.geometry.type !== 'Point') {
           lyr.setStyle({
             color: feature.properties.colour,
             opacity: opacity,

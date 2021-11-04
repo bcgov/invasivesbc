@@ -579,7 +579,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       updatedFormData = setUpInitialValues(activityResult, updatedFormData);
       const updatedDoc = { ...activityResult, formData: updatedFormData };
       setGeometry(updatedDoc.geometry);
-      setExtent(updatedDoc.extent);
+      // setExtent(updatedDoc.extent);
       setPhotos(updatedDoc.photos || []);
       setDoc(updatedDoc);
 
