@@ -363,7 +363,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
               </Button>
             </Grid>
             <Grid xs={12} className={props.classes.mapContainer} item>
-              <MapContainer {...props} />
+              <MapContainer {...props} activityId={props.activity.activityId} />
             </Grid>
             <Grid xs={12} item>
               <Accordion>
