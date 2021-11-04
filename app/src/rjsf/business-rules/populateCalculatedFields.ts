@@ -195,3 +195,65 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
 
   return updatedActivitySubtypeData;
 }
+
+export const autoFillTotalCollectionTime = (formData: any) => {
+  if (!formData.activity_subtype_data.collections) {
+    return formData;
+  }
+
+  formData.activity_subtype_data.collections.forEach((collection) => {
+    if (collection.start_time && collection.stop_time) {
+      const arrStart = collection.start_time.split(':');
+      const arrStop = collection.stop_time.split(':');
+      const minutesStart = +arrStart[0] * 60 + +arrStart[1];
+      const minutesStop = +arrStop[0] * 60 + +arrStop[1];
+
+      const total = minutesStop - minutesStart;
+      collection.total_time = total;
+    }
+  });
+  return formData;
+};
+
+export const autoFillSlopeAspect = (formData: any, lastField: string) => {
+  if (!lastField) {
+    return formData;
+  }
+  const fieldId = lastField[0];
+  if (
+    fieldId.includes('slope_code') &&
+    formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code === 'FL'
+  ) {
+    formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code = 'FL';
+  }
+  if (
+    fieldId.includes('aspect_code') &&
+    formData.activity_subtype_data.observation_plant_terrestrial_data.aspect_code === 'FL'
+  ) {
+    formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code = 'FL';
+  }
+  return formData;
+};
+
+export const autoFillTreeNumbers = (activitySubtypeData: any) => {
+  if (activitySubtypeData.form_b) {
+    activitySubtypeData.form_b.forEach((FormB: any) => {
+      if (FormB.form_a) {
+        FormB.form_a.forEach((FormA: any) => {
+          if (FormA.stand_table) {
+            for (let tree_index = 0; tree_index < FormA.stand_table.length; tree_index++) {
+              FormA.stand_table[tree_index].tree_num = tree_index + 1;
+            }
+          }
+          if (FormA.plot_information && FormA.plot_information.log) {
+            for (let log_index = 0; log_index < FormA.plot_information.log.length; log_index++) {
+              FormA.plot_information.log[log_index].log_num = log_index + 1;
+            }
+          }
+        });
+      }
+    });
+  }
+
+  return activitySubtypeData;
+};
