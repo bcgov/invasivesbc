@@ -519,6 +519,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
               <ChevronLeftIcon />
             </IconButton>
           </div>
+          {keycloak?.obj?.token && <p>Keycloak token is present</p>}
           {networkContext.connected ? (
             <div>
               {userInfoLoaded ? (
