@@ -1,29 +1,32 @@
-import { IconButton } from '@material-ui/core';
+import { Grid, IconButton } from '@material-ui/core';
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { toolStyles } from './Helpers/ToolBtnStyles';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
-import { Capacitor } from '@capacitor/core';
-import { generateDBActivityPayload } from 'utils/addActivity';
-import { useHistory } from 'react-router';
+//import { useDataAccess } from 'hooks/useDataAccess';
+//import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+//import { Capacitor } from '@capacitor/core';
+//import { generateDBActivityPayload } from 'utils/addActivity';
+//import { useHistory } from 'react-router';
 import CreateIcon from '@mui/icons-material/Create';
-import { ActivitySubtype, ActivityType } from 'constants/activities';
+//import { ActivitySubtype, ActivityType } from 'constants/activities';
 import { AuthStateContext } from 'contexts/authStateContext';
+import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+
+//great for plants vs animals:
+import GrassIcon from '@mui/icons-material/Grass';
+import PetsIcon from '@mui/icons-material/Pets';
 
 export const NewRecord = (props) => {
-  const history = useHistory();
-  const { userInfo } = useContext(AuthStateContext); // style
+  //const history = useHistory();
+  //const { userInfo } = useContext(AuthStateContext); // style
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
 
   // Is this needed? Copied from DisplayPosition
   const divRef = useRef(null);
-
-  // DB: MOBILE ONLY!
-  const databaseContext = useContext(DatabaseContext2);
-  const dataAccess = useDataAccess();
 
   // initial setup & events to block:
   useEffect(() => {
@@ -31,10 +34,14 @@ export const NewRecord = (props) => {
     L.DomEvent.disableScrollPropagation(divRef?.current);
   }, []);
 
-  // can be replaced with a menu (later):
   const createOnClick = async () => {
-    //
-    //mobile only
+    console.log('create record');
+  };
+
+  //
+  /* ref for whatever helper makes records:
+    setMode('PRESSED');
+
     const type = ActivityType.Observation;
     const subtype = ActivitySubtype.Observation_PlantTerrestrial;
     const dbActivity = generateDBActivityPayload({}, null, type, subtype);
@@ -46,16 +53,85 @@ export const NewRecord = (props) => {
       history.push({ pathname: `/home/activity` });
     }, 500);
   };
+    */
+  // can be replaced with a menu (later):
 
-  return (
-    <>
+  const [mode, setMode] = useState('NOT_PRESSED');
+
+  const RenderWhenMode_NotPressed = (props) => {
+    const onClick = async () => {
+      setMode('PRESSED');
+    };
+    return (
       <IconButton
         ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         aria-label="Create Record"
-        onClick={createOnClick}>
+        onClick={onClick}>
         <CreateIcon />
       </IconButton>
+    );
+  };
+
+  const RenderWhenMode_Pressed = (props) => {
+    const [items, setItems] = useState([
+      { type: 'Ob', onClick: null },
+      { type: 'Tr', onClick: null },
+      { type: 'Mo', onClick: null }
+    ]);
+    const [index, setIndex] = useState(0);
+    return (
+      <Grid xs={5} container className={toolClass.toolBtnMultiStageMenu}>
+        <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
+          <IconButton
+            ref={divRef}
+            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+            aria-label="Previous choice"
+            onClick={() => setIndex(index !== 0 ? index - 1 : items.length - 1)}>
+            <KeyboardBackspaceIcon />
+          </IconButton>
+        </Grid>
+        <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
+          <IconButton
+            ref={divRef}
+            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+            aria-label="Create Record"
+            onClick={createOnClick}>
+            {items[index].type}
+          </IconButton>
+        </Grid>
+        <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
+          <IconButton
+            ref={divRef}
+            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+            aria-label="Next Choice"
+            onClick={() => setIndex(index !== items.length - 1 ? index + 1 : 0)}>
+            <ArrowRightAltIcon />
+          </IconButton>
+        </Grid>
+        <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
+          <IconButton
+            ref={divRef}
+            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+            aria-label="Cancel"
+            onClick={() => {
+              setMode('NOT_PRESSED');
+            }}>
+            <CancelPresentationIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  return (
+    <>
+      {
+        {
+          NOT_PRESSED: <RenderWhenMode_NotPressed />,
+          PRESSED: <RenderWhenMode_Pressed />
+        }[mode]
+      }
     </>
   );
 };

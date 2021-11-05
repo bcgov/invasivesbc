@@ -23,6 +23,28 @@ export const toolStyles = makeStyles((theme) => ({
     flexFlow: 'column wrap',
     height: '40vh'
   },
+  toolBtnMultiStageMenu: {
+    height: 43,
+    //width: 43,
+    zIndex: 1500
+    //borderRadius: 4,
+    // marginRight: 10,
+    // background: 'white',
+    // '&:hover': {
+    //   background: 'white'
+    // }
+  },
+  toolBtnMultiStageMenuItem: {
+    height: 43,
+    //width: 43,
+    zIndex: 1500
+    //borderRadius: 4,
+    // marginRight: 10,
+    // background: 'white',
+    // '&:hover': {
+    //   background: 'white'
+    // }
+  },
   toolBtnLight: {
     height: 43,
     width: 43,
