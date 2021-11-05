@@ -97,14 +97,17 @@ export const JumpToActivity = (props) => {
 
   return (
     <>
-      <IconButton
-        ref={divRef}
-        className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        aria-label="Jump To Location"
-        onClick={jump}
-        disabled={!props.id || !IFlyToAndFadeItems[0]}>
-        <KeyboardReturnIcon />
-      </IconButton>
+      {' '}
+      {props.id && (
+        <IconButton
+          ref={divRef}
+          className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+          aria-label="Jump To Location"
+          onClick={jump}
+          disabled={!props.id || !IFlyToAndFadeItems[0]}>
+          <KeyboardReturnIcon />
+        </IconButton>
+      )}
     </>
   );
 };
