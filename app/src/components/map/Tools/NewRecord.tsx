@@ -32,7 +32,7 @@ export const NewRecord = (props) => {
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
-  }, []);
+  });
 
   const createOnClick = async () => {
     console.log('create record');
@@ -64,7 +64,6 @@ export const NewRecord = (props) => {
     };
     return (
       <IconButton
-        ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         aria-label="Create Record"
         onClick={onClick}>
@@ -84,7 +83,6 @@ export const NewRecord = (props) => {
       <Grid xs={5} container className={toolClass.toolBtnMultiStageMenu}>
         <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
           <IconButton
-            ref={divRef}
             className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
             aria-label="Previous choice"
             onClick={() => setIndex(index !== 0 ? index - 1 : items.length - 1)}>
@@ -93,7 +91,6 @@ export const NewRecord = (props) => {
         </Grid>
         <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
           <IconButton
-            ref={divRef}
             className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
             aria-label="Create Record"
             onClick={createOnClick}>
@@ -102,7 +99,6 @@ export const NewRecord = (props) => {
         </Grid>
         <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
           <IconButton
-            ref={divRef}
             className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
             aria-label="Next Choice"
             onClick={() => setIndex(index !== items.length - 1 ? index + 1 : 0)}>
@@ -111,7 +107,6 @@ export const NewRecord = (props) => {
         </Grid>
         <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
           <IconButton
-            ref={divRef}
             className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
             aria-label="Cancel"
             onClick={() => {
@@ -125,14 +120,14 @@ export const NewRecord = (props) => {
   };
 
   return (
-    <>
+    <div ref={divRef}>
       {
         {
           NOT_PRESSED: <RenderWhenMode_NotPressed />,
           PRESSED: <RenderWhenMode_Pressed />
         }[mode]
       }
-    </>
+    </div>
   );
 };
 

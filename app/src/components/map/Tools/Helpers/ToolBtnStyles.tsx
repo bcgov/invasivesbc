@@ -17,25 +17,27 @@ export const toolStyles = makeStyles((theme) => ({
     marginBottom: 5
   },
   toolBtnsLoc: {
+    marginTop: 75,
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    flexFlow: 'column wrap',
-    height: '40vh'
+    flexFlow: 'column wrap'
+    //  height: '40vh'
   },
   toolBtnMultiStageMenu: {
-    height: 43,
+    height: '43px',
+    minWidth: '250px',
     //width: 43,
-    zIndex: 1500
+    zIndex: 1500,
     //borderRadius: 4,
-    // marginRight: 10,
+    marginRight: 10
     // background: 'white',
     // '&:hover': {
     //   background: 'white'
     // }
   },
   toolBtnMultiStageMenuItem: {
-    height: 43,
+    height: '43px',
     //width: 43,
     zIndex: 1500
     //borderRadius: 4,
