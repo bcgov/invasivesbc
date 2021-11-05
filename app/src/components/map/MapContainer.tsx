@@ -35,6 +35,7 @@ import JumpControl, { JumpToTrip } from './Tools/JumpToTrip';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
 import { ZoomBar } from './Tools/ZoomBar';
 import JumpToActivity from './Tools/JumpToActivity';
+import NewRecord from './Tools/NewRecord';
 //Added comment
 
 const DefaultIcon = L.icon({
@@ -233,6 +234,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
             <ScaleControl position="bottomright" imperial={false} />
             <JumpToTrip />
+            <NewRecord />
             <JumpToActivity id={props.activityId} />
             {props.showDrawControls && (
               <FeatureGroup>
