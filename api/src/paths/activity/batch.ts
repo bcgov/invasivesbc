@@ -1,14 +1,14 @@
 'use strict';
 
-import {RequestHandler} from 'express';
-import {Operation} from 'express-openapi';
-import {ALL_ROLES} from '../../constants/misc';
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { ALL_ROLES } from '../../constants/misc';
 import geoJSON_Feature_Schema from '../../openapi/geojson-feature-doc.json';
-import {getLogger} from '../../utils/logger';
-import {ActivityPostRequestBody} from '../../models/activity';
-import {getDBConnection} from '../../database/db';
-import {getActivitySQL, postActivitySQL} from '../../queries/activity-queries';
-import {QueryResult} from 'pg';
+import { getLogger } from '../../utils/logger';
+import { ActivityPostRequestBody } from '../../models/activity';
+import { getDBConnection } from '../../database/db';
+import { getActivitySQL, postActivitySQL } from '../../queries/activity-queries';
+import { QueryResult } from 'pg';
 
 const defaultLog = getLogger('activity');
 
@@ -93,20 +93,20 @@ const batch_apiDoc = {
                   },
                   form_data: {
                     oneOf: [
-                      {$ref: '#/components/schemas/Activity_Observation_PlantTerrestrial'},
-                      {$ref: '#/components/schemas/Activity_Observation_PlantAquatic'},
-                      {$ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal'},
-                      {$ref: '#/components/schemas/Activity_Treatment_ChemicalPlant'},
-                      {$ref: '#/components/schemas/Activity_Treatment_MechanicalPlant'},
-                      {$ref: '#/components/schemas/Activity_Treatment_BiologicalPlant'},
-                      {$ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant'},
-                      {$ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant'},
-                      {$ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant'},
-                      {$ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial'},
-                      {$ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic'},
-                      {$ref: '#/components/schemas/Activity_Transect_FireMonitoring'},
-                      {$ref: '#/components/schemas/Activity_Transect_Vegetation'},
-                      {$ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy'}
+                      { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
+                      { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
+                      { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
+                      { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
+                      { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
+                      { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
+                      { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
+                      { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
+                      { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+                      { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                      { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
+                      { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
+                      { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
+                      { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
                     ]
                   },
                   created_by: {
@@ -192,7 +192,7 @@ POST.apiDoc = {
  */
 function createActivities(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({label: 'activity', message: 'createActivities', body: req.params});
+    defaultLog.debug({ label: 'activity', message: 'createActivities', body: req.params });
 
     const sanitizedActions = [];
 
@@ -261,7 +261,7 @@ function createActivities(): RequestHandler {
         throw error;
       }
     } catch (error) {
-      defaultLog.debug({label: 'createActivities', message: 'error', error});
+      defaultLog.debug({ label: 'createActivities', message: 'error', error });
       throw error;
     } finally {
       connection.release();
