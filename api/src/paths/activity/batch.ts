@@ -75,72 +75,64 @@ const batch_apiDoc = {
             },
             allOf: [
               {
-                oneOf: [
-                  {
-                    properties: {
-                      media: {
-                        type: 'array',
-                        title: 'Media',
-                        items: {
-                          $ref: '#/components/schemas/Media'
-                        }
-                      },
-                      geometry: {
-                        type: 'array',
-                        title: 'Geometries',
-                        items: {
-                          ...(geoJSON_Feature_Schema as any)
-                        },
-                        description: 'An array of GeoJSON Features'
-                      },
-                      form_data: {
-                        oneOf: [
-                          { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
-                          { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
-                          { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
-                          { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
-                          { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
-                          { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
-                          { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
-                          { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                          { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
-                          { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
-                          { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
-                          { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
-                          { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
-                          { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
-                        ]
-                      },
-                      created_by: {
-                        type: 'string',
-                        title: 'Created by',
-                        description: 'ID of the author of the activity.'
-                      },
-                      sync_status: {
-                        enum: ['Not Saved', 'Saving Failed', 'Save Successful'],
-                        type: 'string',
-                        title: 'Saving status',
-                        description: 'Whether the activity was saved or not, or had a saving error'
-                      },
-                      form_status: {
-                        enum: ['Valid'],
-                        type: 'string',
-                        title: 'Form status',
-                        description: 'Validation status of the activity form.'
-                      }
+                properties: {
+                  media: {
+                    type: 'array',
+                    title: 'Media',
+                    items: {
+                      $ref: '#/components/schemas/Media'
                     }
                   },
-                  {
-                    properties: {
-                      form_status: {
-                        enum: ['Invalid', 'Not Validated'],
-                        type: 'string',
-                        title: 'Form status',
-                        description: 'Validation status of the activity form.'
-                      }
-                    }
+                  geometry: {
+                    type: 'array',
+                    title: 'Geometries',
+                    items: {
+                      ...(geoJSON_Feature_Schema as any)
+                    },
+                    description: 'An array of GeoJSON Features'
+                  },
+                  form_data: {
+                    oneOf: [
+                      { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
+                      { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
+                      { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
+                      { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
+                      { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
+                      { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
+                      { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
+                      { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
+                      { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+                      { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                      { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
+                      { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
+                      { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
+                      { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' }
+                    ]
+                  },
+                  created_by: {
+                    type: 'string',
+                    title: 'Created by',
+                    description: 'ID of the author of the activity.'
+                  },
+                  sync_status: {
+                    enum: ['Save Successful', 'Not Saved', 'Saving Failed'],
+                    type: 'string',
+                    title: 'Save status',
+                    description: 'Whether the activity was saved or not, or had a saving error'
+                  },
+                  form_status: {
+                    enum: ['Valid', 'Invalid', 'Not Validated'],
+                    type: 'string',
+                    title: 'Form status',
+                    description: 'Validation status of the activity form.'
+                  },
+                  review_status: {
+                    enum: ['Pre-Approved', 'Not Reviewed', 'Under Review', 'Approved', 'Disapproved'],
+                    type: 'string',
+                    title: 'Review status',
+                    description: 'The current review status of the activity'
                   }
-                ]
+                }
               }
             ]
           }
@@ -205,9 +197,17 @@ function createActivities(): RequestHandler {
     const sanitizedActions = [];
 
     for (const activity of req.body) {
+      console.dir(activity);
+
       const sanitized = new ActivityPostRequestBody(activity);
+      sanitized['activityPostBody']['form_data'] = activity['activity_payload']['form_data'];
+
+      console.dir(sanitized);
+
       const getSQL = getActivitySQL(sanitized.activity_id);
       const createSQL = postActivitySQL(sanitized);
+
+      console.log(createSQL);
 
       if (!getSQL || !createSQL) {
         throw {
