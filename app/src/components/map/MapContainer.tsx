@@ -28,6 +28,9 @@ import EditTools from './Tools/EditTools';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
 import { ZoomBar } from './Tools/ZoomBar';
 import { ToolbarContainer } from './ToolbarContainer';
+import JumpToActivity from './Tools/JumpToActivity';
+import NewRecord from './Tools/NewRecord';
+//Added comment
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
