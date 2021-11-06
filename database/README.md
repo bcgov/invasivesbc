@@ -76,9 +76,16 @@ Run from database/src/: npx knex --knexfile ./knexfile.ts migrate:make <insert n
 
 # Development
 
+For running in Openshift. Mount the database on port 5432. Then run:
 ```bash
 cd database/src
 knex seed:run --env local --specific 05_riso.ts
+```
+
+For running on Docker
+```bash
+cd database/src
+knex seed:run --env local --specific 09_pmp.ts --knexfile knexfile-local.ts
 ```
 
 # Managing data in S3

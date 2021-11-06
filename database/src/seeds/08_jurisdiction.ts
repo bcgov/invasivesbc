@@ -3,25 +3,32 @@ import axios from 'axios';
 import { ungzip } from 'node-gzip';
 
 export async function seed(knex: Knex): Promise<void> {
-  const url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction.sql.gz';
+  /**
+   * If we are in development use the light dataset for
+   * speeding up the development life cycle.
+   */
+  const env: string = process.env.NODE_ENV;
+  let url: string;
+  if (env.match(/dev/i)) {
+    url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction_vancouver_island.sql.gz';
+  } else {
+    url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction.sql.gz';
+  }
+
+  // Fetch data
   const { data } = await axios.get(url, { responseType: 'arraybuffer' });
-  const sql = await ungzip(data);
+
+  // Unzip to text
+  const sql: string = await ungzip(data);
 
   /**
    * This file is too big to run all at once.
-   * Split up by lines, join in groups then run separately
+   * Split up by lines.
    */
-  // const chunk = 10; // Run 100 transactions at a time
+
   const lines = sql.toString().split(/\r?\n/);
-  let i = 0;
-  let lineArr = [];
   for (const line of lines) {
-    lineArr.push(line);
-    if (i % 100 === 0 || lines.length - 1 - i === 0) {
-      await knex.raw(lineArr.join(''));
-      lineArr = [];
-    }
-    i++;
+    await knex.raw(line);
   }
 
   await knex.raw(`      
