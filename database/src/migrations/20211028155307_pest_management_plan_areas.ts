@@ -16,11 +16,8 @@ export async function up(knex: Knex): Promise<void> {
       );
       SELECT AddGeometryColumn('public','pest_management_plan_areas','wkb_geometry',3005,'MULTIPOLYGON',2);
       CREATE INDEX "pest_management_plan_areas_wkb_geometry_geom_idx" ON "pest_management_plan_areas" USING GIST ("wkb_geometry");
-      ALTER TABLE "pest_management_plan_areas" ADD COLUMN "objectid" NUMERIC(10,0);
       ALTER TABLE "pest_management_plan_areas" ADD COLUMN "pmp_name" VARCHAR(254);
       ALTER TABLE "pest_management_plan_areas" ADD COLUMN "contributi" VARCHAR(254);
-      ALTER TABLE "pest_management_plan_areas" ADD COLUMN "shape_leng" NUMERIC(24,15);
-      ALTER TABLE "pest_management_plan_areas" ADD COLUMN "shape_area" NUMERIC(24,15);
       ALTER TABLE "pest_management_plan_areas" ADD COLUMN "label" VARCHAR(254);
 
 
