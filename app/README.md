@@ -108,6 +108,12 @@ For (mostly) hot reloading:
 
 ### Building to Mobile (iOS)
 
+Before doing the following steps you have to build the app to iOS:
+
+- `npx ionic cap sync ios`
+- `brew install cocoapods`
+- `cd ios/App && pod install`
+
 1. Download XCode to your machine
 2. Click on the XCode tab > Click Preferences
 3. Now under accounts add your own Apple account
