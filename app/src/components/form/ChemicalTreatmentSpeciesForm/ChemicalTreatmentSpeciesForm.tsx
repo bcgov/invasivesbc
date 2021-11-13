@@ -266,6 +266,7 @@ const ChemicalTreatmentSpeciesForm = (props) => {
                   <Herbicide
                     key={index}
                     herbicide={herbicide}
+                    tankMixOn={tankMixOn}
                     chemicalApplicationMethodType={chemicalApplicationMethodType}
                     classes={classes}
                     index={index}
