@@ -1,12 +1,13 @@
-import { Typography, Box, Button } from '@material-ui/core';
+import { Typography, Box, Button, TextField } from '@material-ui/core';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useEffect, useState } from 'react';
-import { IHerbicide } from './Models';
+import { ICalculationUsingDilution, ICalculationUsingProdAppRate, IHerbicide } from './Models';
 import CustomAutoComplete from './CustomAutoComplete';
 
 export interface IHerbicideComponent {
   herbicide: any;
   index: number;
+  tankMixOn: boolean;
   businessCodes: any;
   chemicalApplicationMethodType: string;
   classes: any;
@@ -22,7 +23,8 @@ const Herbicide: React.FC<IHerbicideComponent> = ({
   classes,
   businessCodes,
   herbicidesArrState,
-  chemicalApplicationMethodType
+  chemicalApplicationMethodType,
+  tankMixOn
 }) => {
   const [currentHerbicide, setCurrentHerbicide] = useState<IHerbicide>(herbicide);
 
@@ -30,12 +32,21 @@ const Herbicide: React.FC<IHerbicideComponent> = ({
   const [herbicideChoices, setHerbicideChoices] = useState<any[]>([]);
   const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>([]);
 
+  const [calculationFields, setCalculationFields] = useState(currentHerbicide?.calculation_fields || {});
+
   //creating valueLabels to to get the lable for heading
   let optionValueLabels = {};
   const herbicide_type_code = herbicide.herbicide_type === 'G' ? 'granular_herbicide_code' : 'liquid_herbicide_code';
   Object.values(businessCodes[herbicide_type_code] as any[]).forEach((option) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
   });
+
+  //update calculation fields in current herbicide when they change
+  useEffect(() => {
+    setCurrentHerbicide((prevHerb) => {
+      return { ...prevHerb, ...calculationFields };
+    });
+  }, [calculationFields]);
 
   //update this herbicide inside main herbicides array when current herbicide changes
   useEffect(() => {
@@ -150,6 +161,124 @@ const Herbicide: React.FC<IHerbicideComponent> = ({
           });
         }}
       />
+
+      {tankMixOn && (
+        <TextField
+          className={classes.inputField}
+          type="number"
+          label="Product Application Rate (l/ha)"
+          value={calculationFields.product_application_rate_lha}
+          variant="outlined"
+          onChange={(event) => {
+            if (event.target.value === null) {
+              return;
+            }
+            setCalculationFields((prevFields) => ({
+              ...prevFields,
+              product_application_rate_lha: Number(event.target.value)
+            }));
+          }}
+          defaultValue={undefined}
+        />
+      )}
+
+      {!tankMixOn && (
+        <TextField
+          className={classes.inputField}
+          type="number"
+          label="Amount of Mix Used"
+          value={calculationFields.amount_of_mix}
+          variant="outlined"
+          onChange={(event) => {
+            if (event.target.value === null) {
+              return;
+            }
+            setCalculationFields((prevFields) => ({
+              ...prevFields,
+              amount_of_mix: Number(event.target.value)
+            }));
+          }}
+          defaultValue={undefined}
+        />
+      )}
+
+      {currentHerbicide.calculation_type === 'D' ? (
+        <>
+          <TextField
+            className={classes.inputField}
+            type="number"
+            label="Dilution"
+            value={calculationFields.dilution}
+            variant="outlined"
+            onChange={(event) => {
+              if (event.target.value === null) {
+                return;
+              }
+              setCalculationFields((prevFields) => ({
+                ...prevFields,
+                dilution: Number(event.target.value)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+
+          <TextField
+            className={classes.inputField}
+            type="number"
+            label="Area Treated (sqm)"
+            value={calculationFields.area_treated_sqm}
+            variant="outlined"
+            onChange={(event) => {
+              if (event.target.value === null) {
+                return;
+              }
+              setCalculationFields((prevFields) => ({
+                ...prevFields,
+                area_treated_sqm: Number(event.target.value)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+        </>
+      ) : currentHerbicide.calculation_type === 'PAR' ? (
+        <>
+          <TextField
+            className={classes.inputField}
+            type="number"
+            label="Delivery Rate of Mix"
+            value={calculationFields.delivery_rate_of_mix}
+            variant="outlined"
+            onChange={(event) => {
+              if (event.target.value === null) {
+                return;
+              }
+              setCalculationFields((prevFields) => ({
+                ...prevFields,
+                delivery_rate_of_mix: Number(event.target.value)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+
+          <TextField
+            className={classes.inputField}
+            type="number"
+            label="Product Application Rate"
+            value={calculationFields.product_application_rate}
+            variant="outlined"
+            onChange={(event) => {
+              if (event.target.value === null) {
+                return;
+              }
+              setCalculationFields((prevFields) => ({
+                ...prevFields,
+                product_application_rate: Number(event.target.value)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+        </>
+      ) : null}
 
       <Button
         onClick={() => {

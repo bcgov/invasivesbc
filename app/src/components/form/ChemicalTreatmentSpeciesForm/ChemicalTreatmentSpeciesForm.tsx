@@ -89,7 +89,7 @@ const ChemicalTreatmentSpeciesForm = (props) => {
   );
 
   //fields
-  const [tankMixOn, setTankMixOn] = useState(chemicalTreatmentDetails?.tank_mix);
+  const [tankMixOn, setTankMixOn] = useState(chemicalTreatmentDetails?.tank_mix || false);
   const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(
     chemicalTreatmentDetails?.chemical_application_method
   );

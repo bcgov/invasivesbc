@@ -22,17 +22,17 @@ export interface IHerbicide {
   herbicide?: string;
   product_application_rate?: number; //only if in tank
   calculation_type?: string; //only if NOT in tank
-  calculation_fields?: ICalculationUsingDilution | ICalculationUsingProdAppRate; //only if NOT in tank
+  calculation_fields?: any; //only if NOT in tank
 }
 
 export interface ICalculationUsingDilution {
-  amount_of_mix: number;
-  dilution: number;
-  area_treated_sqm: number;
+  amount_of_mix?: number;
+  dilution?: number;
+  area_treated_sqm?: number;
 }
 
 export interface ICalculationUsingProdAppRate {
-  amount_of_mix: number;
-  delivery_rate_of_mix: number;
-  product_application_rate: number;
+  amount_of_mix?: number;
+  delivery_rate_of_mix?: number;
+  product_application_rate?: number;
 }
