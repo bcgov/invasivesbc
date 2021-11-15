@@ -14,7 +14,9 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
-
+import { addBoard } from './commands/addBoard';
+import { dragMapFromCenter } from './commands/dragMapFromCenter';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+Cypress.Commands.add('addBoard', addBoard);
