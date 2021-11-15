@@ -7,7 +7,7 @@
 select
   c.code_description "Species",
   public.pest_management_plan_areas.pmp_name "PMP",
-  p.activity_ids "IDs",
+  p.activity_ids "IDs", -- Change this
   round(
     sum(
       public.st_area(
