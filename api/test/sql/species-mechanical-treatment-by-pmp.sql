@@ -3,6 +3,8 @@
   Species treatment by planning unit.
   TODO: Use IDs to select all treatment records
   then report out treatments.
+  According to [this](https://www.postgresql.org/docs/9.1/arrays.html)
+  you use the `any` keyword to search in an array
 */
 select
   c.code_description "Species",
