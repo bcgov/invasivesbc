@@ -50,3 +50,24 @@ group by
 order by
   public.pest_management_plan_areas.pmp_name
 ;
+
+/**
+ Testing
+ **/
+select
+  activity_payload->
+    'form_data'->
+    'activity_subtype_data'-- ->
+    -- 'treatment_issues_code'
+from
+  activity_incoming_data
+where
+  activity_type = 'Treatment'
+order by
+  created_timestamp desc
+limit 100
+;
+
+-- Find the code
+select distinct code_header_name from code_header
+order by code_header_name;
