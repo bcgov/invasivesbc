@@ -1,6 +1,8 @@
 
 /*
   Species treatment by planning unit.
+  TODO: Use IDs to select all treatment records
+  then report out treatments.
 */
 select
   c.code_description "Species",
