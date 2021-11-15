@@ -18,9 +18,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import React, { useEffect, useState } from 'react';
 import InvasiveSpecie from './InvasiveSpecie';
-import { IGeneralFields, IHerbicide, ISpecies } from './Models';
+import { IGeneralFields, IHerbicide, ISpecies, ITankMix } from './Models';
 import Herbicide from './Herbicide';
 import CustomAutoComplete from './CustomAutoComplete';
+import TankMix from './TankMix';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: { width: '100%', paddingTop: '2rem', paddingBottom: '2rem' },
@@ -95,6 +96,7 @@ const ChemicalTreatmentSpeciesForm = (props) => {
   );
   const [speciesArr, setSpeciesArr] = useState<ISpecies[]>(chemicalTreatmentDetails?.species_list || []);
   const [herbicidesArr, setHerbicidesArr] = useState<IHerbicide[]>(chemicalTreatmentDetails?.herbicides_list || []);
+  const [tankMix, setTankMix] = useState<ITankMix>(chemicalTreatmentDetails?.tank_mix_object || {});
 
   //get arrays for spray and direct chemical methods
   const chemical_method_spray_code_values = businessCodes['chemical_method_spray'].map((code) => {
@@ -149,9 +151,10 @@ const ChemicalTreatmentSpeciesForm = (props) => {
       tank_mix: tankMixOn,
       chemical_application_method: chemicalApplicationMethod,
       species_list: speciesArr,
-      herbicides_list: herbicidesArr
+      herbicides_list: herbicidesArr,
+      tank_mix_object: tankMix
     });
-  }, [tankMixOn, chemicalApplicationMethod, speciesArr, herbicidesArr]);
+  }, [tankMixOn, chemicalApplicationMethod, speciesArr, herbicidesArr, tankMix]);
 
   return (
     <>
@@ -284,7 +287,16 @@ const ChemicalTreatmentSpeciesForm = (props) => {
             <Typography variant="h5">Tank Mix</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Box className={classes.accordionBody}></Box>
+            <Box className={classes.accordionBody}>
+              <TankMix
+                businessCodes={businessCodes}
+                chemicalApplicationMethodType={chemicalApplicationMethodType}
+                tankMixState={{ tankMix, setTankMix }}
+                classes={classes}
+                herbicidesArrState={{ herbicidesArr, setHerbicidesArr }}
+                tankMixOn={tankMixOn}
+              />
+            </Box>
           </AccordionDetails>
         </Accordion>
       </FormControl>

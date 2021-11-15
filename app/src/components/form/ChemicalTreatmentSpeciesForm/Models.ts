@@ -2,6 +2,7 @@ export interface IGeneralFields {
   application_start_time?: Date;
   species_list?: ISpecies[];
   tank_mix?: boolean;
+  tank_mix_object?: any;
   chemical_application_method?: string;
   herbicides_list?: IHerbicide[];
 }
@@ -14,7 +15,7 @@ export interface ISpecies {
 export interface ITankMix {
   calculation_type?: string;
   herbicides_list?: IHerbicide[];
-  calculation_fields: ICalculationUsingDilution | ICalculationUsingProdAppRate;
+  calculation_fields?: any;
 }
 
 export interface IHerbicide {

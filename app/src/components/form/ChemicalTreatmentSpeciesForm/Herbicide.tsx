@@ -143,31 +143,33 @@ const Herbicide: React.FC<IHerbicideComponent> = ({
         }}
       />
 
-      <CustomAutoComplete
-        choices={calculationTypeChoices}
-        className={'inputField'}
-        classes={classes}
-        id={'calculation_type'}
-        label={'Calculation Type'}
-        parentState={{ herbicide, setCurrentHerbicide }}
-        parentName={'herbicide'}
-        fieldName={'calculation_type'}
-        onChange={(event, value) => {
-          if (value === null) {
-            return;
-          }
-          setCurrentHerbicide((prevHerbicide) => {
-            return { ...prevHerbicide, calculation_type: (value as any).value };
-          });
-        }}
-      />
+      {!tankMixOn && (
+        <CustomAutoComplete
+          choices={calculationTypeChoices}
+          className={'inputField'}
+          classes={classes}
+          id={'calculation_type'}
+          label={'Calculation Type'}
+          parentState={{ herbicide, setCurrentHerbicide }}
+          parentName={'herbicide'}
+          fieldName={'calculation_type'}
+          onChange={(event, value) => {
+            if (value === null) {
+              return;
+            }
+            setCurrentHerbicide((prevHerbicide) => {
+              return { ...prevHerbicide, calculation_type: (value as any).value };
+            });
+          }}
+        />
+      )}
 
       {tankMixOn && (
         <TextField
           className={classes.inputField}
           type="number"
           label="Product Application Rate (l/ha)"
-          value={calculationFields.product_application_rate_lha}
+          value={calculationFields.product_application_rate_lha || ''}
           variant="outlined"
           onChange={(event) => {
             if (event.target.value === null) {
@@ -187,7 +189,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({
           className={classes.inputField}
           type="number"
           label="Amount of Mix Used"
-          value={calculationFields.amount_of_mix}
+          value={calculationFields.amount_of_mix || ''}
           variant="outlined"
           onChange={(event) => {
             if (event.target.value === null) {
@@ -202,13 +204,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({
         />
       )}
 
-      {currentHerbicide.calculation_type === 'D' ? (
+      {!tankMixOn && currentHerbicide.calculation_type === 'D' ? (
         <>
           <TextField
             className={classes.inputField}
             type="number"
             label="Dilution"
-            value={calculationFields.dilution}
+            value={calculationFields.dilution || ''}
             variant="outlined"
             onChange={(event) => {
               if (event.target.value === null) {
@@ -226,7 +228,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({
             className={classes.inputField}
             type="number"
             label="Area Treated (sqm)"
-            value={calculationFields.area_treated_sqm}
+            value={calculationFields.area_treated_sqm || ''}
             variant="outlined"
             onChange={(event) => {
               if (event.target.value === null) {
@@ -240,13 +242,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({
             defaultValue={undefined}
           />
         </>
-      ) : currentHerbicide.calculation_type === 'PAR' ? (
+      ) : !tankMixOn && currentHerbicide.calculation_type === 'PAR' ? (
         <>
           <TextField
             className={classes.inputField}
             type="number"
             label="Delivery Rate of Mix"
-            value={calculationFields.delivery_rate_of_mix}
+            value={calculationFields.delivery_rate_of_mix || ''}
             variant="outlined"
             onChange={(event) => {
               if (event.target.value === null) {
@@ -264,7 +266,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({
             className={classes.inputField}
             type="number"
             label="Product Application Rate"
-            value={calculationFields.product_application_rate}
+            value={calculationFields.product_application_rate || ''}
             variant="outlined"
             onChange={(event) => {
               if (event.target.value === null) {
