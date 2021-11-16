@@ -46,44 +46,29 @@ export const addOrRemoveLayer = (child, layers, setLayers) => {
       setLayers([...layersBefore, ...layersAfter]);
     }
   } else if (!child.enabled) {
-    switch (child.bcgw_code) {
-      case 'LEAN_ACTIVITIES':
-        setLayers([
-          ...layers,
-          {
-            bcgw_code: child.bcgw_code,
-            color_code: child.color_code,
-            layer_mode: null,
-            layer_name: child.id,
-            opacity: child.opacity
-          }
-        ]);
-        break;
-      case 'jurisdiction':
-      case 'LEAN_POI':
-        setLayers([
-          ...layers,
-          {
-            bcgw_code: child.bcgw_code,
-            color_code: '#000',
-            layer_mode: null,
-            layer_name: child.id,
-            opacity: child.opacity
-          }
-        ]);
-        break;
-      default:
-        setLayers([
-          ...layers,
-          {
-            bcgw_code: child.bcgw_code,
-            color_code: '#000',
-            layer_mode: child.layer_mode,
-            layer_name: child.id,
-            opacity: child.opacity
-          }
-        ]);
-        break;
+    if (child.layer_mode) {
+      setLayers([
+        ...layers,
+        {
+          color_code: child.color_code,
+          layer_code: child.layer_code,
+          layer_mode: null,
+          layer_name: child.name,
+          opacity: child.opacity
+        }
+      ]);
+    }
+    if (child.bcgw_code) {
+      setLayers([
+        ...layers,
+        {
+          bcgw_code: child.bcgw_code,
+          color_code: child.color_code,
+          layer_mode: child.layer_mode,
+          layer_name: child.layer_name,
+          opacity: child.opacity
+        }
+      ]);
     }
   }
 };

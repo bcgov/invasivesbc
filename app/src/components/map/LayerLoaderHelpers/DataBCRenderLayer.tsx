@@ -14,13 +14,15 @@ export enum LayerMode {
   RegularFeaturesOffline = 'regular_features_offline'
 }
 
+/* moved to NonDataBCRenderLayers.tsx: 
 export enum IndependentLayers {
   Activities = 'LEAN_ACTIVITIES',
   POI = 'LEAN_POI',
-  Jurisdictions = 'jurisdiction'
-}
+  Jurisdictions = 'JURISDICTIONS'
+}*/
 
 export const DataBCLayer = (props) => {
+  /* moved to NonDataBCRenderLayers.tsx: 
   const networkContext = useContext(NetworkContext);
 
   if (Object.values(IndependentLayers).includes(props.layerName)) {
@@ -29,12 +31,12 @@ export const DataBCLayer = (props) => {
         return <ActivitiesLayer online={networkContext.connected} opacity={props.opacity} />;
       case 'LEAN_POI':
         return <PoisLayer online={networkContext.connected} opacity={props.opacity} />;
-      case 'jurisdiction':
+      case 'JURISDICTIONS':
         return <JurisdictionsLayer online={networkContext.connected} opacity={props.opacity} />;
       default:
         return <></>;
     }
-  }
+  }*/
 
   if (!props.mode) {
     throw new Error('you missed a map mode');

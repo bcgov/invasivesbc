@@ -51,6 +51,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { LayersSelector, addOrRemoveLayer, updateLayer } from './LayersSelectorAndRender';
+import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -187,22 +188,27 @@ export function LayerPicker(props: any, { position }) {
     );
   };
 
-  const toggleColorPickerDialog = (parent) => {
-    updateParent(parent.id, {
-      colorpicker_open: !getParent(objectState, parent.id).colorpicker_open
-    });
+  const toggleColorPickerDialog = (parent, child) => {
+    updateChild(
+      parent.id,
+      child.id,
+      {
+        colorpicker_open: !getChild(objectState, parent.id, child.id).colorpicker_open
+      },
+      { objectState, setObjectState }
+    );
   };
-
-  const DragHandle = (expanded: boolean) =>
-    SortableHandle(() => <ListItemIcon>{expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}</ListItemIcon>);
 
   const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
       updateParent(parent.id, { expanded: expanded });
     };
+    const DragHandle = SortableHandle(() => (
+      <ListItemIcon>{parent.expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}</ListItemIcon>
+    ));
     return (
-      <ListItem ContainerComponent="div" style={{ width: '100%', maxWidth: 360 }}>
-        <Grid container spacing={1}>
+      <ListItem dense={true} ContainerComponent="div" style={{ width: '100%', maxWidth: 360 }}>
+        <Grid container>
           <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
             <Grid container xs={12} justifyContent="space-between" alignItems="center">
               {/* removed for now
@@ -214,34 +220,14 @@ export function LayerPicker(props: any, { position }) {
                 </Tooltip>
               </Grid>
                 */}
-              <Grid item xs={7}>
+              <Grid item xs={10}>
                 <AccordionSummary className={classes.heading} id={parent.id}>
                   <Typography variant="caption">{parent.name}</Typography>
                 </AccordionSummary>
               </Grid>
-              {/* Color Picker Dialog */}
-              <Grid item xs={1}>
-                <IconButton className={toolClass.toolBtn} onClick={() => toggleColorPickerDialog(parent)}>
-                  <ColorLens style={{ color: parent.color_code }} />
-                </IconButton>
-                <Dialog open={parent.colorpicker_open} onClose={() => toggleColorPickerDialog(parent)}>
-                  <DialogTitle>{parent.name}</DialogTitle>
-                  <DialogContent style={{ height: 300 }}>
-                    <ColorPicker
-                      name="color"
-                      defaultValue={parent.color_code}
-                      onChange={(color: any) => {
-                        updateParent(parent.id, { color_code: color });
-                      }}
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => toggleColorPickerDialog(parent)}>Close</Button>
-                  </DialogActions>
-                </Dialog>
-              </Grid>
-              <Grid item xs={1}>
-                <DragHandle expanded={parent.expanded} />
+              {/* DragHandle */}
+              <Grid item style={{ marginRight: 10 }} xs={1}>
+                <DragHandle />
               </Grid>
             </Grid>
             {parent.children.map((child: any) => (
@@ -262,69 +248,24 @@ export function LayerPicker(props: any, { position }) {
                     }}
                   />
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={6}>
                   <Typography variant="caption">{child.name}</Typography>
                 </Grid>
-                {/* Child Dialog Box */}
+                {/* Settings Dialog Box */}
                 <Grid item xs={2}>
                   <IconButton onClick={() => toggleChildDialog(parent, child, true)}>
                     <SettingsIcon />
                   </IconButton>
                   <Dialog open={child.dialog_open} onClose={() => toggleChildDialog(parent, child, false)}>
-                    <DialogTitle>{child.name ? <>{child.name}</> : child.id}</DialogTitle>
-                    {child.id === 'activities' && (
-                      <DialogContent style={{ height: 300 }}>
-                        <ColorPicker
-                          name="color"
-                          defaultValue={child.color_code}
-                          onChange={(color: any) => {
-                            updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
-                            updateLayer({ color_code: color }, child, newLayers, setNewLayers);
-                          }}
-                        />
-                      </DialogContent>
-                    )}
-                    {child.id === 'poi' && (
-                      <DialogContent style={{ height: 300, width: 300 }}>
-                        <ColorPicker
-                          name="color"
-                          defaultValue={child.color_code}
-                          onChange={(color: any) => {
-                            updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
-                            updateLayer({ color_code: color }, child, newLayers, setNewLayers);
-                          }}
-                        />
-                      </DialogContent>
-                    )}
-                    {child.id !== 'activities' && child.id !== 'poi' && (
-                      <DialogContent style={{ height: 300, width: 300 }}>
-                        <LayersSelector
-                          parent={parent}
-                          child={child}
-                          objectState={objectState}
-                          setObjectState={setObjectState}
-                          layers={newLayers}
-                          setLayers={setNewLayers}
-                        />
-                        <Typography style={{ marginRight: 10 }}>Opacity</Typography>
-                        <Slider
-                          defaultValue={child.opacity}
-                          onChangeCommitted={(event: any, newOpacity: number | number[]) => {
-                            updateChild(
-                              parent.id,
-                              child.id,
-                              { opacity: newOpacity as number },
-                              { objectState, setObjectState }
-                            );
-                            updateLayer({ opacity: newOpacity as number }, child, newLayers, setNewLayers);
-                          }}
-                          getAriaValueText={opacityText}
-                          step={0.0001}
-                          min={0.0}
-                          max={1.0}
-                        />
-                      </DialogContent>
-                    )}
+                    <DialogTitle>{child.name}</DialogTitle>
+                    <LayersSelector
+                      parent={parent}
+                      child={child}
+                      objectState={objectState}
+                      setObjectState={setObjectState}
+                      layers={newLayers}
+                      setLayers={setNewLayers}
+                    />
                     <DialogActions>
                       <Button
                         onClick={() =>
@@ -342,13 +283,57 @@ export function LayerPicker(props: any, { position }) {
                     </DialogActions>
                   </Dialog>
                 </Grid>
+                <Grid item xs={1}>
+                  <IconButton className={toolClass.toolBtn} onClick={() => toggleColorPickerDialog(parent, child)}>
+                    <ColorLens style={{ color: child.color_code }} />
+                  </IconButton>
+                  <Dialog open={child.colorpicker_open} onClose={() => toggleColorPickerDialog(parent, child)}>
+                    <DialogTitle>{child.name}</DialogTitle>
+                    {/* Opacity */}
+                    <DialogContent style={{ width: 300 }}>
+                      <Typography style={{ marginRight: 10 }}>Opacity</Typography>
+                      <Slider
+                        defaultValue={child.opacity}
+                        onChangeCommitted={(event: any, newOpacity: number | number[]) => {
+                          updateChild(
+                            parent.id,
+                            child.id,
+                            { opacity: newOpacity as number },
+                            { objectState, setObjectState }
+                          );
+                          updateLayer({ opacity: newOpacity as number }, child, newLayers, setNewLayers);
+                        }}
+                        getAriaValueText={opacityText}
+                        step={0.0001}
+                        min={0.0}
+                        max={1.0}
+                      />
+                    </DialogContent>
+                    {/* Color Picker */}
+                    <DialogContent style={{ height: 300 }}>
+                      <ColorPicker
+                        style={{
+                          backgroundColor: child.color_code
+                        }}
+                        floatingLabelText={' '}
+                        name="color"
+                        defaultValue={child.color_code}
+                        onChange={(color: any) => {
+                          updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
+                        }}
+                      />
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={() => toggleColorPickerDialog(parent, child)}>Close</Button>
+                    </DialogActions>
+                  </Dialog>
+                </Grid>
                 {/* <Grid item xs={2} style={{ position: 'relative' }}>
                   {child.loaded === 100 ? <DoneIcon /> : <div>{getErrorIcon(timeLeft)}</div>}
                         </Grid> */}
               </Grid>
             ))}
           </Accordion>
-          {/*<ListItemSecondaryAction style={{ width: 32 }}></ListItemSecondaryAction>*/}
         </Grid>
       </ListItem>
     );
@@ -370,14 +355,21 @@ export function LayerPicker(props: any, { position }) {
   return (
     <LayersControlProvider value={null}>
       {newLayers.map((layer) => (
-        <DataBCLayer
-          opacity={layer.opacity}
-          layerName={layer.bcgw_code}
-          mode={layer.layer_mode}
-          inputGeo={props.inputGeo}
-          setWellIdandProximity={props.setWellIdandProximity}
-          color_code={layer.color_code}
-        />
+        <>
+          {layer.bcgw_code && (
+            <DataBCLayer
+              opacity={layer.opacity}
+              layerName={layer.bcgw_code}
+              mode={layer.layer_mode}
+              inputGeo={props.inputGeo}
+              setWellIdandProximity={props.setWellIdandProximity}
+              color_code={layer.color_code}
+            />
+          )}
+          {layer.layer_code && (
+            <IndependentLayer opacity={layer.opacity} layerName={layer.layer_code} color_code={layer.color_code} />
+          )}
+        </>
       ))}
       <div className={positionClass}>
         <PopupState variant="popover" popupId="layerPicker">
