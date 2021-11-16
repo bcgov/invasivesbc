@@ -12,6 +12,7 @@ import { Capacitor } from '@capacitor/core';
 import { DatabaseContext } from '../contexts/DatabaseContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
+import { ActivitySyncStatus } from 'constants/activities';
 
 /**
  * Returns a set of supported api methods.
@@ -206,7 +207,8 @@ export const useDataAccess = () => {
                 type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
                 docType: DocType.ACTIVITY,
                 json: activity,
-                ID: activity.activity_id
+                ID: activity.activity_id,
+                sync_status: activity.sync_status
               }
             ],
             dbcontext
@@ -343,6 +345,7 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() === 'web') {
       return api.createActivity(activity);
     } else {
+      console.log('Activity creating: ', activity);
       const dbcontext = context;
       return dbcontext.asyncQueue({
         asyncTask: () => {
@@ -352,7 +355,9 @@ export const useDataAccess = () => {
                 type: UpsertType.DOC_TYPE_AND_ID,
                 docType: DocType.ACTIVITY,
                 ID: activity.activity_id,
-                json: activity
+                json: activity,
+                activity_subtype: activity.activity_subtype,
+                sync_status: ActivitySyncStatus.NOT_SAVED
               }
             ],
             dbcontext
@@ -425,6 +430,27 @@ export const useDataAccess = () => {
   };
 
   /**
+   * Sync cached records
+   * Used for syncing a user's cached mobile records
+   * with the InvasivesBC DB
+   *
+   * @return {*} {Promise<any>}
+   */
+  const syncCachedRecords = async (): Promise<any> => {
+    // Only callable on mobile
+    if (Capacitor.getPlatform() !== 'web') {
+      await getActivities(
+        { activity_type: ['Observation', 'Treatment', 'Monitoring'] },
+        databaseContext,
+        true, //force cache
+        false // Read activity instead of reference activitiy
+      ).then((res: any) => {
+        console.log('Cached records: ', res);
+      });
+    }
+  };
+
+  /**
    * Get appState
    *
    * @param {any} activeActivity
@@ -475,6 +501,7 @@ export const useDataAccess = () => {
     deleteActivities,
     getAppState,
     setAppState,
-    getJurisdictions
+    getJurisdictions,
+    syncCachedRecords
   };
 };
