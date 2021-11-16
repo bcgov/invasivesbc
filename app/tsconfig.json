@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "es5", "esnext"],
     "baseUrl": "src",
     "outDir": "dist",
     "jsx": "react",
@@ -27,17 +23,10 @@
     "strict": false,
     "isolatedModules": true,
     "noEmit": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "types": ["cypress"],
+    "typeRoots": ["node_modules/@types"],
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "**/*.spec.ts",
-    "**/node_modules",
-    "**/dist"
-  ]
+  "include": ["src", "**/*.ts"],
+  "exclude": ["**/*.spec.ts", "**/node_modules", "**/dist"]
 }
