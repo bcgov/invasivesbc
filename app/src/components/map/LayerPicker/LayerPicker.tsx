@@ -381,6 +381,7 @@ export function LayerPicker(props: any, { position }) {
                 </IconButton>
               </Paper>
               <Popover
+                style={{ maxHeight: 500 }}
                 {...bindPopover(popupState)}
                 anchorOrigin={{
                   vertical: 'top',
