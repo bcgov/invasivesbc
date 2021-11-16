@@ -4,7 +4,6 @@ import { LayersControlProvider } from './layerControlContext';
 import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
-import { Capacitor } from '@capacitor/core';
 /* HelperFiles */
 import {
   sortArray,
@@ -39,8 +38,7 @@ import {
   Dialog,
   DialogTitle,
   DialogActions,
-  DialogContent,
-  Tooltip
+  DialogContent
 } from '@material-ui/core';
 import ColorPicker from 'material-ui-color-picker';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
@@ -49,10 +47,9 @@ import LayersIcon from '@material-ui/icons/Layers';
 import ColorLens from '@material-ui/icons/ColorLens';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DoneIcon from '@material-ui/icons/Done';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import InfoIcon from '@material-ui/icons/Info';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { LayersSelector, addOrRemoveLayer, updateLayer } from './LayersSelectorAndRender';
 
 const useStyles = makeStyles((theme) => ({
@@ -196,17 +193,8 @@ export function LayerPicker(props: any, { position }) {
     });
   };
 
-  const toggleInfoDialog = (parent) => {
-    updateParent(parent.id, {
-      info_dialog_open: !getParent(objectState, parent.id).info_dialog_open
-    });
-  };
-
-  const DragHandle = SortableHandle(() => (
-    <ListItemIcon>
-      <DragHandleIcon />
-    </ListItemIcon>
-  ));
+  const DragHandle = (expanded: boolean) =>
+    SortableHandle(() => <ListItemIcon>{expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}</ListItemIcon>);
 
   const SortableParentLayer = SortableElement(({ parent }) => {
     const onParentLayerAccordionChange = (event: any, expanded: any) => {
@@ -217,6 +205,7 @@ export function LayerPicker(props: any, { position }) {
         <Grid container spacing={1}>
           <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
             <Grid container xs={12} justifyContent="space-between" alignItems="center">
+              {/* removed for now
               <Grid item xs={1}>
                 <Tooltip disableFocusListener classes={{ tooltip: classes.tooltipWidth }} title={parent.id}>
                   <IconButton onClick={() => toggleInfoDialog(parent)}>
@@ -224,9 +213,10 @@ export function LayerPicker(props: any, { position }) {
                   </IconButton>
                 </Tooltip>
               </Grid>
+                */}
               <Grid item xs={7}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
-                  {parent.id}
+                <AccordionSummary className={classes.heading} id={parent.id}>
+                  <Typography variant="caption">{parent.name}</Typography>
                 </AccordionSummary>
               </Grid>
               {/* Color Picker Dialog */}
@@ -235,7 +225,7 @@ export function LayerPicker(props: any, { position }) {
                   <ColorLens style={{ color: parent.color_code }} />
                 </IconButton>
                 <Dialog open={parent.colorpicker_open} onClose={() => toggleColorPickerDialog(parent)}>
-                  <DialogTitle>{parent.id}</DialogTitle>
+                  <DialogTitle>{parent.name}</DialogTitle>
                   <DialogContent style={{ height: 300 }}>
                     <ColorPicker
                       name="color"
@@ -251,7 +241,7 @@ export function LayerPicker(props: any, { position }) {
                 </Dialog>
               </Grid>
               <Grid item xs={1}>
-                <DragHandle />
+                <DragHandle expanded={parent.expanded} />
               </Grid>
             </Grid>
             {parent.children.map((child: any) => (
@@ -273,9 +263,7 @@ export function LayerPicker(props: any, { position }) {
                   />
                 </Grid>
                 <Grid item xs={5}>
-                  <Tooltip disableFocusListener title={'tip of the tool'}>
-                    <Button>{child.id}</Button>
-                  </Tooltip>
+                  <Typography variant="caption">{child.name}</Typography>
                 </Grid>
                 {/* Child Dialog Box */}
                 <Grid item xs={2}>

@@ -9,14 +9,12 @@ import {
   Typography,
   IconButton,
   Grid,
-  FormControlLabel,
   Switch
 } from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FolderIcon from '@material-ui/icons/Folder';
 import StorageIcon from '@material-ui/icons/Storage';
 import AdjustIcon from '@material-ui/icons/Adjust';
-import SearchIcon from '@material-ui/icons/Search';
 // Leaflet and React-Leaflet
 import { useMapEvent, GeoJSON, Popup, Marker, Tooltip } from 'react-leaflet';
 import L, { DomEvent } from 'leaflet';
@@ -35,6 +33,7 @@ import { useDataAccess } from '../../../hooks/useDataAccess';
 import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from './Helpers/ToolBtnStyles';
 import marker from '../Icons/POImarker.png';
+import binoculars from '../Icons/binoculars.png';
 import { Stack } from '@mui/material';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
@@ -59,7 +58,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   const [bufferedGeo, setBufferedGeo] = useState(null);
   const [poiTableRows, setPoiTableRows] = useState([]);
   const [section, setSection] = useState('position');
-  const [pointMode, setPointMode] = useState(false);
+  const [pointMode, setPointMode] = useState(true);
   const [showRadius, setShowRadius] = useState(false);
   const [databc, setDataBC] = useState(null);
   const [radius, setRadius] = useState(3);
@@ -224,14 +223,14 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
               }>
               Within Radius
             </Typography>
-            <Switch onChange={(event: any) => setPointMode(event.target.checked)} color="primary" />
+            <Switch checked={pointMode} onChange={(event: any) => setPointMode(event.target.checked)} color="primary" />
             <Typography
               style={
                 pointMode
                   ? { padding: 3, color: '#2196f3', backgroundColor: 'rgba(0, 0, 0, 0.04)', borderRadius: 5 }
                   : null
               }>
-              This Location
+              Just This Point
             </Typography>
           </Stack>
           {!pointMode && (
@@ -335,7 +334,7 @@ function SetPointOnClick({ map }: any) {
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         onClick={() => setClickMode(!clickMode)}
         style={clickMode ? { backgroundColor: '#006ee6' } : null}>
-        <SearchIcon />
+        <img style={{ width: 32, height: 32 }} src={binoculars} aria-label="create-pin" />
       </IconButton>
       {utm && (
         <GeoJSON data={geoPoint} key={Math.random()}>
@@ -354,5 +353,5 @@ function SetPointOnClick({ map }: any) {
 }
 
 // Circle Icon: <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-
+// Binoculars: <div>Icons made by <a href="" title="Victoruler">Victoruler</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 export { SetPointOnClick };

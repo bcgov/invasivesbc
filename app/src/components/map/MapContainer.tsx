@@ -24,7 +24,7 @@ import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi
 
 // Layer Picker
 import { LayerPicker } from './LayerPicker/LayerPicker';
-import data from './LayerPicker/GEO_DATA.json';
+import layers from './LayerPicker/LAYERS.json';
 import DisplayPosition from './Tools/DisplayPosition';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import MeasureTool from './Tools/MeasureTool';
@@ -131,7 +131,7 @@ export interface IMapContainerProps {
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   //to support the zoom control component controlling the parent map container:
-  const [mapZoom, setMapZoom] = useState<number>(5);
+  // removed because redundent: const [mapZoom, setMapZoom] = useState<number>(5);
   const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
   const divref = useRef(null);
@@ -214,7 +214,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   return (
     <ReactLeafletMapContainer
       center={[55, -128]}
-      zoom={mapZoom}
+      zoom={5 /* was mapZoom */}
       bounceAtZoomLimits={true}
       maxZoom={mapMaxZoom}
       //maxZoom={25}
@@ -248,7 +248,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           <LayerPicker
             position="topright"
             map={map}
-            data={data}
+            layers={layers}
             inputGeo={props.geometryState.geometry}
             setWellIdandProximity={props.setWellIdandProximity}
           />
@@ -257,7 +257,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               display: 'flex',
               justifyContent: 'flex-start',
               alignItems: 'flex-end',
-              height: '45vh',
+              height: '43vh',
               marginLeft: 50
             }}>
             <ZoomBar style={{ display: 'flex', justify: 'flex-start' }} map={map} />

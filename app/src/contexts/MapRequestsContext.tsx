@@ -1,5 +1,5 @@
 import * as React from 'react';
-import data from '../components/map/LayerPicker/GEO_DATA.json';
+import layers from '../components/map/LayerPicker/LAYERS.json';
 // export const ThemeContext = React.createContext();
 
 interface IMapExtentLayersContext {
@@ -24,7 +24,7 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
 
 export const MapRequestContextProvider: React.FC = (props) => {
   const [mapRequest, setMapRequest] = React.useState(null);
-  const [layersSelected, setLayersSelected] = React.useState(data);
+  const [layersSelected, setLayersSelected] = React.useState(layers);
 
   return (
     <MapRequestContext.Provider

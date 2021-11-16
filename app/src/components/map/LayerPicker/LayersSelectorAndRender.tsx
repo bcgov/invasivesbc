@@ -118,7 +118,7 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
   return (
     <>
       {/* Server Accordion */}
-      {!networkContext.connected && (
+      {networkContext.connected && (
         <Accordion expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
           <AccordionSummary>
             <Typography>Server</Typography>
