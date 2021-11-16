@@ -1,11 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { WMSTileLayer } from 'react-leaflet';
 import { RenderWFSFeatures } from './RenderWFSFeatures';
 import { RenderVectorTilesOffline } from './RenderVectorTilesOffline';
-import { ActivitiesLayer } from './ActivitiesLayer';
-import { PoisLayer } from './PoisLayer';
-import { JurisdictionsLayer } from './JurisdictionsLayer';
-import { NetworkContext } from 'contexts/NetworkContext';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',
