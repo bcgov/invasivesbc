@@ -604,6 +604,14 @@ export const useInvasivesApi = () => {
     });
     return data;
   };
+  const downloadTemplateV2 = async (): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers },
+      url: options.baseUrl + '/api/batch/new_template'
+    });
+    return data;
+  };
 
   return {
     getMedia,
@@ -626,6 +634,7 @@ export const useInvasivesApi = () => {
     getBatchUploads,
     postBatchUpload,
     downloadTemplate,
+    downloadTemplateV2,
     getJurisdictions,
     cacheUserInfo,
     getUserInfoFromCache,

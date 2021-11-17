@@ -71,6 +71,31 @@ POST.apiDoc = {
   ...POST_API_DOC
 };
 
+export const HEADERS = [
+  'latitude',
+  'longitude',
+  'utm_easting',
+  'utm_northing',
+  'utm_zone',
+  'employer_code',
+  'jurisdiction_pct_covered',
+  'jurisdiction_code',
+  'comment',
+  'access_description',
+  'location_description',
+  'slope_code',
+  'aspect_code',
+  'soil_texture_code',
+  'specific_use_code',
+  'research_detection_ind',
+  'invasive_plants_occurrence',
+  'invasive_plants_observation_type',
+  'invasive_plants_distribution_code',
+  'invasive_plants_density_code',
+  'invasive_plants_life_stage_code',
+  'invasive_plants_plant_code'
+];
+
 const dataFromRow = (row, created_by) => {
   return {
     created_by: created_by,

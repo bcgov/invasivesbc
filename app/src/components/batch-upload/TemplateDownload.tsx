@@ -5,8 +5,16 @@ import {useInvasivesApi} from "../../hooks/useInvasivesApi";
 const TemplateDownload: React.FC = () => {
   const api = useInvasivesApi();
 
-  const downloadTemplate = async () => {
-    const data = await api.downloadTemplate();
+  const downloadTemplate = async (version) => {
+    let downloadAPICall;
+
+    if (version === 'v2') {
+      downloadAPICall = api.downloadTemplateV2;
+    } else {
+      downloadAPICall = api.downloadTemplate;
+    }
+
+    const data = await downloadAPICall();
     const dataUrl = `data:text/csv;base64,${btoa(data)}`;
 
     const downloadLink = document.createElement('a');
@@ -16,16 +24,16 @@ const TemplateDownload: React.FC = () => {
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
-  }
+  };
 
   return (
     <Paper>
       <Box mx={3} my={3} py={3}>
         <Typography variant={"h4"}>CSV Template Download</Typography>
         <ul>
-          <li><span onClick={downloadTemplate}>Download Plant Form Template</span></li>
+          <li><span onClick={() => downloadTemplate('v1')}>Download Plant Form Template</span></li>
+          <li><span onClick={() => downloadTemplate('v2')}>Download Plant Form Template (v2)</span></li>
         </ul>
-
       </Box>
     </Paper>
   );
