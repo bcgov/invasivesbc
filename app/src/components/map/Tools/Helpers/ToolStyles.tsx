@@ -1,4 +1,6 @@
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core';
+import { ThemeContext } from 'contexts/themeContext';
 
 export const toolStyles = makeStyles((theme) => ({
   toolBtn: {
@@ -82,3 +84,33 @@ export const toolStyles = makeStyles((theme) => ({
     borderRadius: 5
   }
 }));
+
+/**
+ * Specify theme for selected mode text and background to be used
+ * in className
+ * @param mode is true; mode = Point otherwise mode = Within Radius
+ * @param themeType if true in dark mode else in light mdoe
+ * @returns class
+ */
+export const assignPointModeTheme = (mode: boolean, themeType: boolean) => {
+  return mode && (themeType ? toolStyles().popupModeSelectedDark : toolStyles().popupModeSelectedLight);
+};
+
+/**
+ * Specify theme for non selected mode text to be used in style
+ * @param mode is true; mode = Point otherwise mode = Within Radius
+ * @param themeType if true in dark mode else in light mdoe
+ * @returns color style
+ */
+export const assignPtDefaultTheme = (mode: boolean, themeType: boolean) => {
+  return { color: mode && (themeType ? '#fff' : 'rgba(0, 0, 0, 0.87)') };
+};
+
+/**
+ * Specify theme for text to be used in style
+ * @param themeType if true in dark mode else in light mdoe
+ * @returns color style
+ */
+export const assignTextDefaultTheme = (themeType: boolean) => {
+  return { color: themeType ? '#fff' : 'rgba(0, 0, 0, 0.87)' };
+};
