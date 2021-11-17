@@ -68,5 +68,17 @@ export const toolStyles = makeStyles((theme) => ({
   toolIconDark: {
     backgroundColor: '#424242',
     borderRadius: '100%'
+  },
+  popupModeSelectedDark: {
+    padding: 3,
+    backgroundColor: '#424242',
+    color: '#2196f3',
+    borderRadius: 5
+  },
+  popupModeSelectedLight: {
+    padding: 3,
+    color: '#223f75',
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    borderRadius: 5
   }
 }));

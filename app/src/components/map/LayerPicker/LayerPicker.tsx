@@ -17,7 +17,7 @@ import {
   getChild,
   sortObject
 } from './SortLayerOrder';
-import { toolStyles } from '../Tools/Helpers/ToolBtnStyles';
+import { toolStyles } from '../Tools/Helpers/ToolStyles';
 // MUI
 import {
   Checkbox,
@@ -52,6 +52,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { LayersSelector, addOrRemoveLayer, updateLayer } from './LayersSelectorAndRender';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
+import KMLUpload from 'components/map-buddy-components/KMLUpload';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -409,6 +410,10 @@ export function LayerPicker(props: any, { position }) {
                   }}>
                   Load
                 </Button>
+                <Accordion>
+                  <AccordionSummary>KML upload</AccordionSummary>
+                  <KMLUpload />
+                </Accordion>
               </Popover>
             </div>
           )}

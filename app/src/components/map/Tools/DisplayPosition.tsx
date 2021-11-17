@@ -6,7 +6,7 @@ import { CircularProgress, IconButton } from '@material-ui/core';
 import proj4 from 'proj4';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './Helpers/ToolBtnStyles';
+import { toolStyles } from './Helpers/ToolStyles';
 import { GeneratePopup } from './InfoAreaDescription';
 import { createDataUTM } from './Helpers/StyledTable';
 import marker from '../Icons/POImarker.png';

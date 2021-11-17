@@ -260,10 +260,10 @@ export const RenderTablePosition = ({ rows }) => {
       {rows &&
         rows?.map((row) => (
           <StyledTableRow key={row.name}>
-            <StyledTableCell component="th" scope="row">
+            <StyledTableCell style={{ width: 150.5 }} component="th" scope="row">
               {row.name}
             </StyledTableCell>
-            <StyledTableCell>{row.value}</StyledTableCell>
+            <StyledTableCell style={{ width: 150.5 }}>{row.value}</StyledTableCell>
           </StyledTableRow>
         ))}
     </TableBody>
@@ -337,7 +337,7 @@ export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
           <>
             <StyledTableRow key={row?.obj.activity_id}>
               <StyledTableCell
-                style={{ display: 'flex', flexflow: 'row nowrap', marginRight: -20 }}
+                style={{ display: 'flex', flexflow: 'row nowrap', width: 150.5 }}
                 component="th"
                 scope="row">
                 <IconButton size="small" onClick={() => updateRow(row, { open: !row.open })}>
@@ -347,7 +347,7 @@ export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
                   {row?.obj.activity_payload.short_id}
                 </Button>
               </StyledTableCell>
-              <StyledTableCell style={{ marginRight: -40 }}>
+              <StyledTableCell style={{ width: 150.5 }}>
                 {getPlantCodes(row.obj).map((code) => (
                   <>{code}</>
                 ))}
@@ -397,14 +397,14 @@ export const RenderTableDataBC = ({ rows }) => {
           {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
             <>
               <StyledTableRow key={row?.properties.WELL_TAG_NUMBER}>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell style={{ width: 51 }} component="th" scope="row">
                   {row.properties.AQUIFER_ID}
                 </StyledTableCell>
-                <StyledTableCell>
+                <StyledTableCell style={{ width: 125 }}>
                   {row.geometry.coordinates[0].toFixed(2)}, {row.geometry.coordinates[1].toFixed(2)}
                   <></>
                 </StyledTableCell>
-                <StyledTableCell>{row.properties.STREET_ADDRESS}</StyledTableCell>
+                <StyledTableCell style={{ width: 125 }}>{row.properties.STREET_ADDRESS}</StyledTableCell>
               </StyledTableRow>
             </>
           ))}
@@ -447,7 +447,7 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
           {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
             <>
               <StyledTableRow key={row?.site_id}>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell style={{ width: 51 }} component="th" scope="row">
                   <a
                     onClick={() => {
                       if (row.geometry)
@@ -463,7 +463,7 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
                     {row.site_id}
                   </a>
                 </StyledTableCell>
-                <StyledTableCell>
+                <StyledTableCell style={{ width: 125 }}>
                   {row.species.map((s) => (
                     <>
                       {s}
@@ -471,7 +471,7 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
                     </>
                   ))}
                 </StyledTableCell>
-                <StyledTableCell>
+                <StyledTableCell style={{ width: 125 }}>
                   {row.jurisdictions.map((j) => (
                     <>
                       {j}

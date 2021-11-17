@@ -29,7 +29,7 @@ import DisplayPosition from './Tools/DisplayPosition';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
-import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
+import { toolStyles } from './Tools/Helpers/ToolStyles';
 import { SetPointOnClick } from './Tools/InfoAreaDescription';
 import JumpControl, { JumpToTrip } from './Tools/JumpToTrip';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';

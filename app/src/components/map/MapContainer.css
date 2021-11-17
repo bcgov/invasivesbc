@@ -9,3 +9,17 @@
 .greenIconFilter {
   filter: invert(100%);
 }
+
+.leaflet-popup-content-wrapper-dark {
+  background-color: #333;
+  border-radius: 10px;
+}
+
+.leaflet-popup-content-wrapper-light {
+  background-color: #ffff;
+  border-radius: 10px;
+}
+
+.leaflet-popup-content-wrapper {
+  background-color: transparent;
+}
