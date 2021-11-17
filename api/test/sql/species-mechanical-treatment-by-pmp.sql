@@ -65,7 +65,7 @@ where
   activity_type = 'Treatment'
 order by
   created_timestamp desc
-limit 100
+limit 10
 ;
 
 -- Find the code
