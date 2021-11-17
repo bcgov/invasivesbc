@@ -1,6 +1,4 @@
-import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core';
-import { ThemeContext } from 'contexts/themeContext';
 
 export const toolStyles = makeStyles((theme) => ({
   toolBtn: {
