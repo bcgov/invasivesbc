@@ -83,6 +83,32 @@ export const toolStyles = makeStyles((theme) => ({
   }
 }));
 
+export const layerPickerStyles = makeStyles((theme) => ({
+  root: {
+    width: '360px',
+    height: '360px',
+    backgroundColor: 'white',
+    position: 'absolute',
+    zIndex: 1500,
+    borderRadius: '4px',
+    right: 60,
+    top: 20,
+    ['@media (max-width:800px)']: {
+      top: 100
+    }
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    fontWeight: theme.typography.fontWeightRegular
+  },
+  accordion: {
+    width: '100%'
+  },
+  spinnerGridItem: {
+    width: '50px'
+  }
+}));
+
 /**
  * Specify theme for selected mode text and background to be used
  * in className

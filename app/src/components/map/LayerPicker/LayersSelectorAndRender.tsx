@@ -35,7 +35,7 @@ export const updateLayer = (fieldsToUpdate, child, layers, setLayers) => {
   }
 };
 
-export const addOrRemoveLayer = (child, layers, setLayers) => {
+export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
   if (child.enabled) {
     var index = getIndex(child, layers);
     if (index > -1) {
@@ -54,7 +54,8 @@ export const addOrRemoveLayer = (child, layers, setLayers) => {
           layer_code: child.layer_code,
           layer_mode: null,
           layer_name: child.name,
-          opacity: child.opacity
+          opacity: child.opacity,
+          order: parent.order
         }
       ]);
     }
@@ -66,7 +67,8 @@ export const addOrRemoveLayer = (child, layers, setLayers) => {
           color_code: child.color_code,
           layer_mode: child.layer_mode,
           layer_name: child.layer_name,
-          opacity: child.opacity
+          opacity: child.opacity,
+          order: parent.order
         }
       ]);
     }
