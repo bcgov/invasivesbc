@@ -55,7 +55,8 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
           layer_mode: null,
           layer_name: child.name,
           opacity: child.opacity,
-          order: parent.order
+          order: parent.order,
+          parent_id: parent.id
         }
       ]);
     }
@@ -68,11 +69,13 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
           layer_mode: child.layer_mode,
           layer_name: child.layer_name,
           opacity: child.opacity,
-          order: parent.order
+          order: parent.order,
+          parent_id: parent.id
         }
       ]);
     }
   }
+  console.log('unsorted', layers);
 };
 
 export const LayersSelector = ({ parent, child, objectState, setObjectState, layers, setLayers }) => {

@@ -101,9 +101,29 @@ export function LayerPicker(props: any, { position }) {
   const [newLayers, setNewLayers] = useState([]);
 
   useEffect(() => {
-    console.log('layers', newLayers);
+    var len = newLayers.length;
+    if (len > 1) {
+      var tempArr = newLayers;
+
+      for (var j = 0; j < len - 1; j++) {
+        var iMin = j;
+        for (var i = j + 1; i < len; i++) {
+          if (tempArr[i].order < tempArr[iMin].order) iMin = i;
+        }
+        if (tempArr[iMin] !== tempArr[j]) {
+          var temp = tempArr[iMin];
+          tempArr[iMin] = tempArr[j];
+          tempArr[j] = temp;
+          temp = null;
+        }
+      }
+      setNewLayers(tempArr);
+    }
   }, [newLayers]);
 
+  useEffect(() => {
+    console.log('sorted', newLayers);
+  }, [newLayers]);
   /* Removed for now:
   function getErrorIcon(time: any) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
@@ -184,13 +204,13 @@ export function LayerPicker(props: any, { position }) {
       <ListItemIcon>{parent.expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}</ListItemIcon>
     ));
     return (
-      <ListItem dense={true} ContainerComponent="div" style={{ width: '100%', maxWidth: 360 }}>
+      <ListItem dense={true} ContainerComponent="div" style={{ width: '100%', maxWidth: 440 }}>
         {/*<Grid container>*/}
         <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
           <Grid container style={{ marginTop: -10, marginBottom: -10 }} alignItems="center" xs={12}>
             <Grid item xs={10}>
               <AccordionSummary className={classes.heading} id={parent.id}>
-                <Typography variant="caption">{parent.name}</Typography>
+                <Typography variant="subtitle1">{parent.name}</Typography>
               </AccordionSummary>
             </Grid>
             {/* DragHandle */}
@@ -199,7 +219,7 @@ export function LayerPicker(props: any, { position }) {
             </Grid>
           </Grid>
           {parent.children.map((child: any) => (
-            <Grid container style={{ marginTop: -7.5, marginBottom: -7.5 }} direction="row" alignItems="center">
+            <Grid container style={{ marginBottom: -5, marginTop: -5 }} direction="row" alignItems="center">
               &emsp;
               <Grid item xs={2}>
                 <Checkbox
