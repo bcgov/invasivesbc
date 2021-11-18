@@ -186,7 +186,8 @@ export const DatabaseContext2Provider = (props) => {
              (
               id TEXT PRIMARY KEY,
               json TEXT,
-              activity_subtype TEXT
+              activity_subtype TEXT,
+              sync_status TEXT
             );\n`;
           break;
         case 'REFERENCE_POINT_OF_INTEREST':
@@ -267,6 +268,8 @@ export enum UpsertType {
   DOC_TYPE_AND_ID_FAST_JSON_PATCH = 'docType and ID - FAST JSON PATCH', // uses sqlitejson1 extension when I get it working
   DOC_TYPE_AND_ID_SLOW_JSON_PATCH = 'docType and ID - SLOW JSON PATCH', // workaround, all of these need to have same doctype
   DOC_TYPE = 'docType',
+  MOBILE_ACTIVITY_CREATE = 'create mobile activity',
+  MOBILE_ACTIVITY_PATCH = 'patch mobile activity',
   RAW_SQL = 'raw sql'
 }
 export interface IUpsert {
@@ -275,6 +278,8 @@ export interface IUpsert {
   docType?: DocType;
   sql?: string;
   json?: Object;
+  activity_subtype?: string;
+  sync_status?: string;
   geo?: GeoJSONObject; //todo - give geo it's own column so we can fetch many geos locally fast
   trip_ID?: number; //todo - give a trip number for handling cache management
 }
@@ -359,6 +364,31 @@ export const upsert = async (upsertConfigs: Array<IUpsert>, databaseContext: any
           break;
           */
         // json patch upsert:
+        case UpsertType.MOBILE_ACTIVITY_CREATE:
+          batchUpdate +=
+            `insert into ` +
+            upsertConfig.docType +
+            ` (id, json, activity_subtype, sync_status) values ('` +
+            upsertConfig.ID +
+            `','` +
+            JSON.stringify(upsertConfig.json).split(`'`).join(`''`) +
+            `','` +
+            upsertConfig.activity_subtype +
+            `','` +
+            upsertConfig.sync_status +
+            `');\n`;
+          break;
+        case UpsertType.MOBILE_ACTIVITY_PATCH:
+          let sql =
+            `update ` +
+            upsertConfig.docType +
+            ` set sync_status='${upsertConfig.sync_status}', json='${JSON.stringify(upsertConfig.json)
+              .split(`'`)
+              .join(`''`)}` +
+            `' where id='${upsertConfig.ID}';\n`;
+          console.log('SQL: ', sql);
+          batchUpdate += sql;
+          break;
         case UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH:
           break;
         case UpsertType.DOC_TYPE_AND_ID_FAST_JSON_PATCH:

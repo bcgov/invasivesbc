@@ -201,18 +201,23 @@ export const useDataAccess = () => {
       const dbcontext = context;
       return dbcontext.asyncQueue({
         asyncTask: () => {
-          return upsert(
-            [
-              {
-                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-                docType: DocType.ACTIVITY,
-                json: activity,
-                ID: activity.activity_id,
-                sync_status: activity.sync_status
-              }
-            ],
-            dbcontext
-          );
+          try {
+            return upsert(
+              [
+                {
+                  type: UpsertType.MOBILE_ACTIVITY_PATCH,
+                  docType: DocType.ACTIVITY,
+                  json: activity,
+                  ID: activity.activity_id,
+                  sync_status: activity.sync_status,
+                  activity_subtype: activity.activity_subtype
+                }
+              ],
+              dbcontext
+            );
+          } catch (err) {
+            console.log('Error occurred: ', err);
+          }
         }
       });
     }
@@ -248,6 +253,49 @@ export const useDataAccess = () => {
         return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], dbcontext);
       }
     });
+  };
+
+  /**
+   * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
+   *
+   * @param {activitiesSearchCriteria} activitiesSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getActivitiesForMobileSync = async (
+    activitiesSearchCriteria: IActivitySearchCriteria,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ): Promise<any> => {
+    if (Capacitor.getPlatform() !== 'web') {
+      const dbContext = context;
+
+      const typeClause = activitiesSearchCriteria.activity_type
+        ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
+            activitiesSearchCriteria.activity_type
+          ).replace(/[\[\]']+/g, '')})`
+        : '';
+      const subTypeClause = activitiesSearchCriteria.activity_subtype
+        ? ` and json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
+            activitiesSearchCriteria.activity_subtype
+          ).replace(/[\[\]']+/g, '')})`
+        : '';
+
+      const sql = `select * from activity where 1=1 and sync_status='${ActivitySyncStatus.NOT_SAVED}' ${typeClause} ${subTypeClause}`;
+      const asyncReturnVal = await dbContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.RAW_SQL,
+              sql: sql
+            },
+            dbContext
+          );
+        }
+      });
+      return {
+        rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
+        count: asyncReturnVal.length
+      };
+    }
   };
 
   /**
@@ -352,7 +400,7 @@ export const useDataAccess = () => {
           return upsert(
             [
               {
-                type: UpsertType.DOC_TYPE_AND_ID,
+                type: UpsertType.MOBILE_ACTIVITY_CREATE,
                 docType: DocType.ACTIVITY,
                 ID: activity.activity_id,
                 json: activity,
@@ -438,14 +486,24 @@ export const useDataAccess = () => {
    */
   const syncCachedRecords = async (): Promise<any> => {
     // Only callable on mobile
-    if (Capacitor.getPlatform() !== 'web') {
-      await getActivities(
+    if (Capacitor.getPlatform() !== 'web' && networkContext.connected) {
+      await getActivitiesForMobileSync(
         { activity_type: ['Observation', 'Treatment', 'Monitoring'] },
-        databaseContext,
-        true, //force cache
-        false // Read activity instead of reference activitiy
+        databaseContext
       ).then((res: any) => {
-        console.log('Cached records: ', res);
+        if (res.count > 0) {
+          res.rows.forEach(async (row: ICreateOrUpdateActivity) => {
+            try {
+              api.createActivity(row);
+            } catch (err) {
+              console.log('Error saving activity to api');
+            }
+            let tempRow: ICreateOrUpdateActivity = row;
+            tempRow.sync_status = ActivitySyncStatus.SAVE_SUCCESSFUL;
+            console.log(tempRow);
+            updateActivity(tempRow, databaseContext);
+          });
+        }
       });
     }
   };

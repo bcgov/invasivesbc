@@ -41,6 +41,7 @@ import { Sync } from '@material-ui/icons';
 import { IonAlert } from '@ionic/react';
 import { Capacitor } from '@capacitor/core';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -222,6 +223,7 @@ const ActivitiesList: React.FC = () => {
   const [isDisabled, setIsDisable] = useState(false);
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
   const [showAlert, setShowAlert] = useState(false);
+  const networkContext = useContext(NetworkContext);
 
   const syncCachedActivities = async () => {
     console.log('Syncing...');
@@ -345,7 +347,7 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
             </Select>
           </FormControl>
-          {isMobile && (
+          {isMobile && networkContext.connected && (
             <Button onClick={showPrompt} key="sync" color="primary" variant="outlined" startIcon={<Sync />}>
               Sync Cached Records
             </Button>
