@@ -563,7 +563,8 @@
           "utm_easting",
           "utm_northing",
           "reported_area",
-          "location_description"
+          "location_description",
+          "general_comment"
         ],
         "properties": {
           "activity_date_time": {
