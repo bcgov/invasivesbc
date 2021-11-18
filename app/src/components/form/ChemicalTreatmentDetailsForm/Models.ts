@@ -1,10 +1,10 @@
 export interface IGeneralFields {
   application_start_time?: Date;
-  species_list?: ISpecies[];
+  invasive_plants?: ISpecies[];
   tank_mix?: boolean;
   tank_mix_object?: any;
   chemical_application_method?: string;
-  herbicides_list?: IHerbicide[];
+  herbicides?: IHerbicide[];
 }
 
 export interface ISpecies {
@@ -14,14 +14,14 @@ export interface ISpecies {
 
 export interface ITankMix {
   calculation_type?: string;
-  herbicides_list?: IHerbicide[];
+  herbicides?: IHerbicide[];
   calculation_fields?: any;
 }
 
 export interface IHerbicide {
-  herbicide_type?: string;
-  herbicide?: string;
-  product_application_rate?: number; //only if in tank
+  herbicide_type_code?: string;
+  herbicide_code?: string;
+  application_rate?: number; //only if in tank
   calculation_type?: string; //only if NOT in tank
   calculation_fields?: any; //only if NOT in tank
 }

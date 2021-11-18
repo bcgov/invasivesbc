@@ -1,14 +1,16 @@
-import { Box, TextField } from '@material-ui/core';
+import { Box, Button, TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import CustomAutoComplete from './CustomAutoComplete';
 import Herbicide from './Herbicide';
 import { IHerbicide, ITankMix } from './Models';
+import AddIcon from '@mui/icons-material/Add';
 
 export interface ITankMixComponent {
   tankMixOn: boolean;
   businessCodes: any;
   chemicalApplicationMethodType: string;
   classes: any;
+  errorSchema: any;
   tankMixState: {
     tankMix: ITankMix;
     setTankMix: React.Dispatch<React.SetStateAction<ITankMix>>;
@@ -22,6 +24,7 @@ export interface ITankMixComponent {
 const TankMix: React.FC<ITankMixComponent> = ({
   tankMixOn,
   businessCodes,
+  errorSchema,
   chemicalApplicationMethodType,
   classes,
   tankMixState,
@@ -41,7 +44,7 @@ const TankMix: React.FC<ITankMixComponent> = ({
 
   //when herbicides arr changes, update it in tank mix
   useEffect(() => {
-    setCurrentTankMix({ ...currentTankMix, herbicides_list: herbicidesArr });
+    setCurrentTankMix({ ...currentTankMix, herbicides: herbicidesArr });
   }, [herbicidesArr]);
 
   //update choices for autocomplete fields
@@ -74,12 +77,29 @@ const TankMix: React.FC<ITankMixComponent> = ({
         }}
       />
 
+      <Box component="div" className={classes.centerBox}>
+        <Button
+          onClick={() => {
+            setHerbicidesArr((prevArr) => {
+              const newHerbicidesArr = [...prevArr];
+              newHerbicidesArr.push({});
+              return newHerbicidesArr;
+            });
+          }}
+          variant="contained"
+          startIcon={<AddIcon />}
+          color="primary">
+          Add Herbicide
+        </Button>
+      </Box>
+
       <Box component="div" className={classes.listContainer}>
         {herbicidesArrState.herbicidesArr.map((herbicide, index) => (
           <Herbicide
             key={index}
             herbicide={herbicide}
             tankMixOn={tankMixOn}
+            errorSchema={errorSchema}
             chemicalApplicationMethodType={chemicalApplicationMethodType}
             classes={classes}
             index={index}

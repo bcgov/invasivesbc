@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   tankMixRadioGroup: { flexDirection: 'row', justifyContent: 'center' }
 }));
 
-const ChemicalTreatmentSpeciesForm = (props) => {
+const ChemicalTreatmentDetailsForm = (props) => {
   const classes = useStyles();
 
   //get business codes from schema
@@ -94,8 +94,8 @@ const ChemicalTreatmentSpeciesForm = (props) => {
   const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(
     chemicalTreatmentDetails?.chemical_application_method
   );
-  const [speciesArr, setSpeciesArr] = useState<ISpecies[]>(chemicalTreatmentDetails?.species_list || []);
-  const [herbicidesArr, setHerbicidesArr] = useState<IHerbicide[]>(chemicalTreatmentDetails?.herbicides_list || []);
+  const [speciesArr, setSpeciesArr] = useState<ISpecies[]>(chemicalTreatmentDetails?.invasive_plants || []);
+  const [herbicidesArr, setHerbicidesArr] = useState<IHerbicide[]>(chemicalTreatmentDetails?.herbicides || []);
   const [tankMix, setTankMix] = useState<ITankMix>(chemicalTreatmentDetails?.tank_mix_object || {});
 
   //get arrays for spray and direct chemical methods
@@ -110,6 +110,11 @@ const ChemicalTreatmentSpeciesForm = (props) => {
     chemical_method_spray_code_values.includes(chemicalApplicationMethod) ? 'spray' : 'direct'
   );
   const [chemicalApplicationMethodChoices, setChemicalApplicationMethodChoices] = useState([]);
+  //error helpers
+  const herbicidesArrErrors =
+    props.errorSchema?.activity_subtype_data?.chemical_treatment_details?.herbicides?.__errors;
+  const invasivePlantsArrErrors =
+    props.errorSchema?.activity_subtype_data?.chemical_treatment_details?.invasive_plants?.__errors;
 
   //update RJSF form data when chem treatment details change
   useEffect(() => {
@@ -150,8 +155,8 @@ const ChemicalTreatmentSpeciesForm = (props) => {
     setChemicalTreatmentDetails({
       tank_mix: tankMixOn,
       chemical_application_method: chemicalApplicationMethod,
-      species_list: speciesArr,
-      herbicides_list: herbicidesArr,
+      invasive_plants: speciesArr,
+      herbicides: herbicidesArr,
       tank_mix_object: tankMix
     });
   }, [tankMixOn, chemicalApplicationMethod, speciesArr, herbicidesArr, tankMix]);
@@ -164,7 +169,15 @@ const ChemicalTreatmentSpeciesForm = (props) => {
       <FormControl className={classes.formControl}>
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="species-content" id="species-header">
-            <Typography variant="h5">Species</Typography>
+            <Typography
+              style={{ width: '33%', flexShrink: 0 }}
+              color={invasivePlantsArrErrors?.length > 0 ? 'error' : 'textPrimary'}
+              variant="h5">
+              Species
+            </Typography>
+            <Typography variant="body2" color={'error'}>
+              {invasivePlantsArrErrors?.length > 0 && invasivePlantsArrErrors[0]}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box className={classes.accordionBody}>
@@ -188,6 +201,7 @@ const ChemicalTreatmentSpeciesForm = (props) => {
                 {speciesArr.map((species, index) => (
                   <InvasiveSpecie
                     key={index}
+                    errorSchema={props.errorSchema}
                     species={species}
                     classes={classes}
                     index={index}
@@ -268,6 +282,7 @@ const ChemicalTreatmentSpeciesForm = (props) => {
                 {herbicidesArr.map((herbicide, index) => (
                   <Herbicide
                     key={index}
+                    errorSchema={props.errorSchema}
                     herbicide={herbicide}
                     tankMixOn={tankMixOn}
                     chemicalApplicationMethodType={chemicalApplicationMethodType}
@@ -284,7 +299,15 @@ const ChemicalTreatmentSpeciesForm = (props) => {
 
         <Accordion expanded={tankMixOn} disabled={!tankMixOn}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="tank-mix-content" id="tank-mix-header">
-            <Typography variant="h5">Tank Mix</Typography>
+            <Typography
+              color={herbicidesArrErrors?.length > 0 ? 'error' : 'textPrimary'}
+              style={{ width: '33%', flexShrink: 0 }}
+              variant="h5">
+              Tank Mix
+            </Typography>
+            <Typography variant="body2" color={'error'}>
+              {herbicidesArrErrors?.length > 0 && herbicidesArrErrors[0]}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box className={classes.accordionBody}>
@@ -292,6 +315,7 @@ const ChemicalTreatmentSpeciesForm = (props) => {
                 businessCodes={businessCodes}
                 chemicalApplicationMethodType={chemicalApplicationMethodType}
                 tankMixState={{ tankMix, setTankMix }}
+                errorSchema={props.errorSchema}
                 classes={classes}
                 herbicidesArrState={{ herbicidesArr, setHerbicidesArr }}
                 tankMixOn={tankMixOn}
@@ -304,4 +328,4 @@ const ChemicalTreatmentSpeciesForm = (props) => {
   );
 };
 
-export default ChemicalTreatmentSpeciesForm;
+export default ChemicalTreatmentDetailsForm;

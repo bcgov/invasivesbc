@@ -29,7 +29,7 @@ import MultiSelectAutoComplete from '../../rjsf/widgets/MultiSelectAutoComplete'
 import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
-import ChemicalTreatmentSpeciesForm from './ChemicalTreatmentSpeciesForm/ChemicalTreatmentSpeciesForm';
+import ChemicalTreatmentSpeciesForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -136,7 +136,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     } else if (args[0].includes('root_activity_data_')) {
       argumentFieldName = 'root_activity_data_';
     }
-    if (args[0].includes('herbicide_information_application_rate')) {
+    if (args[0].includes('application_rate')) {
       argumentFieldName = 'application_rate';
     }
     let fieldName = argumentFieldName ? args[0].substr(argumentFieldName.length) : args[0]; // else use the full arg name
@@ -391,6 +391,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             <ChemicalTreatmentSpeciesForm
               {...props}
               schema={schemas.schema}
+              errorSchema={formRef?.state?.errorSchema || {}}
               formData={props.activity?.formData || null}
               onChange={(event) => {
                 if (!props.onFormChange) {

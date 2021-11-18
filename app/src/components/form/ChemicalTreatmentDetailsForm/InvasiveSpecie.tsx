@@ -8,6 +8,7 @@ export interface ISpeciesComponent {
   species: any;
   index: number;
   businessCodes: any;
+  errorSchema: any;
   classes: any;
   speciesArrState: {
     speciesArr: ISpecies[];
@@ -15,7 +16,14 @@ export interface ISpeciesComponent {
   };
 }
 
-const InvasiveSpecies: React.FC<ISpeciesComponent> = ({ species, index, classes, businessCodes, speciesArrState }) => {
+const InvasiveSpecies: React.FC<ISpeciesComponent> = ({
+  species,
+  index,
+  classes,
+  errorSchema,
+  businessCodes,
+  speciesArrState
+}) => {
   const [currentSpecies, setCurrentSpecies] = useState<ISpecies>(species);
 
   //creating valueLabels to to get the lable for heading
