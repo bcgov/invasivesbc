@@ -53,19 +53,29 @@ order by
 
 /**
  Testing
+ TODO: Look up codes for these
+ mechanical_disposal_code
+ mechanical_method_code
+
  **/
 select
   activity_payload->
     'form_data'->
-    'activity_subtype_data'-- ->
-    -- 'treatment_issues_code'
+    'activity_subtype_data'->
+    'mechanical_plant_information'->0->
+    'invasive_plant_code' "Plant Code"
 from
   activity_incoming_data
 where
-  activity_type = 'Treatment'
+  activity_type = 'Treatment' and
+  activity_payload->
+    'form_data'->
+    'activity_subtype_data'->
+    'mechanical_plant_information'->0 ?
+    'invasive_plant_code'
 order by
   created_timestamp desc
-limit 10
+limit 20
 ;
 
 -- Find the code
