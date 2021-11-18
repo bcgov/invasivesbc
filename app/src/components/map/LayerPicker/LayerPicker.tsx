@@ -174,6 +174,12 @@ export function LayerPicker(props: any, { position }) {
     setObjectState([...parentsBefore, updatedParent, ...parentsAfter] as any);
   };
 
+  /**
+   * Function used to open or close the Settings Dialog Box
+   * @param parent object from objectState (LAYERS.json)
+   * @param child object from parent children array
+   * @param open if true opens dialog box otherwise close
+   */
   const toggleChildDialog = (parent, child, open: boolean) => {
     updateChild(
       parent.id,
@@ -185,6 +191,11 @@ export function LayerPicker(props: any, { position }) {
     );
   };
 
+  /**
+   * Function to open the color picker dialog box
+   * @param parent object from objectState (LAYERS.json)
+   * @param child object from parent children array
+   */
   const toggleColorPickerDialog = (parent, child) => {
     updateChild(
       parent.id,
