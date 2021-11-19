@@ -5,9 +5,12 @@
   then report out treatments.
   According to [this](https://www.postgresql.org/docs/9.1/arrays.html)
   you use the `any` keyword to search in an array
+  TBD: There is duplication most likely do to the multi-polygon nature 
+  of the old PMP Layer.
 */
 select
   c.code_description "Species",
+  count(*) "count",
   public.pest_management_plan_areas.pmp_name "PMP",
   p.activity_ids "IDs", -- Change this
   round(
@@ -33,6 +36,7 @@ where
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   p.species = c.code_name and
   p.activity_type = 'Treatment' and
+  array_length(p.activity_ids,1) > 0 and
   c.code_header_id = ( -- Invasive plant id
     select
       code_header_id
@@ -53,6 +57,7 @@ order by
 
 /**
  Querying mechanical treatments
+ TODO: Select IDs for joining to other query.
  **/
 select
   c.code_description "Treatment",
@@ -79,12 +84,4 @@ where
     'activity_subtype_data'->
     'mechanical_plant_information'->0 ?
     'invasive_plant_code'
-order by
-  created_timestamp desc
-limit 20
-;
-
--- Find the code
-select distinct code_header_name from code_header
-order by code_header_name;
 
