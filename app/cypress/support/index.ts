@@ -15,7 +15,7 @@
 
 // Import commands.js using ES2015 syntax:
 import { addBoard } from './commands/addBoard';
-import { changeTheme, themeTextCheck } from './commands/landingTestCmds';
+import { changeTheme, themeTextCheck } from './commands/themeTestCmds';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
