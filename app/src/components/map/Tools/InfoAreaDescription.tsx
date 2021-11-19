@@ -343,7 +343,12 @@ function SetPointOnClick({ map }: any) {
         ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         onClick={() => setClickMode(!clickMode)}
-        style={clickMode ? { backgroundColor: '#006ee6' } : null}>
+        style={{
+          backgroundColor: clickMode ? '#006ee6' : null,
+          borderTopLeftRadius: 5,
+          borderTopRightRadius: 5,
+          marginTop: 5
+        }}>
         <img
           style={{ width: 32, height: 32 }}
           color={themeContext.themeType ? '#000' : 'white'}

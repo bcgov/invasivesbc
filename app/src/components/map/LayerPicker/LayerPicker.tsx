@@ -53,13 +53,6 @@ import { LayersSelector, addOrRemoveLayer, updateLayer } from './LayersSelectorA
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 
-const POSITION_CLASSES = {
-  bottomleft: 'leaflet-bottom leaflet-left',
-  bottomright: 'leaflet-bottom leaflet-right',
-  topleft: 'leaflet-top leaflet-left',
-  topright: 'leaflet-top leaflet-right'
-};
-
 export const updateChild = (
   parentType: string,
   childType: string,
@@ -90,13 +83,12 @@ export const updateChild = (
   setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
 };
 
-export function LayerPicker(props: any, { position }) {
+export function LayerPicker(props: any) {
   const classes = layerPickerStyles();
   const toolClass = toolStyles();
   const mapLayersContext = useContext(MapRequestContext);
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
-  const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
   const divref = useRef();
   const [newLayers, setNewLayers] = useState([]);
 
@@ -352,7 +344,7 @@ export function LayerPicker(props: any, { position }) {
   };
 
   return (
-    <LayersControlProvider value={null}>
+    <>
       {newLayers.map((layer) => (
         <>
           {layer.bcgw_code && (
@@ -370,53 +362,51 @@ export function LayerPicker(props: any, { position }) {
           )}
         </>
       ))}
-      <div className={positionClass}>
-        <PopupState variant="popover" popupId="layerPicker">
-          {(popupState) => (
-            <div className="leaflet-control leaflet-bar" ref={divref}>
-              <Paper>
-                <IconButton {...bindTrigger(popupState)}>
-                  <LayersIcon fontSize="medium" />
-                </IconButton>
-              </Paper>
-              <Popover
-                style={{ maxHeight: 500 }}
-                {...bindPopover(popupState)}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right'
+      <PopupState variant="popover" popupId="layerPicker">
+        {(popupState) => (
+          <>
+            <Paper>
+              <IconButton style={{ height: 53, width: 53 }} {...bindTrigger(popupState)}>
+                <LayersIcon />
+              </IconButton>
+            </Paper>
+            <Popover
+              style={{ maxHeight: 500 }}
+              {...bindPopover(popupState)}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}>
+              <SortableListContainer
+                items={sortArray(objectState)}
+                onSortEnd={onSortEnd}
+                useDragHandle={true}
+                lockAxis="y"
+              />
+              <Button
+                onClick={() => {
+                  localStorage.setItem('mySave', JSON.stringify(objectState));
                 }}>
-                <SortableListContainer
-                  items={sortArray(objectState)}
-                  onSortEnd={onSortEnd}
-                  useDragHandle={true}
-                  lockAxis="y"
-                />
-                <Button
-                  onClick={() => {
-                    localStorage.setItem('mySave', JSON.stringify(objectState));
-                  }}>
-                  Save
-                </Button>
-                <Button
-                  onClick={() => {
-                    setObjectState(JSON.parse(localStorage.getItem('mySave')));
-                  }}>
-                  Load
-                </Button>
-                <Accordion>
-                  <AccordionSummary>KML upload</AccordionSummary>
-                  <KMLUpload />
-                </Accordion>
-              </Popover>
-            </div>
-          )}
-        </PopupState>
-      </div>
-    </LayersControlProvider>
+                Save
+              </Button>
+              <Button
+                onClick={() => {
+                  setObjectState(JSON.parse(localStorage.getItem('mySave')));
+                }}>
+                Load
+              </Button>
+              <Accordion>
+                <AccordionSummary>KML upload</AccordionSummary>
+                <KMLUpload />
+              </Accordion>
+            </Popover>
+          </>
+        )}
+      </PopupState>
+    </>
   );
 }

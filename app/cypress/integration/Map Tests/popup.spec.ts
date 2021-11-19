@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 import React from 'react';
-import '../support/index';
+import '../../support/index';
 
 describe('can get to Map Page from Landing Page', function () {
   it('Map Page test', function () {

@@ -24,24 +24,22 @@ export const toolStyles = makeStyles((theme) => ({
     height: '40vh'
   },
   toolBtnLight: {
-    height: 43,
-    width: 43,
+    height: 44,
+    width: 44,
     zIndex: 1500,
-    borderRadius: 4,
-    marginRight: 10,
-    marginBottom: 5,
+    marginLeft: 9,
+    borderRadius: 0,
     background: 'white',
     '&:hover': {
       background: 'white'
     }
   },
   toolBtnDark: {
-    height: 43,
-    width: 43,
+    height: 44,
+    width: 44,
     zIndex: 1500,
-    borderRadius: 4,
-    marginRight: 10,
-    marginBottom: 5,
+    marginLeft: 9,
+    borderRadius: 0,
     background: '#424242',
     '&:hover': {
       background: '#424242'

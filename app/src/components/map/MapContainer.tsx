@@ -35,6 +35,7 @@ import JumpControl, { JumpToTrip } from './Tools/JumpToTrip';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
 import { ZoomBar } from './Tools/ZoomBar';
 import JumpToActivity from './Tools/JumpToActivity';
+import { ToolbarContainer } from './ToolbarContainer';
 //Added comment
 
 const DefaultIcon = L.icon({
@@ -226,14 +227,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       <FlyToAndFadeContextProvider>
         <MapRequestContextProvider>
           <div className={toolClass.toolBtnsLoc}>
-            <SetPointOnClick map={map} />
-            <DisplayPosition map={map} />
-            <MeasureTool />
             <ZoomButtons position="bottomleft" />
-            <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
             <ScaleControl position="bottomright" imperial={false} />
-            <JumpToTrip />
-            <JumpToActivity id={props.activityId} />
             {props.showDrawControls && (
               <FeatureGroup>
                 <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
@@ -245,12 +240,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           {/* Here is the offline component */}
           <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
 
-          <LayerPicker
+          <ToolbarContainer
             position="topright"
             map={map}
             layers={layers}
             inputGeo={props.geometryState.geometry}
             setWellIdandProximity={props.setWellIdandProximity}
+            mapMaxNativeZoom={mapMaxNativeZoom}
+            setMapMaxNativeZoom={setMapMaxNativeZoom}
           />
           <div
             style={{

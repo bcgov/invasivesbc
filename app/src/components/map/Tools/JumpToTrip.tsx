@@ -102,7 +102,8 @@ export const JumpToTrip = (props) => {
         ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         aria-label="Jump To Location"
-        onClick={jump}>
+        onClick={jump}
+        style={{ borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}>
         <ExploreIcon />
       </IconButton>
     </>
