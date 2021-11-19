@@ -17,11 +17,20 @@ select
     sum(
       public.st_area(
         case
-          when public.st_within(p.geom,public.pest_management_plan_areas.wkb_geometry)
+          when public.st_within(
+            p.geom,
+            public.st_transform(
+              public.geometry(public.pest_management_plan_areas.geog),
+              3005
+            )
+          )
           then p.geom
           else public.st_intersection(
             p.geom,
-            public.st_transform(public.pest_management_plan_areas.wkb_geometry,3005)
+            public.st_transform(
+              public.geometry(public.pest_management_plan_areas.geog),
+              3005
+            )
           )
           end
       )
@@ -31,7 +40,12 @@ from
   code c,
   public.activities_by_species p join
   public.pest_management_plan_areas on
-  public.st_intersects(p.geom,public.st_transform(public.pest_management_plan_areas.wkb_geometry,3005))
+  public.st_intersects(
+    p.geom,public.st_transform(
+      public.geometry(public.pest_management_plan_areas.geog),
+      3005
+    )
+  )
 where
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   p.species = c.code_name and
