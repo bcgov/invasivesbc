@@ -93,27 +93,6 @@ export function LayerPicker(props: any) {
   const [newLayers, setNewLayers] = useState([]);
 
   useEffect(() => {
-    var len = newLayers.length;
-    if (len > 1) {
-      var tempArr = newLayers;
-
-      for (var j = 0; j < len - 1; j++) {
-        var iMin = j;
-        for (var i = j + 1; i < len; i++) {
-          if (tempArr[i].order < tempArr[iMin].order) iMin = i;
-        }
-        if (tempArr[iMin] !== tempArr[j]) {
-          var temp = tempArr[iMin];
-          tempArr[iMin] = tempArr[j];
-          tempArr[j] = temp;
-          temp = null;
-        }
-      }
-      setNewLayers(tempArr);
-    }
-  }, [newLayers]);
-
-  useEffect(() => {
     console.log('sorted', newLayers);
   }, [newLayers]);
   /* Removed for now:
