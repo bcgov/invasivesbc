@@ -1,6 +1,6 @@
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -13,7 +13,6 @@ import {
   ScaleControl
 } from 'react-leaflet';
 import Spinner from '../../components/spinner/Spinner';
-import ZoomControl from 'components/map/Tools/ZoomControl';
 
 // Offline dependencies
 import 'leaflet.offline';
@@ -23,20 +22,13 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 
 // Layer Picker
-import { LayerPicker } from './LayerPicker/LayerPicker';
 import layers from './LayerPicker/LAYERS.json';
-import DisplayPosition from './Tools/DisplayPosition';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
-import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
 import { toolStyles } from './Tools/Helpers/ToolStyles';
-import { SetPointOnClick } from './Tools/InfoAreaDescription';
-import JumpControl, { JumpToTrip } from './Tools/JumpToTrip';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
 import { ZoomBar } from './Tools/ZoomBar';
-import JumpToActivity from './Tools/JumpToActivity';
 import { ToolbarContainer } from './ToolbarContainer';
-//Added comment
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -135,10 +127,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   // removed because redundent: const [mapZoom, setMapZoom] = useState<number>(5);
   const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
-  const divref = useRef(null);
 
   const [map, setMap] = useState<any>(null);
-  const toolClass = toolStyles();
 
   const Offline = (props) => {
     const mapOffline = useMap();
