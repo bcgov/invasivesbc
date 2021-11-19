@@ -48,8 +48,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
       chemical_application_method: null,
       tank_mix_object: {
         herbicides: [],
-        calculation_type: null,
-        calculation_fields: {}
+        calculation_type: null
       }
     },
     autoCompleteChoices: {},
@@ -132,9 +131,9 @@ const ChemicalTreatmentDetailsForm = (props) => {
             </Box>
           </Box>
 
-          {/* <HerbicidesAccordion />
+          <HerbicidesAccordion />
 
-          <TankMixAccordion /> */}
+          <TankMixAccordion />
         </FormControl>
       </ChemicalTreatmentDetailsContextProvider>
     )

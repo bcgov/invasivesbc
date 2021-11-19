@@ -8,13 +8,15 @@ import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsC
 export interface IHerbicideComponent {
   herbicide: any;
   key: number;
+  index: number;
+  classes: any;
+  insideTankMix?: boolean;
 }
 
-const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
+const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, classes, insideTankMix }) => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
-  const classes = formDetails.classes;
   const businessCodes = formDetails.businessCodes;
   const chemicalApplicationMethod = formDetails.formData.chemical_application_method;
   const tankMixOn = formDetails.formData.tank_mix;
@@ -27,14 +29,11 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
     ? 'direct'
     : 'spray';
 
-  const [herbicidesArr, setHerbicidesArr] = useState<IHerbicide[]>(formDetails.formData.herbicides);
-  const [currentHerbicide, setCurrentHerbicide] = useState<IHerbicide>(formDetails.formData.herbicides[key]);
+  const [currentHerbicide, setCurrentHerbicide] = useState<IHerbicide>(formDetails.formData.herbicides[index]);
 
   const [herbicideTypeChoices, setHerbicideTypeChoices] = useState<any[]>([]);
   const [herbicideChoices, setHerbicideChoices] = useState<any[]>([]);
   const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>([]);
-
-  const [calculationFields, setCalculationFields] = useState(currentHerbicide?.calculation_fields || {});
 
   //creating valueLabels to to get the lable for heading
   let optionValueLabels = {};
@@ -44,33 +43,33 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
   });
 
-  //update this herbicide inside herbicides arr
+  //update this herbicide inside context
   useEffect(() => {
-    if (currentHerbicide !== herbicidesArr[key]) {
-      setHerbicidesArr((prevArr) => {
-        const newArr = [...prevArr];
-        newArr[key] = currentHerbicide;
-        return [...newArr];
-      });
+    if (currentHerbicide !== herbicide) {
+      if (insideTankMix) {
+        setFormDetails((prevDetails) => {
+          const newHerbArr = formDetails.formData.herbicides;
+          newHerbArr[index] = { ...currentHerbicide };
+          return {
+            ...prevDetails,
+            formData: {
+              ...prevDetails.formData,
+              tank_mix_object: { ...prevDetails.formData.tank_mix_object, herbicides: [...newHerbArr] }
+            }
+          };
+        });
+      } else {
+        setFormDetails((prevDetails) => {
+          const newHerbArr = formDetails.formData.herbicides;
+          newHerbArr[index] = { ...currentHerbicide };
+          return {
+            ...prevDetails,
+            formData: { ...prevDetails.formData, herbicides: [...newHerbArr] }
+          };
+        });
+      }
     }
   }, [currentHerbicide]);
-
-  //update the herbicides array inside context when it changes
-  useEffect(() => {
-    if (herbicidesArr !== formDetails.formData.herbicides) {
-      setFormDetails((prevDetails) => ({
-        ...prevDetails,
-        formData: { ...prevDetails.formData, herbicidesArr: [...herbicidesArr] }
-      }));
-    }
-  }, [herbicidesArr]);
-
-  //update calculation fields in current herbicide when they change
-  useEffect(() => {
-    setCurrentHerbicide((prevHerb) => {
-      return { ...prevHerb, ...calculationFields };
-    });
-  }, [calculationFields]);
 
   //update choices for autocomplete fields
   useEffect(() => {
@@ -117,7 +116,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
         <Typography className={classes.speciesHeading} variant="h5">
           {optionValueLabels[herbicide.herbicide_code]
             ? optionValueLabels[herbicide.herbicide_code]
-            : `Herbicide #${key + 1}`}
+            : `Herbicide #${index + 1}`}
         </Typography>
 
         <CustomAutoComplete
@@ -186,13 +185,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
             // error={currentHerbicideErrorSchema?.application_rate?.__errors?.length > 0 || false}
             label="Product Application Rate (l/ha)"
             // helperText={currentHerbicideErrorSchema?.application_rate?.__errors[0] || ''}
-            value={calculationFields.application_rate || ''}
+            value={herbicide.application_rate || ''}
             variant="outlined"
             onChange={(event) => {
               if (event.target.value === null) {
                 return;
               }
-              setCalculationFields((prevFields) => ({
+              setCurrentHerbicide((prevFields) => ({
                 ...prevFields,
                 application_rate: Number(event.target.value)
               }));
@@ -206,13 +205,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
             className={classes.inputField}
             type="number"
             label="Amount of Mix Used"
-            value={calculationFields.amount_of_mix || ''}
+            value={herbicide.amount_of_mix || ''}
             variant="outlined"
             onChange={(event) => {
               if (event.target.value === null) {
                 return;
               }
-              setCalculationFields((prevFields) => ({
+              setCurrentHerbicide((prevFields) => ({
                 ...prevFields,
                 amount_of_mix: Number(event.target.value)
               }));
@@ -227,13 +226,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
               className={classes.inputField}
               type="number"
               label="Dilution"
-              value={calculationFields.dilution || ''}
+              value={herbicide.dilution || ''}
               variant="outlined"
               onChange={(event) => {
                 if (event.target.value === null) {
                   return;
                 }
-                setCalculationFields((prevFields) => ({
+                setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
                   dilution: Number(event.target.value)
                 }));
@@ -245,13 +244,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
               className={classes.inputField}
               type="number"
               label="Area Treated (sqm)"
-              value={calculationFields.area_treated_sqm || ''}
+              value={herbicide.area_treated_sqm || ''}
               variant="outlined"
               onChange={(event) => {
                 if (event.target.value === null) {
                   return;
                 }
-                setCalculationFields((prevFields) => ({
+                setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
                   area_treated_sqm: Number(event.target.value)
                 }));
@@ -265,13 +264,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
               className={classes.inputField}
               type="number"
               label="Delivery Rate of Mix"
-              value={calculationFields.delivery_rate_of_mix || ''}
+              value={herbicide.delivery_rate_of_mix || ''}
               variant="outlined"
               onChange={(event) => {
                 if (event.target.value === null) {
                   return;
                 }
-                setCalculationFields((prevFields) => ({
+                setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
                   delivery_rate_of_mix: Number(event.target.value)
                 }));
@@ -285,13 +284,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
               // error={currentHerbicideErrorSchema?.application_rate?.__errors?.length > 0}
               label="Product Application Rate"
               // helperText={currentHerbicideErrorSchema?.application_rate?.__errors[0] || ''}
-              value={calculationFields.application_rate || ''}
+              value={herbicide.application_rate || ''}
               variant="outlined"
               onChange={(event) => {
                 if (event.target.value === null) {
                   return;
                 }
-                setCalculationFields((prevFields) => ({
+                setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
                   application_rate: Number(event.target.value)
                 }));
@@ -303,11 +302,28 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key }) => {
 
         <Button
           onClick={() => {
-            setHerbicidesArr((prevArr) => {
-              const newHerbicidesArr = [...prevArr];
-              newHerbicidesArr.splice(key, 1);
-              return newHerbicidesArr;
-            });
+            if (insideTankMix) {
+              setFormDetails((prevDetails) => {
+                const newHerbicidesArr = [...prevDetails.formData.herbicides];
+                newHerbicidesArr.splice(index, 1);
+                return {
+                  ...prevDetails,
+                  formData: {
+                    ...prevDetails.formData,
+                    tank_mix_object: { ...prevDetails.formData.tank_mix_object, herbicides: [...newHerbicidesArr] }
+                  }
+                };
+              });
+            } else {
+              setFormDetails((prevDetails) => {
+                const newHerbicidesArr = [...prevDetails.formData.herbicides];
+                newHerbicidesArr.splice(index, 1);
+                return {
+                  ...prevDetails,
+                  formData: { ...prevDetails.formData, herbicides: [...newHerbicidesArr] }
+                };
+              });
+            }
           }}
           variant="contained"
           className={classes.speciesRemoveButton}

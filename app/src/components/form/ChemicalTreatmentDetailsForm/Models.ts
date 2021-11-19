@@ -15,7 +15,9 @@ export interface IInvasivePlant {
 export interface ITankMix {
   calculation_type?: string;
   herbicides?: IHerbicide[];
-  calculation_fields?: any;
+  amount_of_mix?: number;
+  delivery_rate_of_mix?: number;
+  area_treated_sqm?: number;
 }
 
 export interface IHerbicide {

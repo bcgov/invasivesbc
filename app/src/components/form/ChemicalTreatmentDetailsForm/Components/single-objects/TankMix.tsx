@@ -3,12 +3,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import HerbicidesAccordion from '../accordions/HerbicidesAccordion';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
+import { useFormStyles } from '../../formStyles';
 
 const TankMix: React.FC = (props) => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
-  const classes = formDetails.classes;
+  const classes = useFormStyles();
   const businessCodes = formDetails.businessCodes;
 
   const [currentTankMix, setCurrentTankMix] = useState(formDetails.formData.tank_mix_object);
@@ -17,7 +18,7 @@ const TankMix: React.FC = (props) => {
   useEffect(() => {
     setFormDetails((prevDetails) => ({
       ...prevDetails,
-      formData: { ...prevDetails.formData, tankMix: { ...currentTankMix } }
+      formData: { ...prevDetails.formData, tank_mix_object: { ...currentTankMix } }
     }));
   }, [currentTankMix]);
 
@@ -41,7 +42,7 @@ const TankMix: React.FC = (props) => {
         id={'calculation_type'}
         label={'Calculation Type'}
         parentState={{ currentTankMix, setCurrentTankMix }}
-        parentName={'tankMix'}
+        parentName={'currentTankMix'}
         fieldName={'calculation_type'}
         onChange={(event, value) => {
           if (value === null) {
@@ -53,13 +54,13 @@ const TankMix: React.FC = (props) => {
         }}
       />
 
-      <HerbicidesAccordion />
+      <HerbicidesAccordion insideTankMix={true} />
 
       <TextField
         className={classes.inputField}
         type="number"
         label="Amount of Mix Used"
-        value={currentTankMix.calculation_fields?.amount_of_mix || ''}
+        value={currentTankMix.amount_of_mix || ''}
         variant="outlined"
         onChange={(event) => {
           if (event.target.value === null) {
@@ -67,7 +68,7 @@ const TankMix: React.FC = (props) => {
           }
           setCurrentTankMix((prevFields) => ({
             ...prevFields,
-            calculation_fields: { ...prevFields.calculation_fields, amount_of_mix: Number(event.target.value) }
+            amount_of_mix: Number(event.target.value)
           }));
         }}
         defaultValue={undefined}
@@ -77,7 +78,7 @@ const TankMix: React.FC = (props) => {
         className={classes.inputField}
         type="number"
         label="Delivery Rate of Mix"
-        value={currentTankMix.calculation_fields?.delivery_rate_of_mix || ''}
+        value={currentTankMix.delivery_rate_of_mix || ''}
         variant="outlined"
         onChange={(event) => {
           if (event.target.value === null) {
@@ -85,7 +86,7 @@ const TankMix: React.FC = (props) => {
           }
           setCurrentTankMix((prevFields) => ({
             ...prevFields,
-            calculation_fields: { ...prevFields.calculation_fields, delivery_rate_of_mix: Number(event.target.value) }
+            delivery_rate_of_mix: Number(event.target.value)
           }));
         }}
         defaultValue={undefined}
@@ -95,7 +96,7 @@ const TankMix: React.FC = (props) => {
         className={classes.inputField}
         type="number"
         label="Area Treated (sqm)"
-        value={currentTankMix.calculation_fields?.area_treated_sqm || ''}
+        value={currentTankMix.area_treated_sqm || ''}
         variant="outlined"
         onChange={(event) => {
           if (event.target.value === null) {
@@ -103,7 +104,7 @@ const TankMix: React.FC = (props) => {
           }
           setCurrentTankMix((prevFields) => ({
             ...prevFields,
-            calculation_fields: { ...prevFields.calculation_fields, area_treated_sqm: Number(event.target.value) }
+            area_treated_sqm: Number(event.target.value)
           }));
         }}
         defaultValue={undefined}

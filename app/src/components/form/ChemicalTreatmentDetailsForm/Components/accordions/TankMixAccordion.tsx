@@ -3,12 +3,13 @@ import React, { useContext } from 'react';
 import TankMix from '../single-objects/TankMix';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
+import { useFormStyles } from '../../formStyles';
 
 const TankMixAccordion = () => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
-  const classes = formDetails.classes;
+  const classes = useFormStyles();
   const tankMixOn = formDetails.formData.tank_mix;
 
   return (
