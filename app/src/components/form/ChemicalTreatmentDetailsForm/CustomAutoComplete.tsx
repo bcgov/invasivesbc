@@ -52,7 +52,7 @@ const CustomAutoComplete = ({
         });
       }
     }
-  }, [choices]);
+  }, [choices, onChange]);
 
   return (
     <Autocomplete

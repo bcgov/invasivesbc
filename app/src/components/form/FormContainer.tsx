@@ -30,6 +30,7 @@ import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplet
 import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 import ChemicalTreatmentSpeciesForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
+import { ChemicalTreatmentDetailsContextProvider } from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -388,18 +389,8 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               }}>
               <React.Fragment />
             </Form>
-            <ChemicalTreatmentSpeciesForm
-              {...props}
-              schema={schemas.schema}
-              errorSchema={formRef?.state?.errorSchema || {}}
-              formData={props.activity?.formData || null}
-              onChange={(event) => {
-                if (!props.onFormChange) {
-                  return;
-                }
-                props.onFormChange(event, formRef, focusedFieldArgs);
-              }}
-            />
+
+            <ChemicalTreatmentSpeciesForm schema={schemas.schema} />
           </>
         </SelectAutoCompleteContextProvider>
       </ThemeProvider>
