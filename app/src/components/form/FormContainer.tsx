@@ -390,7 +390,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               <React.Fragment />
             </Form>
 
-            <ChemicalTreatmentSpeciesForm schema={schemas.schema} />
+            <ChemicalTreatmentSpeciesForm
+              onChange={props.onFormChange}
+              formData={props.activity?.formData || null}
+              schema={schemas.schema}
+            />
           </>
         </SelectAutoCompleteContextProvider>
       </ThemeProvider>

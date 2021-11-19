@@ -6,7 +6,6 @@ export interface IChemicalDetailsContextformDetails {
   formData?: IGeneralFields;
   errors?: any;
   businessCodes?: any;
-  autoCompleteChoices?: any;
   classes?: ClassNameMap;
 }
 

@@ -41,25 +41,36 @@ const ChemicalTreatmentDetailsForm = (props) => {
   const businessCodes = getBusinessCodes();
 
   const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
-    formData: {
-      invasive_plants: [],
-      herbicides: [],
-      tank_mix: null,
-      chemical_application_method: null,
-      tank_mix_object: {
-        herbicides: [],
-        calculation_type: null
-      }
-    },
-    autoCompleteChoices: {},
+    formData: !props.formData.activity_subtype_data.chemical_treatment_details
+      ? {
+          invasive_plants: [],
+          herbicides: [],
+          tank_mix: null,
+          chemical_application_method: null,
+          tank_mix_object: {
+            herbicides: [],
+            calculation_type: null
+          }
+        }
+      : { ...props.formData.activity_subtype_data.chemical_treatment_details },
     businessCodes: businessCodes,
     classes: classes,
     errors: {}
   });
 
+  const [formData, setFormData] = useState(formDetails.formData);
+
   useEffect(() => {
-    console.log('just checking data change');
-    console.log(formDetails);
+    if (formData !== formDetails.formData)
+      props.onChange({
+        formData: {
+          ...props.formData,
+          activity_subtype_data: {
+            ...props.formData.activity_subtype_data,
+            chemical_treatment_details: { ...formDetails.formData }
+          }
+        }
+      });
   }, [formDetails]);
 
   //fields
