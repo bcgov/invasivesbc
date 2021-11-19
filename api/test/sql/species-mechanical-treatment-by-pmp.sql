@@ -52,23 +52,29 @@ order by
 ;
 
 /**
- Testing
- TODO: Look up codes for these
- mechanical_disposal_code
- mechanical_method_code
-
+ Querying mechanical treatments
  **/
 select
+  c.code_description "Treatment",
   activity_payload->
     'form_data'->
     'activity_subtype_data'->
     'mechanical_plant_information'->0->
     'invasive_plant_code' "Plant Code"
 from
+  code c,
   activity_incoming_data
 where
-  activity_type = 'Treatment' and
-  activity_payload->
+  c.code_header_id = ( -- Mechanical Treatment ID
+    select
+      code_header_id
+    from
+      code_header
+    where
+      code_header_name = 'mechanical_method_code'
+  ) and
+  activity_type = 'Treatment' and -- Treatments only
+  activity_payload-> -- There must be a mechanical treatment code
     'form_data'->
     'activity_subtype_data'->
     'mechanical_plant_information'->0 ?
