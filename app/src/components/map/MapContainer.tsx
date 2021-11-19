@@ -1,6 +1,6 @@
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -25,7 +25,6 @@ import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi
 import layers from './LayerPicker/LAYERS.json';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import EditTools from './Tools/EditTools';
-import { toolStyles } from './Tools/Helpers/ToolStyles';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
 import { ZoomBar } from './Tools/ZoomBar';
 import { ToolbarContainer } from './ToolbarContainer';
