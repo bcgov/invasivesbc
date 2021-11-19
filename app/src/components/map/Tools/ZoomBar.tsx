@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { Slider } from '@material-ui/core';
 import L from 'leaflet';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -17,6 +17,7 @@ export const ZoomBar = (props) => {
 
   return (
     <div
+      className={POSITION_CLASSES.bottomleft}
       onTouchStart={() => {
         props?.map.dragging.disable();
         props?.map.doubleClickZoom.disable();
@@ -40,29 +41,35 @@ export const ZoomBar = (props) => {
           props?.map.dragging.enable();
           props?.map.doubleClickZoom.enable();
         }
-      }}
-      style={{
-        zIndex: 1500,
-        width: 300,
-        borderRadius: 5,
-        backgroundColor: 'white',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
       }}>
-      <Slider
+      <div
+        className="leaflet-control"
         style={{
           zIndex: 1000,
-          width: 270
-        }}
-        step={1}
-        marks
-        min={1}
-        max={30}
-        onChange={(event: any, newZoom: number) => {
-          zoomFunction(newZoom);
-        }}
-      />
+          width: 300,
+          borderRadius: 5,
+          backgroundColor: 'white',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginLeft: 50,
+          marginBottom: 10
+        }}>
+        <Slider
+          value={props?.mapZoom}
+          style={{
+            zIndex: 1000,
+            width: 270
+          }}
+          step={1}
+          marks
+          min={1}
+          max={30}
+          onChange={(event: any, newZoom: number) => {
+            zoomFunction(newZoom);
+          }}
+        />
+      </div>
     </div>
   );
 };

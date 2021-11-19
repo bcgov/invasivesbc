@@ -35,7 +35,7 @@ export const updateLayer = (fieldsToUpdate, child, layers, setLayers) => {
   }
 };
 
-export const addOrRemoveLayer = (child, layers, setLayers) => {
+export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
   if (child.enabled) {
     var index = getIndex(child, layers);
     if (index > -1) {
@@ -46,46 +46,36 @@ export const addOrRemoveLayer = (child, layers, setLayers) => {
       setLayers([...layersBefore, ...layersAfter]);
     }
   } else if (!child.enabled) {
-    switch (child.bcgw_code) {
-      case 'LEAN_ACTIVITIES':
-        setLayers([
-          ...layers,
-          {
-            bcgw_code: child.bcgw_code,
-            color_code: child.color_code,
-            layer_mode: null,
-            layer_name: child.id,
-            opacity: child.opacity
-          }
-        ]);
-        break;
-      case 'jurisdiction':
-      case 'LEAN_POI':
-        setLayers([
-          ...layers,
-          {
-            bcgw_code: child.bcgw_code,
-            color_code: '#000',
-            layer_mode: null,
-            layer_name: child.id,
-            opacity: child.opacity
-          }
-        ]);
-        break;
-      default:
-        setLayers([
-          ...layers,
-          {
-            bcgw_code: child.bcgw_code,
-            color_code: '#000',
-            layer_mode: child.layer_mode,
-            layer_name: child.id,
-            opacity: child.opacity
-          }
-        ]);
-        break;
+    if (child.layer_mode) {
+      setLayers([
+        ...layers,
+        {
+          color_code: child.color_code,
+          layer_code: child.layer_code,
+          layer_mode: null,
+          layer_name: child.name,
+          opacity: child.opacity,
+          order: parent.order,
+          parent_id: parent.id
+        }
+      ]);
+    }
+    if (child.bcgw_code) {
+      setLayers([
+        ...layers,
+        {
+          bcgw_code: child.bcgw_code,
+          color_code: child.color_code,
+          layer_mode: child.layer_mode,
+          layer_name: child.layer_name,
+          opacity: child.opacity,
+          order: parent.order,
+          parent_id: parent.id
+        }
+      ]);
     }
   }
+  console.log('unsorted', layers);
 };
 
 export const LayersSelector = ({ parent, child, objectState, setObjectState, layers, setLayers }) => {
@@ -118,7 +108,7 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
   return (
     <>
       {/* Server Accordion */}
-      {!networkContext.connected && (
+      {networkContext.connected && (
         <Accordion expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
           <AccordionSummary>
             <Typography>Server</Typography>

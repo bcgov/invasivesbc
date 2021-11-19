@@ -1,6 +1,6 @@
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -13,7 +13,6 @@ import {
   ScaleControl
 } from 'react-leaflet';
 import Spinner from '../../components/spinner/Spinner';
-import ZoomControl from 'components/map/Tools/ZoomControl';
 
 // Offline dependencies
 import 'leaflet.offline';
@@ -23,19 +22,12 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 
 // Layer Picker
-import { LayerPicker } from './LayerPicker/LayerPicker';
-import data from './LayerPicker/GEO_DATA.json';
-import DisplayPosition from './Tools/DisplayPosition';
+import layers from './LayerPicker/LAYERS.json';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
-import MeasureTool from './Tools/MeasureTool';
 import EditTools from './Tools/EditTools';
-import { toolStyles } from './Tools/Helpers/ToolBtnStyles';
-import { SetPointOnClick } from './Tools/InfoAreaDescription';
-import JumpControl, { JumpToTrip } from './Tools/JumpToTrip';
 import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
 import { ZoomBar } from './Tools/ZoomBar';
-import JumpToActivity from './Tools/JumpToActivity';
-//Added comment
+import { ToolbarContainer } from './ToolbarContainer';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -131,13 +123,11 @@ export interface IMapContainerProps {
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   //to support the zoom control component controlling the parent map container:
-  const [mapZoom, setMapZoom] = useState<number>(5);
+  // removed because redundent: const [mapZoom, setMapZoom] = useState<number>(5);
   const [mapMaxZoom, setMapMaxZoom] = useState<number>(30);
   const [mapMaxNativeZoom, setMapMaxNativeZoom] = useState<number>(17);
-  const divref = useRef(null);
 
   const [map, setMap] = useState<any>(null);
-  const toolClass = toolStyles();
 
   const Offline = (props) => {
     const mapOffline = useMap();
@@ -214,7 +204,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   return (
     <ReactLeafletMapContainer
       center={[55, -128]}
-      zoom={mapZoom}
+      zoom={5 /* was mapZoom */}
       bounceAtZoomLimits={true}
       maxZoom={mapMaxZoom}
       //maxZoom={25}
@@ -225,43 +215,28 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <FlyToAndFadeContextProvider>
         <MapRequestContextProvider>
-          <div className={toolClass.toolBtnsLoc}>
-            <SetPointOnClick map={map} />
-            <DisplayPosition map={map} />
-            <MeasureTool />
-            <ZoomButtons position="bottomleft" />
-            <ZoomControl mapMaxNativeZoom={mapMaxNativeZoom} setMapMaxNativeZoom={setMapMaxNativeZoom} />
-            <ScaleControl position="bottomright" imperial={false} />
-            <JumpToTrip />
-            <JumpToActivity id={props.activityId} />
-            {props.showDrawControls && (
-              <FeatureGroup>
-                <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
-              </FeatureGroup>
-            )}
-            {/*<LayerPicker data={data} />*/}
-          </div>
+          <ZoomButtons position="bottomleft" />
+          <ScaleControl position="bottomright" imperial={false} />
+          {props.showDrawControls && (
+            <FeatureGroup>
+              <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
+            </FeatureGroup>
+          )}
 
           {/* Here is the offline component */}
           <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
 
-          <LayerPicker
+          {/* All Buttons are located in this file */}
+          <ToolbarContainer
             position="topright"
             map={map}
-            data={data}
+            layers={layers}
             inputGeo={props.geometryState.geometry}
             setWellIdandProximity={props.setWellIdandProximity}
+            mapMaxNativeZoom={mapMaxNativeZoom}
+            setMapMaxNativeZoom={setMapMaxNativeZoom}
           />
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              alignItems: 'flex-end',
-              height: '45vh',
-              marginLeft: 50
-            }}>
-            <ZoomBar style={{ display: 'flex', justify: 'flex-start' }} map={map} />
-          </div>
+          <ZoomBar map={map} />
           {/* Here are the editing tools */}
 
           <MapResizer />

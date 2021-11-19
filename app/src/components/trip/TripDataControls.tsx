@@ -9,7 +9,7 @@ import {
   IMetabaseQuerySearchCriteria
 } from '../../interfaces/useInvasivesApi-interfaces';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import geoData from '../../components/map/LayerPicker/GEO_DATA.json';
+import layers from '../../components/map/LayerPicker/LAYERS.json';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
@@ -551,7 +551,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         idArr
       );
 
-      const layerNames = getLayerNamesFromJSON(geoData);
+      const layerNames = getLayerNamesFromJSON(layers);
       // for each layer name, do...
       for (let layerNamesIndex = 0; layerNamesIndex < layerNames.length; layerNamesIndex++) {
         let itemsPushedForLayer = 0;

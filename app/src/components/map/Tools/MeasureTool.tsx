@@ -9,7 +9,7 @@ import L from 'leaflet';
 import dotMarker from '../Icons/dotMarker.png';
 import ruler from '../Icons/ruler.png';
 import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './Helpers/ToolBtnStyles';
+import { toolStyles } from './Helpers/ToolStyles';
 
 const useStyles = makeStyles((theme) => ({
   typography: {

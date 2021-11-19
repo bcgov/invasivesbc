@@ -15,8 +15,10 @@
 
 // Import commands.js using ES2015 syntax:
 import { addBoard } from './commands/addBoard';
-import { dragMapFromCenter } from './commands/dragMapFromCenter';
+import { changeTheme, themeTextCheck } from './commands/landingTestCmds';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
 Cypress.Commands.add('addBoard', addBoard);
+Cypress.Commands.add('changeTheme', changeTheme);
+Cypress.Commands.add('themeTextCheck', themeTextCheck);

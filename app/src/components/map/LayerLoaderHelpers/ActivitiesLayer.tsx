@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import { useDataAccess } from '../../../hooks/useDataAccess';
@@ -16,8 +16,8 @@ export const ActivitiesLayer = (props) => {
     tolerance: 3,
     debug: 0,
     style: {
-      fillColor: props.color,
-      color: props.color,
+      fillColor: props.color_code,
+      color: props.color_code,
       stroke: true,
       opacity: props.opacity,
       fillOpacity: props.opacity - 0.2,

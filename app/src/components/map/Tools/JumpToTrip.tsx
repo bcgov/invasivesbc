@@ -1,6 +1,6 @@
 import { IconButton } from '@material-ui/core';
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { toolStyles } from './Helpers/ToolBtnStyles';
+import { toolStyles } from './Helpers/ToolStyles';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
 import ExploreIcon from '@mui/icons-material/Explore';
@@ -102,7 +102,8 @@ export const JumpToTrip = (props) => {
         ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         aria-label="Jump To Location"
-        onClick={jump}>
+        onClick={jump}
+        style={{ borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}>
         <ExploreIcon />
       </IconButton>
     </>
