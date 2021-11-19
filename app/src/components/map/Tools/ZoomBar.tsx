@@ -17,6 +17,7 @@ export const ZoomBar = (props) => {
 
   return (
     <div
+      className={POSITION_CLASSES.bottomleft}
       onTouchStart={() => {
         props?.map.dragging.disable();
         props?.map.doubleClickZoom.disable();
@@ -48,7 +49,9 @@ export const ZoomBar = (props) => {
         backgroundColor: 'white',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginLeft: 50,
+        marginBottom: 10
       }}>
       <Slider
         value={props?.mapZoom}

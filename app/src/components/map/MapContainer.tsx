@@ -226,20 +226,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {/* <LayerComponentGoesHere></LayerComponentGoesHere> */}
       <FlyToAndFadeContextProvider>
         <MapRequestContextProvider>
-          <div className={toolClass.toolBtnsLoc}>
-            <ZoomButtons position="bottomleft" />
-            <ScaleControl position="bottomright" imperial={false} />
-            {props.showDrawControls && (
-              <FeatureGroup>
-                <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
-              </FeatureGroup>
-            )}
-            {/*<LayerPicker data={data} />*/}
-          </div>
+          <ZoomButtons position="bottomleft" />
+          <ScaleControl position="bottomright" imperial={false} />
+          {props.showDrawControls && (
+            <FeatureGroup>
+              <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
+            </FeatureGroup>
+          )}
 
           {/* Here is the offline component */}
           <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
 
+          {/* All Buttons are located in this file */}
           <ToolbarContainer
             position="topright"
             map={map}
@@ -249,16 +247,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             mapMaxNativeZoom={mapMaxNativeZoom}
             setMapMaxNativeZoom={setMapMaxNativeZoom}
           />
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              alignItems: 'flex-end',
-              height: '43vh',
-              marginLeft: 50
-            }}>
-            <ZoomBar style={{ display: 'flex', justify: 'flex-start' }} map={map} />
-          </div>
+          <ZoomBar map={map} />
           {/* Here are the editing tools */}
 
           <MapResizer />
