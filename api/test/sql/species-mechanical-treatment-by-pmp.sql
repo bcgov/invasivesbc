@@ -73,10 +73,11 @@ order by
  Querying mechanical treatments
  **/
 select
-  c.code_description "Treatment"
+  c.code_description "Treatment",
+  sum(st_area(a.geog)) "geog"
 from
   code c,
-  activity_incoming_data
+  activity_incoming_data a
 where
   c.code_header_id = ( -- Mechanical Treatment ID
     select
@@ -86,11 +87,12 @@ where
     where
       code_header_name = 'mechanical_method_code'
   ) and
-  activity_type = 'Treatment' and -- Treatments only
-  activity_payload-> -- There must be a mechanical treatment code
+  a.activity_type = 'Treatment' and -- Treatments only
+  a.activity_payload-> -- There must be a mechanical treatment code
     'form_data'->
     'activity_subtype_data'->
     'mechanical_plant_information'->0 ?
     'invasive_plant_code'
-  limit 10
+  group by
+    c.code_description
 ;
