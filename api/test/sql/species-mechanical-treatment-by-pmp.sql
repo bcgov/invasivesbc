@@ -71,15 +71,9 @@ order by
 
 /**
  Querying mechanical treatments
- TODO: Select IDs for joining to other query.
  **/
 select
-  c.code_description "Treatment",
-  activity_payload->
-    'form_data'->
-    'activity_subtype_data'->
-    'mechanical_plant_information'->0->
-    'invasive_plant_code' "Plant Code"
+  c.code_description "Treatment"
 from
   code c,
   activity_incoming_data
@@ -98,4 +92,5 @@ where
     'activity_subtype_data'->
     'mechanical_plant_information'->0 ?
     'invasive_plant_code'
-
+  limit 10
+;
