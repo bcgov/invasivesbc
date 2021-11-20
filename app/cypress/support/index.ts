@@ -16,9 +16,11 @@
 // Import commands.js using ES2015 syntax:
 import { addBoard } from './commands/addBoard';
 import { changeTheme, themeTextCheck } from './commands/themeTestCmds';
+import { dragAccordion } from './commands/layerPickerTestCmds';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
 Cypress.Commands.add('addBoard', addBoard);
 Cypress.Commands.add('changeTheme', changeTheme);
+Cypress.Commands.add('dragAccordion', dragAccordion);
 Cypress.Commands.add('themeTextCheck', themeTextCheck);

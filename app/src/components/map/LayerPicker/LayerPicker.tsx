@@ -211,8 +211,9 @@ export function LayerPicker(props: any) {
               direction="row"
               alignItems="center">
               &emsp;
-              <Grid id="child-checkbox" item xs={2}>
+              <Grid item xs={2}>
                 <Checkbox
+                  id="child-checkbox"
                   checked={child.enabled}
                   name={child.name}
                   onChange={() => {
@@ -230,47 +231,34 @@ export function LayerPicker(props: any) {
                 <Typography variant="caption">{child.name}</Typography>
               </Grid>
               {/* Settings Dialog Box */}
-              <Grid item xs={2}>
-                <IconButton id="settings-btn" onClick={() => toggleChildDialog(parent, child, true)}>
-                  <SettingsIcon />
-                </IconButton>
-                <Dialog
-                  id="layermode-settings-dialog"
-                  open={child.dialog_open}
-                  onClose={() => toggleChildDialog(parent, child, false)}>
-                  <DialogTitle>{child.name}</DialogTitle>
-                  <LayersSelector
-                    parent={parent}
-                    child={child}
-                    objectState={objectState}
-                    setObjectState={setObjectState}
-                    layers={newLayers}
-                    setLayers={setNewLayers}
-                  />
-                  <DialogActions id="close-dialog-action">
-                    <Button
-                      id="close-btn"
-                      onClick={() =>
-                        updateChild(
-                          parent.id,
-                          child.id,
-                          {
-                            dialog_open: false
-                          },
-                          { objectState, setObjectState }
-                        )
-                      }>
-                      Close
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </Grid>
+              {process.env.REACT_APP_REAL_NODE_ENV === 'development' && (
+                <LayerModeDialog
+                  parent={parent}
+                  child={child}
+                  objectState={objectState}
+                  setObjectState={setObjectState}
+                  toggleChildDialog={toggleChildDialog}
+                  newLayers={newLayers}
+                  setNewLayers={setNewLayers}
+                />
+              )}
+              {process.env.REACT_APP_REAL_NODE_ENV === 'local' && (
+                <LayerModeDialog
+                  parent={parent}
+                  child={child}
+                  objectState={objectState}
+                  setObjectState={setObjectState}
+                  toggleChildDialog={toggleChildDialog}
+                  newLayers={newLayers}
+                  setNewLayers={setNewLayers}
+                />
+              )}
               <Grid item xs={1}>
                 <IconButton
                   id="colorpicker-btn"
                   className={toolClass.toolBtn}
                   onClick={() => toggleColorPickerDialog(parent, child)}>
-                  <ColorLens style={{ color: child.color_code }} />
+                  <ColorLens id="color-lens" style={{ color: child.color_code }} />
                 </IconButton>
                 <Dialog
                   id="layer-settings-dialog"
@@ -314,8 +302,10 @@ export function LayerPicker(props: any) {
                       }}
                     />
                   </DialogContent>
-                  <DialogActions id="close-btn">
-                    <Button onClick={() => toggleColorPickerDialog(parent, child)}>Close</Button>
+                  <DialogActions>
+                    <Button id="close-btn" onClick={() => toggleColorPickerDialog(parent, child)}>
+                      Close
+                    </Button>
                   </DialogActions>
                 </Dialog>
               </Grid>
@@ -366,7 +356,7 @@ export function LayerPicker(props: any) {
         {(popupState) => (
           <>
             <Paper id="layer-picker-paper" style={assignPaperBGTheme(themeType)}>
-              <IconButton id="layer-picker-icon" style={{ height: 53, width: 53 }} {...bindTrigger(popupState)}>
+              <IconButton id="layer-picker-btn" style={{ height: 53, width: 53 }} {...bindTrigger(popupState)}>
                 <LayersIcon />
               </IconButton>
             </Paper>
@@ -413,3 +403,32 @@ export function LayerPicker(props: any) {
     </>
   );
 }
+
+const LayerModeDialog = (props, { objectState, setObjectState }) => {
+  return (
+    <Grid item xs={2}>
+      <IconButton id="settings-btn" onClick={() => props.toggleChildDialog(props.parent, props.child, true)}>
+        <SettingsIcon />
+      </IconButton>
+      <Dialog
+        id="layermode-settings-dialog"
+        open={props.child.dialog_open}
+        onClose={() => props.toggleChildDialog(props.parent, props.child, false)}>
+        <DialogTitle>{props.child.name}</DialogTitle>
+        <LayersSelector
+          parent={props.parent}
+          child={props.child}
+          objectState={props.objectState}
+          setObjectState={props.setObjectState}
+          layers={props.newLayers}
+          setLayers={props.setNewLayers}
+        />
+        <DialogActions id="close-dialog-action">
+          <Button id="close-btn" onClick={() => props.toggleChildDialog(props.parent, props.child, false)}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Grid>
+  );
+};
