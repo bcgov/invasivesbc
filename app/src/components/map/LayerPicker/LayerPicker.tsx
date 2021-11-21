@@ -1,56 +1,53 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
-import { DomEvent } from 'leaflet';
-import { MapRequestContext } from 'contexts/MapRequestsContext';
-/* HelperFiles */
-import {
-  sortArray,
-  getObjectsBeforeIndex,
-  getObjectsAfterIndex,
-  getChildObjBeforeIndex,
-  getChildObjAfterIndex,
-  getParentIndex,
-  getChildIndex,
-  getParent,
-  getChild,
-  sortObject
-} from './SortLayerOrder';
-import { layerPickerStyles, toolStyles } from '../Tools/Helpers/ToolStyles';
 // MUI
 import {
-  Checkbox,
-  Grid,
-  ListItemIcon,
-  ListItem,
-  List,
-  CircularProgress,
-  AccordionSummary,
   Accordion,
-  IconButton,
-  Paper,
-  Slider,
-  Typography,
-  Popover,
+  AccordionSummary,
   Button,
+  Checkbox,
   Dialog,
-  DialogTitle,
   DialogActions,
-  DialogContent
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  Paper,
+  Popover,
+  Slider,
+  Typography
 } from '@material-ui/core';
-import ColorPicker from 'material-ui-color-picker';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import ColorLens from '@material-ui/icons/ColorLens';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 // MUI Icons
 import LayersIcon from '@material-ui/icons/Layers';
-import ColorLens from '@material-ui/icons/ColorLens';
 import SettingsIcon from '@material-ui/icons/Settings';
-import DoneIcon from '@material-ui/icons/Done';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import { LayersSelector, addOrRemoveLayer, updateLayer } from './LayersSelectorAndRender';
-import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
+import { DomEvent } from 'leaflet';
+import ColorPicker from 'material-ui-color-picker';
+import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
+import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
+import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
+import { layerPickerStyles, toolStyles } from '../Tools/Helpers/ToolStyles';
+import { addOrRemoveLayer, LayersSelector, updateLayer } from './LayersSelectorAndRender';
+/* HelperFiles */
+import {
+  getChild,
+  getChildIndex,
+  getChildObjAfterIndex,
+  getChildObjBeforeIndex,
+  getObjectsAfterIndex,
+  getObjectsBeforeIndex,
+  getParent,
+  getParentIndex,
+  sortArray,
+  sortObject
+} from './SortLayerOrder';
 
 export const updateChild = (
   parentType: string,

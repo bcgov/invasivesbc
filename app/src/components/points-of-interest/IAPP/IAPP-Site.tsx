@@ -2,30 +2,19 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
-  Collapse,
   Container,
   Grid,
-  IconButton,
   makeStyles,
-  Paper,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow
+  Typography
 } from '@material-ui/core';
-import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore, DeleteForever } from '@material-ui/icons';
+import { ExpandMore } from '@material-ui/icons';
 import React from 'react';
 import {
-  IAPPSurveyTable,
-  IAPPMechanicalTreatmentsTable,
-  IAPPChemicalTreatmentsTable,
+  IAPPBiologicalDispersalsTable,
   IAPPBiologicalTreatmentsTable,
-  IAPPBiologicalDispersalsTable
+  IAPPChemicalTreatmentsTable,
+  IAPPMechanicalTreatmentsTable,
+  IAPPSurveyTable
 } from '../../common/RecordTables';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,13 +44,8 @@ export const IAPPSite: React.FC<IAPPSitePropType> = (props) => {
     ...form_data?.point_of_interest_data,
     ...form_data?.point_of_interest_type_data
   };
-  const {
-    surveys,
-    mechanical_treatments,
-    chemical_treatments,
-    biological_treatments,
-    biological_dispersals
-  } = form_data;
+  const { surveys, mechanical_treatments, chemical_treatments, biological_treatments, biological_dispersals } =
+    form_data;
   const coordinates = props?.record?.point_of_interest_payload?.geometry[0]?.geometry?.coordinates;
   const longitude = parseFloat(coordinates[0]).toFixed(6);
   const latitude = parseFloat(coordinates[1]).toFixed(6);

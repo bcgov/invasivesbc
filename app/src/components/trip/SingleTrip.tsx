@@ -1,19 +1,19 @@
 import { Grid, Paper, Typography } from '@material-ui/core';
+import { DocType } from 'constants/database';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useHistory } from 'react-router';
 import ActivityDataFilter from '../../components/activities-search-controls/ActivitiesFilter';
+import KMLUpload from '../../components/map-buddy-components/KMLUpload';
 import PointOfInterestDataFilter from '../../components/point-of-interest-search/PointOfInterestFilter';
 import MetabaseSearch from '../../components/search/MetabaseSearch';
-import { DocType } from 'constants/database';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext2';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext';
 import TripDataControls from './TripDataControls';
 import TripNamer from './TripNamer';
 import { TripStep } from './TripStep';
 import { TripStatusCode } from './TripStepStatus';
-import KMLUpload from '../../components/map-buddy-components/KMLUpload';
-import { useHistory } from 'react-router';
 
 export const SingleTrip: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const [stepState, setStepState] = useState(null);
   const history = useHistory();
 

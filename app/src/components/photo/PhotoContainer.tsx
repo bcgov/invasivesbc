@@ -14,7 +14,7 @@ import {
   TextField
 } from '@material-ui/core';
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React from 'react';
 
 export interface IPhoto {
   filepath: string;

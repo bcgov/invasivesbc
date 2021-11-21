@@ -1,6 +1,6 @@
 import * as React from 'react';
-import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';
 import { useInvasivesApi } from '../hooks/useInvasivesApi';
+import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';
 
 export const info: IUserInfo = {
   username: '',

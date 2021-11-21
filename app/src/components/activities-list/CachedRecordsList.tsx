@@ -1,23 +1,21 @@
-import { List, makeStyles, Paper, Theme, Typography, Button, Box, Container } from '@material-ui/core';
+import { Box, Button, Container, List, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
-import { DatabaseContext } from '../../contexts/DatabaseContext';
-import React, { useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
-import { ICreateMetabaseQuery } from '../../interfaces/useInvasivesApi-interfaces';
-import { notifySuccess, notifyError } from '../../utils/NotificationUtils';
-import MapContainer, { getZIndex } from '../map/MapContainer';
-import { Feature } from 'geojson';
-import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import booleanIntersects from '@turf/boolean-intersects';
+import { Feature } from 'geojson';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { sanitizeRecord } from 'utils/addActivity';
 import {
   ObservationsTable,
-  PlantTreatmentsTable,
   PlantMonitoringTable,
+  PlantTreatmentsTable,
   PointsOfInterestTable
 } from '../../components/common/RecordTables';
+import { DatabaseContext } from '../../contexts/DatabaseContext';
+import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { useDataAccess } from '../../hooks/useDataAccess';
-import { DatabaseContext2 } from '../../contexts/DatabaseContext2';
-import { sanitizeRecord } from 'utils/addActivity';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import { ICreateMetabaseQuery } from '../../interfaces/useInvasivesApi-interfaces';
+import MapContainer, { getZIndex } from '../map/MapContainer';
 
 const useStyles = makeStyles((theme: Theme) => ({
   activitiesContent: {},
@@ -68,8 +66,7 @@ const geoColors = {
 
 const CachedRecordsList: React.FC = (props) => {
   const classes = useStyles();
-  const databaseContext = useContext(DatabaseContext);
-  const databaseContext2 = useContext(DatabaseContext2);
+  const databaseContext2 = useContext(DatabaseContext);
   // data access WIP
   const invasivesApi = useInvasivesApi();
   const dataAccess = useDataAccess();
@@ -237,18 +234,10 @@ const CachedRecordsList: React.FC = (props) => {
     try {
       const response = await invasivesApi.createMetabaseQuery(queryCreate);
       if (response?.activity_query_id && response?.activity_query_name) {
-        notifySuccess(
-          databaseContext,
-          `Created a new Metabase Query, with name "${response.activity_query_name}" and ID ${response.activity_query_id}`
-        );
       } else {
         throw response;
       }
     } catch (error) {
-      notifyError(
-        databaseContext,
-        'Unable to create new Metabase Query.  There may an issue with your connection to the Metabase API: ' + error
-      );
       setMetabaseQuerySubmitted(false);
     }
   };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { WMSTileLayer } from 'react-leaflet';
-import { RenderWFSFeatures } from './RenderWFSFeatures';
 import { RenderVectorTilesOffline } from './RenderVectorTilesOffline';
+import { RenderWFSFeatures } from './RenderWFSFeatures';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',

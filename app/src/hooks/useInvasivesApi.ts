@@ -1,6 +1,11 @@
+import { Http } from '@capacitor-community/http';
 import { Capacitor } from '@capacitor/core';
-import { useKeycloak } from '@react-keycloak/web';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext2';
+import { AuthStateContext } from 'contexts/authStateContext';
+import qs from 'qs';
+import { useContext, useMemo } from 'react';
+import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
+import { DocType } from '../constants/database';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
   ICreateMetabaseQuery,
@@ -9,12 +14,6 @@ import {
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
-import qs from 'qs';
-import { Http } from '@capacitor-community/http';
-import { useContext, useMemo } from 'react';
-import { DocType } from '../constants/database';
-import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
-import { AuthStateContext } from 'contexts/authStateContext';
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
@@ -71,7 +70,7 @@ const useRequestOptions = () => {
  */
 export const useInvasivesApi = () => {
   const options = useRequestOptions();
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   /**
    * Fetch*
    activities by search criteria.

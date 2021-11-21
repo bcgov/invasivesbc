@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useMapEvent, GeoJSON, Popup, Marker } from 'react-leaflet';
-import { IconButton, Button, makeStyles, Popover, Grid, Typography } from '@material-ui/core';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import { Button, Grid, IconButton, makeStyles, Popover, Typography } from '@material-ui/core';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
-import utm_zone from '../Nav/DisplayPosition';
-import { polygon, area } from '@turf/turf';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import { area, polygon } from '@turf/turf';
+import { ThemeContext } from 'contexts/themeContext';
 import L from 'leaflet';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { GeoJSON, Marker, Popup, useMapEvent } from 'react-leaflet';
 import dotMarker from '../../../Icons/dotMarker.png';
 import ruler from '../../../Icons/ruler.png';
-import { ThemeContext } from 'contexts/themeContext';
 import { toolStyles } from '../../Helpers/ToolStyles';
 
 const useStyles = makeStyles((theme) => ({

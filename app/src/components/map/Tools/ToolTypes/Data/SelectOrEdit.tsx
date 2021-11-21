@@ -1,21 +1,12 @@
-import { Grid, IconButton, Typography } from '@material-ui/core';
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { toolStyles } from '../../Helpers/ToolStyles';
-import L from 'leaflet';
-import { ThemeContext } from 'contexts/themeContext';
-import CreateIcon from '@mui/icons-material/Create';
+import { IconButton, Typography } from '@material-ui/core';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
-import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
-
-//great for plants vs animals:
-import GrassIcon from '@mui/icons-material/Grass';
-import PetsIcon from '@mui/icons-material/Pets';
+import { ThemeContext } from 'contexts/themeContext';
+import L from 'leaflet';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { toolStyles } from '../../Helpers/ToolStyles';
 
 export const SelectOrEdit = (props) => {
-  //const history = useHistory();
-  //const { userInfo } = useContext(AuthStateContext); // style
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
 
@@ -50,11 +41,17 @@ export const SelectOrEdit = (props) => {
     */
   // can be replaced with a menu (later):
 
-  const [mode, setMode] = useState('NOT_PRESSED');
+  enum modes {
+    NOT_PRESSED = 'NOT_PRESSED',
+    WAITING_FOR_SELECT_OR_CANCEL = 'WAITING_FOR_SELECT_OR_CANCEL',
+    IS_EDITING = 'IS_EDITING'
+  }
+
+  const [mode, setMode] = useState<modes>(modes.NOT_PRESSED);
 
   const RenderWhenMode_NotPressed = (props) => {
     const onClick = async () => {
-      setMode('PRESSED');
+      setMode(modes.WAITING_FOR_SELECT_OR_CANCEL);
     };
     return (
       <IconButton
@@ -69,15 +66,15 @@ export const SelectOrEdit = (props) => {
 
   const RenderWhenMode_Pressed = (props) => {
     const onClick = async () => {
-      setMode('NOT_PRESSED');
+      setMode(modes.NOT_PRESSED);
     };
     return (
       <IconButton
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-        aria-label="Edit Record"
+        aria-label="Cancel"
         onClick={onClick}>
-        <CreateIcon />
-        <Typography className={toolClass.Font}>Edit Record</Typography>
+        <CancelPresentationIcon />
+        <Typography className={toolClass.Font}>Cancel</Typography>
       </IconButton>
     );
   };
@@ -87,7 +84,7 @@ export const SelectOrEdit = (props) => {
       {
         {
           NOT_PRESSED: <RenderWhenMode_NotPressed />,
-          PRESSED: <RenderWhenMode_Pressed />
+          WAITING_FOR_SELECT_OR_CANCEL: <RenderWhenMode_Pressed />
         }[mode]
       }
     </div>

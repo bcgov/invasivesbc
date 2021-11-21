@@ -1,14 +1,14 @@
 import React from 'react';
 import { LayersControlProvider } from './LayerPicker/layerControlContext';
 import { LayerPicker } from './LayerPicker/LayerPicker';
-import DisplayPosition from './Tools/ToolTypes/Nav/DisplayPosition';
-import EditRecord from './Tools/ToolTypes/Data/SelectOrEdit';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
+import NewRecord from './Tools/ToolTypes/Data/NewRecord';
+import EditRecord from './Tools/ToolTypes/Data/SelectOrEdit';
+import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
+import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
+import DisplayPosition from './Tools/ToolTypes/Nav/DisplayPosition';
 import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
 import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
-import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
-import NewRecord from './Tools/ToolTypes/Data/NewRecord';
-import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',

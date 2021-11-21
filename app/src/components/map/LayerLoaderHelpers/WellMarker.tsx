@@ -1,10 +1,10 @@
 import { Divider, makeStyles, Theme } from '@material-ui/core';
+import L from 'leaflet';
 import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import WellIconClosest from '../Icons/well-closest.svg';
 import WellIconInside from '../Icons/well-inside.svg';
 import WellIconStandard from '../Icons/well-standard.svg';
-import L from 'leaflet';
 import { calc_utm } from '../Tools/ToolTypes/Nav/DisplayPosition';
 
 const wellIconSandard = new L.Icon({

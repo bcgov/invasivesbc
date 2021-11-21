@@ -1,18 +1,18 @@
 import { Box, Button, makeStyles } from '@material-ui/core';
-import { DocType } from 'constants/database';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext2';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import * as turf from '@turf/turf';
-import {
-  IActivitySearchCriteria,
-  IPointOfInterestSearchCriteria,
-  IMetabaseQuerySearchCriteria
-} from '../../interfaces/useInvasivesApi-interfaces';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { DocType } from 'constants/database';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
+import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
 import layers from '../../components/map/LayerPicker/LAYERS.json';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
-import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
-import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import {
+  IActivitySearchCriteria,
+  IMetabaseQuerySearchCriteria,
+  IPointOfInterestSearchCriteria
+} from '../../interfaces/useInvasivesApi-interfaces';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -33,7 +33,7 @@ export const TripDataControls: React.FC<any> = (props) => {
 
   const invasivesApi = useInvasivesApi();
 
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
 
   const [trip, setTrip] = useState(null);
 

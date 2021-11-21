@@ -1,8 +1,8 @@
 import { Plugins } from '@capacitor/core';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import App from 'App';
 import { default as React } from 'react';
 import ReactDOM from 'react-dom';
-import App from 'App';
 import * as serviceWorker from 'serviceWorker';
 
 const { Device } = Plugins;

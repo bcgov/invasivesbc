@@ -12,12 +12,12 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
-import { ActivityTypeIcon, ActivitySubtype } from 'constants/activities';
+import { ActivitySubtype, ActivityTypeIcon } from 'constants/activities';
 import { MediumDateFormat } from 'constants/misc';
 import moment from 'moment';
 import React from 'react';
-import { getShortActivityID } from 'utils/addActivity';
 import { useHistory } from 'react-router-dom';
+import { getShortActivityID } from 'utils/addActivity';
 import ActivityListItem from './ActivityListItem';
 
 const useStyles = makeStyles((theme: Theme) => ({

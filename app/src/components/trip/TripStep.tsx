@@ -8,11 +8,11 @@ import {
   Tooltip,
   Typography
 } from '@material-ui/core';
-import HelpIcon from '@material-ui/icons/Help';
 import { ExpandMore } from '@material-ui/icons';
+import HelpIcon from '@material-ui/icons/Help';
+import { ClassNameMap } from '@material-ui/styles';
 import React from 'react';
 import TripStepStatus, { TripStatusCode } from './TripStepStatus';
-import { ClassNameMap } from '@material-ui/styles';
 
 interface ITripStep {
   expanded: boolean;

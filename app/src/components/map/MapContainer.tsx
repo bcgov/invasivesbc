@@ -1,35 +1,29 @@
-import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { Feature, GeoJsonObject } from 'geojson';
-import React, { useState, useEffect } from 'react';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import './MapContainer.css';
-import {
-  MapContainer as ReactLeafletMapContainer,
-  ZoomControl as ZoomButtons,
-  useMap,
-  FeatureGroup,
-  ScaleControl
-} from 'react-leaflet';
-import Spinner from '../../components/spinner/Spinner';
-
 // Offline dependencies
 import 'leaflet.offline';
-
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import React, { useEffect, useState } from 'react';
+import {
+  MapContainer as ReactLeafletMapContainer,
+  ScaleControl,
+  useMap,
+  ZoomControl as ZoomButtons
+} from 'react-leaflet';
+import Spinner from '../../components/spinner/Spinner';
+import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
+import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
-
 // Layer Picker
 import layers from './LayerPicker/LAYERS.json';
-import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
-import EditTools from './Tools/ToolTypes/Data/EditTools';
-import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
-import { ZoomBar } from './Tools/ToolTypes/Misc/ZoomBar';
+import './MapContainer.css';
 import { ToolbarContainer } from './ToolbarContainer';
-import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
-import NewRecord from './Tools/ToolTypes/Data/NewRecord';
+import { ZoomBar } from './Tools/ToolTypes/Misc/ZoomBar';
+import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
+
 //Added comment
 
 const DefaultIcon = L.icon({
@@ -219,7 +213,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       <FlyToAndFadeContextProvider>
         <MapRequestContextProvider>
           <ZoomButtons position="bottomleft" />
-          <ScaleControl position="bottomright" imperial={false} />
+          <ScaleControl position="bottomleft" imperial={false} />
           {props.showDrawControls &&
             {
               /*   <FeatureGroup>

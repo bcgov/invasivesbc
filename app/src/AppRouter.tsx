@@ -1,13 +1,13 @@
 import { Network } from '@capacitor/network';
 import { CircularProgress } from '@material-ui/core';
-import React, { useEffect, useState, useContext } from 'react';
+import { NetworkContext } from 'contexts/NetworkContext';
+import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import HomeRouter from './features/home/HomeRouter';
 import PublicLayout from './layouts/PublicLayout';
 import AccessDenied from './pages/misc/AccessDenied';
 import { NotFoundPage } from './pages/misc/NotFoundPage';
 import AppRoute from './utils/AppRoute';
-import { NetworkContext } from 'contexts/NetworkContext';
 
 interface IAppRouterProps {
   deviceInfo: any;

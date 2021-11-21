@@ -1,13 +1,9 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { useLeafletContext } from '@react-leaflet/core';
-import { useMapEvent } from 'react-leaflet';
 import * as turf from '@turf/turf';
 import L from 'leaflet';
-import React from 'react';
-import single from '../Icons/square.png';
-import multi from '../Icons/trim.png';
-import { async } from 'q';
-import { Capacitor } from '@capacitor/core';
+import React, { useEffect, useRef, useState } from 'react';
+import { useMapEvent } from 'react-leaflet';
 import { MobileDrawCancel, MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
 
 const circleORmarker = (feature, latLng, markerStyle) => {

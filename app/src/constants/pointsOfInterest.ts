@@ -1,4 +1,4 @@
-import { SvgIconComponent, Description } from '@material-ui/icons';
+import { Description, SvgIconComponent } from '@material-ui/icons';
 
 export enum PointOfInterestType {
   IAPP_Site = 'Point Of Interest'

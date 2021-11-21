@@ -1,16 +1,12 @@
 import { Grid, IconButton, Typography } from '@material-ui/core';
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { toolStyles } from '../../Helpers/ToolStyles';
-import L from 'leaflet';
-import { ThemeContext } from 'contexts/themeContext';
-
-import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
-import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import AddIcon from '@mui/icons-material/Add';
-//great for plants vs animals:
-import GrassIcon from '@mui/icons-material/Grass';
-import PetsIcon from '@mui/icons-material/Pets';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { ThemeContext } from 'contexts/themeContext';
+import L from 'leaflet';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { toolStyles } from '../../Helpers/ToolStyles';
 
 export const NewRecord = (props) => {
   const toolClass = toolStyles();
@@ -111,6 +107,7 @@ export const NewRecord = (props) => {
                 setMode('NOT_PRESSED');
               }}>
               <CancelPresentationIcon />
+              <Typography className={toolClass.Font}>Cancel</Typography>
             </IconButton>
           </Grid>
           <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>

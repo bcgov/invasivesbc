@@ -1,9 +1,8 @@
+import { Capacitor } from '@capacitor/core';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { CircularProgress } from '@mui/material';
-import { Capacitor } from '@capacitor/core';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;

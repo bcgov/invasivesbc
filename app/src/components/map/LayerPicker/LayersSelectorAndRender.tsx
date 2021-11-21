@@ -1,13 +1,13 @@
-import { NetworkContext } from 'contexts/NetworkContext';
 import {
   Accordion,
   AccordionSummary,
+  FormControl,
   FormControlLabel,
-  Typography,
-  RadioGroup,
   Radio,
-  FormControl
+  RadioGroup,
+  Typography
 } from '@material-ui/core';
+import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
 import { updateChild } from './LayerPicker';
 import { getChild } from './SortLayerOrder';

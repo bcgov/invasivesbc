@@ -1,21 +1,20 @@
-import { Button, CircularProgress, Container, IconButton, makeStyles, Paper } from '@material-ui/core';
-import { Delete, DeleteForever } from '@material-ui/icons';
-import MapContainer from '../../../components/map/MapContainer';
-import { Feature, GeoJsonObject } from 'geojson';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { MapContextMenuData } from '../map/MapContextMenu';
-import { TripStatusCode } from '../../../components/trip/TripStepStatus';
-import RecordTable from '../../../components/common/RecordTable';
-import { DocType } from 'constants/database';
 import { Capacitor } from '@capacitor/core';
-import * as _ from 'lodash';
-import { useDataAccess } from '../../../hooks/useDataAccess';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext2';
-import { SingleTrip } from '../../../components/trip/SingleTrip';
-
-import { IonContent, IonRefresher, IonRefresherContent } from '@ionic/react';
 import { RefresherEventDetail } from '@ionic/core';
+import { IonContent, IonRefresher, IonRefresherContent } from '@ionic/react';
+import { Button, CircularProgress, Container, IconButton, makeStyles, Paper } from '@material-ui/core';
+import { DeleteForever } from '@material-ui/icons';
+import { DocType } from 'constants/database';
+import { Feature, GeoJsonObject } from 'geojson';
+import * as _ from 'lodash';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
+import RecordTable from '../../../components/common/RecordTable';
+import MapContainer from '../../../components/map/MapContainer';
+import { SingleTrip } from '../../../components/trip/SingleTrip';
+import { TripStatusCode } from '../../../components/trip/TripStepStatus';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../../contexts/DatabaseContext';
+import { useDataAccess } from '../../../hooks/useDataAccess';
+import { MapContextMenuData } from '../map/MapContextMenu';
 
 interface IPlanPageProps {
   classes?: any;
@@ -80,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
 const PlanPage: React.FC<IPlanPageProps> = (props) => {
   const classes = useStyles();
 
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const [tripDeleted, seTripDeleted] = useState();
   const [geometry, setGeometry] = useState<Feature[]>([]);
 

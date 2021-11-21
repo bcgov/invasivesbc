@@ -1,14 +1,14 @@
-import { IconButton } from '@material-ui/core';
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { toolStyles } from '../../Helpers/ToolStyles';
-import L from 'leaflet';
-import { ThemeContext } from 'contexts/themeContext';
-import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
-import { useMapEvent } from 'react-leaflet';
-import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
 import { Capacitor } from '@capacitor/core';
+import { IconButton } from '@material-ui/core';
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { ThemeContext } from 'contexts/themeContext';
+import { useDataAccess } from 'hooks/useDataAccess';
+import L from 'leaflet';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useMapEvent } from 'react-leaflet';
+import { toolStyles } from '../../Helpers/ToolStyles';
+import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
 
 export const JumpToActivity = (props) => {
   // style
@@ -19,7 +19,7 @@ export const JumpToActivity = (props) => {
   const divRef = useRef(null);
 
   // DB: MOBILE ONLY!
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
 
   const flyToContext = useFlyToAndFadeContext();

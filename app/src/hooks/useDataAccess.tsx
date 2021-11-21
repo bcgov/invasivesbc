@@ -1,3 +1,10 @@
+import { Capacitor } from '@capacitor/core';
+import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
+import { ActivitySyncStatus } from 'constants/activities';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { useContext } from 'react';
+import { DocType } from '../constants/database';
+import { DatabaseContext, DBRequest, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
   ICreateOrUpdateActivity,
@@ -5,14 +12,6 @@ import {
   IPointOfInterestSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 import { useInvasivesApi } from './useInvasivesApi';
-import { DBRequest, DatabaseContext2, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext2';
-import { useContext } from 'react';
-import { DocType } from '../constants/database';
-import { Capacitor } from '@capacitor/core';
-import { DatabaseContext } from '../contexts/DatabaseContext';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
-import { ActivitySyncStatus } from 'constants/activities';
 
 /**
  * Returns a set of supported api methods.
@@ -22,8 +21,7 @@ import { ActivitySyncStatus } from 'constants/activities';
  */
 export const useDataAccess = () => {
   const api = useInvasivesApi();
-  const databaseContext = useContext(DatabaseContext2);
-  const databaseContextPouch = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext);
   const platform = Capacitor.getPlatform();
   const networkContext = useContext(NetworkContext);
 
@@ -457,7 +455,7 @@ export const useDataAccess = () => {
     ready: boolean;
   }): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      return databaseContextPouch.database.find({ selector: { _id: DocType.APPSTATE } });
+      //return databaseContextPouch.database.find({ selector: { _id: DocType.APPSTATE } });
     } else {
       const dbcontext = context;
       return dbcontext.asyncQueue({
@@ -519,9 +517,9 @@ export const useDataAccess = () => {
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      return databaseContextPouch.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-        return { ...appStateDoc, ...newState };
-      });
+      //return databaseContextPouch.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+      //  return { ...appStateDoc, ...newState };
+      // });
     } else {
       const dbcontext = context;
 

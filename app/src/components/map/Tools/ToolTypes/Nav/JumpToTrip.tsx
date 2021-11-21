@@ -1,13 +1,13 @@
-import { IconButton, Typography } from '@material-ui/core';
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { toolStyles } from '../../Helpers/ToolStyles';
-import L from 'leaflet';
-import { ThemeContext } from 'contexts/themeContext';
-import ExploreIcon from '@mui/icons-material/Explore';
 import { Capacitor } from '@capacitor/core';
+import { IconButton, Typography } from '@material-ui/core';
+import ExploreIcon from '@mui/icons-material/Explore';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { ThemeContext } from 'contexts/themeContext';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+import L from 'leaflet';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
+import { toolStyles } from '../../Helpers/ToolStyles';
 import { FlyToAndFadeItemTransitionType, IFlyToAndFadeItem, useFlyToAndFadeContext } from './FlyToAndFade';
 
 export const JumpToTrip = (props) => {
@@ -19,7 +19,7 @@ export const JumpToTrip = (props) => {
   const divRef = useRef(null);
 
   // DB: MOBILE ONLY!
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
 
   const flyToContext = useFlyToAndFadeContext();

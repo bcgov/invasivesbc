@@ -1,51 +1,45 @@
 import { Capacitor } from '@capacitor/core';
+import { IonAlert } from '@ionic/react';
 import {
   AppBar,
+  Avatar,
+  Chip,
   CircularProgress,
-  Tab,
-  Tabs,
-  Toolbar,
-  Grid,
-  makeStyles,
-  Theme,
-  Button,
-  FormGroup,
+  Divider,
+  Drawer,
   FormControlLabel,
-  Switch,
+  Grid,
+  Hidden,
+  IconButton,
+  List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Chip,
-  Drawer,
-  Avatar,
+  makeStyles,
   Menu,
   MenuItem,
-  List,
-  createStyles,
-  IconButton,
-  Divider,
-  Hidden
+  Switch,
+  Tab,
+  Tabs,
+  Theme,
+  Toolbar
 } from '@material-ui/core';
-import './TabsContainer.css';
-import clsx from 'clsx';
-import { Assignment, Bookmarks, Explore, HomeWork, Map, Search, Home } from '@material-ui/icons';
-import { ALL_ROLES } from 'constants/roles';
-import { ThemeContext } from 'contexts/themeContext';
+import { Assignment, Bookmarks, Explore, Home, HomeWork, Map, Search } from '@material-ui/icons';
+import Brightness2Icon from '@material-ui/icons/Brightness2';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import MenuIcon from '@material-ui/icons/Menu';
+import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
-import React, { useCallback, useLayoutEffect, useContext, useEffect, useState } from 'react';
+import clsx from 'clsx';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { ThemeContext } from 'contexts/themeContext';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import invbclogo from '../../InvasivesBC_Icon.svg';
-import MenuIcon from '@material-ui/icons/Menu';
-import Brightness2Icon from '@material-ui/icons/Brightness2';
-import WbSunnyIcon from '@material-ui/icons/WbSunny';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { IonAlert } from '@ionic/react';
+import './TabsContainer.css';
 
 const drawerWidth = 240;
 

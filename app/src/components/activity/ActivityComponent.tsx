@@ -1,25 +1,22 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from '@material-ui/core';
-import { ExpandMore, PermDeviceInformationSharp } from '@material-ui/icons';
-import moment from 'moment';
-import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
-import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
-import { ReviewStatus, FormValidationStatus, ActivitySyncStatus } from 'constants/activities';
-import React, { useContext, useEffect, useState } from 'react';
-import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import { useDataAccess } from 'hooks/useDataAccess';
 import { Geolocation } from '@capacitor/geolocation';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from '@material-ui/core';
+import { ExpandMore } from '@material-ui/icons';
+import { useKeycloak } from '@react-keycloak/web';
 //import { useCurrentPosition, useWatchPosition } from '@ionic/react-hooks/geolocation';
 import * as turf from '@turf/turf';
+import FormContainer, { IFormContainerProps } from 'components/form/FormContainer';
 import MapContainer, { IMapContainerProps } from 'components/map/MapContainer';
-import { useHistory } from 'react-router-dom';
-import KMLUpload from 'components/map-buddy-components/KMLUpload';
-import 'gridfix.css';
-import { sanitizeRecord } from 'utils/addActivity';
-import { useKeycloak } from '@react-keycloak/web';
 import { calc_lat_long_from_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
-import { Feature } from '@turf/turf';
+import PhotoContainer, { IPhotoContainerProps } from 'components/photo/PhotoContainer';
+import { ActivitySyncStatus, FormValidationStatus, ReviewStatus } from 'constants/activities';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import 'gridfix.css';
+import { useDataAccess } from 'hooks/useDataAccess';
+import moment from 'moment';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { sanitizeRecord } from 'utils/addActivity';
 
 export interface IActivityComponentProps extends IMapContainerProps, IFormContainerProps, IPhotoContainerProps {
   classes?: any;
@@ -39,7 +36,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
   const [currentPosition, setCurrentPosition] = useState(null);
   const watchPosition = Geolocation.watchPosition;
   const [workingPolyline, setWorkingPolyline] = useState([]);
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const { keycloak } = useKeycloak();
   const { userInfo } = useContext(AuthStateContext);
@@ -76,7 +73,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
     } catch (e) {
       console.log('unable to start watch');
     }
-    notifySuccess(databaseContext, JSON.stringify('Starting track.'));
+    console.log('Starting track.');
   };
 
   const manualUTMEntry = () => {
@@ -140,10 +137,10 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         var polygon = turf.lineToPolygon(line);
         if (window.confirm('Convert track to polygon?')) {
           props.geometryState.setGeometry([polygon as any]);
-          notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  '));
+          //          notifySuccess(databaseContext, JSON.stringify('Made a polygon!!  '));
           // clearWatch();
         } else {
-          notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  '));
+          //         notifySuccess(databaseContext, JSON.stringify('Made a polyine!!  '));
           /// clearWatch();
         }
       } else {
@@ -177,10 +174,11 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         }),
         databaseContext
       );
-      if (!result?.activity_id) notifyError(databaseContext, 'Count not save to database.');
+      if (!result?.activity_id) console.log('');
+      //notifyError(databaseContext, 'Count not save to database.');
       else window.location.reload();
     } catch (error) {
-      notifyError(databaseContext, 'Could not save to database.  Are you connected to the internet?');
+      //notifyError(databaseContext, 'Could not save to database.  Are you connected to the internet?');
     }
   };
 
@@ -200,10 +198,10 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         }),
         databaseContext
       );
-      if (!result?.activity_id) notifyError(databaseContext, 'Count not submit form for review.');
+      if (!result?.activity_id) console.log('Count not submit form for review.');
       else window.location.reload();
     } catch (error) {
-      notifyError(databaseContext, 'Could not submit form for review.  Are you connected to the internet?');
+      console.log('Could not submit form for review.  Are you connected to the internet?');
     }
   };
 
@@ -220,10 +218,10 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         }),
         databaseContext
       );
-      if (!result?.activity_id) notifyError(databaseContext, 'Count not approve form.');
+      if (!result?.activity_id) console.log('Count not approve form.');
       else window.location.reload();
     } catch (error) {
-      notifyError(databaseContext, 'Could not approve form.  Are you connected to the internet?');
+      //notifyError(databaseContext, 'Could not approve form.  Are you connected to the internet?');
     }
   };
 
@@ -240,10 +238,10 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
         }),
         databaseContext
       );
-      if (!result?.activity_id) notifyError(databaseContext, 'Count not disapprove form.');
+      if (!result?.activity_id) console.log('Count not disapprove form.');
       else window.location.reload();
     } catch (error) {
-      notifyError(databaseContext, 'Could not disapprove form.  Are you connected to the internet?');
+      console.log('Could not disapprove form.  Are you connected to the internet?');
     }
   };
 
@@ -368,9 +366,7 @@ const ActivityComponent: React.FC<IActivityComponentProps> = (props) => {
             <Grid xs={12} item>
               <Accordion>
                 <AccordionSummary>KML Upload</AccordionSummary>
-                <AccordionDetails>
-                  <KMLUpload setGeo={props.geometryState.setGeometry} />
-                </AccordionDetails>
+                <AccordionDetails>{/*<KMLUpload setGeo={props.geometryState.setGeometry} />*/}</AccordionDetails>
               </Accordion>
             </Grid>
           </Grid>

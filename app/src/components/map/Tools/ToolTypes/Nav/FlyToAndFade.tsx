@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState } from 'react';
-import { useMap, GeoJSON, Circle } from 'react-leaflet';
 import bbox from '@turf/bbox';
-import union from '@turf/union';
 import buffer from '@turf/buffer';
 import circle from '@turf/circle';
 import { BBox, Geometries } from '@turf/turf';
-import L, { LatLngBoundsExpression, LatLngExpression } from 'leaflet';
+import union from '@turf/union';
+import L, { LatLngExpression } from 'leaflet';
+import React, { createContext, useContext, useState } from 'react';
+import { GeoJSON, useMap } from 'react-leaflet';
 import { createPolygonFromBounds2 } from '../../../LayerLoaderHelpers/LtlngBoundsToPoly';
 
 export const FlyToAndFadeContext = createContext({

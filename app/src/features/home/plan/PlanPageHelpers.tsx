@@ -1,6 +1,5 @@
 import { DocType } from 'constants/database';
-import { upsert, UpsertType } from 'contexts/DatabaseContext2';
-import { notifyError, notifySuccess } from 'utils/NotificationUtils';
+import { upsert, UpsertType } from 'contexts/DatabaseContext';
 
 export const confirmDeleteTrip = (trip_ID, tripName) => {
   // prettier-ignore
@@ -96,7 +95,6 @@ export const deleteTripRecords = async (databaseContext, trip_ID) => {
     // update records
     // delete records
   } catch (error) {
-    notifyError(databaseContext, 'Ran into a problem deleting trip records:' + error);
     console.dir(error);
   }
 };

@@ -1,8 +1,8 @@
+import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
 import { ActivitiesLayer } from './ActivitiesLayer';
-import { PoisLayer } from './PoisLayer';
 import { JurisdictionsLayer } from './JurisdictionsLayer';
-import { NetworkContext } from 'contexts/NetworkContext';
+import { PoisLayer } from './PoisLayer';
 
 export enum IndependentLayers {
   Activities = 'LEAN_ACTIVITIES',

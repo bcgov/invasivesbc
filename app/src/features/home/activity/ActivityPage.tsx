@@ -1,46 +1,39 @@
-import {
-  CircularProgress,
-  Container,
-  makeStyles,
-  Box,
-  Button,
-  Typography,
-  Zoom,
-  Tooltip,
-  Paper
-} from '@material-ui/core';
+import { Capacitor } from '@capacitor/core';
+import { Box, Button, CircularProgress, Container, makeStyles, Tooltip, Typography, Zoom } from '@material-ui/core';
 import { FileCopy } from '@material-ui/icons';
-import ActivityComponent from '../../../components/activity/ActivityComponent';
-import { IPhoto } from '../../../components/photo/PhotoContainer';
-import { ActivityStatus, FormValidationStatus } from 'constants/activities';
-import { DatabaseContext } from '../../../contexts/DatabaseContext';
-import proj4 from 'proj4';
 import * as turf from '@turf/turf';
+import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
+import { ActivityStatus, FormValidationStatus } from 'constants/activities';
+import { DocType } from 'constants/database';
 import { Feature } from 'geojson';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { debounced } from '../../../utils/FunctionUtils';
-import { MapContextMenuData } from '../map/MapContextMenu';
-import './scrollbar.css';
+import ActivityComponent from '../../../components/activity/ActivityComponent';
+import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
+import bcArea from '../../../components/map/BC_AREA.json';
+import { IPhoto } from '../../../components/photo/PhotoContainer';
+import { DatabaseContext } from '../../../contexts/DatabaseContext';
+import { useDataAccess } from '../../../hooks/useDataAccess';
+import { getCustomErrorTransformer } from '../../../rjsf/business-rules/customErrorTransformer';
 import {
-  getCustomValidator,
   getAreaValidator,
+  getCustomValidator,
   getDateAndTimeValidator,
-  getWindValidator,
-  getTemperatureValidator,
+  getDuplicateInvasivePlantsValidator,
+  getDurationCountAndPlantCountValidation,
   getHerbicideApplicationRateValidator,
-  getTransectOffsetDistanceValidator,
   // getPosAndNegObservationValidator,
   getHerbicideMixValidation,
-  getVegTransectPointsPercentCoverValidator,
-  getDurationCountAndPlantCountValidation,
-  getPersonNameNoNumbersValidator,
-  getJurisdictionPercentValidator,
-  getSlopeAspectBothFlatValidator,
   getInvasivePlantsValidator,
-  getDuplicateInvasivePlantsValidator,
-  getPlotIdentificatiomTreesValidator
+  getJurisdictionPercentValidator,
+  getPersonNameNoNumbersValidator,
+  getPlotIdentificatiomTreesValidator,
+  getSlopeAspectBothFlatValidator,
+  getTemperatureValidator,
+  getTransectOffsetDistanceValidator,
+  getVegTransectPointsPercentCoverValidator,
+  getWindValidator
 } from '../../../rjsf/business-rules/customValidation';
-import { getCustomErrorTransformer } from '../../../rjsf/business-rules/customErrorTransformer';
 import {
   autoFillSlopeAspect,
   autoFillTotalCollectionTime,
@@ -48,19 +41,12 @@ import {
   populateHerbicideCalculatedFields,
   populateTransectLineAndPointData
 } from '../../../rjsf/business-rules/populateCalculatedFields';
-import { notifySuccess, notifyError } from '../../../utils/NotificationUtils';
+import { mapDBActivityToDoc, mapDocToDBActivity, populateSpeciesArrays } from '../../../utils/addActivity';
+import { debounced } from '../../../utils/FunctionUtils';
+import { calculateGeometryArea, calculateLatLng } from '../../../utils/geometryHelpers';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
-import { calculateLatLng, calculateGeometryArea } from '../../../utils/geometryHelpers';
-import { mapDocToDBActivity, mapDBActivityToDoc, populateSpeciesArrays } from '../../../utils/addActivity';
-import { useDataAccess } from '../../../hooks/useDataAccess';
-import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
-import { Capacitor } from '@capacitor/core';
-import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
-import bcArea from '../../../components/map/BC_AREA.json';
-import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
-import { GetUserAccessLevel } from 'utils/getAccessLevel';
-import { DocType } from 'constants/database';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { MapContextMenuData } from '../map/MapContextMenu';
+import './scrollbar.css';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -90,8 +76,7 @@ interface IActivityPageProps {
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
-  const databaseContextPouch = useContext(DatabaseContext);
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
 
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
@@ -352,7 +337,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const { formData, activitySubtype } = doc;
 
     saveFormDataToSession(formData, activitySubtype);
-    notifySuccess(databaseContextPouch, 'Successfully copied form data.');
   };
 
   /*
@@ -408,10 +392,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
             onClick={async () => {
               // const addedActivity = await addClonedActivityToDB(databaseContextPouch, doc);
               //setActiveActivity(addedActivity);
-              notifySuccess(
-                databaseContextPouch,
-                'Successfully cloned activity. You are now viewing the cloned activity.'
-              );
             }}>
             Clone Activity
           </Button>
