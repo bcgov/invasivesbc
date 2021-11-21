@@ -4,6 +4,9 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  List,
+  ListItem,
+  ListItemText,
   Radio,
   RadioGroup,
   Typography
@@ -18,6 +21,7 @@ import HerbicidesAccordion from './Components/accordions/HerbicidesAccordion';
 import TankMixAccordion from './Components/accordions/TankMixAccordion';
 import InvasivePlantsAccordion from './Components/accordions/InvasivePlantsAccordion';
 import { useFormStyles } from './formStyles';
+import { runValidation } from './Validation';
 
 const ChemicalTreatmentDetailsForm = (props) => {
   const classes = useFormStyles();
@@ -55,14 +59,14 @@ const ChemicalTreatmentDetailsForm = (props) => {
       : { ...props.formData.activity_subtype_data.chemical_treatment_details },
     businessCodes: businessCodes,
     classes: classes,
-    errors: {}
+    errors: []
   });
 
-  const [formData, setFormData] = useState(formDetails.formData);
+  const [localErrors, setLocalErrors] = useState([]);
 
   useEffect(() => {
-    if (formData !== formDetails.formData)
-      props.onChange({
+    props.onChange(
+      {
         formData: {
           ...props.formData,
           activity_subtype_data: {
@@ -70,7 +74,17 @@ const ChemicalTreatmentDetailsForm = (props) => {
             chemical_treatment_details: { ...formDetails.formData }
           }
         }
-      });
+      },
+      null,
+      null,
+      () => {
+        let lerrors = [];
+        const newErr = runValidation(formDetails.formData, lerrors, businessCodes);
+        console.log(newErr);
+        setLocalErrors([...newErr]);
+      }
+    );
+    // const newErr = runValidation(formData, formDetails.errors, businessCodes);
   }, [formDetails]);
 
   //fields
@@ -101,6 +115,28 @@ const ChemicalTreatmentDetailsForm = (props) => {
       <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
         <Typography variant="h4">Treatment Details</Typography>
         <Divider />
+
+        {localErrors.length > 0 && (
+          <>
+            <Typography style={{ marginTop: '1rem' }} color={'error'} variant="h5">
+              There are errors in this sub-form:
+            </Typography>
+            <List dense={true}>
+              {localErrors.map((err, index) => (
+                <ListItem>
+                  <ListItemText
+                    style={{ color: '#ff000' }}
+                    primary={
+                      <Typography color={'error'} variant="body1">
+                        {`${index + 1}. ${err}`}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </>
+        )}
 
         <FormControl className={classes.formControl}>
           <InvasivePlantsAccordion />
@@ -142,7 +178,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
             </Box>
           </Box>
 
-          <HerbicidesAccordion />
+          <HerbicidesAccordion insideTankMix={false} />
 
           <TankMixAccordion />
         </FormControl>

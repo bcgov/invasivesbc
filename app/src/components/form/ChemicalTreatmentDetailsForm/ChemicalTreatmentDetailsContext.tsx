@@ -4,7 +4,7 @@ import { IGeneralFields } from './Models';
 
 export interface IChemicalDetailsContextformDetails {
   formData?: IGeneralFields;
-  errors?: any;
+  errors?: any[];
   businessCodes?: any;
   classes?: ClassNameMap;
 }

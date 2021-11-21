@@ -25,5 +25,9 @@ export interface IHerbicide {
   herbicide_code?: string;
   application_rate?: number; //only if in tank
   calculation_type?: string; //only if NOT in tank
-  calculation_fields?: any; //only if NOT in tank
+  amount_of_mix?: number;
+  dilution?: number;
+  area_treated_sqm?: number;
+  delivery_rate_of_mix?: number;
+  product_application_rate?: number;
 }

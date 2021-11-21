@@ -33,7 +33,9 @@ const HerbicidesAccordion = (props) => {
   }, [herbicidesArr]);
 
   return (
-    <Accordion expanded={!tankMixOn || props.insideTankMix} disabled={tankMixOn && !props.insideTankMix}>
+    <Accordion
+      expanded={(tankMixOn && props.insideTankMix) || (!tankMixOn && !props.insideTankMix)}
+      disabled={(tankMixOn && !props.insideTankMix) || (!tankMixOn && props.insideTankMix)}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="herbicides-content" id="herbicides-header">
         <Typography variant="h5">Herbicides</Typography>
       </AccordionSummary>
@@ -42,17 +44,34 @@ const HerbicidesAccordion = (props) => {
           <Box component="div" className={classes.centerBox}>
             <Button
               onClick={() => {
-                setFormDetails((prevDetails) => {
-                  const newHerbicidesArr = [...prevDetails.formData.herbicides];
-                  newHerbicidesArr.push({});
-                  return {
-                    ...prevDetails,
-                    formData: {
-                      ...prevDetails.formData,
-                      herbicides: [...newHerbicidesArr]
-                    }
-                  };
-                });
+                if (props.insideTankMix) {
+                  setFormDetails((prevDetails) => {
+                    const newHerbicidesArr = [...prevDetails.formData.herbicides];
+                    newHerbicidesArr.push({});
+                    return {
+                      ...prevDetails,
+                      formData: {
+                        ...prevDetails.formData,
+                        tank_mix_object: {
+                          ...prevDetails.formData.tank_mix_object,
+                          herbicides: [...newHerbicidesArr]
+                        }
+                      }
+                    };
+                  });
+                } else {
+                  setFormDetails((prevDetails) => {
+                    const newHerbicidesArr = [...prevDetails.formData.herbicides];
+                    newHerbicidesArr.push({});
+                    return {
+                      ...prevDetails,
+                      formData: {
+                        ...prevDetails.formData,
+                        herbicides: [...newHerbicidesArr]
+                      }
+                    };
+                  });
+                }
               }}
               variant="contained"
               startIcon={<AddIcon />}
@@ -62,15 +81,25 @@ const HerbicidesAccordion = (props) => {
           </Box>
 
           <Box component="div" className={classes.listContainer}>
-            {formDetails.formData.herbicides.map((herbicide, index) => (
-              <Herbicide
-                insideTankMix={props.insideTankMix}
-                classes={classes}
-                key={index}
-                index={index}
-                herbicide={herbicide}
-              />
-            ))}
+            {props.insideTankMix
+              ? formDetails.formData.tank_mix_object.herbicides.map((herbicide, index) => (
+                  <Herbicide
+                    insideTankMix={props.insideTankMix}
+                    classes={classes}
+                    key={index}
+                    index={index}
+                    herbicide={herbicide}
+                  />
+                ))
+              : formDetails.formData.herbicides.map((herbicide, index) => (
+                  <Herbicide
+                    insideTankMix={props.insideTankMix}
+                    classes={classes}
+                    key={index}
+                    index={index}
+                    herbicide={herbicide}
+                  />
+                ))}
           </Box>
         </Box>
       </AccordionDetails>

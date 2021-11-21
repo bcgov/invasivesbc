@@ -48,7 +48,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
     if (currentHerbicide !== herbicide) {
       if (insideTankMix) {
         setFormDetails((prevDetails) => {
-          const newHerbArr = formDetails.formData.herbicides;
+          const newHerbArr = formDetails.formData.tank_mix_object.herbicides;
           newHerbArr[index] = { ...currentHerbicide };
           return {
             ...prevDetails,
@@ -182,10 +182,10 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
           <TextField
             className={classes.inputField}
             type="number"
-            // error={currentHerbicideErrorSchema?.application_rate?.__errors?.length > 0 || false}
+            // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
             label="Product Application Rate (l/ha)"
-            // helperText={currentHerbicideErrorSchema?.application_rate?.__errors[0] || ''}
-            value={herbicide.application_rate || ''}
+            // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
+            value={herbicide.product_application_rate || ''}
             variant="outlined"
             onChange={(event) => {
               if (event.target.value === null) {
@@ -193,7 +193,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
               }
               setCurrentHerbicide((prevFields) => ({
                 ...prevFields,
-                application_rate: Number(event.target.value)
+                product_application_rate: Number(event.target.value)
               }));
             }}
             defaultValue={undefined}
@@ -284,7 +284,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
               // error={currentHerbicideErrorSchema?.application_rate?.__errors?.length > 0}
               label="Product Application Rate"
               // helperText={currentHerbicideErrorSchema?.application_rate?.__errors[0] || ''}
-              value={herbicide.application_rate || ''}
+              value={herbicide.product_application_rate || ''}
               variant="outlined"
               onChange={(event) => {
                 if (event.target.value === null) {
@@ -292,7 +292,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
                 }
                 setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
-                  application_rate: Number(event.target.value)
+                  product_application_rate: Number(event.target.value)
                 }));
               }}
               defaultValue={undefined}

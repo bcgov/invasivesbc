@@ -40,6 +40,8 @@ const CustomAutoComplete = ({
           value: parentState[parentName][fieldName] || null,
           label: optionValueLabels[parentState[parentName][fieldName]] || null
         });
+      } else {
+        onChange(null, null);
       }
     } else {
       if (choices.length > 0 && parentState[fieldName]) {
@@ -50,6 +52,8 @@ const CustomAutoComplete = ({
           value: parentState[fieldName] || null,
           label: optionValueLabels[parentState[fieldName]] || null
         });
+      } else {
+        onChange(null, null);
       }
     }
   }, [choices, onChange]);
