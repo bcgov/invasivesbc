@@ -3,7 +3,7 @@ import { Redirect, Route, RouteProps } from 'react-router-dom';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { CircularProgress } from '@mui/material';
-import { UserInfoContext } from 'contexts/UserInfoContext';
+import { Capacitor } from '@capacitor/core';
 
 interface IPrivateRouteProps extends RouteProps {
   component: React.ComponentType<any>;
@@ -22,20 +22,26 @@ interface IPrivateRouteProps extends RouteProps {
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   const { keycloak } = useContext(AuthStateContext);
   const networkContext = useContext(NetworkContext);
+  const authStateContext = useContext(AuthStateContext);
+
   let { component: Component, layout: Layout, ...rest } = props;
 
   document.title = props.title;
 
-  // needs a clean solution to having some public pages
+  const isMobile = () => {
+    return Capacitor.getPlatform() !== 'web';
+  };
+
+  const isAuthenticated = () => {
+    return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && authStateContext.userInfoLoaded);
+  };
+
   return (
     <Route
       {...rest}
       render={(renderProps) => {
         if (process.env.REACT_APP_REAL_NODE_ENV !== 'production' && networkContext.connected) {
-          if (
-            (!keycloak.obj?.authenticated || !rest.roles || !keycloak.hasRole(rest.roles)) &&
-            !props.componentProps?.isMobileNoNetwork
-          ) {
+          if (!isAuthenticated()) {
             console.log('unauthenticated');
             return <Redirect to={{ pathname: '/forbidden', state: { referer: renderProps.location } }} />;
           }

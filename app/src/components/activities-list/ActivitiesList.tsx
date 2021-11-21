@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Checkbox,
   Divider,
   FormControl,
@@ -36,6 +37,11 @@ import {
 import { DatabaseContext2, query, QueryType } from '../../contexts/DatabaseContext2';
 import BatchUpload from '../../components/batch-upload/BatchUpload';
 import { ALL_ROLES, PLANT_ROLES, ANIMAL_ROLES, USER_ACCESS, User_Access } from 'constants/roles';
+import { Sync } from '@material-ui/icons';
+import { IonAlert } from '@ionic/react';
+import { Capacitor } from '@capacitor/core';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -184,6 +190,7 @@ interface IActivityList {
 
 const ActivitiesList: React.FC = () => {
   const classes = useStyles();
+  const dataAccess = useDataAccess();
 
   let hasPlantAccess = false;
   let hasAnimalAccess = false;
@@ -215,6 +222,25 @@ const ActivitiesList: React.FC = () => {
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
+  const [showAlert, setShowAlert] = useState(false);
+  const networkContext = useContext(NetworkContext);
+
+  const syncCachedActivities = async () => {
+    console.log('Syncing...');
+    try {
+      await dataAccess.syncCachedRecords();
+    } catch (e: any) {
+      console.log('Error syncing cached records: ', e);
+    }
+  };
+
+  const showPrompt = () => {
+    setShowAlert(true);
+  };
+
+  const isMobile = () => {
+    return Capacitor.getPlatform() !== 'web';
+  };
 
   // const syncActivities = async () => {
   //   setIsDisable(true);
@@ -288,6 +314,26 @@ const ActivitiesList: React.FC = () => {
 
   return (
     <>
+      <IonAlert
+        isOpen={showAlert}
+        onDidDismiss={() => setShowAlert(false)}
+        header={'Are you sure?'}
+        message={'If you choose to sync your cached records, you will no longer be able to edit them.'}
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {}
+          },
+          {
+            text: 'Okay',
+            handler: () => {
+              syncCachedActivities();
+            }
+          }
+        ]}
+      />
       <Box>
         <Box mb={3} display="flex" justifyContent="space-between">
           <FormControl variant="outlined" className={classes.formControl}>
@@ -301,6 +347,11 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
             </Select>
           </FormControl>
+          {isMobile && networkContext.connected && (
+            <Button onClick={showPrompt} key="sync" color="primary" variant="outlined" startIcon={<Sync />}>
+              Sync Cached Records
+            </Button>
+          )}
         </Box>
         <Box>
           {workflowFunction === 'Plant' && (
