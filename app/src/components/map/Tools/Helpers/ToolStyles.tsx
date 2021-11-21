@@ -25,25 +25,83 @@ export const toolStyles = makeStyles((theme) => ({
   },
   toolBtnLight: {
     height: 44,
-    width: 44,
+    width: 100,
     zIndex: 1500,
+    text: 100,
     marginLeft: 9,
-    borderRadius: 0,
+    borderRadius: 5,
+    spacing: 'space-around',
     background: 'white',
+    backgroundColor: 'white',
     '&:hover': {
       background: 'white'
     }
   },
   toolBtnDark: {
     height: 44,
-    width: 44,
+    width: 100,
     zIndex: 1500,
     marginLeft: 9,
-    borderRadius: 0,
+    borderRadius: 5,
     background: '#424242',
     '&:hover': {
       background: '#424242'
     }
+  },
+  toolBtnLightDisabled: {
+    height: 44,
+    width: 100,
+    zIndex: 1500,
+    text: 100,
+    marginLeft: 9,
+    borderRadius: 5,
+    spacing: 'space-around',
+    background: 'white !important',
+    backgroundColor: 'white',
+    '&:hover': {
+      background: 'white !important'
+    }
+  },
+  toolBtnDarkDisabled: {
+    height: 44,
+    width: 100,
+    zIndex: 1500,
+    marginLeft: 9,
+    borderRadius: 5,
+    background: '#424242',
+    '&:hover': {
+      background: '#424242'
+    }
+  },
+  Font: {
+    text: 80,
+    padding: 10,
+    alight: 'left'
+  },
+  toolBtnMultiStageMenu: {
+    height: '43px',
+    minWidth: '250px',
+    //width: 43,
+    zIndex: 1500,
+    //borderRadius: 4,
+    marginRight: 10,
+    position: 'absolute',
+    right: 50
+    // background: 'white',
+    // '&:hover': {
+    //   background: 'white'
+    // }
+  },
+  toolBtnMultiStageMenuItem: {
+    height: '43px',
+    //width: 43,
+    zIndex: 1500
+    //borderRadius: 4,
+    // marginRight: 10,
+    // background: 'white',
+    // '&:hover': {
+    //   background: 'white'
+    // }
   },
   toolImg: {
     height: 24,

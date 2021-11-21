@@ -6,7 +6,7 @@ import buffer from '@turf/buffer';
 import circle from '@turf/circle';
 import { BBox, Geometries } from '@turf/turf';
 import L, { LatLngBoundsExpression, LatLngExpression } from 'leaflet';
-import { createPolygonFromBounds2 } from '../LayerLoaderHelpers/LtlngBoundsToPoly';
+import { createPolygonFromBounds2 } from '../../../LayerLoaderHelpers/LtlngBoundsToPoly';
 
 export const FlyToAndFadeContext = createContext({
   go: (input: any) => {}

@@ -1,6 +1,6 @@
-import { Grid, IconButton } from '@material-ui/core';
+import { Grid, IconButton, Typography } from '@material-ui/core';
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { toolStyles } from './Helpers/ToolBtnStyles';
+import { toolStyles } from '../../Helpers/ToolStyles';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
 //import { useDataAccess } from 'hooks/useDataAccess';
@@ -14,7 +14,7 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-
+import AddIcon from '@mui/icons-material/Add';
 //great for plants vs animals:
 import GrassIcon from '@mui/icons-material/Grass';
 import PetsIcon from '@mui/icons-material/Pets';
@@ -58,18 +58,24 @@ export const NewRecord = (props) => {
 
   const [mode, setMode] = useState('NOT_PRESSED');
 
-  const RenderWhenMode_NotPressed = (props) => {
-    const onClick = async () => {
-      setMode('PRESSED');
-    };
+  const MainButton = (props) => {
     return (
       <IconButton
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         aria-label="Create Record"
-        onClick={onClick}>
-        <CreateIcon />
+        disabled={mode !== 'NOT_PRESSED'}
+        onClick={props.onClick}>
+        <AddIcon />
+        <Typography className={toolClass.Font}>New Record</Typography>
       </IconButton>
     );
+  };
+
+  const RenderWhenMode_NotPressed = (props) => {
+    const onClick = async () => {
+      setMode('PRESSED');
+    };
+    return <MainButton onClick={onClick}></MainButton>;
   };
 
   const RenderWhenMode_Pressed = (props) => {
@@ -80,42 +86,45 @@ export const NewRecord = (props) => {
     ]);
     const [index, setIndex] = useState(0);
     return (
-      <Grid xs={5} container className={toolClass.toolBtnMultiStageMenu}>
-        <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
-          <IconButton
-            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-            aria-label="Previous choice"
-            onClick={() => setIndex(index !== 0 ? index - 1 : items.length - 1)}>
-            <KeyboardBackspaceIcon />
-          </IconButton>
+      <>
+        <MainButton />
+        <Grid xs={6} container className={toolClass.toolBtnMultiStageMenu}>
+          <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
+            <IconButton
+              className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+              aria-label="Previous choice"
+              onClick={() => setIndex(index !== 0 ? index - 1 : items.length - 1)}>
+              <KeyboardBackspaceIcon />
+            </IconButton>
+          </Grid>
+          <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
+            <IconButton
+              className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+              aria-label="Create Record"
+              onClick={createOnClick}>
+              {items[index].type}
+            </IconButton>
+          </Grid>
+          <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
+            <IconButton
+              className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+              aria-label="Next Choice"
+              onClick={() => setIndex(index !== items.length - 1 ? index + 1 : 0)}>
+              <ArrowRightAltIcon />
+            </IconButton>
+          </Grid>
+          <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
+            <IconButton
+              className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
+              aria-label="Cancel"
+              onClick={() => {
+                setMode('NOT_PRESSED');
+              }}>
+              <CancelPresentationIcon />
+            </IconButton>
+          </Grid>
         </Grid>
-        <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
-          <IconButton
-            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-            aria-label="Create Record"
-            onClick={createOnClick}>
-            {items[index].type}
-          </IconButton>
-        </Grid>
-        <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
-          <IconButton
-            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-            aria-label="Next Choice"
-            onClick={() => setIndex(index !== items.length - 1 ? index + 1 : 0)}>
-            <ArrowRightAltIcon />
-          </IconButton>
-        </Grid>
-        <Grid item className={toolClass.toolBtnMultiStageMenuItem}>
-          <IconButton
-            className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
-            aria-label="Cancel"
-            onClick={() => {
-              setMode('NOT_PRESSED');
-            }}>
-            <CancelPresentationIcon />
-          </IconButton>
-        </Grid>
-      </Grid>
+      </>
     );
   };
 

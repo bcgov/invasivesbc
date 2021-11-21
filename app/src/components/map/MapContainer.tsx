@@ -24,12 +24,12 @@ import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi
 // Layer Picker
 import layers from './LayerPicker/LAYERS.json';
 import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
-import EditTools from './Tools/EditTools';
-import { FlyToAndFadeContextProvider } from './Tools/FlyToAndFade';
-import { ZoomBar } from './Tools/ZoomBar';
+import EditTools from './Tools/ToolTypes/Data/EditTools';
+import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
+import { ZoomBar } from './Tools/ToolTypes/Misc/ZoomBar';
 import { ToolbarContainer } from './ToolbarContainer';
-import JumpToActivity from './Tools/JumpToActivity';
-import NewRecord from './Tools/NewRecord';
+import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
+import NewRecord from './Tools/ToolTypes/Data/NewRecord';
 //Added comment
 
 const DefaultIcon = L.icon({
@@ -220,11 +220,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <MapRequestContextProvider>
           <ZoomButtons position="bottomleft" />
           <ScaleControl position="bottomright" imperial={false} />
-          {props.showDrawControls && (
-            <FeatureGroup>
+          {props.showDrawControls &&
+            {
+              /*   <FeatureGroup>
               <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
-            </FeatureGroup>
-          )}
+         </FeatureGroup>*/
+            }}
 
           {/* Here is the offline component */}
           <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
@@ -232,6 +233,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           {/* All Buttons are located in this file */}
           <ToolbarContainer
             position="topright"
+            id={props.activityId}
             map={map}
             layers={layers}
             inputGeo={props.geometryState.geometry}

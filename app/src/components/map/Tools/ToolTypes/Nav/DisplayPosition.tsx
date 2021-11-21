@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Marker, GeoJSON, Tooltip } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, IconButton } from '@material-ui/core';
+import { CircularProgress, IconButton, Typography } from '@material-ui/core';
 import proj4 from 'proj4';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './Helpers/ToolStyles';
-import { GeneratePopup } from './InfoAreaDescription';
-import { createDataUTM } from './Helpers/StyledTable';
-import marker from '../Icons/POImarker.png';
+import { toolStyles } from '../../Helpers/ToolStyles';
+import { GeneratePopup } from '../Data/InfoAreaDescription';
+import { createDataUTM } from '../../Helpers/StyledTable';
+import marker from '../../../Icons/POImarker.png';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -126,6 +126,7 @@ export default function DisplayPosition({ map }) {
         aria-label="my position"
         onClick={getLocation}>
         {initialTime > 0 ? <CircularProgress size={24} /> : <LocationOnIcon />}
+        <Typography className={toolClass.Font}>Current Position</Typography>{' '}
       </IconButton>
     </>
   );

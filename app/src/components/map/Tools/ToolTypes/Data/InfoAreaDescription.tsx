@@ -19,21 +19,26 @@ import AdjustIcon from '@material-ui/icons/Adjust';
 import { useMapEvent, GeoJSON, Popup, Marker, Tooltip } from 'react-leaflet';
 import L, { DomEvent } from 'leaflet';
 // App Imports
-import { calc_utm } from './DisplayPosition';
+import { calc_utm } from '../Nav/DisplayPosition';
 import {
   createDataUTM,
   RenderTableActivity,
   RenderTablePosition,
   RenderTableDataBC,
   RenderTablePOI
-} from './Helpers/StyledTable';
-import { getDataFromDataBC } from '../WFSConsumer';
+} from '../../Helpers/StyledTable';
+import { getDataFromDataBC } from '../../../WFSConsumer';
 import * as turf from '@turf/turf';
-import { useDataAccess } from '../../../hooks/useDataAccess';
+import { useDataAccess } from '../../../../../hooks/useDataAccess';
 import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles, assignPtDefaultTheme, assignPointModeTheme, assignTextDefaultTheme } from './Helpers/ToolStyles';
+import {
+  toolStyles,
+  assignPtDefaultTheme,
+  assignPointModeTheme,
+  assignTextDefaultTheme
+} from '../../Helpers/ToolStyles';
 import marker from '../Icons/POImarker.png';
-import binoculars from '../Icons/binoculars.png';
+import binoculars from '../../../Icons/binoculars.png';
 import { Stack } from '@mui/material';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
@@ -316,7 +321,7 @@ function SetPointOnClick({ map }: any) {
   }, [utm]);
 
   const markerIcon = L.icon({
-    iconUrl: marker,
+    iconUrl: binoculars,
     iconSize: [24, 24]
   });
 
@@ -328,7 +333,8 @@ function SetPointOnClick({ map }: any) {
       {poiMarker && (
         <Marker
           position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
-          icon={markerIcon}>
+          //  icon={markerIcon}>
+        >
           <Tooltip direction="top" opacity={0.5} permanent>
             <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
               {poiMarker.species.map((s) => (
@@ -355,6 +361,7 @@ function SetPointOnClick({ map }: any) {
           src={binoculars}
           aria-label="create-pin"
         />
+        <Typography className={toolClass.Font}>What's here?</Typography>
       </IconButton>
       {utm && (
         <GeoJSON data={geoPoint} key={Math.random()}>

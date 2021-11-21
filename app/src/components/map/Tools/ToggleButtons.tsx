@@ -1,6 +1,6 @@
-import { Grid, IconButton } from '@material-ui/core';
+import { Grid, IconButton, Typography } from '@material-ui/core';
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { toolStyles } from './Helpers/ToolBtnStyles';
+import { toolStyles } from './Helpers/ToolStyles';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
 //import { useDataAccess } from 'hooks/useDataAccess';
@@ -14,12 +14,12 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-
+import AddIcon from '@mui/icons-material/Add';
 //great for plants vs animals:
 import GrassIcon from '@mui/icons-material/Grass';
 import PetsIcon from '@mui/icons-material/Pets';
 
-export const NewRecord = (props) => {
+export const ToggleDisplayButtons = (props) => {
   //const history = useHistory();
   //const { userInfo } = useContext(AuthStateContext); // style
   const toolClass = toolStyles();
@@ -67,7 +67,8 @@ export const NewRecord = (props) => {
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         aria-label="Create Record"
         onClick={onClick}>
-        <CreateIcon />
+        <AddIcon />
+        <Typography className={toolClass.Font}>New Record</Typography>
       </IconButton>
     );
   };
@@ -131,4 +132,4 @@ export const NewRecord = (props) => {
   );
 };
 
-export default NewRecord;
+export default ToggleDisplayButtons;

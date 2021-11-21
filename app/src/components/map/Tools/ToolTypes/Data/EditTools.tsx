@@ -8,7 +8,7 @@ import single from '../Icons/square.png';
 import multi from '../Icons/trim.png';
 import { async } from 'q';
 import { Capacitor } from '@capacitor/core';
-import { MobileDrawCancel, MobilePolylineDrawButton } from './Helpers/MobileDrawBtns';
+import { MobileDrawCancel, MobilePolylineDrawButton } from '../../Helpers/MobileDrawBtns';
 
 const circleORmarker = (feature, latLng, markerStyle) => {
   if (feature.properties.radius) {
