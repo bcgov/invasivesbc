@@ -32,7 +32,7 @@ export const toolStyles = makeStyles((theme) => ({
     borderRadius: 5,
     spacing: 'space-around',
     background: 'white',
-    backgroundColor: 'white',
+    backgroundColor: 'white !important',
     '&:hover': {
       background: 'white'
     }
@@ -80,13 +80,14 @@ export const toolStyles = makeStyles((theme) => ({
   },
   toolBtnMultiStageMenu: {
     height: '43px',
-    minWidth: '250px',
+    minWidth: '650px',
+    flexWrap: 'nowrap',
     //width: 43,
     zIndex: 1500,
     //borderRadius: 4,
     marginRight: 10,
-    position: 'absolute',
-    right: 50
+    position: 'relative',
+    right: 0
     // background: 'white',
     // '&:hover': {
     //   background: 'white'

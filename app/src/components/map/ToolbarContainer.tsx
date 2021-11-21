@@ -23,7 +23,9 @@ export const ToolbarContainer = (props) => {
   return (
     <LayersControlProvider value={null}>
       <div className={positionClass}>
-        <div className="leaflet-control" style={{ display: 'flex', flexDirection: 'column', padding: 10, gap: 10 }}>
+        <div
+          className="leaflet-control"
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'end', padding: 10, gap: 10 }}>
           <LayerPicker
             map={props.map}
             layers={props.layer}

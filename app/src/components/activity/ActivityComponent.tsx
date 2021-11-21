@@ -17,7 +17,7 @@ import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import 'gridfix.css';
 import { sanitizeRecord } from 'utils/addActivity';
 import { useKeycloak } from '@react-keycloak/web';
-import { calc_lat_long_from_utm } from 'components/map/Tools/DisplayPosition';
+import { calc_lat_long_from_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { Feature } from '@turf/turf';
 import { AuthStateContext } from 'contexts/authStateContext';
 

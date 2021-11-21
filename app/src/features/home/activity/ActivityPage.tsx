@@ -57,7 +57,7 @@ import { DatabaseContext2 } from '../../../contexts/DatabaseContext2';
 import { Capacitor } from '@capacitor/core';
 import { IWarningDialog, WarningDialog } from '../../../components/dialog/WarningDialog';
 import bcArea from '../../../components/map/BC_AREA.json';
-import { calc_utm } from 'components/map/Tools/DisplayPosition';
+import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { GetUserAccessLevel } from 'utils/getAccessLevel';
 import { DocType } from 'constants/database';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';

@@ -3,14 +3,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import L from 'leaflet';
 import { ThemeContext } from 'contexts/themeContext';
-//import { useDataAccess } from 'hooks/useDataAccess';
-//import { DatabaseContext2 } from 'contexts/DatabaseContext2';
-//import { Capacitor } from '@capacitor/core';
-//import { generateDBActivityPayload } from 'utils/addActivity';
-//import { useHistory } from 'react-router';
-import CreateIcon from '@mui/icons-material/Create';
-//import { ActivitySubtype, ActivityType } from 'constants/activities';
-import { AuthStateContext } from 'contexts/authStateContext';
+
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
@@ -20,8 +13,6 @@ import GrassIcon from '@mui/icons-material/Grass';
 import PetsIcon from '@mui/icons-material/Pets';
 
 export const NewRecord = (props) => {
-  //const history = useHistory();
-  //const { userInfo } = useContext(AuthStateContext); // style
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
 
@@ -87,8 +78,7 @@ export const NewRecord = (props) => {
     const [index, setIndex] = useState(0);
     return (
       <>
-        <MainButton />
-        <Grid xs={6} container className={toolClass.toolBtnMultiStageMenu}>
+        <Grid xs={12} container className={toolClass.toolBtnMultiStageMenu}>
           <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
             <IconButton
               className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
@@ -122,6 +112,9 @@ export const NewRecord = (props) => {
               }}>
               <CancelPresentationIcon />
             </IconButton>
+          </Grid>
+          <Grid item xs={3} className={toolClass.toolBtnMultiStageMenuItem}>
+            <MainButton />
           </Grid>
         </Grid>
       </>
