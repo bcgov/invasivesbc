@@ -51,23 +51,23 @@ import { addOrRemoveLayer, LayersSelector, updateLayer } from './LayersSelectorA
 import { ThemeContext } from 'contexts/themeContext';
 
 export const updateChild = (
-  parentType: string,
-  childType: string,
+  parentId: string,
+  childId: string,
   fieldsToUpdate: Object,
   { objectState, setObjectState }
 ) => {
   // sort parents, get index of parent
-  let pIndex = getParentIndex(objectState, parentType);
+  let pIndex = getParentIndex(objectState, parentId);
   // sort child of specific parent, get index of child
-  let cIndex = getChildIndex(objectState, parentType, childType);
+  let cIndex = getChildIndex(objectState, parentId, childId);
   // get old child and overwrite fields with fields in fieldsToUpdate
-  const oldChild = getChild(objectState, parentType, childType);
+  const oldChild = getChild(objectState, parentId, childId);
   const updatedChild = { ...oldChild, ...fieldsToUpdate };
   // break up slicing into chunks:
   let parentsBefore = getObjectsBeforeIndex(objectState, pIndex);
   let parentsAfter = getObjectsAfterIndex(objectState, pIndex);
   //spread to avoid reference issue when copying
-  const oldParent = getParent(objectState, parentType);
+  const oldParent = getParent(objectState, parentId);
 
   const childrenBefore = getChildObjBeforeIndex(objectState, pIndex, cIndex);
   const childrenAfter = getChildObjAfterIndex(objectState, pIndex, cIndex);
@@ -144,37 +144,8 @@ export function LayerPicker(props: any) {
     setObjectState([...parentsBefore, updatedParent, ...parentsAfter] as any);
   };
 
-  /**
-   * Function used to open or close the Settings Dialog Box
-   * @param parent object from objectState (LAYERS.json)
-   * @param child object from parent children array
-   * @param open if true opens dialog box otherwise close
-   */
-  const toggleChildDialog = (parent, child, open: boolean) => {
-    updateChild(
-      parent.id,
-      child.id,
-      {
-        dialog_open: open
-      },
-      { objectState, setObjectState }
-    );
-  };
-
-  /**
-   * Function to open the color picker dialog box
-   * @param parent object from objectState (LAYERS.json)
-   * @param child object from parent children array
-   */
-  const toggleColorPickerDialog = (parent, child) => {
-    updateChild(
-      parent.id,
-      child.id,
-      {
-        colorpicker_open: !getChild(objectState, parent.id, child.id).colorpicker_open
-      },
-      { objectState, setObjectState }
-    );
+  const toggleDialogClose = (parent: any, child: any, fieldsToUpdate: Object) => {
+    updateChild(parent.id, child.id, fieldsToUpdate, { objectState, setObjectState });
   };
 
   const SortableParentLayer = SortableElement(({ parent }) => {
@@ -186,7 +157,6 @@ export function LayerPicker(props: any) {
     ));
     return (
       <ListItem id={parent.id} dense={true} ContainerComponent="div" style={{ width: '100%', maxWidth: 440 }}>
-        {/*<Grid container>*/}
         <Accordion
           id="parent-accordion"
           expanded={parent.expanded}
@@ -211,7 +181,7 @@ export function LayerPicker(props: any) {
               direction="row"
               alignItems="center">
               &emsp;
-              <Grid item xs={2}>
+              <Grid item xs={2} alignContent="center" justifyContent="center">
                 <Checkbox
                   id="child-checkbox"
                   checked={child.enabled}
@@ -237,7 +207,7 @@ export function LayerPicker(props: any) {
                   child={child}
                   objectState={objectState}
                   setObjectState={setObjectState}
-                  toggleChildDialog={toggleChildDialog}
+                  toggleDialogClose={toggleDialogClose}
                   newLayers={newLayers}
                   setNewLayers={setNewLayers}
                 />
@@ -248,22 +218,22 @@ export function LayerPicker(props: any) {
                   child={child}
                   objectState={objectState}
                   setObjectState={setObjectState}
-                  toggleChildDialog={toggleChildDialog}
                   newLayers={newLayers}
                   setNewLayers={setNewLayers}
+                  toggleDialogClose={toggleDialogClose}
                 />
               )}
               <Grid item xs={1}>
                 <IconButton
                   id="colorpicker-btn"
                   className={toolClass.toolBtn}
-                  onClick={() => toggleColorPickerDialog(parent, child)}>
+                  onClick={() => toggleDialogClose(parent, child, { dialog_colorpicker_open: true })}>
                   <ColorLens id="color-lens" style={{ color: child.color_code }} />
                 </IconButton>
                 <Dialog
                   id="layer-settings-dialog"
-                  open={child.colorpicker_open}
-                  onClose={() => toggleColorPickerDialog(parent, child)}>
+                  open={child.dialog_colorpicker_open}
+                  onClose={() => toggleDialogClose(parent, child, { dialog_colorpicker_open: false })}>
                   <DialogTitle>{child.name}</DialogTitle>
                   {/* Opacity */}
                   <DialogContent id="layer-opacity" style={{ width: 300 }}>
@@ -303,7 +273,9 @@ export function LayerPicker(props: any) {
                     />
                   </DialogContent>
                   <DialogActions>
-                    <Button id="close-btn" onClick={() => toggleColorPickerDialog(parent, child)}>
+                    <Button
+                      id="close-btn"
+                      onClick={() => toggleDialogClose(parent, child, { dialog_colorpicker_open: false })}>
                       Close
                     </Button>
                   </DialogActions>
@@ -315,7 +287,6 @@ export function LayerPicker(props: any) {
             </Grid>
           ))}
         </Accordion>
-        {/*</Grid>*/}
       </ListItem>
     );
   });
@@ -404,16 +375,18 @@ export function LayerPicker(props: any) {
   );
 }
 
-const LayerModeDialog = (props, { objectState, setObjectState }) => {
+const LayerModeDialog = (props) => {
   return (
     <Grid item xs={2}>
-      <IconButton id="settings-btn" onClick={() => props.toggleChildDialog(props.parent, props.child, true)}>
+      <IconButton
+        id="settings-btn"
+        onClick={() => props.toggleDialogClose(props.parent, props.child, { dialog_layerselector_open: true })}>
         <SettingsIcon />
       </IconButton>
       <Dialog
         id="layermode-settings-dialog"
-        open={props.child.dialog_open}
-        onClose={() => props.toggleChildDialog(props.parent, props.child, false)}>
+        open={props.child.dialog_layerselector_open}
+        onClose={() => props.toggleDialogClose(props.parent, props.child, { dialog_layerselector_open: false })}>
         <DialogTitle>{props.child.name}</DialogTitle>
         <LayersSelector
           parent={props.parent}
@@ -424,7 +397,9 @@ const LayerModeDialog = (props, { objectState, setObjectState }) => {
           setLayers={props.setNewLayers}
         />
         <DialogActions id="close-dialog-action">
-          <Button id="close-btn" onClick={() => props.toggleChildDialog(props.parent, props.child, false)}>
+          <Button
+            id="close-btn"
+            onClick={() => props.toggleDialogClose(props.parent, props.child, { dialog_layerselector_open: false })}>
             Close
           </Button>
         </DialogActions>

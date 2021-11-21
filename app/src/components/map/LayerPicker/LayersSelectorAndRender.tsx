@@ -109,13 +109,14 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
     <>
       {/* Server Accordion */}
       {networkContext.connected && (
-        <Accordion expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
-          <AccordionSummary>
+        <Accordion id="server-accordion" expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
+          <AccordionSummary id="accordion-summary">
             <Typography>Server</Typography>
           </AccordionSummary>
           {child.accordion_server_expanded && (
-            <FormControl>
+            <FormControl id="radio-control">
               <RadioGroup
+                id="radio-group"
                 defaultValue={child.layer_mode}
                 onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                   updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
@@ -132,13 +133,14 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
 
       {/* Local Accordion */}
 
-      <Accordion expanded={child.accordion_local_expanded} onChange={onLocalAccordionChange}>
-        <AccordionSummary>
+      <Accordion id="local-accordion" expanded={child.accordion_local_expanded} onChange={onLocalAccordionChange}>
+        <AccordionSummary id="accordion-summary">
           <Typography>Local</Typography>
         </AccordionSummary>
         {child.accordion_local_expanded && (
-          <FormControl>
+          <FormControl id="radio-control">
             <RadioGroup
+              id="radio-group"
               defaultValue={child.layer_mode}
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                 updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });

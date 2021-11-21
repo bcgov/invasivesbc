@@ -1,14 +1,12 @@
 /// <reference types="cypress" />
 
 import React from 'react';
-import { changeTheme, themeTextCheck } from '../../support/commands/themeTestCmds';
 import '../../support/index';
 
-const openColorPickerTest = () => {
+const openColorPickerTest = (value1, value2) => {
   it('Open layer picker and use colorpicker', function () {
-    const invasivesRecordsDragHandle = '#invasivesbc_records > #parent-accordion > #accordion-grid > #draghandle';
-    const aquaticLayersAndWellsDragHandle =
-      '#aquatic_layers_and_wells > #parent-accordion > #accordion-grid > #draghandle';
+    const invasivesRecordsDragHandle = '#invasivesbc_records';
+    const aquaticLayersAndWellsDragHandle = '#aquatic_layers_and_wells';
     cy.dragAccordion(invasivesRecordsDragHandle, aquaticLayersAndWellsDragHandle);
     // click accordion
     cy.get('#invasivesbc_records').click();
@@ -16,7 +14,7 @@ const openColorPickerTest = () => {
     cy.get('#invasivesbc_records #colorpicker-btn').click();
     // click colorpicker box
     cy.get('.MuiInputBase-input').click();
-    cy.get('.saturation-black').click(20, 20, { force: true });
+    cy.get('.saturation-black').click(value1, value2, { force: true });
     // click colorpicker box
     cy.get('.MuiInputBase-input').click();
     cy.get('.hue-horizontal').click('center');
@@ -46,7 +44,7 @@ describe('OPENING THE LAYER PICKER LIGHT THEME', function () {
     cy.get('.MuiPaper-root > .MuiButtonBase-root').trigger('click');
   });
 
-  openColorPickerTest();
+  openColorPickerTest(20, 20);
 
   after(() => {
     cy.get('body').click('center');
@@ -59,7 +57,7 @@ describe('OPENING THE LAYER PICKER DARK THEME', function () {
     cy.get('.MuiPaper-root > .MuiButtonBase-root').trigger('click');
   });
 
-  openColorPickerTest();
+  openColorPickerTest(-5, 30);
 
   after(() => {
     cy.get('body').click();
@@ -74,12 +72,38 @@ describe('ENABLING LAYER ONTO MAP', function () {
   });
   it('Open Administrative Boundaries and Select Layer', function () {
     const adminBoundaries = '#administrative_boundaries';
-    cy.get(adminBoundaries).should('exist');
-    cy.get(adminBoundaries).click();
-    cy.get('#ministry_of_transportations_reagional > :nth-child(1)').click('center');
-    cy.get(adminBoundaries + '> #parent-accordion > #accordion-grid > #accordion-summary').click('center');
     const invasivesbcRecords = '#invasivesbc_records';
+    const childId = '#ministry_of_transportations_reagional';
+    cy.get(adminBoundaries).should('exist');
+    cy.clickChildCheckbox(adminBoundaries, childId);
+    cy.toggleParentAccordion(adminBoundaries);
     cy.dragAccordion(adminBoundaries, invasivesbcRecords);
-    cy.get(adminBoundaries + '> #parent-accordion').click();
+    cy.clickChildCheckbox(adminBoundaries, childId);
+    cy.toggleParentAccordion(adminBoundaries);
+  });
+  after(() => {
+    cy.get('body').click();
+  });
+});
+
+describe('SWITCHING LAYER MODES', function () {
+  before(() => {
+    cy.get('[aria-label="my position"]').click();
+    cy.wait(10000);
+    cy.get('[data-index="11"]').click();
+    cy.get('#layer-picker-btn').click();
+  });
+  it('Visual test to see if the layer mode changes from wms_online to wfs_online', function () {
+    const aquaticLayersAndWells = '#aquatic_layers_and_wells';
+    const childId = '#freshwater_wells';
+    // Visual check
+    cy.clickChildCheckbox(aquaticLayersAndWells, childId);
+    cy.get(childId + ' > :nth-child(3) > #settings-btn').click();
+    cy.get('#server-accordion').click();
+    cy.get('#radio-group > :nth-child(3)').click();
+    cy.get('#server-accordion > #accordion-summary').click();
+    cy.get('#close-btn').click();
+    cy.get('body').click();
+    cy.get('.leaflet-container').dblclick();
   });
 });
