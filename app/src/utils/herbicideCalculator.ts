@@ -16,6 +16,135 @@
  * -------------------------------------------------------------------------------
  */
 
+import { IGeneralFields } from 'components/form/ChemicalTreatmentDetailsForm/Models';
+
+//chooses the scenario based on the values in the form
+export const performCalculation = (formData: IGeneralFields, businessCodes: any): IGeneralFields => {
+  const {
+    tank_mix,
+    herbicides,
+    tank_mix_object,
+    invasive_plants,
+    chemical_application_method,
+    chemical_application_method_type
+  } = formData;
+
+  let calculationResults = {};
+
+  const area = 125; //temporary
+
+  if (tank_mix === false) {
+    console.log('false tank mix');
+    if (chemical_application_method_type === 'spray') {
+      console.log('spray chem app method');
+      //single herb single inv plant
+      if (herbicides.length < 2 && invasive_plants.length < 2) {
+        console.log('single herb and inv plant');
+        if (herbicides[0].herbicide_type_code === 'L') {
+          console.log('liquid herb');
+          if (herbicides[0].calculation_type === 'PAR') {
+            console.log('par calc type');
+            calculationResults = sSpecie_sLHerb_spray_usingProdAppRate(
+              area,
+              herbicides[0].product_application_rate,
+              herbicides[0].amount_of_mix,
+              herbicides[0].delivery_rate_of_mix
+            );
+          }
+          if (herbicides[0].calculation_type === 'D') {
+            console.log('D calc type');
+            calculationResults = sSpecie_sLHerb_spray_usingDilutionPercent(
+              area,
+              herbicides[0].amount_of_mix,
+              herbicides[0].dilution,
+              herbicides[0].area_treated_sqm
+            );
+          }
+        }
+      }
+      //single herb multiple inv plants
+      else if (herbicides.length < 2 && invasive_plants.length > 2) {
+        console.log('single herb and >2 plants');
+        if (herbicides[0].herbicide_type_code === 'L') {
+          if (herbicides[0].calculation_type === 'PAR') {
+            const percentages_of_treatment_on_species = [];
+            invasive_plants.forEach((plant) => {
+              percentages_of_treatment_on_species.push(plant.percent_area_covered);
+            });
+
+            calculationResults = mSpecie_sLHerb_spray_usingProdAppRate(
+              area,
+              herbicides[0].product_application_rate,
+              herbicides[0].amount_of_mix,
+              herbicides[0].delivery_rate_of_mix,
+              percentages_of_treatment_on_species
+            );
+          }
+        }
+      } else if (herbicides.length < 2 && invasive_plants.length > 1) {
+        console.log('single herb and >1 plant');
+        if (herbicides[0].herbicide_type_code === 'L') {
+          console.log('liquid herb');
+          if (herbicides[0].calculation_type === 'D') {
+            console.log('D calc type');
+            const percentages_of_treatment_on_species = [];
+            invasive_plants.forEach((plant) => {
+              percentages_of_treatment_on_species.push(plant.percent_area_covered);
+            });
+            calculationResults = mSpecie_sLHerb_spray_usingDilutionPercent(
+              area,
+              herbicides[0].amount_of_mix,
+              herbicides[0].dilution,
+              herbicides[0].area_treated_sqm,
+              percentages_of_treatment_on_species
+            );
+          }
+        } else if (herbicides[0].herbicide_type_code === 'G') {
+          console.log('granular herb');
+          if (herbicides[0].calculation_type === 'PAR') {
+            console.log('PAR calc type');
+            calculationResults = sSpecie_sGHerb_spray_usingProdAppRate(
+              area,
+              herbicides[0].product_application_rate,
+              herbicides[0].amount_of_mix,
+              herbicides[0].delivery_rate_of_mix
+            );
+          } else if (herbicides[0].calculation_type === 'D') {
+            console.log('D calc type');
+            calculationResults = sSpecie_sGHerb_spray_usingDilutionPercent(
+              area,
+              herbicides[0].amount_of_mix,
+              herbicides[0].dilution,
+              herbicides[0].area_treated_sqm
+            );
+          }
+        }
+      }
+    }
+    if (chemical_application_method_type === 'direct') {
+      console.log('direct chem app method');
+      if (herbicides.length < 2 && invasive_plants.length < 2) {
+        if (herbicides[0].herbicide_type_code === 'L') {
+          if (herbicides[0].calculation_type === 'D') {
+            calculationResults = sSpecie_sLHerb_direct_usingDilutionPercent(
+              area,
+              herbicides[0].amount_of_mix,
+              herbicides[0].dilution,
+              herbicides[0].area_treated_sqm
+            );
+          }
+        }
+      }
+    }
+  } else if (tank_mix === true) {
+    //dont do for now
+  }
+
+  console.log(calculationResults);
+
+  return { ...calculationResults };
+};
+
 export const parseToRightFormat = (value: number) => {
   return Number(value.toFixed(4));
 };
@@ -394,7 +523,8 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
   area: number,
   amount_of_mix: number,
   delivery_rate_of_mix: number,
-  species: ISpecie[]
+  species: ISpecie[],
+  herbicides: IHerbicide[]
 ) => {
   let resultObj = {};
 

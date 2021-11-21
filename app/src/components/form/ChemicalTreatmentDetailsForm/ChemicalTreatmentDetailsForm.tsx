@@ -22,9 +22,12 @@ import TankMixAccordion from './Components/accordions/TankMixAccordion';
 import InvasivePlantsAccordion from './Components/accordions/InvasivePlantsAccordion';
 import { useFormStyles } from './formStyles';
 import { runValidation } from './Validation';
+import { performCalculation } from 'utils/herbicideCalculator';
 
 const ChemicalTreatmentDetailsForm = (props) => {
   const classes = useFormStyles();
+
+  const [calculationResults, setCalculationResults] = useState();
 
   //get business codes from schema
   const getBusinessCodes = () => {
@@ -44,6 +47,17 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
   const businessCodes = getBusinessCodes();
 
+  let herbicideDictionary = {};
+
+  let allHerbCodes = [
+    ...(businessCodes as any).liquid_herbicide_code,
+    ...(businessCodes as any).granular_herbicide_code
+  ];
+
+  allHerbCodes.map((row) => {
+    herbicideDictionary[row.value] = row.label;
+  });
+
   const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
     formData: !props.formData.activity_subtype_data.chemical_treatment_details
       ? {
@@ -58,6 +72,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
         }
       : { ...props.formData.activity_subtype_data.chemical_treatment_details },
     businessCodes: businessCodes,
+    herbicideDictionary: herbicideDictionary,
     classes: classes,
     errors: []
   });
@@ -79,9 +94,14 @@ const ChemicalTreatmentDetailsForm = (props) => {
       null,
       () => {
         let lerrors = [];
-        const newErr = runValidation(formDetails.formData, lerrors, businessCodes);
-        console.log(newErr);
+        const newErr = runValidation(formDetails.formData, lerrors, businessCodes, herbicideDictionary);
         setLocalErrors([...newErr]);
+
+        if (newErr.length < 1) {
+          setCalculationResults(performCalculation(formDetails.formData, businessCodes) as any);
+        } else {
+          setCalculationResults(null);
+        }
       }
     );
     // const newErr = runValidation(formData, formDetails.errors, businessCodes);
@@ -98,6 +118,11 @@ const ChemicalTreatmentDetailsForm = (props) => {
     ? [...businessCodes['chemical_method_spray']]
     : [...businessCodes['chemical_method_spray'], ...businessCodes['chemical_method_direct']];
 
+  //get arrays for spray and direct chemical methods
+  const chemical_method_direct_code_values = businessCodes['chemical_method_direct'].map((code) => {
+    return code.value;
+  });
+
   //update context form data when any fields change
   useEffect(() => {
     setFormDetails((prevFormDetails) => ({
@@ -105,7 +130,10 @@ const ChemicalTreatmentDetailsForm = (props) => {
       formData: {
         ...prevFormDetails.formData,
         tank_mix: tankMixOn,
-        chemical_application_method: chemicalApplicationMethod
+        chemical_application_method: chemicalApplicationMethod,
+        chemical_application_method_type: chemical_method_direct_code_values.includes(chemicalApplicationMethod)
+          ? 'direct'
+          : 'spray'
       }
     }));
   }, [tankMixOn, chemicalApplicationMethod]);
@@ -181,6 +209,22 @@ const ChemicalTreatmentDetailsForm = (props) => {
           <HerbicidesAccordion insideTankMix={false} />
 
           <TankMixAccordion />
+
+          {calculationResults && (
+            <>
+              <Typography style={{ marginTop: '1rem' }} variant="h5">
+                Calculation Results
+              </Typography>
+              <Divider />
+              {Object.keys(calculationResults).map((key) => {
+                return (
+                  <Typography
+                    style={{ lineHeight: '1.5rem' }}
+                    variant={'body1'}>{`${key}: ${calculationResults[key]}`}</Typography>
+                );
+              })}
+            </>
+          )}
         </FormControl>
       </ChemicalTreatmentDetailsContextProvider>
     )

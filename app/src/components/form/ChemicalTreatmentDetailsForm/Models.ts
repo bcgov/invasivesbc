@@ -3,6 +3,7 @@ export interface IGeneralFields {
   invasive_plants?: IInvasivePlant[];
   tank_mix?: boolean;
   chemical_application_method?: string;
+  chemical_application_method_type?: string;
   herbicides?: IHerbicide[];
   tank_mix_object?: ITankMix;
 }

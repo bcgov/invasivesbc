@@ -326,7 +326,9 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       formStatus: ref?.state?.errors?.length === 0 ? FormValidationStatus.VALID : FormValidationStatus.INVALID
     });
 
-    callbackFun();
+    if (callbackFun) {
+      callbackFun();
+    }
   });
   /**
    * Paste copied form data saved in session storage

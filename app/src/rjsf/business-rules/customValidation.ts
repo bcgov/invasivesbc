@@ -298,7 +298,6 @@ export function getDuplicateInvasivePlantsValidator(activitySubtype: string): rj
 
     invasivePlants.forEach((invasivePlant: any) => {
       plantCodeList.push(invasivePlant.invasive_plant_code);
-      console.log('push');
     });
 
     // // validate duplicates of the invasive_plant_code within invasive_plants

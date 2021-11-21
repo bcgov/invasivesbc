@@ -1,6 +1,12 @@
+import { HerbicideApplicationRates } from 'rjsf/business-rules/constants/herbicideApplicationRates';
 import { IGeneralFields } from './Models';
 
-export const runValidation = (formData: IGeneralFields, errors: any[], businessCodes: any) => {
+export const runValidation = (
+  formData: IGeneralFields,
+  errors: any[],
+  businessCodes: any,
+  herbicideDictionary: any
+) => {
   let newErrors = errors;
 
   newErrors = validate_inv_plants_arr_length(formData, errors);
@@ -8,7 +14,7 @@ export const runValidation = (formData: IGeneralFields, errors: any[], businessC
   newErrors = validate_herbicides_arr_length(formData, errors);
   newErrors = validate_general_fields(formData, errors);
   newErrors = validate_chem_app_method_value(formData, errors, businessCodes);
-  newErrors = validate_herbicide_fields(formData, errors);
+  newErrors = validate_herbicide_fields(formData, errors, businessCodes, herbicideDictionary);
   newErrors = validate_tank_mix_fields(formData, errors);
   newErrors = validate_tank_mix_herbicides(formData, errors);
 
@@ -141,7 +147,12 @@ export const validate_chem_app_method_value = (formData: IGeneralFields, errors:
 /**
  * Validates that all herbicide object fields are not undefined and not negative (for numbers)
  */
-export const validate_herbicide_fields = (formData: IGeneralFields, errors: any) => {
+export const validate_herbicide_fields = (
+  formData: IGeneralFields,
+  errors: any,
+  businessCodes: any,
+  herbicideDictionary: any
+) => {
   if (!formData || !formData.herbicides || formData.herbicides.length < 1 || formData.tank_mix === true) {
     return errors;
   }
@@ -180,6 +191,20 @@ export const validate_herbicide_fields = (formData: IGeneralFields, errors: any)
     }
     if (herb.amount_of_mix < 0) {
       negativeAmountOfMix = true;
+    }
+
+    if (!herb.product_application_rate || !herb.herbicide_code) {
+    } else if (
+      herb.product_application_rate &&
+      herb.product_application_rate > HerbicideApplicationRates[herb.herbicide_code.toString()]
+    ) {
+      errors.push(
+        `Application rate of ${
+          herbicideDictionary[Number(herb.herbicide_code)]
+        } herbicide exceeds maximum applicable rate of ${
+          HerbicideApplicationRates[herb.herbicide_code]
+        } L/ha for this herbicide`
+      );
     }
     if (!herb.calculation_type) {
       noCalculationType = true;

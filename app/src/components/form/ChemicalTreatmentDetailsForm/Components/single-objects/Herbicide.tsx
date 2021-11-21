@@ -185,7 +185,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
             // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
             label="Product Application Rate (l/ha)"
             // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
-            value={herbicide.product_application_rate || ''}
+            value={herbicide?.product_application_rate || ''}
             variant="outlined"
             onChange={(event) => {
               if (event.target.value === null) {
@@ -205,7 +205,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
             className={classes.inputField}
             type="number"
             label="Amount of Mix Used"
-            value={herbicide.amount_of_mix || ''}
+            value={herbicide?.amount_of_mix || ''}
             variant="outlined"
             onChange={(event) => {
               if (event.target.value === null) {
@@ -220,13 +220,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
           />
         )}
 
-        {!tankMixOn && currentHerbicide.calculation_type === 'D' ? (
+        {!tankMixOn && currentHerbicide?.calculation_type === 'D' ? (
           <>
             <TextField
               className={classes.inputField}
               type="number"
               label="Dilution"
-              value={herbicide.dilution || ''}
+              value={herbicide?.dilution || ''}
               variant="outlined"
               onChange={(event) => {
                 if (event.target.value === null) {
@@ -258,7 +258,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
               defaultValue={undefined}
             />
           </>
-        ) : !tankMixOn && currentHerbicide.calculation_type === 'PAR' ? (
+        ) : !tankMixOn && currentHerbicide?.calculation_type === 'PAR' ? (
           <>
             <TextField
               className={classes.inputField}
