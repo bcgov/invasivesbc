@@ -7,6 +7,7 @@ export interface ICustomAutoComplete {
   className: string;
   classes: any;
   choices: any[];
+  actualValue?: string;
   parentName?: string;
   fieldName: string;
   parentState: {
