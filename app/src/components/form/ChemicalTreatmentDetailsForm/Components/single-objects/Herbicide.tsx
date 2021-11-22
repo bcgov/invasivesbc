@@ -29,7 +29,9 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
     ? 'direct'
     : 'spray';
 
-  const [currentHerbicide, setCurrentHerbicide] = useState<IHerbicide>(formDetails.formData.herbicides[index]);
+  const [currentHerbicide, setCurrentHerbicide] = useState<IHerbicide>(
+    insideTankMix ? formDetails.formData.tank_mix_object.herbicides[index] : formDetails.formData.herbicides[index]
+  );
 
   const [herbicideTypeChoices, setHerbicideTypeChoices] = useState<any[]>([]);
   const [herbicideChoices, setHerbicideChoices] = useState<any[]>([]);
@@ -42,6 +44,9 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
   Object.values(businessCodes[herbicide_type_code] as any[]).forEach((option) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
   });
+
+  console.log('here is herb');
+  console.log(herbicide);
 
   //update this herbicide inside context
   useEffect(() => {
@@ -124,7 +129,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
           className={'inputField'}
           classes={classes}
           id={'herbicide-type'}
-          actualValue={herbicide.herbicide_type_code}
+          actualValue={currentHerbicide.herbicide_type_code}
           label={'Herbicide Type'}
           parentState={{ herbicide, setCurrentHerbicide }}
           parentName={'herbicide'}
@@ -133,7 +138,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
             if (value === null) {
               return;
             }
-            console.log(value);
+
             setCurrentHerbicide((prevHerbicide) => {
               return { ...prevHerbicide, herbicide_type_code: (value as any).value };
             });
@@ -146,7 +151,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
           classes={classes}
           id={'herbicide-code'}
           label={'Herbicide'}
-          actualValue={herbicide.herbicide_code}
+          actualValue={currentHerbicide.herbicide_code}
           parentState={{ herbicide, setCurrentHerbicide }}
           parentName={'herbicide'}
           fieldName={'herbicide_code'}
@@ -167,7 +172,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, key, index, class
             classes={classes}
             id={'calculation_type'}
             label={'Calculation Type'}
-            actualValue={herbicide.calculation_type}
+            actualValue={currentHerbicide.calculation_type}
             parentState={{ herbicide, setCurrentHerbicide }}
             parentName={'herbicide'}
             fieldName={'calculation_type'}

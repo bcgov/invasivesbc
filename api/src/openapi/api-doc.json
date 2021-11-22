@@ -3399,7 +3399,8 @@
               "humidity",
               "wind_speed",
               "wind_direction_code",
-              "signage_on_site"
+              "signage_on_site",
+              "application_start_time"
             ],
             "properties": {
               "applicator1_name": {
@@ -3498,6 +3499,11 @@
                 "enum": ["Yes", "No", "Unknown"],
                 "default": "Yes",
                 "x-tooltip-text": "Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not"
+              },
+              "application_start_time": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Application Start Time"
               }
             }
           }
@@ -3520,7 +3526,8 @@
               "humidity",
               "wind_speed",
               "wind_direction_code",
-              "signage_on_site"
+              "signage_on_site",
+              "application_start_time"
             ],
             "properties": {
               "applicator1_name": {
@@ -3615,6 +3622,11 @@
                 "enum": ["Yes", "No", "Unknown"],
                 "default": "Yes",
                 "x-tooltip-text": "Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not"
+              },
+              "application_start_time": {
+                "type": "string",
+                "format": "date-time",
+                "title": "Application Start Time"
               }
             }
           }

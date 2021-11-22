@@ -145,6 +145,17 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     return fieldName;
   };
 
+  const isActivityChemTreatment = () => {
+    if (
+      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlant' ||
+      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic' ||
+      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlant' ||
+      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlantAquatic'
+    ) {
+      return true;
+    }
+  };
+
   //herlper function to get the path to the field in an oject.
   //if multiple found, stores multiple strings in array
   const getPathToFieldName = (obj: any, predicate: Function) => {
@@ -390,11 +401,13 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               <React.Fragment />
             </Form>
 
-            <ChemicalTreatmentSpeciesForm
-              onChange={props.onFormChange}
-              formData={props.activity?.formData || null}
-              schema={schemas.schema}
-            />
+            {isActivityChemTreatment() && (
+              <ChemicalTreatmentSpeciesForm
+                onChange={props.onFormChange}
+                formData={props.activity?.formData || null}
+                schema={schemas.schema}
+              />
+            )}
           </>
         </SelectAutoCompleteContextProvider>
       </ThemeProvider>

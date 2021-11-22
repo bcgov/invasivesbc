@@ -19,7 +19,7 @@
 import { IGeneralFields, IHerbicide, IInvasivePlant } from 'components/form/ChemicalTreatmentDetailsForm/Models';
 
 //chooses the scenario based on the values in the form
-export const performCalculation = (formData: IGeneralFields, businessCodes: any): IGeneralFields => {
+export const performCalculation = (area: number, formData: IGeneralFields, businessCodes: any): IGeneralFields => {
   const {
     tank_mix,
     herbicides,
@@ -30,8 +30,6 @@ export const performCalculation = (formData: IGeneralFields, businessCodes: any)
   } = formData;
 
   let calculationResults = {};
-
-  const area = 125; //temporary
 
   if (tank_mix === false) {
     console.log('false tank mix');
@@ -62,9 +60,10 @@ export const performCalculation = (formData: IGeneralFields, businessCodes: any)
           }
         }
       }
-      //single herb multiple inv plants
+      //single herb multiple (>2) inv plants
       else if (herbicides.length < 2 && invasive_plants.length > 2) {
         console.log('single herb and >2 plants');
+        console.log(herbicides[0]);
         if (herbicides[0].herbicide_type_code === 'L') {
           if (herbicides[0].calculation_type === 'PAR') {
             const percentages_of_treatment_on_species = [];
@@ -81,7 +80,9 @@ export const performCalculation = (formData: IGeneralFields, businessCodes: any)
             );
           }
         }
-      } else if (herbicides.length < 2 && invasive_plants.length > 1) {
+      }
+      //single herb multiple inv plants
+      else if (herbicides.length < 2 && invasive_plants.length > 1) {
         console.log('single herb and >1 plant');
         if (herbicides[0].herbicide_type_code === 'L') {
           console.log('liquid herb');

@@ -2,6 +2,7 @@ import { HerbicideApplicationRates } from 'rjsf/business-rules/constants/herbici
 import { IGeneralFields } from './Models';
 
 export const runValidation = (
+  area: number,
   formData: IGeneralFields,
   errors: any[],
   businessCodes: any,
@@ -9,13 +10,17 @@ export const runValidation = (
 ) => {
   let newErrors = errors;
 
+  if (!area) {
+    newErrors.push('No area provided');
+  }
+
   newErrors = validate_inv_plants_arr_length(formData, errors);
   newErrors = validate_inv_plants_fields(formData, errors);
   newErrors = validate_herbicides_arr_length(formData, errors);
   newErrors = validate_general_fields(formData, errors);
   newErrors = validate_chem_app_method_value(formData, errors, businessCodes);
-  newErrors = validate_herbicide_fields(formData, errors, businessCodes, herbicideDictionary);
-  newErrors = validate_tank_mix_fields(formData, errors);
+  newErrors = validate_herbicide_fields(area, formData, errors, businessCodes, herbicideDictionary);
+  newErrors = validate_tank_mix_fields(area, formData, errors);
   newErrors = validate_tank_mix_herbicides(formData, errors, businessCodes, herbicideDictionary);
 
   return newErrors;
@@ -148,6 +153,7 @@ export const validate_chem_app_method_value = (formData: IGeneralFields, errors:
  * Validates that all herbicide object fields are not undefined and not negative (for numbers)
  */
 export const validate_herbicide_fields = (
+  area: number,
   formData: IGeneralFields,
   errors: any,
   businessCodes: any,
@@ -172,6 +178,7 @@ export const validate_herbicide_fields = (
 
   let noAreaTreatedSqm = false;
   let negativeAreaTreatedSqm = false;
+  let areaLargerThanTreatmentArea = false;
 
   let noProdAppRate = false;
   let negativeProdAppRate = false;
@@ -179,9 +186,13 @@ export const validate_herbicide_fields = (
   let noDeliveryRate = false;
   let negativeDeliveryRate = false;
 
+  let herbCodeList = [];
+
   formData.herbicides.forEach((herb) => {
     if (!herb.herbicide_code) {
       noHerbCode = true;
+    } else {
+      herbCodeList.push(herb.herbicide_code);
     }
     if (!herb.herbicide_type_code) {
       noHerbTypeCode = true;
@@ -218,6 +229,8 @@ export const validate_herbicide_fields = (
         }
         if (!herb.area_treated_sqm) {
           noAreaTreatedSqm = true;
+        } else if (herb.area_treated_sqm > area) {
+          areaLargerThanTreatmentArea = true;
         }
         if (herb.area_treated_sqm < 0) {
           negativeAreaTreatedSqm = true;
@@ -239,6 +252,16 @@ export const validate_herbicide_fields = (
     }
   });
 
+  if (new Set(herbCodeList).size !== herbCodeList.length) {
+    newErrors.push(
+      `There are duplicated herbicides identified.
+        Please remove or fix duplicated herbicides.`
+    );
+  }
+
+  if (areaLargerThanTreatmentArea) {
+    newErrors.push('Ar least 1 of your herbicides area treated is larger than the area of entire treatment');
+  }
   if (noHerbCode) {
     newErrors.push("At least 1 of your herbicides doesn't have a herbicide name");
   }
@@ -293,7 +316,7 @@ export const validate_herbicide_fields = (
 /**
  * Validates that all tank mix fields are not undefined and not negative(for numbers)
  */
-export const validate_tank_mix_fields = (formData: IGeneralFields, errors: any) => {
+export const validate_tank_mix_fields = (area: number, formData: IGeneralFields, errors: any) => {
   if (!formData || !formData.tank_mix || !formData.tank_mix_object) {
     return errors;
   }
@@ -310,6 +333,8 @@ export const validate_tank_mix_fields = (formData: IGeneralFields, errors: any) 
   }
   if (!formData.tank_mix_object.area_treated_sqm) {
     newErrors.push('There is no value provided for area treated in your tank mix');
+  } else if (formData.tank_mix_object.area_treated_sqm > area) {
+    newErrors.push('Ar least 1 of your herbicides area treated is larger than the area of entire treatment');
   }
   if (formData.tank_mix_object.area_treated_sqm < 0) {
     newErrors.push('There is a negative value provided for area treated in your tank mix');
@@ -353,6 +378,8 @@ export const validate_tank_mix_herbicides = (
   let noProdAppRate = false;
   let negativeProdAppRate = false;
 
+  let herbCodeList = [];
+
   formData.tank_mix_object.herbicides.forEach((herb) => {
     if (!herb.product_application_rate || !herb.herbicide_code) {
     } else if (
@@ -370,6 +397,8 @@ export const validate_tank_mix_herbicides = (
 
     if (!herb.herbicide_code) {
       noHerbCode = true;
+    } else {
+      herbCodeList.push(herb.herbicide_code);
     }
     if (!herb.herbicide_type_code) {
       noHerbTypeCode = true;
@@ -381,6 +410,13 @@ export const validate_tank_mix_herbicides = (
       negativeProdAppRate = true;
     }
   });
+
+  if (new Set(herbCodeList).size !== herbCodeList.length) {
+    newErrors.push(
+      `There are duplicated herbicides identified.
+        Please remove or fix duplicated herbicides.`
+    );
+  }
 
   if (noHerbCode) {
     newErrors.push("At least 1 of your herbicides doesn't have a herbicide name");

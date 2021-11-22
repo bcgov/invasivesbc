@@ -23,9 +23,17 @@ import InvasivePlantsAccordion from './Components/accordions/InvasivePlantsAccor
 import { useFormStyles } from './formStyles';
 import { runValidation } from './Validation';
 import { performCalculation } from 'utils/herbicideCalculator';
+import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 
 const ChemicalTreatmentDetailsForm = (props) => {
   const classes = useFormStyles();
+
+  const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
+    dialogActions: [],
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogContentText: null
+  });
 
   const [calculationResults, setCalculationResults] = useState(null);
 
@@ -94,11 +102,23 @@ const ChemicalTreatmentDetailsForm = (props) => {
       null,
       () => {
         let lerrors = [];
-        const newErr = runValidation(formDetails.formData, lerrors, businessCodes, herbicideDictionary);
+        const newErr = runValidation(
+          props.formData.activity_data.reported_area,
+          formDetails.formData,
+          lerrors,
+          businessCodes,
+          herbicideDictionary
+        );
         setLocalErrors([...newErr]);
 
         if (newErr.length < 1) {
-          setCalculationResults(performCalculation(formDetails.formData, businessCodes) as any);
+          const results = performCalculation(
+            props.formData.activity_data.reported_area,
+            formDetails.formData,
+            businessCodes
+          );
+          console.log(results);
+          setCalculationResults(results as any);
         } else {
           setCalculationResults(null);
         }
@@ -106,6 +126,35 @@ const ChemicalTreatmentDetailsForm = (props) => {
     );
     // const newErr = runValidation(formData, formDetails.errors, businessCodes);
   }, [formDetails]);
+
+  useEffect(() => {
+    localErrors.forEach((err, index) => {
+      if (err.includes('exceeds maximum applicable rate of')) {
+        setWarningDialog({
+          dialogOpen: true,
+          dialogTitle: 'Warning!',
+          dialogContentText: `${err}. Do you wish to proceed?`,
+          dialogActions: [
+            {
+              actionName: 'No',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+              }
+            },
+            {
+              actionName: 'Yes',
+              actionOnClick: async () => {
+                setWarningDialog({ ...warningDialog, dialogOpen: false });
+
+                localErrors.splice(index, 1);
+              },
+              autoFocus: true
+            }
+          ]
+        });
+      }
+    });
+  }, [localErrors]);
 
   //fields
   const [tankMixOn, setTankMixOn] = useState(formDetails.formData.tank_mix);
@@ -141,7 +190,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
   return (
     classes && (
       <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
-        <Typography variant="h4">Treatment Details</Typography>
+        <Typography variant="h4">Chemical Treatment Details</Typography>
         <Divider />
 
         {localErrors.length > 0 && (
@@ -234,6 +283,12 @@ const ChemicalTreatmentDetailsForm = (props) => {
             </>
           )}
         </FormControl>
+        <WarningDialog
+          dialogOpen={warningDialog.dialogOpen}
+          dialogTitle={warningDialog.dialogTitle}
+          dialogActions={warningDialog.dialogActions}
+          dialogContentText={warningDialog.dialogContentText}
+        />
       </ChemicalTreatmentDetailsContextProvider>
     )
   );
