@@ -16,7 +16,7 @@
  * -------------------------------------------------------------------------------
  */
 
-import { IGeneralFields } from 'components/form/ChemicalTreatmentDetailsForm/Models';
+import { IGeneralFields, IHerbicide, IInvasivePlant } from 'components/form/ChemicalTreatmentDetailsForm/Models';
 
 //chooses the scenario based on the values in the form
 export const performCalculation = (formData: IGeneralFields, businessCodes: any): IGeneralFields => {
@@ -137,16 +137,15 @@ export const performCalculation = (formData: IGeneralFields, businessCodes: any)
       }
     }
   } else if (tank_mix === true) {
-    //dont do for now
+    calculationResults = mSpecie_mLGHerb_spray_usingProdAppRate(
+      area,
+      tank_mix_object.amount_of_mix,
+      tank_mix_object.delivery_rate_of_mix,
+      invasive_plants,
+      tank_mix_object.herbicides
+    );
   }
-
-  console.log(calculationResults);
-
   return { ...calculationResults };
-};
-
-export const parseToRightFormat = (value: number) => {
-  return Number(value.toFixed(4));
 };
 
 /**
@@ -505,25 +504,11 @@ export const sSpecie_sLHerb_direct_usingDilutionPercent = (
  * @return { ISpecie[] } species
  */
 
-export interface IHerbicide {
-  product_application_rate_lha: number;
-  dilution: number;
-  amount_of_undiluted_herbicide_used: number;
-}
-export interface ISpecie {
-  herbicides: IHerbicide[];
-  area_of_specie: number;
-  area_treated_ha: number;
-  area_treated_sqm: number;
-  percent_area_covered: number;
-  amount_of_mix_used: number;
-}
-
 export const mSpecie_mLGHerb_spray_usingProdAppRate = (
   area: number,
   amount_of_mix: number,
   delivery_rate_of_mix: number,
-  species: ISpecie[],
+  species: IInvasivePlant[],
   herbicides: IHerbicide[]
 ) => {
   let resultObj = {};
@@ -532,44 +517,53 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
     return resultObj;
   }
 
-  const newSpecies = species.map((specie) => {
-    if (!specie.herbicides || specie.herbicides.length < 2) {
-      return {};
-    }
-    const newSpecie = { ...specie };
-    newSpecie.amount_of_mix_used = amount_of_mix * (specie.area_of_specie / 100);
-    newSpecie.area_treated_ha = (amount_of_mix / delivery_rate_of_mix) * (specie.area_of_specie / 100);
-    newSpecie.area_treated_sqm = newSpecie.area_treated_ha * 10000;
-    newSpecie.percent_area_covered = (newSpecie.area_treated_sqm / area) * 100;
+  let amounts_of_mix_used: number[] = [];
+  let areas_treated_ha: number[] = [];
+  let areas_treated_sqm: number[] = [];
+  let percents_area_covered: number[] = [];
 
-    const newHerbArr: any[] = newSpecie.herbicides.map((herb) => {
-      if (!herb.product_application_rate_lha) {
-        return {};
-      }
-      const newHerbicide = { ...herb };
-      newHerbicide.dilution = (herb.product_application_rate_lha / delivery_rate_of_mix) * 100;
-      newHerbicide.amount_of_undiluted_herbicide_used =
-        ((newHerbicide.dilution / 100) * amount_of_mix * specie.area_of_specie) / 100;
+  let herbicidesArr = [];
 
-      newHerbicide.dilution = parseToRightFormat(newHerbicide.dilution);
-      newHerbicide.amount_of_undiluted_herbicide_used = parseToRightFormat(
-        newHerbicide.amount_of_undiluted_herbicide_used
+  species.forEach((specie, plant_index) => {
+    amounts_of_mix_used.push(amount_of_mix * (specie.percent_area_covered / 100));
+    areas_treated_ha.push((amount_of_mix / delivery_rate_of_mix) * (specie.percent_area_covered / 100));
+    areas_treated_sqm.push(areas_treated_ha[plant_index] * 10000);
+    percents_area_covered.push((areas_treated_sqm[plant_index] / area) * 100);
+
+    herbicides.forEach((herb, index) => {
+      const correctIndex = plant_index + (index + plant_index * plant_index);
+
+      herbicidesArr.push({ invPlantIndex: plant_index });
+
+      herbicidesArr[correctIndex].dilution = (herbicides[index].product_application_rate / delivery_rate_of_mix) * 100;
+
+      herbicidesArr[correctIndex].amount_of_undiluted_herbicide_used =
+        ((herbicidesArr[correctIndex].dilution / 100) * amount_of_mix * specie.percent_area_covered) / 100;
+
+      herbicidesArr[correctIndex].dilution = parseToRightFormat(herbicidesArr[correctIndex].dilution);
+      herbicidesArr[correctIndex].amount_of_undiluted_herbicide_used = parseToRightFormat(
+        herbicidesArr[correctIndex].amount_of_undiluted_herbicide_used
       );
-
-      return newHerbicide;
     });
 
-    newSpecie.herbicides = [...newHerbArr];
-    newSpecie.amount_of_mix_used = parseToRightFormat(newSpecie.amount_of_mix_used);
-    newSpecie.area_treated_ha = parseToRightFormat(newSpecie.area_treated_ha);
-    newSpecie.area_treated_sqm = parseToRightFormat(newSpecie.area_treated_sqm);
-    newSpecie.percent_area_covered = parseToRightFormat(newSpecie.percent_area_covered);
-    return newSpecie;
+    amounts_of_mix_used[plant_index] = parseToRightFormat(amounts_of_mix_used[plant_index]);
+    areas_treated_ha[plant_index] = parseToRightFormat(areas_treated_ha[plant_index]);
+    areas_treated_sqm[plant_index] = parseToRightFormat(areas_treated_sqm[plant_index]);
+    percents_area_covered[plant_index] = parseToRightFormat(percents_area_covered[plant_index]);
   });
 
-  return newSpecies;
+  return {
+    amounts_of_mix_used: amounts_of_mix_used,
+    areas_treated_ha: areas_treated_ha,
+    areas_treated_sqm: areas_treated_sqm,
+    percents_area_covered: percents_area_covered,
+    herbicides: herbicidesArr
+  };
 };
 
 /**
  * ------------------------Helper Functions-----------------------------------
  */
+export const parseToRightFormat = (value: number) => {
+  return Number(value.toFixed(4));
+};

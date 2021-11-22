@@ -218,9 +218,11 @@ const ChemicalTreatmentDetailsForm = (props) => {
               <Divider />
               {Object.keys(calculationResults).map((key) => {
                 return (
-                  <Typography
-                    style={{ lineHeight: '1.5rem' }}
-                    variant={'body1'}>{`${key}: ${calculationResults[key]}`}</Typography>
+                  <Typography style={{ lineHeight: '1.5rem' }} variant={'body1'}>{`${key}: ${
+                    typeof calculationResults[key] === 'object'
+                      ? JSON.stringify(calculationResults[key])
+                      : calculationResults[key]
+                  }`}</Typography>
                 );
               })}
             </>
