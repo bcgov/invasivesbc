@@ -10,7 +10,7 @@ import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
 import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 import AppRouter from './AppRouter';
-import { DatabaseContext2Provider } from './contexts/DatabaseContext';
+import { DatabaseContextProvider } from './contexts/DatabaseContext';
 import { ThemeContextProvider } from './contexts/themeContext';
 import CustomThemeProvider from './utils/CustomThemeProvider';
 
@@ -67,7 +67,7 @@ const App: React.FC<IAppProps> = (props) => {
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
       <NetworkContextProvider>
         <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
-          <DatabaseContext2Provider>
+          <DatabaseContextProvider>
             <AuthStateContextProvider>
               <ThemeContextProvider>
                 <CustomThemeProvider>
@@ -77,7 +77,7 @@ const App: React.FC<IAppProps> = (props) => {
                 </CustomThemeProvider>
               </ThemeContextProvider>
             </AuthStateContextProvider>
-          </DatabaseContext2Provider>
+          </DatabaseContextProvider>
         </KeycloakProvider>
       </NetworkContextProvider>
     </Box>

@@ -17,7 +17,7 @@ export interface DBRequest {
   asyncTask: () => Promise<any>;
 }
 
-export const DatabaseContext2 = React.createContext({
+export const DatabaseContext = React.createContext({
   sqliteDB: null,
   asyncQueue: async (request: DBRequest) => {
     let x: any;
@@ -26,7 +26,7 @@ export const DatabaseContext2 = React.createContext({
   ready: false
 });
 
-export const DatabaseContext2Provider = (props) => {
+export const DatabaseContextProvider = (props) => {
   const { keycloak } = useContext(AuthStateContext);
   const message = useRef('');
   const [databaseIsSetup, setDatabaseIsSetup] = useState(false);
@@ -120,7 +120,7 @@ export const DatabaseContext2Provider = (props) => {
                   json: user
                 }
               ],
-              DatabaseContext2
+              DatabaseContext
             );
           }
         });
@@ -239,9 +239,9 @@ export const DatabaseContext2Provider = (props) => {
       return (
         <>
           {databaseIsSetup && sqlite ? (
-            <DatabaseContext2.Provider value={{ sqliteDB: sqlite, asyncQueue: processRequest, ready: true }}>
+            <DatabaseContext.Provider value={{ sqliteDB: sqlite, asyncQueue: processRequest, ready: true }}>
               {props.children}
-            </DatabaseContext2.Provider>
+            </DatabaseContext.Provider>
           ) : (
             <></>
           )}
