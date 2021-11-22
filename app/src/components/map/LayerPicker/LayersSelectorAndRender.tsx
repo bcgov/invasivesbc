@@ -12,32 +12,32 @@ import React, { useContext } from 'react';
 import { updateChild } from './LayerPicker';
 import { getChild } from './SortLayerOrder';
 
-const getIndex = (child, layers) => {
-  for (let i in layers) {
-    if (layers[i].bcgw_code === child.bcgw_code) {
-      return parseInt(i);
+const getIndex = (childId, layers) => {
+  var index = -1;
+  for (var i = 0; i < layers.length; i++) {
+    if (layers[i].id === childId) {
+      index = i;
+      break;
     }
   }
-  return -1;
+  return index;
 };
 
-export const updateLayer = (fieldsToUpdate, child, layers, setLayers) => {
-  if (child.enabled) {
-    var index = getIndex(child, layers);
-    if (index > -1) {
-      var oldLayer = layers[index];
-      var layersBefore = [...layers.slice(0, index)];
-      var layersAfter = [...layers.slice(index)];
-      var updatedLayer = { ...oldLayer, ...fieldsToUpdate };
-      layersAfter[0] = updatedLayer;
-      setLayers([...layersBefore, ...layersAfter]);
-    }
+export const updateLayer = (fieldsToUpdate, layers, setLayers, childId) => {
+  var index = getIndex(childId, layers);
+  if (index > -1) {
+    var oldLayer = layers[index];
+    var layersBefore = [...layers.slice(0, index)];
+    var layersAfter = [...layers.slice(index)];
+    var updatedLayer = { ...oldLayer, ...fieldsToUpdate };
+    layersAfter[0] = updatedLayer;
+    setLayers([...layersBefore, ...layersAfter]);
   }
 };
 
 export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
   if (child.enabled) {
-    var index = getIndex(child, layers);
+    var index = getIndex(child.id, layers);
     if (index > -1) {
       var layersCopy = [...layers];
       layersCopy.splice(index, 1);
@@ -53,7 +53,7 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
           color_code: child.color_code,
           layer_code: child.layer_code,
           layer_mode: null,
-          layer_name: child.name,
+          id: child.id,
           opacity: child.opacity,
           order: parent.order,
           parent_id: parent.id
@@ -67,7 +67,7 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
           bcgw_code: child.bcgw_code,
           color_code: child.color_code,
           layer_mode: child.layer_mode,
-          layer_name: child.layer_name,
+          id: child.id,
           opacity: child.opacity,
           order: parent.order,
           parent_id: parent.id
@@ -120,7 +120,7 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
                 defaultValue={child.layer_mode}
                 onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                   updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
-                  updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
+                  updateLayer({ layer_mode: event.target.value }, layers, setLayers, child.id);
                 }}>
                 <FormControlLabel value="wms_online" control={<Radio />} label="WMS" />
                 <FormControlLabel value="vector_tiles_online" control={<Radio />} label="Vector Tiles" />
@@ -144,7 +144,7 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
               defaultValue={child.layer_mode}
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                 updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
-                updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
+                updateLayer({ layer_mode: event.target.value }, layers, setLayers, child.id);
               }}>
               <FormControlLabel value="vector_tiles_offline" control={<Radio />} label="Vector Tiles" />
               <FormControlLabel value="wfs_offline" control={<Radio />} label="WFS" />

@@ -14,7 +14,8 @@ import {
   getChildIndex,
   getParent,
   getChild,
-  sortObject
+  sortObject,
+  getParentByOrder
 } from './SortLayerOrder';
 import { assignPaperBGTheme, layerPickerStyles, toolStyles } from '../Tools/Helpers/ToolStyles';
 // MUI
@@ -49,6 +50,37 @@ import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import { addOrRemoveLayer, LayersSelector, updateLayer } from './LayersSelectorAndRender';
 import { ThemeContext } from 'contexts/themeContext';
+
+const sortLayers = (layers, oldIndex, newIndex) => {
+  let returnVal = [];
+  if (newIndex > oldIndex) {
+    let layersBefore = getObjectsBeforeIndex(layers, oldIndex);
+    let loopIndex = oldIndex + 1;
+    let inBetween = [];
+    while (loopIndex < newIndex) {
+      let obj = getParentByOrder(layers, loopIndex);
+      obj.order = obj.order - 1;
+      inBetween.push({ ...obj });
+      loopIndex = loopIndex + 1;
+    }
+    let objWeMoved = getParentByOrder(layers, oldIndex);
+    let objWeSwapped = getParentByOrder(layers, newIndex);
+    objWeSwapped = newIndex - 1;
+
+    let parentsAfter = getObjectsAfterIndex(layers, newIndex);
+    const newState = [...layersBefore, ...inBetween, objWeSwapped, objWeMoved, ...parentsAfter];
+    returnVal = newState;
+  } else if (newIndex < oldIndex) {
+    let layersBefore = getObjectsBeforeIndex(layers, oldIndex);
+    let loopIndex = newIndex + 1;
+    let inBetween = [];
+    while (loopIndex < oldIndex) {
+      let obj = getParentByOrder(layers, loopIndex);
+      obj.order = obj.order + 1;
+      inBetween.push({ ...obj });
+    }
+  }
+};
 
 export const updateChild = (
   parentId: string,
@@ -92,8 +124,13 @@ export function LayerPicker(props: any) {
   const divref = useRef();
 
   useEffect(() => {
-    console.log('sorted', newLayers);
+    if (newLayers) {
+      newLayers.forEach((layer) => {
+        console.log(layer.id, layer.order);
+      });
+    }
   }, [newLayers]);
+
   /* Removed for now:
   function getErrorIcon(time: any) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
@@ -250,7 +287,7 @@ export function LayerPicker(props: any) {
                           { opacity: newOpacity as number },
                           { objectState, setObjectState }
                         );
-                        updateLayer({ opacity: newOpacity as number }, child, newLayers, setNewLayers);
+                        updateLayer({ opacity: newOpacity as number }, newLayers, setNewLayers, child.id);
                       }}
                       getAriaValueText={opacityText}
                       step={0.0001}
@@ -301,6 +338,7 @@ export function LayerPicker(props: any) {
 
   const onSortEnd = ({ oldIndex, newIndex }: any) => {
     const returnVal = sortObject(objectState, oldIndex, newIndex);
+
     setObjectState(returnVal);
   };
 
