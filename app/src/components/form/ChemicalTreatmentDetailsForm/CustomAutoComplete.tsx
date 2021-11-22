@@ -7,6 +7,7 @@ export interface ICustomAutoComplete {
   className: string;
   classes: any;
   choices: any[];
+  actualValue?: string;
   parentName?: string;
   fieldName: string;
   parentState: {
@@ -24,36 +25,38 @@ const CustomAutoComplete = ({
   onChange,
   parentState,
   choices,
+  actualValue,
   parentName,
   fieldName
 }) => {
-  let optionValueLabels = {};
   const [labelValuePair, setLabelValuePair] = useState({});
 
   useEffect(() => {
+    let optionValueLabels = {};
+    Object.values(choices as any[]).forEach((option) => {
+      optionValueLabels[option.value] = option.label || option.title || option.value;
+    });
+
     if (parentName) {
       if (choices.length > 0 && parentState[parentName][fieldName]) {
-        Object.values(choices as any[]).forEach((option) => {
-          optionValueLabels[option.value] = option.label || option.title || option.value;
-        });
         setLabelValuePair({
           value: parentState[parentName][fieldName] || null,
           label: optionValueLabels[parentState[parentName][fieldName]] || null
         });
-      } else {
-        onChange(null, null);
+      }
+      if (!optionValueLabels[parentState[parentName][fieldName]] && actualValue) {
+        onChange(null, { value: null });
       }
     } else {
       if (choices.length > 0 && parentState[fieldName]) {
-        Object.values(choices as any[]).forEach((option) => {
-          optionValueLabels[option.value] = option.label || option.title || option.value;
-        });
         setLabelValuePair({
           value: parentState[fieldName] || null,
           label: optionValueLabels[parentState[fieldName]] || null
         });
-      } else {
-        onChange(null, null);
+      }
+
+      if (!optionValueLabels[parentState[fieldName]] === undefined && actualValue) {
+        onChange(null, { value: null });
       }
     }
   }, [choices, onChange]);

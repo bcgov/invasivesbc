@@ -517,48 +517,40 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
     return resultObj;
   }
 
-  let amounts_of_mix_used: number[] = [];
-  let areas_treated_ha: number[] = [];
-  let areas_treated_sqm: number[] = [];
-  let percents_area_covered: number[] = [];
-
-  let herbicidesArr = [];
+  let outputInvPlantsArr = [];
 
   species.forEach((specie, plant_index) => {
-    amounts_of_mix_used.push(amount_of_mix * (specie.percent_area_covered / 100));
-    areas_treated_ha.push((amount_of_mix / delivery_rate_of_mix) * (specie.percent_area_covered / 100));
-    areas_treated_sqm.push(areas_treated_ha[plant_index] * 10000);
-    percents_area_covered.push((areas_treated_sqm[plant_index] / area) * 100);
+    let outputSpecie: any = {};
+
+    outputSpecie.amount_of_mix_used = amount_of_mix * (specie.percent_area_covered / 100);
+    outputSpecie.area_treated_ha = (amount_of_mix / delivery_rate_of_mix) * (specie.percent_area_covered / 100);
+    outputSpecie.area_treated_sqm = outputSpecie.area_treated_ha * 10000;
+    outputSpecie.percent_area_covered = (outputSpecie.area_treated_sqm / area) * 100;
+
+    outputSpecie.herbicides = [];
 
     herbicides.forEach((herb, index) => {
-      const correctIndex = plant_index + (index + plant_index * plant_index);
+      let outputHerb: any = {};
 
-      herbicidesArr.push({ invPlantIndex: plant_index });
+      outputHerb.dilution = (herbicides[index].product_application_rate / delivery_rate_of_mix) * 100;
+      outputHerb.amount_of_undiluted_herbicide_used =
+        ((outputHerb.dilution / 100) * amount_of_mix * specie.percent_area_covered) / 100;
 
-      herbicidesArr[correctIndex].dilution = (herbicides[index].product_application_rate / delivery_rate_of_mix) * 100;
+      outputHerb.dilution = parseToRightFormat(outputHerb.dilution);
+      outputHerb.amount_of_undiluted_herbicide_used = parseToRightFormat(outputHerb.amount_of_undiluted_herbicide_used);
 
-      herbicidesArr[correctIndex].amount_of_undiluted_herbicide_used =
-        ((herbicidesArr[correctIndex].dilution / 100) * amount_of_mix * specie.percent_area_covered) / 100;
-
-      herbicidesArr[correctIndex].dilution = parseToRightFormat(herbicidesArr[correctIndex].dilution);
-      herbicidesArr[correctIndex].amount_of_undiluted_herbicide_used = parseToRightFormat(
-        herbicidesArr[correctIndex].amount_of_undiluted_herbicide_used
-      );
+      outputSpecie.herbicides.push(outputHerb);
     });
 
-    amounts_of_mix_used[plant_index] = parseToRightFormat(amounts_of_mix_used[plant_index]);
-    areas_treated_ha[plant_index] = parseToRightFormat(areas_treated_ha[plant_index]);
-    areas_treated_sqm[plant_index] = parseToRightFormat(areas_treated_sqm[plant_index]);
-    percents_area_covered[plant_index] = parseToRightFormat(percents_area_covered[plant_index]);
+    outputSpecie.amount_of_mix_used = parseToRightFormat(outputSpecie.amount_of_mix_used);
+    outputSpecie.area_treated_ha = parseToRightFormat(outputSpecie.area_treated_ha);
+    outputSpecie.area_treated_sqm = parseToRightFormat(outputSpecie.area_treated_sqm);
+    outputSpecie.percent_area_covered = parseToRightFormat(outputSpecie.percent_area_covered);
+
+    outputInvPlantsArr.push(outputSpecie);
   });
 
-  return {
-    amounts_of_mix_used: amounts_of_mix_used,
-    areas_treated_ha: areas_treated_ha,
-    areas_treated_sqm: areas_treated_sqm,
-    percents_area_covered: percents_area_covered,
-    herbicides: herbicidesArr
-  };
+  return { invasive_plants: [...outputInvPlantsArr] };
 };
 
 /**

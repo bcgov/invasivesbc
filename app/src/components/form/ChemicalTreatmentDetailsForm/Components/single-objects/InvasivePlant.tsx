@@ -59,6 +59,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, key, species,
         choices={businessCodes['invasive_plant_code']}
         className={'inputField'}
         classes={classes}
+        actualValue={species.invasive_plant_code}
         fieldName={'invasive_plant_code'}
         id={'invasive_plant_code'}
         label={'Invasive Plant'}

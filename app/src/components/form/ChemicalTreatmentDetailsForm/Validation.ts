@@ -16,7 +16,7 @@ export const runValidation = (
   newErrors = validate_chem_app_method_value(formData, errors, businessCodes);
   newErrors = validate_herbicide_fields(formData, errors, businessCodes, herbicideDictionary);
   newErrors = validate_tank_mix_fields(formData, errors);
-  newErrors = validate_tank_mix_herbicides(formData, errors);
+  newErrors = validate_tank_mix_herbicides(formData, errors, businessCodes, herbicideDictionary);
 
   return newErrors;
 };
@@ -330,7 +330,12 @@ export const validate_tank_mix_fields = (formData: IGeneralFields, errors: any) 
 /**
  * Validates that herbicides array inside tank mix has right values specified
  */
-export const validate_tank_mix_herbicides = (formData: IGeneralFields, errors: any) => {
+export const validate_tank_mix_herbicides = (
+  formData: IGeneralFields,
+  errors: any,
+  businessCodes: any,
+  herbicideDictionary: any
+) => {
   if (
     !formData ||
     !formData.tank_mix ||
@@ -349,6 +354,20 @@ export const validate_tank_mix_herbicides = (formData: IGeneralFields, errors: a
   let negativeProdAppRate = false;
 
   formData.tank_mix_object.herbicides.forEach((herb) => {
+    if (!herb.product_application_rate || !herb.herbicide_code) {
+    } else if (
+      herb.product_application_rate &&
+      herb.product_application_rate > HerbicideApplicationRates[herb.herbicide_code.toString()]
+    ) {
+      errors.push(
+        `Application rate of ${
+          herbicideDictionary[Number(herb.herbicide_code)]
+        } herbicide exceeds maximum applicable rate of ${
+          HerbicideApplicationRates[herb.herbicide_code]
+        } L/ha for this herbicide`
+      );
+    }
+
     if (!herb.herbicide_code) {
       noHerbCode = true;
     }

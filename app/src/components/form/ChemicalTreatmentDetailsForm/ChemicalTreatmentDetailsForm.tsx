@@ -27,7 +27,7 @@ import { performCalculation } from 'utils/herbicideCalculator';
 const ChemicalTreatmentDetailsForm = (props) => {
   const classes = useFormStyles();
 
-  const [calculationResults, setCalculationResults] = useState();
+  const [calculationResults, setCalculationResults] = useState(null);
 
   //get business codes from schema
   const getBusinessCodes = () => {
@@ -190,6 +190,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
               <CustomAutoComplete
                 choices={chemicalApplicationMethodChoices}
                 className={null}
+                actualValue={chemicalApplicationMethod}
                 classes={classes}
                 fieldName={'chemicalApplicationMethod'}
                 id={'chemical-application-method'}
@@ -212,7 +213,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
           {calculationResults && (
             <>
-              <Typography style={{ marginTop: '1rem' }} variant="h5">
+              <Typography style={{ marginTop: '1rem' }} variant="h4">
                 Calculation Results
               </Typography>
               <Divider />
@@ -225,6 +226,11 @@ const ChemicalTreatmentDetailsForm = (props) => {
                   }`}</Typography>
                 );
               })}
+              {Object.keys(calculationResults).length < 1 && (
+                <Typography style={{ marginTop: '10px' }} variant={'body1'} color={'error'}>
+                  Couldn't perform calculation because of the invalid scenario.
+                </Typography>
+              )}
             </>
           )}
         </FormControl>
