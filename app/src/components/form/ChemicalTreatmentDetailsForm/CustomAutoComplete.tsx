@@ -17,7 +17,10 @@ export interface ICustomAutoComplete {
 
 const CustomAutoComplete = ({ classes, className, id, label, onChange, actualValue, parentState, choices }) => {
   let optionValueLabels = {};
-  const [labelValuePair, setLabelValuePair] = useState(null);
+  const [labelValuePair, setLabelValuePair] = useState({
+    value: null,
+    label: null
+  });
 
   Object.values(choices as any[]).forEach((option) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
@@ -55,7 +58,14 @@ const CustomAutoComplete = ({ classes, className, id, label, onChange, actualVal
           // console.log(option);
           // console.log(value);
         }
-        return (option as any).value === (value as any).value;
+
+        if ((value as any).value === null) {
+          return true;
+        } else if ((option as any).value === (value as any).value) {
+          return true;
+        } else if ((value as any) === '') {
+          return true;
+        }
       }}
       getOptionLabel={(option) => ((option as any).label ? (option as any).label : '')}
       onChange={(event, value) => {
