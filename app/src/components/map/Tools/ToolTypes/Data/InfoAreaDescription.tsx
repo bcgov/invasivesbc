@@ -40,21 +40,12 @@ import {
 // App Imports
 import { calc_utm } from '../Nav/DisplayPosition';
 
-export const generateGeo = (lat, lng, { setGeoPoint }) => {
+export const generateGeo = (map, lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
-    setGeoPoint({
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Point',
-            coordinates: [lng, lat]
-          }
-        }
-      ]
-    });
+    var point = turf.point([lng, lat]);
+    var buffer = turf.buffer(point, 50, { units: 'meters' });
+    map.flyTo([lat, lng], 15);
+    setGeoPoint(buffer);
   }
 };
 
@@ -311,7 +302,7 @@ function SetPointOnClick({ map }: any) {
   useEffect(() => {
     if (isFinite(position?.lng) && isFinite(position?.lat) && clickMode) {
       setUTM(calc_utm(position?.lng as number, position?.lat as number));
-      // generateGeo(position.lat, position.lng, { setGeoPoint });
+      generateGeo(map, position.lat, position.lng, { setGeoPoint });
     }
   }, [position]);
 
@@ -365,7 +356,7 @@ function SetPointOnClick({ map }: any) {
         <Typography className={toolClass.Font}>What's here?</Typography>
       </IconButton>
       {utm && (
-        <Marker position={[position.lat, position.lng]} icon={markerIcon} key={Math.random()}>
+        <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup
             utmRows={rows}
             map={map}
@@ -374,7 +365,7 @@ function SetPointOnClick({ map }: any) {
             setPoiMarker={setPoiMarker}
             setActivityGeo={setActivityGeo}
           />
-        </Marker>
+        </GeoJSON>
       )}
     </>
   );
