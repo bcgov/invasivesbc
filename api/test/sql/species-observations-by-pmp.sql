@@ -7,16 +7,16 @@
 */
 select
   c.code_description "Species",
-  public.regional_invasive_species_organization_areas.agency "Agency",
+  public.pest_management_plan_areas.pmp_name "PMP",
   round(
     sum(
       public.st_area(
         case
-          when public.st_within(p.geom,public.regional_invasive_species_organization_areas.geom)
+          when public.st_within(p.geom,public.pest_management_plan_areas.wkb_geometry)
           then p.geom
           else public.st_intersection(
             p.geom,
-            public.st_transform(public.regional_invasive_species_organization_areas.geom,3005)
+            public.st_transform(public.pest_management_plan_areas.wkb_geometry,3005)
           )
           end
       )
@@ -25,8 +25,8 @@ select
 from
   code c,
   public.activities_by_species p join
-  public.regional_invasive_species_organization_areas on
-  public.st_intersects(p.geom,public.st_transform(public.regional_invasive_species_organization_areas.geom,3005))
+  public.pest_management_plan_areas on
+  public.st_intersects(p.geom,public.st_transform(public.pest_management_plan_areas.wkb_geometry,3005))
 where
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   p.species = c.code_name and
@@ -39,10 +39,10 @@ where
     where
       code_header_name = 'invasive_plant_code'
   )
-  [[and {{agent}}]] -- This is for metabase
+  [[and {{pmp_name}}]] -- This is for metabase
 group by
   c.code_description,
-  public.regional_invasive_species_organization_areas.agency
+  public.pest_management_plan_areas.pmp_name
 order by
-  public.regional_invasive_species_organization_areas.agency
+  public.pest_management_plan_areas.pmp_name
 ;

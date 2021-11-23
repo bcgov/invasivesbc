@@ -10,19 +10,9 @@ export async function up(knex: Knex): Promise<void> {
       set client_encoding to utf8;
       set standard_conforming_strings to on;
 
-      CREATE TABLE "pest_management_plan_areas" (
-	      "ogc_fid" SERIAL,
-        CONSTRAINT "pest_management_plan_areas_pk" PRIMARY KEY ("ogc_fid")
-      );
-      SELECT AddGeometryColumn('public','pest_management_plan_areas','wkb_geometry',3005,'MULTIPOLYGON',2);
-      CREATE INDEX "pest_management_plan_areas_wkb_geometry_geom_idx" ON "pest_management_plan_areas" USING GIST ("wkb_geometry");
-      ALTER TABLE "pest_management_plan_areas" ADD COLUMN "objectid" NUMERIC(10,0);
-      ALTER TABLE "pest_management_plan_areas" ADD COLUMN "pmp_name" VARCHAR(254);
-      ALTER TABLE "pest_management_plan_areas" ADD COLUMN "contributi" VARCHAR(254);
-      ALTER TABLE "pest_management_plan_areas" ADD COLUMN "shape_leng" NUMERIC(24,15);
-      ALTER TABLE "pest_management_plan_areas" ADD COLUMN "shape_area" NUMERIC(24,15);
-      ALTER TABLE "pest_management_plan_areas" ADD COLUMN "label" VARCHAR(254);
-
+      create table "public"."pest_management_plan_areas" ( "ogc_fid" SERIAL, "geog" geography(POLYGON,4326), CONSTRAINT "pest_management_plan_areas_pk" PRIMARY KEY ("ogc_fid") );
+      create index "pest_management_plan_areas_geog_geom_idx" ON "public"."pest_management_plan_areas" using gist ("geog");
+      alter table "public"."pest_management_plan_areas" add column "pmp_name" varchar(254);
 
     `;
     await knex.raw(sql);

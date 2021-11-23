@@ -7,9 +7,9 @@ export async function seed(knex: Knex): Promise<void> {
    * If we are in development use the light dataset for
    * speeding up the development life cycle.
    */
-  const env: string = process.env.NODE_ENV;
+  const env: string = process.env.REACT_APP_REAL_NODE_ENV;
   let url: string;
-  if (env.match(/dev/i)) {
+  if (env.match(/dev/i) || env.match(/local/i)) {
     url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction_vancouver_island.sql.gz';
   } else {
     url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction.sql.gz';
