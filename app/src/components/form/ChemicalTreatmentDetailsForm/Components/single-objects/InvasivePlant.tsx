@@ -8,11 +8,11 @@ import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsC
 export interface IInvasivePlantComponent {
   index: number;
   species: any;
-  key: number;
+  key?: number;
   classes: any;
 }
 
-const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, key, species, classes }) => {
+const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, classes }) => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
@@ -60,7 +60,6 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, key, species,
         className={'inputField'}
         classes={classes}
         actualValue={species.invasive_plant_code}
-        fieldName={'invasive_plant_code'}
         id={'invasive_plant_code'}
         label={'Invasive Plant'}
         onChange={(event, value) => {
@@ -71,7 +70,6 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, key, species,
             return { ...prevInvasivePlant, invasive_plant_code: (value as any).value };
           });
         }}
-        parentName="species"
         parentState={{ species, setCurrentInvasivePlant }}
       />
 

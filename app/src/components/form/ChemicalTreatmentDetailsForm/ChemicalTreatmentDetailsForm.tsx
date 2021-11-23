@@ -190,7 +190,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
   return (
     classes && (
       <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
-        <Typography variant="h4">Chemical Treatment Details</Typography>
+        <Typography variant="h5">Chemical Treatment Details</Typography>
         <Divider />
 
         {localErrors.length > 0 && (
@@ -200,7 +200,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
             </Typography>
             <List dense={true}>
               {localErrors.map((err, index) => (
-                <ListItem>
+                <ListItem key={index}>
                   <ListItemText
                     style={{ color: '#ff000' }}
                     primary={
@@ -241,7 +241,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 className={null}
                 actualValue={chemicalApplicationMethod}
                 classes={classes}
-                fieldName={'chemicalApplicationMethod'}
+                key={'chemical-application-method'}
                 id={'chemical-application-method'}
                 label={'Chemical Application Method'}
                 onChange={(event, value) => {
@@ -251,7 +251,6 @@ const ChemicalTreatmentDetailsForm = (props) => {
                   setChemicalApplicationMethod(value.value);
                 }}
                 parentState={{ chemicalApplicationMethod, setChemicalApplicationMethod }}
-                parentName={undefined}
               />
             </Box>
           </Box>
@@ -268,7 +267,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
               <Divider />
               {Object.keys(calculationResults).map((key) => {
                 return (
-                  <Typography style={{ lineHeight: '1.5rem' }} variant={'body1'}>{`${key}: ${
+                  <Typography key={key} style={{ lineHeight: '1.5rem' }} variant={'body1'}>{`${key}: ${
                     typeof calculationResults[key] === 'object'
                       ? JSON.stringify(calculationResults[key])
                       : calculationResults[key]

@@ -46,7 +46,7 @@ const HerbicidesAccordion = (props) => {
               onClick={() => {
                 if (props.insideTankMix) {
                   setFormDetails((prevDetails) => {
-                    const newHerbicidesArr = [...prevDetails.formData.herbicides];
+                    const newHerbicidesArr = [...prevDetails.formData.tank_mix_object.herbicides];
                     newHerbicidesArr.push({});
                     return {
                       ...prevDetails,
@@ -54,7 +54,7 @@ const HerbicidesAccordion = (props) => {
                         ...prevDetails.formData,
                         tank_mix_object: {
                           ...prevDetails.formData.tank_mix_object,
-                          herbicides: [...newHerbicidesArr]
+                          herbicides: newHerbicidesArr
                         }
                       }
                     };
@@ -67,7 +67,7 @@ const HerbicidesAccordion = (props) => {
                       ...prevDetails,
                       formData: {
                         ...prevDetails.formData,
-                        herbicides: [...newHerbicidesArr]
+                        herbicides: newHerbicidesArr
                       }
                     };
                   });

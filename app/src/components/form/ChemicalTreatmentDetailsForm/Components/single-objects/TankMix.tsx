@@ -40,10 +40,10 @@ const TankMix: React.FC = (props) => {
         className={'inputField'}
         classes={classes}
         id={'calculation_type'}
+        key={'calculation_type'}
         label={'Calculation Type'}
+        actualValue={formDetails.formData.tank_mix_object.calculation_type}
         parentState={{ currentTankMix, setCurrentTankMix }}
-        parentName={'currentTankMix'}
-        fieldName={'calculation_type'}
         onChange={(event, value) => {
           if (value === null) {
             return;

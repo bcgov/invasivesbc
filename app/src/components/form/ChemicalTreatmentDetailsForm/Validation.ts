@@ -33,7 +33,7 @@ export const validate_inv_plants_arr_length = (formData: IGeneralFields, errors:
   if (!formData || !formData.invasive_plants) {
     return errors;
   }
-  let newErrors = [...errors];
+  let newErrors = errors;
 
   if (formData.invasive_plants.length < 1) {
     newErrors.push('You must have at least one Invasive Plant added');
@@ -104,7 +104,7 @@ export const validate_herbicides_arr_length = (formData: IGeneralFields, errors:
   if (!formData || !formData.herbicides || formData.tank_mix === true) {
     return errors;
   }
-  const newErrors = [...errors];
+  const newErrors = errors;
   if (formData.herbicides.length < 1) {
     newErrors.push('You must have at least one Herbicide added');
   }
