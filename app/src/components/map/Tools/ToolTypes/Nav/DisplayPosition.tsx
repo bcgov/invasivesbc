@@ -58,8 +58,13 @@ export default function DisplayPosition({ map }) {
   const divRef = useRef(null);
 
   useEffect(() => {
+    if (map) {
+      getLocation();
+    }
+  }, map);
+
+  useEffect(() => {
     if (newPosition) {
-      console.log(newPosition.coords);
       generateGeo(newPosition.coords.latitude, newPosition.coords.longitude, { setGeoPoint });
     }
   }, [newPosition]);
@@ -82,7 +87,6 @@ export default function DisplayPosition({ map }) {
   useEffect(() => {
     if (newPosition) {
       setUTM(calc_utm(newPosition.coords.longitude, newPosition.coords.latitude));
-      map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
     }
   }, [newPosition]);
 
@@ -133,7 +137,11 @@ export default function DisplayPosition({ map }) {
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         disabled={startTimer}
         aria-label="my position"
-        onClick={getLocation}>
+        onClick={() => {
+          if (newPosition) {
+            map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
+          }
+        }}>
         {initialTime > 0 ? <CircularProgress size={24} /> : <LocationOnIcon />}
         <Typography className={toolClass.Font}>Current Position</Typography>{' '}
       </IconButton>

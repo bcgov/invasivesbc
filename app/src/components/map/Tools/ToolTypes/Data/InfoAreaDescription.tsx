@@ -356,7 +356,7 @@ function SetPointOnClick({ map }: any) {
         />
         <Typography className={toolClass.Font}>What's here?</Typography>
       </IconButton>
-      {utm && (
+      {utm && clickMode && (
         <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup
             utmRows={rows}
