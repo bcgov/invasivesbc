@@ -1,12 +1,14 @@
 import React from 'react';
 import { LayersControlProvider } from './LayerPicker/layerControlContext';
 import { LayerPicker } from './LayerPicker/LayerPicker';
-import DisplayPosition from './Tools/DisplayPosition';
-import { SetPointOnClick } from './Tools/InfoAreaDescription';
-import JumpToActivity from './Tools/JumpToActivity';
-import JumpToTrip from './Tools/JumpToTrip';
-import MeasureTool from './Tools/MeasureTool';
-import { ZoomControl } from './Tools/ZoomControl';
+import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
+import NewRecord from './Tools/ToolTypes/Data/NewRecord';
+import EditRecord from './Tools/ToolTypes/Data/SelectOrEdit';
+import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
+import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
+import DisplayPosition from './Tools/ToolTypes/Nav/DisplayPosition';
+import JumpToActivity from './Tools/ToolTypes/Nav/JumpToActivity';
+import JumpToTrip from './Tools/ToolTypes/Nav/JumpToTrip';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -21,7 +23,9 @@ export const ToolbarContainer = (props) => {
   return (
     <LayersControlProvider value={null}>
       <div className={positionClass}>
-        <div className="leaflet-control" style={{ display: 'flex', flexDirection: 'column' }}>
+        <div
+          className="leaflet-control"
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'end', padding: 10, gap: 10 }}>
           <LayerPicker
             map={props.map}
             layers={props.layer}
@@ -34,7 +38,9 @@ export const ToolbarContainer = (props) => {
           <MeasureTool />
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
           <JumpToTrip />
-          <JumpToActivity id={props.activityId} />
+          {/* <NewRecord />
+          <EditRecord /> */}
+          <JumpToActivity id={props.id} />
         </div>
       </div>
     </LayersControlProvider>

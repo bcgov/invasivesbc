@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   Box,
@@ -16,9 +15,8 @@ import {
 import { Add, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 interface IActivityChoices {
   activityType: string;
@@ -41,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const ActivityDataFilter: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const [activityChoices, setActivityChoices] = useState([]);
 
   const getActivityChoicesFromTrip = useCallback(async () => {

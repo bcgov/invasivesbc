@@ -1,5 +1,5 @@
-import { query, QueryType } from 'contexts/DatabaseContext2';
 import * as turf from '@turf/turf';
+import { query, QueryType } from 'contexts/DatabaseContext';
 
 export const getStyleForLayerFeature = (feature: any, layerStyles: any, opacity: number): any => {
   let style = {};

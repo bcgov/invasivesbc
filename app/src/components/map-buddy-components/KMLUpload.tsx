@@ -1,12 +1,11 @@
-import { DatabaseContext2, query, QueryType } from 'contexts/DatabaseContext2';
-import React, { useContext, useEffect, useState } from 'react';
-import { DropzoneArea } from 'material-ui-dropzone';
+import { Capacitor } from '@capacitor/core';
 import { kml } from '@tmcw/togeojson';
 import { DocType } from 'constants/database';
-import { upsert, UpsertType } from 'contexts/DatabaseContext2';
-import { Capacitor } from '@capacitor/core';
+import { DatabaseContext, upsert, UpsertType } from 'contexts/DatabaseContext';
 // node doesn't have xml parsing or a dom. use xmldom
 import JSZip from 'jszip';
+import { DropzoneArea } from 'material-ui-dropzone';
+import React, { useContext, useEffect, useState } from 'react';
 const DOMParser = require('xmldom').DOMParser;
 
 export const KML_TYPES = {
@@ -73,7 +72,7 @@ const get_KMorKML_AsStringArray = async (input: File) => {
 };
 
 export const KMLUpload: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
 
   // Raw file kept in useState var and converted to Geo before hitting db:
   const [aFile, setAFile] = useState(null);

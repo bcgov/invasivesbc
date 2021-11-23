@@ -2,10 +2,8 @@ import { Box, Button, makeStyles, Theme, Typography } from '@material-ui/core';
 import SearchActivitiesList from 'components/activities-list/SearchActivitiesList';
 import { ISearchActivity } from 'features/home/search/SearchPage';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { notifyError } from 'utils/NotificationUtils';
-import { DatabaseContext } from 'contexts/DatabaseContext';
 
 interface ISearchResultsList {
   classes?: any;
@@ -29,11 +27,9 @@ const SearchResultsList: React.FC<ISearchResultsList> = (props) => {
   const history = useHistory();
   const classes = useStyles();
   const invasivesApi = useInvasivesApi();
-  const databaseContext = useContext(DatabaseContext);
 
   const navigateToEditPage = (editsList: any) => {
     if (new Set(editsList.map((edit) => edit.subtype)).size > 1) {
-      notifyError(databaseContext, 'Sorry, all activites must be the same Subtype in order to Bulk Edit.');
       return;
     }
     const ids = editsList.map((edit) => edit.id);

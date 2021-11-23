@@ -1,40 +1,44 @@
-import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
 //Material UI
 import {
   BottomNavigation,
   BottomNavigationAction,
   Button,
-  Slider,
-  TableContainer,
-  Typography,
-  IconButton,
   Grid,
-  Switch
+  IconButton,
+  Slider,
+  Switch,
+  TableContainer,
+  Typography
 } from '@material-ui/core';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import FolderIcon from '@material-ui/icons/Folder';
-import StorageIcon from '@material-ui/icons/Storage';
 import AdjustIcon from '@material-ui/icons/Adjust';
-// Leaflet and React-Leaflet
-import { useMapEvent, GeoJSON, Popup, Marker, Tooltip } from 'react-leaflet';
+import FolderIcon from '@material-ui/icons/Folder';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import StorageIcon from '@material-ui/icons/Storage';
+import { Stack } from '@mui/material';
+import * as turf from '@turf/turf';
+import { ThemeContext } from 'contexts/themeContext';
 import L, { DomEvent } from 'leaflet';
-// App Imports
-import { calc_utm } from './DisplayPosition';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+// Leaflet and React-Leaflet
+import { GeoJSON, Marker, Popup, Tooltip, useMapEvent } from 'react-leaflet';
+import { useDataAccess } from '../../../../../hooks/useDataAccess';
+import binoculars from '../../../Icons/binoculars.png';
+import { getDataFromDataBC } from '../../../WFSConsumer';
 import {
   createDataUTM,
   RenderTableActivity,
-  RenderTablePosition,
   RenderTableDataBC,
-  RenderTablePOI
-} from './Helpers/StyledTable';
-import { getDataFromDataBC } from '../WFSConsumer';
-import * as turf from '@turf/turf';
-import { useDataAccess } from '../../../hooks/useDataAccess';
-import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles, assignPtDefaultTheme, assignPointModeTheme, assignTextDefaultTheme } from './Helpers/ToolStyles';
-import marker from '../Icons/POImarker.png';
-import binoculars from '../Icons/binoculars.png';
-import { Stack } from '@mui/material';
+  RenderTablePOI,
+  RenderTablePosition
+} from '../../Helpers/StyledTable';
+import {
+  assignPointModeTheme,
+  assignPtDefaultTheme,
+  assignTextDefaultTheme,
+  toolStyles
+} from '../../Helpers/ToolStyles';
+// App Imports
+import { calc_utm } from '../Nav/DisplayPosition';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
@@ -316,7 +320,7 @@ function SetPointOnClick({ map }: any) {
   }, [utm]);
 
   const markerIcon = L.icon({
-    iconUrl: marker,
+    iconUrl: binoculars,
     iconSize: [24, 24]
   });
 
@@ -328,7 +332,8 @@ function SetPointOnClick({ map }: any) {
       {poiMarker && (
         <Marker
           position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
-          icon={markerIcon}>
+          //  icon={markerIcon}>
+        >
           <Tooltip direction="top" opacity={0.5} permanent>
             <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
               {poiMarker.species.map((s) => (
@@ -355,6 +360,7 @@ function SetPointOnClick({ map }: any) {
           src={binoculars}
           aria-label="create-pin"
         />
+        <Typography className={toolClass.Font}>What's here?</Typography>
       </IconButton>
       {utm && (
         <GeoJSON data={geoPoint} key={Math.random()}>

@@ -1,11 +1,10 @@
-import React from 'react';
-
 import Button from '@material-ui/core/Button';
-import Add from '@material-ui/icons/Add';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Remove from '@material-ui/icons/Remove';
 import { IconButtonProps as MuiIconButtonProps } from '@material-ui/core/IconButton';
+import Add from '@material-ui/icons/Add';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import ArrowUpward from '@material-ui/icons/ArrowUpward';
+import Remove from '@material-ui/icons/Remove';
+import React from 'react';
 
 const mappings: any = {
   remove: <Remove />,

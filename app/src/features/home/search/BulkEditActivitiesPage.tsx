@@ -1,25 +1,23 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { Accordion, CircularProgress, AccordionDetails, Box, Button, Container } from '@material-ui/core';
+import { Accordion, AccordionDetails, Box, Button, CircularProgress, Container } from '@material-ui/core';
 import { Save } from '@material-ui/icons';
 import FormContainer from 'components/form/FormContainer';
-import { generateActivityPayload } from 'utils/addActivity';
-import { ActivityStatus, ActivityType, ActivitySubtype, FormValidationStatus } from 'constants/activities';
-import { IActivity } from 'interfaces/activity-interfaces';
-import { debounced } from 'utils/FunctionUtils';
-import { useQuery } from 'hooks/useQuery';
-import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
+import { ActivityStatus, ActivitySubtype, ActivityType, FormValidationStatus } from 'constants/activities';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import {
-  populateHerbicideCalculatedFields,
-  populateTransectLineAndPointData
-} from 'rjsf/business-rules/populateCalculatedFields';
+import { useQuery } from 'hooks/useQuery';
+import { IActivity } from 'interfaces/activity-interfaces';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
   getCustomValidator,
   getHerbicideApplicationRateValidator,
   getJurisdictionPercentValidator
 } from 'rjsf/business-rules/customValidation';
+import {
+  populateHerbicideCalculatedFields,
+  populateTransectLineAndPointData
+} from 'rjsf/business-rules/populateCalculatedFields';
+import { generateActivityPayload } from 'utils/addActivity';
+import { debounced } from 'utils/FunctionUtils';
+import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
 
 interface IBulkEditActivitiesPage {
   classes?: any;
@@ -29,7 +27,6 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [activity, setActivity] = useState(null);
   const invasivesApi = useInvasivesApi();
-  const databaseContext = useContext(DatabaseContext);
   const queryParams = useQuery();
 
   const [parentFormRef, setParentFormRef] = useState(null);
@@ -57,12 +54,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
   /*
     Function that runs if the form submit fails and has errors
   */
-  const onFormSubmitError = () => {
-    notifyError(
-      databaseContext,
-      'Failed to edit activities. Please make sure your form contains no errors and try again.'
-    );
-  };
+  const onFormSubmitError = () => {};
 
   /**
    * Save the form when it is submitted.
@@ -84,10 +76,7 @@ const BulkEditActivitiesPage: React.FC<IBulkEditActivitiesPage> = (props) => {
           };
 
           await invasivesApi.updateActivity(getICreateOrUpdateActivity(doc, updatedActivityFormData));
-          notifySuccess(databaseContext, `Successfully updated activity ${activityId}.`);
-        } catch (error) {
-          notifyError(databaseContext, `Failed to update activity ${activityId}.`);
-        }
+        } catch (error) {}
       })
     );
   };

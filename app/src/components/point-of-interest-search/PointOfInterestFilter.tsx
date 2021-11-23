@@ -1,10 +1,8 @@
 import { Capacitor } from '@capacitor/core';
 import DateFnsUtils from '@date-io/date-fns';
-import DatesFnsUtils from '@date-io/date-fns';
 import {
   Box,
   Button,
-  FormControlLabel,
   Grid,
   Input,
   InputLabel,
@@ -14,14 +12,12 @@ import {
   MenuItem,
   Paper,
   Select,
-  Switch,
-  TextField
+  Switch
 } from '@material-ui/core';
-import { Add, ContactlessOutlined, DeleteForever } from '@material-ui/icons';
+import { Add, DeleteForever } from '@material-ui/icons';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
 import React, { useContext, useEffect, useState } from 'react';
 
 interface IPointOfInterestChoices {
@@ -45,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const PointOfInterestDataFilter: React.FC<any> = (props) => {
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const [pointOfInterestChoices, setPointOfInterestChoices] = useState([]);
   const [iappSelected, setIappSelected] = useState(false);
 

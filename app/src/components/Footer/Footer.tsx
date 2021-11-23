@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Tabs, Tab } from '@material-ui/core';
+import { AppBar, Tab, Tabs, Toolbar } from '@material-ui/core';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';

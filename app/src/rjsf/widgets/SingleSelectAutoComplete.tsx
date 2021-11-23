@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import StarIcon from '@mui/icons-material/Star';
+import { Box, Typography } from '@mui/material';
 import { WidgetProps } from '@rjsf/core';
 import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
-import { Box, Typography } from '@mui/material';
-import StarIcon from '@mui/icons-material/Star';
+import React, { useContext, useEffect, useState } from 'react';
 // Custom type to support this widget
 export type AutoCompleteSelectOption = { label: string; value: any; title: any };
 

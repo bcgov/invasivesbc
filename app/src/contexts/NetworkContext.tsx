@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { Capacitor } from '@capacitor/core';
+import React from 'react';
 
 interface INetworkContext {
   connected: boolean;

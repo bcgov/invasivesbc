@@ -1,7 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { Slider } from '@material-ui/core';
-import L from 'leaflet';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',

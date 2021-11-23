@@ -1,8 +1,8 @@
 import { Accordion, AccordionDetails, AccordionSummary, makeStyles, Typography } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
-import React from 'react';
 import FormContainer from 'components/form/FormContainer';
 import PhotoContainer from 'components/photo/PhotoContainer';
+import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
   heading: {

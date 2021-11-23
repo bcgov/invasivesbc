@@ -1,4 +1,3 @@
-import { ActivityType, ActivitySubtype } from 'constants/activities';
 import { PointOfInterestSubtype, PointOfInterestType } from 'constants/pointsOfInterest';
 import { Feature } from 'geojson';
 

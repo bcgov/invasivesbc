@@ -1,23 +1,18 @@
-import { Capacitor } from '@capacitor/core';
 import { DeviceInfo } from '@capacitor/device';
-
 import { IonReactRouter } from '@ionic/react-router';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
-import { DatabaseChangesContextProvider } from './contexts/DatabaseChangesContext';
-import { DatabaseContext, DatabaseContextProvider, IDatabaseContext } from './contexts/DatabaseContext';
-import { DatabaseContext2Provider } from './contexts/DatabaseContext2';
-import { ThemeContextProvider } from './contexts/themeContext';
+import { KeycloakProvider } from '@react-keycloak/web';
+import { AuthStateContextProvider } from 'contexts/authStateContext';
 import { NetworkContextProvider } from 'contexts/NetworkContext';
 import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
 import React from 'react';
-import { KeycloakProvider } from '@react-keycloak/web';
-import CustomThemeProvider from './utils/CustomThemeProvider';
 import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
-
 import AppRouter from './AppRouter';
-import { AuthStateContextProvider } from 'contexts/authStateContext';
+import { DatabaseContextProvider } from './contexts/DatabaseContext';
+import { ThemeContextProvider } from './contexts/themeContext';
+import CustomThemeProvider from './utils/CustomThemeProvider';
 
 interface IAppProps {
   deviceInfo: DeviceInfo;
@@ -72,38 +67,17 @@ const App: React.FC<IAppProps> = (props) => {
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
       <NetworkContextProvider>
         <KeycloakProvider keycloak={keycloak} initConfig={keycloakConfig} onEvent={getKeycloakEventHandler(keycloak)}>
-          <DatabaseContext2Provider>
+          <DatabaseContextProvider>
             <AuthStateContextProvider>
               <ThemeContextProvider>
                 <CustomThemeProvider>
                   <IonReactRouter>
-                    <DatabaseContextProvider>
-                      <DatabaseContext.Consumer>
-                        {(databaseContext: IDatabaseContext) => {
-                          if (Capacitor.getPlatform() === 'ios') {
-                            return (
-                              <DatabaseChangesContextProvider>
-                                <AppRouter {...appRouterProps} />
-                              </DatabaseChangesContextProvider>
-                            );
-                          }
-                          if (databaseContext.database) {
-                            // database not ready, delay loading app
-                            return (
-                              <DatabaseChangesContextProvider>
-                                <AppRouter {...appRouterProps} />
-                              </DatabaseChangesContextProvider>
-                            );
-                          }
-                          return <CircularProgress />;
-                        }}
-                      </DatabaseContext.Consumer>
-                    </DatabaseContextProvider>
+                    <AppRouter {...appRouterProps} />
                   </IonReactRouter>
                 </CustomThemeProvider>
               </ThemeContextProvider>
             </AuthStateContextProvider>
-          </DatabaseContext2Provider>
+          </DatabaseContextProvider>
         </KeycloakProvider>
       </NetworkContextProvider>
     </Box>

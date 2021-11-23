@@ -1,11 +1,11 @@
-import L, { TileLayer as LeafletTileLayer, TileLayerOptions } from 'leaflet';
 import { createTileLayerComponent, LayerProps, updateGridLayer, withPane } from '@react-leaflet/core';
-import { isFilterSatisfied } from './AdditionalHelperFunctions';
 import geojsonvt from 'geojson-vt';
-
-(window as any).geojsonvt = geojsonvt;
+import L, { TileLayer as LeafletTileLayer, TileLayerOptions } from 'leaflet';
 // eslint-disable-next-line import/first
 import {} from 'leaflet-geojson-vt/src/leaflet-geojson-vt.js';
+import { isFilterSatisfied } from './AdditionalHelperFunctions';
+
+(window as any).geojsonvt = geojsonvt;
 
 export interface TileLayerProps extends TileLayerOptions, LayerProps {
   geoJSON: any;

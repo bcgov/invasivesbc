@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useMap, useMapEvent } from 'react-leaflet';
-import { createPolygonFromBounds } from './LtlngBoundsToPoly';
-import { GeoJSONVtLayer } from './GeoJsonVtLayer';
+import { DatabaseContext } from 'contexts/DatabaseContext';
 import SLDParser from 'geostyler-sld-parser';
-import { JurisdictionSLD } from '../SldStyles/jurisdiction_sld';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+import React, { useContext, useState } from 'react';
+import { useMap, useMapEvent } from 'react-leaflet';
+import { JurisdictionSLD } from '../SldStyles/jurisdiction_sld';
+import { GeoJSONVtLayer } from './GeoJsonVtLayer';
+import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export const JurisdictionsLayer = (props) => {
   const map = useMap();
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
   const [jurisdictions, setJurisdictions] = useState(null);
   const dataAccess = useDataAccess();
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const [options, setOptions] = useState({
     maxZoom: 24,
     tolerance: 3,

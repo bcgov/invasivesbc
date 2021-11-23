@@ -1,10 +1,7 @@
 import { Input, makeStyles } from '@material-ui/core';
-import Spinner from 'components/spinner/Spinner';
 import { DocType } from 'constants/database';
-import { DatabaseChangesContext } from 'contexts/DatabaseChangesContext';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext2';
-import React, { useContext, useEffect, useState } from 'react';
-import { useCallback } from 'react';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from 'contexts/DatabaseContext';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   status: {}
@@ -15,7 +12,7 @@ export interface ITripNamer {
 }
 
 export const TripNamer: React.FC<ITripNamer> = (props) => {
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const [name, setName] = useState(null);
 
   const getNameFromTrip = useCallback(async () => {

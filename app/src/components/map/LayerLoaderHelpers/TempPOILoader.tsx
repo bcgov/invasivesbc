@@ -1,22 +1,13 @@
 import { Feature, GeoJsonObject } from 'geojson';
 import { useDataAccess } from 'hooks/useDataAccess';
 import { IPointOfInterestSearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import React, { useEffect, useState } from 'react';
-import MarkerClusterGroup from 'react-leaflet-cluster';
-import {
-  GeoJSON,
-  MapContainer,
-  TileLayer,
-  LayersControl,
-  Marker,
-  useMap,
-  FeatureGroup,
-  useMapEvent
-} from 'react-leaflet';
 import * as L from 'leaflet';
-
+import React, { useEffect, useState } from 'react';
+import { Marker, useMapEvent } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import IAPPSiteMarker from '../Icons/pinned.png';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
+
 var IAPPSite = L.icon({
   iconUrl: IAPPSiteMarker,
   //shadowUrl: 'leaf-shadow.png',

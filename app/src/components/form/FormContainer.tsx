@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import {
   Box,
   Button,
@@ -14,13 +15,11 @@ import {
 } from '@material-ui/core';
 import { ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
-import { Capacitor } from '@capacitor/core';
-import { ActivitySyncStatus, ActivityMonitoringLinks } from '../../constants/activities';
+import React, { useContext, useEffect, useState } from 'react';
+import { ActivityMonitoringLinks, ActivitySyncStatus } from '../../constants/activities';
 import { SelectAutoCompleteContextProvider } from '../../contexts/SelectAutoCompleteContext';
 import { ThemeContext } from '../../contexts/themeContext';
-import { getShortActivityID } from '../../utils/addActivity';
 import { useDataAccess } from '../../hooks/useDataAccess';
-import React, { useContext, useEffect, useState } from 'react';
 import ArrayFieldTemplate from '../../rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from '../../rjsf/templates/FieldTemplate';
 import ObjectFieldTemplate from '../../rjsf/templates/ObjectFieldTemplate';
@@ -28,6 +27,7 @@ import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
 import MultiSelectAutoComplete from '../../rjsf/widgets/MultiSelectAutoComplete';
 import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from '../../themes/rjsfTheme';
+import { getShortActivityID } from '../../utils/addActivity';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
 import ChemicalTreatmentSpeciesForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import { ChemicalTreatmentDetailsContextProvider } from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';

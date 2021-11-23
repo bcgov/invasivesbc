@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState } from 'react';
-import { useMap, GeoJSON, Circle } from 'react-leaflet';
 import bbox from '@turf/bbox';
-import union from '@turf/union';
 import buffer from '@turf/buffer';
 import circle from '@turf/circle';
 import { BBox, Geometries } from '@turf/turf';
-import L, { LatLngBoundsExpression, LatLngExpression } from 'leaflet';
-import { createPolygonFromBounds2 } from '../LayerLoaderHelpers/LtlngBoundsToPoly';
+import union from '@turf/union';
+import L, { LatLngExpression } from 'leaflet';
+import React, { createContext, useContext, useState } from 'react';
+import { GeoJSON, useMap } from 'react-leaflet';
+import { createPolygonFromBounds2 } from '../../../LayerLoaderHelpers/LtlngBoundsToPoly';
 
 export const FlyToAndFadeContext = createContext({
   go: (input: any) => {}
@@ -64,7 +64,7 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
               }
             });
             var geosAsOne = union(...reprocessedForCircles);
-            var buffered = buffer(geosAsOne, 100);
+            var buffered = buffer(geosAsOne, 25);
             var aBbox = bbox(buffered);
 
             //@#$%'n circles again:

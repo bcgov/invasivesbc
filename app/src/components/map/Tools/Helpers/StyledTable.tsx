@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useContext } from 'react';
 import {
   Button,
   ClickAwayListener,
@@ -14,16 +13,17 @@ import {
   Theme,
   Tooltip
 } from '@material-ui/core';
-import { createStyles, withStyles } from '@material-ui/styles';
 import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
-import { useHistory } from 'react-router-dom';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
-import { useDataAccess } from 'hooks/useDataAccess';
-import { ActivitySubtypeShortLabels } from 'constants/activities';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import { createStyles, withStyles } from '@material-ui/styles';
 import * as turf from '@turf/turf';
+import { ActivitySubtypeShortLabels } from 'constants/activities';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { useDataAccess } from 'hooks/useDataAccess';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 const CreateTableHead = ({ labels }) => {
   return (
@@ -277,7 +277,7 @@ export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [emptyRows, setEmptyRows] = useState(0);
   const [page, setPage] = useState(0);
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const history = useHistory();
 
