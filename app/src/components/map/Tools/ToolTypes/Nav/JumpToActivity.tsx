@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { IconButton } from '@material-ui/core';
+import { IconButton, Typography } from '@material-ui/core';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ThemeContext } from 'contexts/themeContext';
@@ -106,6 +106,7 @@ export const JumpToActivity = (props) => {
           onClick={jump}
           disabled={!props.id || !IFlyToAndFadeItems[0]}>
           <KeyboardReturnIcon />
+          <Typography className={toolClass.Font}>Show Record</Typography>
         </IconButton>
       )}
     </>

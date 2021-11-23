@@ -64,7 +64,7 @@ export const FlyToAndFadeContextProvider: React.FC = (props) => {
               }
             });
             var geosAsOne = union(...reprocessedForCircles);
-            var buffered = buffer(geosAsOne, 100);
+            var buffered = buffer(geosAsOne, 25);
             var aBbox = bbox(buffered);
 
             //@#$%'n circles again:
