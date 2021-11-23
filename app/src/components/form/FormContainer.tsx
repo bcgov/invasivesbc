@@ -29,6 +29,8 @@ import MultiSelectAutoComplete from '../../rjsf/widgets/MultiSelectAutoComplete'
 import SingleSelectAutoComplete from '../../rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from '../../themes/rjsfTheme';
 import FormControlsComponent, { IFormControlsComponentProps } from './FormControlsComponent';
+import ChemicalTreatmentSpeciesForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
+import { ChemicalTreatmentDetailsContextProvider } from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
 // import './aditionalFormStyles.css';
 export interface IFormContainerProps extends IFormControlsComponentProps {
   classes?: any;
@@ -135,12 +137,23 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     } else if (args[0].includes('root_activity_data_')) {
       argumentFieldName = 'root_activity_data_';
     }
-    if (args[0].includes('herbicide_information_application_rate')) {
+    if (args[0].includes('application_rate')) {
       argumentFieldName = 'application_rate';
     }
     let fieldName = argumentFieldName ? args[0].substr(argumentFieldName.length) : args[0]; // else use the full arg name
 
     return fieldName;
+  };
+
+  const isActivityChemTreatment = () => {
+    if (
+      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlant' ||
+      props.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic' ||
+      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlant' ||
+      props.activity.activitySubtype === 'Activity_Treatment_ChemicalPlantAquatic'
+    ) {
+      return true;
+    }
   };
 
   //herlper function to get the path to the field in an oject.
@@ -387,6 +400,14 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               }}>
               <React.Fragment />
             </Form>
+
+            {isActivityChemTreatment() && (
+              <ChemicalTreatmentSpeciesForm
+                onChange={props.onFormChange}
+                formData={props.activity?.formData || null}
+                schema={schemas.schema}
+              />
+            )}
           </>
         </SelectAutoCompleteContextProvider>
       </ThemeProvider>

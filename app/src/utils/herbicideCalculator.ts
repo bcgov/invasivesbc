@@ -1,10 +1,3 @@
-export const isWeedPoison = (input: string) => {
-  if (String.length > 10) {
-    return true;
-  }
-  return false;
-};
-
 /**
  * ------------------- GENERAL INFO on function names ----------------------------
  *  sSpecie = single specie
@@ -23,8 +16,137 @@ export const isWeedPoison = (input: string) => {
  * -------------------------------------------------------------------------------
  */
 
-export const parseToRightFormat = (value: number) => {
-  return Number(value.toFixed(4));
+import { IGeneralFields, IHerbicide, IInvasivePlant } from 'components/form/ChemicalTreatmentDetailsForm/Models';
+
+//chooses the scenario based on the values in the form
+export const performCalculation = (area: number, formData: IGeneralFields, businessCodes: any): IGeneralFields => {
+  const {
+    tank_mix,
+    herbicides,
+    tank_mix_object,
+    invasive_plants,
+    chemical_application_method,
+    chemical_application_method_type
+  } = formData;
+
+  let calculationResults = {};
+
+  if (tank_mix === false) {
+    console.log('false tank mix');
+    if (chemical_application_method_type === 'spray') {
+      console.log('spray chem app method');
+      //single herb single inv plant
+      if (herbicides.length < 2 && invasive_plants.length < 2) {
+        console.log('single herb and inv plant');
+        if (herbicides[0].herbicide_type_code === 'L') {
+          console.log('liquid herb');
+          if (herbicides[0].calculation_type === 'PAR') {
+            console.log('par calc type');
+            calculationResults = sSpecie_sLHerb_spray_usingProdAppRate(
+              area,
+              herbicides[0].product_application_rate,
+              herbicides[0].amount_of_mix,
+              herbicides[0].delivery_rate_of_mix
+            );
+          }
+          if (herbicides[0].calculation_type === 'D') {
+            console.log('D calc type');
+            calculationResults = sSpecie_sLHerb_spray_usingDilutionPercent(
+              area,
+              herbicides[0].amount_of_mix,
+              herbicides[0].dilution,
+              herbicides[0].area_treated_sqm
+            );
+          }
+        }
+      }
+      //single herb multiple (>2) inv plants
+      else if (herbicides.length < 2 && invasive_plants.length > 2) {
+        console.log('single herb and >2 plants');
+        console.log(herbicides[0]);
+        if (herbicides[0].herbicide_type_code === 'L') {
+          if (herbicides[0].calculation_type === 'PAR') {
+            const percentages_of_treatment_on_species = [];
+            invasive_plants.forEach((plant) => {
+              percentages_of_treatment_on_species.push(plant.percent_area_covered);
+            });
+
+            calculationResults = mSpecie_sLHerb_spray_usingProdAppRate(
+              area,
+              herbicides[0].product_application_rate,
+              herbicides[0].amount_of_mix,
+              herbicides[0].delivery_rate_of_mix,
+              percentages_of_treatment_on_species
+            );
+          }
+        }
+      }
+      //single herb multiple inv plants
+      else if (herbicides.length < 2 && invasive_plants.length > 1) {
+        console.log('single herb and >1 plant');
+        if (herbicides[0].herbicide_type_code === 'L') {
+          console.log('liquid herb');
+          if (herbicides[0].calculation_type === 'D') {
+            console.log('D calc type');
+            const percentages_of_treatment_on_species = [];
+            invasive_plants.forEach((plant) => {
+              percentages_of_treatment_on_species.push(plant.percent_area_covered);
+            });
+            calculationResults = mSpecie_sLHerb_spray_usingDilutionPercent(
+              area,
+              herbicides[0].amount_of_mix,
+              herbicides[0].dilution,
+              herbicides[0].area_treated_sqm,
+              percentages_of_treatment_on_species
+            );
+          }
+        } else if (herbicides[0].herbicide_type_code === 'G') {
+          console.log('granular herb');
+          if (herbicides[0].calculation_type === 'PAR') {
+            console.log('PAR calc type');
+            calculationResults = sSpecie_sGHerb_spray_usingProdAppRate(
+              area,
+              herbicides[0].product_application_rate,
+              herbicides[0].amount_of_mix,
+              herbicides[0].delivery_rate_of_mix
+            );
+          } else if (herbicides[0].calculation_type === 'D') {
+            console.log('D calc type');
+            calculationResults = sSpecie_sGHerb_spray_usingDilutionPercent(
+              area,
+              herbicides[0].amount_of_mix,
+              herbicides[0].dilution,
+              herbicides[0].area_treated_sqm
+            );
+          }
+        }
+      }
+    }
+    if (chemical_application_method_type === 'direct') {
+      console.log('direct chem app method');
+      if (herbicides.length < 2 && invasive_plants.length < 2) {
+        if (herbicides[0].herbicide_type_code === 'L') {
+          if (herbicides[0].calculation_type === 'D') {
+            calculationResults = sSpecie_sLHerb_direct_usingDilutionPercent(
+              area,
+              herbicides[0].amount_of_mix,
+              herbicides[0].dilution,
+              herbicides[0].area_treated_sqm
+            );
+          }
+        }
+      }
+    }
+  } else if (tank_mix === true) {
+    calculationResults = mSpecie_mLGHerb_spray_usingProdAppRate(
+      area,
+      tank_mix_object.amount_of_mix,
+      tank_mix_object.delivery_rate_of_mix,
+      invasive_plants,
+      tank_mix_object.herbicides
+    );
+  }
+  return { ...calculationResults };
 };
 
 /**
@@ -383,25 +505,12 @@ export const sSpecie_sLHerb_direct_usingDilutionPercent = (
  * @return { ISpecie[] } species
  */
 
-export interface IHerbicide {
-  product_application_rate_lha: number;
-  dilution: number;
-  amount_of_undiluted_herbicide_used: number;
-}
-export interface ISpecie {
-  herbicides: IHerbicide[];
-  area_of_specie: number;
-  area_treated_ha: number;
-  area_treated_sqm: number;
-  percent_area_covered: number;
-  amount_of_mix_used: number;
-}
-
 export const mSpecie_mLGHerb_spray_usingProdAppRate = (
   area: number,
   amount_of_mix: number,
   delivery_rate_of_mix: number,
-  species: ISpecie[]
+  species: IInvasivePlant[],
+  herbicides: IHerbicide[]
 ) => {
   let resultObj = {};
 
@@ -409,44 +518,45 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
     return resultObj;
   }
 
-  const newSpecies = species.map((specie) => {
-    if (!specie.herbicides || specie.herbicides.length < 2) {
-      return {};
-    }
-    const newSpecie = { ...specie };
-    newSpecie.amount_of_mix_used = amount_of_mix * (specie.area_of_specie / 100);
-    newSpecie.area_treated_ha = (amount_of_mix / delivery_rate_of_mix) * (specie.area_of_specie / 100);
-    newSpecie.area_treated_sqm = newSpecie.area_treated_ha * 10000;
-    newSpecie.percent_area_covered = (newSpecie.area_treated_sqm / area) * 100;
+  let outputInvPlantsArr = [];
 
-    const newHerbArr: any[] = newSpecie.herbicides.map((herb) => {
-      if (!herb.product_application_rate_lha) {
-        return {};
-      }
-      const newHerbicide = { ...herb };
-      newHerbicide.dilution = (herb.product_application_rate_lha / delivery_rate_of_mix) * 100;
-      newHerbicide.amount_of_undiluted_herbicide_used =
-        ((newHerbicide.dilution / 100) * amount_of_mix * specie.area_of_specie) / 100;
+  species.forEach((specie, plant_index) => {
+    let outputSpecie: any = {};
 
-      newHerbicide.dilution = parseToRightFormat(newHerbicide.dilution);
-      newHerbicide.amount_of_undiluted_herbicide_used = parseToRightFormat(
-        newHerbicide.amount_of_undiluted_herbicide_used
-      );
+    outputSpecie.amount_of_mix_used = amount_of_mix * (specie.percent_area_covered / 100);
+    outputSpecie.area_treated_ha = (amount_of_mix / delivery_rate_of_mix) * (specie.percent_area_covered / 100);
+    outputSpecie.area_treated_sqm = outputSpecie.area_treated_ha * 10000;
+    outputSpecie.percent_area_covered = (outputSpecie.area_treated_sqm / area) * 100;
 
-      return newHerbicide;
+    outputSpecie.herbicides = [];
+
+    herbicides.forEach((herb, index) => {
+      let outputHerb: any = {};
+
+      outputHerb.dilution = (herbicides[index].product_application_rate / delivery_rate_of_mix) * 100;
+      outputHerb.amount_of_undiluted_herbicide_used =
+        ((outputHerb.dilution / 100) * amount_of_mix * specie.percent_area_covered) / 100;
+
+      outputHerb.dilution = parseToRightFormat(outputHerb.dilution);
+      outputHerb.amount_of_undiluted_herbicide_used = parseToRightFormat(outputHerb.amount_of_undiluted_herbicide_used);
+
+      outputSpecie.herbicides.push(outputHerb);
     });
 
-    newSpecie.herbicides = [...newHerbArr];
-    newSpecie.amount_of_mix_used = parseToRightFormat(newSpecie.amount_of_mix_used);
-    newSpecie.area_treated_ha = parseToRightFormat(newSpecie.area_treated_ha);
-    newSpecie.area_treated_sqm = parseToRightFormat(newSpecie.area_treated_sqm);
-    newSpecie.percent_area_covered = parseToRightFormat(newSpecie.percent_area_covered);
-    return newSpecie;
+    outputSpecie.amount_of_mix_used = parseToRightFormat(outputSpecie.amount_of_mix_used);
+    outputSpecie.area_treated_ha = parseToRightFormat(outputSpecie.area_treated_ha);
+    outputSpecie.area_treated_sqm = parseToRightFormat(outputSpecie.area_treated_sqm);
+    outputSpecie.percent_area_covered = parseToRightFormat(outputSpecie.percent_area_covered);
+
+    outputInvPlantsArr.push(outputSpecie);
   });
 
-  return newSpecies;
+  return { invasive_plants: [...outputInvPlantsArr] };
 };
 
 /**
  * ------------------------Helper Functions-----------------------------------
  */
+export const parseToRightFormat = (value: number) => {
+  return Number(value.toFixed(4));
+};

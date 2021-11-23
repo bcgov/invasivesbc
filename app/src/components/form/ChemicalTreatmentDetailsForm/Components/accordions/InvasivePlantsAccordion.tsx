@@ -1,0 +1,72 @@
+import React, { useContext } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {
+  Accordion,
+  AccordionSummary,
+  Typography,
+  AccordionDetails,
+  Box,
+  Button,
+  Theme,
+  makeStyles
+} from '@material-ui/core';
+import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
+import AddIcon from '@mui/icons-material/Add';
+import InvasivePlant from '../single-objects/InvasivePlant';
+import { useFormStyles } from '../../formStyles';
+
+const InvasivePlantsAccordion = () => {
+  const formDataContext = useContext(ChemicalTreatmentDetailsContext);
+  const { formDetails, setFormDetails } = formDataContext;
+
+  const classes = useFormStyles();
+
+  return (
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="species-content" id="species-header">
+        <Typography
+          style={{ width: '33%', flexShrink: 0 }}
+          // color={invasivePlantsArrErrors?.length > 0 ? 'error' : 'textPrimary'}
+          variant="h5">
+          Species
+        </Typography>
+        {/* <Typography variant="body2" color={'error'}>
+              {invasivePlantsArrErrors?.length > 0 && invasivePlantsArrErrors[0]}
+            </Typography> */}
+      </AccordionSummary>
+      <AccordionDetails>
+        <Box className={classes.accordionBody}>
+          <Box component="div" className={classes.centerBox}>
+            <Button
+              onClick={() => {
+                setFormDetails((prevDetails) => {
+                  const newSpeciesArr = [...prevDetails.formData.invasive_plants];
+                  newSpeciesArr.push({ invasive_plant_code: null });
+                  return {
+                    ...prevDetails,
+                    formData: {
+                      ...prevDetails.formData,
+                      invasive_plants: newSpeciesArr
+                    }
+                  };
+                });
+              }}
+              variant="contained"
+              startIcon={<AddIcon />}
+              color="primary">
+              Add Specie
+            </Button>
+          </Box>
+
+          <Box component="div" className={classes.listContainer}>
+            {formDetails.formData.invasive_plants.map((species, index) => {
+              return <InvasivePlant species={species} key={index} index={index} classes={classes} />;
+            })}
+          </Box>
+        </Box>
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
+export default InvasivePlantsAccordion;
