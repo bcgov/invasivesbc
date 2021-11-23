@@ -6,10 +6,10 @@ import L from 'leaflet';
 import proj4 from 'proj4';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { GeoJSON, Marker, Tooltip } from 'react-leaflet';
-import marker from '../../../Icons/POImarker.png';
 import { createDataUTM } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
-import { GeneratePopup } from '../Data/InfoAreaDescription';
+import { generateGeo, GeneratePopup } from '../Data/InfoAreaDescription';
+import marker from '../Icons/POImarker.png';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -51,9 +51,18 @@ export default function DisplayPosition({ map }) {
   const [activityGeo, setActivityGeo] = useState(null);
   const [poiMarker, setPoiMarker] = useState(null);
   const [startTimer, setStartTimer] = useState(false);
+  const [geoPoint, setGeoPoint] = useState(null);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
+  const [key] = useState(Math.random()); // NOSONAR
   const divRef = useRef(null);
+
+  useEffect(() => {
+    if (newPosition) {
+      console.log(newPosition.coords);
+      generateGeo(newPosition.coords.latitude, newPosition.coords.longitude, { setGeoPoint });
+    }
+  }, [newPosition]);
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
@@ -107,8 +116,8 @@ export default function DisplayPosition({ map }) {
           </Tooltip>
         </Marker>
       )}
-      {newPosition && (
-        <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
+      {geoPoint && (
+        <GeoJSON data={geoPoint} key={key}>
           <GeneratePopup
             utmRows={rows}
             map={map}
@@ -117,7 +126,7 @@ export default function DisplayPosition({ map }) {
             setPoiMarker={setPoiMarker}
             setActivityGeo={setActivityGeo}
           />
-        </Marker>
+        </GeoJSON>
       )}
       <IconButton
         ref={divRef}

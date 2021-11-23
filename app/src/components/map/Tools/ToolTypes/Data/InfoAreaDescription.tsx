@@ -40,11 +40,11 @@ import {
 // App Imports
 import { calc_utm } from '../Nav/DisplayPosition';
 
-export const generateGeo = (map, lat, lng, { setGeoPoint }) => {
+export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
+    console.log('latlng', lat, lng);
     var point = turf.point([lng, lat]);
     var buffer = turf.buffer(point, 50, { units: 'meters' });
-    map.flyTo([lat, lng], 15);
     setGeoPoint(buffer);
   }
 };
@@ -296,13 +296,14 @@ function SetPointOnClick({ map }: any) {
   useMapEvent('click', (e) => {
     if (clickMode) {
       setPosition(e.latlng);
+      map.flyTo(e.latlng, 15);
     }
   });
 
   useEffect(() => {
     if (isFinite(position?.lng) && isFinite(position?.lat) && clickMode) {
       setUTM(calc_utm(position?.lng as number, position?.lat as number));
-      generateGeo(map, position.lat, position.lng, { setGeoPoint });
+      generateGeo(position.lat, position.lng, { setGeoPoint });
     }
   }, [position]);
 
