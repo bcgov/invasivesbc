@@ -206,7 +206,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       zoom={5 /* was mapZoom */}
       bounceAtZoomLimits={true}
       maxZoom={mapMaxZoom}
-      //maxZoom={25}
+      minZoom={6}
       style={{ height: 'calc(100% - 20px)', width: '100%' }}
       zoomControl={false}
       whenCreated={setMap}
