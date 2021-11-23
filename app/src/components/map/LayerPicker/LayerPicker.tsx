@@ -51,35 +51,17 @@ import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers'
 import { addOrRemoveLayer, LayersSelector, updateLayer } from './LayersSelectorAndRender';
 import { ThemeContext } from 'contexts/themeContext';
 
-const sortLayers = (layers, oldIndex, newIndex) => {
-  let returnVal = [];
-  if (newIndex > oldIndex) {
-    let layersBefore = getObjectsBeforeIndex(layers, oldIndex);
-    let loopIndex = oldIndex + 1;
-    let inBetween = [];
-    while (loopIndex < newIndex) {
-      let obj = getParentByOrder(layers, loopIndex);
-      obj.order = obj.order - 1;
-      inBetween.push({ ...obj });
-      loopIndex = loopIndex + 1;
-    }
-    let objWeMoved = getParentByOrder(layers, oldIndex);
-    let objWeSwapped = getParentByOrder(layers, newIndex);
-    objWeSwapped = newIndex - 1;
-
-    let parentsAfter = getObjectsAfterIndex(layers, newIndex);
-    const newState = [...layersBefore, ...inBetween, objWeSwapped, objWeMoved, ...parentsAfter];
-    returnVal = newState;
-  } else if (newIndex < oldIndex) {
-    let layersBefore = getObjectsBeforeIndex(layers, oldIndex);
-    let loopIndex = newIndex + 1;
-    let inBetween = [];
-    while (loopIndex < oldIndex) {
-      let obj = getParentByOrder(layers, loopIndex);
-      obj.order = obj.order + 1;
-      inBetween.push({ ...obj });
+const sortLayers = (layers, objectState) => {
+  let returnVal = layers;
+  for (let parent of objectState) {
+    for (let layer of returnVal) {
+      if (parent.id === layer.parent_id && parent.order !== layer.order) {
+        layer.order = parent.order;
+      }
     }
   }
+
+  return sortArray(returnVal);
 };
 
 export const updateChild = (
@@ -124,10 +106,8 @@ export function LayerPicker(props: any) {
   const divref = useRef();
 
   useEffect(() => {
-    if (newLayers) {
-      newLayers.forEach((layer) => {
-        console.log(layer.id, layer.order);
-      });
+    for (let layer of newLayers) {
+      console.log(layer.id, layer.order);
     }
   }, [newLayers]);
 
@@ -198,10 +178,10 @@ export function LayerPicker(props: any) {
           id="parent-accordion"
           expanded={parent.expanded}
           onChange={onParentLayerAccordionChange}
-          className={classes.accordion}>
+          style={{ width: '100%' }}>
           <Grid id="accordion-grid" container style={{ marginTop: -10, marginBottom: -10 }} alignItems="center" xs={12}>
             <Grid id="accordion-summary" item xs={10}>
-              <AccordionSummary className={classes.heading}>
+              <AccordionSummary>
                 <Typography variant="subtitle1">{parent.name}</Typography>
               </AccordionSummary>
             </Grid>
@@ -338,8 +318,13 @@ export function LayerPicker(props: any) {
 
   const onSortEnd = ({ oldIndex, newIndex }: any) => {
     const returnVal = sortObject(objectState, oldIndex, newIndex);
-
+    const returnLayers = sortLayers(newLayers, returnVal);
+    console.log('=============');
+    for (let layer of returnLayers) {
+      console.log(layer.id, layer.order);
+    }
     setObjectState(returnVal);
+    setNewLayers(returnLayers);
   };
 
   return (

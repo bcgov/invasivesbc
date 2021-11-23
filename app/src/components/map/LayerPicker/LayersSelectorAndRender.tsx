@@ -10,7 +10,7 @@ import {
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
 import { updateChild } from './LayerPicker';
-import { getChild } from './SortLayerOrder';
+import { getChild, sortArray } from './SortLayerOrder';
 
 const getIndex = (childId, layers) => {
   var index = -1;
@@ -31,11 +31,14 @@ export const updateLayer = (fieldsToUpdate, layers, setLayers, childId) => {
     var layersAfter = [...layers.slice(index)];
     var updatedLayer = { ...oldLayer, ...fieldsToUpdate };
     layersAfter[0] = updatedLayer;
-    setLayers([...layersBefore, ...layersAfter]);
+    const returnVal = [...layersBefore, ...layersAfter];
+
+    setLayers(sortArray(layers));
   }
 };
 
 export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
+  var returnLayers = [];
   if (child.enabled) {
     var index = getIndex(child.id, layers);
     if (index > -1) {
@@ -47,7 +50,7 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
     }
   } else if (!child.enabled) {
     if (child.layer_mode) {
-      setLayers([
+      returnLayers = [
         ...layers,
         {
           color_code: child.color_code,
@@ -58,10 +61,11 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
           order: parent.order,
           parent_id: parent.id
         }
-      ]);
+      ];
+      setLayers(sortArray(returnLayers));
     }
     if (child.bcgw_code) {
-      setLayers([
+      returnLayers = [
         ...layers,
         {
           bcgw_code: child.bcgw_code,
@@ -72,10 +76,10 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
           order: parent.order,
           parent_id: parent.id
         }
-      ]);
+      ];
+      setLayers(sortArray(returnLayers));
     }
   }
-  console.log('unsorted', layers);
 };
 
 export const LayersSelector = ({ parent, child, objectState, setObjectState, layers, setLayers }) => {
