@@ -9,9 +9,11 @@ import {
   ListItemText,
   Radio,
   RadioGroup,
+  Tooltip,
   Typography
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import CustomAutoComplete from './CustomAutoComplete';
 import {
   ChemicalTreatmentDetailsContextProvider,
@@ -220,6 +222,12 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
           <Box className={classes.generalFieldsContainer}>
             <Box className={classes.generalFieldColumn}>
+              <Tooltip
+                style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+                placement="left"
+                title="Check if there is a mix of herbicides in the tank">
+                <HelpOutlineIcon />
+              </Tooltip>
               <FormLabel className={classes.formLabel} component="legend">
                 Tank Mix
               </FormLabel>
@@ -236,6 +244,12 @@ const ChemicalTreatmentDetailsForm = (props) => {
               </RadioGroup>
             </Box>
             <Box className={classes.generalFieldColumn}>
+              <Tooltip
+                style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+                placement="left"
+                title="Choose treatment application method">
+                <HelpOutlineIcon />
+              </Tooltip>
               <CustomAutoComplete
                 choices={chemicalApplicationMethodChoices}
                 className={null}

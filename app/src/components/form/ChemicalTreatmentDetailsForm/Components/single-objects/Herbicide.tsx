@@ -1,9 +1,10 @@
-import { Typography, Box, Button, TextField } from '@material-ui/core';
+import { Typography, Box, Button, TextField, Tooltip } from '@material-ui/core';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useContext, useEffect, useState } from 'react';
 import { IHerbicide } from '../../Models';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export interface IHerbicideComponent {
   herbicide: any;
@@ -128,6 +129,12 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             : `Herbicide #${index + 1}`}
         </Typography>
 
+        <Tooltip
+          style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+          placement="left"
+          title="Choose whether the herbicide being used is liquid or granular">
+          <HelpOutlineIcon />
+        </Tooltip>
         <CustomAutoComplete
           choices={herbicideTypeChoices}
           className={'inputField'}
@@ -148,6 +155,12 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
           }}
         />
 
+        <Tooltip
+          style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+          placement="left"
+          title="Choose which herbicide you are using">
+          <HelpOutlineIcon />
+        </Tooltip>
         <CustomAutoComplete
           choices={herbicideChoices}
           className={'inputField'}
@@ -167,69 +180,99 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
         />
 
         {!tankMixOn && (
-          <CustomAutoComplete
-            choices={calculationTypeChoices}
-            className={'inputField'}
-            classes={classes}
-            id={'calculation_type'}
-            label={'Calculation Type'}
-            actualValue={herbicide.calculation_type}
-            parentState={{ herbicide, setCurrentHerbicide }}
-            onChange={(event, value) => {
-              if (value === null) {
-                return;
-              }
-              setCurrentHerbicide((prevHerbicide) => {
-                return { ...prevHerbicide, calculation_type: (value as any).value };
-              });
-            }}
-          />
+          <>
+            <Tooltip
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              placement="left"
+              title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution. Expressed as the percent of herbicide in the solution. Example: 25% = 25% herbicide concentrate in the treatment solution. See spreadsheet for where this field should go.">
+              <HelpOutlineIcon />
+            </Tooltip>
+            <CustomAutoComplete
+              choices={calculationTypeChoices}
+              className={'inputField'}
+              classes={classes}
+              id={'calculation_type'}
+              label={'Calculation Type'}
+              actualValue={herbicide.calculation_type}
+              parentState={{ herbicide, setCurrentHerbicide }}
+              onChange={(event, value) => {
+                if (value === null) {
+                  return;
+                }
+                setCurrentHerbicide((prevHerbicide) => {
+                  return { ...prevHerbicide, calculation_type: (value as any).value };
+                });
+              }}
+            />
+          </>
         )}
 
         {tankMixOn && (
-          <TextField
-            className={classes.inputField}
-            type="number"
-            // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
-            label="Product Application Rate (l/ha)"
-            // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
-            value={herbicide?.product_application_rate || ''}
-            variant="outlined"
-            onChange={(event) => {
-              if (event.target.value === null) {
-                return;
-              }
-              setCurrentHerbicide((prevFields) => ({
-                ...prevFields,
-                product_application_rate: Number(event.target.value)
-              }));
-            }}
-            defaultValue={undefined}
-          />
+          <>
+            <Tooltip
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              placement="left"
+              title="Recommended label rate for herbicide (L/ha) used for this treatment">
+              <HelpOutlineIcon />
+            </Tooltip>
+            <TextField
+              className={classes.inputField}
+              type="number"
+              // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
+              label="Product Application Rate (l/ha)"
+              // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
+              value={herbicide?.product_application_rate || ''}
+              variant="outlined"
+              onChange={(event) => {
+                if (event.target.value === null) {
+                  return;
+                }
+                setCurrentHerbicide((prevFields) => ({
+                  ...prevFields,
+                  product_application_rate: Number(event.target.value)
+                }));
+              }}
+              defaultValue={undefined}
+            />
+          </>
         )}
 
         {!tankMixOn && (
-          <TextField
-            className={classes.inputField}
-            type="number"
-            label="Amount of Mix Used"
-            value={herbicide?.amount_of_mix || ''}
-            variant="outlined"
-            onChange={(event) => {
-              if (event.target.value === null) {
-                return;
-              }
-              setCurrentHerbicide((prevFields) => ({
-                ...prevFields,
-                amount_of_mix: Number(event.target.value)
-              }));
-            }}
-            defaultValue={undefined}
-          />
+          <>
+            <Tooltip
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              placement="left"
+              title="Volume in litres (ie 5.1 L) of herbicide and water mix">
+              <HelpOutlineIcon />
+            </Tooltip>
+            <TextField
+              className={classes.inputField}
+              type="number"
+              label="Amount of Mix Used"
+              value={herbicide?.amount_of_mix || ''}
+              variant="outlined"
+              onChange={(event) => {
+                if (event.target.value === null) {
+                  return;
+                }
+                setCurrentHerbicide((prevFields) => ({
+                  ...prevFields,
+                  amount_of_mix: Number(event.target.value)
+                }));
+              }}
+              defaultValue={undefined}
+            />
+          </>
         )}
 
         {!tankMixOn && currentHerbicide?.calculation_type === 'D' ? (
           <>
+            <Tooltip
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              placement="left"
+              title="Percent (%) of product in the mix">
+              <HelpOutlineIcon />
+            </Tooltip>
             <TextField
               className={classes.inputField}
               type="number"
@@ -248,6 +291,12 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               defaultValue={undefined}
             />
 
+            <Tooltip
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              placement="left"
+              title="Area Treated in square meters">
+              <HelpOutlineIcon />
+            </Tooltip>
             <TextField
               className={classes.inputField}
               type="number"
@@ -268,6 +317,12 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
           </>
         ) : !tankMixOn && currentHerbicide?.calculation_type === 'PAR' ? (
           <>
+            <Tooltip
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              placement="left"
+              title="Calibrated delivery rate of the device used to apply herbicide in L/ha">
+              <HelpOutlineIcon />
+            </Tooltip>
             <TextField
               className={classes.inputField}
               type="number"
@@ -286,6 +341,12 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               defaultValue={undefined}
             />
 
+            <Tooltip
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              placement="left"
+              title="Recommended label rate for herbicide (L/ha) used for this treatment">
+              <HelpOutlineIcon />
+            </Tooltip>
             <TextField
               className={classes.inputField}
               type="number"
