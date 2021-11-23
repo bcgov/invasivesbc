@@ -303,13 +303,15 @@ function SetPointOnClick({ map }: any) {
   });
 
   useMapEvent('click', (e) => {
-    if (clickMode) setPosition(e.latlng);
+    if (clickMode) {
+      setPosition(e.latlng);
+    }
   });
 
   useEffect(() => {
     if (isFinite(position?.lng) && isFinite(position?.lat) && clickMode) {
       setUTM(calc_utm(position?.lng as number, position?.lat as number));
-      generateGeo(position.lat, position.lng, { setGeoPoint });
+      // generateGeo(position.lat, position.lng, { setGeoPoint });
     }
   }, [position]);
 
@@ -363,7 +365,7 @@ function SetPointOnClick({ map }: any) {
         <Typography className={toolClass.Font}>What's here?</Typography>
       </IconButton>
       {utm && (
-        <GeoJSON data={geoPoint} key={Math.random()}>
+        <Marker position={[position.lat, position.lng]} icon={markerIcon} key={Math.random()}>
           <GeneratePopup
             utmRows={rows}
             map={map}
@@ -372,7 +374,7 @@ function SetPointOnClick({ map }: any) {
             setPoiMarker={setPoiMarker}
             setActivityGeo={setActivityGeo}
           />
-        </GeoJSON>
+        </Marker>
       )}
     </>
   );

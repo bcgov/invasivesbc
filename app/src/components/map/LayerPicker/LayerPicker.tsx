@@ -99,7 +99,6 @@ export function LayerPicker(props: any) {
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const [objectState, setObjectState] = useState(layersSelected);
   const [newLayers, setNewLayers] = useState([]);
-  const classes = layerPickerStyles();
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;

@@ -33,7 +33,7 @@ export const updateLayer = (fieldsToUpdate, layers, setLayers, childId) => {
     layersAfter[0] = updatedLayer;
     const returnVal = [...layersBefore, ...layersAfter];
 
-    setLayers(sortArray(layers));
+    setLayers(sortArray(returnVal));
   }
 };
 
