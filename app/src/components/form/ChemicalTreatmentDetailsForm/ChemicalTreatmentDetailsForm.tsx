@@ -57,17 +57,17 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
   const businessCodes = getBusinessCodes();
 
+  //constructing herbicide dictionary to get the correct labels for herbicides when displaying errors
   let herbicideDictionary = {};
-
   let allHerbCodes = [
     ...(businessCodes as any).liquid_herbicide_code,
     ...(businessCodes as any).granular_herbicide_code
   ];
-
   allHerbCodes.map((row) => {
     herbicideDictionary[row.value] = row.label;
   });
 
+  //main usestate that holds all form data
   const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
     formData: !props.formData.activity_subtype_data.chemical_treatment_details
       ? {
@@ -86,9 +86,10 @@ const ChemicalTreatmentDetailsForm = (props) => {
     classes: classes,
     errors: []
   });
-
+  //used to render the list of errors
   const [localErrors, setLocalErrors] = useState([]);
 
+  //when formDetails change, run validation and if it passes, perform calculations
   useEffect(() => {
     props.onChange(
       {
@@ -104,6 +105,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
       null,
       () => {
         let lerrors = [];
+        //run validation
         const newErr = runValidation(
           props.formData.activity_data.reported_area,
           formDetails.formData,
@@ -113,22 +115,22 @@ const ChemicalTreatmentDetailsForm = (props) => {
         );
         setLocalErrors([...newErr]);
 
+        //if no errors, perform calculations
         if (newErr.length < 1) {
           const results = performCalculation(
             props.formData.activity_data.reported_area,
             formDetails.formData,
             businessCodes
           );
-          console.log(results);
           setCalculationResults(results as any);
         } else {
           setCalculationResults(null);
         }
       }
     );
-    // const newErr = runValidation(formData, formDetails.errors, businessCodes);
   }, [formDetails]);
 
+  //when we get application rate error, display warning dialog and if user presses yes, delete this error
   useEffect(() => {
     localErrors.forEach((err, index) => {
       if (err.includes('exceeds maximum applicable rate of')) {
@@ -158,13 +160,13 @@ const ChemicalTreatmentDetailsForm = (props) => {
     });
   }, [localErrors]);
 
-  //fields
+  //use state hooks for general fields outside any objects
   const [tankMixOn, setTankMixOn] = useState(formDetails.formData.tank_mix);
   const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(
     formDetails.formData.chemical_application_method
   );
 
-  //choices
+  //set chemical application method choices based on the value of tank mix
   const chemicalApplicationMethodChoices = formDetails.formData.tank_mix
     ? [...businessCodes['chemical_method_spray']]
     : [...businessCodes['chemical_method_spray'], ...businessCodes['chemical_method_direct']];
