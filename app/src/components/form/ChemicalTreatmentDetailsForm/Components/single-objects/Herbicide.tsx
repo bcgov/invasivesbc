@@ -184,7 +184,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             <Tooltip
               style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
               placement="left"
-              title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution. Expressed as the percent of herbicide in the solution. Example: 25% = 25% herbicide concentrate in the treatment solution. See spreadsheet for where this field should go.">
+              title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution. Expressed as the percent of herbicide in the solution.">
               <HelpOutlineIcon />
             </Tooltip>
             <CustomAutoComplete
