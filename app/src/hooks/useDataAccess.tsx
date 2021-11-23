@@ -455,7 +455,10 @@ export const useDataAccess = () => {
     ready: boolean;
   }): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      //return databaseContextPouch.database.find({ selector: { _id: DocType.APPSTATE } });
+      const raw_old = localStorage.getItem('appstate-invasivesbc');
+      if (raw_old) {
+        return JSON.parse(raw_old);
+      }
     } else {
       const dbcontext = context;
       return dbcontext.asyncQueue({
@@ -517,9 +520,14 @@ export const useDataAccess = () => {
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      //return databaseContextPouch.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-      //  return { ...appStateDoc, ...newState };
-      // });
+      const old = await getAppState();
+      console.log('old app state', old);
+      console.log('hello');
+      if (old) {
+        localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...old, ...newState }));
+      } else {
+        localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...newState }));
+      }
     } else {
       const dbcontext = context;
 

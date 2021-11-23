@@ -351,7 +351,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     let activityResults;
     if (Capacitor.getPlatform() === 'web') {
       activityResults = await dataAccess.getActivityById(
-        activityId || (appStateResults.docs[0].activeActivity as string),
+        activityId || (appStateResults.activeActivity as string),
         databaseContext,
         false
       );

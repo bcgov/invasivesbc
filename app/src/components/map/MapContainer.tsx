@@ -8,6 +8,7 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import React, { useEffect, useState } from 'react';
 import {
+  FeatureGroup,
   MapContainer as ReactLeafletMapContainer,
   ScaleControl,
   useMap,
@@ -21,6 +22,7 @@ import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi
 import layers from './LayerPicker/LAYERS.json';
 import './MapContainer.css';
 import { ToolbarContainer } from './ToolbarContainer';
+import EditTools from './Tools/ToolTypes/Data/EditTools';
 import { ZoomBar } from './Tools/ToolTypes/Misc/ZoomBar';
 import { FlyToAndFadeContextProvider } from './Tools/ToolTypes/Nav/FlyToAndFade';
 
@@ -214,12 +216,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <MapRequestContextProvider>
           <ZoomButtons position="bottomleft" />
           <ScaleControl position="bottomleft" imperial={false} />
-          {props.showDrawControls &&
-            {
-              /*   <FeatureGroup>
+          {props.showDrawControls && (
+            <FeatureGroup>
               <EditTools isPlanPage={props.isPlanPage} geometryState={props.geometryState} />
-         </FeatureGroup>*/
-            }}
+            </FeatureGroup>
+          )}
 
           {/* Here is the offline component */}
           <Offline {...props} maxNativeZoom={mapMaxNativeZoom} />
