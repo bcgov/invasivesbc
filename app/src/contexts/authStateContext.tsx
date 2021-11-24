@@ -43,9 +43,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const [userRoles, setUserRoles] = React.useState([]);
 
   React.useEffect(() => {
-    console.log('trigg');
     if (keycloak?.obj?.authenticated) {
-      console.log('auth');
       keycloak?.obj?.loadUserInfo().then((info) => {
         if (info) {
           setUserRoles(info?.roles);
