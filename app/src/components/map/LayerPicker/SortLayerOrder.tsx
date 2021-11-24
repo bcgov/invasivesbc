@@ -15,6 +15,18 @@ export const sortArray = (inputArray: any[]) => {
   });
 };
 
+export const sortLayersDescending = (inputArray: any[]) => {
+  return [...inputArray].sort((a, b) => {
+    if (a.parent_order < b.parent_order) {
+      return 1;
+    }
+    if (a.parent_order > b.parent_order) {
+      return -1;
+    }
+    return 0;
+  });
+};
+
 /**
  *
  * @param id

@@ -15,7 +15,8 @@ import {
   getParent,
   getChild,
   sortObject,
-  getParentByOrder
+  getParentByOrder,
+  sortLayersDescending
 } from './SortLayerOrder';
 import { assignPaperBGTheme, layerPickerStyles, toolStyles } from '../Tools/Helpers/ToolStyles';
 // MUI
@@ -61,7 +62,7 @@ const sortLayers = (layers, objectState) => {
     }
   }
 
-  return sortArray(returnVal);
+  return sortLayersDescending(returnVal);
 };
 
 export const updateChild = (
@@ -104,12 +105,12 @@ export function LayerPicker(props: any) {
   const { themeType } = themeContext;
   const divref = useRef();
 
-  /* Layers check
+  /* Layers check */
   useEffect(() => {
     for (let layer of newLayers) {
       console.log(layer.id, layer.order);
     }
-  }, [newLayers]);*/
+  }, [newLayers]);
 
   /* Removed for now:
   function getErrorIcon(time: any) {

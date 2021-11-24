@@ -10,7 +10,7 @@ import {
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
 import { updateChild } from './LayerPicker';
-import { getChild, sortArray } from './SortLayerOrder';
+import { getChild, sortLayersDescending } from './SortLayerOrder';
 
 const getIndex = (childId, layers) => {
   var index = -1;
@@ -33,7 +33,7 @@ export const updateLayer = (fieldsToUpdate, layers, setLayers, childId) => {
     layersAfter[0] = updatedLayer;
     const returnVal = [...layersBefore, ...layersAfter];
 
-    setLayers(sortArray(returnVal));
+    setLayers(sortLayersDescending(returnVal));
   }
 };
 
@@ -56,13 +56,13 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
           color_code: child.color_code,
           layer_code: child.layer_code,
           layer_mode: null,
-          id: child.id,
+          child_id: child.id,
           opacity: child.opacity,
-          order: parent.order,
+          parent_order: parent.order,
           parent_id: parent.id
         }
       ];
-      setLayers(sortArray(returnLayers));
+      setLayers(sortLayersDescending(returnLayers));
     }
     if (child.bcgw_code) {
       returnLayers = [
@@ -71,13 +71,13 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
           bcgw_code: child.bcgw_code,
           color_code: child.color_code,
           layer_mode: child.layer_mode,
-          id: child.id,
+          child_id: child.id,
           opacity: child.opacity,
-          order: parent.order,
+          parent_order: parent.order,
           parent_id: parent.id
         }
       ];
-      setLayers(sortArray(returnLayers));
+      setLayers(sortLayersDescending(returnLayers));
     }
   }
 };
