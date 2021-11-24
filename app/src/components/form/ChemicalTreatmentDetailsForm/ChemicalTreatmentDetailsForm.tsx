@@ -9,9 +9,11 @@ import {
   ListItemText,
   Radio,
   RadioGroup,
+  Tooltip,
   Typography
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import CustomAutoComplete from './CustomAutoComplete';
 import {
   ChemicalTreatmentDetailsContextProvider,
@@ -24,6 +26,7 @@ import { useFormStyles } from './formStyles';
 import { runValidation } from './Validation';
 import { performCalculation } from 'utils/herbicideCalculator';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
+import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
 
 const ChemicalTreatmentDetailsForm = (props) => {
   const classes = useFormStyles();
@@ -55,17 +58,17 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
   const businessCodes = getBusinessCodes();
 
+  //constructing herbicide dictionary to get the correct labels for herbicides when displaying errors
   let herbicideDictionary = {};
-
   let allHerbCodes = [
     ...(businessCodes as any).liquid_herbicide_code,
     ...(businessCodes as any).granular_herbicide_code
   ];
-
   allHerbCodes.map((row) => {
     herbicideDictionary[row.value] = row.label;
   });
 
+  //main usestate that holds all form data
   const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
     formData: !props.formData.activity_subtype_data.chemical_treatment_details
       ? {
@@ -84,9 +87,10 @@ const ChemicalTreatmentDetailsForm = (props) => {
     classes: classes,
     errors: []
   });
-
+  //used to render the list of errors
   const [localErrors, setLocalErrors] = useState([]);
 
+  //when formDetails change, run validation and if it passes, perform calculations
   useEffect(() => {
     props.onChange(
       {
@@ -102,6 +106,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
       null,
       () => {
         let lerrors = [];
+        //run validation
         const newErr = runValidation(
           props.formData.activity_data.reported_area,
           formDetails.formData,
@@ -111,22 +116,50 @@ const ChemicalTreatmentDetailsForm = (props) => {
         );
         setLocalErrors([...newErr]);
 
+        //if no errors, perform calculations
         if (newErr.length < 1) {
           const results = performCalculation(
             props.formData.activity_data.reported_area,
             formDetails.formData,
             businessCodes
           );
-          console.log(results);
           setCalculationResults(results as any);
+          props.onChange(
+            {
+              formData: {
+                ...props.formData,
+                activity_subtype_data: {
+                  ...props.formData.activity_subtype_data,
+                  chemical_treatment_details: { ...formDetails.formData, calculation_results: results, errors: false }
+                }
+              }
+            },
+            null,
+            null,
+            null
+          );
         } else {
+          props.onChange(
+            {
+              formData: {
+                ...props.formData,
+                activity_subtype_data: {
+                  ...props.formData.activity_subtype_data,
+                  chemical_treatment_details: { ...formDetails.formData, errors: true }
+                }
+              }
+            },
+            null,
+            null,
+            null
+          );
           setCalculationResults(null);
         }
       }
     );
-    // const newErr = runValidation(formData, formDetails.errors, businessCodes);
   }, [formDetails]);
 
+  //when we get application rate error, display warning dialog and if user presses yes, delete this error
   useEffect(() => {
     localErrors.forEach((err, index) => {
       if (err.includes('exceeds maximum applicable rate of')) {
@@ -156,13 +189,13 @@ const ChemicalTreatmentDetailsForm = (props) => {
     });
   }, [localErrors]);
 
-  //fields
+  //use state hooks for general fields outside any objects
   const [tankMixOn, setTankMixOn] = useState(formDetails.formData.tank_mix);
   const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(
     formDetails.formData.chemical_application_method
   );
 
-  //choices
+  //set chemical application method choices based on the value of tank mix
   const chemicalApplicationMethodChoices = formDetails.formData.tank_mix
     ? [...businessCodes['chemical_method_spray']]
     : [...businessCodes['chemical_method_spray'], ...businessCodes['chemical_method_direct']];
@@ -190,7 +223,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
   return (
     classes && (
       <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
-        <Typography variant="h4">Chemical Treatment Details</Typography>
+        <Typography variant="h5">Chemical Treatment Details</Typography>
         <Divider />
 
         {localErrors.length > 0 && (
@@ -200,7 +233,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
             </Typography>
             <List dense={true}>
               {localErrors.map((err, index) => (
-                <ListItem>
+                <ListItem key={index}>
                   <ListItemText
                     style={{ color: '#ff000' }}
                     primary={
@@ -220,6 +253,12 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
           <Box className={classes.generalFieldsContainer}>
             <Box className={classes.generalFieldColumn}>
+              <Tooltip
+                style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+                placement="left"
+                title="Check if there is a mix of herbicides in the tank">
+                <HelpOutlineIcon />
+              </Tooltip>
               <FormLabel className={classes.formLabel} component="legend">
                 Tank Mix
               </FormLabel>
@@ -236,12 +275,18 @@ const ChemicalTreatmentDetailsForm = (props) => {
               </RadioGroup>
             </Box>
             <Box className={classes.generalFieldColumn}>
+              <Tooltip
+                style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+                placement="left"
+                title="Choose treatment application method">
+                <HelpOutlineIcon />
+              </Tooltip>
               <CustomAutoComplete
                 choices={chemicalApplicationMethodChoices}
                 className={null}
                 actualValue={chemicalApplicationMethod}
                 classes={classes}
-                fieldName={'chemicalApplicationMethod'}
+                key={'chemical-application-method'}
                 id={'chemical-application-method'}
                 label={'Chemical Application Method'}
                 onChange={(event, value) => {
@@ -251,7 +296,6 @@ const ChemicalTreatmentDetailsForm = (props) => {
                   setChemicalApplicationMethod(value.value);
                 }}
                 parentState={{ chemicalApplicationMethod, setChemicalApplicationMethod }}
-                parentName={undefined}
               />
             </Box>
           </Box>
@@ -265,16 +309,18 @@ const ChemicalTreatmentDetailsForm = (props) => {
               <Typography style={{ marginTop: '1rem' }} variant="h4">
                 Calculation Results
               </Typography>
-              <Divider />
-              {Object.keys(calculationResults).map((key) => {
+              <Divider style={{ marginBottom: '1rem' }} />
+              <CalculationResultsTable data={calculationResults} />
+              {/* {Object.keys(calculationResults).map((key) => {
                 return (
-                  <Typography style={{ lineHeight: '1.5rem' }} variant={'body1'}>{`${key}: ${
+                  <Typography key={key} style={{ lineHeight: '1.5rem' }} variant={'body1'}>{`${key}: ${
                     typeof calculationResults[key] === 'object'
                       ? JSON.stringify(calculationResults[key])
                       : calculationResults[key]
                   }`}</Typography>
+                  
                 );
-              })}
+              })} */}
               {Object.keys(calculationResults).length < 1 && (
                 <Typography style={{ marginTop: '10px' }} variant={'body1'} color={'error'}>
                   Couldn't perform calculation because of the invalid scenario.

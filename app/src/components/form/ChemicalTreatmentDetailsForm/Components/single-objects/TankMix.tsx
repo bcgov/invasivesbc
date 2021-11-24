@@ -1,9 +1,10 @@
-import { TextField } from '@material-ui/core';
+import { TextField, Tooltip } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import HerbicidesAccordion from '../accordions/HerbicidesAccordion';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import { useFormStyles } from '../../formStyles';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const TankMix: React.FC = (props) => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
@@ -35,15 +36,21 @@ const TankMix: React.FC = (props) => {
 
   return (
     <>
+      <Tooltip
+        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+        placement="left"
+        title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution.">
+        <HelpOutlineIcon />
+      </Tooltip>
       <CustomAutoComplete
         choices={calculationTypeChoices}
         className={'inputField'}
         classes={classes}
         id={'calculation_type'}
+        key={'calculation_type'}
         label={'Calculation Type'}
+        actualValue={formDetails.formData.tank_mix_object.calculation_type}
         parentState={{ currentTankMix, setCurrentTankMix }}
-        parentName={'currentTankMix'}
-        fieldName={'calculation_type'}
         onChange={(event, value) => {
           if (value === null) {
             return;
@@ -56,6 +63,12 @@ const TankMix: React.FC = (props) => {
 
       <HerbicidesAccordion insideTankMix={true} />
 
+      <Tooltip
+        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+        placement="left"
+        title="Volume in litres (ie 5.1 L) of herbicide and water mix">
+        <HelpOutlineIcon />
+      </Tooltip>
       <TextField
         className={classes.inputField}
         type="number"
@@ -74,6 +87,12 @@ const TankMix: React.FC = (props) => {
         defaultValue={undefined}
       />
 
+      <Tooltip
+        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+        placement="left"
+        title="Calibrated delivery rate of the device used to apply herbicide in L/ha">
+        <HelpOutlineIcon />
+      </Tooltip>
       <TextField
         className={classes.inputField}
         type="number"
@@ -92,6 +111,12 @@ const TankMix: React.FC = (props) => {
         defaultValue={undefined}
       />
 
+      <Tooltip
+        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+        placement="left"
+        title="Area Treated in square meters">
+        <HelpOutlineIcon />
+      </Tooltip>
       <TextField
         className={classes.inputField}
         type="number"

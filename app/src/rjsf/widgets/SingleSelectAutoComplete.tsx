@@ -182,7 +182,13 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
           }
         }}
         options={optionValues}
-        getOptionSelected={(option) => option === value}
+        getOptionSelected={(option) => {
+          if (option === value) {
+            return true;
+          } else if (value === '') {
+            return true;
+          }
+        }}
         filterOptions={createFilterOptions({
           // limit: 500, // NOTE: removed for now, but might want with very long lists
           stringify: (option) => option + ' ' + optionValueLabels[option]

@@ -1,18 +1,19 @@
-import { Typography, Box, TextField, Button } from '@material-ui/core';
+import { Typography, Box, TextField, Button, Tooltip } from '@material-ui/core';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useContext, useEffect, useState } from 'react';
 import { IInvasivePlant } from '../../Models';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export interface IInvasivePlantComponent {
   index: number;
   species: any;
-  key: number;
+  key?: number;
   classes: any;
 }
 
-const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, key, species, classes }) => {
+const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, classes }) => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
@@ -55,12 +56,17 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, key, species,
           : `InvasivePlant #${index + 1}`}
       </Typography>
 
+      <Tooltip
+        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+        placement="left"
+        title="Target invasive plant species at this location">
+        <HelpOutlineIcon />
+      </Tooltip>
       <CustomAutoComplete
         choices={businessCodes['invasive_plant_code']}
         className={'inputField'}
         classes={classes}
         actualValue={species.invasive_plant_code}
-        fieldName={'invasive_plant_code'}
         id={'invasive_plant_code'}
         label={'Invasive Plant'}
         onChange={(event, value) => {
@@ -71,13 +77,19 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, key, species,
             return { ...prevInvasivePlant, invasive_plant_code: (value as any).value };
           });
         }}
-        parentName="species"
         parentState={{ species, setCurrentInvasivePlant }}
       />
 
+      <Tooltip
+        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+        placement="left"
+        title="Percent of area covered by this species">
+        <HelpOutlineIcon />
+      </Tooltip>
       <TextField
+        fullWidth
         className={classes.inputField}
-        style={{ display: invasivePlantsArr.length < 2 ? 'none' : 'block' }}
+        style={{ display: invasivePlantsArr.length < 2 ? 'none' : 'flex' }}
         type="number"
         value={species.percent_area_covered}
         label="Percent Area Covered"

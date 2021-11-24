@@ -33,7 +33,7 @@ export const validate_inv_plants_arr_length = (formData: IGeneralFields, errors:
   if (!formData || !formData.invasive_plants) {
     return errors;
   }
-  let newErrors = [...errors];
+  let newErrors = errors;
 
   if (formData.invasive_plants.length < 1) {
     newErrors.push('You must have at least one Invasive Plant added');
@@ -104,9 +104,12 @@ export const validate_herbicides_arr_length = (formData: IGeneralFields, errors:
   if (!formData || !formData.herbicides || formData.tank_mix === true) {
     return errors;
   }
-  const newErrors = [...errors];
+  const newErrors = errors;
   if (formData.herbicides.length < 1) {
     newErrors.push('You must have at least one Herbicide added');
+  }
+  if (formData.herbicides.length > 1) {
+    newErrors.push('You can have a maximum of 1 herbicide per record, unless you are using tank mix');
   }
   return newErrors;
 };
@@ -206,6 +209,7 @@ export const validate_herbicide_fields = (
 
     if (!herb.product_application_rate || !herb.herbicide_code) {
     } else if (
+      herb.calculation_type === 'PAR' &&
       herb.product_application_rate &&
       herb.product_application_rate > HerbicideApplicationRates[herb.herbicide_code.toString()]
     ) {
@@ -383,6 +387,7 @@ export const validate_tank_mix_herbicides = (
   formData.tank_mix_object.herbicides.forEach((herb) => {
     if (!herb.product_application_rate || !herb.herbicide_code) {
     } else if (
+      herb.calculation_type === 'PAR' &&
       herb.product_application_rate &&
       herb.product_application_rate > HerbicideApplicationRates[herb.herbicide_code.toString()]
     ) {

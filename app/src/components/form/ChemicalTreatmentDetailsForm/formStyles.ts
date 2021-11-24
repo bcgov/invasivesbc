@@ -23,7 +23,7 @@ export const useFormStyles = makeStyles((theme: Theme) => ({
   },
   formLabel: { textAlign: 'center' },
   centerBox: { display: 'flex', justifyContent: 'center' },
-  inputField: { width: '100%', marginTop: '3rem', marginBottom: '0.5rem' },
+  inputField: { width: '100%', marginTop: '0rem', marginBottom: '0.5rem' },
   accordionBody: { display: 'block', width: '100%' },
   listContainer: { display: 'flex', flexWrap: 'wrap', width: '100%', justifyContent: 'space-between' },
   listItemContainer: {

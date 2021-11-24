@@ -23,16 +23,16 @@ import {
   getDurationCountAndPlantCountValidation,
   getHerbicideApplicationRateValidator,
   // getPosAndNegObservationValidator,
-  getHerbicideMixValidation,
   getInvasivePlantsValidator,
-  getJurisdictionPercentValidator,
+  getVegTransectPointsPercentCoverValidator,
   getPersonNameNoNumbersValidator,
-  getPlotIdentificatiomTreesValidator,
+  getJurisdictionPercentValidator,
   getSlopeAspectBothFlatValidator,
   getTemperatureValidator,
   getTransectOffsetDistanceValidator,
-  getVegTransectPointsPercentCoverValidator,
-  getWindValidator
+  getWindValidator,
+  transferErrorsFromChemDetails,
+  getPlotIdentificatiomTreesValidator
 } from '../../../rjsf/business-rules/customValidation';
 import {
   autoFillSlopeAspect,
@@ -708,10 +708,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getSlopeAspectBothFlatValidator(),
               getTemperatureValidator(doc.activitySubtype),
               // getPosAndNegObservationValidator(),
+              transferErrorsFromChemDetails(),
               getDuplicateInvasivePlantsValidator(doc.activitySubtype),
               getHerbicideApplicationRateValidator(),
               getTransectOffsetDistanceValidator(),
-              getHerbicideMixValidation(),
               getVegTransectPointsPercentCoverValidator(),
               getDurationCountAndPlantCountValidation(),
               getPersonNameNoNumbersValidator(),

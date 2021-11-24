@@ -65,7 +65,8 @@ const Treatment_ChemicalPlant = {
       'wind_speed',
       'wind_direction_code',
       'pesticide_use_permit_PUP',
-      'signage_on_site'
+      'signage_on_site',
+      'application_start_time'
     ]
   },
 
