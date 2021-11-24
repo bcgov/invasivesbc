@@ -258,7 +258,7 @@ export const mSpecie_sLHerb_spray_usingProdAppRate = (
   dilution = parseToRightFormat(dilution);
   resultObj = {
     dilution: dilution,
-    species: species
+    invasive_plants: species
   };
 
   return resultObj;

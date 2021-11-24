@@ -1,7 +1,14 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Collapse,
+  Divider,
   IconButton,
+  List,
+  ListItem,
+  ListItemText,
   Paper,
   Table,
   TableBody,
@@ -11,6 +18,7 @@ import {
   TableRow,
   Typography
 } from '@material-ui/core';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import React from 'react';
@@ -63,6 +71,8 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
   const { row, name } = props;
   const [open, setOpen] = React.useState(false);
 
+  console.log(row, name);
+
   return (
     <React.Fragment>
       <TableRow>
@@ -97,7 +107,38 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                         <TableRow key={Math.random()}>
                           <TableCell>{index + 1}</TableCell>
                           {Object.keys(plant).map((key) => {
-                            return <TableCell>{plant[key]}</TableCell>;
+                            return (
+                              <TableCell>
+                                {/* {typeof plant[key] === 'string' ? `${JSON.stringify(plant[key])}` : `${plant[key]}`} */}
+                                {Array.isArray(plant[key]) ? (
+                                  <>
+                                    {plant[key].map((herb, index) => {
+                                      return (
+                                        <Accordion>
+                                          <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1a-content"
+                                            id="panel1a-header">
+                                            <Typography>Herbicide #{index + 1}</Typography>
+                                          </AccordionSummary>
+                                          <AccordionDetails>
+                                            <Typography>
+                                              {Object.keys(herb).map((key) => {
+                                                return <p>{`${key} : ${herb[key]}`}</p>;
+                                              })}
+                                            </Typography>
+                                          </AccordionDetails>
+                                        </Accordion>
+                                      );
+                                    })}
+                                  </>
+                                ) : typeof plant[key] === 'object' ? (
+                                  <></>
+                                ) : (
+                                  `${plant[key]}`
+                                )}
+                              </TableCell>
+                            );
                           })}
                         </TableRow>
                       );
