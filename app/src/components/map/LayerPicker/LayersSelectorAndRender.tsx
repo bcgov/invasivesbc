@@ -10,34 +10,37 @@ import {
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
 import { updateChild } from './LayerPicker';
-import { getChild } from './SortLayerOrder';
+import { getChild, sortArray } from './SortLayerOrder';
 
-const getIndex = (child, layers) => {
-  for (let i in layers) {
-    if (layers[i].bcgw_code === child.bcgw_code) {
-      return parseInt(i);
+const getIndex = (childId, layers) => {
+  var index = -1;
+  for (var i = 0; i < layers.length; i++) {
+    if (layers[i].id === childId) {
+      index = i;
+      break;
     }
   }
-  return -1;
+  return index;
 };
 
-export const updateLayer = (fieldsToUpdate, child, layers, setLayers) => {
-  if (child.enabled) {
-    var index = getIndex(child, layers);
-    if (index > -1) {
-      var oldLayer = layers[index];
-      var layersBefore = [...layers.slice(0, index)];
-      var layersAfter = [...layers.slice(index)];
-      var updatedLayer = { ...oldLayer, ...fieldsToUpdate };
-      layersAfter[0] = updatedLayer;
-      setLayers([...layersBefore, ...layersAfter]);
-    }
+export const updateLayer = (fieldsToUpdate, layers, setLayers, childId) => {
+  var index = getIndex(childId, layers);
+  if (index > -1) {
+    var oldLayer = layers[index];
+    var layersBefore = [...layers.slice(0, index)];
+    var layersAfter = [...layers.slice(index)];
+    var updatedLayer = { ...oldLayer, ...fieldsToUpdate };
+    layersAfter[0] = updatedLayer;
+    const returnVal = [...layersBefore, ...layersAfter];
+
+    setLayers(sortArray(returnVal));
   }
 };
 
 export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
+  var returnLayers = [];
   if (child.enabled) {
-    var index = getIndex(child, layers);
+    var index = getIndex(child.id, layers);
     if (index > -1) {
       var layersCopy = [...layers];
       layersCopy.splice(index, 1);
@@ -47,35 +50,36 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
     }
   } else if (!child.enabled) {
     if (child.layer_mode) {
-      setLayers([
+      returnLayers = [
         ...layers,
         {
           color_code: child.color_code,
           layer_code: child.layer_code,
           layer_mode: null,
-          layer_name: child.name,
+          id: child.id,
           opacity: child.opacity,
           order: parent.order,
           parent_id: parent.id
         }
-      ]);
+      ];
+      setLayers(sortArray(returnLayers));
     }
     if (child.bcgw_code) {
-      setLayers([
+      returnLayers = [
         ...layers,
         {
           bcgw_code: child.bcgw_code,
           color_code: child.color_code,
           layer_mode: child.layer_mode,
-          layer_name: child.layer_name,
+          id: child.id,
           opacity: child.opacity,
           order: parent.order,
           parent_id: parent.id
         }
-      ]);
+      ];
+      setLayers(sortArray(returnLayers));
     }
   }
-  console.log('unsorted', layers);
 };
 
 export const LayersSelector = ({ parent, child, objectState, setObjectState, layers, setLayers }) => {
@@ -109,17 +113,18 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
     <>
       {/* Server Accordion */}
       {networkContext.connected && (
-        <Accordion expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
-          <AccordionSummary>
+        <Accordion id="server-accordion" expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
+          <AccordionSummary id="accordion-summary">
             <Typography>Server</Typography>
           </AccordionSummary>
           {child.accordion_server_expanded && (
-            <FormControl>
+            <FormControl id="radio-control">
               <RadioGroup
+                id="radio-group"
                 defaultValue={child.layer_mode}
                 onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                   updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
-                  updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
+                  updateLayer({ layer_mode: event.target.value }, layers, setLayers, child.id);
                 }}>
                 <FormControlLabel value="wms_online" control={<Radio />} label="WMS" />
                 <FormControlLabel value="vector_tiles_online" control={<Radio />} label="Vector Tiles" />
@@ -132,17 +137,18 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
 
       {/* Local Accordion */}
 
-      <Accordion expanded={child.accordion_local_expanded} onChange={onLocalAccordionChange}>
-        <AccordionSummary>
+      <Accordion id="local-accordion" expanded={child.accordion_local_expanded} onChange={onLocalAccordionChange}>
+        <AccordionSummary id="accordion-summary">
           <Typography>Local</Typography>
         </AccordionSummary>
         {child.accordion_local_expanded && (
-          <FormControl>
+          <FormControl id="radio-control">
             <RadioGroup
+              id="radio-group"
               defaultValue={child.layer_mode}
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                 updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
-                updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
+                updateLayer({ layer_mode: event.target.value }, layers, setLayers, child.id);
               }}>
               <FormControlLabel value="vector_tiles_offline" control={<Radio />} label="Vector Tiles" />
               <FormControlLabel value="wfs_offline" control={<Radio />} label="WFS" />

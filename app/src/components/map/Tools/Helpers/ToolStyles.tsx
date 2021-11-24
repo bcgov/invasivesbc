@@ -195,3 +195,7 @@ export const assignPtDefaultTheme = (mode: boolean, themeType: boolean) => {
 export const assignTextDefaultTheme = (themeType: boolean) => {
   return { color: themeType ? '#fff' : 'rgba(0, 0, 0, 0.87)' };
 };
+
+export const assignPaperBGTheme = (themeType: boolean) => {
+  return { backgroundColor: themeType ? '#424242' : '#fff' };
+};

@@ -2,6 +2,10 @@
   transform: scale(1.4) translate(3.75px, 80px);
 }
 
+.leaflet-popup-content-wrapper {
+  background-color: transparent;
+}
+
 /* .leaflet-draw.leaflet-control .leaflet-draw-section:nth-child(2) {
   transform: translate(0, -13px);
 } */
@@ -18,8 +22,4 @@
 .leaflet-popup-content-wrapper-light {
   background-color: #ffff;
   border-radius: 10px;
-}
-
-.leaflet-popup-content-wrapper {
-  background-color: transparent;
 }

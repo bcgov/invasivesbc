@@ -42,23 +42,16 @@ import { calc_utm } from '../Nav/DisplayPosition';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
-    setGeoPoint({
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Point',
-            coordinates: [lng, lat]
-          }
-        }
-      ]
-    });
+    var point = turf.point([lng, lat]);
+    var buffer = turf.buffer(point, 50, { units: 'meters' });
+    setGeoPoint(buffer);
   }
 };
 
 export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivityGeo }) => {
+  const themeContext = useContext(ThemeContext);
+  const { themeType } = themeContext;
+  const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [bufferedGeo, setBufferedGeo] = useState(null);
   const [poiTableRows, setPoiTableRows] = useState([]);
   const [section, setSection] = useState('position');
@@ -69,8 +62,6 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   const [pois, setPOIs] = useState([]);
   const [rows, setRows] = useState([]);
   const dataAccess = useDataAccess();
-  const themeContext = useContext(ThemeContext);
-  const { themeType } = themeContext;
   const popupElRef = useRef(null);
   var activities;
 
@@ -202,12 +193,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
 
   return (
     <>
-      <Popup
-        className={themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light'}
-        ref={popupElRef}
-        autoClose={false}
-        closeOnClick={false}
-        closeButton={false}>
+      <Popup className={theme} ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
         <div>
           <TableContainer>
             {section == 'position' && <RenderTablePosition rows={utmRows} />}
@@ -286,6 +272,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
 };
 
 function SetPointOnClick({ map }: any) {
+  const themeContext = useContext(ThemeContext);
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPoint, setGeoPoint] = useState(null);
   const [clickMode, setClickMode] = useState(false);
@@ -294,7 +281,6 @@ function SetPointOnClick({ map }: any) {
   const [utm, setUTM] = useState(null);
   const [rows, setRows] = useState(null);
   const divRef = useRef();
-  const themeContext = useContext(ThemeContext);
   const toolClass = toolStyles();
 
   useEffect(() => {
@@ -303,7 +289,10 @@ function SetPointOnClick({ map }: any) {
   });
 
   useMapEvent('click', (e) => {
-    if (clickMode) setPosition(e.latlng);
+    if (clickMode) {
+      setPosition(e.latlng);
+      map.flyTo(e.latlng, 15);
+    }
   });
 
   useEffect(() => {
@@ -362,7 +351,7 @@ function SetPointOnClick({ map }: any) {
         />
         <Typography className={toolClass.Font}>What's here?</Typography>
       </IconButton>
-      {utm && (
+      {utm && clickMode && (
         <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup
             utmRows={rows}

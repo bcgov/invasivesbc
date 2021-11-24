@@ -11,7 +11,7 @@ const POSITION_CLASSES = {
 
 export const ZoomBar = (props) => {
   const zoomFunction = (zoom) => {
-    props?.map.setZoom(zoom);
+    props?.map.setZoom(zoom + 5);
   };
 
   return (
@@ -63,7 +63,7 @@ export const ZoomBar = (props) => {
           step={1}
           marks
           min={1}
-          max={30}
+          max={15}
           onChange={(event: any, newZoom: number) => {
             zoomFunction(newZoom);
           }}
