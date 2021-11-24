@@ -77,6 +77,7 @@
     "localforage": "^1.9.0",
     "lodash": "^4.17.21",
     "lodash.groupby": "^4.6.0",
+    "material-ui-color": "^1.2.0",
     "material-ui-color-picker": "^3.5.1",
     "material-ui-dropzone": "^3.5.0",
     "material-ui-popup-state": "^1.9.3",

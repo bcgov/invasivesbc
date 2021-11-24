@@ -45,7 +45,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LayersIcon from '@material-ui/icons/Layers';
 import SettingsIcon from '@material-ui/icons/Settings';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
-import ColorPicker from 'material-ui-color-picker';
+import { ColorPicker } from 'material-ui-color';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import { addOrRemoveLayer, LayersSelector, updateLayer } from './LayersSelectorAndRender';
