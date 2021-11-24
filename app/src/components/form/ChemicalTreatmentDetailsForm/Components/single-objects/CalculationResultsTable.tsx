@@ -82,17 +82,13 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
-                <Table size="small" aria-label="purchases">
+                <Table size="medium" aria-label="purchases">
                   <TableHead>
                     <TableRow>
                       <TableCell>#</TableCell>
                       {Object.keys(row[0]).map((key) => {
                         return <TableCell>{key}</TableCell>;
                       })}
-                      {/* <TableCell>Date</TableCell>
-                      <TableCell>Customer</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                      <TableCell align="right">Total price ($)</TableCell> */}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -106,15 +102,6 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                         </TableRow>
                       );
                     })}
-                    {/* {row.history.map((historyRow) => (
-                      <TableRow key={historyRow.date}>
-                        <TableCell component="th" scope="row">
-                          {historyRow.date}
-                        </TableCell>
-                        <TableCell>{historyRow.customerId}</TableCell>
-                        <TableCell align="right">{historyRow.amount}</TableCell>
-                      </TableRow>
-                    ))} */}
                   </TableBody>
                 </Table>
               </Box>
