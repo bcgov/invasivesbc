@@ -30,8 +30,8 @@ const CalculationResultsTable = ({ data }) => {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Property Name</TableCell>
-            <TableCell>Value</TableCell>
+            <TableCell style={{ fontWeight: 'bold' }}>Property Name</TableCell>
+            <TableCell style={{ fontWeight: 'bold' }}>Value</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -94,12 +94,10 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
               <Box sx={{ margin: 1 }}>
                 <Table size="medium" aria-label="purchases">
                   <TableHead>
-                    <TableRow>
-                      <TableCell>#</TableCell>
-                      {Object.keys(row[0]).map((key) => {
-                        return <TableCell>{key}</TableCell>;
-                      })}
-                    </TableRow>
+                    <TableCell style={{ fontWeight: 'bold' }}>#</TableCell>
+                    {Object.keys(row[0]).map((key) => {
+                      return <TableCell style={{ fontWeight: 'bold' }}>{key}</TableCell>;
+                    })}
                   </TableHead>
                   <TableBody>
                     {row.map((plant, index) => {
@@ -109,7 +107,6 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                           {Object.keys(plant).map((key) => {
                             return (
                               <TableCell>
-                                {/* {typeof plant[key] === 'string' ? `${JSON.stringify(plant[key])}` : `${plant[key]}`} */}
                                 {Array.isArray(plant[key]) ? (
                                   <>
                                     {plant[key].map((herb, index) => {
@@ -124,7 +121,11 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                                           <AccordionDetails>
                                             <Typography>
                                               {Object.keys(herb).map((key) => {
-                                                return <p>{`${key} : ${herb[key]}`}</p>;
+                                                return (
+                                                  <p>
+                                                    <span style={{ fontWeight: 'bold' }}>{key}</span> : {herb[key]}
+                                                  </p>
+                                                );
                                               })}
                                             </Typography>
                                           </AccordionDetails>

@@ -130,7 +130,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 ...props.formData,
                 activity_subtype_data: {
                   ...props.formData.activity_subtype_data,
-                  chemical_treatment_details: { ...formDetails.formData, errors: false }
+                  chemical_treatment_details: { ...formDetails.formData, calculation_results: results, errors: false }
                 }
               }
             },
