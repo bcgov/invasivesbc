@@ -45,7 +45,7 @@ from
     Run an outer join on the intersection of PMPs and Activities.
     Shapes that intersect (inside, touching or straddling) will
     be sent to the above case statement for the decision as to copy
-    or code. Otherwise the treatment just gets copied over.
+    or clip. Otherwise the treatment just gets copied over.
   */
   public.activities_by_species p join
   public.pest_management_plan_areas on

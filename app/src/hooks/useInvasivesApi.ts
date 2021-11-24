@@ -372,6 +372,8 @@ export const useInvasivesApi = () => {
    * @return {*}  {Promise<any>}
    */
   const createActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
+    console.log('creating an activity');
+    console.dir(activity);
     const { data } = await Http.request({
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },

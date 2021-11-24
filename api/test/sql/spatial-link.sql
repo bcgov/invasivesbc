@@ -10,7 +10,8 @@
 */
 -- Positive Layer
 drop table if exists test_spatial_expload_positive;
-create temporary table test_spatial_expload_positive as
+create table test_spatial_expload_positive as
+-- create temporary table test_spatial_expload_positive as
   select 
     activity_type,
     activity_subtype,
@@ -38,7 +39,8 @@ alter table test_spatial_expload_positive add primary key (gid);
 
 -- Negative Layer
 drop table if exists test_spatial_expload_negative;
-create temporary table test_spatial_expload_negative as
+create table test_spatial_expload_negative as
+-- create temporary table test_spatial_expload_negative as
   select 
     activity_subtype,
     created_timestamp,
@@ -48,7 +50,8 @@ create temporary table test_spatial_expload_negative as
   from
     activity_incoming_data
   where
-    activity_type = 'Observation' and
+    -- activity_type = 'Observation' and
+    activity_type in ('Observation', 'Treatment') and -- Observations for now
     deleted_timestamp is null and
     array_length(
       species_negative, 1
@@ -127,6 +130,24 @@ alter table activities_by_species add primary key (gid);
 
 
 /*********** Not using the json lookup anymore **************/
+select
+  species_positive,
+  created_timestamp,
+  jsonb_array_elements(activity_payload -> 'species_positive') "species"
+from
+  activity_incoming_data
+where
+  activity_type = 'Treatment' and
+  -- array_length(species_positive,1) > 0
+  deleted_timestamp is null and
+  json_array_length(
+    to_json(activity_payload -> 'species_positive')
+  ) > 0
+order by
+  created_timestamp desc
+limit 10
+;
+
 -- select 
 --   activity_subtype,
 --   jsonb_array_elements(activity_payload -> 'species_positive') "species"
