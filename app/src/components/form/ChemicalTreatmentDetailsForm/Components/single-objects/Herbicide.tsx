@@ -87,7 +87,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
       case 'direct':
         setHerbicideTypeChoices(
           businessCodes['herbicide_type_code'].filter((herb) => {
-            return herb.value === 'G';
+            return herb.value === 'L';
           })
         );
         setCalculationTypeChoices(

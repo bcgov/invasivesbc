@@ -26,6 +26,7 @@ import { useFormStyles } from './formStyles';
 import { runValidation } from './Validation';
 import { performCalculation } from 'utils/herbicideCalculator';
 import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
+import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
 
 const ChemicalTreatmentDetailsForm = (props) => {
   const classes = useFormStyles();
@@ -280,16 +281,18 @@ const ChemicalTreatmentDetailsForm = (props) => {
               <Typography style={{ marginTop: '1rem' }} variant="h4">
                 Calculation Results
               </Typography>
-              <Divider />
-              {Object.keys(calculationResults).map((key) => {
+              <Divider style={{ marginBottom: '1rem' }} />
+              <CalculationResultsTable data={calculationResults} />
+              {/* {Object.keys(calculationResults).map((key) => {
                 return (
                   <Typography key={key} style={{ lineHeight: '1.5rem' }} variant={'body1'}>{`${key}: ${
                     typeof calculationResults[key] === 'object'
                       ? JSON.stringify(calculationResults[key])
                       : calculationResults[key]
                   }`}</Typography>
+                  
                 );
-              })}
+              })} */}
               {Object.keys(calculationResults).length < 1 && (
                 <Typography style={{ marginTop: '10px' }} variant={'body1'} color={'error'}>
                   Couldn't perform calculation because of the invalid scenario.

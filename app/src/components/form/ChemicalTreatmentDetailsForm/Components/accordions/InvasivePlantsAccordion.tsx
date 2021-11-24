@@ -28,7 +28,7 @@ const InvasivePlantsAccordion = () => {
           style={{ width: '33%', flexShrink: 0 }}
           // color={invasivePlantsArrErrors?.length > 0 ? 'error' : 'textPrimary'}
           variant="h5">
-          Species
+          Invasive Plants
         </Typography>
         {/* <Typography variant="body2" color={'error'}>
               {invasivePlantsArrErrors?.length > 0 && invasivePlantsArrErrors[0]}
@@ -54,7 +54,7 @@ const InvasivePlantsAccordion = () => {
               variant="contained"
               startIcon={<AddIcon />}
               color="primary">
-              Add Specie
+              Add Invasive Plant
             </Button>
           </Box>
 
