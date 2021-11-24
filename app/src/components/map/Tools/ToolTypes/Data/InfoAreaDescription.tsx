@@ -162,7 +162,7 @@ export const GeneratePopup = (props) => {
           }
         }
         setRows(tempArr);
-      } else setRows([]);
+      } else setRows(null);
     }
   }, [bufferedGeo]);
 
@@ -180,8 +180,11 @@ export const GeneratePopup = (props) => {
 
   const hideElement = () => {
     if (!popupElRef?.current || !props.map) return;
-    props?.setClickMode(false);
     props.map.closePopup();
+    props.setActivityGeo(null);
+    if (props.setClickMode) {
+      props.setClickMode(false);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
@@ -202,7 +205,7 @@ export const GeneratePopup = (props) => {
               <RenderTableActivity
                 setActivityGeo={props.setActivityGeo}
                 map={props.map}
-                rows={props.rows}
+                rows={rows}
                 setRows={setRows}
               />
             )}
@@ -290,13 +293,6 @@ function SetPointOnClick({ map }: any) {
   const [rows, setRows] = useState(null);
   const divRef = useRef();
   const toolClass = toolStyles();
-
-  useEffect(() => {
-    if (!clickMode) {
-      setPosition(null);
-      setGeoPoint(null);
-    }
-  }, [clickMode]);
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
