@@ -1,3 +1,4 @@
+import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { useInvasivesApi } from '../hooks/useInvasivesApi';
 import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';
@@ -42,7 +43,9 @@ export const AuthStateContextProvider: React.FC = (props) => {
   const [userRoles, setUserRoles] = React.useState([]);
 
   React.useEffect(() => {
+    console.log('trigg');
     if (keycloak?.obj?.authenticated) {
+      console.log('auth');
       keycloak?.obj?.loadUserInfo().then((info) => {
         if (info) {
           setUserRoles(info?.roles);
@@ -58,14 +61,25 @@ export const AuthStateContextProvider: React.FC = (props) => {
     const getApiSpec = async () => {
       await invasivesApi.getCachedApiSpec();
     };
-
     getApiSpec();
   }, []);
 
   return (
-    <AuthStateContext.Provider
-      value={{ keycloak, userInfoLoaded, userInfo, userRoles, setUserInfo, setUserInfoLoaded, setUserRoles }}>
-      {props.children}
-    </AuthStateContext.Provider>
+    <>
+      {userInfoLoaded === true && (
+        <AuthStateContext.Provider
+          value={{
+            keycloak,
+            userInfoLoaded,
+            userInfo,
+            userRoles,
+            setUserInfo,
+            setUserInfoLoaded,
+            setUserRoles
+          }}>
+          {props.children}
+        </AuthStateContext.Provider>
+      )}
+    </>
   );
 };
