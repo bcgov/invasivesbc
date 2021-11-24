@@ -449,33 +449,6 @@ export function getPersonNameNoNumbersValidator(): rjsfValidator {
     return errors;
   };
 }
-/*
-  Function to validate that if the herbicide mix is set to true,
-  there must be 2 or more herbicides chosen
-*/
-export function getHerbicideMixValidation(): rjsfValidator {
-  return (formData: any, errors: FormValidation): FormValidation => {
-    if (
-      !formData ||
-      !formData.activity_subtype_data ||
-      !formData.activity_subtype_data.chemical_treatment_details ||
-      !formData.activity_subtype_data.chemical_treatment_details.tank_mix ||
-      !formData.activity_subtype_data.chemical_treatment_details.herbicides
-    ) {
-      return errors;
-    }
-
-    let chemical_treatment_details = formData.activity_subtype_data.chemical_treatment_details;
-
-    if (chemical_treatment_details.tank_mix === true && chemical_treatment_details.herbicides.length < 2) {
-      errors.activity_subtype_data['chemical_treatment_details']['herbicides'].addError(
-        'There must be 2 or more herbicides added if the tank mix field is checked'
-      );
-    }
-
-    return errors;
-  };
-}
 
 /*
   Function to validate that the application rate specified for a given herbicide
@@ -661,6 +634,25 @@ export function getPlotIdentificatiomTreesValidator(activitySubtype: string): rj
         }
         form_b_index++;
       });
+    }
+    return errors;
+  };
+}
+
+/* 
+  function to transfer error state from chemical details form to main rjsf form
+ */
+export function transferErrorsFromChemDetails(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (!formData || !formData.activity_subtype_data || !formData.activity_subtype_data.chemical_treatment_details) {
+      return errors;
+    }
+
+    if (!formData.activity_subtype_data.chemical_treatment_details.errors !== true) {
+      console.log('hello??');
+      errors.activity_subtype_data.addError('Chemical Treatment details form has errors');
+    } else {
+      errors.activity_subtype_data.__errors.pop();
     }
     return errors;
   };

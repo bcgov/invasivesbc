@@ -355,7 +355,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
               validate={props.customValidation}
               transformErrors={props.customErrorTransformer}
               autoComplete="off"
-              ErrorList={() => {
+              ErrorList={(err) => {
                 return (
                   <div>
                     <Typography color="error" variant="h5">

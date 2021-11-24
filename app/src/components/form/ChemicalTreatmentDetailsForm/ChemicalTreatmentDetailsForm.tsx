@@ -124,7 +124,35 @@ const ChemicalTreatmentDetailsForm = (props) => {
             businessCodes
           );
           setCalculationResults(results as any);
+          props.onChange(
+            {
+              formData: {
+                ...props.formData,
+                activity_subtype_data: {
+                  ...props.formData.activity_subtype_data,
+                  chemical_treatment_details: { ...formDetails.formData, errors: false }
+                }
+              }
+            },
+            null,
+            null,
+            null
+          );
         } else {
+          props.onChange(
+            {
+              formData: {
+                ...props.formData,
+                activity_subtype_data: {
+                  ...props.formData.activity_subtype_data,
+                  chemical_treatment_details: { ...formDetails.formData, errors: true }
+                }
+              }
+            },
+            null,
+            null,
+            null
+          );
           setCalculationResults(null);
         }
       }
