@@ -5,13 +5,17 @@ import '../../support/index';
 
 const openColorPickerTest = (value1, value2) => {
   it('Open layer picker and use colorpicker', function () {
-    const invasivesRecordsDragHandle = '#invasivesbc_records';
-    const aquaticLayersAndWellsDragHandle = '#aquatic_layers_and_wells';
-    cy.dragAccordion(invasivesRecordsDragHandle, aquaticLayersAndWellsDragHandle);
+    const invasivesbcRecords = '#invasivesbc_records';
+    const aquaticLayersAndWells = '#aquatic_layers_and_wells';
+    const accordionSummary = ' > #parent-accordion > #accordion-grid > #accordion-summary > ';
+    cy.dragAccordion(invasivesbcRecords, aquaticLayersAndWells);
     // click accordion
-    cy.get('#invasivesbc_records').click();
+    cy.wait(500);
+    cy.get(invasivesbcRecords).click();
     // click colorpicker btn
-    cy.get('#invasivesbc_records #colorpicker-btn').click();
+    cy.get('#colorpicker-btn').should('exist');
+    cy.wait(500);
+    cy.get('#colorpicker-btn').click({ force: true });
     // click colorpicker box
     cy.get('.MuiInputBase-input').click();
     cy.get('.saturation-black').click(value1, value2, { force: true });

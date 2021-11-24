@@ -9,7 +9,7 @@ import { GeoJSON, Marker, Tooltip } from 'react-leaflet';
 import { createDataUTM } from '../../Helpers/StyledTable';
 import { toolStyles } from '../../Helpers/ToolStyles';
 import { generateGeo, GeneratePopup } from '../Data/InfoAreaDescription';
-import marker from '../Icons/POImarker.png';
+import marker from '../../../Icons/POImarker.png';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {

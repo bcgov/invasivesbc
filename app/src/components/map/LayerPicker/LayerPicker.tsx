@@ -104,11 +104,12 @@ export function LayerPicker(props: any) {
   const { themeType } = themeContext;
   const divref = useRef();
 
+  /* Layers check
   useEffect(() => {
     for (let layer of newLayers) {
       console.log(layer.id, layer.order);
     }
-  }, [newLayers]);
+  }, [newLayers]);*/
 
   /* Removed for now:
   function getErrorIcon(time: any) {

@@ -11,6 +11,7 @@ declare global {
 }
 
 export const clickChildCheckbox = (parentId: string, childId: string) => {
+  cy.wait(500);
   cy.get(parentId + ' > #parent-accordion > #accordion-grid > #accordion-summary').click('center');
   cy.get(childId + ' > :nth-child(1)').click();
   cy.wait(2000);
