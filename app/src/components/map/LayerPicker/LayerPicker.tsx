@@ -107,8 +107,9 @@ export function LayerPicker(props: any) {
 
   /* Layers check */
   useEffect(() => {
+    console.log('======== New Layers ========');
     for (let layer of newLayers) {
-      console.log(layer.id, layer.order);
+      console.log(layer.child_id, layer.parent_order);
     }
   }, [newLayers]);
 
@@ -320,12 +321,8 @@ export function LayerPicker(props: any) {
   const onSortEnd = ({ oldIndex, newIndex }: any) => {
     const returnVal = sortObject(objectState, oldIndex, newIndex);
     const returnLayers = sortLayers(newLayers, returnVal);
-    console.log('=============');
-    for (let layer of returnLayers) {
-      console.log(layer.id, layer.order);
-    }
-    setObjectState(returnVal);
     setNewLayers(returnLayers);
+    setObjectState(returnVal);
   };
 
   return (

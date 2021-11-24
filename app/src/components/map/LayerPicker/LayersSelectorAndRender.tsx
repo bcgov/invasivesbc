@@ -15,7 +15,7 @@ import { getChild, sortLayersDescending } from './SortLayerOrder';
 const getIndex = (childId, layers) => {
   var index = -1;
   for (var i = 0; i < layers.length; i++) {
-    if (layers[i].id === childId) {
+    if (layers[i].child_id === childId) {
       index = i;
       break;
     }
@@ -46,10 +46,12 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
       layersCopy.splice(index, 1);
       var layersBefore = [...layersCopy.slice(0, index)];
       var layersAfter = [...layersCopy.slice(index)];
-      setLayers([...layersBefore, ...layersAfter]);
+      console.log('here', layersBefore, layersAfter);
+      var temp = [...layersBefore, ...layersAfter];
+      setLayers(sortLayersDescending(temp));
     }
   } else if (!child.enabled) {
-    if (child.layer_mode) {
+    if (child.layer_code) {
       returnLayers = [
         ...layers,
         {
