@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
 import { DomEvent } from 'leaflet';
@@ -14,11 +14,9 @@ import {
   getChildIndex,
   getParent,
   getChild,
-  sortObject,
-  getParentByOrder,
-  sortLayersDescending
+  sortObject
 } from './SortLayerOrder';
-import { assignPaperBGTheme, layerPickerStyles, toolStyles } from '../Tools/Helpers/ToolStyles';
+import { assignPaperBGTheme, toolStyles } from '../Tools/Helpers/ToolStyles';
 // MUI
 import {
   Accordion,
@@ -52,25 +50,7 @@ import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers'
 import { addOrRemoveLayer, LayersSelector, updateLayer } from './LayersSelectorAndRender';
 import { ThemeContext } from 'contexts/themeContext';
 
-const sortLayers = (layers, objectState) => {
-  let returnVal = layers;
-  for (let parent of objectState) {
-    for (let layer of returnVal) {
-      if (parent.id === layer.parent_id && parent.order !== layer.order) {
-        layer.order = parent.order;
-      }
-    }
-  }
-
-  return sortLayersDescending(returnVal);
-};
-
-export const updateChild = (
-  parentId: string,
-  childId: string,
-  fieldsToUpdate: Object,
-  { objectState, setObjectState }
-) => {
+export const updateChild = (parentId: string, childId: string, fieldsToUpdate: Object, objectState, setObjectState) => {
   // sort parents, get index of parent
   let pIndex = getParentIndex(objectState, parentId);
   // sort child of specific parent, get index of child
@@ -98,20 +78,10 @@ export const updateChild = (
 export function LayerPicker(props: any) {
   const mapLayersContext = useContext(MapRequestContext);
   const { layersSelected, setLayersSelected } = mapLayersContext;
-  const [objectState, setObjectState] = useState(layersSelected);
-  const [newLayers, setNewLayers] = useState([]);
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const divref = useRef();
-
-  /* Layers check */
-  useEffect(() => {
-    console.log('======== New Layers ========');
-    for (let layer of newLayers) {
-      console.log(layer.child_id, layer.parent_order);
-    }
-  }, [newLayers]);
 
   /* Removed for now:
   function getErrorIcon(time: any) {
@@ -128,17 +98,24 @@ export function LayerPicker(props: any) {
     return seconds;
   }*/
 
-  //update context on ObjectState change
-  useEffect(() => {
-    setLayersSelected(newLayers);
-  }, [newLayers]);
-
   useEffect(() => {
     if (divref?.current) {
       DomEvent.disableClickPropagation(divref?.current);
       DomEvent.disableScrollPropagation(divref?.current);
     }
   });
+
+  /* log to check enabled layers: 
+  useEffect(() => {
+    console.log('================');
+    layersSelected.forEach((parent) => {
+      parent.children.forEach((child) => {
+        if (child.enabled) {
+          console.log(child.id, parent.order, parent.zIndex);
+        }
+      });
+    });
+  }, [layersSelected]);*/
 
   /**
    * Function used to print opacity as text
@@ -155,16 +132,16 @@ export function LayerPicker(props: any) {
    * @param fieldsToUpdate specified field to update e.g. { id: "newId" }
    */
   const updateParent = (parentId: string, fieldsToUpdate: Object) => {
-    let pIndex = getParentIndex(objectState, parentId);
-    let parentsBefore: Object[] = getObjectsBeforeIndex(objectState, pIndex);
-    let parentsAfter: Object[] = getObjectsAfterIndex(objectState, pIndex);
-    const oldParent = getParent(objectState, parentId);
+    let pIndex = getParentIndex(layersSelected, parentId);
+    let parentsBefore: Object[] = getObjectsBeforeIndex(layersSelected, pIndex);
+    let parentsAfter: Object[] = getObjectsAfterIndex(layersSelected, pIndex);
+    const oldParent = getParent(layersSelected, parentId);
     const updatedParent = { ...oldParent, ...fieldsToUpdate };
-    setObjectState([...parentsBefore, updatedParent, ...parentsAfter] as any);
+    setLayersSelected([...parentsBefore, updatedParent, ...parentsAfter] as any);
   };
 
   const toggleDialogClose = (parent: any, child: any, fieldsToUpdate: Object) => {
-    updateChild(parent.id, child.id, fieldsToUpdate, { objectState, setObjectState });
+    updateChild(parent.id, child.id, fieldsToUpdate, layersSelected, setLayersSelected);
   };
 
   const SortableParentLayer = SortableElement(({ parent }) => {
@@ -206,12 +183,13 @@ export function LayerPicker(props: any) {
                   checked={child.enabled}
                   name={child.name}
                   onChange={() => {
-                    addOrRemoveLayer(parent, child, newLayers, setNewLayers);
+                    addOrRemoveLayer(parent, child, layersSelected, setLayersSelected);
                     updateChild(
                       parent.id,
                       child.id,
-                      { enabled: !getChild(objectState, parent.id, child.id).enabled },
-                      { objectState, setObjectState }
+                      { enabled: !getChild(layersSelected, parent.id, child.id).enabled },
+                      layersSelected,
+                      setLayersSelected
                     );
                   }}
                 />
@@ -224,21 +202,17 @@ export function LayerPicker(props: any) {
                 <LayerModeDialog
                   parent={parent}
                   child={child}
-                  objectState={objectState}
-                  setObjectState={setObjectState}
                   toggleDialogClose={toggleDialogClose}
-                  newLayers={newLayers}
-                  setNewLayers={setNewLayers}
+                  layers={layersSelected}
+                  setLayers={setLayersSelected}
                 />
               )}
               {process.env.REACT_APP_REAL_NODE_ENV === 'local' && (
                 <LayerModeDialog
                   parent={parent}
                   child={child}
-                  objectState={objectState}
-                  setObjectState={setObjectState}
-                  newLayers={newLayers}
-                  setNewLayers={setNewLayers}
+                  layers={layersSelected}
+                  setLayers={setLayersSelected}
                   toggleDialogClose={toggleDialogClose}
                 />
               )}
@@ -267,9 +241,10 @@ export function LayerPicker(props: any) {
                           parent.id,
                           child.id,
                           { opacity: newOpacity as number },
-                          { objectState, setObjectState }
+                          layersSelected,
+                          setLayersSelected
                         );
-                        updateLayer({ opacity: newOpacity as number }, newLayers, setNewLayers, child.id);
+                        updateLayer({ opacity: newOpacity as number }, layersSelected, setLayersSelected, child.id);
                       }}
                       getAriaValueText={opacityText}
                       step={0.0001}
@@ -277,7 +252,7 @@ export function LayerPicker(props: any) {
                       max={1.0}
                     />
                   </DialogContent>
-                  {/* Color Picker */}
+                  {/* Color Picker */}s
                   <DialogContent id="layer-colorpicker" style={{ height: 300 }}>
                     <ColorPicker
                       style={{
@@ -287,7 +262,7 @@ export function LayerPicker(props: any) {
                       name="color"
                       defaultValue={child.color_code}
                       onChange={(color: any) => {
-                        updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
+                        updateChild(parent.id, child.id, { color_code: color }, layersSelected, setLayersSelected);
                       }}
                     />
                   </DialogContent>
@@ -319,15 +294,40 @@ export function LayerPicker(props: any) {
   ));
 
   const onSortEnd = ({ oldIndex, newIndex }: any) => {
-    const returnVal = sortObject(objectState, oldIndex, newIndex);
-    const returnLayers = sortLayers(newLayers, returnVal);
-    setNewLayers(returnLayers);
-    setObjectState(returnVal);
+    const returnVal = sortObject(layersSelected, oldIndex, newIndex);
+    var len = returnVal.length;
+    for (var i = 0; i < len; i++) {
+      returnVal[i].zIndex = len * 1000;
+      len--;
+    }
+    setLayersSelected(returnVal);
   };
 
   return (
     <>
-      {newLayers.map((layer) => (
+      {layersSelected.map((parent) => {
+        return (
+          <>
+            {parent.children.map((child) => {
+              var zIndex = parent.zIndex + child.zIndex;
+              return (
+                child.enabled && (
+                  <DataBCLayer
+                    opacity={child.opacity}
+                    layerName={child.bcgw_code}
+                    mode={child.layer_mode}
+                    inputGeo={props.inputGeo}
+                    zIndex={zIndex}
+                    setWellIdandProximity={props.setWellIdandProximity}
+                    color_code={child.color_code}
+                  />
+                )
+              );
+            })}
+          </>
+        );
+      })}
+      {/*layersSelected?.forEach((layer) => (
         <>
           {layer.bcgw_code && (
             <DataBCLayer
@@ -343,7 +343,7 @@ export function LayerPicker(props: any) {
             <IndependentLayer opacity={layer.opacity} layerName={layer.layer_code} color_code={layer.color_code} />
           )}
         </>
-      ))}
+          ))*/}
       <PopupState variant="popover" popupId="layer-picker-popup-state">
         {(popupState) => (
           <>
@@ -365,7 +365,7 @@ export function LayerPicker(props: any) {
                 horizontal: 'right'
               }}>
               <SortableListContainer
-                items={sortArray(objectState)}
+                items={sortArray(layersSelected)}
                 onSortEnd={onSortEnd}
                 useDragHandle={true}
                 lockAxis="y"
@@ -373,14 +373,14 @@ export function LayerPicker(props: any) {
               <Button
                 id="layer-picker-save-btn"
                 onClick={() => {
-                  localStorage.setItem('mySave', JSON.stringify(objectState));
+                  localStorage.setItem('mySave', JSON.stringify(layersSelected));
                 }}>
                 Save
               </Button>
               <Button
                 id="layer-picker-load-btn"
                 onClick={() => {
-                  setObjectState(JSON.parse(localStorage.getItem('mySave')));
+                  setLayersSelected(JSON.parse(localStorage.getItem('mySave')));
                 }}>
                 Load
               </Button>

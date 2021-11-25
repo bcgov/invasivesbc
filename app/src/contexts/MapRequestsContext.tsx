@@ -1,6 +1,5 @@
 import * as React from 'react';
 import layers from '../components/map/LayerPicker/LAYERS.json';
-// export const ThemeContext = React.createContext();
 
 interface IMapExtentLayersContext {
   mapRequest: {
@@ -8,8 +7,39 @@ interface IMapExtentLayersContext {
     extent: any;
   };
   setMapRequest: React.Dispatch<React.SetStateAction<any>>;
-  layersSelected: any;
-  setLayersSelected: React.Dispatch<React.SetStateAction<any>>;
+  layersSelected: IParentLayer[];
+  setLayersSelected: React.Dispatch<React.SetStateAction<IParentLayer[]>>;
+}
+
+interface IParentLayer {
+  id?: string;
+  name?: string;
+  order?: number;
+  zIndex?: number;
+  loaded?: number;
+  checked?: boolean;
+  expanded?: boolean;
+  enabled?: boolean;
+  children?: IChildLayer[];
+}
+
+interface IChildLayer {
+  id?: string;
+  name?: string;
+  source?: string;
+  layer_mode?: string;
+  layer_code?: string;
+  color_code?: string;
+  order?: number;
+  bcgw_code?: string;
+  opacity?: number;
+  zIndex?: number;
+  loaded?: number;
+  enabled?: boolean;
+  dialog_layerselector_open?: boolean;
+  dialog_colorpicker_open?: boolean;
+  accordion_server_expanded?: boolean;
+  accordion_local_expanded?: boolean;
 }
 
 export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
@@ -18,13 +48,13 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
     extent: null
   },
   setMapRequest: () => {},
-  layersSelected: {},
+  layersSelected: [],
   setLayersSelected: () => {}
 });
 
 export const MapRequestContextProvider: React.FC = (props) => {
   const [mapRequest, setMapRequest] = React.useState(null);
-  const [layersSelected, setLayersSelected] = React.useState(layers);
+  const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers);
 
   return (
     <MapRequestContext.Provider

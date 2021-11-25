@@ -47,6 +47,7 @@ export const DataBCLayer = (props) => {
           format={'image/png'}
           url="http://openmaps.gov.bc.ca/geo/ows"
           layers={props.layerName}
+          zIndex={props.zIndex}
         />
       );
     case LayerMode.WFSOnline:

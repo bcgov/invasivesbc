@@ -15,18 +15,6 @@ export const sortArray = (inputArray: any[]) => {
   });
 };
 
-export const sortLayersDescending = (inputArray: any[]) => {
-  return [...inputArray].sort((a, b) => {
-    if (a.parent_order < b.parent_order) {
-      return 1;
-    }
-    if (a.parent_order > b.parent_order) {
-      return -1;
-    }
-    return 0;
-  });
-};
-
 /**
  *
  * @param id
@@ -192,6 +180,7 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
     while (loopIndex < oldIndex) {
       let obj: any = getParentByOrder(objectState, loopIndex);
       obj.order = obj.order + 1;
+      console.log('obj', obj.id);
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
