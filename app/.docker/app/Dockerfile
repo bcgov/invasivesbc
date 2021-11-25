@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:16
 
 RUN apt-get -qq update
 RUN apt-get -qq install -y curl
