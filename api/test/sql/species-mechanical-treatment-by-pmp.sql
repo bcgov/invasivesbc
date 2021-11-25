@@ -60,6 +60,7 @@ where
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   p.species = c.code_name and -- Match code to species
   p.activity_type = 'Treatment' and -- Treatments only
+  p.activity_subtype = 'Activity_Treatment_MechanicalPlant'
   array_length(p.activity_ids,1) > 0 and -- ignore records without shapes
   c.code_header_id = ( -- Best way to look up the plant code
     select
@@ -111,3 +112,15 @@ where
   group by
     c.code_description
 ;
+
+/**
+  Took me a while to find where this data was.
+  Will need to create a separate spatial link query
+  to split up the following
+  form_data->activity_subtype_data->mechanical_plant_information->[
+    - invasive_plant_code
+    - mechanical_disposal_code
+    - mechanical_method_code
+    - treated_area
+  ]
+**/
