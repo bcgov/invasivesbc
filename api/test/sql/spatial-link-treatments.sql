@@ -1,4 +1,4 @@
-/* spatial-link.sql
+/* spatial-link-treatments.sql
   Logic for spatially linking records of the same species
   within a certain distance from eachother.
  */
