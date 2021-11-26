@@ -10,6 +10,7 @@ COPY ./package-lock.json $HOME
 RUN chmod 0666 package.json
 RUN chmod 0666 package-lock.json
 
+RUN id
 RUN ls -la $HOME
 
 # INSTALL NODE DEPENDENCIES
