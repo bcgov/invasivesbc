@@ -41,13 +41,13 @@ build-local: ## Builds the local development containers
 	@echo "==============================================="
 	@echo "Make: build-local - building Docker images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build
+	@docker-compose -f docker-compose.local.yml build
 
 run-local: ## Runs the local development containers
 	@echo "==============================================="
 	@echo "Make: run-local - running api/app images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d
+	@docker-compose -f docker-compose.local.yml up -d
 
 run-debug: ## Runs the local development containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
@@ -59,13 +59,13 @@ close-local: ## Closes the local development containers
 	@echo "==============================================="
 	@echo "Make: close-local - closing Docker containers"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml down
+	@docker-compose -f docker-compose.local.yml down
 
 clean-local: ## Closes and cleans (removes) local development containers
 	@echo "==============================================="
 	@echo "Make: clean-local - closing and cleaning Docker containers"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
+	@docker-compose -f docker-compose.local.yml down -v --rmi all --remove-orphans
 
 # ------------------------------------------------------------------------------
 # Helper Commands
