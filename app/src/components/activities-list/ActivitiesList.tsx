@@ -219,7 +219,6 @@ const ActivitiesList: React.FC = () => {
   const networkContext = useContext(NetworkContext);
 
   const syncCachedActivities = async () => {
-    console.log('Syncing...');
     try {
       await dataAccess.syncCachedRecords();
     } catch (e: any) {
