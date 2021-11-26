@@ -105,6 +105,7 @@
     "reproject": "^1.2.6",
     "rxjs": "^6.6.7",
     "sass": "^1.43.4",
+    "serve": "^13.0.2",
     "stream-to-string": "^1.2.0",
     "typescript": "3.8.3",
     "unzipper": "^0.10.11",
@@ -148,7 +149,7 @@
     "start:ionic": "ionic serve",
     "start:ionic:reload": "ionic serve",
     "build-prod": "react-scripts build --prod",
-    "deploy_start": "npm run start",
+    "deploy_start": "npx serve -s build",
     "eject": "react-scripts eject",
     "lint": "eslint src/ --ext .jsx,.js,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix"
