@@ -1,0 +1,185 @@
+[
+  {
+    "id": "invasivesbc_records",
+    "expanded": false,
+    "children": [
+      {
+        "id": "all_lean_activities",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      }
+    ]
+  },
+  {
+    "id": "iapp_records",
+    "expanded": false,
+    "children": [
+      {
+        "id": "all_lean_pois",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      }
+    ]
+  },
+  {
+    "id": "administrative_boundaries",
+    "expanded": false,
+    "children": [
+      {
+        "id": "natural_resource_districts",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "ministry_of_transportations_districts",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "ministry_of_transportations_reagional",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "ministry_of_transportation_road_inventory",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "access_and_directory_management_services_regional_districts",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "access_and_directory_management_services_municipalities",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "jurisdictions",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+
+      {
+        "id": "land_ownership",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "federal_parks",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      }
+    ]
+  },
+  {
+    "id": "aquatic_layers_and_wells",
+    "expanded": false,
+    "children": [
+      {
+        "id": "freshwater_wells",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "fish_watershed_atlas_streams",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "fish_watershed_atlas_wetlands",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "fish_sensitive_watershed_boundaries",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "regional_invasive_species_organization_areas",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "invasive_plant_management_areas",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "first_nation_reserves",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      }
+    ]
+  },
+  {
+    "id": "terrestial_layers",
+    "expanded": false,
+    "children": [
+      {
+        "id": "biogeoclimatic_zones",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "aggregate_tenures",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "wildlife_habitat_areas",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      }
+    ]
+  },
+  {
+    "id": "user_uploaded_layers",
+    "expanded": false,
+    "children": []
+  }
+]

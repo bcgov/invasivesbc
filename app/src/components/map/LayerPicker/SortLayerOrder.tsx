@@ -180,6 +180,7 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
     while (loopIndex < oldIndex) {
       let obj: any = getParentByOrder(objectState, loopIndex);
       obj.order = obj.order + 1;
+      console.log('obj', obj.id);
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
@@ -200,4 +201,38 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
     return objectState;
   }
   return returnVal;
+};
+
+/**
+ * Function used to update parent object in the objectState
+ * @param parentId specified string of a parent object
+ * @param fieldsToUpdate specified field to update e.g. { id: "newId" }
+ */
+export const updateParentLayer = (inputArray: any[], setInputArray: any, parentId: string, fieldsToUpdate: Object) => {
+  let pIndex = getParentIndex(inputArray, parentId);
+  let parentsBefore: Object[] = getObjectsBeforeIndex(inputArray, pIndex);
+  let parentsAfter: Object[] = getObjectsAfterIndex(inputArray, pIndex);
+  const oldParent = getParent(inputArray, parentId);
+  const updatedParent = { ...oldParent, ...fieldsToUpdate };
+  setInputArray([...parentsBefore, updatedParent, ...parentsAfter] as any);
+};
+
+export const updateChild = (objectState: any[], setObjectState: any, parentId, childId, fieldsToUpdate) => {
+  let pIndex = getParentIndex(objectState, parentId);
+  let cIndex = getChildIndex(objectState, parentId, childId);
+  const oldChild = getChild(objectState, parentId, childId);
+  const updatedChild = { ...oldChild, ...fieldsToUpdate };
+  let parentsBefore = getObjectsBeforeIndex(objectState, pIndex);
+  let parentsAfter = getObjectsAfterIndex(objectState, pIndex);
+  const oldParent = getParent(objectState, parentId);
+
+  const childrenBefore = getChildObjBeforeIndex(objectState, pIndex, cIndex);
+  const childrenAfter = getChildObjAfterIndex(objectState, pIndex, cIndex);
+
+  const newParent = {
+    ...oldParent,
+    children: [...childrenBefore, updatedChild, ...childrenAfter]
+  };
+
+  setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
 };

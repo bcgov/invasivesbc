@@ -71,7 +71,11 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const startFetchingLayers = () => {
     const newLayerArray = [];
     layersSelected.forEach((layer: any) => {
-      newLayerArray.push(layer.BCGWcode);
+      if (layer.layer_mode) {
+        newLayerArray.push(layer.layer_code);
+      } else if (layer.bcgw_code) {
+        newLayerArray.push(layer.bcgw_code);
+      }
     });
 
     //calling function to remove no longer needed elements from the queue

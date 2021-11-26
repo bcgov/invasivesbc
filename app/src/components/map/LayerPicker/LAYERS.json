@@ -3,9 +3,8 @@
     "id": "invasivesbc_records",
     "name": "INVASIVESBC Records",
     "order": 0,
+    "zIndex": 6000,
     "loaded": 70,
-    "checked": false,
-    "expanded": false,
     "enabled": false,
     "children": [
       {
@@ -17,12 +16,9 @@
         "color_code": "#000",
         "order": 0,
         "opacity": 0.4,
+        "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -30,9 +26,8 @@
     "id": "iapp_records",
     "name": "IAPP Records",
     "order": 1,
+    "zIndex": 5000,
     "loaded": 70,
-    "checked": false,
-    "expanded": false,
     "enabled": false,
     "children": [
       {
@@ -44,12 +39,9 @@
         "color_code": "#000",
         "order": 0,
         "opacity": 0.4,
+        "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -57,8 +49,8 @@
     "id": "administrative_boundaries",
     "name": "Administrative Boundaries",
     "order": 2,
+    "zIndex": 4000,
     "loaded": 70,
-    "expanded": false,
     "enabled": false,
     "children": [
       {
@@ -70,12 +62,9 @@
         "color_code": "#000",
         "order": 0,
         "opacity": 0.4,
+        "zIndex": 90,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "ministry_of_transportations_districts",
@@ -86,12 +75,9 @@
         "color_code": "#000",
         "order": 1,
         "opacity": 0.4,
+        "zIndex": 80,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "ministry_of_transportations_reagional",
@@ -102,12 +88,9 @@
         "color_code": "#000",
         "order": 2,
         "opacity": 0.4,
+        "zIndex": 70,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "ministry_of_transportation_road_inventory",
@@ -118,12 +101,9 @@
         "color_code": "#000",
         "order": 3,
         "opacity": 0.4,
+        "zIndex": 60,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "access_and_directory_management_services_regional_districts",
@@ -134,12 +114,9 @@
         "color_code": "#000",
         "order": 4,
         "opacity": 0.4,
+        "zIndex": 50,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "access_and_directory_management_services_municipalities",
@@ -150,12 +127,9 @@
         "color_code": "#000",
         "order": 5,
         "opacity": 0.4,
+        "zIndex": 40,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "jurisdictions",
@@ -166,12 +140,9 @@
         "color_code": "#000",
         "order": 6,
         "opacity": 0.4,
+        "zIndex": 30,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
 
       {
@@ -183,12 +154,9 @@
         "color_code": "#000",
         "order": 7,
         "opacity": 0.4,
+        "zIndex": 20,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "federal_parks",
@@ -199,12 +167,9 @@
         "color_code": "#000",
         "order": 8,
         "opacity": 0.4,
+        "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -212,10 +177,9 @@
     "id": "aquatic_layers_and_wells",
     "name": "Aquatic Layers and Wells",
     "order": 3,
+    "zIndex": 3000,
     "loaded": 70,
-    "expanded": false,
     "enabled": false,
-    "colorpicker_open": false,
     "children": [
       {
         "id": "freshwater_wells",
@@ -226,12 +190,9 @@
         "color_code": "#000",
         "order": 0,
         "opacity": 0.4,
+        "zIndex": 70,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "fish_watershed_atlas_streams",
@@ -242,12 +203,9 @@
         "color_code": "#000",
         "order": 1,
         "opacity": 0.4,
+        "zIndex": 60,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "fish_watershed_atlas_wetlands",
@@ -258,12 +216,9 @@
         "color_code": "#000",
         "order": 2,
         "opacity": 0.4,
+        "zIndex": 50,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "fish_sensitive_watershed_boundaries",
@@ -274,12 +229,9 @@
         "color_code": "#000",
         "order": 3,
         "opacity": 0.4,
+        "zIndex": 40,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "regional_invasive_species_organization_areas",
@@ -290,12 +242,9 @@
         "color_code": "#000",
         "order": 4,
         "opacity": 0.4,
+        "zIndex": 30,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "invasive_plant_management_areas",
@@ -306,12 +255,9 @@
         "color_code": "#000",
         "order": 5,
         "opacity": 0.4,
+        "zIndex": 20,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "first_nation_reserves",
@@ -322,12 +268,9 @@
         "color_code": "#000",
         "order": 6,
         "opacity": 0.4,
+        "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -335,8 +278,8 @@
     "id": "terrestial_layers",
     "name": "Terrestrial Layers",
     "order": 4,
+    "zIndex": 2000,
     "loaded": 70,
-    "expanded": false,
     "enabled": false,
     "children": [
       {
@@ -348,12 +291,9 @@
         "color_code": "#000",
         "order": 0,
         "opacity": 0.4,
+        "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "aggregate_tenures",
@@ -364,12 +304,9 @@
         "color_code": "#000",
         "order": 1,
         "opacity": 0.4,
+        "zIndex": 20,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "wildlife_habitat_areas",
@@ -380,12 +317,9 @@
         "color_code": "#000",
         "order": 2,
         "opacity": 0.4,
+        "zIndex": 30,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -393,8 +327,8 @@
     "id": "user_uploaded_layers",
     "name": "User Uploaded Layers",
     "order": 5,
+    "zIndex": 1000,
     "loaded": 70,
-    "expanded": false,
     "enabled": false,
     "children": []
   }

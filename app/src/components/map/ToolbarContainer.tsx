@@ -26,13 +26,7 @@ export const ToolbarContainer = (props) => {
         <div
           className="leaflet-control"
           style={{ display: 'flex', flexDirection: 'column', alignItems: 'end', padding: 10, gap: 10 }}>
-          <LayerPicker
-            map={props.map}
-            layers={props.layer}
-            inputGeo={props.inputGeo}
-            setWel
-            lIdandProximity={props.setWellIdandProximity}
-          />
+          <LayerPicker inputGeo={props.inputGeo} setWellIdandProximity={props.setWellIdandProximity} />
           <SetPointOnClick map={props.map} />
           <DisplayPosition map={props.map} />
           <MeasureTool />

@@ -48,7 +48,7 @@ export const generateGeo = (lat, lng, { setGeoPoint }) => {
   }
 };
 
-export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivityGeo }) => {
+export const GeneratePopup = (props) => {
   const themeContext = useContext(ThemeContext);
   const { themeType } = themeContext;
   const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
@@ -73,8 +73,8 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   });
 
   useEffect(() => {
-    if (lat && lng) {
-      var point = turf.point([lng, lat]);
+    if (props.lat && props.lng) {
+      var point = turf.point([props.lng, props.lat]);
       if (pointMode) {
         setBufferedGeo(point);
       } else {
@@ -162,7 +162,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
           }
         }
         setRows(tempArr);
-      } else setRows([]);
+      } else setRows(null);
     }
   }, [bufferedGeo]);
 
@@ -179,8 +179,12 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   }, [bufferedGeo]);
 
   const hideElement = () => {
-    if (!popupElRef?.current || !map) return;
-    map.closePopup();
+    if (!popupElRef?.current || !props.map) return;
+    props.map.closePopup();
+    props.setActivityGeo(null);
+    if (props.setClickMode) {
+      props.setClickMode(false);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
@@ -196,12 +200,19 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
       <Popup className={theme} ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
         <div>
           <TableContainer>
-            {section == 'position' && <RenderTablePosition rows={utmRows} />}
+            {section == 'position' && <RenderTablePosition rows={props.utmRows} />}
             {section == 'activity' && (
-              <RenderTableActivity setActivityGeo={setActivityGeo} map={map} rows={rows} setRows={setRows} />
+              <RenderTableActivity
+                setActivityGeo={props.setActivityGeo}
+                map={props.map}
+                rows={rows}
+                setRows={setRows}
+              />
             )}
             {section == 'databc' && <RenderTableDataBC rows={databc} />}
-            {section == 'poi' && <RenderTablePOI map={map} rows={poiTableRows} setPoiMarker={setPoiMarker} />}
+            {section == 'poi' && (
+              <RenderTablePOI map={props.map} rows={poiTableRows} setPoiMarker={props.setPoiMarker} />
+            )}
           </TableContainer>
           <Grid container>
             <BottomNavigation
@@ -351,7 +362,7 @@ function SetPointOnClick({ map }: any) {
         />
         <Typography className={toolClass.Font}>What's here?</Typography>
       </IconButton>
-      {utm && clickMode && (
+      {geoPoint && clickMode && (
         <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup
             utmRows={rows}
@@ -360,6 +371,7 @@ function SetPointOnClick({ map }: any) {
             lng={position.lng}
             setPoiMarker={setPoiMarker}
             setActivityGeo={setActivityGeo}
+            setClickMode={setClickMode}
           />
         </GeoJSON>
       )}

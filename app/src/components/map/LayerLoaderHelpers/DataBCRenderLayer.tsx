@@ -18,7 +18,7 @@ export enum IndependentLayers {
 }*/
 
 export const DataBCLayer = (props) => {
-  /* moved to NonDataBCRenderLayers.tsx: 
+  /* moved to IndependentRenderLayers.tsx: 
   const networkContext = useContext(NetworkContext);
 
   if (Object.values(IndependentLayers).includes(props.layerName)) {
@@ -34,10 +34,10 @@ export const DataBCLayer = (props) => {
     }
   }*/
 
-  if (!props.mode) {
+  if (!props.layer_mode) {
     throw new Error('you missed a map mode');
   }
-  switch (props.mode) {
+  switch (props.layer_mode) {
     case LayerMode.WMSOnline:
       return (
         <WMSTileLayer
@@ -46,7 +46,8 @@ export const DataBCLayer = (props) => {
           opacity={props.opacity}
           format={'image/png'}
           url="http://openmaps.gov.bc.ca/geo/ows"
-          layers={props.layerName}
+          layers={props.bcgw_code}
+          zIndex={props.zIndex}
         />
       );
     case LayerMode.WFSOnline:
@@ -55,7 +56,7 @@ export const DataBCLayer = (props) => {
           inputGeo={props.inputGeo}
           online={true}
           opacity={props.opacity}
-          dataBCLayerName={props.layerName}
+          dataBCLayerName={props.bcgw_code}
           setWellIdandProximity={props.setWellIdandProximity}
         />
       );

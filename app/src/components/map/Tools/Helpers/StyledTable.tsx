@@ -333,7 +333,7 @@ export const RenderTableActivity = ({ map, rows, setRows, setActivityGeo }) => {
     <Table padding="none" size="small">
       <CreateTableHead labels={labels} />
       <TableBody>
-        {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows).map((row) => (
+        {(rowsPerPage > 0 ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows)?.map((row) => (
           <>
             <StyledTableRow key={row?.obj.activity_id}>
               <StyledTableCell
