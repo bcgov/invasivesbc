@@ -46,6 +46,7 @@ import { debounced } from '../../../utils/FunctionUtils';
 import { calculateGeometryArea, calculateLatLng } from '../../../utils/geometryHelpers';
 import { retrieveFormDataFromSession, saveFormDataToSession } from '../../../utils/saveRetrieveFormData';
 import { MapContextMenuData } from '../map/MapContextMenu';
+import { AuthStateContext } from '../../../contexts/authStateContext';
 import './scrollbar.css';
 
 const useStyles = makeStyles((theme) => ({
@@ -76,8 +77,9 @@ interface IActivityPageProps {
 const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const classes = useStyles();
   const dataAccess = useDataAccess();
+  const authStateContext = useContext(AuthStateContext);
   const databaseContext = useContext(DatabaseContext);
-
+  const api = useInvasivesApi();
   const [isLoading, setIsLoading] = useState(true);
   const [linkedActivity, setLinkedActivity] = useState(null);
   const [geometry, setGeometry] = useState<Feature[]>([]);
@@ -95,6 +97,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const [doc, setDoc] = useState(null);
 
   const [photos, setPhotos] = useState<IPhoto[]>([]);
+
+  const [applicationUsers, setApplicationUsers] = useState([]);
 
   /**
    * Applies overriding updates to the current doc,
@@ -173,12 +177,21 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const getDefaultFormDataValues = (activity: any) => {
     const { activity_data } = activity.formData || {};
-
+    let needsInsert = false;
+    let userNameInject = '';
+    if (activity_data.activity_persons && activity_data.activity_persons.length > 0) {
+      if (activity_data.activity_persons[0].person_name === undefined && activity_data.activity_persons.length === 1) {
+        needsInsert = true;
+        console.log(authStateContext.userInfo);
+        userNameInject = authStateContext.userInfo.name;
+      }
+    }
     return {
       ...activity.formData,
       activity_data: {
         ...activity_data,
-        reported_area: calculateGeometryArea(activity.geometry)
+        reported_area: calculateGeometryArea(activity.geometry),
+        activity_persons: needsInsert ? [{ person_name: userNameInject }] : activity_data.activity_persons
       }
     };
   };
@@ -295,7 +308,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any, callbackFun: () => void) => {
     let updatedFormData = event.formData;
 
-    console.log(event);
+    // console.log(event);
 
     updatedFormData.activity_subtype_data = populateHerbicideCalculatedFields(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);
@@ -630,6 +643,15 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
+    api.getApplicationUsers().then((res) => {
+      setApplicationUsers(res);
+    });
+  }, [isLoading, doc]);
+
+  useEffect(() => {
+    if (isLoading || !doc) {
+      return;
+    }
 
     if (doc.docType !== DocType.REFERENCE_ACTIVITY) {
       savePhotos(photos);
@@ -714,7 +736,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
               getTransectOffsetDistanceValidator(),
               getVegTransectPointsPercentCoverValidator(),
               getDurationCountAndPlantCountValidation(),
-              getPersonNameNoNumbersValidator(),
+              getPersonNameNoNumbersValidator(applicationUsers),
               getJurisdictionPercentValidator(),
               getInvasivePlantsValidator(linkedActivity),
               getPlotIdentificatiomTreesValidator(doc.activitySubtype)
