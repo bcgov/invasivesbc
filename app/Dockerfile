@@ -7,11 +7,11 @@ FROM node:16
 COPY ./package.json $HOME
 COPY ./package-lock.json $HOME
 
-RUN chmod 0666 package.json
-RUN chmod 0666 package-lock.json
 
 RUN id
 RUN ls -la $HOME
+RUN chmod 0666 package.json
+RUN chmod 0666 package-lock.json
 
 # INSTALL NODE DEPENDENCIES
 RUN npm install
