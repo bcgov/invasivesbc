@@ -103,6 +103,7 @@
     "react-select-material-ui": "^8.0.1",
     "react-sortable-hoc": "^2.0.0",
     "reproject": "^1.2.6",
+    "requests": "^0.3.0",
     "rxjs": "^6.6.7",
     "sass": "^1.43.4",
     "stream-to-string": "^1.2.0",
