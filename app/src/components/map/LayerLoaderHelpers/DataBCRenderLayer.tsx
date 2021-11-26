@@ -46,7 +46,7 @@ export const DataBCLayer = (props) => {
           opacity={props.opacity}
           format={'image/png'}
           url="http://openmaps.gov.bc.ca/geo/ows"
-          layers={props.layerName}
+          layers={props.bcgw_code}
           zIndex={props.zIndex}
         />
       );

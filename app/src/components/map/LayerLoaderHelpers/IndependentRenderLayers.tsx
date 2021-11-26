@@ -14,15 +14,34 @@ export const IndependentLayer = (props) => {
   const networkContext = useContext(NetworkContext);
 
   if (Object.values(IndependentLayers).includes(props.layerName)) {
-    switch (props.layerName) {
+    switch (props.layer_code) {
       case 'LEAN_ACTIVITIES':
         return (
-          <ActivitiesLayer color_code={props.color_code} online={networkContext.connected} opacity={props.opacity} />
+          <ActivitiesLayer
+            color_code={props.color_code}
+            online={networkContext.connected}
+            opacity={props.opacity}
+            zIndex={props.zIndex}
+          />
         );
       case 'LEAN_POI':
-        return <PoisLayer online={networkContext.connected} opacity={props.opacity} />;
+        return (
+          <PoisLayer
+            color_code={props.color_code}
+            online={networkContext.connected}
+            opacity={props.opacity}
+            zIndex={props.zIndex}
+          />
+        );
       case 'JURISDICTIONS':
-        return <JurisdictionsLayer online={networkContext.connected} opacity={props.opacity} />;
+        return (
+          <JurisdictionsLayer
+            color_code={props.color_code}
+            online={networkContext.connected}
+            opacity={props.opacity}
+            zIndex={props.zIndex}
+          />
+        );
       default:
         return <></>;
     }
