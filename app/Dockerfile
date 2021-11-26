@@ -10,6 +10,8 @@ COPY ./package-lock.json $HOME
 RUN chmod 0666 package.json
 RUN chmod 0666 package-lock.json
 
+RUN ls -la $HOME
+
 # INSTALL NODE DEPENDENCIES
 RUN npm install
 RUN npm install -g @ionic/cli
