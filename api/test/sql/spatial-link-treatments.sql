@@ -49,14 +49,11 @@ create index spatial_explode_geom_gist on spatial_explode using gist ("geom");
 alter table spatial_explode add column gid serial;
 alter table spatial_explode add primary key (gid);
 
-
-
 /*********** Merge everything together **************/
 drop table if exists treatments_by_species;
 create table treatments_by_species as
 select
-  species,
-  activity_type,
+  treatment->>'invasive_plant_code' "species",
   max(created_timestamp) "max_created_timestamp",
   array_agg(activity_incoming_data_id) "activity_ids", -- Collect original IDs 
   st_unaryUnion( -- Remove embedded linework
@@ -71,8 +68,7 @@ select
 from
   spatial_explode
 group by
-  species,
-  activity_type
+  treatment->>'invasive_plant_code'
 ;
 
 drop index if exists treatments_by_species_geom_gist;
