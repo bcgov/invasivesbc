@@ -149,7 +149,7 @@
     "start:ionic": "ionic serve",
     "start:ionic:reload": "ionic serve",
     "build-prod": "react-scripts build --prod",
-    "deploy_start": "npx serve -s build",
+    "deploy_start": "npx serve -s build -l 8100",
     "eject": "react-scripts eject",
     "lint": "eslint src/ --ext .jsx,.js,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix"
