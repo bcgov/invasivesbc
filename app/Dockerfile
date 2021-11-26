@@ -4,14 +4,11 @@
 
 FROM node:16
 
-COPY ./package.json $HOME
-COPY ./package-lock.json $HOME
-
+COPY --chown 1001:0 ./package.json $HOME 
+COPY --chown 1001:0 ./package-lock.json $HOME
 
 RUN id
 RUN ls -la $HOME
-RUN chmod 0666 package.json
-RUN chmod 0666 package-lock.json
 
 # INSTALL NODE DEPENDENCIES
 RUN npm install
