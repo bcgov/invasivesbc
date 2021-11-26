@@ -30,10 +30,10 @@ parameters:
     value: dev
   - name: BASE_IMAGE_URL
     required: true
-    value: registry.redhat.io/rhscl/nodejs-12-rhel7
+    value: registry.access.redhat.com/ubi8/nodejs-16:1-5
   - name: SOURCE_IMAGE_NAME
     required: true
-    value: nodejs-12-rhel7
+    value: nodejs-16
   - name: SOURCE_IMAGE_TAG
     required: true
     value: latest

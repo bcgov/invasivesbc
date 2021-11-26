@@ -58,6 +58,7 @@ module.exports = (settings) => {
         CHANGE_ID: changeId,
         ENVIRONMENT: phases[phase].env || 'dev',
         NODE_ENV: phases[phase].env || 'dev',
+        REACT_APP_REAL_NODE_ENV: phases[phase].env === 'dev' ? 'development' : 'production',
         DB_SERVICE_NAME: `${phases[phase].name}-postgresql${phases[phase].suffix}`,
         IMAGE: dbSetupImageStream.image.dockerImageReference
       }

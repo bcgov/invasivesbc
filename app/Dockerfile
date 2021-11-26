@@ -2,27 +2,20 @@
 # This DockerFile is used for deployments only, please do not change for other purposes. It will break our deployment.
 # ####################################################################################################################
 
-FROM node:12
+FROM node:16
 
-# Setting Path
-ENV PATH /opt/rh/rh-nodejs12/root/usr/bin:/opt/app-root/src/node_modules/.bin/:/opt/app-root/src/app.npm-global/bin/:/opt/app-root/src/app/bin:/opt/app-root/src/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+COPY --chown=1001:0 ./package.json $HOME 
+COPY --chown=1001:0 ./package-lock.json $HOME
 
-# Create app directory
-
-WORKDIR /opt/app-root/src
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-# COPY PACKAGE JSON
-COPY ./package*.json ./
+RUN id
+RUN ls -la $HOME
 
 # INSTALL NODE DEPENDENCIES
 RUN npm install
 RUN npm install -g @ionic/cli
 
 # Copy All the sources
-COPY ./ .
+COPY ./ $HOME
 
 # BUILD APP
 RUN npm run build-prod
@@ -31,3 +24,4 @@ EXPOSE 3030
 
 # RUN APP
 CMD ["npm", "run", "deploy_start"]
+
