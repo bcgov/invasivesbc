@@ -4,8 +4,8 @@
 
 FROM node:16
 
-COPY --chown 1001:0 ./package.json $HOME 
-COPY --chown 1001:0 ./package-lock.json $HOME
+COPY --chown=1001:0 ./package.json $HOME 
+COPY --chown=1001:0 ./package-lock.json $HOME
 
 RUN id
 RUN ls -la $HOME
