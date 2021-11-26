@@ -19,6 +19,7 @@ const Treatment_ChemicalPlant = {
     'applicator1_license': {},
     'applicator2_name': {},
     'applicator2_license': {},
+    'application_start_time': {},
     'pesticide_employer_code': {
       'ui:widget': 'single-select-autocomplete'
     },
@@ -54,6 +55,7 @@ const Treatment_ChemicalPlant = {
       'applicator1_license',
       'applicator2_name',
       'applicator2_license',
+      'application_start_time',
       'pesticide_employer_code',
       'pesticide_user_license_number',
       'chemical_method_code',
@@ -211,6 +213,11 @@ const Activity = {
       ...BaseUISchemaComponents.Jurisdictions
     }
   },
+  'activity_persons': {
+    items: {
+      ...BaseUISchemaComponents.ActivityPersons
+    }
+  },
   'general_comment': {},
   'location_description': {
     'ui:widget': 'textarea'
@@ -236,6 +243,7 @@ const Activity = {
     'employer_code',
     'invasive_species_agency_code',
     'jurisdictions',
+    'activity_persons',
     'general_comment',
     'location_description',
     'access_description',
