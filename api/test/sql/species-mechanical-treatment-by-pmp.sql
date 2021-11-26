@@ -45,9 +45,9 @@ from
     Run an outer join on the intersection of PMPs and Activities.
     Shapes that intersect (inside, touching or straddling) will
     be sent to the above case statement for the decision as to copy
-    or clip. Otherwise the treatment just gets copied over.
+    or clip. Otherwise the treatment just gets copied over.:w
   */
-  public.activities_by_species p join
+  public.treatments_by_species p join
   public.pest_management_plan_areas on
   public.st_intersects(
     p.geom,public.st_transform(
@@ -82,6 +82,7 @@ order by
 
 /**
  Querying mechanical treatments
+ TODO: Deprecate this part
  **/
 select
   c.code_description "Treatment",
