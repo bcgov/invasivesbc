@@ -8,7 +8,7 @@
     "url": "https://github.com/bcgov/invasivesbc.git"
   },
   "engines": {
-    "node": ">= 14.0.0",
+    "node": ">= 16.0.0",
     "npm": ">= 6.0.0"
   },
   "dependencies": {
@@ -103,7 +103,6 @@
     "react-select-material-ui": "^8.0.1",
     "react-sortable-hoc": "^2.0.0",
     "reproject": "^1.2.6",
-    "requests": "^0.3.0",
     "rxjs": "^6.6.7",
     "sass": "^1.43.4",
     "stream-to-string": "^1.2.0",
@@ -149,7 +148,7 @@
     "start:ionic": "ionic serve",
     "start:ionic:reload": "ionic serve",
     "build-prod": "react-scripts build --prod",
-    "deploy_start": "node server",
+    "deploy_start": "npm run start",
     "eject": "react-scripts eject",
     "lint": "eslint src/ --ext .jsx,.js,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix"
