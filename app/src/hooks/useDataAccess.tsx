@@ -521,8 +521,6 @@ export const useDataAccess = () => {
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
       const old = await getAppState();
-      console.log('old app state', old);
-      console.log('hello');
       if (old) {
         localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...old, ...newState }));
       } else {
