@@ -64,7 +64,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
   return (
     <>
-      {userInfoLoaded === true && (
+      {
         <AuthStateContext.Provider
           value={{
             keycloak,
@@ -77,7 +77,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
           }}>
           {props.children}
         </AuthStateContext.Provider>
-      )}
+      }
     </>
   );
 };
