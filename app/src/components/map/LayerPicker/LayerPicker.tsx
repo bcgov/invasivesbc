@@ -34,18 +34,18 @@ import {
   Slider,
   Typography
 } from '@material-ui/core';
-import ColorLens from '@material-ui/icons/ColorLens';
+import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 // MUI Icons
 import LayersIcon from '@material-ui/icons/Layers';
 import SettingsIcon from '@material-ui/icons/Settings';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
-import { ColorPicker } from 'material-ui-color';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
 import { addOrRemoveLayer, LayersSelector } from './LayersSelectorAndRender';
 import { ThemeContext } from 'contexts/themeContext';
+import ColorPicker from 'material-ui-color-picker';
 
 export const LayerPicker = React.memo(
   (props: any) => {
@@ -155,7 +155,7 @@ export const LayerPicker = React.memo(
                     onClick={() =>
                       toggleDialog(layersActions, setLayersActions, parent, child, { dialog_colorpicker_open: true })
                     }>
-                    <ColorLens id="color-lens" style={{ color: child.color_code }} />
+                    <ColorLensIcon id="color-lens" style={{ color: child.color_code }} />
                   </IconButton>
                   <Dialog
                     id="layer-settings-dialog"
