@@ -3,15 +3,49 @@
   within a certain distance from eachother.
  */
 
-/*
-  Deletes
-  1. Create an exploaded layer of positives
-  2. Create an exploaded layer of negatives
-*/
--- Positive Layer
-drop table if exists test_spatial_expload_positive;
-create table test_spatial_expload_positive as
--- create temporary table test_spatial_expload_positive as
+/**
+  Took me a while to find where this data was.
+  Will need to create a separate spatial link query
+  to split up the following
+  form_data->activity_subtype_data->mechanical_plant_information->[
+    - invasive_plant_code
+    - mechanical_disposal_code
+    - mechanical_method_code
+    - treated_area
+  ]
+**/
+
+-- Spread the species into separate records
+drop table if exists spatial_explode;
+create table spatial_explode as
+select
+  activity_incoming_data_id,
+  created_timestamp,
+  jsonb_array_elements(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'mechanical_plant_information'
+  ) "treatment",
+  geometry(geog) "geom" -- Convert to Geometry (EPSG:4326)
+from
+  activity_incoming_data
+where
+  deleted_timestamp is null and -- Not deleted
+  activity_type = 'Treatment' and -- Treatments
+  activity_subtype = 'Activity_Treatment_MechanicalPlant' and
+  jsonb_array_length(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'mechanical_plant_information'
+  ) > 0
+;
+
+-- Spread the species into separate records
+drop table if exists spatial_explode;
+create table spatial_explode as
+-- create temporary table spatial_explode as
   select 
     activity_type,
     activity_subtype,
@@ -22,7 +56,8 @@ create table test_spatial_expload_positive as
   from
     activity_incoming_data
   where
-    activity_type = 'Observation' and -- Observations for now
+    activity_type = 'Treatment' and -- Treatments
+    activity_subtype = 'Activity_Treatment_MechanicalPlant' and
     deleted_timestamp is null and -- Not deleted
     array_length( -- At least one species registered
       species_positive, 1
@@ -30,68 +65,11 @@ create table test_spatial_expload_positive as
   ;
 
 -- Add indexes and IDs
-drop index if exists test_spatial_explode_positive_geom_gist;
-create index test_spatial_explode_positive_geom_gist on test_spatial_expload_positive using gist ("geom");
+drop index if exists spatial_explode_geom_gist;
+create index spatial_explode_geom_gist on spatial_explode using gist ("geom");
 
-alter table test_spatial_expload_positive add column gid serial;
-alter table test_spatial_expload_positive add primary key (gid);
-
-
--- Negative Layer
-drop table if exists test_spatial_expload_negative;
-create table test_spatial_expload_negative as
--- create temporary table test_spatial_expload_negative as
-  select 
-    activity_subtype,
-    created_timestamp,
-    activity_incoming_data_id,
-    jsonb_array_elements(to_jsonb(species_negative)) "species",
-    geometry(geog) "geom"
-  from
-    activity_incoming_data
-  where
-    activity_type = 'Observation' and -- Observations for now
-    deleted_timestamp is null and
-    array_length(
-      species_negative, 1
-    ) > 0
-  ;
-
-drop index if exists test_spatial_explode_negative_geom_gist;
-create index test_spatial_explode_negative_geom_gist on test_spatial_expload_negative using gist ("geom");
-
-alter table test_spatial_expload_negative add column gid serial;
-alter table test_spatial_expload_negative add primary key (gid);
-
-
-
-/*********** Run the deletion **************/
-drop table if exists test_spatial_positive_negative;
-create temporary table test_spatial_positive_negative as
-select
-  pos.species #>> '{}' "species",
-  pos.activity_type,
-  pos.created_timestamp,
-  pos.activity_incoming_data_id,
-  case  -- If there is over, delete, otherwise pass through
-    when st_intersects(pos.geom,neg.geom)
-    then st_difference(pos.geom,neg.geom)
-    else pos.geom
-    end
-from
-  test_spatial_expload_positive pos left outer join -- This allows the pass through
-  test_spatial_expload_negative neg
-  on
-    st_intersects(pos.geom,neg.geom) and
-    pos.species = neg.species and
-    pos.created_timestamp < neg.created_timestamp -- Only delete new negatives
-;
-
-drop index if exists test_spatial_positive_negative_geom_gist;
-create index test_spatial_positive_negative_geom_gist on test_spatial_positive_negative using gist ("geom");
-
-alter table test_spatial_positive_negative add column gid serial;
-alter table test_spatial_positive_negative add primary key (gid);
+alter table spatial_explode add column gid serial;
+alter table spatial_explode add primary key (gid);
 
 
 
@@ -113,7 +91,7 @@ select
     ,3)
   ) "geom"
 from
-  test_spatial_positive_negative
+  spatial_explode
 group by
   species,
   activity_type
