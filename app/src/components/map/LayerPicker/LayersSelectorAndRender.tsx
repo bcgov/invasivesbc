@@ -102,7 +102,7 @@ export const LayersSelector = ({ parent, child }) => {
           <AccordionSummary id="accordion-summary">
             <Typography>Server</Typography>
           </AccordionSummary>
-          {child.accordion_server_expanded && (
+          {getChildAction(layersActions, parent.id, child.id).accordion_server_expanded && (
             <FormControl id="radio-control">
               <RadioGroup
                 id="radio-group"
@@ -130,7 +130,7 @@ export const LayersSelector = ({ parent, child }) => {
         <AccordionSummary id="accordion-summary">
           <Typography>Local</Typography>
         </AccordionSummary>
-        {child.accordion_local_expanded && (
+        {getChildAction(layersActions, parent.id, child.id).accordion_local_expanded && (
           <FormControl id="radio-control">
             <RadioGroup
               id="radio-group"
