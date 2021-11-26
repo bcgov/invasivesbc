@@ -4,24 +4,18 @@
 
 FROM node:16
 
-# Create app directory
-RUN mkdir -p /opt/app-root/src
-WORKDIR /opt/app-root/src
-RUN chown -R 1001:1001 /opt/app-root
-USER 1001
-
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 # COPY PACKAGE JSON
-COPY ./package*.json ./
+COPY ./package*.json $HOME
 
 # INSTALL NODE DEPENDENCIES
 RUN npm install
 RUN npm install -g @ionic/cli
 
 # Copy All the sources
-COPY ./ .
+COPY ./ $HOME
 
 # BUILD APP
 RUN npm run build-prod
