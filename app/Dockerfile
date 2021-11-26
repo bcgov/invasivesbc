@@ -4,11 +4,11 @@
 
 FROM node:16
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-# COPY PACKAGE JSON
-COPY ./package*.json $HOME
+COPY ./package.json $HOME
+COPY ./package-lock.json $HOME
+
+RUN chmod 0666 package.json
+RUN chmod 0666 package-lock.json
 
 # INSTALL NODE DEPENDENCIES
 RUN npm install
@@ -24,3 +24,4 @@ EXPOSE 3030
 
 # RUN APP
 CMD ["npm", "run", "deploy_start"]
+
