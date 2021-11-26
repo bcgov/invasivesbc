@@ -42,28 +42,6 @@ where
   ) > 0
 ;
 
--- Spread the species into separate records
-drop table if exists spatial_explode;
-create table spatial_explode as
--- create temporary table spatial_explode as
-  select 
-    activity_type,
-    activity_subtype,
-    created_timestamp,
-    activity_incoming_data_id,
-    jsonb_array_elements(to_jsonb(species_positive)) "species", -- Explode species
-    geometry(geog) "geom" -- Convert to Geometry (EPSG:4326)
-  from
-    activity_incoming_data
-  where
-    activity_type = 'Treatment' and -- Treatments
-    activity_subtype = 'Activity_Treatment_MechanicalPlant' and
-    deleted_timestamp is null and -- Not deleted
-    array_length( -- At least one species registered
-      species_positive, 1
-    ) > 0
-  ;
-
 -- Add indexes and IDs
 drop index if exists spatial_explode_geom_gist;
 create index spatial_explode_geom_gist on spatial_explode using gist ("geom");
