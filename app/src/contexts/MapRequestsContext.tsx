@@ -1,6 +1,6 @@
 import * as React from 'react';
 import layers from '../components/map/LayerPicker/LAYERS.json';
-
+import layersActionsJSON from 'components/map/LayerPicker/LayersActionsHelper/LAYERS_ACTIONS.json';
 interface IMapExtentLayersContext {
   mapRequest: {
     layer: any;
@@ -9,6 +9,8 @@ interface IMapExtentLayersContext {
   setMapRequest: React.Dispatch<React.SetStateAction<any>>;
   layersSelected: IParentLayer[];
   setLayersSelected: React.Dispatch<React.SetStateAction<IParentLayer[]>>;
+  layersActions: any[];
+  setLayersActions: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface IParentLayer {
@@ -49,12 +51,15 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
   },
   setMapRequest: () => {},
   layersSelected: [],
-  setLayersSelected: () => {}
+  setLayersSelected: () => {},
+  layersActions: [],
+  setLayersActions: () => {}
 });
 
 export const MapRequestContextProvider: React.FC = (props) => {
   const [mapRequest, setMapRequest] = React.useState(null);
   const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers);
+  const [layersActions, setLayersActions] = React.useState<any[]>(layersActionsJSON);
 
   return (
     <MapRequestContext.Provider
@@ -62,7 +67,9 @@ export const MapRequestContextProvider: React.FC = (props) => {
         mapRequest,
         setMapRequest,
         layersSelected,
-        setLayersSelected
+        setLayersSelected,
+        layersActions,
+        setLayersActions
       }}>
       {props.children}
     </MapRequestContext.Provider>

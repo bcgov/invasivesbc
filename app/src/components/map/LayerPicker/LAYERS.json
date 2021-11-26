@@ -5,8 +5,6 @@
     "order": 0,
     "zIndex": 6000,
     "loaded": 70,
-    "checked": false,
-    "expanded": false,
     "enabled": false,
     "children": [
       {
@@ -20,11 +18,7 @@
         "opacity": 0.4,
         "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -34,8 +28,6 @@
     "order": 1,
     "zIndex": 5000,
     "loaded": 70,
-    "checked": false,
-    "expanded": false,
     "enabled": false,
     "children": [
       {
@@ -49,11 +41,7 @@
         "opacity": 0.4,
         "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -63,7 +51,6 @@
     "order": 2,
     "zIndex": 4000,
     "loaded": 70,
-    "expanded": false,
     "enabled": false,
     "children": [
       {
@@ -77,11 +64,7 @@
         "opacity": 0.4,
         "zIndex": 90,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "ministry_of_transportations_districts",
@@ -94,11 +77,7 @@
         "opacity": 0.4,
         "zIndex": 80,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "ministry_of_transportations_reagional",
@@ -111,11 +90,7 @@
         "opacity": 0.4,
         "zIndex": 70,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "ministry_of_transportation_road_inventory",
@@ -128,11 +103,7 @@
         "opacity": 0.4,
         "zIndex": 60,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "access_and_directory_management_services_regional_districts",
@@ -145,11 +116,7 @@
         "opacity": 0.4,
         "zIndex": 50,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "access_and_directory_management_services_municipalities",
@@ -162,11 +129,7 @@
         "opacity": 0.4,
         "zIndex": 40,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "jurisdictions",
@@ -179,11 +142,7 @@
         "opacity": 0.4,
         "zIndex": 30,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
 
       {
@@ -197,11 +156,7 @@
         "opacity": 0.4,
         "zIndex": 20,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "federal_parks",
@@ -214,11 +169,7 @@
         "opacity": 0.4,
         "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -228,9 +179,7 @@
     "order": 3,
     "zIndex": 3000,
     "loaded": 70,
-    "expanded": false,
     "enabled": false,
-    "colorpicker_open": false,
     "children": [
       {
         "id": "freshwater_wells",
@@ -243,11 +192,7 @@
         "opacity": 0.4,
         "zIndex": 70,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "fish_watershed_atlas_streams",
@@ -260,11 +205,7 @@
         "opacity": 0.4,
         "zIndex": 60,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "fish_watershed_atlas_wetlands",
@@ -277,11 +218,7 @@
         "opacity": 0.4,
         "zIndex": 50,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "fish_sensitive_watershed_boundaries",
@@ -294,11 +231,7 @@
         "opacity": 0.4,
         "zIndex": 40,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "regional_invasive_species_organization_areas",
@@ -311,11 +244,7 @@
         "opacity": 0.4,
         "zIndex": 30,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "invasive_plant_management_areas",
@@ -328,11 +257,7 @@
         "opacity": 0.4,
         "zIndex": 20,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "first_nation_reserves",
@@ -345,11 +270,7 @@
         "opacity": 0.4,
         "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -359,7 +280,6 @@
     "order": 4,
     "zIndex": 2000,
     "loaded": 70,
-    "expanded": false,
     "enabled": false,
     "children": [
       {
@@ -373,11 +293,7 @@
         "opacity": 0.4,
         "zIndex": 10,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "aggregate_tenures",
@@ -390,11 +306,7 @@
         "opacity": 0.4,
         "zIndex": 20,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       },
       {
         "id": "wildlife_habitat_areas",
@@ -407,11 +319,7 @@
         "opacity": 0.4,
         "zIndex": 30,
         "loaded": 70,
-        "enabled": false,
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
+        "enabled": false
       }
     ]
   },
@@ -421,7 +329,6 @@
     "order": 5,
     "zIndex": 1000,
     "loaded": 70,
-    "expanded": false,
     "enabled": false,
     "children": []
   }

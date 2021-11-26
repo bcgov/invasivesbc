@@ -7,10 +7,12 @@ import {
   RadioGroup,
   Typography
 } from '@material-ui/core';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
-import { updateChild } from './LayerPicker';
-import { getChild } from './SortLayerOrder';
+import { getChildAction } from './LayersActionsHelper/LayersActionsFunctions';
+import { updateChild } from './SortLayerOrder';
+import { updateChildAction } from './LayersActionsHelper/LayersActionsFunctions';
 
 const getIndex = (childId, layers) => {
   var index = -1;
@@ -21,22 +23,6 @@ const getIndex = (childId, layers) => {
     }
   }
   return index;
-};
-
-export const updateLayer = (fieldsToUpdate, layers, setLayers, childId) => {
-  var index = getIndex(childId, layers);
-  if (index > -1) {
-    var oldLayer = layers[index];
-    var layersBefore = [...layers.slice(0, index)];
-    var layersAfter = [...layers.slice(index)];
-    var updatedLayer = { ...oldLayer, ...fieldsToUpdate };
-    layersAfter[0] = updatedLayer;
-    console.log('layersBefore', layersBefore);
-    console.log('layersAfter', layersAfter);
-    const returnVal = [...layersBefore, ...layersAfter];
-
-    setLayers(returnVal);
-  }
 };
 
 export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
@@ -85,40 +71,34 @@ export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
   }
 };
 
-export const LayersSelector = ({ parent, child, objectState, setObjectState, layers, setLayers }) => {
+export const LayersSelector = ({ parent, child }) => {
   const networkContext = useContext(NetworkContext);
+  const mapLayersContext = useContext(MapRequestContext);
+  const { layersSelected, setLayersSelected } = mapLayersContext;
+  const { layersActions, setLayersActions } = mapLayersContext;
 
   const onServerAccordionChange = (event: any, expanded: any) => {
-    updateChild(
-      parent.id,
-      child.id,
-      {
-        accordion_local_expanded: false,
-        accordion_server_expanded: !getChild(objectState, parent.id, child.id).accordion_server_expanded
-      },
-      objectState,
-      setObjectState
-    );
+    updateChildAction(layersActions, setLayersActions, parent.id, child.id, {
+      accordion_local_expanded: false,
+      accordion_server_expanded: expanded
+    });
   };
 
   const onLocalAccordionChange = (event: any, expanded: any) => {
-    updateChild(
-      parent.id,
-      child.id,
-      {
-        accordion_local_expanded: !getChild(objectState, parent.id, child.id).accordion_local_expanded,
-        accordion_server_expanded: false
-      },
-      objectState,
-      setObjectState
-    );
+    updateChildAction(layersActions, setLayersActions, parent.id, child.id, {
+      accordion_local_expanded: expanded,
+      accordion_server_expanded: false
+    });
   };
 
   return (
     <>
       {/* Server Accordion */}
       {networkContext.connected && (
-        <Accordion id="server-accordion" expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
+        <Accordion
+          id="server-accordion"
+          expanded={getChildAction(layersActions, parent.id, child.id).accordion_server_expanded}
+          onChange={onServerAccordionChange}>
           <AccordionSummary id="accordion-summary">
             <Typography>Server</Typography>
           </AccordionSummary>
@@ -128,8 +108,9 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
                 id="radio-group"
                 defaultValue={child.layer_mode}
                 onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                  updateChild(parent.id, child.id, { layer_mode: event.target.value }, objectState, setObjectState);
-                  updateLayer({ layer_mode: event.target.value }, layers, setLayers, child.id);
+                  updateChild(layersSelected, setLayersSelected, parent.id, child.id, {
+                    layer_mode: event.target.value
+                  });
                 }}>
                 <FormControlLabel value="wms_online" control={<Radio />} label="WMS" />
                 <FormControlLabel value="vector_tiles_online" control={<Radio />} label="Vector Tiles" />
@@ -142,7 +123,10 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
 
       {/* Local Accordion */}
 
-      <Accordion id="local-accordion" expanded={child.accordion_local_expanded} onChange={onLocalAccordionChange}>
+      <Accordion
+        id="local-accordion"
+        expanded={getChildAction(layersActions, parent.id, child.id).accordion_local_expanded}
+        onChange={onLocalAccordionChange}>
         <AccordionSummary id="accordion-summary">
           <Typography>Local</Typography>
         </AccordionSummary>
@@ -152,8 +136,7 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
               id="radio-group"
               defaultValue={child.layer_mode}
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                updateChild(parent.id, child.id, { layer_mode: event.target.value }, objectState, setObjectState);
-                updateLayer({ layer_mode: event.target.value }, layers, setLayers, child.id);
+                updateChild(layersSelected, setLayersSelected, parent.id, child.id, { layer_mode: event.target.value });
               }}>
               <FormControlLabel value="vector_tiles_offline" control={<Radio />} label="Vector Tiles" />
               <FormControlLabel value="wfs_offline" control={<Radio />} label="WFS" />
