@@ -1,6 +1,5 @@
-import React, { useEffect, useContext, useRef, useMemo } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 /* HelperFiles Parent Layers */
@@ -39,11 +38,9 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 // MUI Icons
 import LayersIcon from '@material-ui/icons/Layers';
-import SettingsIcon from '@material-ui/icons/Settings';
 import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
-import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
-import { addOrRemoveLayer, LayersSelector } from './LayersSelectorAndRender';
+import { LayerModeDialog } from './LayerModeSelector';
 import { ThemeContext } from 'contexts/themeContext';
 import ColorPicker from 'material-ui-color-picker';
 
@@ -233,39 +230,6 @@ export const LayerPicker = React.memo(
 
     return (
       <>
-        {layersSelected.map((parent) => (
-          <>
-            {parent.children.map(
-              (child) =>
-                child.enabled && (
-                  <>
-                    {child.bcgw_code ? (
-                      <DataBCLayer
-                        opacity={child.opacity}
-                        bcgw_code={child.bcgw_code}
-                        layer_mode={child.layer_mode}
-                        inputGeo={props.inputGeo}
-                        setWellIdandProximity={props.setWellIdandProximity}
-                        color_code={child.color_code}
-                        zIndex={parent.zIndex + child.zIndex}
-                      />
-                    ) : (
-                      <IndependentLayer
-                        opacity={child.opacity}
-                        layer_code={child.layer_code}
-                        bcgw_code={child.bcgw_code}
-                        layer_mode={child.layer_mode}
-                        inputGeo={props.inputGeo}
-                        setWellIdandProximity={props.setWellIdandProximity}
-                        color_code={child.color_code}
-                        zIndex={child.zIndex}
-                      />
-                    )}
-                  </>
-                )
-            )}
-          </>
-        ))}
         <PopupState variant="popover" popupId="layer-picker-popup-state">
           {(popupState) => (
             <>
@@ -324,37 +288,3 @@ export const LayerPicker = React.memo(
     return true;
   }
 );
-
-const LayerModeDialog = (props) => {
-  const mapLayersContext = useContext(MapRequestContext);
-  const { layersActions, setLayersActions } = mapLayersContext;
-  const action = getChildAction(layersActions, props.parent.id, props.child.id);
-
-  return (
-    <Grid item xs={2}>
-      <IconButton
-        id="settings-btn"
-        onClick={() =>
-          toggleDialog(layersActions, setLayersActions, props.parent, props.child, { dialog_layerselector_open: true })
-        }>
-        <SettingsIcon />
-      </IconButton>
-      <Dialog
-        id="layermode-settings-dialog"
-        open={action.dialog_layerselector_open}
-        onClose={() =>
-          toggleDialog(layersActions, setLayersActions, props.parent, props.child, { dialog_layerselector_open: false })
-        }>
-        <DialogTitle>{props.child.name}</DialogTitle>
-        <LayersSelector parent={props.parent} child={props.child} />
-        <DialogActions id="close-dialog-action">
-          <DialogCloseBtn
-            parent={props.parent}
-            child={props.child}
-            fieldsToUpdate={{ dialog_layerselector_open: false }}
-          />
-        </DialogActions>
-      </Dialog>
-    </Grid>
-  );
-};

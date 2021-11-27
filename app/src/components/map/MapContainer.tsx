@@ -21,6 +21,7 @@ import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi
 // Layer Picker
 import layers from './LayerPicker/LAYERS.json';
 import './MapContainer.css';
+import { RenderLayers } from './RenderSelectedLayers';
 import { ToolbarContainer } from './ToolbarContainer';
 import EditTools from './Tools/ToolTypes/Data/EditTools';
 import { ZoomBar } from './Tools/ToolTypes/Misc/ZoomBar';
@@ -231,9 +232,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             position="topright"
             id={props.activityId}
             map={map}
-            layers={layers}
-            inputGeo={props.geometryState.geometry}
-            setWellIdandProximity={props.setWellIdandProximity}
             mapMaxNativeZoom={mapMaxNativeZoom}
             setMapMaxNativeZoom={setMapMaxNativeZoom}
           />
@@ -241,6 +239,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           {/* Here are the editing tools */}
 
           <MapResizer />
+
+          <RenderLayers inputGeo={props.geometryState.geometry} setWellIdandProximity={props.setWellIdandProximity} />
 
           {/*<LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Regular Layer">
