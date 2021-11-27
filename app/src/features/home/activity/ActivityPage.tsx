@@ -100,6 +100,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
 
   const [applicationUsers, setApplicationUsers] = useState([]);
 
+  const isMobile = () => {
+    return Capacitor.platform !== 'web';
+  };
+
   /**
    * Applies overriding updates to the current doc,
    * and queues an update to the corresponding DB state
@@ -643,9 +647,17 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     if (isLoading || !doc) {
       return;
     }
-    api.getApplicationUsers().then((res) => {
-      setApplicationUsers(res);
-    });
+    if (isMobile()) {
+      // Load users from cache
+      dataAccess.getApplicationUsers(databaseContext).then((res) => {
+        console.log('RES IN USEEFFECT', res);
+        // setUsers(res.rows);
+      });
+    } else {
+      api.getApplicationUsers().then((res) => {
+        setApplicationUsers(res);
+      });
+    }
   }, [isLoading, doc]);
 
   useEffect(() => {

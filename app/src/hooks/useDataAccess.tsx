@@ -24,6 +24,9 @@ export const useDataAccess = () => {
   const databaseContext = useContext(DatabaseContext);
   const platform = Capacitor.getPlatform();
   const networkContext = useContext(NetworkContext);
+  const isMobile = () => {
+    return Capacitor.getPlatform() !== 'web';
+  };
 
   /**
    * Fetch points of interest by search criteria.
@@ -251,6 +254,46 @@ export const useDataAccess = () => {
         return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], dbcontext);
       }
     });
+  };
+
+  const getApplicationUsers = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE,
+            docType: DocType.APPLICATION_USER,
+            ID: '1'
+          },
+          dbcontext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        console.log('RES FROM GETAPPLICATIONUSERS: ', res);
+        return res;
+      }
+    });
+  };
+
+  const cacheApplicationUsers = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }) => {
+    if (networkContext.connected && isMobile()) {
+      const users = await api.getApplicationUsers();
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.APPLICATION_USER, ID: '1', json: users }],
+            dbcontext
+          );
+        }
+      });
+    }
   };
 
   /**
@@ -564,6 +607,8 @@ export const useDataAccess = () => {
     getAppState,
     setAppState,
     getJurisdictions,
-    syncCachedRecords
+    syncCachedRecords,
+    getApplicationUsers,
+    cacheApplicationUsers
   };
 };

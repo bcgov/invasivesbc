@@ -8,6 +8,7 @@ import layers from '../../components/map/LayerPicker/LAYERS.json';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import { useDataAccess } from 'hooks/useDataAccess';
 import {
   IActivitySearchCriteria,
   IMetabaseQuerySearchCriteria,
@@ -32,6 +33,7 @@ export const TripDataControls: React.FC<any> = (props) => {
   useStyles();
 
   const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
 
   const databaseContext = useContext(DatabaseContext);
 
@@ -815,6 +817,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       }));
       console.log('Error when fetching from network: ' + error);
     }
+    await dataAccess.cacheApplicationUsers();
   };
 
   return (
