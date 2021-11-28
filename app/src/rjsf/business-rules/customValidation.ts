@@ -767,7 +767,6 @@ export function transferErrorsFromChemDetails(): rjsfValidator {
     }
 
     if (!formData.activity_subtype_data.chemical_treatment_details.errors !== true) {
-      console.log('hello??');
       errors.activity_subtype_data.addError('Chemical Treatment details form has errors');
     } else {
       errors.activity_subtype_data.__errors.pop();

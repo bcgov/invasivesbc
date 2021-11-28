@@ -37,6 +37,7 @@ import {
 import {
   autoFillSlopeAspect,
   autoFillTotalCollectionTime,
+  autoFillTotalReleaseQuantity,
   autoFillTreeNumbers,
   populateHerbicideCalculatedFields,
   populateTransectLineAndPointData
@@ -51,10 +52,6 @@ import './scrollbar.css';
 import { MapRecordsContextProvider } from 'contexts/MapRecordsContext';
 
 const useStyles = makeStyles((theme) => ({
-  heading: {
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightRegular
-  },
   mapContainer: {
     height: '600px'
   },
@@ -325,6 +322,8 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
     //auto fills total collection time (only on biocontrol collection activity)
     updatedFormData = autoFillTotalCollectionTime(updatedFormData);
+    //uto fills total release quantity (only on biocontrol release activity)
+    updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
 
     await updateDoc({
       formData: updatedFormData,

@@ -200,18 +200,21 @@ export const autoFillTotalCollectionTime = (formData: any) => {
   if (!formData.activity_subtype_data.collections) {
     return formData;
   }
+  const newCollections = [];
 
   formData.activity_subtype_data.collections.forEach((collection) => {
+    const newCollection = collection;
     if (collection.start_time && collection.stop_time) {
-      const arrStart = collection.start_time.split(':');
-      const arrStop = collection.stop_time.split(':');
-      const minutesStart = +arrStart[0] * 60 + +arrStart[1];
-      const minutesStop = +arrStop[0] * 60 + +arrStop[1];
-
-      const total = minutesStop - minutesStart;
-      collection.total_time = total;
+      const diff = Math.abs((new Date(collection.stop_time) as any) - (new Date(collection.start_time) as any));
+      const total_minutes = Math.floor(diff / 1000 / 60);
+      newCollection.total_time = total_minutes;
+    } else {
+      newCollection.total_time = undefined;
     }
+    newCollections.push(newCollection);
   });
+
+  formData.activity_subtype_data.collections = [...newCollections];
   return formData;
 };
 
@@ -232,6 +235,7 @@ export const autoFillSlopeAspect = (formData: any, lastField: string) => {
   ) {
     formData.activity_subtype_data.observation_plant_terrestrial_data.slope_code = 'FL';
   }
+
   return formData;
 };
 
@@ -256,4 +260,32 @@ export const autoFillTreeNumbers = (activitySubtypeData: any) => {
   }
 
   return activitySubtypeData;
+};
+
+export const autoFillTotalReleaseQuantity = (formData: any) => {
+  if (formData.activity_subtype_data.biological_agent_stages.length < 1) {
+    return formData;
+  }
+
+  let total = null;
+
+  const bioAgentStagesArr = formData.activity_subtype_data.biological_agent_stages;
+
+  bioAgentStagesArr.forEach((el) => {
+    if (!el.release_quantity || !el.biological_agent_stage_code) {
+      return formData;
+    } else {
+      total += el.release_quantity;
+    }
+  });
+
+  const newFormData = {
+    ...formData,
+    activity_subtype_data: {
+      ...formData.activity_subtype_data,
+      total_release_quantity: total
+    }
+  };
+
+  return newFormData;
 };

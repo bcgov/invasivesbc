@@ -1252,7 +1252,16 @@ const Observation_PlantAquatic = {
   Collection
 */
 
+const Microsite_Conditions = {
+  'mesoslope_position_code':{},
+  'site_surface_shape_code':{},
+  'ui:order':['mesoslope_position_code','site_surface_shape_code']
+}
+
 const Collection = {
+  'microsite_conditions': {
+    ...Microsite_Conditions
+  },
   'collection_persons': {
     items: {
       ...Persons
@@ -1261,7 +1270,7 @@ const Collection = {
   'weather_conditions': {
     ...Weather_Conditions
   },
-  'ui:order':['collection_persons','weather_conditions']
+  'ui:order':['microsite_conditions','collection_persons','weather_conditions']
 };
 
 const Biocontrol_Collection_Details = {
@@ -1272,9 +1281,13 @@ const Biocontrol_Collection_Details = {
   'biological_agent_code': {
     'ui:widget': 'single-select-autocomplete'
   },
+  'collection_type':{},
+  'plant_count':{},
   'historical_iapp_site_id': {},
   'collection_method': {
     'ui:widget': 'single-select-autocomplete'
+  },
+    'num_of_plants': {
   },
   'start_time': {
     'ui:widget': 'datetime'
@@ -1294,7 +1307,10 @@ const Biocontrol_Collection_Details = {
     'invasive_plant_code',
     'biological_agent_code',
     'historical_iapp_site_id',
+    'collection_type',
+    'plant_count',
     'collection_method',
+    'num_of_plants',
     'start_time',
     'stop_time',
     'total_time',
@@ -1788,6 +1804,13 @@ const Treatment = {
   'ui:order':['treatment_organization','treatment_location','treatment_persons']
 };
 
+const Treatment_Information_BiologicalPlant = {
+  ...Microsite_Conditions,
+ ...Treatment,
+ ...Weather_Conditions,
+ 'ui:order':['microsite_conditions','treatment_persons','weather_conditions']
+}
+
 const Treatment_MechanicalPlant = {
   'mechanical_plant_information':{
     items: {
@@ -1838,27 +1861,42 @@ const Treatment_BiologicalPlant = {
   'classified_area_code': {
     'ui:widget': 'single-select-autocomplete'
   },
-  'release_quantity': {},
+  
   'mortality': {},
   'agent_source': {},
+  'collection_date':{
+    'ui:widget': 'datetime'
+  },
+  'plant_collected_from':{},
   'biological_agent_code': {
     'ui:widget': 'single-select-autocomplete'
   },
-  'biological_agent_stage_code': {
-    'ui:widget': 'single-select-autocomplete'
+  'biological_agent_stages':{
+    'biological_agent_stage_code': {
+      'ui:widget': 'single-select-autocomplete'
+    },
+    'release_quantity': {},
+    'ui:order':['biological_agent_stage_code','release_quantity']
   },
+  'total_release_quantity':{
+    'ui:readonly': true
+  },
+  'linear_segment':{},
   'bioagent_maturity_status_code': {
     'ui:widget': 'single-select-autocomplete'
   },
   'ui:order':[
     'invasive_plant_code',
+    'biological_agent_code',
+    'biological_agent_stages',
+    'total_release_quantity',
     'treatment_issues_code',
     'classified_area_code',
-    'release_quantity',
     'mortality',
     'agent_source',
-    'biological_agent_code',
-    'biological_agent_stage_code',
+    'collection_date',
+    'plant_collected_from',
+    'linear_segment',
     'bioagent_maturity_status_code'
   ]
 };
@@ -2136,6 +2174,7 @@ const BaseUISchemaComponents = {
   Monitoring_MechanicalAnimalTerrestrial,
   Treatment,
   Treatment_MechanicalPlant,
+  Treatment_Information_BiologicalPlant,
   Treatment_MechanicalPlantAquatic,
   Treatment_MechanicalPlant_BulkEdit,
   Treatment_BiologicalPlant,
