@@ -36,6 +36,7 @@ import {
 } from '../../../rjsf/business-rules/customValidation';
 import {
   autoFillSlopeAspect,
+  autoFillTotalBioAgentQuantity,
   autoFillTotalCollectionTime,
   autoFillTotalReleaseQuantity,
   autoFillTreeNumbers,
@@ -302,8 +303,10 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
     //auto fills total collection time (only on biocontrol collection activity)
     updatedFormData = autoFillTotalCollectionTime(updatedFormData);
-    //uto fills total release quantity (only on biocontrol release activity)
+    //auto fills total release quantity (only on biocontrol release activity)
     updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
+    //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
+    updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
 
     await updateDoc({
       formData: updatedFormData,

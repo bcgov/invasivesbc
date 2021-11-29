@@ -263,7 +263,10 @@ export const autoFillTreeNumbers = (activitySubtypeData: any) => {
 };
 
 export const autoFillTotalReleaseQuantity = (formData: any) => {
-  if (formData.activity_subtype_data.biological_agent_stages.length < 1) {
+  if (
+    !formData.activity_subtype_data.biological_agent_stages ||
+    formData.activity_subtype_data.biological_agent_stages.length < 1
+  ) {
     return formData;
   }
 
@@ -284,6 +287,36 @@ export const autoFillTotalReleaseQuantity = (formData: any) => {
     activity_subtype_data: {
       ...formData.activity_subtype_data,
       total_release_quantity: total
+    }
+  };
+
+  return newFormData;
+};
+
+export const autoFillTotalBioAgentQuantity = (formData: any) => {
+  if (
+    !formData.activity_subtype_data.biological_agent_stages ||
+    formData.activity_subtype_data.biological_agent_stages.length < 1
+  ) {
+    return formData;
+  }
+  let total = null;
+
+  const bioAgentStagesArr = formData.activity_subtype_data.biological_agent_stages;
+
+  bioAgentStagesArr.forEach((el) => {
+    if (!el.release_quantity || !el.biological_agent_stage_code) {
+      return formData;
+    } else {
+      total += el.release_quantity;
+    }
+  });
+
+  const newFormData = {
+    ...formData,
+    activity_subtype_data: {
+      ...formData.activity_subtype_data,
+      total_bio_agent_quantity: total
     }
   };
 

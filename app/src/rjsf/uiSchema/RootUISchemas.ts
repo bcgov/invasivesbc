@@ -104,13 +104,18 @@ const Activity_Transect_BiocontrolEfficacy = {
 const Activity_Monitoring_BiologicalDispersal = {
   'activity_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...UISchemaComponents.Activity
+    ...UISchemaComponents.MonitoringActivity
+  },
+  'activity_type_data': {
+    ...BaseUISchemaComponents.ThreeColumnStyle,
+    ...BaseUISchemaComponents.Microsite_Conditions
+    // ...UISchemaComponents.MonitoringActivity
   },
   'activity_subtype_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
     ...BaseUISchemaComponents.Monitoring_BiologicalDispersal
   },
-  'ui:order':['activity_data','activity_subtype_data']
+  'ui:order':['activity_data','activity_type_data','activity_subtype_data']
 };
 
 const Activity_Treatment_ChemicalPlant = {
@@ -219,7 +224,7 @@ const Activity_Monitoring_BiologicalTerrestrialPlant = {
   },
   'activity_type_data': {
     ...BaseUISchemaComponents.ThreeColumnStyle,
-    ...BaseUISchemaComponents.Monitoring,
+    ...BaseUISchemaComponents.Monitoring_Biocontrol,
     ...UISchemaComponents.Monitoring
   },
   'activity_subtype_data': {

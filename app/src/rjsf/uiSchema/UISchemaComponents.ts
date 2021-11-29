@@ -256,20 +256,20 @@ const MonitoringActivity = {
     'activity_date_time',
     'latitude',
     'longitude',
+    'utm_zone',
     'utm_easting',
     'utm_northing',
-    'utm_zone',
     'reported_area',
     'well_id',
     'well_proximity',
     'employer_code',
     'invasive_species_agency_code',
     'jurisdictions',
-    'general_comment',
+    'project_code',
+    'jurisdiction_code',
     'location_description',
     'access_description',
-    'project_code',
-    'jurisdiction_code']
+    'general_comment']
 };
 
 const Monitoring = {
