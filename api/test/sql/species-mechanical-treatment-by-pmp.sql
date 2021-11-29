@@ -67,8 +67,8 @@ where
     where
       code_header_name = 'invasive_plant_code'
   )
-  and pest_management_plan_areas.pmp_name = 'PMP - South Coast' -- For testing
---   [[and {{pmp_name}}]] -- This is for metabase
+  -- and pest_management_plan_areas.pmp_name = 'PMP - South Coast' -- For testing
+  [[and {{pmp_name}}]] -- This is for metabase
 group by
   c.code_description,
   p.activity_ids,
