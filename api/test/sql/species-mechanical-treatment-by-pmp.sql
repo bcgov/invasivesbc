@@ -1,10 +1,6 @@
 
 /*
   Species treatment by planning unit.
-  TODO: Use IDs to select all treatment records
-  then report out treatments.
-  According to [this](https://www.postgresql.org/docs/9.1/arrays.html)
-  you use the `any` keyword to search in an array
 */
 select
   c.code_description "Species", -- Species name
@@ -76,49 +72,3 @@ group by
 order by
   public.pest_management_plan_areas.pmp_name
 ;
-
-/**
- Querying mechanical treatments
- TODO: Deprecate this part
- **/
-select
-  c.code_description "Treatment",
-  sum(st_area(a.geog)) "Area" -- Sum area by meters
-from
-  code c, -- The code table
-  activity_incoming_data a -- Raw data table
-where
-  c.code_header_id = ( -- Mechanical Treatment ID
-    select
-      code_header_id
-    from
-      code_header
-    where
-      code_header_name = 'mechanical_method_code'
-  ) and
-  a.activity_payload-> -- The treatment code must mach
-    'form_data'->
-    'activity_subtype_data'->
-    'mechanical_plant_information'->0->>
-    'mechanical_method_code' = c.code_name and
-  a.activity_type = 'Treatment' and -- Treatments only
-  a.activity_payload-> -- There must be a mechanical treatment code
-    'form_data'->
-    'activity_subtype_data'->
-    'mechanical_plant_information'->0 ?
-    'invasive_plant_code'
-  group by
-    c.code_description
-;
-
-/**
-  Took me a while to find where this data was.
-  Will need to create a separate spatial link query
-  to split up the following
-  form_data->activity_subtype_data->mechanical_plant_information->[
-    - invasive_plant_code
-    - mechanical_disposal_code
-    - mechanical_method_code
-    - treated_area
-  ]
-**/
