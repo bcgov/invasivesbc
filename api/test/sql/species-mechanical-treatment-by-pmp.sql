@@ -8,7 +8,6 @@
 */
 select
   c.code_description "Species", -- Species name
-  public.pest_management_plan_areas.pmp_name "PMP",
   p.activity_ids "IDs", -- Change this
   /**
     If shape is within a boundary.. copy it.
@@ -45,7 +44,7 @@ from
     Run an outer join on the intersection of PMPs and Activities.
     Shapes that intersect (inside, touching or straddling) will
     be sent to the above case statement for the decision as to copy
-    or clip. Otherwise the treatment just gets copied over.:w
+    or clip. Otherwise the treatment just gets copied over.:
   */
   public.treatments_by_species p join
   public.pest_management_plan_areas on
@@ -59,8 +58,6 @@ where
   -- Only records within a year of today
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   p.species = c.code_name and -- Match code to species
-  p.activity_type = 'Treatment' and -- Treatments only
-  p.activity_subtype = 'Activity_Treatment_MechanicalPlant'
   array_length(p.activity_ids,1) > 0 and -- ignore records without shapes
   c.code_header_id = ( -- Best way to look up the plant code
     select
