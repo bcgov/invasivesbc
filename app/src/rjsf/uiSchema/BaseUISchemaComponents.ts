@@ -61,7 +61,7 @@ const Weather_Conditions = {
   'weather_comments': {
     'ui:widget': 'textarea'
   },
-  'ui:order':['temperature','cloud_cover_code','precipitation_code','wind_speed','weather_comments']
+  'ui:order':['temperature','cloud_cover_code','precipitation_code','wind_speed','weather_comments','wind_aspect']
 };
 
 const Herbicide = {
@@ -1155,6 +1155,7 @@ const Transect_BiocontrolEfficacy = {
 */
 
 const Observation = {
+  'pre_treatment_observation':{},
   'observation_type_code': {
     'ui:widget': 'single-select-autocomplete'
   },
@@ -1164,7 +1165,7 @@ const Observation = {
     }
   },
   'survey_type':{},
-  'ui:order':['observation_type_code','observation_persons','survey_type']
+  'ui:order':['pre_treatment_observation','observation_type_code','observation_persons','survey_type']
 };
 
 const Observation_PlantTerrestrial_Data = {
@@ -1753,11 +1754,16 @@ const Monitoring_BiologicalDispersal = {
     'invasive_plant_code',
     'applicator1_name',
     'applicator2_name',
+    'linear_segment',
     'monitoring_organization',
     'biological_agent_presence_code',
     'count_duration',
     'biological_agent_code',
+    'monitoring_type', 
+    'monitoring_method',
     'plant_count',
+    'biological_agent_stages',
+    'total_bio_agent_quantity',
     'biological_agent_count',
     'collection_history',
     'collection_history_comments',
@@ -1925,7 +1931,7 @@ const Treatment_BiologicalPlant_BulkEdit = {
 */
 
 const Monitoring = {
-  linked_id: {
+  'linked_id': {
     'ui:widget': 'single-select-autocomplete'
   },
   'observer_name': {},
@@ -1938,6 +1944,26 @@ const Monitoring = {
   'ui:order':['linked_id','observer_name','tank_mix','efficacy_code']
 };
 
+const Monitoring_Biocontrol = {
+  'linked_id': {
+    'ui:widget': 'single-select-autocomplete'
+  },
+  'observer_first_name': {},
+  'observer_last_name': {},
+  'tank_mix': {
+    'ui:widget': 'select'
+  },
+  'efficacy_code': {
+    'ui:widget': 'single-select-autocomplete'
+  },
+    'weather_conditions': {
+    ...Weather_Conditions
+  },
+  'ui:order':['linked_id','observer_first_name','observer_last_name','weather_conditions','microsite_conditions']
+};
+
+
+
 const Monitoring_BiologicalTerrestrialPlant = {
   'invasive_plant_code':{},
   'plant_count': {},
@@ -1946,6 +1972,10 @@ const Monitoring_BiologicalTerrestrialPlant = {
   'suitable_collection_site':{},
   'agent_destroyed_ind': {},
   'legacy_presence_ind': {},
+  'biological_agent_stages':{},
+  'total_bio_agent_quantity':{
+    'ui:readonly': true
+  },
   'foliar_feeding_damage_ind': {},
   'root_feeding_damage_ind': {},
   'oviposition_marks_ind': {},
@@ -1957,6 +1987,11 @@ const Monitoring_BiologicalTerrestrialPlant = {
   'biological_agent_spread': {},
   'ui:order':[
     'invasive_plant_code',
+    'biological_agent_code',
+    'monitoring_type', 
+    'monitoring_method',
+    'biological_agent_stages',
+    'total_bio_agent_quantity',
     'plant_count',
     'agent_count',
     'count_duration',
@@ -2182,6 +2217,7 @@ const BaseUISchemaComponents = {
   Treatment_MechanicalAnimalTerrestrial,
   Treatment_ChemicalAnimalTerrestrial,
   Monitoring,
+  Monitoring_Biocontrol,
   Monitoring_BiologicalTerrestrialPlant,
   Collection,
   Collection_BioControll,

@@ -345,7 +345,7 @@
             "$ref": "#/components/schemas/Activity"
           },
           "activity_type_data": {
-            "$ref": "#/components/schemas/Monitoring"
+            "$ref": "#/components/schemas/Monitoring_Biocontrol"
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Monitoring_BiologicalTerrestrialPlant"
@@ -357,6 +357,13 @@
         "properties": {
           "activity_data": {
             "$ref": "#/components/schemas/Activity"
+          },
+          "activity_type_data": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Microsite_Conditions"
+              }
+            ]
           },
           "activity_subtype_data": {
             "$ref": "#/components/schemas/Monitoring_BiologicalDispersal"
@@ -1292,6 +1299,13 @@
         "type": "object",
         "required": ["observation_type_code"],
         "properties": {
+          "pre_treatment_observation": {
+            "title": "Pre-treatment Observation",
+            "type": "string",
+            "enum": ["Yes", "No", "Unknown"],
+            "default": "Unknown",
+            "x-tooltip-text": "Choose yes if this observation was completed directly before a treatment"
+          },
           "observation_type_code": {
             "type": "string",
             "title": "Type",
@@ -2831,7 +2845,7 @@
       "Treatment_Information_BiologicalPlant": {
         "title": "Treatment Information",
         "type": "object",
-        "required": ["treatment_persons", "microsite_conditions"],
+        "required": ["treatment_persons"],
         "properties": {
           "treatment_persons": {
             "type": "array",
@@ -3664,7 +3678,7 @@
           },
           "release_quantity": {
             "type": "number",
-            "title": "Release Quantity",
+            "title": "Bioagent Quantity",
             "minimum": 1,
             "maximum": 100000,
             "default": 1,
@@ -3676,7 +3690,7 @@
       "Monitoring": {
         "title": "Monitoring Information",
         "type": "object",
-        "required": ["activity_id", "observer_first_name", "observer_last_name", "efficacy_code"],
+        "required": ["linked_id", "observer_first_name", "observer_last_name"],
         "properties": {
           "linked_id": {
             "type": "string",
@@ -3696,17 +3710,38 @@
           "observer_last_name": {
             "type": "string",
             "title": "Last Name"
-          },
-          "efficacy_code": {
+          }
+        }
+      },
+      "Monitoring_Biocontrol": {
+        "title": "Monitoring Information",
+        "type": "object",
+        "required": [
+          "linked_id",
+          "observer_first_name",
+          "observer_last_name",
+          "weather_conditions",
+          "microsite_conditions"
+        ],
+        "properties": {
+          "linked_id": {
             "type": "string",
-            "title": "Efficacy Rating",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "efficacy_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            }
+            "title": "Linked Treatment ID",
+            "x-tooltip-text": "Identifier of linked treatment record"
+          },
+          "observer_first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "observer_last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
+          "weather_conditions": {
+            "$ref": "#/components/schemas/Weather_Conditions"
+          },
+          "microsite_conditions": {
+            "$ref": "#/components/schemas/Microsite_Conditions"
           }
         }
       },
@@ -3714,10 +3749,11 @@
         "title": "Biological Dispersal Information",
         "type": "object",
         "required": [
-          "monitoring_organization",
           "biological_agent_presence_code",
           "biological_agent_code",
           "biological_agent_count",
+          "monitoring_type",
+          "monitoring_method",
           "applicator1_name",
           "applicator2_name",
           "invasive_plant_code",
@@ -3740,6 +3776,7 @@
           "phen_level_bo",
           "phen_level_fl",
           "phen_level_sf",
+          "total_bio_agent_quantity",
           "phen_level_sc",
           "phen_total_percentage",
           "collection_history",
@@ -3769,17 +3806,12 @@
             "title": "Secondary Observer Name",
             "x-tooltip-text": "Name of secondary applicator"
           },
-          "monitoring_organization": {
+          "linear_segment": {
             "type": "string",
-            "title": "Employer",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "employer_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "The organization or company doing the monitoring"
+            "title": "Linear segment",
+            "default": "Unknown",
+            "enum": ["Unknown", "Yes", "No"],
+            "x-tooltip-text": "If the invasive plant infestation is primarily linear in nature, choose Yes."
           },
           "biological_agent_presence_code": {
             "type": "string",
@@ -3792,12 +3824,6 @@
               "x-enum-code-sort-order": "code_sort_order"
             },
             "x-tooltip-text": "Visible state of the agent present"
-          },
-          "count_duration": {
-            "type": "number",
-            "title": "Duration of Count (min)",
-            "minimum": 1,
-            "x-tooltip-text": "Time spent on counting the agents (minutes)"
           },
           "biological_agent_code": {
             "type": "string",
@@ -3924,6 +3950,36 @@
             "maximum": 100,
             "x-tooltip-text": "Total percentage (sum of all 6 levels)"
           }
+        },
+        "dependencies": {
+          "monitoring_type": {
+            "oneOf": [
+              {
+                "properties": {
+                  "monitoring_type": {
+                    "const": "Timed"
+                  },
+                  "plant_count": {
+                    "type": "number",
+                    "minimum": 0,
+                    "title": "Duration of Count (min)"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "monitoring_type": {
+                    "const": "Count"
+                  },
+                  "plant_count": {
+                    "type": "number",
+                    "minimum": 0,
+                    "title": "Plant Count"
+                  }
+                }
+              }
+            ]
+          }
         }
       },
       "Monitoring_ChemicalTerrestrialAquaticPlant": {
@@ -3986,10 +4042,42 @@
           "larvae_present_ind",
           "pupae_present_ind",
           "invasive_plant_code",
+          "total_bio_agent_quantity",
           "adults_present_ind",
           "tunnels_present_ind",
-          "suitable_collection_site"
+          "suitable_collection_site",
+          "biological_agent_code"
         ],
+        "dependencies": {
+          "monitoring_type": {
+            "oneOf": [
+              {
+                "properties": {
+                  "monitoring_type": {
+                    "const": "Timed"
+                  },
+                  "plant_count": {
+                    "type": "number",
+                    "minimum": 0,
+                    "title": "Plant Count (minutes)"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "monitoring_type": {
+                    "const": "Count"
+                  },
+                  "plant_count": {
+                    "type": "number",
+                    "minimum": 0,
+                    "title": "Plant Count"
+                  }
+                }
+              }
+            ]
+          }
+        },
         "properties": {
           "invasive_plant_code": {
             "type": "string",
@@ -4003,7 +4091,44 @@
             },
             "x-tooltip-text": "Target invasive plant species at this location"
           },
-          "plant_count": {
+          "biological_agent_code": {
+            "type": "string",
+            "title": "Biological Control Agent",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "The biological control agent that was collected."
+          },
+          "monitoring_type": {
+            "type": "string",
+            "title": "Monitoring Type",
+            "enum": ["Timed", "Count"]
+          },
+          "monitoring_method": {
+            "type": "string",
+            "title": "Monitoring Method",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biocontrol_methods_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "biological_agent_stages": {
+            "type": "array",
+            "default": [{}],
+            "minItems": 1,
+            "title": "Biological Agent Stages",
+            "items": {
+              "$ref": "#/components/schemas/Biological_Agent_Stage"
+            }
+          },
+          "total_bio_agent_quantity": {
             "type": "number",
             "minimum": 0,
             "title": "Plant Count"
@@ -4023,13 +4148,6 @@
             "title": "Suitable Collection Site",
             "enum": ["Unknown", "Yes", "No"],
             "x-tooltip-text": "Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field."
-          },
-          "agent_destroyed_ind": {
-            "type": "string",
-            "title": "Agent Destroyed",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate whether the agent was destroyed"
           },
           "legacy_presence_ind": {
             "type": "string",
@@ -4089,7 +4207,7 @@
           },
           "tunnels_present_ind": {
             "type": "string",
-            "title": "Tunnels Present",
+            "title": "Stem Tunnels Present",
             "enum": ["Yes", "No", "Unknown"],
             "default": "No",
             "x-tooltip-text": "Please indicate the presence of tunnels"
