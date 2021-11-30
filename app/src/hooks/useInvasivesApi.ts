@@ -40,7 +40,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     API_URL = 'https://invasivesbci.apps.silver.devops.gov.bc.ca';
     break;
   default:
-    API_URL = 'http://192.168.0.174:7080';
+    API_URL = API_HOST ? `http://${API_HOST}:${API_PORT}` : 'http://localhost:7080';
     break;
 }
 // This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
@@ -595,7 +595,7 @@ export const useInvasivesApi = () => {
       method: 'POST',
       headers: { ...options.headers, 'Content-Type': 'application/json' },
       data: uploadRequest,
-      url: `${options.baseUrl}/api/batch/upload`
+      url: `${options.baseUrl}/api/batch/new_upload`
     });
     return data;
   };
@@ -614,15 +614,25 @@ export const useInvasivesApi = () => {
     const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
-      url: options.baseUrl + '/api/batch/template'
+      url: options.baseUrl + '/api/batch/new_template'
     });
     return data;
   };
-  const downloadTemplateV2 = async (): Promise<any> => {
+
+  const listCodeTables = async (): Promise<any> => {
     const { data } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
-      url: options.baseUrl + '/api/batch/new_template'
+      url: options.baseUrl + '/api/code_tables'
+    });
+    return data;
+  };
+
+  const fetchCodeTable = async (codeHeaderId, csv = false): Promise<any> => {
+    const { data } = await Http.request({
+      method: 'GET',
+      headers: { ...options.headers, Accept: csv ? 'text/csv' : 'application/json' },
+      url: `${options.baseUrl}/api/code_tables/${codeHeaderId}`
     });
     return data;
   };
@@ -648,7 +658,8 @@ export const useInvasivesApi = () => {
     getBatchUploads,
     postBatchUpload,
     downloadTemplate,
-    downloadTemplateV2,
+    listCodeTables,
+    fetchCodeTable,
     getJurisdictions,
     cacheUserInfo,
     getUserInfoFromCache,

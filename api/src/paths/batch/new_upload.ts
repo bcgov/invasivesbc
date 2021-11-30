@@ -1,16 +1,18 @@
 'use strict';
 
-import { RequestHandler } from 'express';
-import { Operation } from 'express-openapi';
-import { ALL_ROLES } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
-import { PlantFormSubmissionFromData } from '../../utils/batch/plant_form_submit_template';
+import {RequestHandler} from 'express';
+import {Operation} from 'express-openapi';
+import {ALL_ROLES} from '../../constants/misc';
+import {getLogger} from '../../utils/logger';
+import {PlantFormSubmissionFromData} from '../../utils/batch/plant_form_submit_template';
 import fetch from 'node-fetch';
-import { v4 as uuidv4 } from 'uuid';
-import { HOST, PORT } from '../../app';
+import {v4 as uuidv4} from 'uuid';
+import {HOST, PORT} from '../../app';
 import csvParser from 'csv-parser';
-import { Readable } from 'stream';
-import { atob } from 'js-base64';
+import {Readable} from 'stream';
+import {atob} from 'js-base64';
+import {getDBConnection} from "../../database/db";
+import {QueryResult} from "pg";
 
 const defaultLog = getLogger('batch');
 
@@ -150,23 +152,65 @@ function upload(): RequestHandler {
 
     const batch = [];
 
+    const connection = await getDBConnection();
+
+    if (!connection) {
+      throw {
+        status: 503,
+        message: 'Failed to establish database connection'
+      };
+    }
+
+    let createdId;
+
+    try {
+      try {
+        // Perform both get and create operations as a single transaction
+        await connection.query('BEGIN');
+
+        const response: QueryResult = await connection.query(
+          `insert into batch_uploads (csv_data, created_by)
+           values ($1, $2)
+           returning id `,
+          [decoded, req['auth_payload'].preferred_username]
+        );
+
+        await connection.query('COMMIT');
+
+        createdId = response.rows[0]['id'];
+
+      } catch (error) {
+        await connection.query('ROLLBACK');
+        defaultLog.error({label: 'batchUpload', message: 'error', error});
+        throw error;
+      }
+    } finally {
+      connection.release();
+    }
+
     const parser = csvParser({
       mapHeaders: ({ header }) => header.trim()
     });
 
     let i = 0;
 
-    await Readable.from(decoded)
-      .pipe(parser)
-      .on('data', async (row) => {
-        i++;
+    const readComplete = new Promise((resolve, reject) => {
+      Readable.from(decoded)
+        .pipe(parser)
+        .on('data', async (row) => {
+          i++;
+          batch.push(PlantFormSubmissionFromData(dataFromRow(row, req['auth_payload'].preferred_username)));
+        })
+        .on('close', () => {
+          resolve();
+        });
+    });
 
-        batch.push(PlantFormSubmissionFromData(dataFromRow(row, req['auth_payload'].preferred_username)));
-      });
+    await readComplete;
 
     defaultLog.info(`submitting batch: ${batch}`);
 
-    const result = await fetch(`http://${HOST}:${PORT}/activity/batch`, {
+    await fetch(`http://${HOST}:${PORT}/activity/batch`, {
       method: 'POST',
       headers: {
         Authorization: req.headers.authorization,
@@ -176,6 +220,6 @@ function upload(): RequestHandler {
       body: JSON.stringify(batch)
     });
 
-    return res.status(result.status).send(await result.json());
+    return res.status(201).send({ batchId: createdId });
   };
 }
