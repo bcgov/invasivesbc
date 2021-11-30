@@ -426,20 +426,63 @@ export function getPersonNameNoNumbersValidator(users): rjsfValidator {
       formData.activity_data.activity_persons.length < 1
     ) {
       return errors;
-    }
-    errors.activity_data['activity_persons'].__errors = [];
-    const persons = formData.activity_data.activity_persons;
-    for (let ind = 0; ind < formData.activity_data.activity_persons.length; ind++) {
-      if (persons[ind]?.person_name) {
-        let user = users.find((u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name);
-        if (user === undefined) {
-          errors.activity_data['activity_persons'][ind]['person_name'].addError('User not found');
+    } else {
+      console.log(formData);
+      errors.activity_data['activity_persons'].__errors = [];
+      const persons = formData.activity_data.activity_persons;
+      for (let ind = 0; ind < formData.activity_data.activity_persons.length; ind++) {
+        if (persons[ind]?.person_name) {
+          let user = users.find(
+            (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
+          );
+          if (user === undefined) {
+            errors.activity_data['activity_persons'][ind]['person_name'].addError('User not found');
+          }
+          if (persons[ind].person_name.match(/\d+/g) != null) {
+            errors.activity_data['activity_persons'][ind]['person_name'].addError('User name cannot contain numbers');
+          }
         }
-        if (persons[ind].person_name.match(/\d+/g) != null) {
-          errors.activity_data['activity_persons'][ind]['person_name'].addError('User name cannot contain numbers');
+      }
+      if (formData.activity_subtype_data) {
+        if (formData.activity_subtype_data.applicator1_name) {
+          const persons = formData.activity_subtype_data.applicator1_name;
+          for (let ind = 0; ind < formData.activity_subtype_data.applicator1_name.length; ind++) {
+            if (persons[ind]?.person_name) {
+              let user = users.find(
+                (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
+              );
+              if (user === undefined) {
+                errors.activity_subtype_data['applicator1_name'][ind]['person_name'].addError('User not found');
+              }
+              if (persons[ind].person_name.match(/\d+/g) != null) {
+                errors.activity_subtype_data['applicator1_name'][ind]['person_name'].addError(
+                  'User name cannot contain numbers'
+                );
+              }
+            }
+          }
+        }
+        if (formData.activity_subtype_data.applicator2_name) {
+          const persons = formData.activity_subtype_data.applicator2_name;
+          for (let ind = 0; ind < formData.activity_subtype_data.applicator2_name.length; ind++) {
+            if (persons[ind]?.person_name) {
+              let user = users.find(
+                (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
+              );
+              if (user === undefined) {
+                errors.activity_subtype_data['applicator2_name'][ind]['person_name'].addError('User not found');
+              }
+              if (persons[ind].person_name.match(/\d+/g) != null) {
+                errors.activity_subtype_data['applicator2_name'][ind]['person_name'].addError(
+                  'User name cannot contain numbers'
+                );
+              }
+            }
+          }
         }
       }
     }
+
     return errors;
   };
 }
