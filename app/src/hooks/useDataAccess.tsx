@@ -302,7 +302,7 @@ export const useDataAccess = () => {
   };
 
   useEffect(() => {
-    if (keycloak?.obj?.token) cacheApplicationUsers();
+    if (keycloak?.obj?.token) cacheApplicationUsers(databaseContext);
   }, [networkContext.connected, keycloak?.obj?.authenticated]);
 
   /**
