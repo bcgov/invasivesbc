@@ -1890,15 +1890,14 @@ const Monitoring = {
   linked_id: {
     'ui:widget': 'single-select-autocomplete'
   },
-  'observer_first_name': {},
-  'observer_last_name': {},
+  'observer_name': {},
   'tank_mix': {
     'ui:widget': 'select'
   },
   'efficacy_code': {
     'ui:widget': 'single-select-autocomplete'
   },
-  'ui:order':['linked_id','observer_first_name','observer_last_name','tank_mix','efficacy_code']
+  'ui:order':['linked_id','observer_name','tank_mix','efficacy_code']
 };
 
 const Monitoring_BiologicalTerrestrialPlant = {
@@ -2115,6 +2114,10 @@ const FREP_FormC = {
   }
 };
 
+const ActivityPersons = {
+  person_name: {},
+}
+
 /*
   Export
 */
@@ -2156,7 +2159,8 @@ const BaseUISchemaComponents = {
   FREP_FormB,
   FREP_FormC,
   FREP_Log,
-  FREP_Stand_Table
+  FREP_Stand_Table,
+  ActivityPersons
 };
 
 export default BaseUISchemaComponents;

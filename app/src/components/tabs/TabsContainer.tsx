@@ -295,11 +295,6 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     return (!isMobile() && keycloak?.obj?.authenticated) || (isMobile() && userInfoLoaded);
   };
 
-  useEffect(() => {
-    console.log('TABSCONTAINER UserInfo Changed: ', userInfo);
-    console.log('TABSCONTAINER UserInfoLoaded Changed: ', userInfoLoaded);
-  }, [userInfo, userInfoLoaded]);
-
   const themeContext = useContext(ThemeContext);
   const { themeType, setThemeType } = themeContext;
   const networkContext = useContext(NetworkContext);

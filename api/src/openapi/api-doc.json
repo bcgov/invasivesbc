@@ -691,6 +691,7 @@
           "access_description",
           "activity_date_time",
           "latitude",
+          "activity_persons",
           "longitude",
           "utm_zone",
           "employer_code",
@@ -785,6 +786,15 @@
               "$ref": "#/components/schemas/Jurisdiction"
             },
             "x-tooltip-text": "Specify one or more jurisdictions for this activity"
+          },
+          "activity_persons": {
+            "type": "array",
+            "default": [{}],
+            "title": "Person Name(s)",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
+            "x-tooltip-text": "Name of person(s) on the activity"
           },
           "project_code": {
             "type": "array",
@@ -1428,7 +1438,7 @@
       "Observation": {
         "title": "Observation Information",
         "type": "object",
-        "required": ["observation_type_code", "observation_persons"],
+        "required": ["observation_type_code"],
         "properties": {
           "observation_type_code": {
             "type": "string",
@@ -1442,16 +1452,6 @@
             },
             "default": "CU",
             "x-tooltip-text": "Choose type of observation from dropdown"
-          },
-          "observation_persons": {
-            "type": "array",
-            "default": [{}],
-            "minItems": 1,
-            "title": "Observation Person(s)",
-            "items": {
-              "$ref": "#/components/schemas/Persons"
-            },
-            "x-tooltip-text": "Name of person(s) doing the observation"
           }
         }
       },
@@ -3174,13 +3174,21 @@
             "x-tooltip-text": "Target invasive plant species at this location"
           },
           "applicator1_name": {
-            "type": "string",
+            "type": "array",
+            "default": [{}],
             "title": "Primary Observer Name",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
             "x-tooltip-text": "Name of primary applicator"
           },
           "applicator2_name": {
-            "type": "string",
+            "type": "array",
+            "default": [{}],
             "title": "Secondary Observer Name",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
             "x-tooltip-text": "Name of secondary applicator"
           },
           "monitoring_organization": {
@@ -3362,18 +3370,7 @@
       "Treatment": {
         "title": "Treatment Information",
         "type": "object",
-        "required": ["treatment_persons"],
-        "properties": {
-          "treatment_persons": {
-            "type": "array",
-            "default": [{}],
-            "title": "Treatment Person(s)",
-            "items": {
-              "$ref": "#/components/schemas/Persons"
-            },
-            "x-tooltip-text": "Name of person(s) doing treatment"
-          }
-        }
+        "properties": {}
       },
       "Treatment_ChemicalPlantAquatic": {
         "title": " ",
@@ -3986,20 +3983,12 @@
       "Monitoring": {
         "title": "Monitoring Information",
         "type": "object",
-        "required": ["activity_id", "observer_first_name", "observer_last_name", "efficacy_code"],
+        "required": ["activity_id", "efficacy_code"],
         "properties": {
           "linked_id": {
             "type": "string",
             "title": "Linked Treatment ID",
             "x-tooltip-text": "Identifier of linked treatment record"
-          },
-          "observer_first_name": {
-            "type": "string",
-            "title": "First Name"
-          },
-          "observer_last_name": {
-            "type": "string",
-            "title": "Last Name"
           },
           "efficacy_code": {
             "type": "string",
@@ -4184,19 +4173,10 @@
       "Collection": {
         "title": "Collection Information",
         "type": "object",
-        "required": ["collection_persons", "weather_conditions"],
+        "required": ["weather_conditions"],
         "properties": {
           "weather_conditions": {
             "$ref": "#/components/schemas/Weather_Conditions"
-          },
-          "collection_persons": {
-            "type": "array",
-            "default": [{}],
-            "title": "Name(s) of Person(s) doing the collection",
-            "items": {
-              "$ref": "#/components/schemas/Persons"
-            },
-            "x-tooltip-text": "Name of person(s) doing the observation"
           }
         }
       },
@@ -4694,12 +4674,8 @@
                               "voucher_verification_completed_by": {
                                 "type": "object",
                                 "title": "Voucher verification completed by",
-                                "required": ["person_name", "organization"],
+                                "required": ["organization"],
                                 "properties": {
-                                  "person_name": {
-                                    "type": "string",
-                                    "title": "Name"
-                                  },
                                   "organization": {
                                     "type": "string",
                                     "title": "Organization"

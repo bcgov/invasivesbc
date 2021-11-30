@@ -1,5 +1,6 @@
 import { FormValidation } from '@rjsf/core';
 import { IHerbicide } from 'components/form/ChemicalTreatmentDetailsForm/Models';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { HerbicideApplicationRates } from 'rjsf/business-rules/constants/herbicideApplicationRates';
 
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
@@ -412,40 +413,104 @@ export function getInvasivePlantsValidator(linkedActivity: any): rjsfValidator {
     return errors;
   };
 }
+
 /*
-  Function to validate that the person field does not contain any numbers
+  Function to validate that the total percent value of all jurisdictions combined = 100
 */
-export function getPersonNameNoNumbersValidator(): rjsfValidator {
+export function getPersonNameNoNumbersValidator(users): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
-    if (!formData || !formData.activity_type_data) {
+    if (
+      !formData ||
+      !formData.activity_data ||
+      !formData.activity_data.activity_persons ||
+      formData.activity_data.activity_persons.length < 1
+    ) {
+      return errors;
+    } else {
+      console.log(formData);
+      errors.activity_data['activity_persons'].__errors = [];
+      const persons = formData.activity_data.activity_persons;
+      for (let ind = 0; ind < formData.activity_data.activity_persons.length; ind++) {
+        if (persons[ind]?.person_name) {
+          let user = users.find(
+            (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
+          );
+          if (user === undefined) {
+            errors.activity_data['activity_persons'][ind]['person_name'].addError('User not found');
+          }
+          if (persons[ind].person_name.match(/\d+/g) != null) {
+            errors.activity_data['activity_persons'][ind]['person_name'].addError('User name cannot contain numbers');
+          }
+        }
+      }
+      if (formData.activity_subtype_data) {
+        if (formData.activity_subtype_data.applicator1_name) {
+          const persons = formData.activity_subtype_data.applicator1_name;
+          for (let ind = 0; ind < formData.activity_subtype_data.applicator1_name.length; ind++) {
+            if (persons[ind]?.person_name) {
+              let user = users.find(
+                (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
+              );
+              if (user === undefined) {
+                errors.activity_subtype_data['applicator1_name'][ind]['person_name'].addError('User not found');
+              }
+              if (persons[ind].person_name.match(/\d+/g) != null) {
+                errors.activity_subtype_data['applicator1_name'][ind]['person_name'].addError(
+                  'User name cannot contain numbers'
+                );
+              }
+            }
+          }
+        }
+        if (formData.activity_subtype_data.applicator2_name) {
+          const persons = formData.activity_subtype_data.applicator2_name;
+          for (let ind = 0; ind < formData.activity_subtype_data.applicator2_name.length; ind++) {
+            if (persons[ind]?.person_name) {
+              let user = users.find(
+                (u: any) => u.first_name.trim() + ' ' + u.last_name.trim() === persons[ind].person_name
+              );
+              if (user === undefined) {
+                errors.activity_subtype_data['applicator2_name'][ind]['person_name'].addError('User not found');
+              }
+              if (persons[ind].person_name.match(/\d+/g) != null) {
+                errors.activity_subtype_data['applicator2_name'][ind]['person_name'].addError(
+                  'User name cannot contain numbers'
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return errors;
+  };
+}
+
+/*
+  Function to validate that if the herbicide mix is set to true,
+  there must be 2 or more herbicides chosen
+*/
+export function getHerbicideMixValidation(): rjsfValidator {
+  return (formData: any, errors: FormValidation): FormValidation => {
+    if (
+      !formData ||
+      !formData.activity_subtype_data ||
+      !formData.activity_subtype_data.chemical_treatment_details ||
+      !formData.activity_subtype_data.chemical_treatment_details.tank_mix ||
+      !formData.activity_subtype_data.chemical_treatment_details.herbicides
+    ) {
       return errors;
     }
-    if (formData.activity_type_data.observation_persons && formData.activity_type_data.observation_persons.length > 0) {
-      let index = 0;
-      formData.activity_type_data.observation_persons.forEach((person) => {
-        if (person?.person_name)
-          if (person.person_name.match(/\d+/g) != null) {
-            errors['activity_type_data']['observation_persons'][index]['person_name'].addError(
-              'Name field must not contain any numbers'
-            );
-          }
-        index++;
-      });
-    } else if (
-      formData.activity_type_data.treatment_persons &&
-      formData.activity_type_data.treatment_persons.length > 0
-    ) {
-      let index = 0;
-      formData.activity_type_data.treatment_persons.forEach((person) => {
-        if (person?.person_name)
-          if (person.person_name.match(/\d+/g) != null) {
-            errors['activity_type_data']['treatment_persons'][index]['person_name'].addError(
-              'Name field must not contain any numbers'
-            );
-          }
-        index++;
-      });
+
+    let chemical_treatment_details = formData.activity_subtype_data.chemical_treatment_details;
+
+    if (chemical_treatment_details.tank_mix === true && chemical_treatment_details.herbicides.length < 2) {
+      errors.activity_subtype_data['chemical_treatment_details']['herbicides'].addError(
+        'There must be 2 or more herbicides added if the tank mix field is checked'
+      );
     }
+
     return errors;
   };
 }

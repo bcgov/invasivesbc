@@ -6,7 +6,7 @@ interface INetworkContext {
   setConnected: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export const NetworkContext = React.createContext<INetworkContext>({
-  connected: Capacitor.getPlatform() !== 'web' ? false : true,
+  connected: true,
   setConnected: () => {}
 });
 
