@@ -150,7 +150,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     useEffect(() => {
       const cacheMapTiles = async () => {
-        await storeLayers();
+        //  await storeLayers();
+        console.log('removed caching map tiles for now');
       };
 
       if (props.cacheMapTilesFlag?.flag && props.cacheMapTilesFlag?.flag !== 0) {

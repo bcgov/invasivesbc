@@ -86,6 +86,9 @@ export const fetchLayerDataFromLocal = async (layerName: string, mapExtent: any,
   smallGridRes.forEach((row) => {
     const featureArea = JSON.parse(row.featureArea).geometry;
     const featuresInArea = JSON.parse(row.featuresInArea);
+
+    console.log(featuresInArea);
+
     if (turf.booleanContains(mapExtent, featureArea) || turf.booleanOverlap(mapExtent, featureArea)) {
       allFeatures = allFeatures.concat(featuresInArea);
     }

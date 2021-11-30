@@ -70,12 +70,14 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   //this is called on map load and each time the map is moved
   const startFetchingLayers = () => {
     const newLayerArray = [];
-    layersSelected.forEach((layer: any) => {
-      if (layer.layer_mode) {
-        newLayerArray.push(layer.layer_code);
-      } else if (layer.bcgw_code) {
-        newLayerArray.push(layer.bcgw_code);
-      }
+    layersSelected.forEach((parentLayer: any) => {
+      parentLayer.children.forEach((childLayer) => {
+        if (childLayer.layer_mode) {
+          newLayerArray.push(childLayer.layer_code);
+        } else if (childLayer.bcgw_code) {
+          newLayerArray.push(childLayer.bcgw_code);
+        }
+      });
     });
 
     //calling function to remove no longer needed elements from the queue
@@ -101,11 +103,9 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     //get the map extent as geoJson polygon feature
     const mapExtent = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();
     //if well layer is selected
-
     //if online, just get data from WFSonline consumer
     if (props.online) {
       getStylesDataFromBC(props.dataBCLayerName).then((returnStyles) => {
-        setlayerStyles(returnStyles);
         getDataFromDataBC(props.dataBCLayerName, mapExtent).then((returnVal) => {
           if (props.dataBCLayerName === 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW') {
             props.inputGeo[0] ? setWellFeatures(getClosestWellToPolygon(returnVal)) : setWellFeatures(returnVal);

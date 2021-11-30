@@ -585,7 +585,6 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
   }
   //alert(JSON.stringify(databaseContext));
   if (Capacitor.getPlatform() != 'web') {
-    // alert('made it here');
     let ret;
     let db = await getConnection();
 
@@ -631,6 +630,7 @@ export const query = async (queryConfig: IQuery, databaseContext: any) => {
           'Your sqlite query needs a QueryType and corresponding parameters.  What you provided:  ' +
             JSON.stringify(queryConfig)
         );
+        return;
     }
   }
 };

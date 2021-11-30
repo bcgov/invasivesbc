@@ -28,7 +28,7 @@
     "@turf/distance": "^6.0.1",
     "@turf/helpers": "^6.1.4",
     "@turf/nearest-point": "^6.0.1",
-    "aws-sdk": "~2.742.0",
+    "aws-sdk": "~2.814.0",
     "axios": "~0.21.1",
     "body-parser": "~1.19.0",
     "csv-parser": "^3.0.0",
