@@ -1,135 +1,116 @@
-import { NetworkContext } from 'contexts/NetworkContext';
 import {
   Accordion,
   AccordionSummary,
+  FormControl,
   FormControlLabel,
-  Typography,
-  RadioGroup,
   Radio,
-  FormControl
+  RadioGroup,
+  Typography
 } from '@material-ui/core';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
+import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
-import { updateChild } from './LayerPicker';
-import { getChild } from './SortLayerOrder';
+import { getChildAction } from './LayersActionsHelper/LayersActionsFunctions';
+import { updateChild } from './SortLayerOrder';
+import { updateChildAction } from './LayersActionsHelper/LayersActionsFunctions';
 
-const getIndex = (child, layers) => {
-  for (let i in layers) {
-    if (layers[i].bcgw_code === child.bcgw_code) {
-      return parseInt(i);
+const getIndex = (childId, layers) => {
+  var index = -1;
+  for (var i = 0; i < layers.length; i++) {
+    if (layers[i].child_id === childId) {
+      index = i;
+      break;
     }
   }
-  return -1;
+  return index;
 };
 
-export const updateLayer = (fieldsToUpdate, child, layers, setLayers) => {
+export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
+  var returnLayers = [];
   if (child.enabled) {
-    var index = getIndex(child, layers);
-    if (index > -1) {
-      var oldLayer = layers[index];
-      var layersBefore = [...layers.slice(0, index)];
-      var layersAfter = [...layers.slice(index)];
-      var updatedLayer = { ...oldLayer, ...fieldsToUpdate };
-      layersAfter[0] = updatedLayer;
-      setLayers([...layersBefore, ...layersAfter]);
-    }
-  }
-};
-
-export const addOrRemoveLayer = (child, layers, setLayers) => {
-  if (child.enabled) {
-    var index = getIndex(child, layers);
+    var index = getIndex(child.id, layers);
     if (index > -1) {
       var layersCopy = [...layers];
       layersCopy.splice(index, 1);
       var layersBefore = [...layersCopy.slice(0, index)];
       var layersAfter = [...layersCopy.slice(index)];
+      console.log('here', layersBefore, layersAfter);
       setLayers([...layersBefore, ...layersAfter]);
     }
   } else if (!child.enabled) {
-    switch (child.bcgw_code) {
-      case 'LEAN_ACTIVITIES':
-        setLayers([
-          ...layers,
-          {
-            bcgw_code: child.bcgw_code,
-            color_code: child.color_code,
-            layer_mode: null,
-            layer_name: child.id,
-            opacity: child.opacity
-          }
-        ]);
-        break;
-      case 'jurisdiction':
-      case 'LEAN_POI':
-        setLayers([
-          ...layers,
-          {
-            bcgw_code: child.bcgw_code,
-            color_code: '#000',
-            layer_mode: null,
-            layer_name: child.id,
-            opacity: child.opacity
-          }
-        ]);
-        break;
-      default:
-        setLayers([
-          ...layers,
-          {
-            bcgw_code: child.bcgw_code,
-            color_code: '#000',
-            layer_mode: child.layer_mode,
-            layer_name: child.id,
-            opacity: child.opacity
-          }
-        ]);
-        break;
+    if (child.layer_code) {
+      returnLayers = [
+        ...layers,
+        {
+          color_code: child.color_code,
+          layer_code: child.layer_code,
+          layer_mode: null,
+          child_id: child.id,
+          opacity: child.opacity,
+          parent_order: parent.order,
+          parent_id: parent.id
+        }
+      ];
+      setLayers(returnLayers);
+    }
+    if (child.bcgw_code) {
+      returnLayers = [
+        ...layers,
+        {
+          bcgw_code: child.bcgw_code,
+          color_code: child.color_code,
+          layer_mode: child.layer_mode,
+          child_id: child.id,
+          opacity: child.opacity,
+          parent_order: parent.order,
+          parent_id: parent.id
+        }
+      ];
+      setLayers(returnLayers);
     }
   }
 };
 
-export const LayersSelector = ({ parent, child, objectState, setObjectState, layers, setLayers }) => {
+export const LayersSelector = ({ parent, child }) => {
   const networkContext = useContext(NetworkContext);
+  const mapLayersContext = useContext(MapRequestContext);
+  const { layersSelected, setLayersSelected } = mapLayersContext;
+  const { layersActions, setLayersActions } = mapLayersContext;
 
   const onServerAccordionChange = (event: any, expanded: any) => {
-    updateChild(
-      parent.id,
-      child.id,
-      {
-        accordion_local_expanded: false,
-        accordion_server_expanded: !getChild(objectState, parent.id, child.id).accordion_server_expanded
-      },
-      { objectState, setObjectState }
-    );
+    updateChildAction(layersActions, setLayersActions, parent.id, child.id, {
+      accordion_local_expanded: false,
+      accordion_server_expanded: expanded
+    });
   };
 
   const onLocalAccordionChange = (event: any, expanded: any) => {
-    updateChild(
-      parent.id,
-      child.id,
-      {
-        accordion_local_expanded: !getChild(objectState, parent.id, child.id).accordion_local_expanded,
-        accordion_server_expanded: false
-      },
-      { objectState, setObjectState }
-    );
+    updateChildAction(layersActions, setLayersActions, parent.id, child.id, {
+      accordion_local_expanded: expanded,
+      accordion_server_expanded: false
+    });
   };
 
   return (
     <>
       {/* Server Accordion */}
-      {!networkContext.connected && (
-        <Accordion expanded={child.accordion_server_expanded} onChange={onServerAccordionChange}>
-          <AccordionSummary>
+      {networkContext.connected && (
+        <Accordion
+          id="server-accordion"
+          expanded={getChildAction(layersActions, parent.id, child.id).accordion_server_expanded}
+          onChange={onServerAccordionChange}>
+          <AccordionSummary id="accordion-summary">
             <Typography>Server</Typography>
           </AccordionSummary>
-          {child.accordion_server_expanded && (
-            <FormControl>
+          {getChildAction(layersActions, parent.id, child.id).accordion_server_expanded && (
+            <FormControl id="radio-control">
               <RadioGroup
+                id="radio-group"
                 defaultValue={child.layer_mode}
                 onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                  updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
-                  updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
+                  updateChild(layersSelected, setLayersSelected, parent.id, child.id, {
+                    layer_mode: event.target.value
+                  });
                 }}>
                 <FormControlLabel value="wms_online" control={<Radio />} label="WMS" />
                 <FormControlLabel value="vector_tiles_online" control={<Radio />} label="Vector Tiles" />
@@ -142,17 +123,20 @@ export const LayersSelector = ({ parent, child, objectState, setObjectState, lay
 
       {/* Local Accordion */}
 
-      <Accordion expanded={child.accordion_local_expanded} onChange={onLocalAccordionChange}>
-        <AccordionSummary>
+      <Accordion
+        id="local-accordion"
+        expanded={getChildAction(layersActions, parent.id, child.id).accordion_local_expanded}
+        onChange={onLocalAccordionChange}>
+        <AccordionSummary id="accordion-summary">
           <Typography>Local</Typography>
         </AccordionSummary>
-        {child.accordion_local_expanded && (
-          <FormControl>
+        {getChildAction(layersActions, parent.id, child.id).accordion_local_expanded && (
+          <FormControl id="radio-control">
             <RadioGroup
+              id="radio-group"
               defaultValue={child.layer_mode}
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                updateChild(parent.id, child.id, { layer_mode: event.target.value }, { objectState, setObjectState });
-                updateLayer({ layer_mode: event.target.value }, child, layers, setLayers);
+                updateChild(layersSelected, setLayersSelected, parent.id, child.id, { layer_mode: event.target.value });
               }}>
               <FormControlLabel value="vector_tiles_offline" control={<Radio />} label="Vector Tiles" />
               <FormControlLabel value="wfs_offline" control={<Radio />} label="WFS" />

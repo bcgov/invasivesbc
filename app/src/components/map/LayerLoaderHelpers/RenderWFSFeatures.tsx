@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
-import { Feature, Geometry } from 'geojson';
-import * as turf from '@turf/turf';
+import { polygon } from '@turf/helpers';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
-import { polygon } from '@turf/helpers';
+import * as turf from '@turf/turf';
+import { Feature, Geometry } from 'geojson';
 import { Layer } from 'leaflet';
-import { DatabaseContext2, query, QueryType } from '../../../contexts/DatabaseContext2';
-import { WellMarker } from './WellMarker';
-import { q } from '../MapContainer';
-import { createPolygonFromBounds } from './LtlngBoundsToPoly';
+import React, { useContext, useEffect, useState } from 'react';
+import { GeoJSON, useMap, useMapEvent } from 'react-leaflet';
+import { DatabaseContext, query, QueryType } from '../../../contexts/DatabaseContext';
 import { MapRequestContext } from '../../../contexts/MapRequestsContext';
+import { q } from '../MapContainer';
 import { getDataFromDataBC, getStylesDataFromBC } from '../WFSConsumer';
 import { fetchLayerDataFromLocal, getStyleForLayerFeature } from './AdditionalHelperFunctions';
+import { createPolygonFromBounds } from './LtlngBoundsToPoly';
+import { WellMarker } from './WellMarker';
 
 interface IRenderWFSFeatures {
   inputGeo: Feature;
@@ -29,7 +29,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const [wellFeatures, setWellFeatures] = useState(null);
   const [wellIdandProximity, setWellIdandProximity] = useState(null);
   const [otherFeatures, setOtherFeatures] = useState(null);
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const map = useMap();
   const mapRequestContext = useContext(MapRequestContext);
   const { layersSelected } = mapRequestContext;
@@ -71,7 +71,11 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
   const startFetchingLayers = () => {
     const newLayerArray = [];
     layersSelected.forEach((layer: any) => {
-      newLayerArray.push(layer.BCGWcode);
+      if (layer.layer_mode) {
+        newLayerArray.push(layer.layer_code);
+      } else if (layer.bcgw_code) {
+        newLayerArray.push(layer.bcgw_code);
+      }
     });
 
     //calling function to remove no longer needed elements from the queue

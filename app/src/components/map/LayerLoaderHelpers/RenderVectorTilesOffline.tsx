@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
 import { useMapEvent } from 'react-leaflet';
-import { DatabaseContext2, query, QueryType } from '../../../contexts/DatabaseContext2';
+import { DatabaseContext, query, QueryType } from '../../../contexts/DatabaseContext';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 
 export const RenderVectorTilesOffline = (props) => {
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const [geosToRender, setGeosToRender] = useState(null);
   const [options, setOptions] = useState({
     maxZoom: 24,

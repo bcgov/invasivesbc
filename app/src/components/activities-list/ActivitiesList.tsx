@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Checkbox,
   Divider,
   FormControl,
@@ -11,31 +12,34 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
+import { useKeycloak } from '@react-keycloak/web';
 import { ActivitySyncStatus, ActivityType } from 'constants/activities';
 import { DocType } from 'constants/database';
-import { DatabaseContext } from '../../contexts/DatabaseContext';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import React, { useContext, useEffect, useState } from 'react';
-import { useKeycloak } from '@react-keycloak/web';
-import '../../styles/spinners.scss';
-import ActivityListDate from './ActivityListDate';
 import { GetUserAccessLevel } from 'utils/getAccessLevel';
+import BatchUpload from '../../components/batch-upload/BatchUpload';
 import {
-  MyBiocontrolTable,
   MyAnimalActivitiesTable,
-  MyPlantMonitoringTable,
   MyAnimalMonitoringTable,
   MyAnimalTreatmentsTable,
-  MyObservationsTable,
+  MyBiocontrolTable,
   MyFREPTable,
+  MyObservationsTable,
   MyPastActivitiesTable,
-  MyTransectsTable,
+  MyPlantMonitoringTable,
   MyPlantTreatmentsTable,
+  MyTransectsTable,
   ReviewActivitiesTable
 } from '../../components/common/RecordTables';
-import { DatabaseContext2, query, QueryType } from '../../contexts/DatabaseContext2';
-import BatchUpload from '../../components/batch-upload/BatchUpload';
+import { DatabaseContext, query, QueryType } from '../../contexts/DatabaseContext';
 import { ALL_ROLES, PLANT_ROLES, ANIMAL_ROLES, USER_ACCESS, User_Access } from 'constants/roles';
+import { Sync } from '@material-ui/icons';
+import { IonAlert } from '@ionic/react';
+import { Capacitor } from '@capacitor/core';
+import { useDataAccess } from 'hooks/useDataAccess';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import ActivityListDate from './ActivityListDate';
 
 const useStyles = makeStyles((theme: Theme) => ({
   newActivityButtonsRow: {
@@ -85,7 +89,6 @@ interface IActivityListItem {
 const ActivityListItem: React.FC<IActivityListItem> = (props) => {
   const classes = useStyles();
 
-  const databaseContext = useContext(DatabaseContext);
   const invasivesApi = useInvasivesApi();
   const [species, setSpecies] = useState(null);
 
@@ -120,10 +123,6 @@ const ActivityListItem: React.FC<IActivityListItem> = (props) => {
 
     // Must save the value because the database call is async, and the event object will be destroyed before it runs.
     const isChecked = event.target.checked;
-
-    databaseContext.database.upsert(props.activity._id, (activity) => {
-      return { ...activity, sync: { ...activity.sync, ready: isChecked } };
-    });
   };
 
   const isDisabled = props.isDisabled || props.activity.sync.status === ActivitySyncStatus.SAVE_SUCCESSFUL;
@@ -184,11 +183,12 @@ interface IActivityList {
 
 const ActivitiesList: React.FC = () => {
   const classes = useStyles();
+  const dataAccess = useDataAccess();
 
   let hasPlantAccess = false;
   let hasAnimalAccess = false;
 
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const { keycloak } = useKeycloak();
   let accessLevel = GetUserAccessLevel();
   if (accessLevel.hasPlantAccess) {
@@ -215,6 +215,24 @@ const ActivitiesList: React.FC = () => {
   const [syncing, setSyncing] = useState(false);
   const [isDisabled, setIsDisable] = useState(false);
   const [workflowFunction, setWorkflowFunction] = useState('Plant');
+  const [showAlert, setShowAlert] = useState(false);
+  const networkContext = useContext(NetworkContext);
+
+  const syncCachedActivities = async () => {
+    try {
+      await dataAccess.syncCachedRecords();
+    } catch (e: any) {
+      console.log('Error syncing cached records: ', e);
+    }
+  };
+
+  const showPrompt = () => {
+    setShowAlert(true);
+  };
+
+  const isMobile = () => {
+    return Capacitor.getPlatform() !== 'web';
+  };
 
   // const syncActivities = async () => {
   //   setIsDisable(true);
@@ -288,6 +306,26 @@ const ActivitiesList: React.FC = () => {
 
   return (
     <>
+      <IonAlert
+        isOpen={showAlert}
+        onDidDismiss={() => setShowAlert(false)}
+        header={'Are you sure?'}
+        message={'If you choose to sync your cached records, you will no longer be able to edit them.'}
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {}
+          },
+          {
+            text: 'Okay',
+            handler: () => {
+              syncCachedActivities();
+            }
+          }
+        ]}
+      />
       <Box>
         <Box mb={3} display="flex" justifyContent="space-between">
           <FormControl variant="outlined" className={classes.formControl}>
@@ -301,6 +339,11 @@ const ActivitiesList: React.FC = () => {
               <MenuItem value="Batch Upload">Batch Upload</MenuItem>
             </Select>
           </FormControl>
+          {isMobile && networkContext.connected && (
+            <Button onClick={showPrompt} key="sync" color="primary" variant="outlined" startIcon={<Sync />}>
+              Sync Cached Records
+            </Button>
+          )}
         </Box>
         <Box>
           {workflowFunction === 'Plant' && (

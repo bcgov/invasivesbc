@@ -21,17 +21,15 @@ import {
   Typography
 } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
-import { DEFAULT_PAGE_SIZE } from 'constants/database';
-import { KeyboardArrowUp, KeyboardArrowDown, ExpandMore, FilterList } from '@material-ui/icons';
-import { notifyError } from '../../utils/NotificationUtils';
-import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
-import { DatabaseContext } from '../../contexts/DatabaseContext';
-import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
-import Spinner from '../../components/spinner/Spinner';
+import { ExpandMore, FilterList, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import clsx from 'clsx';
+import { DEFAULT_PAGE_SIZE } from 'constants/database';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import Spinner from '../../components/spinner/Spinner';
 import { useDataAccess } from '../../hooks/useDataAccess';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import RootUISchemas from '../../rjsf/uiSchema/RootUISchemas';
 
 const ACTION_TIMEOUT = 1500; // 1.5s
 const ACTION_ERROR_TIMEOUT = 15000; // 15s
@@ -257,7 +255,6 @@ export interface IRecordTable {
 const RecordTable: React.FC<IRecordTable> = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const databaseContext = useContext(DatabaseContext);
   const invasivesApi = useInvasivesApi();
 
   const {
@@ -605,7 +602,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
               tableName={tableName}
               enableFiltering={enableFiltering}
               actions={actions}
-              databaseContext={databaseContext}
+              // databaseContext={databaseContext}
               fetchRows={fetchRows}
             />
           )}
@@ -647,7 +644,7 @@ const RecordTable: React.FC<IRecordTable> = (props) => {
                         }}
                         actions={rowActions}
                         actionStyle={rowActionStyle}
-                        databaseContext={databaseContext}
+                        //   databaseContext={databaseContext}
                         fetchRows={fetchRows}
                       />
                     ))}
@@ -795,7 +792,6 @@ const RecordTableToolbar = (props) => {
             } catch (error) {
               setActionError(error?.message || error);
               setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error?.message || error || action.invalidError);
             }
           }}>
           {action.label}
@@ -834,7 +830,6 @@ const RecordTableToolbar = (props) => {
             } catch (error) {
               setActionError(error?.message || error);
               setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error?.message || error || action.invalidError);
             }
           }}>
           {action.label}
@@ -956,7 +951,6 @@ const RecordTableRow = (props) => {
             } catch (error) {
               setActionError(error?.message || error);
               setTimeout(() => setActionError(''), ACTION_ERROR_TIMEOUT);
-              notifyError(databaseContext, error?.message || error || action.invalidError);
             }
           }}>
           {action.label}

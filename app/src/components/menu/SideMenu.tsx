@@ -1,6 +1,5 @@
-import { List, ListItem, ListItemText, ListItemIcon, SvgIcon } from '@material-ui/core';
-import { Assignment, Photo, Map, Lock, SvgIconComponent } from '@material-ui/icons';
-
+import { List, ListItem, ListItemIcon, ListItemText, SvgIcon } from '@material-ui/core';
+import { Assignment, Lock, Map, Photo, SvgIconComponent } from '@material-ui/icons';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 

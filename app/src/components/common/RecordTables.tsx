@@ -1,6 +1,7 @@
 import { Add, Check, Clear, Delete, Edit, FindInPage, Sync } from '@material-ui/icons';
 import { useKeycloak } from '@react-keycloak/web';
 import RecordTable, { IRecordTable } from 'components/common/RecordTable';
+import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
 import {
   ActivitySubtype,
   ActivitySubtypeShortLabels,
@@ -9,14 +10,13 @@ import {
   ReviewStatus
 } from 'constants/activities';
 import { DEFAULT_PAGE_SIZE, DocType } from 'constants/database';
-import { DatabaseContext2 } from '../../contexts/DatabaseContext2';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { useDataAccess } from 'hooks/useDataAccess';
 import moment from 'moment';
 import React, { useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IWarningDialog, WarningDialog } from 'components/dialog/WarningDialog';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { generateDBActivityPayload, getShortActivityID, sanitizeRecord } from 'utils/addActivity';
+import { DatabaseContext } from '../../contexts/DatabaseContext';
 
 export const activityStandardMapping = (doc) => {
   const record = sanitizeRecord(doc);
@@ -227,7 +227,7 @@ const activitesDefaultHeaders = [
 export const ActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const history = useHistory();
   const dataAccess = useDataAccess();
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const { userInfo } = useContext(AuthStateContext);
   const [warningDialog, setWarningDialog] = useState<IWarningDialog>({
     dialogActions: [],
@@ -770,7 +770,7 @@ export const MyObservationsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const PlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
@@ -913,7 +913,7 @@ export const MyPlantTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
 };
 
 export const AnimalTreatmentsTable: React.FC<IActivitiesTable> = (props) => {
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
   const { tableSchemaType, headers = [], ...otherProps } = props;
   return useMemo(() => {
@@ -1396,7 +1396,7 @@ export const MyBiocontrolTable: React.FC<IActivitiesTable> = (props) => {
 export const PointsOfInterestTable: React.FC<IRecordTable> = (props) => {
   const { tableSchemaType, actions, ...otherProps } = props;
   const dataAccess = useDataAccess();
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   return useMemo(() => {
     return (
       <RecordTable
@@ -1859,7 +1859,7 @@ export const IAPPBiologicalTreatmentsMonitoringTable: React.FC<IRecordTable> = (
 export const ReviewActivitiesTable: React.FC<IActivitiesTable> = (props) => {
   const { rows, headers = [], ...otherProps } = props;
   const dataAccess = useDataAccess();
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   return useMemo(() => {
     return (
       <ActivitiesTable

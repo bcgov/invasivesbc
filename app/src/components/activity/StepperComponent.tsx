@@ -1,5 +1,5 @@
+import { Box, Step, StepLabel, Stepper, Typography } from '@material-ui/core';
 import React from 'react';
-import { Box, Step, StepLabel, Typography, Stepper } from '@material-ui/core';
 
 interface IStepperComponentProps {
   activeStep: number;

@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {Box, Paper, Typography} from '@material-ui/core';
-import {useInvasivesApi} from "../../hooks/useInvasivesApi";
+import { Box, Paper, Typography } from '@material-ui/core';
+import React from 'react';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 
 const TemplateDownload: React.FC = () => {
   const api = useInvasivesApi();
@@ -29,10 +29,11 @@ const TemplateDownload: React.FC = () => {
   return (
     <Paper>
       <Box mx={3} my={3} py={3}>
-        <Typography variant={"h4"}>CSV Template Download</Typography>
+        <Typography variant={'h4'}>CSV Template Download</Typography>
         <ul>
-          <li><span onClick={() => downloadTemplate('v1')}>Download Plant Form Template</span></li>
-          <li><span onClick={() => downloadTemplate('v2')}>Download Plant Form Template (v2)</span></li>
+          <li>
+            <span onClick={downloadTemplate}>Download Plant Form Template</span>
+          </li>
         </ul>
       </Box>
     </Paper>

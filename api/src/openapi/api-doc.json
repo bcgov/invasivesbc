@@ -144,6 +144,93 @@
           }
         }
       },
+      "ChemicalTreatment_Species_Codes": {
+        "type": "object",
+        "properties": {
+          "chemical_method_direct": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "chemical_method_direct",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Direct Chemical Application Method"
+          },
+          "herbicide_type_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "herbicide_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Herbicide Type (liquid or granular)"
+          },
+          "calculation_type_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "calculation_type_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Type of calculation for herbicide"
+          },
+          "chemical_method_spray": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "chemical_method_spray",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Direct Chemical Application Spray"
+          },
+          "invasive_plant_code": {
+            "type": "string",
+            "title": "Invasive Plant",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "invasive_plant_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Target invasive plant species being treated at this location"
+          },
+          "liquid_herbicide_code": {
+            "type": "string",
+            "title": "Herbicide (liquid)",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "liquid_herbicide_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
+          "granular_herbicide_code": {
+            "type": "string",
+            "title": "Herbicide (granular)",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "granular_herbicide_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          }
+        }
+      },
       "Activity_FREP_FormA": {
         "type": "object",
         "properties": {
@@ -476,7 +563,8 @@
           "utm_easting",
           "utm_northing",
           "reported_area",
-          "location_description"
+          "location_description",
+          "general_comment"
         ],
         "properties": {
           "activity_date_time": {
@@ -603,6 +691,7 @@
           "access_description",
           "activity_date_time",
           "latitude",
+          "activity_persons",
           "longitude",
           "utm_zone",
           "employer_code",
@@ -697,6 +786,15 @@
               "$ref": "#/components/schemas/Jurisdiction"
             },
             "x-tooltip-text": "Specify one or more jurisdictions for this activity"
+          },
+          "activity_persons": {
+            "type": "array",
+            "default": [{}],
+            "title": "Person Name(s)",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
+            "x-tooltip-text": "Name of person(s) on the activity"
           },
           "project_code": {
             "type": "array",
@@ -1340,7 +1438,7 @@
       "Observation": {
         "title": "Observation Information",
         "type": "object",
-        "required": ["observation_type_code", "observation_persons"],
+        "required": ["observation_type_code"],
         "properties": {
           "observation_type_code": {
             "type": "string",
@@ -1354,16 +1452,6 @@
             },
             "default": "CU",
             "x-tooltip-text": "Choose type of observation from dropdown"
-          },
-          "observation_persons": {
-            "type": "array",
-            "default": [{}],
-            "minItems": 1,
-            "title": "Observation Person(s)",
-            "items": {
-              "$ref": "#/components/schemas/Persons"
-            },
-            "x-tooltip-text": "Name of person(s) doing the observation"
           }
         }
       },
@@ -3086,13 +3174,21 @@
             "x-tooltip-text": "Target invasive plant species at this location"
           },
           "applicator1_name": {
-            "type": "string",
+            "type": "array",
+            "default": [{}],
             "title": "Primary Observer Name",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
             "x-tooltip-text": "Name of primary applicator"
           },
           "applicator2_name": {
-            "type": "string",
+            "type": "array",
+            "default": [{}],
             "title": "Secondary Observer Name",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
             "x-tooltip-text": "Name of secondary applicator"
           },
           "monitoring_organization": {
@@ -3274,18 +3370,7 @@
       "Treatment": {
         "title": "Treatment Information",
         "type": "object",
-        "required": ["treatment_persons"],
-        "properties": {
-          "treatment_persons": {
-            "type": "array",
-            "default": [{}],
-            "title": "Treatment Person(s)",
-            "items": {
-              "$ref": "#/components/schemas/Persons"
-            },
-            "x-tooltip-text": "Name of person(s) doing treatment"
-          }
-        }
+        "properties": {}
       },
       "Treatment_ChemicalPlantAquatic": {
         "title": " ",
@@ -3312,7 +3397,8 @@
               "humidity",
               "wind_speed",
               "wind_direction_code",
-              "signage_on_site"
+              "signage_on_site",
+              "application_start_time"
             ],
             "properties": {
               "applicator1_name": {
@@ -3411,36 +3497,20 @@
                 "enum": ["Yes", "No", "Unknown"],
                 "default": "Yes",
                 "x-tooltip-text": "Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not"
-              }
-            }
-          },
-          "treatment_information": {
-            "title": "Treatment Information",
-            "type": "object",
-            "properties": {
+              },
               "application_start_time": {
                 "type": "string",
                 "format": "date-time",
                 "title": "Application Start Time"
-              },
-              "invasive_plants_information": {
-                "title": "Invasive Plants",
-                "type": "array",
-                "minItems": 1,
-                "default": [{}],
-                "items": {
-                  "$ref": "#/components/schemas/Invasive_Plant"
-                }
               }
-            },
-            "required": ["invasive_plants_information", "application_start_time"]
+            }
           }
         }
       },
       "Treatment_ChemicalPlant": {
         "title": " ",
         "type": "object",
-        "required": ["treatment_chemicalplant_information", "treatment_information"],
+        "required": ["treatment_chemicalplant_information"],
         "properties": {
           "treatment_chemicalplant_information": {
             "type": "object",
@@ -3454,7 +3524,8 @@
               "humidity",
               "wind_speed",
               "wind_direction_code",
-              "signage_on_site"
+              "signage_on_site",
+              "application_start_time"
             ],
             "properties": {
               "applicator1_name": {
@@ -3549,29 +3620,13 @@
                 "enum": ["Yes", "No", "Unknown"],
                 "default": "Yes",
                 "x-tooltip-text": "Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not"
-              }
-            }
-          },
-          "treatment_information": {
-            "title": "Treatment Information",
-            "type": "object",
-            "properties": {
+              },
               "application_start_time": {
                 "type": "string",
                 "format": "date-time",
                 "title": "Application Start Time"
-              },
-              "invasive_plants_information": {
-                "title": "Invasive Plants",
-                "type": "array",
-                "minItems": 1,
-                "default": [{}],
-                "items": {
-                  "$ref": "#/components/schemas/Invasive_Plant"
-                }
               }
-            },
-            "required": ["invasive_plants_information"]
+            }
           }
         }
       },
@@ -3928,20 +3983,12 @@
       "Monitoring": {
         "title": "Monitoring Information",
         "type": "object",
-        "required": ["activity_id", "observer_first_name", "observer_last_name", "efficacy_code"],
+        "required": ["activity_id", "efficacy_code"],
         "properties": {
           "linked_id": {
             "type": "string",
             "title": "Linked Treatment ID",
             "x-tooltip-text": "Identifier of linked treatment record"
-          },
-          "observer_first_name": {
-            "type": "string",
-            "title": "First Name"
-          },
-          "observer_last_name": {
-            "type": "string",
-            "title": "Last Name"
           },
           "efficacy_code": {
             "type": "string",
@@ -4126,19 +4173,10 @@
       "Collection": {
         "title": "Collection Information",
         "type": "object",
-        "required": ["collection_persons", "weather_conditions"],
+        "required": ["weather_conditions"],
         "properties": {
           "weather_conditions": {
             "$ref": "#/components/schemas/Weather_Conditions"
-          },
-          "collection_persons": {
-            "type": "array",
-            "default": [{}],
-            "title": "Name(s) of Person(s) doing the collection",
-            "items": {
-              "$ref": "#/components/schemas/Persons"
-            },
-            "x-tooltip-text": "Name of person(s) doing the observation"
           }
         }
       },
@@ -4636,12 +4674,8 @@
                               "voucher_verification_completed_by": {
                                 "type": "object",
                                 "title": "Voucher verification completed by",
-                                "required": ["person_name", "organization"],
+                                "required": ["organization"],
                                 "properties": {
-                                  "person_name": {
-                                    "type": "string",
-                                    "title": "Name"
-                                  },
                                   "organization": {
                                     "type": "string",
                                     "title": "Organization"
@@ -5021,80 +5055,6 @@
             ]
           }
         }
-      },
-      "Invasive_Plant": {
-        "properties": {
-          "invasive_plant_code": {
-            "type": "string",
-            "title": "Invasive Plant",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "invasive_plant_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Target invasive plant species being treated at this location"
-          },
-          "tank_mix": {
-            "type": "boolean",
-            "title": "Tank Mix",
-            "default": false,
-            "x-tooltip-text": "Check if there is a mix of herbicides in the tank"
-          }
-        },
-        "dependencies": {
-          "tank_mix": {
-            "oneOf": [
-              {
-                "properties": {
-                  "tank_mix": {
-                    "enum": [true]
-                  },
-                  "herbicide_with_tank_volume": {
-                    "type": "array",
-                    "default": [{}],
-                    "title": "Herbicide",
-                    "items": {
-                      "allOf": [
-                        {
-                          "properties": {
-                            "tank_volume": {
-                              "title": "Tank Volume (L)",
-                              "type": "number",
-                              "x-tooltip-text": "Capacity of tank measured in litres"
-                            }
-                          }
-                        },
-                        {
-                          "$ref": "#/components/schemas/Herbicide"
-                        }
-                      ]
-                    },
-                    "x-tooltip-text": "Herbicide information for the treatment"
-                  }
-                }
-              },
-              {
-                "properties": {
-                  "tank_mix": {
-                    "enum": [false]
-                  },
-                  "herbicide": {
-                    "type": "array",
-                    "default": [{}],
-                    "title": "Herbicide",
-                    "items": {
-                      "$ref": "#/components/schemas/Herbicide"
-                    },
-                    "x-tooltip-text": "Herbicide information for the treatment"
-                  }
-                }
-              }
-            ]
-          }
-        },
-        "required": ["invasive_plant_code"]
       },
       "Herbicide": {
         "type": "object",

@@ -11,6 +11,8 @@ parameters:
     value: invasivesbci-db-setup
   - name: SUFFIX
     value: '-dev'
+  - name: REACT_APP_REAL_NODE_ENV
+    required: true
   - name: VERSION
     description: Version of the application
     value: '1.0.0'
@@ -86,6 +88,8 @@ objects:
               value: ${ENVIRONMENT}
             - name: NODE_ENV
               value: ${NODE_ENV}
+            - name: REACT_APP_REAL_NODE_ENV
+              value: ${REACT_APP_REAL_NODE_ENV}
             - name: VERSION
               value: ${VERSION}
           imagePullPolicy: Always

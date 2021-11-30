@@ -1,5 +1,5 @@
-import { Feature } from 'geojson';
 import * as turf from '@turf/turf';
+import { Feature } from 'geojson';
 
 /**
  * Calculate the net area for the total geometry

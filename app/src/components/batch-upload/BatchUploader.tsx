@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Paper, Typography } from '@material-ui/core';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 
 export interface IBatchUploadRequest {
   data: string;

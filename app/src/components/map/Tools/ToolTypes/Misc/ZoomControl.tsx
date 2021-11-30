@@ -1,10 +1,10 @@
-import { Button, IconButton } from '@material-ui/core';
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { toolStyles } from './Helpers/ToolBtnStyles';
-import L from 'leaflet';
-import { ThemeContext } from 'contexts/themeContext';
+import { IconButton, Typography } from '@material-ui/core';
 import HdIcon from '@mui/icons-material/Hd';
 import SdIcon from '@mui/icons-material/Sd';
+import { ThemeContext } from 'contexts/themeContext';
+import L from 'leaflet';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { toolStyles } from '../../Helpers/ToolStyles';
 
 export const ZoomControl = (props) => {
   const LOW_RES = 17;
@@ -43,6 +43,7 @@ export const ZoomControl = (props) => {
         aria-label="toggle max zoom resolution"
         onClick={toggle}>
         {isHighRes ? <HdIcon fontSize={'large'} /> : <SdIcon fontSize={'large'} />}
+        <Typography className={toolClass.Font}>{isHighRes ? 'High Def' : 'Low Def'}</Typography>
       </IconButton>
     </>
   );

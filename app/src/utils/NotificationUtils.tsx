@@ -1,7 +1,7 @@
 import { DocType } from 'constants/database';
-import { IDatabaseContext } from 'contexts/DatabaseContext';
 import { v4 as uuidv4 } from 'uuid';
 
+/* TBD if we salvage this
 export const notifyError = async (databaseContext: IDatabaseContext, message: string) => {
   await databaseContext.database.put({
     _id: uuidv4(),
@@ -34,3 +34,4 @@ export const notifyWarning = async (databaseContext: IDatabaseContext, message: 
     dateCreated: new Date()
   });
 };
+*/

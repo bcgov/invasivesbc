@@ -8,7 +8,7 @@
     "url": "https://github.com/bcgov/invasivesbc.git"
   },
   "engines": {
-    "node": ">= 14.0.0",
+    "node": ">= 16.0.0",
     "npm": ">= 6.0.0"
   },
   "dependencies": {
@@ -77,6 +77,7 @@
     "localforage": "^1.9.0",
     "lodash": "^4.17.21",
     "lodash.groupby": "^4.6.0",
+    "material-ui-color": "^1.2.0",
     "material-ui-color-picker": "^3.5.1",
     "material-ui-dropzone": "^3.5.0",
     "material-ui-popup-state": "^1.9.3",
@@ -104,6 +105,7 @@
     "reproject": "^1.2.6",
     "rxjs": "^6.6.7",
     "sass": "^1.43.4",
+    "serve": "^13.0.2",
     "stream-to-string": "^1.2.0",
     "typescript": "3.8.3",
     "unzipper": "^0.10.11",
@@ -136,6 +138,7 @@
     "happypack": "^5.0.1",
     "prettier": "^2.3.1",
     "react": "^17.0.2",
+    "react-leaflet-editable": "^0.2.2",
     "react-scripts": "4.0.3",
     "react-sqlite-hook": "^2.1.3"
   },
@@ -146,7 +149,7 @@
     "start:ionic": "ionic serve",
     "start:ionic:reload": "ionic serve",
     "build-prod": "react-scripts build --prod",
-    "deploy_start": "node server",
+    "deploy_start": "npx serve -s build -l 8100",
     "eject": "react-scripts eject",
     "lint": "eslint src/ --ext .jsx,.js,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix"

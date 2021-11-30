@@ -1,6 +1,7 @@
+import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
-import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';
 import { useInvasivesApi } from '../hooks/useInvasivesApi';
+import useKeycloakWrapper, { IUserInfo } from '../hooks/useKeycloakWrapper';
 
 export const info: IUserInfo = {
   username: '',
@@ -58,14 +59,25 @@ export const AuthStateContextProvider: React.FC = (props) => {
     const getApiSpec = async () => {
       await invasivesApi.getCachedApiSpec();
     };
-
     getApiSpec();
   }, []);
 
   return (
-    <AuthStateContext.Provider
-      value={{ keycloak, userInfoLoaded, userInfo, userRoles, setUserInfo, setUserInfoLoaded, setUserRoles }}>
-      {props.children}
-    </AuthStateContext.Provider>
+    <>
+      {
+        <AuthStateContext.Provider
+          value={{
+            keycloak,
+            userInfoLoaded,
+            userInfo,
+            userRoles,
+            setUserInfo,
+            setUserInfoLoaded,
+            setUserRoles
+          }}>
+          {props.children}
+        </AuthStateContext.Provider>
+      }
+    </>
   );
 };

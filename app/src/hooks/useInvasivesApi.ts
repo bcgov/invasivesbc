@@ -1,6 +1,11 @@
+import { Http } from '@capacitor-community/http';
 import { Capacitor } from '@capacitor/core';
-import { useKeycloak } from '@react-keycloak/web';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext2';
+import { AuthStateContext } from 'contexts/authStateContext';
+import qs from 'qs';
+import { useContext, useMemo } from 'react';
+import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
+import { DocType } from '../constants/database';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
   ICreateMetabaseQuery,
@@ -9,12 +14,6 @@ import {
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
-import qs from 'qs';
-import { Http } from '@capacitor-community/http';
-import { useContext, useMemo } from 'react';
-import { DocType } from '../constants/database';
-import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
-import { AuthStateContext } from 'contexts/authStateContext';
 
 const REACT_APP_API_HOST = process.env.REACT_APP_API_HOST;
 const REACT_APP_API_PORT = process.env.REACT_APP_API_PORT;
@@ -41,7 +40,7 @@ switch (process.env.REACT_APP_REAL_NODE_ENV) {
     API_URL = 'https://invasivesbci.apps.silver.devops.gov.bc.ca';
     break;
   default:
-    API_URL = API_HOST ? `http://${API_HOST}:${API_PORT}` : 'http://localhost:7080';
+    API_URL = 'http://192.168.0.174:7080';
     break;
 }
 // This has to be here because they are evaluated at build time, and thus ignored in the openshift deploy config
@@ -55,14 +54,14 @@ console.log('API_URL', API_URL);
  */
 const useRequestOptions = () => {
   const { keycloak } = useContext(AuthStateContext); //useKeycloak();
-  const instance = useMemo(() => {
-    return {
-      baseUrl: API_URL,
-      headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.obj?.token}` }
-    };
-  }, [keycloak]);
+  // const instance = useMemo(() => {
+  return {
+    baseUrl: API_URL,
+    headers: { 'Access-Control-Allow-Origin': '*', Authorization: `Bearer ${keycloak?.obj?.token}` }
+  };
+  // }, [keycloak]);
 
-  return instance;
+  // return instance;
 };
 /**
  * Returns a set of supported api methods.
@@ -71,7 +70,7 @@ const useRequestOptions = () => {
  */
 export const useInvasivesApi = () => {
   const options = useRequestOptions();
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   /**
    * Fetch*
    activities by search criteria.
@@ -346,6 +345,21 @@ export const useInvasivesApi = () => {
       headers: { ...options.headers },
       method: 'GET',
       url: options.baseUrl + `/api/media?` + qs.stringify({ key: mediaKeys })
+    });
+
+    return data;
+  };
+
+  /**
+   * Fetch application_users.
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getApplicationUsers = async (): Promise<any> => {
+    const { data } = await Http.request({
+      headers: { ...options.headers },
+      method: 'GET',
+      url: options.baseUrl + `/application-user`
     });
 
     return data;
@@ -638,6 +652,7 @@ export const useInvasivesApi = () => {
     getJurisdictions,
     cacheUserInfo,
     getUserInfoFromCache,
-    clearUserInfoFromCache
+    clearUserInfoFromCache,
+    getApplicationUsers
   };
 };

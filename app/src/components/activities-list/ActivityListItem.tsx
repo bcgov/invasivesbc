@@ -1,6 +1,6 @@
 import { Box, Divider, Grid, Typography } from '@material-ui/core';
-import React, { useState, useEffect } from 'react';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import React, { useEffect, useState } from 'react';
 
 interface IActivityListItem {
   activity: any;

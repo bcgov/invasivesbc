@@ -1,9 +1,7 @@
 import { makeStyles } from '@material-ui/core';
-import React from 'react';
 import CheckCircleTwoToneIcon from '@material-ui/icons/CheckCircleTwoTone';
 import HighlightOffTwoToneIcon from '@material-ui/icons/HighlightOffTwoTone';
-import CancelTwoToneIcon from '@material-ui/icons/CancelTwoTone';
-import AutorenewTwoToneIcon from '@material-ui/icons/AutorenewTwoTone';
+import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
   status: {}

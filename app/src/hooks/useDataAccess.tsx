@@ -1,3 +1,11 @@
+import { Capacitor } from '@capacitor/core';
+import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
+import { ActivitySyncStatus } from 'constants/activities';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { NetworkContext } from 'contexts/NetworkContext';
+import { useContext, useEffect } from 'react';
+import { DocType } from '../constants/database';
+import { DatabaseContext, DBRequest, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
   ICreateOrUpdateActivity,
@@ -5,13 +13,6 @@ import {
   IPointOfInterestSearchCriteria
 } from '../interfaces/useInvasivesApi-interfaces';
 import { useInvasivesApi } from './useInvasivesApi';
-import { DBRequest, DatabaseContext2, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext2';
-import { useContext } from 'react';
-import { DocType } from '../constants/database';
-import { Capacitor } from '@capacitor/core';
-import { DatabaseContext } from '../contexts/DatabaseContext';
-import { NetworkContext } from 'contexts/NetworkContext';
-import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
 
 /**
  * Returns a set of supported api methods.
@@ -21,10 +22,15 @@ import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/Addit
  */
 export const useDataAccess = () => {
   const api = useInvasivesApi();
-  const databaseContext = useContext(DatabaseContext2);
-  const databaseContextPouch = useContext(DatabaseContext);
+  const databaseContext = useContext(DatabaseContext);
   const platform = Capacitor.getPlatform();
   const networkContext = useContext(NetworkContext);
+  const authContext = useContext(AuthStateContext);
+  const keycloak = authContext.keycloak; //useKeycloak();
+
+  const isMobile = () => {
+    return Capacitor.getPlatform() !== 'web';
+  };
 
   /**
    * Fetch points of interest by search criteria.
@@ -200,17 +206,23 @@ export const useDataAccess = () => {
       const dbcontext = context;
       return dbcontext.asyncQueue({
         asyncTask: () => {
-          return upsert(
-            [
-              {
-                type: UpsertType.DOC_TYPE_AND_ID_SLOW_JSON_PATCH,
-                docType: DocType.ACTIVITY,
-                json: activity,
-                ID: activity.activity_id
-              }
-            ],
-            dbcontext
-          );
+          try {
+            return upsert(
+              [
+                {
+                  type: UpsertType.MOBILE_ACTIVITY_PATCH,
+                  docType: DocType.ACTIVITY,
+                  json: activity,
+                  ID: activity.activity_id,
+                  sync_status: activity.sync_status,
+                  activity_subtype: activity.activity_subtype
+                }
+              ],
+              dbcontext
+            );
+          } catch (err) {
+            console.log('Error occurred: ', err);
+          }
         }
       });
     }
@@ -246,6 +258,94 @@ export const useDataAccess = () => {
         return upsert([{ type: UpsertType.DOC_TYPE, docType: DocType.TRIP, json: newTripObj }], dbcontext);
       }
     });
+  };
+
+  const getApplicationUsers = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }): Promise<any> => {
+    const dbcontext = context;
+    return dbcontext.asyncQueue({
+      asyncTask: async () => {
+        let res = await query(
+          {
+            type: QueryType.DOC_TYPE,
+            docType: DocType.APPLICATION_USER,
+            ID: '1'
+          },
+          dbcontext
+        );
+        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
+        console.log('RES FROM GETAPPLICATIONUSERS: ', res);
+        return res;
+      }
+    });
+  };
+
+  const cacheApplicationUsers = async (context?: {
+    asyncQueue: (request: DBRequest) => Promise<any>;
+    ready: boolean;
+  }) => {
+    if (networkContext.connected && isMobile()) {
+      console.log('Got here');
+      const users = await api.getApplicationUsers();
+      const dbcontext = context;
+      return dbcontext.asyncQueue({
+        asyncTask: () => {
+          return upsert(
+            [{ type: UpsertType.DOC_TYPE_AND_ID, docType: DocType.APPLICATION_USER, ID: '1', json: users }],
+            dbcontext
+          );
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (keycloak?.obj?.token) cacheApplicationUsers();
+  }, [networkContext.connected, keycloak?.obj?.authenticated]);
+
+  /**
+   * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
+   *
+   * @param {activitiesSearchCriteria} activitiesSearchCriteria
+   * @return {*}  {Promise<any>}
+   */
+  const getActivitiesForMobileSync = async (
+    activitiesSearchCriteria: IActivitySearchCriteria,
+    context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
+  ): Promise<any> => {
+    if (Capacitor.getPlatform() !== 'web') {
+      const dbContext = context;
+
+      const typeClause = activitiesSearchCriteria.activity_type
+        ? ` and json_extract(json(json), '$.activity_type') IN (${JSON.stringify(
+            activitiesSearchCriteria.activity_type
+          ).replace(/[\[\]']+/g, '')})`
+        : '';
+      const subTypeClause = activitiesSearchCriteria.activity_subtype
+        ? ` and json_extract(json(json), '$.activity_subtype') IN (${JSON.stringify(
+            activitiesSearchCriteria.activity_subtype
+          ).replace(/[\[\]']+/g, '')})`
+        : '';
+
+      const sql = `select * from activity where 1=1 and sync_status='${ActivitySyncStatus.NOT_SAVED}' ${typeClause} ${subTypeClause}`;
+      const asyncReturnVal = await dbContext.asyncQueue({
+        asyncTask: () => {
+          return query(
+            {
+              type: QueryType.RAW_SQL,
+              sql: sql
+            },
+            dbContext
+          );
+        }
+      });
+      return {
+        rows: asyncReturnVal.map((val) => JSON.parse(val.json)),
+        count: asyncReturnVal.length
+      };
+    }
   };
 
   /**
@@ -343,16 +443,19 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() === 'web') {
       return api.createActivity(activity);
     } else {
+      console.log('Activity creating: ', activity);
       const dbcontext = context;
       return dbcontext.asyncQueue({
         asyncTask: () => {
           return upsert(
             [
               {
-                type: UpsertType.DOC_TYPE_AND_ID,
+                type: UpsertType.MOBILE_ACTIVITY_CREATE,
                 docType: DocType.ACTIVITY,
                 ID: activity.activity_id,
-                json: activity
+                json: activity,
+                activity_subtype: activity.activity_subtype,
+                sync_status: ActivitySyncStatus.NOT_SAVED
               }
             ],
             dbcontext
@@ -404,7 +507,10 @@ export const useDataAccess = () => {
     ready: boolean;
   }): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      return databaseContextPouch.database.find({ selector: { _id: DocType.APPSTATE } });
+      const raw_old = localStorage.getItem('appstate-invasivesbc');
+      if (raw_old) {
+        return JSON.parse(raw_old);
+      }
     } else {
       const dbcontext = context;
       return dbcontext.asyncQueue({
@@ -425,6 +531,37 @@ export const useDataAccess = () => {
   };
 
   /**
+   * Sync cached records
+   * Used for syncing a user's cached mobile records
+   * with the InvasivesBC DB
+   *
+   * @return {*} {Promise<any>}
+   */
+  const syncCachedRecords = async (): Promise<any> => {
+    // Only callable on mobile
+    if (Capacitor.getPlatform() !== 'web' && networkContext.connected) {
+      await getActivitiesForMobileSync(
+        { activity_type: ['Observation', 'Treatment', 'Monitoring'] },
+        databaseContext
+      ).then((res: any) => {
+        if (res.count > 0) {
+          res.rows.forEach(async (row: ICreateOrUpdateActivity) => {
+            try {
+              api.createActivity(row);
+            } catch (err) {
+              console.log('Error saving activity to api');
+            }
+            let tempRow: ICreateOrUpdateActivity = row;
+            tempRow.sync_status = ActivitySyncStatus.SAVE_SUCCESSFUL;
+            console.log(tempRow);
+            updateActivity(tempRow, databaseContext);
+          });
+        }
+      });
+    }
+  };
+
+  /**
    * Get appState
    *
    * @param {any} activeActivity
@@ -435,9 +572,12 @@ export const useDataAccess = () => {
     context?: { asyncQueue: (request: DBRequest) => Promise<any>; ready: boolean }
   ): Promise<any> => {
     if (Capacitor.getPlatform() === 'web') {
-      return databaseContextPouch.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-        return { ...appStateDoc, ...newState };
-      });
+      const old = await getAppState();
+      if (old) {
+        localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...old, ...newState }));
+      } else {
+        localStorage.setItem('appstate-invasivesbc', JSON.stringify({ ...newState }));
+      }
     } else {
       const dbcontext = context;
 
@@ -475,6 +615,9 @@ export const useDataAccess = () => {
     deleteActivities,
     getAppState,
     setAppState,
-    getJurisdictions
+    getJurisdictions,
+    syncCachedRecords,
+    getApplicationUsers,
+    cacheApplicationUsers
   };
 };

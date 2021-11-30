@@ -1,25 +1,25 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { Capacitor } from '@capacitor/core';
 import {
-  Container,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
-  Typography,
   Button,
   Card,
   CardActions,
   CardContent,
+  Container,
+  Divider,
   Grid,
   makeStyles,
   Theme,
-  Divider,
-  Accordion,
-  AccordionDetails,
-  AccordionSummary
+  Typography
 } from '@material-ui/core';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import React, { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import planTripGIF from '../../../gifs/Plan Page.gif';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { Capacitor } from '@capacitor/core';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const useStyles = makeStyles((theme: Theme) => ({
   userInfoItemGrid: {

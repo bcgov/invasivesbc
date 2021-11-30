@@ -1,7 +1,6 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { NetworkContext } from 'contexts/NetworkContext';
-import { useEffect, useState, useContext } from 'react';
-import { Capacitor } from '@capacitor/core';
+import { useContext, useState } from 'react';
 import { useInvasivesApi } from './useInvasivesApi';
 /**
  * Represents the userinfo provided by keycloak.

@@ -1,18 +1,19 @@
 import { Box, Button, makeStyles } from '@material-ui/core';
-import { DocType } from 'constants/database';
-import { DatabaseContext2, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext2';
-import { useInvasivesApi } from '../../hooks/useInvasivesApi';
 import * as turf from '@turf/turf';
+import { DocType } from 'constants/database';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
+import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
+import layers from '../../components/map/LayerPicker/LAYERS.json';
+import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
+import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext';
+import { useInvasivesApi } from '../../hooks/useInvasivesApi';
+import { useDataAccess } from 'hooks/useDataAccess';
 import {
   IActivitySearchCriteria,
-  IPointOfInterestSearchCriteria,
-  IMetabaseQuerySearchCriteria
+  IMetabaseQuerySearchCriteria,
+  IPointOfInterestSearchCriteria
 } from '../../interfaces/useInvasivesApi-interfaces';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import geoData from '../../components/map/LayerPicker/GEO_DATA.json';
-import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
-import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
-import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,8 +33,9 @@ export const TripDataControls: React.FC<any> = (props) => {
   useStyles();
 
   const invasivesApi = useInvasivesApi();
+  const dataAccess = useDataAccess();
 
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
 
   const [trip, setTrip] = useState(null);
 
@@ -551,7 +553,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         idArr
       );
 
-      const layerNames = getLayerNamesFromJSON(geoData);
+      const layerNames = getLayerNamesFromJSON(layers);
       // for each layer name, do...
       for (let layerNamesIndex = 0; layerNamesIndex < layerNames.length; layerNamesIndex++) {
         let itemsPushedForLayer = 0;
@@ -815,6 +817,7 @@ export const TripDataControls: React.FC<any> = (props) => {
       }));
       console.log('Error when fetching from network: ' + error);
     }
+    await dataAccess.cacheApplicationUsers(databaseContext);
   };
 
   return (

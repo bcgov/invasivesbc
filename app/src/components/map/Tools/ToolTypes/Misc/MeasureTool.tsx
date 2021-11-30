@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useMapEvent, GeoJSON, Popup, Marker } from 'react-leaflet';
-import { IconButton, Button, makeStyles, Popover, Grid, Typography } from '@material-ui/core';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import { Button, Grid, IconButton, makeStyles, Popover, Typography } from '@material-ui/core';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
-import utm_zone from './DisplayPosition';
-import { polygon, area } from '@turf/turf';
-import L from 'leaflet';
-import dotMarker from '../Icons/dotMarker.png';
-import ruler from '../Icons/ruler.png';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import { area, polygon } from '@turf/turf';
 import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './Helpers/ToolBtnStyles';
+import L from 'leaflet';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { GeoJSON, Marker, Popup, useMapEvent } from 'react-leaflet';
+import dotMarker from '../../../Icons/dotMarker.png';
+import ruler from '../../../Icons/ruler.png';
+import { toolStyles } from '../../Helpers/ToolStyles';
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -200,6 +199,7 @@ const MeasureTool = (props: any) => {
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         onClick={handleClick}>
         <img className={toolClass.toolImg} src={ruler} />
+        <Typography className={toolClass.Font}>Meaure</Typography>
       </IconButton>
       <Popover
         id={id}
@@ -263,7 +263,6 @@ const MeasureTool = (props: any) => {
         {isMeasuringDistance && <Popup>{totalDistance.toFixed(1)} meters</Popup>}
         {isMeasuringArea && <Popup>{polyArea.toFixed(2)} meters&#178;</Popup>}
       </GeoJSON>
-
       {isMeasuringArea && (
         <>
           {!finishDraw &&

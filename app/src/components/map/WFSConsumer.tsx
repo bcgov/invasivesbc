@@ -1,9 +1,9 @@
-import reproject from 'reproject';
-import proj4 from 'proj4';
-import SLDParser from 'geostyler-sld-parser';
 import '@capacitor-community/http';
 import { Http } from '@capacitor-community/http';
-import { IndependentLayers } from './LayerLoaderHelpers/DataBCRenderLayer';
+import SLDParser from 'geostyler-sld-parser';
+import proj4 from 'proj4';
+import reproject from 'reproject';
+import { IndependentLayers } from './LayerLoaderHelpers/IndependentRenderLayers';
 const { stringify } = require('wkt');
 
 const getHTTP = async (url) => {

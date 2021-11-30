@@ -1,149 +1,67 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useEffect, useContext, useRef, useMemo } from 'react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import { LayersControlProvider } from './layerControlContext';
 import { DataBCLayer } from '../LayerLoaderHelpers/DataBCRenderLayer';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
-import { Capacitor } from '@capacitor/core';
-/* HelperFiles */
+/* HelperFiles Parent Layers */
+import { sortArray, getChild, sortObject, updateChild } from './SortLayerOrder';
+/* Helper Files Parent Actions */
 import {
-  sortArray,
-  getObjectsBeforeIndex,
-  getObjectsAfterIndex,
-  getChildObjBeforeIndex,
-  getChildObjAfterIndex,
-  getParentIndex,
-  getChildIndex,
-  getParent,
-  getChild,
-  sortObject
-} from './SortLayerOrder';
-import { toolStyles } from '../Tools/Helpers/ToolBtnStyles';
+  DialogCloseBtn,
+  getChildAction,
+  toggleDialog,
+  updateParentAction
+} from './LayersActionsHelper/LayersActionsFunctions';
+import { getParentAction } from 'components/map/LayerPicker/LayersActionsHelper/LayersActionsFunctions';
+import { assignPaperBGTheme, toolStyles } from '../Tools/Helpers/ToolStyles';
 // MUI
 import {
-  Checkbox,
-  Grid,
-  ListItemIcon,
-  ListItem,
-  List,
-  CircularProgress,
-  AccordionSummary,
   Accordion,
-  makeStyles,
-  IconButton,
-  Paper,
-  Slider,
-  Typography,
-  Popover,
+  AccordionSummary,
   Button,
+  Checkbox,
   Dialog,
-  DialogTitle,
   DialogActions,
   DialogContent,
-  Tooltip
+  DialogTitle,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  Paper,
+  Popover,
+  Slider,
+  Typography
 } from '@material-ui/core';
-import ColorPicker from 'material-ui-color-picker';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import ColorLens from '@material-ui/icons/ColorLens';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 // MUI Icons
 import LayersIcon from '@material-ui/icons/Layers';
-import ColorLens from '@material-ui/icons/ColorLens';
 import SettingsIcon from '@material-ui/icons/Settings';
-import DoneIcon from '@material-ui/icons/Done';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import InfoIcon from '@material-ui/icons/Info';
-import { LayersSelector, addOrRemoveLayer, updateLayer } from './LayersSelectorAndRender';
+import KMLUpload from 'components/map-buddy-components/KMLUpload';
+import { ColorPicker } from 'material-ui-color';
+import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
+import { IndependentLayer } from '../LayerLoaderHelpers/IndependentRenderLayers';
+import { addOrRemoveLayer, LayersSelector } from './LayersSelectorAndRender';
+import { ThemeContext } from 'contexts/themeContext';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '360px',
-    height: '360px',
-    backgroundColor: 'white',
-    position: 'absolute',
-    zIndex: 1500,
-    borderRadius: '4px',
-    right: 60,
-    top: 20,
-    ['@media (max-width:800px)']: {
-      top: 100
-    }
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    fontWeight: theme.typography.fontWeightRegular
-  },
-  accordion: {
-    width: '100%'
-  },
-  div: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  spinnerGridItem: {
-    width: '50px'
-  },
-  gridContainer: {
-    position: 'relative'
-  },
-  tooltipWidth: {
-    maxWidth: 500
-  }
-}));
+export const LayerPicker = React.memo(
+  (props: any) => {
+    const mapLayersContext = useContext(MapRequestContext);
+    const { layersSelected, setLayersSelected } = mapLayersContext;
+    const { layersActions, setLayersActions } = mapLayersContext;
+    const toolClass = toolStyles();
+    const themeContext = useContext(ThemeContext);
+    const { themeType } = themeContext;
+    const divref = useRef();
 
-const POSITION_CLASSES = {
-  bottomleft: 'leaflet-bottom leaflet-left',
-  bottomright: 'leaflet-bottom leaflet-right',
-  topleft: 'leaflet-top leaflet-left',
-  topright: 'leaflet-top leaflet-right'
-};
-
-export const updateChild = (
-  parentType: string,
-  childType: string,
-  fieldsToUpdate: Object,
-  { objectState, setObjectState }
-) => {
-  // sort parents, get index of parent
-  let pIndex = getParentIndex(objectState, parentType);
-  // sort child of specific parent, get index of child
-  let cIndex = getChildIndex(objectState, parentType, childType);
-  // get old child and overwrite fields with fields in fieldsToUpdate
-  const oldChild = getChild(objectState, parentType, childType);
-  const updatedChild = { ...oldChild, ...fieldsToUpdate };
-  // break up slicing into chunks:
-  let parentsBefore = getObjectsBeforeIndex(objectState, pIndex);
-  let parentsAfter = getObjectsAfterIndex(objectState, pIndex);
-  //spread to avoid reference issue when copying
-  const oldParent = getParent(objectState, parentType);
-
-  const childrenBefore = getChildObjBeforeIndex(objectState, pIndex, cIndex);
-  const childrenAfter = getChildObjAfterIndex(objectState, pIndex, cIndex);
-
-  const newParent = {
-    ...oldParent,
-    children: [...childrenBefore, updatedChild, ...childrenAfter]
-  };
-
-  setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
-};
-
-export function LayerPicker(props: any, { position }) {
-  const classes = useStyles();
-  const toolClass = toolStyles();
-  const mapLayersContext = useContext(MapRequestContext);
-  const { layersSelected, setLayersSelected } = mapLayersContext;
-  const [objectState, setObjectState] = useState(layersSelected);
-  const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
-  const divref = useRef();
-  const [newLayers, setNewLayers] = useState([]);
-
+    /* Removed for now:
   function getErrorIcon(time: any) {
     return time === 0 ? <ErrorOutlineIcon /> : <CircularProgress />;
   }
 
-  /* removed for now 
   function WithCounter() {
     const [seconds, setSeconds] = React.useState(10);
     React.useEffect(() => {
@@ -154,203 +72,139 @@ export function LayerPicker(props: any, { position }) {
     return seconds;
   }*/
 
-  //update context on ObjectState change
-  useEffect(() => {
-    setLayersSelected(newLayers);
-  }, [newLayers]);
-
-  useEffect(() => {
-    if (divref?.current) {
-      DomEvent.disableClickPropagation(divref?.current);
-      DomEvent.disableScrollPropagation(divref?.current);
-    }
-  });
-
-  const opacityText = (value: number) => {
-    return `${value.toFixed(1)}`;
-  };
-
-  const updateParent = (parentType: string, fieldsToUpdate: Object) => {
-    let pIndex = getParentIndex(objectState, parentType);
-    let parentsBefore: Object[] = getObjectsBeforeIndex(objectState, pIndex);
-    let parentsAfter: Object[] = getObjectsAfterIndex(objectState, pIndex);
-    const oldParent = getParent(objectState, parentType);
-    const updatedParent = { ...oldParent, ...fieldsToUpdate };
-    setObjectState([...parentsBefore, updatedParent, ...parentsAfter] as any);
-  };
-
-  const toggleChildDialog = (parent, child, open: boolean) => {
-    updateChild(
-      parent.id,
-      child.id,
-      {
-        dialog_open: open
-      },
-      { objectState, setObjectState }
-    );
-  };
-
-  const toggleColorPickerDialog = (parent) => {
-    updateParent(parent.id, {
-      colorpicker_open: !getParent(objectState, parent.id).colorpicker_open
+    useEffect(() => {
+      if (divref?.current) {
+        DomEvent.disableClickPropagation(divref?.current);
+        DomEvent.disableScrollPropagation(divref?.current);
+      }
     });
-  };
 
-  const toggleInfoDialog = (parent) => {
-    updateParent(parent.id, {
-      info_dialog_open: !getParent(objectState, parent.id).info_dialog_open
-    });
-  };
-
-  const DragHandle = SortableHandle(() => (
-    <ListItemIcon>
-      <DragHandleIcon />
-    </ListItemIcon>
-  ));
-
-  const SortableParentLayer = SortableElement(({ parent }) => {
-    const onParentLayerAccordionChange = (event: any, expanded: any) => {
-      updateParent(parent.id, { expanded: expanded });
+    /**
+     * Function used to print opacity as text
+     * @param value float to indicate an opacity between 0 and 1
+     * @returns string value
+     */
+    const opacityText = (value: number) => {
+      return `${value.toFixed(1)}`;
     };
-    return (
-      <ListItem ContainerComponent="div" style={{ width: '100%', maxWidth: 360 }}>
-        <Grid container spacing={1}>
-          <Accordion expanded={parent.expanded} onChange={onParentLayerAccordionChange} className={classes.accordion}>
-            <Grid container xs={12} justifyContent="space-between" alignItems="center">
-              <Grid item xs={1}>
-                <Tooltip disableFocusListener classes={{ tooltip: classes.tooltipWidth }} title={parent.id}>
-                  <IconButton onClick={() => toggleInfoDialog(parent)}>
-                    <InfoIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={7}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.heading} id={parent.id}>
-                  {parent.id}
+
+    const SortableParentLayer = SortableElement(({ parent }) => {
+      const onParentLayerAccordionChange = (event: any, expanded: any) => {
+        updateParentAction(layersActions, setLayersActions, parent.id, { expanded: expanded });
+      };
+      const DragHandle = SortableHandle(() => (
+        <ListItemIcon>
+          {getParentAction(layersActions, parent.id).expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+        </ListItemIcon>
+      ));
+      return (
+        <ListItem id={parent.id} dense={true} ContainerComponent="div" style={{ width: '100%', maxWidth: 440 }}>
+          <Accordion
+            id="parent-accordion"
+            expanded={getParentAction(layersActions, parent.id).expanded}
+            onChange={onParentLayerAccordionChange}
+            style={{ width: '100%' }}>
+            <Grid
+              id="accordion-grid"
+              container
+              style={{ marginTop: -10, marginBottom: -10 }}
+              alignItems="center"
+              xs={12}>
+              <Grid id="accordion-summary" item xs={10}>
+                <AccordionSummary>
+                  <Typography variant="subtitle1">{parent.name}</Typography>
                 </AccordionSummary>
               </Grid>
-              {/* Color Picker Dialog */}
-              <Grid item xs={1}>
-                <IconButton className={toolClass.toolBtn} onClick={() => toggleColorPickerDialog(parent)}>
-                  <ColorLens style={{ color: parent.color_code }} />
-                </IconButton>
-                <Dialog open={parent.colorpicker_open} onClose={() => toggleColorPickerDialog(parent)}>
-                  <DialogTitle>{parent.id}</DialogTitle>
-                  <DialogContent style={{ height: 300 }}>
-                    <ColorPicker
-                      name="color"
-                      defaultValue={parent.color_code}
-                      onChange={(color: any) => {
-                        updateParent(parent.id, { color_code: color });
-                      }}
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => toggleColorPickerDialog(parent)}>Close</Button>
-                  </DialogActions>
-                </Dialog>
-              </Grid>
-              <Grid item xs={1}>
+              {/* DragHandle */}
+              <Grid id="draghandle" item xs={1}>
                 <DragHandle />
               </Grid>
             </Grid>
-            {parent.children.map((child: any) => (
-              <Grid container direction="row" justifyContent="flex-start" alignItems="center">
+            {parent?.children.map((child: any) => (
+              <Grid
+                id={child.id}
+                container
+                style={{ marginBottom: -5, marginTop: -5 }}
+                direction="row"
+                alignItems="center">
                 &emsp;
-                <Grid item xs={2}>
+                <Grid item xs={2} alignContent="center" justifyContent="center">
                   <Checkbox
-                    checked={child.enabled}
-                    name={child.id}
+                    id="child-checkbox"
+                    checked={getChild(layersSelected, parent.id, child.id).enabled}
+                    name={child.name}
                     onChange={() => {
-                      addOrRemoveLayer(child, newLayers, setNewLayers);
-                      updateChild(
-                        parent.id,
-                        child.id,
-                        { enabled: !getChild(objectState, parent.id, child.id).enabled },
-                        { objectState, setObjectState }
-                      );
+                      updateChild(layersSelected, setLayersSelected, parent.id, child.id, {
+                        enabled: !getChild(layersSelected, parent.id, child.id).enabled
+                      });
                     }}
                   />
                 </Grid>
-                <Grid item xs={5}>
-                  <Tooltip disableFocusListener title={'tip of the tool'}>
-                    <Button>{child.id}</Button>
-                  </Tooltip>
+                <Grid item xs={6}>
+                  <Typography variant="caption">{child.name}</Typography>
                 </Grid>
-                {/* Child Dialog Box */}
-                <Grid item xs={2}>
-                  <IconButton onClick={() => toggleChildDialog(parent, child, true)}>
-                    <SettingsIcon />
+                {/* Settings Dialog Box */}
+                {process.env.REACT_APP_REAL_NODE_ENV === 'development' && (
+                  <LayerModeDialog parent={parent} child={child} />
+                )}
+                {process.env.REACT_APP_REAL_NODE_ENV === 'local' && <LayerModeDialog parent={parent} child={child} />}
+                <Grid item xs={1}>
+                  <IconButton
+                    id="colorpicker-btn"
+                    className={toolClass.toolBtn}
+                    onClick={() =>
+                      toggleDialog(layersActions, setLayersActions, parent, child, { dialog_colorpicker_open: true })
+                    }>
+                    <ColorLens id="color-lens" style={{ color: child.color_code }} />
                   </IconButton>
-                  <Dialog open={child.dialog_open} onClose={() => toggleChildDialog(parent, child, false)}>
-                    <DialogTitle>{child.name ? <>{child.name}</> : child.id}</DialogTitle>
-                    {child.id === 'activities' && (
-                      <DialogContent style={{ height: 300 }}>
-                        <ColorPicker
-                          name="color"
-                          defaultValue={child.color_code}
-                          onChange={(color: any) => {
-                            updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
-                            updateLayer({ color_code: color }, child, newLayers, setNewLayers);
-                          }}
-                        />
-                      </DialogContent>
-                    )}
-                    {child.id === 'poi' && (
-                      <DialogContent style={{ height: 300, width: 300 }}>
-                        <ColorPicker
-                          name="color"
-                          defaultValue={child.color_code}
-                          onChange={(color: any) => {
-                            updateChild(parent.id, child.id, { color_code: color }, { objectState, setObjectState });
-                            updateLayer({ color_code: color }, child, newLayers, setNewLayers);
-                          }}
-                        />
-                      </DialogContent>
-                    )}
-                    {child.id !== 'activities' && child.id !== 'poi' && (
-                      <DialogContent style={{ height: 300, width: 300 }}>
-                        <LayersSelector
-                          parent={parent}
-                          child={child}
-                          objectState={objectState}
-                          setObjectState={setObjectState}
-                          layers={newLayers}
-                          setLayers={setNewLayers}
-                        />
-                        <Typography style={{ marginRight: 10 }}>Opacity</Typography>
-                        <Slider
-                          defaultValue={child.opacity}
-                          onChangeCommitted={(event: any, newOpacity: number | number[]) => {
-                            updateChild(
-                              parent.id,
-                              child.id,
-                              { opacity: newOpacity as number },
-                              { objectState, setObjectState }
-                            );
-                            updateLayer({ opacity: newOpacity as number }, child, newLayers, setNewLayers);
-                          }}
-                          getAriaValueText={opacityText}
-                          step={0.0001}
-                          min={0.0}
-                          max={1.0}
-                        />
-                      </DialogContent>
-                    )}
+                  <Dialog
+                    id="layer-settings-dialog"
+                    open={getChildAction(layersActions, parent.id, child.id).dialog_colorpicker_open}
+                    onClose={() =>
+                      toggleDialog(layersActions, setLayersActions, parent, child, {
+                        dialog_colorpicker_open: false
+                      })
+                    }>
+                    <DialogTitle>{child.name}</DialogTitle>
+                    {/* Opacity */}
+                    <DialogContent id="layer-opacity" style={{ width: 300 }}>
+                      <Typography id="slider-title" style={{ marginRight: 10 }}>
+                        Opacity
+                      </Typography>
+                      <Slider
+                        id="slider-control"
+                        defaultValue={child.opacity}
+                        onChangeCommitted={(event: any, newOpacity: number | number[]) => {
+                          updateChild(layersSelected, setLayersSelected, parent.id, child.id, {
+                            opacity: newOpacity
+                          });
+                        }}
+                        getAriaValueText={opacityText}
+                        step={0.0001}
+                        min={0.0}
+                        max={1.0}
+                      />
+                    </DialogContent>
+                    {/* Color Picker */}s
+                    <DialogContent id="layer-colorpicker" style={{ height: 300 }}>
+                      <ColorPicker
+                        style={{
+                          backgroundColor: child.color_code
+                        }}
+                        floatingLabelText={' '}
+                        name="color"
+                        defaultValue={child.color_code}
+                        onChange={(color: any) => {
+                          updateChild(layersSelected, setLayersSelected, parent.id, child.id, { color_code: color });
+                        }}
+                      />
+                    </DialogContent>
                     <DialogActions>
-                      <Button
-                        onClick={() =>
-                          updateChild(
-                            parent.id,
-                            child.id,
-                            {
-                              dialog_open: false
-                            },
-                            { objectState, setObjectState }
-                          )
-                        }>
-                        Close
-                      </Button>
+                      <DialogCloseBtn
+                        parent={parent}
+                        child={child}
+                        fieldsToUpdate={{ dialog_colorpicker_open: false }}
+                      />
                     </DialogActions>
                   </Dialog>
                 </Grid>
@@ -360,47 +214,70 @@ export function LayerPicker(props: any, { position }) {
               </Grid>
             ))}
           </Accordion>
-          {/*<ListItemSecondaryAction style={{ width: 32 }}></ListItemSecondaryAction>*/}
-        </Grid>
-      </ListItem>
-    );
-  });
+        </ListItem>
+      );
+    });
 
-  const SortableListContainer = SortableContainer(({ items }: any) => (
-    <List>
-      {items.map((parent: { id: string; order: number }) => (
-        <SortableParentLayer key={parent.id} index={parent.order} parent={parent} />
-      ))}
-    </List>
-  ));
+    const SortableListContainer = SortableContainer(({ items }: any) => (
+      <List>
+        {items.map((parent: { id: string; order: number }) => (
+          <SortableParentLayer key={parent.id} index={parent.order} parent={parent} />
+        ))}
+      </List>
+    ));
 
-  const onSortEnd = ({ oldIndex, newIndex }: any) => {
-    const returnVal = sortObject(objectState, oldIndex, newIndex);
-    setObjectState(returnVal);
-  };
+    const onSortEnd = ({ oldIndex, newIndex }: any) => {
+      const returnVal = sortObject(layersSelected, oldIndex, newIndex);
+      var len = returnVal.length;
+      for (var i = 0; i < len; i++) {
+        returnVal[i].zIndex = len * 1000;
+        len--;
+      }
+      setLayersSelected(returnVal);
+    };
 
-  return (
-    <LayersControlProvider value={null}>
-      {newLayers.map((layer) => (
-        <DataBCLayer
-          opacity={layer.opacity}
-          layerName={layer.bcgw_code}
-          mode={layer.layer_mode}
-          inputGeo={props.inputGeo}
-          setWellIdandProximity={props.setWellIdandProximity}
-          color_code={layer.color_code}
-        />
-      ))}
-      <div className={positionClass}>
-        <PopupState variant="popover" popupId="layerPicker">
+    return (
+      <>
+        {layersSelected.map((parent) => (
+          <>
+            {parent.children.map(
+              (child) =>
+                child.enabled && (
+                  <>
+                    {child.bcgw_code ? (
+                      <DataBCLayer
+                        opacity={child.opacity}
+                        bcgw_code={child.bcgw_code}
+                        layer_mode={child.layer_mode}
+                        inputGeo={props.inputGeo}
+                        setWellIdandProximity={props.setWellIdandProximity}
+                        color_code={child.color_code}
+                        zIndex={parent.zIndex + child.zIndex}
+                      />
+                    ) : (
+                      <IndependentLayer
+                        opacity={child.opacity}
+                        layer_code={child.layer_code}
+                        color_code={child.color_code}
+                        zIndex={child.zIndex}
+                      />
+                    )}
+                  </>
+                )
+            )}
+          </>
+        ))}
+        <PopupState variant="popover" popupId="layer-picker-popup-state">
           {(popupState) => (
-            <div className="leaflet-control leaflet-bar" ref={divref}>
-              <Paper>
-                <IconButton {...bindTrigger(popupState)}>
-                  <LayersIcon fontSize="medium" />
+            <>
+              <Paper id="layer-picker-paper" style={assignPaperBGTheme(themeType)}>
+                <IconButton id="layer-picker-btn" style={{ height: 53, width: 53 }} {...bindTrigger(popupState)}>
+                  <LayersIcon />
                 </IconButton>
               </Paper>
               <Popover
+                id="layer-picker-popover"
+                style={{ maxHeight: 500 }}
                 {...bindPopover(popupState)}
                 anchorOrigin={{
                   vertical: 'top',
@@ -411,28 +288,74 @@ export function LayerPicker(props: any, { position }) {
                   horizontal: 'right'
                 }}>
                 <SortableListContainer
-                  items={sortArray(objectState)}
+                  items={sortArray(layersSelected)}
                   onSortEnd={onSortEnd}
                   useDragHandle={true}
                   lockAxis="y"
                 />
                 <Button
+                  id="layer-picker-save-btn"
                   onClick={() => {
-                    localStorage.setItem('mySave', JSON.stringify(objectState));
+                    localStorage.setItem('mySave', JSON.stringify(layersSelected));
                   }}>
                   Save
                 </Button>
                 <Button
+                  id="layer-picker-load-btn"
                   onClick={() => {
-                    setObjectState(JSON.parse(localStorage.getItem('mySave')));
+                    setLayersSelected(JSON.parse(localStorage.getItem('mySave')));
                   }}>
                   Load
                 </Button>
+                <Accordion id="layer-picker-kml-accordion">
+                  <AccordionSummary>KML upload</AccordionSummary>
+                  <KMLUpload />
+                </Accordion>
               </Popover>
-            </div>
+            </>
           )}
         </PopupState>
-      </div>
-    </LayersControlProvider>
+      </>
+    );
+  },
+  (prevProps, nextProps) => {
+    if (prevProps.inputGeo !== nextProps.inputGeo) {
+      return false;
+    }
+    return true;
+  }
+);
+
+const LayerModeDialog = (props) => {
+  const mapLayersContext = useContext(MapRequestContext);
+  const { layersActions, setLayersActions } = mapLayersContext;
+  const action = getChildAction(layersActions, props.parent.id, props.child.id);
+
+  return (
+    <Grid item xs={2}>
+      <IconButton
+        id="settings-btn"
+        onClick={() =>
+          toggleDialog(layersActions, setLayersActions, props.parent, props.child, { dialog_layerselector_open: true })
+        }>
+        <SettingsIcon />
+      </IconButton>
+      <Dialog
+        id="layermode-settings-dialog"
+        open={action.dialog_layerselector_open}
+        onClose={() =>
+          toggleDialog(layersActions, setLayersActions, props.parent, props.child, { dialog_layerselector_open: false })
+        }>
+        <DialogTitle>{props.child.name}</DialogTitle>
+        <LayersSelector parent={props.parent} child={props.child} />
+        <DialogActions id="close-dialog-action">
+          <DialogCloseBtn
+            parent={props.parent}
+            child={props.child}
+            fieldsToUpdate={{ dialog_layerselector_open: false }}
+          />
+        </DialogActions>
+      </Dialog>
+    </Grid>
   );
-}
+};

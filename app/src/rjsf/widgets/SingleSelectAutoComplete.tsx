@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import StarIcon from '@mui/icons-material/Star';
+import { Box, Typography } from '@mui/material';
 import { WidgetProps } from '@rjsf/core';
 import { SelectAutoCompleteContext } from 'contexts/SelectAutoCompleteContext';
-import { Box, Typography } from '@mui/material';
-import StarIcon from '@mui/icons-material/Star';
+import React, { useContext, useEffect, useState } from 'react';
 // Custom type to support this widget
 export type AutoCompleteSelectOption = { label: string; value: any; title: any };
 
@@ -66,16 +66,16 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     suggestedJurisdictions.forEach((jurisdiction) => {
       if (jurisdiction.geojson) {
         additionalEnumOptions.push({
-          label: jurisdiction.geojson.properties.type.toString(),
-          value: jurisdiction.geojson.properties.code_name.toString(),
-          title: jurisdiction.geojson.properties.name.toString(),
+          label: jurisdiction?.geojson?.properties?.type?.toString() || null,
+          value: jurisdiction?.geojson?.properties?.code_name?.toString() || null,
+          title: jurisdiction?.geojson?.properties?.name?.toString() || null,
           suggested: true
         } as AutoCompleteSelectOption);
       } else if (jurisdiction.properties) {
         additionalEnumOptions.push({
-          label: jurisdiction.properties.type.toString(),
-          value: jurisdiction.properties.code_name.toString(),
-          title: jurisdiction.properties.name.toString(),
+          label: jurisdiction?.properties?.type?.toString() || null,
+          value: jurisdiction?.properties?.code_name?.toString() || null,
+          title: jurisdiction?.properties?.name?.toString() || null,
           suggested: true
         } as AutoCompleteSelectOption);
       }
@@ -182,7 +182,13 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
           }
         }}
         options={optionValues}
-        getOptionSelected={(option) => option === value}
+        getOptionSelected={(option) => {
+          if (option === value) {
+            return true;
+          } else if (value === '') {
+            return true;
+          }
+        }}
         filterOptions={createFilterOptions({
           // limit: 500, // NOTE: removed for now, but might want with very long lists
           stringify: (option) => option + ' ' + optionValueLabels[option]

@@ -1,19 +1,18 @@
-import { v4 as uuidv4 } from 'uuid';
-import moment from 'moment';
 import {
+  ActivityLetter,
   ActivityStatus,
-  ActivitySyncStatus,
-  FormValidationStatus,
-  ReviewStatus,
   ActivitySubtype,
+  ActivitySyncStatus,
   ActivityType,
-  ActivityLetter
+  FormValidationStatus,
+  ReviewStatus
 } from 'constants/activities';
-import { Feature } from 'geojson';
 import { DocType } from 'constants/database';
+import { Feature } from 'geojson';
 import { IActivity } from 'interfaces/activity-interfaces';
+import moment from 'moment';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import { v4 as uuidv4 } from 'uuid';
 
 const camelCase = (str) => {
   return str

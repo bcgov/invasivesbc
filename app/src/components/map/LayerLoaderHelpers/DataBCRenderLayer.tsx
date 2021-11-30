@@ -1,11 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { WMSTileLayer } from 'react-leaflet';
-import { RenderWFSFeatures } from './RenderWFSFeatures';
 import { RenderVectorTilesOffline } from './RenderVectorTilesOffline';
-import { ActivitiesLayer } from './ActivitiesLayer';
-import { PoisLayer } from './PoisLayer';
-import { JurisdictionsLayer } from './JurisdictionsLayer';
-import { NetworkContext } from 'contexts/NetworkContext';
+import { RenderWFSFeatures } from './RenderWFSFeatures';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',
@@ -14,13 +10,15 @@ export enum LayerMode {
   RegularFeaturesOffline = 'regular_features_offline'
 }
 
+/* moved to NonDataBCRenderLayers.tsx: 
 export enum IndependentLayers {
   Activities = 'LEAN_ACTIVITIES',
   POI = 'LEAN_POI',
-  Jurisdictions = 'jurisdiction'
-}
+  Jurisdictions = 'JURISDICTIONS'
+}*/
 
 export const DataBCLayer = (props) => {
+  /* moved to IndependentRenderLayers.tsx: 
   const networkContext = useContext(NetworkContext);
 
   if (Object.values(IndependentLayers).includes(props.layerName)) {
@@ -29,17 +27,17 @@ export const DataBCLayer = (props) => {
         return <ActivitiesLayer online={networkContext.connected} opacity={props.opacity} />;
       case 'LEAN_POI':
         return <PoisLayer online={networkContext.connected} opacity={props.opacity} />;
-      case 'jurisdiction':
+      case 'JURISDICTIONS':
         return <JurisdictionsLayer online={networkContext.connected} opacity={props.opacity} />;
       default:
         return <></>;
     }
-  }
+  }*/
 
-  if (!props.mode) {
+  if (!props.layer_mode) {
     throw new Error('you missed a map mode');
   }
-  switch (props.mode) {
+  switch (props.layer_mode) {
     case LayerMode.WMSOnline:
       return (
         <WMSTileLayer
@@ -48,7 +46,8 @@ export const DataBCLayer = (props) => {
           opacity={props.opacity}
           format={'image/png'}
           url="http://openmaps.gov.bc.ca/geo/ows"
-          layers={props.layerName}
+          layers={props.bcgw_code}
+          zIndex={props.zIndex}
         />
       );
     case LayerMode.WFSOnline:
@@ -57,7 +56,7 @@ export const DataBCLayer = (props) => {
           inputGeo={props.inputGeo}
           online={true}
           opacity={props.opacity}
-          dataBCLayerName={props.layerName}
+          dataBCLayerName={props.bcgw_code}
           setWellIdandProximity={props.setWellIdandProximity}
         />
       );

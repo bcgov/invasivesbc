@@ -1,65 +1,62 @@
-import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
 //Material UI
 import {
   BottomNavigation,
   BottomNavigationAction,
   Button,
-  Slider,
-  TableContainer,
-  Typography,
-  IconButton,
   Grid,
-  FormControlLabel,
-  Switch
+  IconButton,
+  Slider,
+  Switch,
+  TableContainer,
+  Typography
 } from '@material-ui/core';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import FolderIcon from '@material-ui/icons/Folder';
-import StorageIcon from '@material-ui/icons/Storage';
 import AdjustIcon from '@material-ui/icons/Adjust';
-import SearchIcon from '@material-ui/icons/Search';
-// Leaflet and React-Leaflet
-import { useMapEvent, GeoJSON, Popup, Marker, Tooltip } from 'react-leaflet';
+import FolderIcon from '@material-ui/icons/Folder';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import StorageIcon from '@material-ui/icons/Storage';
+import { Stack } from '@mui/material';
+import * as turf from '@turf/turf';
+import { DatabaseContext } from 'contexts/DatabaseContext';
+import { ThemeContext } from 'contexts/themeContext';
 import L, { DomEvent } from 'leaflet';
-// App Imports
-import { calc_utm } from './DisplayPosition';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+// Leaflet and React-Leaflet
+import { GeoJSON, Marker, Popup, Tooltip, useMapEvent } from 'react-leaflet';
+import { useDataAccess } from '../../../../../hooks/useDataAccess';
+import binoculars from '../../../Icons/binoculars.png';
+import { getDataFromDataBC } from '../../../WFSConsumer';
 import {
   createDataUTM,
   RenderTableActivity,
-  RenderTablePosition,
   RenderTableDataBC,
-  RenderTablePOI
-} from './Helpers/StyledTable';
-import { getDataFromDataBC } from '../WFSConsumer';
-import * as turf from '@turf/turf';
-import { useDataAccess } from '../../../hooks/useDataAccess';
-import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './Helpers/ToolBtnStyles';
-import marker from '../Icons/POImarker.png';
-import { Stack } from '@mui/material';
+  RenderTablePOI,
+  RenderTablePosition
+} from '../../Helpers/StyledTable';
+import {
+  assignPointModeTheme,
+  assignPtDefaultTheme,
+  assignTextDefaultTheme,
+  toolStyles
+} from '../../Helpers/ToolStyles';
+// App Imports
+import { calc_utm } from '../Nav/DisplayPosition';
 
 export const generateGeo = (lat, lng, { setGeoPoint }) => {
   if (lat && lng) {
-    setGeoPoint({
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Point',
-            coordinates: [lng, lat]
-          }
-        }
-      ]
-    });
+    var point = turf.point([lng, lat]);
+    var buffer = turf.buffer(point, 50, { units: 'meters' });
+    setGeoPoint(buffer);
   }
 };
 
-export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivityGeo }) => {
+export const GeneratePopup = (props) => {
+  const themeContext = useContext(ThemeContext);
+  const { themeType } = themeContext;
+  const theme = themeType ? 'leaflet-popup-content-wrapper-dark' : 'leaflet-popup-content-wrapper-light';
   const [bufferedGeo, setBufferedGeo] = useState(null);
   const [poiTableRows, setPoiTableRows] = useState([]);
   const [section, setSection] = useState('position');
-  const [pointMode, setPointMode] = useState(false);
+  const [pointMode, setPointMode] = useState(true);
   const [showRadius, setShowRadius] = useState(false);
   const [databc, setDataBC] = useState(null);
   const [radius, setRadius] = useState(3);
@@ -67,6 +64,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   const [rows, setRows] = useState([]);
   const dataAccess = useDataAccess();
   const popupElRef = useRef(null);
+  const dbContext = useContext(DatabaseContext);
   var activities;
 
   useEffect(() => {
@@ -77,8 +75,8 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
   });
 
   useEffect(() => {
-    if (lat && lng) {
-      var point = turf.point([lng, lat]);
+    if (props.lat && props.lng) {
+      var point = turf.point([props.lng, props.lat]);
       if (pointMode) {
         setBufferedGeo(point);
       } else {
@@ -153,7 +151,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
 
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
-      activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
+      activities = await dataAccess.getActivities({ search_feature: bufferedGeo }, dbContext);
       if (activities) {
         var tempArr = [];
         for (let i in activities.rows) {
@@ -166,25 +164,32 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
           }
         }
         setRows(tempArr);
-      } else setRows([]);
+      } else setRows(null);
     }
   }, [bufferedGeo]);
 
   const updatePOIRecords = useCallback(async () => {
     if (bufferedGeo) {
-      var pointsofinterest = await dataAccess.getPointsOfInterest({
-        search_feature: bufferedGeo,
-        limit: 500,
-        page: 0
-      });
+      var pointsofinterest = await dataAccess.getPointsOfInterest(
+        {
+          search_feature: bufferedGeo,
+          limit: 500,
+          page: 0
+        },
+        dbContext
+      );
 
       setPOIs(pointsofinterest);
     }
   }, [bufferedGeo]);
 
   const hideElement = () => {
-    if (!popupElRef?.current || !map) return;
-    map.closePopup();
+    if (!popupElRef?.current || !props.map) return;
+    props.map.closePopup();
+    props.setActivityGeo(null);
+    if (props.setClickMode) {
+      props.setClickMode(false);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, newSection: string) => {
@@ -197,73 +202,83 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
 
   return (
     <>
-      <Popup ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
-        <TableContainer>
-          {section == 'position' && <RenderTablePosition rows={utmRows} />}
-          {section == 'activity' && (
-            <RenderTableActivity setActivityGeo={setActivityGeo} map={map} rows={rows} setRows={setRows} />
-          )}
-          {section == 'databc' && <RenderTableDataBC rows={databc} />}
-          {section == 'poi' && <RenderTablePOI map={map} rows={poiTableRows} setPoiMarker={setPoiMarker} />}
-        </TableContainer>
-        <Grid container>
-          <BottomNavigation value={section} onChange={handleChange}>
-            <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
-            <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
-            <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
-            <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
-          </BottomNavigation>
-        </Grid>
-        <Grid container>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography
-              style={
-                !pointMode
-                  ? { padding: 3, color: '#2196f3', backgroundColor: 'rgba(0, 0, 0, 0.04)', borderRadius: 5 }
-                  : null
-              }>
-              Within Radius
-            </Typography>
-            <Switch onChange={(event: any) => setPointMode(event.target.checked)} color="primary" />
-            <Typography
-              style={
-                pointMode
-                  ? { padding: 3, color: '#2196f3', backgroundColor: 'rgba(0, 0, 0, 0.04)', borderRadius: 5 }
-                  : null
-              }>
-              This Location
-            </Typography>
-          </Stack>
-          {!pointMode && (
-            <Grid container>
-              <Grid item style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -30 }}>
-                <Typography>{radius} km</Typography>
-                <Slider
-                  style={{ width: 225, alignSelf: 'center', marginLeft: 10 }}
-                  aria-label="Kilometers"
-                  defaultValue={radius}
-                  onChange={(event: any, newRadius: number) => {
-                    setRadius(newRadius);
-                  }}
-                  getAriaValueText={valueText}
-                  step={1}
-                  marks
-                  min={1}
-                  max={10}
-                />
-              </Grid>
-              <Grid item style={{ marginTop: -30 }}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography>Show Area</Typography>
-                  <Switch onChange={(event: any) => setShowRadius(event.target.checked)} color="primary" />
-                </Stack>
-              </Grid>
-            </Grid>
-          )}
-          <Grid item>
-            <Button onClick={hideElement}>Close</Button>
+      <Popup className={theme} ref={popupElRef} autoClose={false} closeOnClick={false} closeButton={false}>
+        <div>
+          <TableContainer>
+            {section == 'position' && <RenderTablePosition rows={props.utmRows} />}
+            {section == 'activity' && (
+              <RenderTableActivity
+                setActivityGeo={props.setActivityGeo}
+                map={props.map}
+                rows={rows}
+                setRows={setRows}
+              />
+            )}
+            {section == 'databc' && <RenderTableDataBC rows={databc} />}
+            {section == 'poi' && (
+              <RenderTablePOI map={props.map} rows={poiTableRows} setPoiMarker={props.setPoiMarker} />
+            )}
+          </TableContainer>
+          <Grid container>
+            <BottomNavigation
+              style={{ backgroundColor: themeType ? '#333' : null, width: 301 }}
+              value={section}
+              onChange={handleChange}>
+              <BottomNavigationAction value="position" label="Position" icon={<LocationOnIcon />} />
+              <BottomNavigationAction value="activity" label="Activity" icon={<FolderIcon />} />
+              <BottomNavigationAction value="databc" label="Data BC" icon={<StorageIcon />} />
+              <BottomNavigationAction value="poi" label="POI" icon={<AdjustIcon />} />
+            </BottomNavigation>
           </Grid>
-        </Grid>
+          <Grid container>
+            <Stack direction="row" spacing={1} style={{ width: 301 }} alignItems="center">
+              <Typography
+                className={assignPointModeTheme(!pointMode, themeType)}
+                style={assignPtDefaultTheme(pointMode, themeType)}>
+                Within Radius
+              </Typography>
+              <Switch
+                checked={pointMode}
+                onChange={(event: any) => setPointMode(event.target.checked)}
+                color="primary"
+              />
+              <Typography
+                className={assignPointModeTheme(pointMode, themeType)}
+                style={assignPtDefaultTheme(!pointMode, themeType)}>
+                Just This Point
+              </Typography>
+            </Stack>
+            {!pointMode && (
+              <Grid container>
+                <Grid item style={{ display: 'flex', flexFlow: 'nowrap', marginTop: -30 }}>
+                  <Typography style={assignTextDefaultTheme(themeType)}>{radius} km</Typography>
+                  <Slider
+                    style={{ width: 225, alignSelf: 'center', marginLeft: 10 }}
+                    aria-label="Kilometers"
+                    defaultValue={radius}
+                    onChange={(event: any, newRadius: number) => {
+                      setRadius(newRadius);
+                    }}
+                    getAriaValueText={valueText}
+                    step={1}
+                    marks
+                    min={1}
+                    max={10}
+                  />
+                </Grid>
+                <Grid item style={{ marginTop: -30 }}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography style={assignTextDefaultTheme(themeType)}>Show Area</Typography>
+                    <Switch onChange={(event: any) => setShowRadius(event.target.checked)} color="primary" />
+                  </Stack>
+                </Grid>
+              </Grid>
+            )}
+            <Grid item>
+              <Button onClick={hideElement}>Close</Button>
+            </Grid>
+          </Grid>
+        </div>
       </Popup>
       {
         bufferedGeo && showRadius && <GeoJSON data={bufferedGeo} key={Math.random()} /> //NOSONAR
@@ -273,6 +288,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
 };
 
 function SetPointOnClick({ map }: any) {
+  const themeContext = useContext(ThemeContext);
   const [position, setPosition] = useState(map?.getCenter());
   const [geoPoint, setGeoPoint] = useState(null);
   const [clickMode, setClickMode] = useState(false);
@@ -281,7 +297,6 @@ function SetPointOnClick({ map }: any) {
   const [utm, setUTM] = useState(null);
   const [rows, setRows] = useState(null);
   const divRef = useRef();
-  const themeContext = useContext(ThemeContext);
   const toolClass = toolStyles();
 
   useEffect(() => {
@@ -290,7 +305,10 @@ function SetPointOnClick({ map }: any) {
   });
 
   useMapEvent('click', (e) => {
-    if (clickMode) setPosition(e.latlng);
+    if (clickMode) {
+      setPosition(e.latlng);
+      map.flyTo(e.latlng, 15);
+    }
   });
 
   useEffect(() => {
@@ -307,7 +325,7 @@ function SetPointOnClick({ map }: any) {
   }, [utm]);
 
   const markerIcon = L.icon({
-    iconUrl: marker,
+    iconUrl: binoculars,
     iconSize: [24, 24]
   });
 
@@ -319,7 +337,8 @@ function SetPointOnClick({ map }: any) {
       {poiMarker && (
         <Marker
           position={[poiMarker.geometry.geometry.coordinates[1], poiMarker.geometry.geometry.coordinates[0]]}
-          icon={markerIcon}>
+          //  icon={markerIcon}>
+        >
           <Tooltip direction="top" opacity={0.5} permanent>
             <div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
               {poiMarker.species.map((s) => (
@@ -334,10 +353,21 @@ function SetPointOnClick({ map }: any) {
         ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         onClick={() => setClickMode(!clickMode)}
-        style={clickMode ? { backgroundColor: '#006ee6' } : null}>
-        <SearchIcon />
+        style={{
+          backgroundColor: clickMode ? '#006ee6' : null,
+          borderTopLeftRadius: 5,
+          borderTopRightRadius: 5,
+          marginTop: 5
+        }}>
+        <img
+          style={{ width: 32, height: 32 }}
+          color={themeContext.themeType ? '#000' : 'white'}
+          src={binoculars}
+          aria-label="create-pin"
+        />
+        <Typography className={toolClass.Font}>What's here?</Typography>
       </IconButton>
-      {utm && (
+      {geoPoint && clickMode && (
         <GeoJSON data={geoPoint} key={Math.random()}>
           <GeneratePopup
             utmRows={rows}
@@ -346,6 +376,7 @@ function SetPointOnClick({ map }: any) {
             lng={position.lng}
             setPoiMarker={setPoiMarker}
             setActivityGeo={setActivityGeo}
+            setClickMode={setClickMode}
           />
         </GeoJSON>
       )}
@@ -354,5 +385,5 @@ function SetPointOnClick({ map }: any) {
 }
 
 // Circle Icon: <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-
+// Binoculars: <div>Icons made by <a href="" title="Victoruler">Victoruler</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 export { SetPointOnClick };

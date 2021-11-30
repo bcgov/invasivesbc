@@ -1,28 +1,26 @@
 //import classes from '*.module.css';
 import {
-  Dialog,
   AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
   Button,
-  ListItemText,
+  Dialog,
   Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
   Slide,
   SlideProps,
-  makeStyles,
-  ListItemIcon
+  Toolbar,
+  Typography
 } from '@material-ui/core';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import SearchIcon from '@material-ui/icons/Search';
-import DirectionsWalkIcon from '@material-ui/icons/DirectionsWalk';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useContext } from 'react';
+import DirectionsWalkIcon from '@material-ui/icons/DirectionsWalk';
+import SearchIcon from '@material-ui/icons/Search';
 import { DocType } from 'constants/database';
 import { Feature } from 'geojson';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import { notifySuccess } from 'utils/NotificationUtils';
+import React, { useContext } from 'react';
 
 const Transition = React.forwardRef<React.FC, SlideProps>((TransitionProps, ref) => {
   return <Slide direction="up" ref={ref} {...TransitionProps} />;
@@ -102,7 +100,6 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
 
 export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
   const classes = useStyles();
-  const databaseContext = useContext(DatabaseContext);
 
   const coordinatesToGeo: any = (lat: number, lng: number) => {
     return [
@@ -117,18 +114,6 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
         }
       }
     ] as Feature[];
-  };
-
-  /**
-   * Save the point of interest added by the user
-   *
-   * @param {Feature} geoJSON The geometry in GeoJSON format
-   */
-  const savePoint = async (geometry: Feature[]) => {
-    await databaseContext.database.upsert('sasquatch', () => {
-      return { docType: DocType.POINT_OF_INTEREST, geometry: geometry, dateUpdated: new Date() };
-    });
-    notifySuccess(databaseContext, 'Saved New Point of Interest');
   };
 
   return (
@@ -175,7 +160,6 @@ export const MapContextMenu: React.FC<MapContextMenuProps> = (props) => {
                 props.contextMenuState.state.lng,
                 props.contextMenuState.state.lat
               );
-              savePoint(newPointAsGeo);
             }}
           />
           <Divider />

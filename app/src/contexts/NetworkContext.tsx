@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
 import { Capacitor } from '@capacitor/core';
+import React from 'react';
 
 interface INetworkContext {
   connected: boolean;
   setConnected: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export const NetworkContext = React.createContext<INetworkContext>({
-  connected: Capacitor.getPlatform() !== 'web' ? false : true,
+  connected: true,
   setConnected: () => {}
 });
 

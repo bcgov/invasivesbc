@@ -10,10 +10,10 @@ import {
   ListItemText,
   Typography
 } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import ErrorIcon from '@material-ui/icons/Error';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
 import DoneIcon from '@material-ui/icons/Done';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
+import ErrorIcon from '@material-ui/icons/Error';
+import React, { useEffect, useState } from 'react';
 
 export interface IProgressDialog {
   dialogTitle: string;

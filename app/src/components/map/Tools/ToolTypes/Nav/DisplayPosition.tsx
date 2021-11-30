@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import { Marker, GeoJSON, Tooltip } from 'react-leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import { CircularProgress, IconButton } from '@material-ui/core';
-import proj4 from 'proj4';
-import L from 'leaflet';
+import { CircularProgress, IconButton, Typography } from '@material-ui/core';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { ThemeContext } from 'contexts/themeContext';
-import { toolStyles } from './Helpers/ToolBtnStyles';
-import { GeneratePopup } from './InfoAreaDescription';
-import { createDataUTM } from './Helpers/StyledTable';
-import marker from '../Icons/POImarker.png';
+import L from 'leaflet';
+import proj4 from 'proj4';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { GeoJSON, Marker, Tooltip } from 'react-leaflet';
+import { createDataUTM } from '../../Helpers/StyledTable';
+import { toolStyles } from '../../Helpers/ToolStyles';
+import { generateGeo, GeneratePopup } from '../Data/InfoAreaDescription';
+import marker from '../../../Icons/POImarker.png';
 
 const timer = ({ initialTime, setInitialTime }, { startTimer, setStartTimer }) => {
   if (initialTime > 0) {
@@ -51,9 +51,23 @@ export default function DisplayPosition({ map }) {
   const [activityGeo, setActivityGeo] = useState(null);
   const [poiMarker, setPoiMarker] = useState(null);
   const [startTimer, setStartTimer] = useState(false);
+  const [geoPoint, setGeoPoint] = useState(null);
   const [utm, setUTM] = useState([]);
   const [rows, setRows] = useState(null);
+  const [key] = useState(Math.random()); // NOSONAR
   const divRef = useRef(null);
+
+  useEffect(() => {
+    if (map) {
+      getLocation();
+    }
+  }, map);
+
+  useEffect(() => {
+    if (newPosition) {
+      generateGeo(newPosition.coords.latitude, newPosition.coords.longitude, { setGeoPoint });
+    }
+  }, [newPosition]);
 
   useEffect(() => {
     L.DomEvent.disableClickPropagation(divRef?.current);
@@ -73,7 +87,6 @@ export default function DisplayPosition({ map }) {
   useEffect(() => {
     if (newPosition) {
       setUTM(calc_utm(newPosition.coords.longitude, newPosition.coords.latitude));
-      map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
     }
   }, [newPosition]);
 
@@ -107,8 +120,8 @@ export default function DisplayPosition({ map }) {
           </Tooltip>
         </Marker>
       )}
-      {newPosition && (
-        <Marker position={[newPosition.coords.latitude, newPosition.coords.longitude]}>
+      {geoPoint && (
+        <GeoJSON data={geoPoint} key={key}>
           <GeneratePopup
             utmRows={rows}
             map={map}
@@ -117,15 +130,20 @@ export default function DisplayPosition({ map }) {
             setPoiMarker={setPoiMarker}
             setActivityGeo={setActivityGeo}
           />
-        </Marker>
+        </GeoJSON>
       )}
       <IconButton
         ref={divRef}
         className={themeContext.themeType ? toolClass.toolBtnDark : toolClass.toolBtnLight}
         disabled={startTimer}
         aria-label="my position"
-        onClick={getLocation}>
+        onClick={() => {
+          if (newPosition) {
+            map.flyTo([newPosition.coords.latitude, newPosition.coords.longitude], 17);
+          }
+        }}>
         {initialTime > 0 ? <CircularProgress size={24} /> : <LocationOnIcon />}
+        <Typography className={toolClass.Font}>Current Position</Typography>{' '}
       </IconButton>
     </>
   );

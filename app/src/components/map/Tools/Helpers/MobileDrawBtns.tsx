@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import L from 'leaflet';
-import { useMapEvent, GeoJSON } from 'react-leaflet';
+import { Button, IconButton, Paper, Popover } from '@mui/material';
 import { LayersControlProvider } from 'components/map/LayerPicker/layerControlContext';
-import { Paper, Popover, IconButton, Button } from '@mui/material';
+import L from 'leaflet';
+import React, { useEffect, useRef, useState } from 'react';
+import { GeoJSON, useMapEvent } from 'react-leaflet';
 
 const POSITION_CLASSES = {
   bottomleft: 'leaflet-bottom leaflet-left',

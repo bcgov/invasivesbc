@@ -1,4 +1,3 @@
-import { createTheme } from '@material-ui/core';
 import 'styles/fonts.scss';
 
 const appTheme = {

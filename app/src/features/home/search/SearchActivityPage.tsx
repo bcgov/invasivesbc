@@ -5,30 +5,28 @@ import { IPhoto } from 'components/photo/PhotoContainer';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
 import { Feature } from 'geojson';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useCallback, useEffect, useState, useContext } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { debounced } from 'utils/FunctionUtils';
-import { MapContextMenuData } from '../map/MapContextMenu';
-import { notifySuccess, notifyError } from 'utils/NotificationUtils';
-import { DatabaseContext } from 'contexts/DatabaseContext';
+import {
+  getAreaValidator,
+  getCustomValidator,
+  getDateAndTimeValidator,
+  getDuplicateInvasivePlantsValidator,
+  getHerbicideApplicationRateValidator,
+  getJurisdictionPercentValidator,
+  getPlotIdentificatiomTreesValidator,
+  getTemperatureValidator,
+  getTransectOffsetDistanceValidator,
+  getWindValidator
+} from 'rjsf/business-rules/customValidation';
 import {
   populateHerbicideCalculatedFields,
   populateTransectLineAndPointData
 } from 'rjsf/business-rules/populateCalculatedFields';
-import { calculateLatLng, calculateGeometryArea } from 'utils/geometryHelpers';
-import {
-  getCustomValidator,
-  getAreaValidator,
-  getDateAndTimeValidator,
-  getWindValidator,
-  getTemperatureValidator,
-  getHerbicideApplicationRateValidator,
-  getTransectOffsetDistanceValidator,
-  getJurisdictionPercentValidator,
-  getDuplicateInvasivePlantsValidator,
-  getPlotIdentificatiomTreesValidator
-} from 'rjsf/business-rules/customValidation';
+import { debounced } from 'utils/FunctionUtils';
+import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { getActivityByIdFromApi, getICreateOrUpdateActivity } from 'utils/getActivity';
+import { MapContextMenuData } from '../map/MapContextMenu';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -58,7 +56,6 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
 
   const invasivesApi = useInvasivesApi();
 
-  const databaseContext = useContext(DatabaseContext);
   const [isLoading, setIsLoading] = useState(true);
   const [geometry, setGeometry] = useState<Feature[]>([]);
   const [extent, setExtent] = useState(null);
@@ -117,12 +114,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
   /*
     Function that runs if the form submit fails and has errors
   */
-  const onFormSubmitError = () => {
-    notifyError(
-      databaseContext,
-      'Failed to update activity. Please make sure your form contains no errors and try again.'
-    );
-  };
+  const onFormSubmitError = () => {};
 
   /**
    * Save the form when it is submitted.
@@ -131,14 +123,6 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
    *
    * @param {*} event the form submit event
    */
-  const onFormSubmitSuccess = async (event: any) => {
-    try {
-      await invasivesApi.updateActivity(getICreateOrUpdateActivity({ ...activity, formData: event.formData }));
-      notifySuccess(databaseContext, 'Successfully updated activity.');
-    } catch (error) {
-      notifyError(databaseContext, 'Failed to update activity.');
-    }
-  };
 
   /**
    * Save the form whenever it changes.
@@ -221,7 +205,7 @@ const SearchActivityPage: React.FC<ISearchActivityPage> = (props) => {
         classes={classes}
         activity={activity}
         onFormChange={onFormChange}
-        onFormSubmitSuccess={onFormSubmitSuccess}
+        //onFormSubmitSuccess={onFormSubmitSuccess}
         onFormSubmitError={onFormSubmitError}
         photoState={{ photos, setPhotos }}
         mapId={activity._id}

@@ -1,4 +1,4 @@
-import { SvgIconComponent, Assignment, Build, Visibility } from '@material-ui/icons';
+import { Assignment, Build, SvgIconComponent, Visibility } from '@material-ui/icons';
 
 // this stuff would make a lot more sense in a database table
 export enum ActivityType {

@@ -1,11 +1,11 @@
-import React, { useState, useContext } from 'react';
-import { Marker, Tooltip, useMap, useMapEvent } from 'react-leaflet';
-import L from 'leaflet';
-import { createPolygonFromBounds } from './LtlngBoundsToPoly';
+import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
-import { GeoJSONVtLayer } from './GeoJsonVtLayer';
+import L from 'leaflet';
+import React, { useContext, useState } from 'react';
+import { useMap, useMapEvent } from 'react-leaflet';
 import marker from '../Icons/POImarker.png';
-import { DatabaseContext2 } from 'contexts/DatabaseContext2';
+import { GeoJSONVtLayer } from './GeoJsonVtLayer';
+import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
 export const PoisLayer = (props) => {
   const map = useMap();
@@ -14,7 +14,7 @@ export const PoisLayer = (props) => {
   //const [poiIDs, setPoiIDs] = useState(null);
   const [poiToRender, setPoiToRender] = useState([]);
   const dataAccess = useDataAccess();
-  const databaseContext = useContext(DatabaseContext2);
+  const databaseContext = useContext(DatabaseContext);
   /*
   useEffect(() => {
   const [poiIDs, setPoiIDs] = useState(null);

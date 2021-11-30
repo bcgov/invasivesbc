@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Container, Box, MenuItem, Button, FormControl, InputLabel, Select, makeStyles } from '@material-ui/core';
+import { Box, Button, Container, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { useQuery } from 'hooks/useQuery';
-import { createLinkedActivity, sanitizeRecord } from 'utils/addActivity';
-import { ActivityType, ActivitySubtype } from 'constants/activities';
-import { DatabaseContext } from 'contexts/DatabaseContext';
-import ActivityPage from 'features/home/activity/ActivityPage';
 import StepperComponent from 'components/activity/StepperComponent';
-import { DocType } from 'constants/database';
-import { useHistory } from 'react-router-dom';
+import { ActivitySubtype, ActivityType } from 'constants/activities';
+import ActivityPage from 'features/home/activity/ActivityPage';
 import { useDataAccess } from 'hooks/useDataAccess';
+import { useQuery } from 'hooks/useQuery';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { createLinkedActivity, sanitizeRecord } from 'utils/addActivity';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -47,7 +45,6 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   const classes = useStyles();
   const queryParams = useQuery();
   const history = useHistory();
-  const databaseContext = useContext(DatabaseContext);
   const dataAccess = useDataAccess();
 
   /*
@@ -71,10 +68,9 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   */
   useEffect(() => {
     const getObservation = async () => {
-      const activity = await databaseContext.database.get(selectedObservationId);
-
-      setObservationSubtype(activity.activitySubtype);
-      setObservation(activity);
+      //const activity = await databaseContext.database.get(selectedObservationId);
+      //   setObservationSubtype(activity.activitySubtype);
+      //   setObservation(activity);
     };
 
     if (!observation) {
@@ -95,9 +91,9 @@ const ObservationCreationStepperPage: React.FC<IObservationCreationStepperPage> 
   */
   const setActiveActivityAndNavigate = async (doc: any) => {
     alert("we shouldn't be here");
-    await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
-      return { ...appStateDoc, activeActivity: doc._id };
-    });
+    // await databaseContext.database.upsert(DocType.APPSTATE, (appStateDoc) => {
+    //  return { ...appStateDoc, activeActivity: doc._id };
+    //});
 
     history.push(`/home/activity`);
   };

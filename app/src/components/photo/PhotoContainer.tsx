@@ -1,6 +1,5 @@
 //import { CameraResultType, CameraSource } from '@capacitor/core';
-import { CameraResultType, CameraSource } from '@capacitor/camera';
-import { useCamera } from '@ionic/react-hooks/camera';
+import { CameraResultType, CameraSource, Camera } from '@capacitor/camera';
 import {
   Box,
   Button,
@@ -14,7 +13,7 @@ import {
   TextField
 } from '@material-ui/core';
 import { AddAPhoto, DeleteForever } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React from 'react';
 
 export interface IPhoto {
   filepath: string;
@@ -31,11 +30,9 @@ export interface IPhotoContainerProps {
 }
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
-  const { getPhoto } = useCamera();
-
   const takePhoto = async () => {
     try {
-      const cameraPhoto = await getPhoto({
+      const cameraPhoto = await Camera.getPhoto({
         resultType: CameraResultType.DataUrl,
         source: CameraSource.Camera,
         quality: 100
