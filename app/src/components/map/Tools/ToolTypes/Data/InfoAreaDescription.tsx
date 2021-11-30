@@ -16,6 +16,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import StorageIcon from '@material-ui/icons/Storage';
 import { Stack } from '@mui/material';
 import * as turf from '@turf/turf';
+import { DatabaseContext } from 'contexts/DatabaseContext';
 import { ThemeContext } from 'contexts/themeContext';
 import L, { DomEvent } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
@@ -63,6 +64,7 @@ export const GeneratePopup = (props) => {
   const [rows, setRows] = useState([]);
   const dataAccess = useDataAccess();
   const popupElRef = useRef(null);
+  const dbContext = useContext(DatabaseContext);
   var activities;
 
   useEffect(() => {
@@ -149,7 +151,7 @@ export const GeneratePopup = (props) => {
 
   const updateActivityRecords = useCallback(async () => {
     if (bufferedGeo) {
-      activities = await dataAccess.getActivities({ search_feature: bufferedGeo });
+      activities = await dataAccess.getActivities({ search_feature: bufferedGeo }, dbContext);
       if (activities) {
         var tempArr = [];
         for (let i in activities.rows) {
@@ -168,11 +170,14 @@ export const GeneratePopup = (props) => {
 
   const updatePOIRecords = useCallback(async () => {
     if (bufferedGeo) {
-      var pointsofinterest = await dataAccess.getPointsOfInterest({
-        search_feature: bufferedGeo,
-        limit: 500,
-        page: 0
-      });
+      var pointsofinterest = await dataAccess.getPointsOfInterest(
+        {
+          search_feature: bufferedGeo,
+          limit: 500,
+          page: 0
+        },
+        dbContext
+      );
 
       setPOIs(pointsofinterest);
     }
