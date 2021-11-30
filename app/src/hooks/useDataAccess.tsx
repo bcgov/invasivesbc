@@ -1,8 +1,9 @@
 import { Capacitor } from '@capacitor/core';
 import { fetchLayerDataFromLocal } from 'components/map/LayerLoaderHelpers/AdditionalHelperFunctions';
 import { ActivitySyncStatus } from 'constants/activities';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { DocType } from '../constants/database';
 import { DatabaseContext, DBRequest, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import {
@@ -24,6 +25,9 @@ export const useDataAccess = () => {
   const databaseContext = useContext(DatabaseContext);
   const platform = Capacitor.getPlatform();
   const networkContext = useContext(NetworkContext);
+  const authContext = useContext(AuthStateContext);
+  const keycloak = authContext.keycloak; //useKeycloak();
+
   const isMobile = () => {
     return Capacitor.getPlatform() !== 'web';
   };
@@ -283,6 +287,7 @@ export const useDataAccess = () => {
     ready: boolean;
   }) => {
     if (networkContext.connected && isMobile()) {
+      console.log('Got here');
       const users = await api.getApplicationUsers();
       const dbcontext = context;
       return dbcontext.asyncQueue({
@@ -295,6 +300,10 @@ export const useDataAccess = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (keycloak?.obj?.token) cacheApplicationUsers();
+  }, [networkContext.connected, keycloak?.obj?.authenticated]);
 
   /**
    * Fetch activities by search criteria.  Also can be used to get cached reference activities on mobile.
