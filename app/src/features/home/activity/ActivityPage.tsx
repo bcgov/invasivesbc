@@ -651,7 +651,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
       // Load users from cache
       dataAccess.getApplicationUsers(databaseContext).then((res) => {
         console.log('RES IN USEEFFECT', res);
-        // setUsers(res.rows);
+        setApplicationUsers(res);
       });
     } else {
       api.getApplicationUsers().then((res) => {
