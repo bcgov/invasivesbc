@@ -3174,13 +3174,21 @@
             "x-tooltip-text": "Target invasive plant species at this location"
           },
           "applicator1_name": {
-            "type": "string",
+            "type": "array",
+            "default": [{}],
             "title": "Primary Observer Name",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
             "x-tooltip-text": "Name of primary applicator"
           },
           "applicator2_name": {
-            "type": "string",
+            "type": "array",
+            "default": [{}],
             "title": "Secondary Observer Name",
+            "items": {
+              "$ref": "#/components/schemas/Persons"
+            },
             "x-tooltip-text": "Name of secondary applicator"
           },
           "monitoring_organization": {
