@@ -12,30 +12,61 @@ const NODE_ENV = process.env.NODE_ENV;
  * @return {*}  {Promise<void>}
  */
 
-export const bcGeo = {
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [-139.5703125, 60.56537850464181],
-            [-134.560546875, 53.72271667491848],
-            [-125.859375, 47.635783590864854],
-            [-113.6865234375, 48.31242790407178],
-            [-113.291015625, 49.781264058178344],
-            [-119.2236328125, 53.904338156274704],
-            [-119.44335937499999, 60.34869562531862],
-            [-139.5703125, 60.56537850464181]
+const env: string = process.env.REACT_APP_REAL_NODE_ENV;
+let bcGeo;
+if (env.match(/dev/i) || env.match(/local/i)) {
+  //VANCOUVER ISLAND
+  bcGeo = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-128.485107421875, 50.7295015014743],
+              [-128.177490234375, 49.89463439573421],
+              [-123.914794921875, 48.268569112964336],
+              [-123.167724609375, 48.39273786659243],
+              [-123.48632812499999, 49.26780455063753],
+              [-125.628662109375, 50.45750402042058],
+              [-127.935791015625, 51.04139389812637],
+              [-128.485107421875, 50.7295015014743]
+            ]
           ]
-        ]
+        }
       }
-    }
-  ]
-};
+    ]
+  };
+} else {
+  //ENTIRE PROVINCE
+  bcGeo = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-139.5703125, 60.56537850464181],
+              [-134.560546875, 53.72271667491848],
+              [-125.859375, 47.635783590864854],
+              [-113.6865234375, 48.31242790407178],
+              [-113.291015625, 49.781264058178344],
+              [-119.2236328125, 53.904338156274704],
+              [-119.44335937499999, 60.34869562531862],
+              [-139.5703125, 60.56537850464181]
+            ]
+          ]
+        }
+      }
+    ]
+  };
+}
 
 export const createSmallerGrid = (feature, factor) => {
   const topLeftCoords = feature.geometry.coordinates[0][1];
@@ -113,30 +144,29 @@ export async function up(knex: Knex): Promise<void> {
     });
     let largeGridItemIndex = 0;
 
-    if (NODE_ENV === 'dev') {
-      for (const largeGridItem of BCLargeGrid) {
-        const sqlInsert = `INSERT INTO ${DB_SCHEMA}.bc_large_grid VALUES(${largeGridItemIndex}, 
+    for (const largeGridItem of BCLargeGrid) {
+      const sqlInsert = `INSERT INTO ${DB_SCHEMA}.bc_large_grid VALUES(${largeGridItemIndex}, 
         public.geography(
           public.ST_Force2D(
             public.ST_SetSRID(public.ST_GeomFromGeoJSON('${JSON.stringify(largeGridItem.geometry)}'),4326)
           )
         )
       );`;
-        await knex.raw(sqlInsert);
-        const smallGrid = createSmallerGrid(largeGridItem, 40);
-        let smallGridItemIndex = 0;
-        let sqlInsertSm = `INSERT INTO ${DB_SCHEMA}.bc_small_grid (geo,large_grid_item_id) VALUES`;
-        const gridLength = smallGrid.length;
-        for (const smGridItem of smallGrid) {
-          const valuesString =
-            smallGridItemIndex !== gridLength - 1
-              ? `(
+      await knex.raw(sqlInsert);
+      const smallGrid = createSmallerGrid(largeGridItem, 40);
+      let smallGridItemIndex = 0;
+      let sqlInsertSm = `INSERT INTO ${DB_SCHEMA}.bc_small_grid (geo,large_grid_item_id) VALUES`;
+      const gridLength = smallGrid.length;
+      for (const smGridItem of smallGrid) {
+        const valuesString =
+          smallGridItemIndex !== gridLength - 1
+            ? `(
                   public.geography(
                     public.ST_Force2D(
                       public.ST_SetSRID(public.ST_GeomFromGeoJSON('${JSON.stringify(smGridItem.geometry)}'),4326)
                     )
                 ), ${largeGridItemIndex}),`
-              : `(public.geography(
+            : `(public.geography(
                   public.ST_Force2D(
                     public.ST_SetSRID(
                       public.ST_GeomFromGeoJSON('${JSON.stringify(smGridItem.geometry)}'),
@@ -144,14 +174,13 @@ export async function up(knex: Knex): Promise<void> {
                       )
                     )
                   ), ${largeGridItemIndex});`;
-          sqlInsertSm += valuesString;
+        sqlInsertSm += valuesString;
 
-          smallGridItemIndex++;
-        }
-        await knex.raw(sqlInsertSm);
-
-        largeGridItemIndex++;
+        smallGridItemIndex++;
       }
+      await knex.raw(sqlInsertSm);
+
+      largeGridItemIndex++;
     }
   } catch (e) {
     console.log('****Error: ' + e);
