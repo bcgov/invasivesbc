@@ -19,7 +19,6 @@ import { MapRequestContextProvider } from '../../contexts/MapRequestsContext';
 import { MapContextMenuData } from '../../features/home/map/MapContextMenu';
 import { IPointOfInterestSearchCriteria } from '../../interfaces/useInvasivesApi-interfaces';
 // Layer Picker
-import layers from './LayerPicker/LAYERS.json';
 import './MapContainer.css';
 import { RenderLayers } from './RenderSelectedLayers';
 import { ToolbarContainer } from './ToolbarContainer';

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import layers from '../components/map/LayerPicker/LAYERS.json';
 import layersActionsJSON from 'components/map/LayerPicker/LayersActionsHelper/LAYERS_ACTIONS.json';
-import { getParentIndex } from 'components/map/LayerPicker/LayerPickerSorting/SortLayerOrder';
 interface IMapExtentLayersContext {
   mapRequest: {
     layer: any;

@@ -19,18 +19,13 @@ import {
   DialogActions,
   ListItemIcon
 } from '@material-ui/core';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { updateParent } from './SortableParent';
 import { Checkbox } from '@mui/material';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { LayerModeDialog } from '../LayerModeSelector';
 import { toolStyles } from 'components/map/Tools/Helpers/ToolStyles';
-import {
-  DialogCloseBtn,
-  getChildAction,
-  getParentAction,
-  toggleDialog
-} from '../LayersActionsHelper/LayersActionsFunctions';
+import { DialogCloseBtn, getChildAction, toggleDialog } from '../LayersActionsHelper/LayersActionsFunctions';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ColorPicker from 'material-ui-color-picker';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
