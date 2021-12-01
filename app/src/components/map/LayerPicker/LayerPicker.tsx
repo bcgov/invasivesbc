@@ -185,14 +185,9 @@ export const LayerPicker = React.memo(
                         max={1.0}
                       />
                     </DialogContent>
-                    {/* Color Picker */}s
+                    {/* Color Picker */}
                     <DialogContent id="layer-colorpicker" style={{ height: 300 }}>
                       <ColorPicker
-                        style={{
-                          backgroundColor: child.color_code
-                        }}
-                        floatingLabelText={' '}
-                        name="color"
                         defaultValue={child.color_code}
                         onChange={(color: any) => {
                           updateChild(layersSelected, setLayersSelected, parent.id, child.id, { color_code: color });
@@ -258,6 +253,10 @@ export const LayerPicker = React.memo(
                       <IndependentLayer
                         opacity={child.opacity}
                         layer_code={child.layer_code}
+                        bcgw_code={child.bcgw_code}
+                        layer_mode={child.layer_mode}
+                        inputGeo={props.inputGeo}
+                        setWellIdandProximity={props.setWellIdandProximity}
                         color_code={child.color_code}
                         zIndex={child.zIndex}
                       />

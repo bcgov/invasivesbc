@@ -10,33 +10,11 @@ export enum LayerMode {
   RegularFeaturesOffline = 'regular_features_offline'
 }
 
-/* moved to NonDataBCRenderLayers.tsx: 
-export enum IndependentLayers {
-  Activities = 'LEAN_ACTIVITIES',
-  POI = 'LEAN_POI',
-  Jurisdictions = 'JURISDICTIONS'
-}*/
-
 export const DataBCLayer = (props) => {
-  /* moved to IndependentRenderLayers.tsx: 
-  const networkContext = useContext(NetworkContext);
-
-  if (Object.values(IndependentLayers).includes(props.layerName)) {
-    switch (props.layerName) {
-      case 'LEAN_ACTIVITIES':
-        return <ActivitiesLayer online={networkContext.connected} opacity={props.opacity} />;
-      case 'LEAN_POI':
-        return <PoisLayer online={networkContext.connected} opacity={props.opacity} />;
-      case 'JURISDICTIONS':
-        return <JurisdictionsLayer online={networkContext.connected} opacity={props.opacity} />;
-      default:
-        return <></>;
-    }
-  }*/
-
   if (!props.layer_mode) {
     throw new Error('you missed a map mode');
   }
+  console.log(props.layer_mode);
   switch (props.layer_mode) {
     case LayerMode.WMSOnline:
       return (
