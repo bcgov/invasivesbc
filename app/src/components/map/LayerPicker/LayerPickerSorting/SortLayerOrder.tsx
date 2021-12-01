@@ -1,3 +1,8 @@
+import { ListItemIcon } from '@material-ui/core';
+import React from 'react';
+import { SortableHandle } from 'react-sortable-hoc';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
+
 /**
  *
  * @param inputArray
@@ -224,3 +229,9 @@ export const updateChild = (objectState: any[], setObjectState: any, parentId, c
 
   setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
 };
+
+export const DragHandle = SortableHandle(() => (
+  <ListItemIcon>
+    <DragHandleIcon />
+  </ListItemIcon>
+));
