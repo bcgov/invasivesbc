@@ -189,13 +189,6 @@
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
-      },
-      {
-        "id": "ministry_of_transportations_districts",
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
       }
     ]
   },
