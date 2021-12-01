@@ -13,7 +13,7 @@ export enum IndependentLayers {
 export const IndependentLayer = (props) => {
   const networkContext = useContext(NetworkContext);
 
-  if (Object.values(IndependentLayers).includes(props.layerName)) {
+  if (Object.values(IndependentLayers).includes(props.source)) {
     switch (props.source) {
       case 'activities':
         return (
