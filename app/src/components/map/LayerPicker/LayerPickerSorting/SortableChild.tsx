@@ -1,8 +1,7 @@
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import {
   getObjectsAfterIndex,
   getObjectsBeforeIndex,
-  DragHandle,
   getObjectByOrder,
   sortArray,
   getChild,
@@ -17,7 +16,8 @@ import {
   DialogTitle,
   Slider,
   DialogContent,
-  DialogActions
+  DialogActions,
+  ListItemIcon
 } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { updateParent } from './SortableParent';
@@ -28,6 +28,7 @@ import { toolStyles } from 'components/map/Tools/Helpers/ToolStyles';
 import { DialogCloseBtn, getChildAction, toggleDialog } from '../LayersActionsHelper/LayersActionsFunctions';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ColorPicker from 'material-ui-color-picker';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
 
 /**
  * Function used to print opacity as text
@@ -37,6 +38,12 @@ import ColorPicker from 'material-ui-color-picker';
 const opacityText = (value: number) => {
   return `${value.toFixed(1)}`;
 };
+
+const DragHandle = SortableHandle(() => (
+  <ListItemIcon>
+    <DragHandleIcon />
+  </ListItemIcon>
+));
 
 /* Removed for now:
   function getErrorIcon(time: any) {

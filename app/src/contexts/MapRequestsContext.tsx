@@ -61,10 +61,6 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers);
   const [layersActions, setLayersActions] = React.useState<any[]>(layersActionsJSON);
 
-  React.useEffect(() => {
-    console.log(layersSelected);
-  }, [layersSelected]);
-
   return (
     <MapRequestContext.Provider
       value={{

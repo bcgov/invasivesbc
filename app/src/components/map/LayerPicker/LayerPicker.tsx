@@ -36,7 +36,7 @@ export const LayerPicker = () => {
             </Paper>
             <Popover
               id="layer-picker-popover"
-              style={{ maxHeight: 500 }}
+              style={{ maxHeight: 500, maxWidth: 500 }}
               {...bindPopover(popupState)}
               anchorOrigin={{
                 vertical: 'top',
