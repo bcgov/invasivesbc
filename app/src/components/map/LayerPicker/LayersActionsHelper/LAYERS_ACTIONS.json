@@ -4,7 +4,84 @@
     "expanded": false,
     "children": [
       {
-        "id": "all_lean_activities",
+        "id": "terrestrial_observations",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "aquatic_observations",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "terrestrial_chemical_treatment",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "aquatic_chemical_treatment",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "terrestrial_mechanical_treatment",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "aquatic_mechanical_treatment",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "chemical_monitoring",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "terrestrial_monitoring",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "biocontrol_collection",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "biocontrol_release",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "biocontrol_dispersal_monitoring",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "biocontrol_release_monitoring",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
@@ -17,7 +94,56 @@
     "expanded": false,
     "children": [
       {
-        "id": "all_lean_pois",
+        "id": "sites",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "surveys",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "chemical_treatment",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "mechanical_treatment",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "monitoring_records",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "biocontrol_release",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "biocontrol_dispersal",
+        "dialog_layerselector_open": false,
+        "dialog_colorpicker_open": false,
+        "accordion_server_expanded": false,
+        "accordion_local_expanded": false
+      },
+      {
+        "id": "biocontrol_monitoring",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
@@ -30,64 +156,35 @@
     "expanded": false,
     "children": [
       {
-        "id": "natural_resource_districts",
+        "id": "regional_districts",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "ministry_of_transportations_districts",
+        "id": "municipality_boundaries",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "ministry_of_transportations_reagional",
+        "id": "first_nations_treaty_lands",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "ministry_of_transportation_road_inventory",
+        "id": "jurisdiction_layer",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "access_and_directory_management_services_regional_districts",
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
-      },
-      {
-        "id": "access_and_directory_management_services_municipalities",
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
-      },
-      {
-        "id": "jurisdictions",
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
-      },
-
-      {
-        "id": "land_ownership",
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
-      },
-      {
-        "id": "federal_parks",
+        "id": "riso_boundaries",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
@@ -100,49 +197,49 @@
     "expanded": false,
     "children": [
       {
-        "id": "freshwater_wells",
+        "id": "bc_major_watersheds",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "fish_watershed_atlas_streams",
+        "id": "freshwater_atlas_rivers",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "fish_watershed_atlas_wetlands",
+        "id": "freshwater_lakes",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "fish_sensitive_watershed_boundaries",
+        "id": "freshwater_atlas_stream_network",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "regional_invasive_species_organization_areas",
+        "id": "water_licenses_drinking_water",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "invasive_plant_management_areas",
+        "id": "water_rights_licenses",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "first_nation_reserves",
+        "id": "water_wells",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
@@ -155,21 +252,14 @@
     "expanded": false,
     "children": [
       {
-        "id": "biogeoclimatic_zones",
+        "id": "digital_road_atlas",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,
         "accordion_local_expanded": false
       },
       {
-        "id": "aggregate_tenures",
-        "dialog_layerselector_open": false,
-        "dialog_colorpicker_open": false,
-        "accordion_server_expanded": false,
-        "accordion_local_expanded": false
-      },
-      {
-        "id": "wildlife_habitat_areas",
+        "id": "city_names",
         "dialog_layerselector_open": false,
         "dialog_colorpicker_open": false,
         "accordion_server_expanded": false,

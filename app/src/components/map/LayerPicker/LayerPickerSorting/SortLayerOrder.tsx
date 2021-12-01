@@ -1,3 +1,8 @@
+import { ListItemIcon } from '@material-ui/core';
+import React from 'react';
+import { SortableHandle } from 'react-sortable-hoc';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
+
 /**
  *
  * @param inputArray
@@ -46,30 +51,6 @@ export function getObjectsBeforeIndex(inputArray: any[], index: number) {
 export function getObjectsAfterIndex(inputArray: any[], index: number) {
   const sorted = sortArray(inputArray);
   return [...sorted.slice(index + 1)];
-}
-
-/**
- * Get childs before index of children array from parent pIndex
- * @param inputArray
- * @param pIndex
- * @param cIndex
- * @returns
- */
-export function getChildObjBeforeIndex(inputArray: any[], pIndex: number, cIndex: number) {
-  const sorted = sortArray(inputArray);
-  return [...sorted[pIndex].children.slice(0, cIndex)];
-}
-
-/**
- * Get childs after index of children array from parent pIndex
- * @param inputArray
- * @param pIndex
- * @param cIndex
- * @returns
- */
-export function getChildObjAfterIndex(inputArray: any[], pIndex: number, cIndex: number) {
-  const sorted = sortArray(inputArray);
-  return [...sorted[pIndex].children.slice(cIndex + 1)];
 }
 
 /**
@@ -131,7 +112,7 @@ export function getChild(inputArray: any[], parentId: string, childId: string) {
  * @param order
  * @returns
  */
-export function getParentByOrder(inputArray: any[], order: number) {
+export function getObjectByOrder(inputArray: any[], order: number) {
   const sorted = sortArray(inputArray);
   const parent = sorted.filter((x) => x.order === order)[0];
   return { ...parent };
@@ -151,16 +132,16 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
     let loopIndex = oldIndex + 1;
     let inBetween: any[] = [];
     while (loopIndex < newIndex) {
-      let obj: any = getParentByOrder(objectState, loopIndex);
+      let obj: any = getObjectByOrder(objectState, loopIndex);
       obj.order = obj.order - 1;
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
 
-    let objWeMoved: any = getParentByOrder(objectState, oldIndex);
+    let objWeMoved: any = getObjectByOrder(objectState, oldIndex);
     objWeMoved.order = newIndex;
 
-    let objWeSwapped: any = getParentByOrder(objectState, newIndex);
+    let objWeSwapped: any = getObjectByOrder(objectState, newIndex);
     objWeSwapped.order = newIndex - 1;
 
     //leave objects after alone
@@ -178,17 +159,17 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
     let loopIndex = newIndex + 1;
     let inBetween: any[] = [];
     while (loopIndex < oldIndex) {
-      let obj: any = getParentByOrder(objectState, loopIndex);
+      let obj: any = getObjectByOrder(objectState, loopIndex);
       obj.order = obj.order + 1;
       console.log('obj', obj.id);
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
 
-    let objWeMoved: any = getParentByOrder(objectState, oldIndex);
+    let objWeMoved: any = getObjectByOrder(objectState, oldIndex);
     objWeMoved.order = newIndex;
 
-    let objWeSwapped: any = getParentByOrder(objectState, newIndex);
+    let objWeSwapped: any = getObjectByOrder(objectState, newIndex);
     objWeSwapped.order = newIndex + 1;
 
     //leave objects after alone
@@ -226,8 +207,8 @@ export const updateChild = (objectState: any[], setObjectState: any, parentId, c
   let parentsAfter = getObjectsAfterIndex(objectState, pIndex);
   const oldParent = getParent(objectState, parentId);
 
-  const childrenBefore = getChildObjBeforeIndex(objectState, pIndex, cIndex);
-  const childrenAfter = getChildObjAfterIndex(objectState, pIndex, cIndex);
+  const childrenBefore = getObjectsBeforeIndex(oldParent.children, cIndex);
+  const childrenAfter = getObjectsAfterIndex(oldParent.children, cIndex);
 
   const newParent = {
     ...oldParent,
@@ -236,3 +217,9 @@ export const updateChild = (objectState: any[], setObjectState: any, parentId, c
 
   setObjectState([...parentsBefore, newParent, ...parentsAfter] as any);
 };
+
+export const DragHandle = SortableHandle(() => (
+  <ListItemIcon>
+    <DragHandleIcon />
+  </ListItemIcon>
+));
