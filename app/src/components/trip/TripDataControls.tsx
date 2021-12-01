@@ -77,6 +77,9 @@ export const TripDataControls: React.FC<any> = (props) => {
         if (cLayer.bcgw_code) {
           layerNamesArr.push(cLayer.bcgw_code);
         }
+        if (cLayer.layer_code) {
+          layerNamesArr.push(cLayer.layer_code);
+        }
       });
     });
     return layerNamesArr;
@@ -631,7 +634,7 @@ export const TripDataControls: React.FC<any> = (props) => {
                 featuresInArea = [];
               }
               break;
-            case 'jurisdiction':
+            case 'JURISDICTIONS':
               const jurRes = await invasivesApi.getJurisdictions({ search_feature: bufferedGeo });
               if (jurRes && jurRes.name !== 'error') {
                 const filteredArr = jurRes.rows.map((res) => {
@@ -791,9 +794,9 @@ export const TripDataControls: React.FC<any> = (props) => {
       dialogOpen: true
     }));
     //NOSONAR
-    props.setCacheMapTilesFlag({
-      flag: Math.random() * 100
-    });
+    // props.setCacheMapTilesFlag({
+    //   flag: Math.random() * 100
+    // });
     //get the trip again cause it prob changed
     await getTrip();
 

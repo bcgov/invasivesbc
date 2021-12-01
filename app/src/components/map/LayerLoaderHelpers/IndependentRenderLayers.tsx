@@ -12,8 +12,7 @@ export enum IndependentLayers {
 
 export const IndependentLayer = (props) => {
   const networkContext = useContext(NetworkContext);
-
-  if (Object.values(IndependentLayers).includes(props.layerName)) {
+  if (Object.values(IndependentLayers).includes(props.layer_code.toUpperCase())) {
     switch (props.layer_code) {
       case 'LEAN_ACTIVITIES':
         return (
@@ -45,5 +44,7 @@ export const IndependentLayer = (props) => {
       default:
         return <></>;
     }
+  } else {
+    throw new Error('something went wrong');
   }
 };

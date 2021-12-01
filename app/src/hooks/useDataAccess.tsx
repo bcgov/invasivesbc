@@ -120,7 +120,7 @@ export const useDataAccess = () => {
     } else {
       if (!networkContext.connected) {
         const featuresArray = await fetchLayerDataFromLocal(
-          'jurisdiction',
+          'JURISDICTIONS',
           jurisdictionSearchCriteria.search_feature,
           context
         );
