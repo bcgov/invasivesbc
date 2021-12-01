@@ -10,7 +10,8 @@
 */
 -- Positive Layer
 drop table if exists test_spatial_expload_positive;
-create temporary table test_spatial_expload_positive as
+create table test_spatial_expload_positive as
+-- create temporary table test_spatial_expload_positive as
   select 
     activity_type,
     activity_subtype,
@@ -21,7 +22,7 @@ create temporary table test_spatial_expload_positive as
   from
     activity_incoming_data
   where
-    activity_type in ('Observation', 'Treatment') and -- Observations for now
+    activity_type = 'Observation' and -- Observations for now
     deleted_timestamp is null and -- Not deleted
     array_length( -- At least one species registered
       species_positive, 1
@@ -38,7 +39,8 @@ alter table test_spatial_expload_positive add primary key (gid);
 
 -- Negative Layer
 drop table if exists test_spatial_expload_negative;
-create temporary table test_spatial_expload_negative as
+create table test_spatial_expload_negative as
+-- create temporary table test_spatial_expload_negative as
   select 
     activity_subtype,
     created_timestamp,
@@ -48,7 +50,7 @@ create temporary table test_spatial_expload_negative as
   from
     activity_incoming_data
   where
-    activity_type = 'Observation' and
+    activity_type = 'Observation' and -- Observations for now
     deleted_timestamp is null and
     array_length(
       species_negative, 1
@@ -94,8 +96,8 @@ alter table test_spatial_positive_negative add primary key (gid);
 
 
 /*********** Merge everything together **************/
-drop table if exists activities_by_species;
-create table activities_by_species as
+drop table if exists observations_by_species;
+create table observations_by_species as
 select
   species,
   activity_type,
@@ -117,16 +119,34 @@ group by
   activity_type
 ;
 
-drop index if exists activities_by_species_geom_gist;
-create index activities_by_species_geom_gist on activities_by_species using gist ("geom");
+drop index if exists observations_by_species_geom_gist;
+create index observations_by_species_geom_gist on observations_by_species using gist ("geom");
 
-alter table activities_by_species add column gid serial;
-alter table activities_by_species add primary key (gid);
+alter table observations_by_species add column gid serial;
+alter table observations_by_species add primary key (gid);
 
 
 
 
 /*********** Not using the json lookup anymore **************/
+-- select
+--   species_positive,
+--   created_timestamp,
+--   jsonb_array_elements(activity_payload -> 'species_positive') "species"
+-- from
+--   activity_incoming_data
+-- where
+--   activity_type = 'Treatment' and
+--   -- array_length(species_positive,1) > 0
+--   deleted_timestamp is null and
+--   json_array_length(
+--     to_json(activity_payload -> 'species_positive')
+--   ) > 0
+-- order by
+--   created_timestamp desc
+-- limit 10
+-- ;
+
 -- select 
 --   activity_subtype,
 --   jsonb_array_elements(activity_payload -> 'species_positive') "species"
