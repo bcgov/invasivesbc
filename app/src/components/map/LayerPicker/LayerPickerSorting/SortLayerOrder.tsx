@@ -128,21 +128,27 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
     //update objects before old index left alone
     let parentsBefore = getObjectsBeforeIndex(objectState, oldIndex);
 
+    let newZindex = getObjectByOrder(objectState, newIndex).zIndex;
+    let swapZindex = newZindex + 1000;
+
     // update objects between old index and new index decrease
     let loopIndex = oldIndex + 1;
     let inBetween: any[] = [];
     while (loopIndex < newIndex) {
       let obj: any = getObjectByOrder(objectState, loopIndex);
       obj.order = obj.order - 1;
+      obj.zIndex = obj.zIndex + 1000;
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
 
     let objWeMoved: any = getObjectByOrder(objectState, oldIndex);
     objWeMoved.order = newIndex;
+    objWeMoved.zIndex = newZindex;
 
     let objWeSwapped: any = getObjectByOrder(objectState, newIndex);
     objWeSwapped.order = newIndex - 1;
+    objWeSwapped.zIndex = swapZindex;
 
     //leave objects after alone
     let parentsAfter = getObjectsAfterIndex(objectState, newIndex);
@@ -155,22 +161,28 @@ export const sortObject = (objectState: any[], oldIndex: number, newIndex: numbe
     //      [{ a: 1 }, { b: 2 }, { c: 3 }, { d: 4 }, { e: 5 }, { f: 6 }];
     //      [{ a: 1 }, { b: 2 }, { e: 3 }, { c: 4 }, { d: 5 }, ,{ f: 6 }];
     let parentsBefore = getObjectsBeforeIndex(objectState, newIndex);
+
+    let newZindex = getObjectByOrder(objectState, newIndex).zIndex;
+    let swapZindex = newZindex - 1000;
+
     // update objects between old index and new index decrease
     let loopIndex = newIndex + 1;
     let inBetween: any[] = [];
     while (loopIndex < oldIndex) {
       let obj: any = getObjectByOrder(objectState, loopIndex);
       obj.order = obj.order + 1;
-      console.log('obj', obj.id);
+      obj.zIndex = obj.zIndex - 1000;
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
 
     let objWeMoved: any = getObjectByOrder(objectState, oldIndex);
     objWeMoved.order = newIndex;
+    objWeMoved.zIndex = newZindex;
 
     let objWeSwapped: any = getObjectByOrder(objectState, newIndex);
     objWeSwapped.order = newIndex + 1;
+    objWeSwapped.zIndex = swapZindex;
 
     //leave objects after alone
     let parentsAfter = getObjectsAfterIndex(objectState, oldIndex);

@@ -299,7 +299,7 @@
         "color_code": "#000",
         "order": 0,
         "opacity": 0.4,
-        "zIndex": 50,
+        "zIndex": 60,
         "loaded": 70,
         "enabled": false
       },
@@ -312,7 +312,7 @@
         "color_code": "#000",
         "order": 1,
         "opacity": 0.4,
-        "zIndex": 40,
+        "zIndex": 50,
         "loaded": 70,
         "enabled": false
       },
@@ -325,7 +325,7 @@
         "color_code": "#000",
         "order": 2,
         "opacity": 0.4,
-        "zIndex": 30,
+        "zIndex": 40,
         "loaded": 70,
         "enabled": false
       },
@@ -338,7 +338,7 @@
         "color_code": "#000",
         "order": 3,
         "opacity": 0.4,
-        "zIndex": 20,
+        "zIndex": 30,
         "loaded": 70,
         "enabled": false
       },
@@ -351,7 +351,7 @@
         "color_code": "#000",
         "order": 4,
         "opacity": 0.4,
-        "zIndex": 10,
+        "zIndex": 20,
         "loaded": 70,
         "enabled": false
       }

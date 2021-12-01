@@ -70,13 +70,8 @@ export const SortableParent = () => {
   ));
   // objectsState
   const onSortEnd = ({ oldIndex, newIndex }: any) => {
-    const returnVal = sortObject(layersSelected, oldIndex, newIndex);
-    var len = returnVal.length;
-    for (var i = 0; i < len; i++) {
-      returnVal[i].zIndex = len * 1000;
-      len--;
-    }
-    setLayersSelected(returnVal);
+    const returnVal = sortObject(sortArray(layersSelected), oldIndex, newIndex);
+    setLayersSelected(sortArray(returnVal));
   };
 
   return (

@@ -58,20 +58,26 @@ const sortChildren = (children: any[], oldIndex: number, newIndex: number) => {
   if (newIndex > oldIndex) {
     let childrenBefore = getObjectsBeforeIndex(children, oldIndex);
 
+    let newZindex = getObjectByOrder(children, newIndex).zIndex;
+    let swapZindex = newZindex + 10;
+
     let loopIndex = oldIndex + 1;
     let inBetween: any[] = [];
     while (loopIndex < newIndex) {
       let obj: any = getObjectByOrder(children, loopIndex);
       obj.order = obj.order - 1;
+      obj.zIndex = obj.zIndex + 10;
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
 
     let objWeMoved: any = getObjectByOrder(children, oldIndex);
     objWeMoved.order = newIndex;
+    objWeMoved.zIndex = newZindex;
 
     let objWeSwapped: any = getObjectByOrder(children, newIndex);
     objWeSwapped.order = newIndex - 1;
+    objWeSwapped.zIndex = swapZindex;
 
     let childrenAfter = getObjectsAfterIndex(children, newIndex);
 
@@ -81,20 +87,26 @@ const sortChildren = (children: any[], oldIndex: number, newIndex: number) => {
   } else if (newIndex < oldIndex) {
     let childrenBefore = getObjectsBeforeIndex(children, newIndex);
 
+    let newZindex = getObjectByOrder(children, newIndex).zIndex;
+    let swapZindex = newZindex - 10;
+
     let loopIndex = newIndex + 1;
     let inBetween: any[] = [];
     while (loopIndex < oldIndex) {
       let obj: any = getObjectByOrder(children, loopIndex);
       obj.order = obj.order + 1;
+      obj.zIndex = obj.zIndex - 10;
       inBetween.push({ ...obj });
       loopIndex += 1;
     }
 
     let objWeMoved: any = getObjectByOrder(children, oldIndex);
     objWeMoved.order = newIndex;
+    objWeMoved.zIndex = newZindex;
 
     let objWeSwapped: any = getObjectByOrder(children, newIndex);
     objWeSwapped.order = newIndex + 1;
+    objWeSwapped.zIndex = swapZindex;
 
     let childrenAfter = getObjectsAfterIndex(children, oldIndex);
 
@@ -213,11 +225,6 @@ export const SortableChild = (props: any) => {
 
   const onSortEnd = ({ oldIndex, newIndex }: any) => {
     const returnVal = sortChildren(props.parent.children, oldIndex, newIndex);
-    var len = returnVal.length;
-    for (var i = 0; i < len; i++) {
-      returnVal[i].zIndex = len * 10;
-      len--;
-    }
     updateParent(props.parent.id, { children: sortArray(returnVal) }, layersSelected, setLayersSelected);
   };
 
