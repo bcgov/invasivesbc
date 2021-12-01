@@ -1,6 +1,7 @@
 import * as React from 'react';
 import layers from '../components/map/LayerPicker/LAYERS.json';
 import layersActionsJSON from 'components/map/LayerPicker/LayersActionsHelper/LAYERS_ACTIONS.json';
+import { getParentIndex } from 'components/map/LayerPicker/LayerPickerSorting/SortLayerOrder';
 interface IMapExtentLayersContext {
   mapRequest: {
     layer: any;
@@ -60,6 +61,14 @@ export const MapRequestContextProvider: React.FC = (props) => {
   const [mapRequest, setMapRequest] = React.useState(null);
   const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers);
   const [layersActions, setLayersActions] = React.useState<any[]>(layersActionsJSON);
+
+  /* SortableChild check (Admin boundaries)
+  React.useEffect(() => {
+    console.log('====================');
+    layersSelected[getParentIndex(layersSelected, 'administrative_boundaries')].children.map((child) => {
+      console.log(child.id, child.order, child.zIndex);
+    });
+  }, [layersSelected]);*/
 
   return (
     <MapRequestContext.Provider
