@@ -23,7 +23,7 @@
       },
       {
         "id": "aquatic_observations",
-        "name": "aquatic_observations",
+        "name": "Aquatic Abservations",
         "source": "activities",
         "layer_mode": "wms_online",
         "layer_code": "AQUATIC_OBSERVATIONS",
@@ -255,7 +255,7 @@
       },
       {
         "id": "biocontrol_dispersal",
-        "name": "Chemical Monitoring",
+        "name": "Biocontrol Dispersal",
         "source": "iapp",
         "layer_mode": "wms_online",
         "layer_code": "BIOCONTROL_DISPERSAL",
