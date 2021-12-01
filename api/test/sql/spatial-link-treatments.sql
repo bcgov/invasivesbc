@@ -76,3 +76,13 @@ create index treatments_by_species_geom_gist on treatments_by_species using gist
 
 alter table treatments_by_species add column gid serial;
 alter table treatments_by_species add primary key (gid);
+
+
+-- Temp query
+select
+  created_timestamp
+from
+  activity_incoming_data
+order by
+  created_timestamp desc
+;
