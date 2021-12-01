@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES } from '../../constants/misc';
-import { HEADERS } from '../../utils/csv-intake-processor';
+import { HEADERS } from './new_upload';
 
 export const GET: Operation = [getTemplate()];
 
