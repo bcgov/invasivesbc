@@ -117,6 +117,14 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
         <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
       </Box>
 
+      {!userInfoLoaded && (
+        <Box mt={2}>
+          <Button variant="outlined" color="primary" onClick={() => history.push('/home/access-request')}>
+            Request Access
+          </Button>
+        </Box>
+      )}
+
       {userInfoLoaded && (
         <Box mt={2}>
           <Typography variant="h5">User Information</Typography>
