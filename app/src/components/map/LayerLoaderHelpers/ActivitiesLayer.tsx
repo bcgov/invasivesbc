@@ -5,6 +5,33 @@ import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
+const getSearchFeature = (layer_id: string) => {
+  var type = { activity_type: null, activity_subtype: null };
+  switch (layer_id) {
+    case 'terrestrial_observations':
+      type = { activity_type: 'observations', activity_subtype: 'plant_terrestrial' };
+      return type;
+    case 'aquatic_observations':
+      type = { activity_type: 'observations', activity_subtype: 'plant_aquatic' };
+      return type;
+    case 'terrestrial_chemical_treatment':
+      type = { activity_type: 'chemical_treatment', activity_subtype: 'plant_terrestrial' };
+      return type;
+    case 'aquatic_chemical_treatment':
+      type = { activity_type: 'chemical_treatment', activity_subtype: 'plant_aquatic' };
+      return type;
+    case 'terrestrial_mechanical_treatment':
+      type = { activity_type: 'mechanical_treatment', activity_subtype: 'plant_terrestrial' };
+      return type;
+    case 'aquatic_mechanical_treatment':
+      type = { activity_type: 'mechanical_treatment', activity_subtype: 'plant_aquatic' };
+      return type;
+    case 'chemical_monitoring':
+      type = { activity_subtype: 'chemical', ...type };
+      return type;
+  }
+};
+
 export const ActivitiesLayer = (props) => {
   const map = useMap();
   const mapBounds = createPolygonFromBounds(map.getBounds(), map).toGeoJSON();

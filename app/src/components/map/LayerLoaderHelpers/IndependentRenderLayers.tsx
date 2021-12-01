@@ -12,18 +12,20 @@ export enum IndependentLayers {
 
 export const IndependentLayer = (props) => {
   const networkContext = useContext(NetworkContext);
-  if (Object.values(IndependentLayers).includes(props.layer_code.toUpperCase())) {
-    switch (props.layer_code) {
-      case 'LEAN_ACTIVITIES':
+
+  if (Object.values(IndependentLayers).includes(props.layerName)) {
+    switch (props.source) {
+      case 'activities':
         return (
           <ActivitiesLayer
+            layer_id={props.layer_id}
             color_code={props.color_code}
             online={networkContext.connected}
             opacity={props.opacity}
             zIndex={props.zIndex}
           />
         );
-      case 'LEAN_POI':
+      case 'iapp':
         return (
           <PoisLayer
             color_code={props.color_code}
@@ -32,7 +34,7 @@ export const IndependentLayer = (props) => {
             zIndex={props.zIndex}
           />
         );
-      case 'JURISDICTIONS':
+      case 'invasivesbc':
         return (
           <JurisdictionsLayer
             color_code={props.color_code}

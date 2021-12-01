@@ -68,7 +68,7 @@ export const SortableParent = () => {
       ))}
     </List>
   ));
-
+  // objectsState
   const onSortEnd = ({ oldIndex, newIndex }: any) => {
     const returnVal = sortObject(layersSelected, oldIndex, newIndex);
     var len = returnVal.length;

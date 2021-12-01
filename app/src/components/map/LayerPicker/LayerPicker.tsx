@@ -1,48 +1,13 @@
 import React, { useEffect, useContext, useRef } from 'react';
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { DomEvent } from 'leaflet';
 import { MapRequestContext } from 'contexts/MapRequestsContext';
-/* HelperFiles Parent Layers */
-import { sortArray, getChild, sortObject, updateChild } from './LayerPickerSorting/SortLayerOrder';
-/* Helper Files Parent Actions */
-import {
-  DialogCloseBtn,
-  getChildAction,
-  toggleDialog,
-  updateParentAction
-} from './LayersActionsHelper/LayersActionsFunctions';
-import { getParentAction } from 'components/map/LayerPicker/LayersActionsHelper/LayersActionsFunctions';
-import { assignPaperBGTheme, toolStyles } from '../Tools/Helpers/ToolStyles';
+import { assignPaperBGTheme } from '../Tools/Helpers/ToolStyles';
 // MUI
-import {
-  Accordion,
-  AccordionSummary,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  Paper,
-  Popover,
-  Slider,
-  Typography
-} from '@material-ui/core';
-import ColorLensIcon from '@material-ui/icons/ColorLens';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Button, IconButton, Paper, Popover } from '@material-ui/core';
 // MUI Icons
 import LayersIcon from '@material-ui/icons/Layers';
-import KMLUpload from 'components/map-buddy-components/KMLUpload';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
-import { LayerModeDialog } from './LayerModeSelector';
 import { ThemeContext } from 'contexts/themeContext';
-import ColorPicker from 'material-ui-color-picker';
 import { SortableParent } from './LayerPickerSorting/SortableParent';
 
 export const LayerPicker = () => {
@@ -82,12 +47,6 @@ export const LayerPicker = () => {
                 horizontal: 'right'
               }}>
               <SortableParent />
-              {/*<SortableListContainer
-                  items={sortArray(layersSelected)}
-                  onSortEnd={onSortEnd}
-                  useDragHandle={true}
-                  lockAxis="y"
-                />*/}
               <Button
                 id="layer-picker-save-btn"
                 onClick={() => {

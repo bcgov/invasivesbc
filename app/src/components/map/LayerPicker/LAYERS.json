@@ -360,6 +360,7 @@
   {
     "id": "aquatic_layers_and_wells",
     "name": "Aquatic Layers and Wells",
+    "source": "databc",
     "order": 3,
     "zIndex": 3000,
     "loaded": 70,
@@ -461,6 +462,7 @@
   {
     "id": "terrestial_layers",
     "name": "Terrestrial Layers",
+    "source": "databc",
     "order": 4,
     "zIndex": 2000,
     "loaded": 70,
@@ -497,6 +499,7 @@
   {
     "id": "user_uploaded_layers",
     "name": "User Uploaded Layers",
+    "source": "other",
     "order": 5,
     "zIndex": 1000,
     "loaded": 70,

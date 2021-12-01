@@ -1,5 +1,5 @@
 import { MapRequestContext } from 'contexts/MapRequestsContext';
-import React, { memo, useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 import { DataBCLayer } from './LayerLoaderHelpers/DataBCRenderLayer';
 import { IndependentLayer } from './LayerLoaderHelpers/IndependentRenderLayers';
 
@@ -15,7 +15,7 @@ export const RenderLayers = (props) => {
             (child) =>
               child.enabled && (
                 <>
-                  {child.bcgw_code ? (
+                  {child.source === 'databc' ? (
                     <DataBCLayer
                       opacity={child.opacity}
                       bcgw_code={child.bcgw_code}
@@ -27,6 +27,8 @@ export const RenderLayers = (props) => {
                     />
                   ) : (
                     <IndependentLayer
+                      layer_id={child.id}
+                      search_feature={child.source}
                       opacity={child.opacity}
                       layer_code={child.layer_code}
                       color_code={child.color_code}
