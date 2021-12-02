@@ -79,10 +79,12 @@ alter table treatments_by_species add primary key (gid);
 
 
 -- Temp query
-select
-  created_timestamp
-from
-  activity_incoming_data
-order by
-  created_timestamp desc
-;
+-- select
+--   count(created_timestamp)
+-- from
+--   activity_incoming_data
+-- where
+--   ''
+-- order by
+--   created_timestamp desc
+-- ;
