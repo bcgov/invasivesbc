@@ -32,7 +32,7 @@ export const RenderLayers = (props) => {
                       opacity={child.opacity}
                       layer_code={child.layer_code}
                       color_code={child.color_code}
-                      zIndex={child.zIndex}
+                      zIndex={parent.zIndex + child.zIndex}
                     />
                   )}
                 </>

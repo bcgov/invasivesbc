@@ -76,7 +76,7 @@ export const PoisLayer = (props) => {
   return (
     <>
       {
-        pois && <GeoJSONVtLayer geoJSON={pois} options={options} /> //NOSONAR
+        pois && <GeoJSONVtLayer zIndex={props.zIndex} geoJSON={pois} options={options} /> //NOSONAR
         /*poiToRender &&
           poiToRender.map((poi) => {
             var coords = poi.point_of_interest_payload.geometry[0].geometry.coordinates;

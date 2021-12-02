@@ -70,7 +70,7 @@ export const ActivitiesLayer = (props) => {
   return (
     <>
       {
-        activities && <GeoJSONVtLayer geoJSON={activities} options={options} /> //NOSONAR
+        activities && <GeoJSONVtLayer zIndex={props.zIndex} geoJSON={activities} options={options} /> //NOSONAR
         /*activities &&
           activities.features.map((activity) => (
             <GeoJSON data={activity} style={options.style} key={Math.random()}>
