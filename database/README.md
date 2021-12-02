@@ -76,6 +76,18 @@ Run from database/src/: npx knex --knexfile ./knexfile.ts migrate:make <insert n
 
 # Development
 
+## Database Migrations
+Create a new Typescript migration file
+```bash
+knex migrate:make --env local -x ts filename
+```
+
+Run new migrations
+```knex
+knex migrate:latest --env local
+```
+
+## Seeding the Database
 For running in Openshift. Mount the database on port 5432. Then run:
 ```bash
 cd database/src
