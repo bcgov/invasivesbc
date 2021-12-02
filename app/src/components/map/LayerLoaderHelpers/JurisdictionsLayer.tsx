@@ -54,7 +54,7 @@ export const JurisdictionsLayer = (props) => {
   return (
     <>
       {
-        jurisdictions && <GeoJSONVtLayer geoJSON={jurisdictions} options={options} /> //NOSONAR
+        jurisdictions && <GeoJSONVtLayer zIndex={props.zIndex} geoJSON={jurisdictions} options={options} /> //NOSONAR
       }
     </>
   );
