@@ -5,20 +5,23 @@ import { JurisdictionsLayer } from './JurisdictionsLayer';
 import { PoisLayer } from './PoisLayer';
 
 export enum IndependentLayers {
-  Activities = 'LEAN_ACTIVITIES',
-  POI = 'LEAN_POI',
-  Jurisdictions = 'JURISDICTIONS'
+  Activities = 'activities',
+  Iapp = 'iapp',
+  InvasivesBC = 'invasivesbc',
+  Other = 'other'
 }
 
 export const IndependentLayer = (props) => {
   const networkContext = useContext(NetworkContext);
+
+  console.log(props.source);
 
   if (Object.values(IndependentLayers).includes(props.source)) {
     switch (props.source) {
       case 'activities':
         return (
           <ActivitiesLayer
-            layer_id={props.layer_id}
+            layer_code={props.layer_code}
             color_code={props.color_code}
             online={networkContext.connected}
             opacity={props.opacity}

@@ -5,9 +5,9 @@ import { useDataAccess } from '../../../hooks/useDataAccess';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 
-const getSearchFeature = (layer_id: string) => {
+const getSearchFeature = (layer_code: string) => {
   var type = { activity_type: null, activity_subtype: null };
-  switch (layer_id) {
+  switch (layer_code) {
     case 'terrestrial_observations':
       type = { activity_type: 'observations', activity_subtype: 'plant_terrestrial' };
       return type;

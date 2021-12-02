@@ -15,7 +15,7 @@ export const RenderLayers = (props) => {
             (child) =>
               child.enabled && (
                 <>
-                  {child.source === 'databc' ? (
+                  {child.source === 'databc' && (
                     <DataBCLayer
                       opacity={child.opacity}
                       bcgw_code={child.bcgw_code}
@@ -25,10 +25,10 @@ export const RenderLayers = (props) => {
                       color_code={child.color_code}
                       zIndex={parent.zIndex + child.zIndex}
                     />
-                  ) : (
+                  )}
+                  {child.source !== 'databc' && (
                     <IndependentLayer
-                      layer_id={child.id}
-                      search_feature={child.source}
+                      source={child.source}
                       opacity={child.opacity}
                       layer_code={child.layer_code}
                       color_code={child.color_code}
