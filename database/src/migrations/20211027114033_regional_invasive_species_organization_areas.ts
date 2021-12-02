@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
       set schema '${DB_SCHEMA}';
       set client_encoding to utf8;
       set standard_conforming_strings to on;
+      drop table if exists regional_invasive_species_organization_areas;
       CREATE TABLE if not exists "regional_invasive_species_organization_areas" (gid serial,
         "ogc_fid" int4,
         "objectid" int4,
