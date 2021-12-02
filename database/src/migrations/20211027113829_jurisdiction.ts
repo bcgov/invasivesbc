@@ -9,6 +9,8 @@ export async function up(knex: Knex): Promise<void> {
       set client_encoding to utf8;
       set standard_conforming_strings to on;
 
+      drop table if exists "jurisdiction";
+
       CREATE TABLE "jurisdiction" (
         "gid" serial,
         "type" varchar(30),

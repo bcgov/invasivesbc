@@ -10,6 +10,8 @@ export async function up(knex: Knex): Promise<void> {
       set client_encoding to utf8;
       set standard_conforming_strings to on;
 
+      drop table if exists aggregate;
+
       CREATE TABLE if not exists "aggregate" (gid serial,
         "pit_number" varchar(254),
         "pit_name" varchar(254),

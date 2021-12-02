@@ -25,6 +25,8 @@ export async function up(knex: Knex): Promise<void> {
 
         SET default_with_oids = false;
 
+        drop table if exists public.utm_zones;
+
         CREATE TABLE public.utm_zones (
             objectid integer NOT NULL,
             utm_zone smallint NOT NULL,
@@ -71,7 +73,7 @@ export async function up(knex: Knex): Promise<void> {
     `;
   } catch (e) {
     console.error('Error loading PMPs',e);
-}
+  }
 }
 
 
