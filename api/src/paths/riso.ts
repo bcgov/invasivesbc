@@ -12,7 +12,7 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('jurisdictions');
 
-export const POST: Operation = [getRISOBySearchFilterCriteria()];
+export const POST: Operation = [getRISOsBySearchFilterCriteria()];
 
 POST.apiDoc = {
   description: 'Fetches all RISOs based on search criteria.',
@@ -82,11 +82,11 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getRISOBySearchFilterCriteria(): RequestHandler {
+function getRISOsBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
       label: 'riso',
-      message: 'getRISOBySearchFilterCriteria',
+      message: 'getRISOsBySearchFilterCriteria',
       body: req.body
     });
 

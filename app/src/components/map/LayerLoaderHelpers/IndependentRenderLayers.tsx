@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { ActivitiesLayer } from './ActivitiesLayer';
 import { JurisdictionsLayer } from './JurisdictionsLayer';
 import { PoisLayer } from './PoisLayer';
+import { RISOLayer } from './RISOLayer';
 
 export enum IndependentLayers {
   Activities = 'activities',
@@ -13,8 +14,6 @@ export enum IndependentLayers {
 
 export const IndependentLayer = (props) => {
   const networkContext = useContext(NetworkContext);
-
-  console.log(props.source);
 
   if (Object.values(IndependentLayers).includes(props.source)) {
     switch (props.source) {
@@ -38,14 +37,27 @@ export const IndependentLayer = (props) => {
           />
         );
       case 'invasivesbc':
-        return (
-          <JurisdictionsLayer
-            color_code={props.color_code}
-            online={networkContext.connected}
-            opacity={props.opacity}
-            zIndex={props.zIndex}
-          />
-        );
+        if (props.layer_code === 'JURISDICTION_LAYER') {
+          return (
+            <JurisdictionsLayer
+              color_code={props.color_code}
+              online={networkContext.connected}
+              opacity={props.opacity}
+              zIndex={props.zIndex}
+            />
+          );
+        }
+        if (props.layer_code === 'RISO_BOUNDARIES') {
+          return (
+            <RISOLayer
+              color_code={props.layer_code}
+              online={networkContext.connected}
+              opacity={props.opacity}
+              zIndex={props.zIndex}
+            />
+          );
+        }
+        return <></>;
       default:
         return <></>;
     }
