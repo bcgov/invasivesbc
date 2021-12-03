@@ -3,11 +3,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES } from 'constants/misc';
-import { getDBConnection } from 'database/db';
-import { RISOSearchCriteria } from 'models/riso';
+import { ALL_ROLES } from '../constants/misc';
+import { getDBConnection } from '../database/db';
+import { RISOSearchCriteria } from '../models/riso';
 import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
-import { getRISOsSQL } from 'queries/riso-queries';
+import { getRISOsSQL } from '../queries/riso-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('jurisdictions');
