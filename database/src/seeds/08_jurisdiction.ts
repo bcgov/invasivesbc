@@ -21,6 +21,10 @@ export async function seed(knex: Knex): Promise<void> {
   // Unzip to text
   const sql: string = await ungzip(data);
 
+  // Clear the table
+  const clear = 'truncate table public.jurisdiction;';
+  await knex.raw(clear);
+
   /**
    * This file is too big to run all at once.
    * Split up by lines.
