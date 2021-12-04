@@ -67,6 +67,109 @@ export const MapRecordsContextProvider: React.FC = (props) => {
   const [leafletEditableHandlers, setLeafletEditableHandlers] = React.useState(null);
 
   React.useEffect(() => {
+    if (!leafletEditableHandlers) {
+      let handler: any = {};
+      // some placeholder handlers for when people are chasing their tail
+      handler.onShapeDelete = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onShapeDeleted = (e, m) => {
+        console.log('onShapeDeleted');
+      };
+      handler.onEditing = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onEnable = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onDisable = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onStartDrawing = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onDrawingClick = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onEndDrawing = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onDrawingCommit = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onDrawingMouseDown = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onDrawingMouseUp = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onDrawingMove = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onCancelDrawing = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onDragStart = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onDrag = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onDragEnd = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerDrag = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerDragStart = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerDragEnd = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertextCtrlClick = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onNewVertex = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerClick = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexRawMarkerClick = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexDeleted = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerCtrlClick = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerShiftClick = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerMetaKeyClick = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerAltClick = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerContextMenu = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerMouseDown = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerMouseOver = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onVertexMarkerMouseOut = (e, m) => {
+        console.log('onShapeDelete');
+      };
+      handler.onMiddleMarkerMouseDown = (e, m) => {
+        console.log('onShapeDelete');
+      };
+    }
     const q = new PQueue({ concurrency: 1 });
     setEditQueue(q);
   }, []);
