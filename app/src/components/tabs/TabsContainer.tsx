@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     })
+    // fontSize: '0.8em'
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -160,14 +161,11 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
   const loadUserFromCache = async () => {
     try {
       // Try to fetch user info from cache and set it to userInfo
-      console.log('Attempting to get user info from cache in context...');
       api.getUserInfoFromCache().then((res: any) => {
         if (res) {
-          console.log('User info found in cache from context');
           setUserInfo(res.userInfo);
           setUserInfoLoaded(true);
         } else {
-          console.log('No cached user info');
         }
       });
     } catch (error) {
@@ -188,11 +186,9 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
     // Reset user info object
     if (isMobile()) {
       try {
-        console.log('Attempting to clear cache from tabs...');
         await api.clearUserInfoFromCache().then((res: any) => {
           setUserInfoLoaded(false);
           setUserInfo({ username: 'tabscontainer', email: '', groups: [], roles: [] });
-          console.log('Cache clear successful.');
         });
       } catch (err) {
         console.log('Error clearing cache: ', err);
@@ -222,10 +218,7 @@ const TabsContainer: React.FC<ITabsContainerProps> = (props: any) => {
         userRoles: roles
       };
       try {
-        console.log('Attempting to cache user info: ', userInfoAndRoles);
-        await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {
-          console.log('User info and roles cached successfully.');
-        });
+        await api.cacheUserInfo(userInfoAndRoles).then((res: any) => {});
       } catch (err) {
         console.log('Error caching user roles: ', err);
       }

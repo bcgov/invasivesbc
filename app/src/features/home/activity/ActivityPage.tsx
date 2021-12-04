@@ -1,6 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { Box, Button, CircularProgress, Container, makeStyles, Tooltip, Typography, Zoom } from '@material-ui/core';
-import { FileCopy } from '@material-ui/icons';
+import { FileCopy, LocalConvenienceStoreOutlined } from '@material-ui/icons';
 import * as turf from '@turf/turf';
 import { calc_utm } from 'components/map/Tools/ToolTypes/Nav/DisplayPosition';
 import { ActivityStatus, FormValidationStatus } from 'constants/activities';
@@ -311,8 +311,6 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
    */
   const onFormChange = debounced(100, async (event: any, ref: any, lastField: any, callbackFun: () => void) => {
     let updatedFormData = event.formData;
-
-    // console.log(event);
 
     updatedFormData.activity_subtype_data = populateHerbicideCalculatedFields(updatedFormData.activity_subtype_data);
     updatedFormData.activity_subtype_data = populateTransectLineAndPointData(updatedFormData.activity_subtype_data);

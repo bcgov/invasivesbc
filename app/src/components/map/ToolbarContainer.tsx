@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import React from 'react';
 import { LayersControlProvider } from './LayerPicker/layerControlContext';
 import { LayerPicker } from './LayerPicker/LayerPicker';
@@ -31,9 +32,9 @@ export const ToolbarContainer = (props) => {
           <DisplayPosition map={props.map} />
           <MeasureTool />
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
-          <JumpToTrip />
-          {/* <NewRecord />
-          <EditRecord /> */}
+          {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
+          {/*   <NewRecord />*/}
+          <EditRecord />
           <JumpToActivity id={props.id} />
         </div>
       </div>

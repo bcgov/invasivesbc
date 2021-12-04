@@ -473,7 +473,6 @@ export const useDataAccess = () => {
     if (Capacitor.getPlatform() === 'web') {
       return api.createActivity(activity);
     } else {
-      console.log('Activity creating: ', activity);
       const dbcontext = context;
       return dbcontext.asyncQueue({
         asyncTask: () => {
