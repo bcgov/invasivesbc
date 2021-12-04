@@ -67,8 +67,8 @@ export const MapRecordsContextProvider: React.FC = (props) => {
   const [leafletEditableHandlers, setLeafletEditableHandlers] = React.useState(null);
 
   React.useEffect(() => {
+    let handler: any = {};
     if (!leafletEditableHandlers) {
-      let handler: any = {};
       // some placeholder handlers for when people are chasing their tail
       handler.onShapeDelete = (e, m) => {
         console.log('onShapeDelete');
@@ -170,6 +170,7 @@ export const MapRecordsContextProvider: React.FC = (props) => {
         console.log('onShapeDelete');
       };
     }
+    setLeafletEditableHandlers(handler);
     const q = new PQueue({ concurrency: 1 });
     setEditQueue(q);
   }, []);
@@ -188,25 +189,34 @@ export const MapRecordsContextProvider: React.FC = (props) => {
   }, [mode, records, selectedRecords, currentGeoEdit, onEachFeature, editRef]);
 
   return (
-    <MapRecordsContext.Provider
-      value={{
-        records,
-        setRecords,
-        selectedRecords,
-        setSelectedRecords,
-        currentGeoEdit,
-        setCurrentGeoEdit,
-        onEachFeature,
-        setOnEachFeature,
-        editRef,
-        setEditRef,
-        mode,
-        setMode,
-        editQueue,
-        leafletEditableHandlers,
-        setLeafletEditableHandlers
-      }}>
-      {props.children}
-    </MapRecordsContext.Provider>
+    <>
+      {
+        //don't render the map without (at least) placeholder handlers set or react-leaflet-editable crashes
+        leafletEditableHandlers ? (
+          <MapRecordsContext.Provider
+            value={{
+              records,
+              setRecords,
+              selectedRecords,
+              setSelectedRecords,
+              currentGeoEdit,
+              setCurrentGeoEdit,
+              onEachFeature,
+              setOnEachFeature,
+              editRef,
+              setEditRef,
+              mode,
+              setMode,
+              editQueue,
+              leafletEditableHandlers,
+              setLeafletEditableHandlers
+            }}>
+            {props.children}
+          </MapRecordsContext.Provider>
+        ) : (
+          <></>
+        )
+      }
+    </>
   );
 };
