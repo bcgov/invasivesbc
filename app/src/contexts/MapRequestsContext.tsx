@@ -1,6 +1,7 @@
 import * as React from 'react';
-import layers from '../components/map/LayerPicker/LAYERS.json';
-import layersActionsJSON from 'components/map/LayerPicker/LayersActionsHelper/LAYERS_ACTIONS.json';
+import { layersJSON } from 'components/map/LayerPicker/JSON/layersJSON';
+import { actionsJSON } from 'components/map/LayerPicker/JSON/actionsJSON';
+import { NetworkContext } from './NetworkContext';
 interface IMapExtentLayersContext {
   mapRequest: {
     layer: any;
@@ -57,9 +58,14 @@ export const MapRequestContext = React.createContext<IMapExtentLayersContext>({
 });
 
 export const MapRequestContextProvider: React.FC = (props) => {
+  const networkContext = React.useContext(NetworkContext);
   const [mapRequest, setMapRequest] = React.useState(null);
-  const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layers);
-  const [layersActions, setLayersActions] = React.useState<any[]>(layersActionsJSON);
+  const [layersSelected, setLayersSelected] = React.useState<IParentLayer[]>(layersJSON(networkContext.connected));
+  const [layersActions, setLayersActions] = React.useState<any[]>(actionsJSON);
+
+  React.useEffect(() => {
+    console.log('networkContext', networkContext);
+  }, [networkContext]);
 
   /* SortableChild check (Admin boundaries)
   React.useEffect(() => {

@@ -4,7 +4,6 @@ import { DocType } from 'constants/database';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { IProgressDialog, ProgressDialog } from '../../components/dialog/ProgressDialog';
 import { IWarningDialog, WarningDialog } from '../../components/dialog/WarningDialog';
-import layers from '../../components/map/LayerPicker/LAYERS.json';
 import { getDataFromDataBC, getStylesDataFromBC } from '../../components/map/WFSConsumer';
 import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../../contexts/DatabaseContext';
 import { useInvasivesApi } from '../../hooks/useInvasivesApi';
@@ -14,6 +13,7 @@ import {
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria
 } from '../../interfaces/useInvasivesApi-interfaces';
+import { MapRequestContext } from 'contexts/MapRequestsContext';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
 
 export const TripDataControls: React.FC<any> = (props) => {
   useStyles();
+
+  const mapLayersContext = useContext(MapRequestContext);
+  const { layersSelected } = mapLayersContext;
 
   const invasivesApi = useInvasivesApi();
   const dataAccess = useDataAccess();
@@ -74,12 +77,7 @@ export const TripDataControls: React.FC<any> = (props) => {
     const layerNamesArr = [];
     geoDataJSON.forEach((pLayer) => {
       pLayer.children.forEach((cLayer) => {
-        if (cLayer.bcgw_code) {
-          layerNamesArr.push(cLayer.bcgw_code);
-        }
-        if (cLayer.layer_code) {
-          layerNamesArr.push(cLayer.layer_code);
-        }
+        layerNamesArr.push(cLayer.layer_code);
       });
     });
     return layerNamesArr;
@@ -556,7 +554,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         idArr
       );
 
-      const layerNames = getLayerNamesFromJSON(layers);
+      const layerNames = getLayerNamesFromJSON(layersSelected);
       // for each layer name, do...
       for (let layerNamesIndex = 0; layerNamesIndex < layerNames.length; layerNamesIndex++) {
         let itemsPushedForLayer = 0;
