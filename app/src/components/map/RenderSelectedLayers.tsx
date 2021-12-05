@@ -2,6 +2,7 @@ import { MapRequestContext } from 'contexts/MapRequestsContext';
 import React, { useContext } from 'react';
 import { DataBCLayer } from './LayerLoaderHelpers/DataBCRenderLayer';
 import { IndependentLayer } from './LayerLoaderHelpers/IndependentRenderLayers';
+import { GeoJSON } from 'react-leaflet';
 
 export const RenderLayers = (props) => {
   const mapLayersContext = useContext(MapRequestContext);
@@ -40,6 +41,7 @@ export const RenderLayers = (props) => {
           )}
         </>
       ))}
+      {props.inputGeo && <GeoJSON data={props.inputGeo} />}
     </>
   );
 };

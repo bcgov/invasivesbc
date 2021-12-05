@@ -42,21 +42,21 @@ export const RISOLayer = (props) => {
   });
 
   const fetchData = async () => {
-    console.log('risoData await');
+    // console.log('risoData await');
     const risosData = await dataAccess.getRISOs({ search_feature: mapBounds }, databaseContext);
     let risosFeatureArray = [];
-    console.log('risoData rows', risosData);
+    // console.log('risoData rows', risosData);
     risosData?.rows.forEach((row) => {
       risosFeatureArray.push(row.geojson ? row.geojson : row);
     });
 
-    console.log('risoData set');
+    // console.log('risoData set');
     setRISO({ type: 'FeatureCollection', features: risosFeatureArray });
   };
 
-  useEffect(() => {
-    console.log('riso', riso);
-  }, [riso]);
+  // useEffect(() => {
+  //   console.log('riso', riso);
+  // }, [riso]);
 
   return (
     <>

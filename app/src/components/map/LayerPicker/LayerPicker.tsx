@@ -10,7 +10,7 @@ import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { ThemeContext } from 'contexts/themeContext';
 import { SortableParent } from './LayerPickerSorting/SortableParent';
 
-export const LayerPicker = () => {
+export const LayerPicker = (props: any) => {
   const mapLayersContext = useContext(MapRequestContext);
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const themeContext = useContext(ThemeContext);
@@ -46,7 +46,7 @@ export const LayerPicker = () => {
                 vertical: 'top',
                 horizontal: 'right'
               }}>
-              <SortableParent />
+              <SortableParent setGeo={props.setGeo} />
               <Button
                 id="layer-picker-save-btn"
                 onClick={() => {

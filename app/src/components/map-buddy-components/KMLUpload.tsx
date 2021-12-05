@@ -157,6 +157,7 @@ export const KMLUpload: React.FC<any> = (props) => {
 
   useEffect(() => {
     if (props?.setGeo && geos) {
+      console.log('geos', geos);
       props.setGeo(geos.features);
     }
   }, [geos]);

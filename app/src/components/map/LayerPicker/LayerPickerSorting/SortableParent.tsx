@@ -26,7 +26,7 @@ export const updateParent = (parentType: string, fieldsToUpdate: Object, objectS
   setObjectState([...parentsBefore, updatedParent, ...parentsAfter] as any);
 };
 
-export const SortableParent = () => {
+export const SortableParent = (props: any) => {
   const mapLayersContext = useContext(MapRequestContext);
   const { layersSelected, setLayersSelected } = mapLayersContext;
   const { layersActions, setLayersActions } = mapLayersContext;
@@ -67,7 +67,11 @@ export const SortableParent = () => {
           </Grid>
           {/* Children Array */}
 
-          {parent.id === 'user_uploaded_layers' ? <KMLUpload /> : <SortableChild parent={parent} />}
+          {parent.id === 'user_uploaded_layers' ? (
+            <KMLUpload setGeo={props.setGeo} />
+          ) : (
+            <SortableChild parent={parent} />
+          )}
         </Accordion>
       </ListItem>
     );

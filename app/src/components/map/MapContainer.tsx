@@ -201,6 +201,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return null;
   };
 
+  useEffect(() => {
+    console.log('geometryState', props.geometryState.geometry);
+  }, [props.geometryState.geometry]);
+
   return (
     <ReactLeafletMapContainer
       center={[55, -128]}
@@ -233,6 +237,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             map={map}
             mapMaxNativeZoom={mapMaxNativeZoom}
             setMapMaxNativeZoom={setMapMaxNativeZoom}
+            setGeo={props.geometryState.setGeometry}
           />
           <ZoomBar map={map} />
           {/* Here are the editing tools */}
