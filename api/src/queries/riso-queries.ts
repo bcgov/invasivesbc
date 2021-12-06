@@ -18,8 +18,9 @@ export const getRISOsSQL = (searchCriteria: RISOSearchCriteria): SQLStatement =>
     SELECT json_build_object (
       'type', 'Feature',
       'properties', json_build_object(
-        'gid', gid,
-        'agency', agency,
+        'code_name', agency_cd,
+        'type', agency,
+        'name', layer,
         'layer', 'regional_invasive_species_organization_areas'
       ),
       'geometry', public.st_asGeoJSON(r.geom)::jsonb

@@ -80,11 +80,18 @@ export interface TileLayerProps extends TileLayerOptions, LayerProps {
           this.options.style.color = rule.symbolizers[0].color;
           this.options.style.fillColor = rule.symbolizers[0].color;
         }
+        if (this.options.layerStyles?.output.name === 'regional_invasive_species_organization_areas') {
+          this.options.style.color = rule.symbolizers[0].outlineColor;
+          this.options.style.fillColor = rule.symbolizers[0].color;
+        }
       });
     } else {
       this.options.layerStyles?.output.rules.forEach((rule) => {
         if (rule.filter) {
           if (isFilterSatisfied(rule?.filter, feature.tags)) {
+            this.options.style.color = rule.symbolizers[0].color;
+            this.options.style.fillColor = rule.symbolizers[0].color;
+          } else {
             this.options.style.color = rule.symbolizers[0].color;
             this.options.style.fillColor = rule.symbolizers[0].color;
           }

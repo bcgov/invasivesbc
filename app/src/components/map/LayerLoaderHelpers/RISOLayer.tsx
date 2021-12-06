@@ -1,6 +1,6 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { createPolygonFromBounds } from './LtlngBoundsToPoly';
 import SLDParser from 'geostyler-sld-parser';
@@ -30,8 +30,7 @@ export const RISOLayer = (props) => {
 
   const getSldStylesFromLocalFile = async () => {
     const sldParser = new SLDParser();
-    let styles = await sldParser.readStyle(RisoSLD);
-    return styles;
+    return await sldParser.readStyle(RisoSLD);
   };
 
   useMapEvent('moveend', () => {
@@ -42,21 +41,13 @@ export const RISOLayer = (props) => {
   });
 
   const fetchData = async () => {
-    // console.log('risoData await');
     const risosData = await dataAccess.getRISOs({ search_feature: mapBounds }, databaseContext);
     let risosFeatureArray = [];
-    // console.log('risoData rows', risosData);
     risosData?.rows.forEach((row) => {
       risosFeatureArray.push(row.geojson ? row.geojson : row);
     });
-
-    // console.log('risoData set');
     setRISO({ type: 'FeatureCollection', features: risosFeatureArray });
   };
-
-  // useEffect(() => {
-  //   console.log('riso', riso);
-  // }, [riso]);
 
   return (
     <>

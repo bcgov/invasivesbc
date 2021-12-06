@@ -1,6 +1,3 @@
-import { NetworkContext } from 'contexts/NetworkContext';
-import React, { useContext } from 'react';
-
 export const layersJSON = (networkContext: any) => {
   return [
     {

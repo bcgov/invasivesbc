@@ -1,7 +1,7 @@
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import SLDParser from 'geostyler-sld-parser';
 import { useDataAccess } from 'hooks/useDataAccess';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { JurisdictionSLD } from '../SldStyles/jurisdiction_sld';
 import { GeoJSONVtLayer } from './GeoJsonVtLayer';
@@ -31,6 +31,7 @@ export const JurisdictionsLayer = (props) => {
   const getSldStylesFromLocalFile = async () => {
     const sldParser = new SLDParser();
     let styles = await sldParser.readStyle(JurisdictionSLD);
+    console.log('styles', styles);
     return styles;
   };
 
@@ -50,6 +51,12 @@ export const JurisdictionsLayer = (props) => {
 
     setJurisdictions({ type: 'FeatureCollection', features: jurisdictionsFeatureArray });
   };
+
+  useEffect(() => {
+    if (jurisdictions) {
+      console.log('jurisdictions', jurisdictions);
+    }
+  }, [jurisdictions]);
 
   return (
     <>
