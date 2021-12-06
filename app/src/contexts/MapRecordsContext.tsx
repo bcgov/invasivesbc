@@ -77,97 +77,97 @@ export const MapRecordsContextProvider: React.FC = (props) => {
         console.log('onShapeDeleted');
       };
       handler.onEditing = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onEditing');
       };
       handler.onEnable = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onEnable');
       };
       handler.onDisable = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onDisable');
       };
       handler.onStartDrawing = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onStartDrawing');
       };
       handler.onDrawingClick = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onDrawingClick');
       };
       handler.onEndDrawing = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onEndDrawing');
       };
       handler.onDrawingCommit = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onDrawingCommit');
       };
       handler.onDrawingMouseDown = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onDrawingMouseDown');
       };
       handler.onDrawingMouseUp = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onDrawingMouseUp');
       };
       handler.onDrawingMove = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onDrawingMove');
       };
       handler.onCancelDrawing = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onCancelDrawing');
       };
       handler.onDragStart = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onDragStart');
       };
       handler.onDrag = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onDrag');
       };
       handler.onDragEnd = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onDragEnd');
       };
       handler.onVertexMarkerDrag = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerDrag');
       };
       handler.onVertexMarkerDragStart = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerDragStart');
       };
       handler.onVertexMarkerDragEnd = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerDragEnd');
       };
       handler.onVertextCtrlClick = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertextCtrlClick');
       };
       handler.onNewVertex = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onNewVertex');
       };
       handler.onVertexMarkerClick = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerClick');
       };
       handler.onVertexRawMarkerClick = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexRawMarkerClick');
       };
       handler.onVertexDeleted = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexDeleted');
       };
       handler.onVertexMarkerCtrlClick = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerCtrlClick');
       };
       handler.onVertexMarkerShiftClick = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerShiftClick');
       };
       handler.onVertexMarkerMetaKeyClick = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerMetaKeyClick');
       };
       handler.onVertexMarkerAltClick = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerAltClick');
       };
       handler.onVertexMarkerContextMenu = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerContextMenu');
       };
       handler.onVertexMarkerMouseDown = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerMouseDown');
       };
       handler.onVertexMarkerMouseOver = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerMouseOver');
       };
       handler.onVertexMarkerMouseOut = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onVertexMarkerMouseOut');
       };
       handler.onMiddleMarkerMouseDown = (e, m) => {
-        console.log('onShapeDelete');
+        console.log('onMiddleMarkerMouseDown');
       };
     }
     setLeafletEditableHandlers(handler);

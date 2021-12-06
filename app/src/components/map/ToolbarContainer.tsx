@@ -33,7 +33,7 @@ export const ToolbarContainer = (props) => {
           <MeasureTool />
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
           {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
-          {/*   <NewRecord />*/}
+          <NewRecord />
           <EditRecord />
           <JumpToActivity id={props.id} />
         </div>
