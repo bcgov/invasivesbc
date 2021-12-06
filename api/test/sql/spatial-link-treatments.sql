@@ -68,38 +68,13 @@ select
       'activity_subtype_data'->
       'chemical_treatment_details'->
       'herbicides'
-  )->'herbicide_type_code' "treatment"
+  )->'herbicide_type_code' "method"
 from
   activity_incoming_data
 where
   deleted_timestamp is null and -- Not deleted
   activity_type = 'Treatment' and -- Treatments
   activity_subtype = 'Activity_Treatment_ChemicalPlant'
-;
-
--- test finding of mechanical treatment type
-select
-  activity_incoming_data_id,
-  activity_subtype,
-  created_timestamp,
-  jsonb_array_elements(
-    activity_payload->
-      'form_data'->
-      'activity_subtype_data'->
-      'mechanical_plant_information'
-  )->>'mechanical_method_code'
-from
-  activity_incoming_data
-where
-  deleted_timestamp is null and -- Not deleted
-  activity_type = 'Treatment' and -- Treatments
-  activity_subtype = 'Activity_Treatment_MechanicalPlant' and
-  jsonb_array_length(
-    activity_payload->
-      'form_data'->
-      'activity_subtype_data'->
-      'mechanical_plant_information'
-  ) > 0
 ;
 /**************************************************/
 
@@ -115,7 +90,8 @@ alter table spatial_explode add primary key (gid);
 drop table if exists treatments_by_species;
 create table treatments_by_species as
 select
-  treatment->>'invasive_plant_code' "species",
+  species,
+  method,
   max(created_timestamp) "max_created_timestamp",
   array_agg(activity_incoming_data_id) "activity_ids", -- Collect original IDs 
   st_unaryUnion( -- Remove embedded linework
@@ -138,15 +114,3 @@ create index treatments_by_species_geom_gist on treatments_by_species using gist
 
 alter table treatments_by_species add column gid serial;
 alter table treatments_by_species add primary key (gid);
-
-
--- Temp query
--- select
---   count(created_timestamp)
--- from
---   activity_incoming_data
--- where
---   ''
--- order by
---   created_timestamp desc
--- ;
