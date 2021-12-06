@@ -28,7 +28,12 @@ select
       'activity_subtype_data'->
       'mechanical_plant_information'
   )->>'invasive_plant_code' "species",
-  -- TODO: Add treatment type
+  jsonb_array_elements(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'mechanical_plant_information'
+  )->>'mechanical_method_code' "method",
   geometry(geog) "geom" -- Convert to Geometry (EPSG:4326)
 from
   activity_incoming_data
@@ -70,6 +75,31 @@ where
   deleted_timestamp is null and -- Not deleted
   activity_type = 'Treatment' and -- Treatments
   activity_subtype = 'Activity_Treatment_ChemicalPlant'
+;
+
+-- test finding of mechanical treatment type
+select
+  activity_incoming_data_id,
+  activity_subtype,
+  created_timestamp,
+  jsonb_array_elements(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'mechanical_plant_information'
+  )->>'mechanical_method_code'
+from
+  activity_incoming_data
+where
+  deleted_timestamp is null and -- Not deleted
+  activity_type = 'Treatment' and -- Treatments
+  activity_subtype = 'Activity_Treatment_MechanicalPlant' and
+  jsonb_array_length(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'mechanical_plant_information'
+  ) > 0
 ;
 /**************************************************/
 
