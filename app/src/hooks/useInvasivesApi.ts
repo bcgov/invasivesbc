@@ -390,6 +390,7 @@ export const useInvasivesApi = () => {
   const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
     // Not sure who is using this... But its smelling
     // const oldActivity = await getActivityById(activity.activity_id);
+    console.dir('updating',activity)
 
     const { data } = await Http.request({
       method: 'PUT',

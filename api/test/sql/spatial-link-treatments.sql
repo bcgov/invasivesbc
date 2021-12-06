@@ -27,7 +27,8 @@ select
       'form_data'->
       'activity_subtype_data'->
       'mechanical_plant_information'
-  ) "treatment",
+  )->>'invasive_plant_code' "species",
+  -- TODO: Add treatment type
   geometry(geog) "geom" -- Convert to Geometry (EPSG:4326)
 from
   activity_incoming_data
@@ -43,7 +44,35 @@ where
   ) > 0
 ;
 
+/**************************************************/
 -- TODO: union chemical treatments
+select
+  activity_incoming_data_id,
+  activity_subtype,
+  created_timestamp,
+  jsonb_array_elements(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'chemical_treatment_details'->
+      'invasive_plants'
+  )->'invasive_plant_code' "species",
+  jsonb_array_elements(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'chemical_treatment_details'->
+      'herbicides'
+  )->'herbicide_type_code' "treatment"
+from
+  activity_incoming_data
+where
+  deleted_timestamp is null and -- Not deleted
+  activity_type = 'Treatment' and -- Treatments
+  activity_subtype = 'Activity_Treatment_ChemicalPlant'
+;
+/**************************************************/
+
 
 -- Add indexes and IDs
 drop index if exists spatial_explode_geom_gist;
