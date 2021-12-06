@@ -20,6 +20,7 @@ drop table if exists spatial_explode;
 create table spatial_explode as
 select
   activity_incoming_data_id,
+  activity_subtype,
   created_timestamp,
   jsonb_array_elements(
     activity_payload->
@@ -41,6 +42,8 @@ where
       'mechanical_plant_information'
   ) > 0
 ;
+
+-- TODO: union chemical treatments
 
 -- Add indexes and IDs
 drop index if exists spatial_explode_geom_gist;
