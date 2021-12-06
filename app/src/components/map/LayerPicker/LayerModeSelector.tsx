@@ -15,9 +15,13 @@ import {
 import { MapRequestContext } from 'contexts/MapRequestsContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import React, { useContext } from 'react';
-import { DialogCloseBtn, getChildAction, toggleDialog } from './LayersActionsHelper/LayersActionsFunctions';
+import {
+  DialogCloseBtn,
+  getChildAction,
+  toggleDialog,
+  updateChildAction
+} from './LayersActionsHelper/LayersActionsFunctions';
 import { updateChild } from './LayerPickerSorting/SortLayerOrder';
-import { updateChildAction } from './LayersActionsHelper/LayersActionsFunctions';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 const getIndex = (childId, layers) => {
