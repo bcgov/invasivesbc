@@ -15,7 +15,7 @@
   ]
 **/
 
--- Spread the species into separate records
+-- Spread the species and treatments into separate records
 drop table if exists spatial_explode;
 create table spatial_explode as
 select
@@ -47,10 +47,9 @@ where
       'activity_subtype_data'->
       'mechanical_plant_information'
   ) > 0
-;
 
-/**************************************************/
--- TODO: union chemical treatments
+union
+
 select
   activity_incoming_data_id,
   activity_subtype,
@@ -61,14 +60,15 @@ select
       'activity_subtype_data'->
       'chemical_treatment_details'->
       'invasive_plants'
-  )->'invasive_plant_code' "species",
+  )->>'invasive_plant_code' "species",
   jsonb_array_elements(
     activity_payload->
       'form_data'->
       'activity_subtype_data'->
       'chemical_treatment_details'->
       'herbicides'
-  )->'herbicide_type_code' "method"
+  )->>'herbicide_type_code' "method",
+  geometry(geog) "geom" -- Convert to Geometry (EPSG:4326)
 from
   activity_incoming_data
 where
@@ -76,7 +76,6 @@ where
   activity_type = 'Treatment' and -- Treatments
   activity_subtype = 'Activity_Treatment_ChemicalPlant'
 ;
-/**************************************************/
 
 
 -- Add indexes and IDs
@@ -92,6 +91,7 @@ create table treatments_by_species as
 select
   species,
   method,
+  activity_subtype,
   max(created_timestamp) "max_created_timestamp",
   array_agg(activity_incoming_data_id) "activity_ids", -- Collect original IDs 
   st_unaryUnion( -- Remove embedded linework
@@ -106,7 +106,9 @@ select
 from
   spatial_explode
 group by
-  treatment->>'invasive_plant_code'
+  species,
+  method,
+  activity_subtype
 ;
 
 drop index if exists treatments_by_species_geom_gist;
