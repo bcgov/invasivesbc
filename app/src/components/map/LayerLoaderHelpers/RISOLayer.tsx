@@ -30,7 +30,7 @@ export const RISOLayer = (props) => {
 
   const getSldStylesFromLocalFile = async () => {
     const sldParser = new SLDParser();
-    const style = await sldParser.readStyle(RisoSLD);
+    const style = await sldParser.readStyle(RisoSLD); //NOSONAR
     return style;
   };
 
