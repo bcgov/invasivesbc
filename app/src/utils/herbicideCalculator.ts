@@ -61,7 +61,7 @@ export const performCalculation = (area: number, formData: IGeneralFields, busin
         }
       }
       //single herb multiple (>2) inv plants
-      else if (herbicides.length < 2 && invasive_plants.length > 2) {
+      else if (herbicides.length < 2 && invasive_plants.length >= 2) {
         console.log('single herb and >2 plants');
         console.log(herbicides[0]);
         if (herbicides[0].herbicide_type_code === 'L') {
@@ -560,8 +560,10 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
   species.forEach((specie, plant_index) => {
     let outputSpecie: any = {};
 
-    outputSpecie.amount_of_mix_used = amount_of_mix * (specie.percent_area_covered / 100);
-    outputSpecie.area_treated_ha = (amount_of_mix / delivery_rate_of_mix) * (specie.percent_area_covered / 100);
+    let percent_area_covered = specie.percent_area_covered ? specie.percent_area_covered : 100;
+
+    outputSpecie.amount_of_mix_used = amount_of_mix * (percent_area_covered / 100);
+    outputSpecie.area_treated_ha = (amount_of_mix / delivery_rate_of_mix) * (percent_area_covered / 100);
     outputSpecie.area_treated_sqm = outputSpecie.area_treated_ha * 10000;
     outputSpecie.percent_area_covered = (outputSpecie.area_treated_sqm / area) * 100;
 
@@ -572,7 +574,7 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
 
       outputHerb.dilution = (herbicides[index].product_application_rate / delivery_rate_of_mix) * 100;
       outputHerb.amount_of_undiluted_herbicide_used =
-        ((outputHerb.dilution / 100) * amount_of_mix * specie.percent_area_covered) / 100;
+        ((outputHerb.dilution / 100) * amount_of_mix * percent_area_covered) / 100;
 
       outputHerb.dilution = parseToRightFormat(outputHerb.dilution);
       outputHerb.amount_of_undiluted_herbicide_used = parseToRightFormat(outputHerb.amount_of_undiluted_herbicide_used);

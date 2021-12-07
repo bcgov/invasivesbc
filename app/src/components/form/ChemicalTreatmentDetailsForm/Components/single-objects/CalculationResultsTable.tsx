@@ -4,11 +4,7 @@ import {
   AccordionSummary,
   Box,
   Collapse,
-  Divider,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
   Paper,
   Table,
   TableBody,
@@ -51,19 +47,7 @@ const CalculationResultsTable = ({ data }) => {
 function createData(name: string, value: number) {
   return {
     name,
-    value,
-    history: [
-      {
-        date: '2020-01-05',
-        customerId: '11091700',
-        amount: 3
-      },
-      {
-        date: '2020-01-02',
-        customerId: 'Anonymous',
-        amount: 1
-      }
-    ]
+    value
   };
 }
 
@@ -82,9 +66,22 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          <p>{name}</p>
+          <p>
+            {name
+              .toString()
+              .replace(/_/g, ' ')
+              .split(' ')
+              .map((word) => {
+                return word[0].toUpperCase() + word.substr(1);
+              })
+              .join(' ')}
+          </p>
         </TableCell>
-        <TableCell>{Array.isArray(row) ? '' : row}</TableCell>
+        <TableCell>
+          <span style={{ color: name.toString().toLowerCase().includes('percent') && Number(row) > 100 && 'red' }}>
+            {Array.isArray(row) ? '' : name.toString().toLowerCase().includes('percent') ? row.toString() + '%' : row}
+          </span>
+        </TableCell>
       </TableRow>
 
       {Array.isArray(row) && (
@@ -96,7 +93,18 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                   <TableHead>
                     <TableCell style={{ fontWeight: 'bold' }}>#</TableCell>
                     {Object.keys(row[0]).map((key) => {
-                      return <TableCell style={{ fontWeight: 'bold' }}>{key}</TableCell>;
+                      return (
+                        <TableCell style={{ fontWeight: 'bold' }}>
+                          {key
+                            .toString()
+                            .replace(/_/g, ' ')
+                            .split(' ')
+                            .map((word) => {
+                              return word[0].toUpperCase() + word.substr(1);
+                            })
+                            .join(' ')}
+                        </TableCell>
+                      );
                     })}
                   </TableHead>
                   <TableBody>
@@ -123,7 +131,20 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                                               {Object.keys(herb).map((key) => {
                                                 return (
                                                   <p>
-                                                    <span style={{ fontWeight: 'bold' }}>{key}</span> : {herb[key]}
+                                                    <span style={{ fontWeight: 'bold' }}>
+                                                      {key
+                                                        .toString()
+                                                        .replace(/_/g, ' ')
+                                                        .split(' ')
+                                                        .map((word) => {
+                                                          return word[0].toUpperCase() + word.substr(1);
+                                                        })
+                                                        .join(' ')}
+                                                    </span>{' '}
+                                                    :{' '}
+                                                    {key.toUpperCase().includes('PERCENT')
+                                                      ? herb[key] + '%'
+                                                      : herb[key]}
                                                   </p>
                                                 );
                                               })}
@@ -136,7 +157,7 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                                 ) : typeof plant[key] === 'object' ? (
                                   <></>
                                 ) : (
-                                  `${plant[key]}`
+                                  `${key.toUpperCase().includes('PERCENT') ? plant[key] + '%' : plant[key]}`
                                 )}
                               </TableCell>
                             );

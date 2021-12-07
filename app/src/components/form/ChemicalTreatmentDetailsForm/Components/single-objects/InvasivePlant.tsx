@@ -81,7 +81,12 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
       />
 
       <Tooltip
-        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+        style={{
+          float: 'right',
+          marginBottom: 5,
+          color: 'rgb(170, 170, 170)',
+          display: invasivePlantsArr.length < 2 ? 'none' : 'block'
+        }}
         placement="left"
         title="Percent of area covered by this species">
         <HelpOutlineIcon />

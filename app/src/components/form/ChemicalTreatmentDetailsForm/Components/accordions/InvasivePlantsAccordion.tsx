@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
@@ -18,11 +18,17 @@ import { useFormStyles } from '../../formStyles';
 const InvasivePlantsAccordion = () => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
-
+  const [accordionExpanded, setAccordionExpanded] = useState(true);
   const classes = useFormStyles();
 
   return (
-    <Accordion>
+    <Accordion
+      onChange={() => {
+        setAccordionExpanded((prevState) => {
+          return !prevState;
+        });
+      }}
+      expanded={accordionExpanded}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="species-content" id="species-header">
         <Typography
           style={{ width: '33%', flexShrink: 0 }}
@@ -30,9 +36,6 @@ const InvasivePlantsAccordion = () => {
           variant="h5">
           Invasive Plants
         </Typography>
-        {/* <Typography variant="body2" color={'error'}>
-              {invasivePlantsArrErrors?.length > 0 && invasivePlantsArrErrors[0]}
-            </Typography> */}
       </AccordionSummary>
       <AccordionDetails>
         <Box className={classes.accordionBody}>

@@ -335,11 +335,6 @@ export const validate_tank_mix_fields = (area: number, formData: IGeneralFields,
   if (formData.tank_mix_object.amount_of_mix < 0) {
     newErrors.push('There is a negative value provided for amount of mix in your tank mix');
   }
-  if (!formData.tank_mix_object.area_treated_sqm) {
-    newErrors.push('There is no value provided for area treated in your tank mix');
-  } else if (formData.tank_mix_object.area_treated_sqm > area) {
-    newErrors.push('Ar least 1 of your herbicides area treated is larger than the area of entire treatment');
-  }
   if (formData.tank_mix_object.area_treated_sqm < 0) {
     newErrors.push('There is a negative value provided for area treated in your tank mix');
   }
