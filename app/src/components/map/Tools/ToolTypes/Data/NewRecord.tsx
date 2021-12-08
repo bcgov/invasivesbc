@@ -158,9 +158,12 @@ export const NewRecord = (props) => {
       console.log('unable to http ');
       console.log(e);
     }
-    setTimeout(() => {
+    /* setTimeout(() => {
+      
       history.push({ pathname: `/home/activity` });
     }, 1000);
+    */
+    mapRecordsContext.setMode('Editing');
   };
 
   const [mode, setMode] = useState('NOT_PRESSED');

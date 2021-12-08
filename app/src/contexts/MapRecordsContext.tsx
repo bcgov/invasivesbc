@@ -5,7 +5,7 @@ import * as React from 'react';
 // or being edited.  To be used for spatial select, filtering and editing
 
 // keep scrolling for comments on what each is for
-interface IMapRecords {
+export interface IMapRecordsContext {
   records?: any[];
   setRecords?: React.Dispatch<React.SetStateAction<[]>>;
   selectedRecords?: Object;
@@ -23,7 +23,7 @@ interface IMapRecords {
   leafletEditableHandlers?: any;
 }
 
-export const MapRecordsContext = React.createContext<IMapRecords>({
+export const MapRecordsContext = React.createContext<IMapRecordsContext>({
   // all the geometries to display
   records: [],
   setRecords: () => {},

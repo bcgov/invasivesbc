@@ -5,6 +5,7 @@ import { LayerPicker } from './LayerPicker/LayerPicker';
 import { SetPointOnClick } from './Tools/ToolTypes/Data/InfoAreaDescription';
 import NewRecord from './Tools/ToolTypes/Data/NewRecord';
 import EditRecord from './Tools/ToolTypes/Data/SelectOrEdit';
+import DrawButtonList from './Tools/ToolTypes/GeoEdit/EditTools';
 import MeasureTool from './Tools/ToolTypes/Misc/MeasureTool';
 import { ZoomControl } from './Tools/ToolTypes/Misc/ZoomControl';
 import DisplayPosition from './Tools/ToolTypes/Nav/DisplayPosition';
@@ -35,6 +36,7 @@ export const ToolbarContainer = (props) => {
           {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
           <NewRecord />
           <EditRecord />
+          <DrawButtonList />
           <JumpToActivity id={props.id} />
         </div>
       </div>
