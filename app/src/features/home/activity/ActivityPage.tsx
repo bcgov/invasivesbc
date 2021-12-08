@@ -183,7 +183,7 @@ const ActivityPage: React.FC<IActivityPageProps> = (props) => {
     const { activity_data } = activity.formData || {};
     let needsInsert = false;
     let userNameInject = '';
-    if (activity_data.activity_persons && activity_data.activity_persons.length > 0) {
+    if (activity_data && activity_data.activity_persons && activity_data.activity_persons.length > 0) {
       if (activity_data.activity_persons[0].person_name === undefined && activity_data.activity_persons.length === 1) {
         needsInsert = true;
         console.log(authStateContext.userInfo);
