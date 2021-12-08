@@ -1,21 +1,4 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  Grid,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  TextField,
-  Typography
-} from '@material-ui/core';
-import AddIcon from '@mui/icons-material/Add';
-import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
-import { Autocomplete } from '@mui/material';
-import { ActivitySubtype, ActivitySubtypeShortLabels, ActivityType } from 'constants/activities';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { Grid, IconButton } from '@material-ui/core';
 import { DatabaseContext } from 'contexts/DatabaseContext';
 import { MapRecordsContext } from 'contexts/MapRecordsContext';
 import { ThemeContext } from 'contexts/themeContext';
@@ -23,9 +6,14 @@ import { useDataAccess } from 'hooks/useDataAccess';
 import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { generateDBActivityPayload } from 'utils/addActivity';
 import { toolStyles } from '../../Helpers/ToolStyles';
-import { startPolygon, stopPolygon } from './ReactLeafletEditableEventHandlers';
+import {
+  startCircle,
+  startPolygon,
+  startPolyline,
+  startRectangle,
+  stopShape
+} from './ReactLeafletEditableEventHandlers';
 
 export const DrawButtonList = (props) => {
   const divRef = useRef(null);
@@ -36,40 +24,100 @@ export const DrawButtonList = (props) => {
     L.DomEvent.disableScrollPropagation(divRef?.current);
   }, []);
 
-  const dataAccess = useDataAccess();
-  const databaseContext = useContext(DatabaseContext);
   const toolClass = toolStyles();
   const themeContext = useContext(ThemeContext);
-  const history = useHistory();
 
   // Is this needed? Copied from DisplayPosition
-  useEffect(() => {
-    console.log('initial render');
-  });
 
   const mapRecordsContext = useContext(MapRecordsContext);
 
   const [index, setIndex] = useState(-1);
   const [inEdit, setInEdit] = useState(false);
 
+  const DrawButton = (props) => {
+    return (
+      <IconButton className={toolClass.toolBtnLight} onClick={props.onClick}>
+        {props.label}
+      </IconButton>
+    );
+  };
+
   const items = [
     {
       label: 'polygon_draw',
       button: (props) => {
         return (
-          <IconButton
-            className={toolClass.toolBtnLight}
+          <>
+            <DrawButton
+              onClick={() => {
+                if (!inEdit) {
+                  startPolygon(mapRecordsContext);
+                  setInEdit(true);
+                } else {
+                  stopShape(mapRecordsContext);
+                  setInEdit(false);
+                }
+              }}
+              label={'Polygon'}
+            />
+          </>
+        );
+      }
+    },
+    {
+      label: 'square_draw',
+      button: (props) => {
+        return (
+          <DrawButton
             onClick={() => {
               if (!inEdit) {
-                startPolygon(mapRecordsContext);
+                startRectangle(mapRecordsContext);
                 setInEdit(true);
               } else {
-                stopPolygon(mapRecordsContext);
+                stopShape(mapRecordsContext);
                 setInEdit(false);
               }
-            }}>
-            Polygon
-          </IconButton>
+            }}
+            label={'Square'}
+          />
+        );
+      }
+    },
+    {
+      label: 'circle_draw',
+      button: (props) => {
+        return (
+          <DrawButton
+            onClick={() => {
+              if (!inEdit) {
+                startCircle(mapRecordsContext);
+                setInEdit(true);
+              } else {
+                stopShape(mapRecordsContext);
+                setInEdit(false);
+              }
+            }}
+            label={'Circle'}
+          />
+        );
+      }
+    },
+    {
+      label: 'polyline_draw',
+      button: (props) => {
+        return (
+          <DrawButton
+            onClick={() => {
+              if (!inEdit) {
+                startPolyline(mapRecordsContext);
+                setInEdit(true);
+              } else {
+                stopShape(mapRecordsContext);
+                setInEdit(false);
+              }
+            }}
+            label={'PolyLine'}
+          />
         );
       }
     }

@@ -35,8 +35,7 @@ export const ToolbarContainer = (props) => {
           <ZoomControl mapMaxNativeZoom={props.mapMaxNativeZoom} setMapMaxNativeZoom={props.setMapMaxNativeZoom} />
           {Capacitor.getPlatform() !== 'web' ? <JumpToTrip /> : <></>}
           <NewRecord />
-          <EditRecord />
-          <DrawButtonList />
+          <EditRecord /> <DrawButtonList />
           <JumpToActivity id={props.id} />
         </div>
       </div>

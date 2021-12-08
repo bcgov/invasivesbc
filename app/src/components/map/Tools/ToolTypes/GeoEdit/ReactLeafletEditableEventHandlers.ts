@@ -3,27 +3,11 @@ import { IMapRecordsContext } from 'contexts/MapRecordsContext';
 export const startPolygon = (mapRecordsContext: IMapRecordsContext) => {
   try {
     console.log('starting polygon');
-    //TODO - overrides go here
-    const getGeoOnNewVertex = (e, m) => {
-      console.log('event');
-      console.dir(e);
-      console.log('map');
-      console.log(m);
-      //mapRecordsContext.setCurrentGeoEdit
-    };
     const getGeoOnDrawCommit = (e, m) => {
-      console.log('event', e.layer.toGeoJSON());
-      console.dir(e);
-      console.log('map');
-      console.log(m);
-      //mapRecordsContext.setCurrentGeoEdit
-    };
-    const getGeoOnDisable = (e, m) => {
-      console.log('event', e.layer.toGeoJSON());
+      mapRecordsContext.setCurrentGeoEdit(e.layer.toGeoJSON());
     };
     mapRecordsContext.setLeafletEditableHandlers({
       ...mapRecordsContext.leafletEditableHandlers,
-      onNewVertex: getGeoOnNewVertex,
       onEndDrawing: getGeoOnDrawCommit
     });
     mapRecordsContext.editRef.current.startPolygon();
@@ -32,10 +16,60 @@ export const startPolygon = (mapRecordsContext: IMapRecordsContext) => {
     return false;
   }
 };
-export const stopPolygon = (mapRecordsContext) => {
-  console.log('stopping polygon');
+
+export const startRectangle = (mapRecordsContext: IMapRecordsContext) => {
+  try {
+    console.log('starting startRectangle');
+    const getGeoOnDrawCommit = (e, m) => {
+      mapRecordsContext.setCurrentGeoEdit(e.layer.toGeoJSON());
+    };
+    mapRecordsContext.setLeafletEditableHandlers({
+      ...mapRecordsContext.leafletEditableHandlers,
+      onEndDrawing: getGeoOnDrawCommit
+    });
+    mapRecordsContext.editRef.current.startRectangle();
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const startCircle = (mapRecordsContext: IMapRecordsContext) => {
+  try {
+    console.log('starting circle');
+    const getGeoOnDrawCommit = (e, m) => {
+      mapRecordsContext.setCurrentGeoEdit(e.layer.toGeoJSON());
+    };
+    mapRecordsContext.setLeafletEditableHandlers({
+      ...mapRecordsContext.leafletEditableHandlers,
+      onEndDrawing: getGeoOnDrawCommit
+    });
+    mapRecordsContext.editRef.current.startCircle();
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const startPolyline = (mapRecordsContext: IMapRecordsContext) => {
+  try {
+    console.log('starting polyline');
+    const getGeoOnDrawCommit = (e, m) => {
+      mapRecordsContext.setCurrentGeoEdit(e.layer.toGeoJSON());
+    };
+    mapRecordsContext.setLeafletEditableHandlers({
+      ...mapRecordsContext.leafletEditableHandlers,
+      onEndDrawing: getGeoOnDrawCommit
+    });
+    mapRecordsContext.editRef.current.startPolyline();
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const stopShape = (mapRecordsContext) => {
+  console.log('stopping shape');
   mapRecordsContext.editRef.current.clearAll();
   return true;
 };
-
-const PolygonOnDrawCommit = (e, m) => {};
