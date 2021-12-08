@@ -61,7 +61,6 @@ select
     )
   ) "Area"
 from
-  -- code c, -- The complete invasives code table
   /**
     This is where the action is!!!
     Run an outer join on the intersection of PMPs and Activities.
@@ -81,21 +80,10 @@ where
   -- Only records within a year of today
   p.activity_subtype = 'Activity_Treatment_ChemicalPlant' and
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
-  -- p.species = c.code_name and -- Match code to species
   array_length(p.activity_ids,1) > 0 -- ignore records without shapes
-  -- c.code_header_id = ( -- Best way to look up the plant code
-  --   select
-  --     code_header_id
-  --   from
-  --     code_header
-  --   where
-  --     code_header_name = 'invasive_plant_code' or
-  --     code_header_name = 'chemical_method_code'
-  -- )
   and pest_management_plan_areas.pmp_name = 'PMP - South Coast' -- For testing
   -- [[and {{pmp_name}}]] -- This is for metabase
 group by
-  -- c.code_description,
   p.species,
   p.activity_ids,
   p.method,
