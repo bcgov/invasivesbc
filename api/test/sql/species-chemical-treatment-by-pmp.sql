@@ -19,13 +19,13 @@ with species_codes as (
       where
         code_header_name = 'invasive_plant_code'
     )
-)
+),
 
 /**
   Select all chemical treatment IDs
   with their descriptions
 */
-with chemical_codes as (
+chemical_codes as (
   select
     code_name,
     code_description
@@ -38,7 +38,8 @@ with chemical_codes as (
       from
         code_header
       where
-        code_header_name = 'chemical_method_code'
+        code_header_name = 'herbicide_type_code'
+        -- code_header_name = 'chemical_method_code'
     )
 )
 
@@ -47,10 +48,11 @@ with chemical_codes as (
 */
 select
   -- TODO: Add the sp and descriptions here
-  species_codes.code_description "Species"
-  p.species "Species", -- Species name
-  p.activity_ids "IDs", -- Change this
-  p.method,
+  species_codes.code_description "Species",
+  chemical_codes.code_description "Herbicide Type",
+  -- p.species "Species", -- Species name
+  -- p.activity_ids "IDs", -- Change this
+  -- p.method,
   /**
     If shape is within a boundary.. copy it.
     Otherwise the shape is straddling the PMP border
@@ -87,6 +89,8 @@ from
     be sent to the above case statement for the decision as to copy
     or clip. Otherwise the treatment just gets copied over.:
   */
+  chemical_codes,
+  species_codes,
   public.treatments_by_species p join
   public.pest_management_plan_areas on
   public.st_intersects(
@@ -97,14 +101,17 @@ from
   )
 where
   -- TODO: Where ids match
-  -- Only records within a year of today
   species_codes.code_name = p.species and
+  chemical_codes.code_name = p.method and
   p.activity_subtype = 'Activity_Treatment_ChemicalPlant' and
+  -- Only records within a year of today
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   array_length(p.activity_ids,1) > 0 -- ignore records without shapes
   and pest_management_plan_areas.pmp_name = 'PMP - South Coast' -- For testing
   -- [[and {{pmp_name}}]] -- This is for metabase
 group by
+  species_codes.code_description,
+  chemical_codes.code_description,
   p.species,
   p.activity_ids,
   p.method,
