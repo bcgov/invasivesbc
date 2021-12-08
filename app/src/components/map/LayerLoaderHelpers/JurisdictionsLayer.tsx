@@ -52,12 +52,6 @@ export const JurisdictionsLayer = (props) => {
     setJurisdictions({ type: 'FeatureCollection', features: jurisdictionsFeatureArray });
   };
 
-  useEffect(() => {
-    if (jurisdictions) {
-      console.log('jurisdictions', jurisdictions);
-    }
-  }, [jurisdictions]);
-
   return (
     <>
       {

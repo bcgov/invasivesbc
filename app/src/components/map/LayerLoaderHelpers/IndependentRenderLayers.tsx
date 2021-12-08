@@ -6,9 +6,9 @@ import { PoisLayer } from './PoisLayer';
 import { RISOLayer } from './RISOLayer';
 
 export enum IndependentLayers {
-  Activities = 'activities',
-  Iapp = 'iapp',
-  InvasivesBC = 'invasivesbc',
+  Activities = 'LEAN_ACTIVITIES',
+  Iapp = 'LEAN_POI',
+  InvasivesBC = 'INVASIVESBC',
   Other = 'other'
 }
 
@@ -17,7 +17,7 @@ export const IndependentLayer = (props) => {
 
   if (Object.values(IndependentLayers).includes(props.source)) {
     switch (props.source) {
-      case 'activities':
+      case 'LEAN_ACTIVITIES':
         return (
           <ActivitiesLayer
             layer_code={props.layer_code}
@@ -27,7 +27,7 @@ export const IndependentLayer = (props) => {
             zIndex={props.zIndex}
           />
         );
-      case 'iapp':
+      case 'LEAN_POI':
         return (
           <PoisLayer
             color_code={props.color_code}
@@ -36,7 +36,7 @@ export const IndependentLayer = (props) => {
             zIndex={props.zIndex}
           />
         );
-      case 'invasivesbc':
+      case 'INVASIVESBC':
         if (props.layer_code === 'JURISDICTION_LAYER') {
           return (
             <JurisdictionsLayer
@@ -50,7 +50,7 @@ export const IndependentLayer = (props) => {
         if (props.layer_code === 'RISO_BOUNDARIES') {
           return (
             <RISOLayer
-              color_code={props.layer_code}
+              color_code={props.color_code}
               online={networkContext.connected}
               opacity={props.opacity}
               zIndex={props.zIndex}

@@ -34,7 +34,6 @@ interface IChildLayer {
   layer_code?: string;
   color_code?: string;
   order?: number;
-  bcgw_code?: string;
   opacity?: number;
   zIndex?: number;
   loaded?: number;

@@ -3,7 +3,7 @@ export const layersJSON = (networkContext: any) => {
     {
       id: 'invasivesbc_records',
       name: 'INVASIVESBC Records',
-      source: 'activities',
+      source: 'LEAN_ACTIVITIES',
       order: 0,
       zIndex: 6000,
       loaded: 70,
@@ -12,7 +12,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'terrestrial_observations',
           name: 'Terrestrial Observations',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'TERRESTRIAL_OBSERVATIONS',
           color_code: '#000',
@@ -25,7 +25,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'aquatic_observations',
           name: 'Aquatic Abservations',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'AQUATIC_OBSERVATIONS',
           color_code: '#000',
@@ -38,7 +38,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'terrestrial_chemical_treatment',
           name: 'Terrestrial Chemical Treatment',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'TERRESTRIAL_CHEMICAL_TREATMENT',
           color_code: '#000',
@@ -51,7 +51,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'aquatic_chemical_treatment',
           name: 'Aquatic Chemical Treatment',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'AQUATIC_CHEMICAL_TREATMENTS',
           color_code: '#000',
@@ -64,7 +64,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'terrestrial_mechanical_treatment',
           name: 'Terrestrial Mechanical Treatment',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'TERRESTRIAL_MECHANICAL_TREATMENT',
           color_code: '#000',
@@ -77,7 +77,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'aquatic_mechanical_treatment',
           name: 'Aquatic Mechanical Treatment',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'AQUATIC_MECHANICAL_TREATMENT',
           color_code: '#000',
@@ -90,7 +90,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'chemical_monitoring',
           name: 'Chemical Monitoring',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'CHEMICAL_MONITORING',
           color_code: '#000',
@@ -103,7 +103,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'terrestrial_monitoring',
           name: 'Terrestrial Monitoring',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'TERRESTRIAL_MONITORING',
           color_code: '#000',
@@ -116,7 +116,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'biocontrol_collection',
           name: 'Biocontrol Collection',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'BIOCONTROL_COLLECTION',
           color_code: '#000',
@@ -129,7 +129,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'biocontrol_release',
           name: 'Biocontrol Release',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'BIOCONTROL_RELEASE',
           color_code: '#000',
@@ -142,7 +142,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'biocontrol_dispersal_monitoring',
           name: 'Biocontrol Dispersal Monitoring',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'BIOCONTROL_DISPERSAL_MONITORING',
           color_code: '#000',
@@ -155,7 +155,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'biocontrol_release_monitoring',
           name: 'Biocontrol Release Monitoring',
-          source: 'activities',
+          source: 'LEAN_ACTIVITIES',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'BIOCONTROL_RELEASE_MONITORING',
           color_code: '#000',
@@ -170,7 +170,7 @@ export const layersJSON = (networkContext: any) => {
     {
       id: 'iapp_records',
       name: 'IAPP Records',
-      source: 'iapp',
+      source: 'LEAN_POI',
       order: 1,
       zIndex: 5000,
       loaded: 70,
@@ -179,7 +179,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'sites',
           name: 'Sites',
-          source: 'iapp',
+          source: 'LEAN_POI',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'SITES',
           color_code: '#000',
@@ -192,7 +192,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'surveys',
           name: 'Surveys',
-          source: 'iapp',
+          source: 'LEAN_POI',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'SURVEYS',
           color_code: '#000',
@@ -205,7 +205,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'chemical_treatment',
           name: 'Chemical Treatment',
-          source: 'iapp',
+          source: 'LEAN_POI',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'CHEMICAL_TREATMENT',
           color_code: '#000',
@@ -218,7 +218,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'mechanical_treatment',
           name: 'Mechanical Treatment',
-          source: 'iapp',
+          source: 'LEAN_POI',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'MECHANICAL_TREATMENTS',
           color_code: '#000',
@@ -231,7 +231,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'monitoring_records',
           name: 'Monitoring Records',
-          source: 'iapp',
+          source: 'LEAN_POI',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'MONITORING_RECORDS',
           color_code: '#000',
@@ -244,7 +244,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'biocontrol_release',
           name: 'Biocontrol Release',
-          source: 'iapp',
+          source: 'LEAN_POI',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'BIOCONTROL_RELEASE',
           color_code: '#000',
@@ -257,7 +257,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'biocontrol_dispersal',
           name: 'Biocontrol Dispersal',
-          source: 'iapp',
+          source: 'LEAN_POI',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'BIOCONTROL_DISPERSAL',
           color_code: '#000',
@@ -270,7 +270,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'biocontrol_monitoring',
           name: 'Biocontrol Monitoring',
-          source: 'iapp',
+          source: 'LEAN_POI',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'BIOCONTROL_MONITORING',
           color_code: '#000',
@@ -285,7 +285,7 @@ export const layersJSON = (networkContext: any) => {
     {
       id: 'administrative_boundaries',
       name: 'Administrative Boundaries',
-      source: ['databc', 'invasivesbc'],
+      source: ['DATABC', 'INVASIVESBC'],
       order: 2,
       zIndex: 4000,
       loaded: 70,
@@ -294,9 +294,9 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'regional_districts',
           name: 'Regional Districts - Legally Defined Administrative Areas of BC',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          layer_code: 'pub:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
+          layer_code: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
           color_code: '#000',
           order: 0,
           opacity: 0.4,
@@ -307,9 +307,9 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'municipality_boundaries',
           name: 'Municipality Boundaries',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          layer_code: 'pub:WHSE_TANTALIS.TA_MUNICIPALITIES_SVW',
+          layer_code: 'WHSE_TANTALIS.TA_MUNICIPALITIES_SVW',
           color_code: '#000',
           order: 1,
           opacity: 0.4,
@@ -320,9 +320,9 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'first_nations_treaty_lands',
           name: 'First Nations Treaty Lands',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          layer_code: 'pub:WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_LAND_SP',
+          layer_code: 'WHSE_LEGAL_ADMIN_BOUNDARIES.FNT_TREATY_LAND_SP',
           color_code: '#000',
           order: 2,
           opacity: 0.4,
@@ -333,7 +333,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'jurisdiction_layer',
           name: 'Jurisdiction Layer',
-          source: 'invasivesbc',
+          source: 'INVASIVESBC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'JURISDICTION_LAYER',
           color_code: '#000',
@@ -346,7 +346,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'riso_boundaries',
           name: 'RISO Boundaries',
-          source: 'invasivesbc',
+          source: 'INVASIVESBC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'RISO_BOUNDARIES',
           color_code: '#000',
@@ -361,7 +361,7 @@ export const layersJSON = (networkContext: any) => {
     {
       id: 'aquatic_layers_and_wells',
       name: 'Aquatic Layers and Wells',
-      source: 'databc',
+      source: 'DATABC',
       order: 3,
       zIndex: 3000,
       loaded: 70,
@@ -370,9 +370,9 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'bc_major_watersheds',
           name: 'BC Major Watersheds',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          layer_code: 'pub:WHSE_BASEMAPPING.BC_MAJOR_WATERSHEDS',
+          layer_code: 'WHSE_BASEMAPPING.BC_MAJOR_WATERSHEDS',
           color_code: '#000',
           order: 0,
           opacity: 0.4,
@@ -383,9 +383,9 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'freshwater_atlas_rivers',
           name: 'Freshwater Atlas Rivers',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          layer_code: 'pub:WHSE_BASEMAPPING.FWA_RIVERS_POLY',
+          layer_code: 'WHSE_BASEMAPPING.FWA_RIVERS_POLY',
           color_code: '#000',
           order: 1,
           opacity: 0.4,
@@ -396,9 +396,9 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'freshwater_lakes',
           name: 'Freshwater Lakes',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          layer_code: 'pub:WHSE_LAND_AND_NATURAL_RESOURCE.EAUBC_LAKES_SP',
+          layer_code: 'WHSE_LAND_AND_NATURAL_RESOURCE.EAUBC_LAKES_SP',
           color_code: '#000',
           order: 2,
           opacity: 0.4,
@@ -409,9 +409,9 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'freshwater_atlas_stream_network',
           name: 'Freshwater Atlas Stream Network',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          layer_code: 'pub:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
+          layer_code: 'WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
           color_code: '#000',
           order: 3,
           opacity: 0.4,
@@ -422,7 +422,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'water_licenses_drinking_water',
           name: 'Water Licenses Drinking Water',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SVW',
           color_code: '#000',
@@ -435,7 +435,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'water_rights_licenses',
           name: 'Water Rights Licenses',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV',
           color_code: '#000',
@@ -448,7 +448,7 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'water_wells',
           name: 'Water Wells',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
           layer_code: 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           color_code: '#000',
@@ -463,7 +463,7 @@ export const layersJSON = (networkContext: any) => {
     {
       id: 'terrestial_layers',
       name: 'Terrestrial Layers',
-      source: 'databc',
+      source: 'DATABC',
       order: 4,
       zIndex: 2000,
       loaded: 70,
@@ -472,9 +472,9 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'digital_road_atlas',
           name: 'Digital Road Atlas (DRA) - Master Partially-Attributed Roads',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          layer_code: 'pub:WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
+          layer_code: 'WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
           color_code: '#000',
           order: 0,
           opacity: 0.4,
@@ -485,9 +485,9 @@ export const layersJSON = (networkContext: any) => {
         {
           id: 'city_names',
           name: 'City Names',
-          source: 'databc',
+          source: 'DATABC',
           layer_mode: networkContext ? 'wms_online' : 'wfs_offline',
-          layer_code: 'pub:WHSE_BASEMAPPING.BC_MAJOR_CITIES_POINTS_500M',
+          layer_code: 'WHSE_BASEMAPPING.BC_MAJOR_CITIES_POINTS_500M',
           color_code: '#000',
           order: 1,
           opacity: 0.4,

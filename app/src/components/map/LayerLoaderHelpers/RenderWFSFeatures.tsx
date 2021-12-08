@@ -72,11 +72,7 @@ export const RenderWFSFeatures = (props: IRenderWFSFeatures) => {
     const newLayerArray = [];
     layersSelected.forEach((parentLayer: any) => {
       parentLayer.children.forEach((childLayer) => {
-        if (childLayer.layer_code) {
-          newLayerArray.push(childLayer.layer_code);
-        } else if (childLayer.bcgw_code) {
-          newLayerArray.push(childLayer.bcgw_code);
-        }
+        if (childLayer.source === 'databc') newLayerArray.push(childLayer.layer_code);
       });
     });
 

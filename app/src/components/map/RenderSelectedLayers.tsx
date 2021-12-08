@@ -19,7 +19,7 @@ export const RenderLayers = (props) => {
                   {child.source === 'databc' && (
                     <DataBCLayer
                       opacity={child.opacity}
-                      bcgw_code={child.layer_code}
+                      layer_code={child.layer_code}
                       layer_mode={child.layer_mode}
                       inputGeo={props.inputGeo}
                       setWellIdandProximity={props.setWellIdandProximity}

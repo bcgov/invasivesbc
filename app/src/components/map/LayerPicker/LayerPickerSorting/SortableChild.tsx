@@ -153,6 +153,11 @@ export const SortableChild = (props: any) => {
             <LayerModeDialog parent={props.parent} child={child} />
           </Grid>
         )}
+        {process.env.REACT_APP_REAL_NODE_ENV === 'local' && (
+          <Grid item xs={1}>
+            <LayerModeDialog parent={props.parent} child={child} />
+          </Grid>
+        )}
         {process.env.REACT_APP_REAL_NODE_ENV === '' && (
           <Grid item xs={1}>
             <LayerModeDialog parent={props.parent} child={child} />

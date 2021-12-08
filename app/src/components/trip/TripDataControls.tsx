@@ -13,7 +13,8 @@ import {
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria
 } from '../../interfaces/useInvasivesApi-interfaces';
-import { MapRequestContext } from 'contexts/MapRequestsContext';
+import { layersJSON } from 'components/map/LayerPicker/JSON/layersJSON';
+import { NetworkContext } from 'contexts/NetworkContext';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
 export const TripDataControls: React.FC<any> = (props) => {
   useStyles();
 
-  const mapLayersContext = useContext(MapRequestContext);
-  const { layersSelected } = mapLayersContext;
+  const networkContext = useContext(NetworkContext);
+  const layers = layersJSON(networkContext.connected);
 
   const invasivesApi = useInvasivesApi();
   const dataAccess = useDataAccess();
@@ -76,9 +77,11 @@ export const TripDataControls: React.FC<any> = (props) => {
   const getLayerNamesFromJSON = (geoDataJSON: any) => {
     const layerNamesArr = [];
     geoDataJSON.forEach((pLayer) => {
-      pLayer.children.forEach((cLayer) => {
-        layerNamesArr.push(cLayer.layer_code);
-      });
+      if (pLayer.children.length > 0) {
+        pLayer.children.forEach((cLayer) => {
+          layerNamesArr.push(cLayer.layer_code);
+        });
+      }
     });
     return layerNamesArr;
   };
@@ -554,7 +557,7 @@ export const TripDataControls: React.FC<any> = (props) => {
         idArr
       );
 
-      const layerNames = getLayerNamesFromJSON(layersSelected);
+      const layerNames = getLayerNamesFromJSON(layers);
       // for each layer name, do...
       for (let layerNamesIndex = 0; layerNamesIndex < layerNames.length; layerNamesIndex++) {
         let itemsPushedForLayer = 0;
@@ -642,6 +645,8 @@ export const TripDataControls: React.FC<any> = (props) => {
               } else {
                 featuresInArea = [];
               }
+              break;
+            case 'RISO':
               break;
             default:
               featuresInArea = await getDataFromDataBC(layerName, bufferedGeo);

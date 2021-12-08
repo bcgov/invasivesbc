@@ -24,63 +24,6 @@ import {
 import { updateChild } from './LayerPickerSorting/SortLayerOrder';
 import SettingsIcon from '@material-ui/icons/Settings';
 
-const getIndex = (childId, layers) => {
-  var index = -1;
-  for (var i = 0; i < layers.length; i++) {
-    if (layers[i].child_id === childId) {
-      index = i;
-      break;
-    }
-  }
-  return index;
-};
-
-export const addOrRemoveLayer = (parent, child, layers, setLayers) => {
-  var returnLayers = [];
-  if (child.enabled) {
-    var index = getIndex(child.id, layers);
-    if (index > -1) {
-      var layersCopy = [...layers];
-      layersCopy.splice(index, 1);
-      var layersBefore = [...layersCopy.slice(0, index)];
-      var layersAfter = [...layersCopy.slice(index)];
-      console.log('here', layersBefore, layersAfter);
-      setLayers([...layersBefore, ...layersAfter]);
-    }
-  } else if (!child.enabled) {
-    if (child.layer_code) {
-      returnLayers = [
-        ...layers,
-        {
-          color_code: child.color_code,
-          layer_code: child.layer_code,
-          layer_mode: null,
-          child_id: child.id,
-          opacity: child.opacity,
-          parent_order: parent.order,
-          parent_id: parent.id
-        }
-      ];
-      setLayers(returnLayers);
-    }
-    if (child.bcgw_code) {
-      returnLayers = [
-        ...layers,
-        {
-          bcgw_code: child.bcgw_code,
-          color_code: child.color_code,
-          layer_mode: child.layer_mode,
-          child_id: child.id,
-          opacity: child.opacity,
-          parent_order: parent.order,
-          parent_id: parent.id
-        }
-      ];
-      setLayers(returnLayers);
-    }
-  }
-};
-
 export const LayersSelector = ({ parent, child }) => {
   const networkContext = useContext(NetworkContext);
   const mapLayersContext = useContext(MapRequestContext);
@@ -124,7 +67,8 @@ export const LayersSelector = ({ parent, child }) => {
                 }}>
                 <FormControlLabel value="wms_online" control={<Radio />} label="WMS" />
                 <FormControlLabel value="vector_tiles_online" control={<Radio />} label="Vector Tiles" />
-                <FormControlLabel value="wfs_online" control={<Radio />} label="WFS" />
+                {/* Removed because WFS online not implemented -
+                <FormControlLabel value="wfs_online" control={<Radio />} label="WFS" />*/}
               </RadioGroup>
             </FormControl>
           )}

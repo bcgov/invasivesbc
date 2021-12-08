@@ -5,7 +5,7 @@ import { RenderWFSFeatures } from './RenderWFSFeatures';
 
 export enum LayerMode {
   WMSOnline = 'wms_online',
-  WFSOnline = 'wfs_online',
+  WFSOffline = 'wfs_offline',
   VectorTilesOffline = 'vector_tiles_offline',
   RegularFeaturesOffline = 'regular_features_offline'
 }
@@ -24,22 +24,22 @@ export const DataBCLayer = (props) => {
           opacity={props.opacity}
           format={'image/png'}
           url="http://openmaps.gov.bc.ca/geo/ows"
-          layers={props.bcgw_code}
+          layers={props.layer_code}
           zIndex={props.zIndex}
         />
       );
-    case LayerMode.WFSOnline:
+    case LayerMode.WFSOffline:
       return (
         <RenderWFSFeatures
           inputGeo={props.inputGeo}
           online={true}
           opacity={props.opacity}
-          dataBCLayerName={props.bcgw_code}
+          dataBCLayerName={props.layer_code}
           setWellIdandProximity={props.setWellIdandProximity}
         />
       );
     case LayerMode.VectorTilesOffline:
-      return <RenderVectorTilesOffline opacity={props.opacity} dataBCLayerName={props.layerName} />;
+      return <RenderVectorTilesOffline opacity={props.opacity} dataBCLayerName={props.layer_code} />;
     case LayerMode.RegularFeaturesOffline:
       //this is the regular geojson stuff
       return (
@@ -47,7 +47,7 @@ export const DataBCLayer = (props) => {
           inputGeo={props.inputGeo}
           online={false}
           opacity={props.opacity}
-          dataBCLayerName={props.layerName}
+          dataBCLayerName={props.layer_code}
           setWellIdandProximity={props.setWellIdandProximity}
         />
       );
