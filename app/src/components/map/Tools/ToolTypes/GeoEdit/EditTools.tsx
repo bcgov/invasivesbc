@@ -7,14 +7,8 @@ import L from 'leaflet';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toolStyles } from '../../Helpers/ToolStyles';
-import {
-  startCircle,
-  startPolygon,
-  startPolyline,
-  startRectangle,
-  stopShape
-} from './ReactLeafletEditableEventHandlers';
-
+import { Shape, startBasicShape, stopShape } from './ReactLeafletEditableEventHandlers';
+import PentagonIcon from '@mui/icons-material/Pentagon';
 export const DrawButtonList = (props) => {
   const divRef = useRef(null);
 
@@ -35,9 +29,15 @@ export const DrawButtonList = (props) => {
   const [inEdit, setInEdit] = useState(false);
 
   const DrawButton = (props) => {
+    const Icn = props.icon;
     return (
-      <IconButton className={toolClass.toolBtnLight} onClick={props.onClick}>
+      <IconButton
+        className={toolClass.toolBtnLight}
+        onClick={() => {
+          props.onClick();
+        }}>
         {props.label}
+        {props.icon ? <Icn /> : <></>}
       </IconButton>
     );
   };
@@ -51,7 +51,7 @@ export const DrawButtonList = (props) => {
             <DrawButton
               onClick={() => {
                 if (!inEdit) {
-                  startPolygon(mapRecordsContext);
+                  startBasicShape(mapRecordsContext, Shape.POLYGON);
                   setInEdit(true);
                 } else {
                   stopShape(mapRecordsContext);
@@ -59,26 +59,27 @@ export const DrawButtonList = (props) => {
                 }
               }}
               label={'Polygon'}
+              icon={PentagonIcon}
             />
           </>
         );
       }
     },
     {
-      label: 'square_draw',
+      label: 'rectangle_draw',
       button: (props) => {
         return (
           <DrawButton
             onClick={() => {
               if (!inEdit) {
-                startRectangle(mapRecordsContext);
+                startBasicShape(mapRecordsContext, Shape.RECTANGLE);
                 setInEdit(true);
               } else {
                 stopShape(mapRecordsContext);
                 setInEdit(false);
               }
             }}
-            label={'Square'}
+            label={'rectangle'}
           />
         );
       }
@@ -90,7 +91,7 @@ export const DrawButtonList = (props) => {
           <DrawButton
             onClick={() => {
               if (!inEdit) {
-                startCircle(mapRecordsContext);
+                startBasicShape(mapRecordsContext, Shape.CIRCLE);
                 setInEdit(true);
               } else {
                 stopShape(mapRecordsContext);
@@ -109,7 +110,7 @@ export const DrawButtonList = (props) => {
           <DrawButton
             onClick={() => {
               if (!inEdit) {
-                startPolyline(mapRecordsContext);
+                startBasicShape(mapRecordsContext, Shape.POLYLINE);
                 setInEdit(true);
               } else {
                 stopShape(mapRecordsContext);

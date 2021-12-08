@@ -15,7 +15,6 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
-import NewRecord from 'components/map/Tools/ToolTypes/Data/NewRecord';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { NetworkContext } from 'contexts/NetworkContext';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -268,7 +267,6 @@ const LandingPage: React.FC<ILandingPage> = (props) => {
         )}
       </Grid>
         */}
-      <NewRecord />
     </Container>
   );
 };
