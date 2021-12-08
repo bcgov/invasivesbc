@@ -2,33 +2,52 @@
 
 /**
   Select all species IDs
+  with their descriptions
 */
-select code_name from code where code_header_id = (
+with species_codes as (
   select
-    code_header_id
+    code_name,
+    code_description
   from
-    code_header
+    code
   where
-    code_header_name = 'invasive_plant_code'
-);
+    code_header_id = (
+      select
+        code_header_id
+      from
+        code_header
+      where
+        code_header_name = 'invasive_plant_code'
+    )
+)
 
 /**
   Select all chemical treatment IDs
+  with their descriptions
 */
-select code_name from code where code_header_id = (
+with chemical_codes as (
   select
-    code_header_id
+    code_name,
+    code_description
   from
-    code_header
+    code
   where
-    code_header_name = 'chemical_method_code'
-);
-
+    code_header_id = (
+      select
+        code_header_id
+      from
+        code_header
+      where
+        code_header_name = 'chemical_method_code'
+    )
+)
 
 /*
   Species chemical treatment by planning unit.
 */
 select
+  -- TODO: Add the sp and descriptions here
+  species_codes.code_description "Species"
   p.species "Species", -- Species name
   p.activity_ids "IDs", -- Change this
   p.method,
@@ -77,7 +96,9 @@ from
     )
   )
 where
+  -- TODO: Where ids match
   -- Only records within a year of today
+  species_codes.code_name = p.species and
   p.activity_subtype = 'Activity_Treatment_ChemicalPlant' and
   date_part('year', p.max_created_timestamp) = date_part('year', CURRENT_DATE) and
   array_length(p.activity_ids,1) > 0 -- ignore records without shapes
