@@ -183,6 +183,7 @@ export const MapRecordsContextProvider: React.FC = (props) => {
       debugObj['records'] = records;
       debugObj['selectedRecords'] = selectedRecords;
       debugObj['editref'] = editRef;
+      debugObj['geoEdited'] = currentGeoEdit;
       console.log('map records context:');
       console.dir(debugObj);
     }

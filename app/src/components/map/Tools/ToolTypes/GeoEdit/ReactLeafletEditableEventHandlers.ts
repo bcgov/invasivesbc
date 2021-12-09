@@ -11,12 +11,18 @@ export enum Shape {
 export const startBasicShape = (mapRecordsContext: IMapRecordsContext, shape: Shape) => {
   try {
     console.log('starting ' + shape);
-    const getGeoOnDrawCommit = (e, m) => {
-      mapRecordsContext.setCurrentGeoEdit(e.layer.toGeoJSON());
+    const getGeoOnDisable = (e, m) => {
+      if (shape !== Shape.CIRCLE) {
+        mapRecordsContext.setCurrentGeoEdit(e.layer.toGeoJSON());
+      } else {
+        const r = e.layer.getRadius();
+        const geo = e.layer.toGeoJSON();
+        mapRecordsContext.setCurrentGeoEdit({ ...geo, properties: { ...geo.properties, radius: r } });
+      }
     };
     mapRecordsContext.setLeafletEditableHandlers({
       ...mapRecordsContext.leafletEditableHandlers,
-      onEndDrawing: getGeoOnDrawCommit
+      onDisable: getGeoOnDisable
     });
     switch (shape) {
       case Shape.CIRCLE:
