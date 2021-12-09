@@ -15,18 +15,25 @@
   ]
 **/
 
--- Spread the species into separate records
+-- Spread the species and treatments into separate records
 drop table if exists spatial_explode;
 create table spatial_explode as
 select
   activity_incoming_data_id,
+  activity_subtype,
   created_timestamp,
   jsonb_array_elements(
     activity_payload->
       'form_data'->
       'activity_subtype_data'->
       'mechanical_plant_information'
-  ) "treatment",
+  )->>'invasive_plant_code' "species",
+  jsonb_array_elements(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'mechanical_plant_information'
+  )->>'mechanical_method_code' "method",
   geometry(geog) "geom" -- Convert to Geometry (EPSG:4326)
 from
   activity_incoming_data
@@ -40,7 +47,36 @@ where
       'activity_subtype_data'->
       'mechanical_plant_information'
   ) > 0
+
+union
+
+select
+  activity_incoming_data_id,
+  activity_subtype,
+  created_timestamp,
+  jsonb_array_elements(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'chemical_treatment_details'->
+      'invasive_plants'
+  )->>'invasive_plant_code' "species",
+  jsonb_array_elements(
+    activity_payload->
+      'form_data'->
+      'activity_subtype_data'->
+      'chemical_treatment_details'->
+      'herbicides'
+  )->>'herbicide_type_code' "method",
+  geometry(geog) "geom" -- Convert to Geometry (EPSG:4326)
+from
+  activity_incoming_data
+where
+  deleted_timestamp is null and -- Not deleted
+  activity_type = 'Treatment' and -- Treatments
+  activity_subtype = 'Activity_Treatment_ChemicalPlant'
 ;
+
 
 -- Add indexes and IDs
 drop index if exists spatial_explode_geom_gist;
@@ -53,7 +89,9 @@ alter table spatial_explode add primary key (gid);
 drop table if exists treatments_by_species;
 create table treatments_by_species as
 select
-  treatment->>'invasive_plant_code' "species",
+  species,
+  method,
+  activity_subtype,
   max(created_timestamp) "max_created_timestamp",
   array_agg(activity_incoming_data_id) "activity_ids", -- Collect original IDs 
   st_unaryUnion( -- Remove embedded linework
@@ -68,7 +106,9 @@ select
 from
   spatial_explode
 group by
-  treatment->>'invasive_plant_code'
+  species,
+  method,
+  activity_subtype
 ;
 
 drop index if exists treatments_by_species_geom_gist;
@@ -76,15 +116,3 @@ create index treatments_by_species_geom_gist on treatments_by_species using gist
 
 alter table treatments_by_species add column gid serial;
 alter table treatments_by_species add primary key (gid);
-
-
--- Temp query
--- select
---   count(created_timestamp)
--- from
---   activity_incoming_data
--- where
---   ''
--- order by
---   created_timestamp desc
--- ;
