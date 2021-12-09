@@ -1,6 +1,7 @@
 import { Box, Checkbox, Collapse, IconButton, TableCell, TableRow } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { getValue, useStyles } from '../RecordTable';
 import { getRecordTableActions } from './RecordTableAction';
 
@@ -46,6 +47,8 @@ const RecordTableRow = (props) => {
   } = props;
   const classes = useStyles();
 
+  const history = useHistory();
+
   const [actionError, setActionError] = useState(props.actionError || '');
 
   const key = row[keyField];
@@ -72,18 +75,28 @@ const RecordTableRow = (props) => {
         aria-checked={isSelected}
         tabIndex={-1}
         selected={isSelected}
-        onClick={toggleExpanded}>
-        {(enableSelection || pageHasDropdown) && (
-          <TableCell padding="checkbox" className={classes.cell}>
-            {enableSelection && (
-              <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
+        onClick={() => {
+          if (!row.point_of_interest_id) {
+            toggleExpanded();
+          } else {
+            history.push(`/home/iapp/${row.point_of_interest_id as string}`);
+          }
+        }}>
+        {!row.point_of_interest_id && (
+          <>
+            {(enableSelection || pageHasDropdown) && (
+              <TableCell padding="checkbox" className={classes.cell}>
+                {enableSelection && (
+                  <Checkbox checked={isSelected} onClick={toggleSelected} inputProps={{ 'aria-labelledby': labelId }} />
+                )}
+                {pageHasDropdown && (
+                  <IconButton aria-label="expand row" size="small">
+                    {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
+                  </IconButton>
+                )}
+              </TableCell>
             )}
-            {pageHasDropdown && (
-              <IconButton aria-label="expand row" size="small">
-                {(rowHasDropdown || hasOverflow) && (isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />)}
-              </IconButton>
-            )}
-          </TableCell>
+          </>
         )}
         {headers.map((header) => (
           <RecordTableCell

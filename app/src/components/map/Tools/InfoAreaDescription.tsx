@@ -144,6 +144,7 @@ export const GeneratePopup = ({ utmRows, map, lat, lng, setPoiMarker, setActivit
 
   const setPoiRowData = (poi, arrSpecies, arrJurisdictions) => {
     return {
+      point_of_interest_id: poi.point_of_interest_id.toString(),
       site_id: poi.point_of_interest_payload.form_data.point_of_interest_type_data.site_id,
       species: arrSpecies,
       jurisdictions: arrJurisdictions,

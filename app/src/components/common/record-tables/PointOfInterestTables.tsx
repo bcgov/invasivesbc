@@ -137,7 +137,6 @@ export const IAPPSitesTable: React.FC<IRecordTable> = (props) => (
     enableSelection={false}
     actions={false}
     startExpanded
-    dropdown={(row) => <IAPPSite record={row} />}
     {...props}
   />
 );

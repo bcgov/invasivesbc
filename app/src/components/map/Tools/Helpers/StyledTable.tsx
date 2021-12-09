@@ -69,8 +69,7 @@ const CreateTableFooter = ({ records, rowsPerPage, page, handleChangePage, handl
 
 const getPlantName = (subtype, invasivePlantCode, response) => {
   try {
-    if (subtype === 'Terrestrial Invasive Plant Chemical Treatment')
-      subtype = subtype.substring(0, subtype.length - 1);
+    if (subtype === 'Terrestrial Invasive Plant Chemical Treatment') subtype = subtype.substring(0, subtype.length - 1);
     var plantType;
     switch (subtype) {
       case 'Plant Terrestrial':
@@ -425,6 +424,7 @@ export const RenderTableDataBC = ({ rows }) => {
 export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+  const history = useHistory();
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage);
 
@@ -450,15 +450,17 @@ export const RenderTablePOI = ({ map, rows, setPoiMarker }) => {
                 <StyledTableCell component="th" scope="row">
                   <a
                     onClick={() => {
-                      if (row.geometry)
-                        map.flyTo(
-                          [row.geometry[0].geometry.coordinates[1], row.geometry[0].geometry.coordinates[0]],
-                          17
-                        );
-                      setPoiMarker({
-                        geometry: row.geometry[0],
-                        species: row.species
-                      });
+                      // removed for now:
+                      // if (row.geometry)
+                      //   map.flyTo(
+                      //     [row.geometry[0].geometry.coordinates[1], row.geometry[0].geometry.coordinates[0]],
+                      //     17
+                      //   );
+                      // setPoiMarker({
+                      //   geometry: row.geometry[0],
+                      //   species: row.species
+                      // });
+                      history.push(`/home/iapp/${row.point_of_interest_id as string}`);
                     }}>
                     {row.site_id}
                   </a>
