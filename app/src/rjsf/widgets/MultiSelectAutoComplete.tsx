@@ -33,9 +33,12 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
   };
 
   let optionArr: any[] = [];
-  enumOptions.forEach(({ value, label }) => {
-    optionArr.push({ label: label, value: value, color: themeType ? '#FFF' : '#000' });
-  });
+
+  if (enumOptions) {
+    enumOptions.forEach(({ value, label }) => {
+      optionArr.push({ label: label, value: value, color: themeType ? '#FFF' : '#000' });
+    });
+  }
 
   const colourStyles = {
     container: (styles) => ({

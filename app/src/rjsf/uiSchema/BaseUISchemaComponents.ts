@@ -1707,7 +1707,7 @@ const Activity_AnimalAquatic = {
   Dispersal
 */
 
-const Monitoring_BiologicalDispersal = {
+const Monitoring_BiocontrolDispersal_TerrestrialPlant = {
   'monitoring_organization': {},
   'biological_agent_presence_code': {
     'ui:widget': 'multi-select-autocomplete'
@@ -1965,7 +1965,7 @@ const Monitoring_Biocontrol = {
 
 
 
-const Monitoring_BiologicalTerrestrialPlant = {
+const Monitoring_BiocontrolRelease_TerrestrialPlant = {
   'invasive_plant_code':{},
   'plant_count': {},
   'agent_count': {},
@@ -1978,6 +1978,12 @@ const Monitoring_BiologicalTerrestrialPlant = {
     'ui:readonly': true
   },
   'foliar_feeding_damage_ind': {},
+  'biological_agent_presence_code':{    
+    'ui:widget': 'multi-select-autocomplete'
+  },
+  'bio_agent_location_code':{
+        'ui:widget': 'multi-select-autocomplete'
+  },
   'root_feeding_damage_ind': {},
   'oviposition_marks_ind': {},
   'eggs_present_ind': {},
@@ -1988,11 +1994,13 @@ const Monitoring_BiologicalTerrestrialPlant = {
   'biological_agent_spread': {},
   'ui:order':[
     'invasive_plant_code',
+    'biological_agent_presence_code',
     'biological_agent_code',
     'monitoring_type', 
     'monitoring_method',
     'biological_agent_stages',
     'total_bio_agent_quantity',
+    'bio_agent_location_code',
     'plant_count',
     'agent_count',
     'count_duration',
@@ -2188,6 +2196,32 @@ const FREP_FormC = {
   }
 };
 
+const Target_Plant_Phenology = {
+  Target_Plant_Phenology_Array: {
+    Target_Plant_Phenology_Item: {
+      phenology_details_recorded : {},
+      winter_dormant: {},
+      seedlings: {},
+      rosettes: {},
+      bolts: {},
+      flowering: {},
+      seeds_forming: {},
+      senescent: {},
+      target_plant_height : {},
+      'ui:order':['phenology_details_recorded','winter_dormant','seedlings','rosettes','bolts','flowering','seeds_forming','senescent','target_plant_height']
+    }
+  }
+};
+
+const Spread_Results = {
+  spread_details_recorded: {},
+  agent_density: {},
+  plant_attack: {},
+  max_spread_distance: {},
+  max_spread_aspect: {},
+  "ui:order":['spread_details_recorded','agent_density','plant_attack','max_spread_distance','max_spread_aspect']
+};
+
 /*
   Export
 */
@@ -2201,7 +2235,7 @@ const BaseUISchemaComponents = {
   Transect_FireMonitoring,
   Transect_Vegetation,
   Transect_BiocontrolEfficacy,
-  Monitoring_BiologicalDispersal,
+  
   Monitoring_ChemicalAnimalTerrestrial,
   Monitoring_MechanicalAnimalTerrestrial,
   Treatment,
@@ -2215,7 +2249,8 @@ const BaseUISchemaComponents = {
   Treatment_ChemicalAnimalTerrestrial,
   Monitoring,
   Monitoring_Biocontrol,
-  Monitoring_BiologicalTerrestrialPlant,
+  Monitoring_BiocontrolRelease_TerrestrialPlant,
+  Monitoring_BiocontrolDispersal_TerrestrialPlant,
   Collection,
   Collection_BioControll,
   ProjectCode,
@@ -2226,6 +2261,9 @@ const BaseUISchemaComponents = {
   TwoColumnStyle,
   Jurisdictions,
   Weather_Conditions,
+  Target_Plant_Phenology,
+  Spread_Results,
+  Microsite_Conditions,
   FREP,
   FREP_FormA,
   FREP_FormB,
