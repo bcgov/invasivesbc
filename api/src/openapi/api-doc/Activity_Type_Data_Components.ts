@@ -1,0 +1,94 @@
+import { Persons } from './Components/General_Sub_Forms';
+
+export const Observation = {
+  title: 'Observation Information',
+  type: 'object',
+  required: ['observation_type_code', 'observation_persons'],
+  properties: {
+    pre_treatment_observation: {
+      title: 'Pre-treatment Observation',
+      type: 'string',
+      enum: ['Yes', 'No', 'Unknown'],
+      default: 'Unknown',
+      'x-tooltip-text': 'Choose yes if this observation was completed directly before a treatment'
+    },
+    observation_type_code: {
+      type: 'string',
+      title: 'Type',
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'observation_type_code',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
+      default: 'CU',
+      'x-tooltip-text': 'Choose type of observation from dropdown'
+    },
+    observation_persons: {
+      type: 'array',
+      default: [{}],
+      minItems: 1,
+      title: 'Observation Person(s)',
+      items: {
+        ...Persons
+      },
+      'x-tooltip-text': 'Name of person(s) doing the observation'
+    }
+  }
+};
+
+export const Monitoring = {
+  title: 'Monitoring Information',
+  type: 'object',
+  required: ['linked_id', 'observer_first_name', 'observer_last_name'],
+  properties: {
+    linked_id: {
+      type: 'string',
+      title: 'Linked Treatment ID',
+      'x-tooltip-text': 'Identifier of linked treatment record'
+    },
+    observer_first_name: {
+      type: 'string',
+      title: 'First Name'
+    },
+    observer_last_name: {
+      type: 'string',
+      title: 'Last Name'
+    }
+  }
+};
+
+export const Treatment = {
+  title: 'Treatment Information',
+  type: 'object',
+  required: ['treatment_persons'],
+  properties: {
+    treatment_persons: {
+      type: 'array',
+      default: [{}],
+      title: 'Treatment Person(s)',
+      items: {
+        ...Persons
+      },
+      'x-tooltip-text': 'Name of person(s) doing treatment'
+    }
+  }
+};
+
+export const Collection = {
+  title: 'Collection Information',
+  type: 'object',
+  required: ['collection_persons'],
+  properties: {
+    collection_persons: {
+      type: 'array',
+      default: [{}],
+      title: 'Name(s) of Person(s) doing the collection',
+      items: {
+        ...Persons
+      },
+      'x-tooltip-text': 'Name of person(s) doing the observation'
+    }
+  }
+};

@@ -20,7 +20,7 @@ export enum ActivitySubtype {
   Activity_AnimalTerrestrial = 'Activity_AnimalActivity_AnimalTerrestrial',
   Activity_AnimalAquatic = 'Activity_AnimalActivity_AnimalAquatic',
 
-  Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlant',
+  Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlantTerrestrial',
   Treatment_ChemicalPlant_BulkEdit = 'Activity_Treatment_ChemicalPlant_BulkEdit',
   Treatment_ChemicalPlantAquatic = 'Activity_Treatment_ChemicalPlantAquatic',
   Treatment_MechanicalPlant = 'Activity_Treatment_MechanicalPlant',
@@ -33,8 +33,8 @@ export enum ActivitySubtype {
 
   Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
   Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-  Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiologicalTerrestrialPlant',
-  Monitoring_BiologicalDispersal = 'Activity_Monitoring_BiologicalDispersal',
+  Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
+  Monitoring_BiologicalDispersal = 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
   Monitoring_ChemicalAnimalTerrestrial = 'Activity_Monitoring_ChemicalAnimalTerrestrial',
   Monitoring_MechanicalAnimalTerrestrial = 'Activity_Monitoring_MechanicalAnimalTerrestrial',
 
@@ -56,7 +56,7 @@ export enum ActivitySubtypeShortLabels {
   Activity_AnimalActivity_AnimalAquatic = 'Aquatic Animal Observation',
 
   // Treatments:
-  Activity_Treatment_ChemicalPlant = 'Terrestrial Plant Treatment - Chemical',
+  Activity_Treatment_ChemicalPlantTerrestrial = 'Terrestrial Plant Treatment - Chemical',
   Activity_Treatment_ChemicalPlantAquatic = 'Aquatic Plant Treatment - Chemical',
   Activity_Treatment_MechanicalPlant = 'Terrestrial Plant Treatment - Mechanical',
   Activity_Treatment_MechanicalPlantAquatic = 'Aquatic Invasive Plant Mechanical Treatment',
@@ -67,8 +67,8 @@ export enum ActivitySubtypeShortLabels {
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Chemical',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Mechanical',
-  Activity_Monitoring_BiologicalTerrestrialPlant = 'Biocontrol Release Monitoring',
-  Activity_Monitoring_BiologicalDispersal = 'Biocontrol Dispersal Monitoring',
+  Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = 'Biocontrol Release Monitoring',
+  Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = 'Biocontrol Dispersal Monitoring',
   Activity_Monitoring_ChemicalAnimalTerrestrial = 'Chemical animal',
   Activity_Monitoring_MechanicalAnimalTerrestrial = 'Mechanical mon',
 
@@ -97,7 +97,7 @@ export enum ActivityMonitoringLinks {
   // Monitoring:
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant = 'Activity_Treatment_ChemicalPlant',
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant = 'Activity_Treatment_MechanicalPlant',
-  Activity_Monitoring_BiologicalTerrestrialPlant = 'Activity_Treatment_BiologicalPlant',
+  Activity_Monitoring_BiologicalTerrestrialPlant = 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
   Activity_Monitoring_ChemicalAnmialTerrestrial = 'Activity_Treatment_ChemicalAnimalTerrestrial',
   Activity_Monitoring_MechanicalAnimalTerrestrial = 'Activity_Treatment_MechanicalAnimalTerrestrial',
 
@@ -124,7 +124,7 @@ export enum ActivityLetter {
   Activity_AnimalActivity_AnimalAquatic = 'AAO',
 
   // Treatments:
-  Activity_Treatment_ChemicalPlant = 'PTC',
+  Activity_Treatment_ChemicalPlantTerrestrial = 'PTC',
   Activity_Treatment_ChemicalPlant_BulkEdit = 'PTC',
   Activity_Treatment_ChemicalPlantAquatic = 'PAC',
   Activity_Treatment_MechanicalPlant = 'PTM',

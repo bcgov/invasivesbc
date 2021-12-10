@@ -338,7 +338,7 @@
           }
         }
       },
-      "Activity_Monitoring_BiologicalTerrestrialPlant": {
+      "Activity_Monitoring_BiocontrolRelease_TerrestrialPlant": {
         "type": "object",
         "properties": {
           "activity_data": {
@@ -348,11 +348,11 @@
             "$ref": "#/components/schemas/Monitoring_Biocontrol"
           },
           "activity_subtype_data": {
-            "$ref": "#/components/schemas/Monitoring_BiologicalTerrestrialPlant"
+            "$ref": "#/components/schemas/Monitoring_BiocontrolRelease_TerrestrialPlant"
           }
         }
       },
-      "Activity_Monitoring_BiologicalDispersal": {
+      "Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant": {
         "type": "object",
         "properties": {
           "activity_data": {
@@ -366,7 +366,17 @@
             ]
           },
           "activity_subtype_data": {
-            "$ref": "#/components/schemas/Monitoring_BiologicalDispersal"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Monitoring_BiologicalDispersal"
+              },
+              {
+                "$ref": "#/components/schemas/Spread_Results"
+              },
+              {
+                "$ref": "#/components/schemas/Target_Plant_Phenology"
+              }
+            ]
           }
         }
       },
@@ -1455,6 +1465,74 @@
             "items": {
               "$ref": "#/components/schemas/AquaticPlants"
             }
+          }
+        }
+      },
+      "ObservationPlantTerrestrialData": {
+        "type": "object",
+        "required": ["specific_use_code", "slope_code", "aspect_code", "research_detection_ind", "well_ind"],
+        "properties": {
+          "soil_texture_code": {
+            "type": "string",
+            "title": "Soil Texture",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "soil_texture_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Relative amount of sand, silt, clay, organic matter, and bedrock throughout the observation area"
+          },
+          "specific_use_code": {
+            "type": "string",
+            "title": "Specific Use",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "specific_use_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Notable land uses or attributes within the observation area"
+          },
+          "slope_code": {
+            "type": "string",
+            "title": "Slope",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "slope_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Exact or general slope of the land expressed as a percentage"
+          },
+          "aspect_code": {
+            "type": "string",
+            "title": "Aspect",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "aspect_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Average orientation that slope is facing within the observation area (ie; SE = southeast)"
+          },
+          "research_detection_ind": {
+            "type": "string",
+            "title": "Research Observation",
+            "enum": ["Yes", "No", "Unknown"],
+            "default": "No",
+            "x-tooltip-text": "Is this observation part of a research project? Add details in project code or comments fields"
+          },
+          "well_ind": {
+            "type": "string",
+            "title": "Visible Well Nearby",
+            "enum": ["Yes", "No", "Unknown"],
+            "default": "No",
+            "x-tooltip-text": "Is there a visible well nearby? Indicate the distance from the observation in the comments"
           }
         }
       },
@@ -3660,33 +3738,6 @@
           }
         }
       },
-      "Biological_Agent_Stage": {
-        "type": "object",
-        "title": " ",
-        "properties": {
-          "biological_agent_stage_code": {
-            "type": "string",
-            "title": "Biological Agent Stage",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "biological_agent_stage_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Life stage of biocontrol agent"
-          },
-          "release_quantity": {
-            "type": "number",
-            "title": "Bioagent Quantity",
-            "minimum": 1,
-            "maximum": 100000,
-            "default": 1,
-            "x-tooltip-text": "Number of agents released (exact or approximate)"
-          }
-        },
-        "required": ["biological_agent_stage_code", "release_quantity"]
-      },
       "Monitoring": {
         "title": "Monitoring Information",
         "type": "object",
@@ -3815,7 +3866,7 @@
           },
           "biological_agent_presence_code": {
             "type": "string",
-            "title": "Biological Agent Presence",
+            "title": "Sign of Biocontrol Presence",
             "x-enum-code": {
               "x-enum-code-category-name": "invasives",
               "x-enum-code-header-name": "biological_agent_presence_code",
@@ -4028,19 +4079,14 @@
           }
         }
       },
-      "Monitoring_BiologicalTerrestrialPlant": {
+      "Monitoring_BiocontrolRelease_TerrestrialPlant_Information": {
         "title": "Biological Monitoring Information",
         "type": "object",
         "required": [
           "agent_count",
           "agent_destroyed_ind",
           "legacy_presence_ind",
-          "foliar_feeding_damage_ind",
-          "root_feeding_damage_ind",
-          "oviposition_marks_ind",
-          "eggs_present_ind",
-          "larvae_present_ind",
-          "pupae_present_ind",
+          "biological_agent_presence_code",
           "invasive_plant_code",
           "total_bio_agent_quantity",
           "adults_present_ind",
@@ -4091,6 +4137,18 @@
             },
             "x-tooltip-text": "Target invasive plant species at this location"
           },
+          "biological_agent_presence_code": {
+            "type": "string",
+            "title": "Sign of Biocontrol Presence",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_presence_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Visible state of the agent present"
+          },
           "biological_agent_code": {
             "type": "string",
             "title": "Biological Control Agent",
@@ -4133,6 +4191,17 @@
             "minimum": 0,
             "title": "Plant Count"
           },
+          "bio_agent_location_code": {
+            "type": "string",
+            "title": "Location agent(s) found",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "bio_agent_location_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            }
+          },
           "agent_count": {
             "type": "number",
             "minimum": 0,
@@ -4155,64 +4224,20 @@
             "enum": ["Yes", "No", "Unknown"],
             "default": "No",
             "x-tooltip-text": "Please indicate the presence of legacy IAPP records"
-          },
-          "foliar_feeding_damage_ind": {
-            "type": "string",
-            "title": "Foliar Feeding Damage",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate the presence of foliar feeding damage"
-          },
-          "root_feeding_damage_ind": {
-            "type": "string",
-            "title": "Root Feeding Damage",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate the presence of root feeding damage"
-          },
-          "oviposition_marks_ind": {
-            "type": "string",
-            "title": "Oviposition Marks",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate the presence of oviposition marks"
-          },
-          "eggs_present_ind": {
-            "type": "string",
-            "title": "Eggs Present",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate the presence of eggs"
-          },
-          "larvae_present_ind": {
-            "type": "string",
-            "title": "Larvae Present",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate the presence of larvae"
-          },
-          "pupae_present_ind": {
-            "type": "string",
-            "title": "Pupae Present",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate the presence of pupae"
-          },
-          "adults_present_ind": {
-            "type": "string",
-            "title": "Adults Present",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate the presence of adults"
-          },
-          "tunnels_present_ind": {
-            "type": "string",
-            "title": "Stem Tunnels Present",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Please indicate the presence of tunnels"
           }
         }
+      },
+      "Monitoring_BiocontrolRelease_TerrestrialPlant": {
+        "type": "object",
+        "allOf": [
+          { "$ref": "#/components/schemas/Monitoring_BiocontrolRelease_TerrestrialPlant_Information" },
+          {
+            "$ref": "#/components/schemas/Spread_Results"
+          },
+          {
+            "$ref": "#/components/schemas/Target_Plant_Phenology"
+          }
+        ]
       },
       "Monitoring_ChemicalAnimalTerrestrial": {
         "title": "Terrestrial Animal Chemical Monitoring",
@@ -4578,10 +4603,51 @@
           }
         }
       },
+      "Biological_Agent_Stage": {
+        "type": "object",
+        "title": " ",
+        "properties": {
+          "biological_agent_stage_code": {
+            "type": "string",
+            "title": "Biological Agent Stage",
+            "x-enum-code": {
+              "x-enum-code-category-name": "invasives",
+              "x-enum-code-header-name": "biological_agent_stage_code",
+              "x-enum-code-name": "code_name",
+              "x-enum-code-text": "code_description",
+              "x-enum-code-sort-order": "code_sort_order"
+            },
+            "x-tooltip-text": "Life stage of biocontrol agent"
+          },
+          "release_quantity": {
+            "type": "number",
+            "title": "Bioagent Quantity",
+            "minimum": 1,
+            "maximum": 100000,
+            "default": 1,
+            "x-tooltip-text": "Number of agents released (exact or approximate)"
+          }
+        },
+        "required": ["biological_agent_stage_code", "release_quantity"]
+      },
       "Weather_Conditions": {
         "type": "object",
         "title": "Weather Conditions",
-        "required": ["temperature", "wind_aspect", "cloud_cover_code", "precipitation_code", "wind_speed"],
+        "required": ["temperature", "cloud_cover_code", "precipitation_code", "wind_speed"],
+        "dependencies": {
+          "wind_speed": {
+            "oneOf": [
+              {
+                "properties": {
+                  "wind_speed": {
+                    "not": { "const": 0 }
+                  }
+                },
+                "required": ["wind_aspect"]
+              }
+            ]
+          }
+        },
         "properties": {
           "temperature": {
             "type": "number",
@@ -4630,6 +4696,158 @@
             "type": "string",
             "title": "Weather Comments",
             "x-tooltip-text": ""
+          }
+        }
+      },
+      "Target_Plant_Phenology": {
+        "title": "Target Plant Phenology",
+        "type": "object",
+        "properties": {
+          "Target_Plant_Phenology_Array": {
+            "type": "array",
+            "title": " ",
+            "default": [{}],
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/components/schemas/Target_Plant_Phenology_Item"
+            }
+          }
+        }
+      },
+      "Target_Plant_Phenology_Item": {
+        "title": " ",
+        "type": "object",
+        "properties": {
+          "phenology_details_recorded": {
+            "title": "Phenology Details Recorded",
+            "type": "boolean"
+          },
+          "target_plant_height": {
+            "title": "Target Plant Height (cm)",
+            "type": "number",
+            "minimum": 0,
+            "x-tooltip-text": "Record of height of up to 10 of the tallest plants at the location in cm"
+          }
+        },
+        "dependencies": {
+          "phenology_details_recorded": {
+            "oneOf": [
+              {
+                "properties": {
+                  "phenology_details_recorded": {
+                    "const": true
+                  },
+                  "winter_dormant": {
+                    "title": "Winter Dormant",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "seedlings": {
+                    "title": "Seedlings",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "rosettes": {
+                    "title": "Rosettes",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "bolts": {
+                    "title": "Bolts",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "flowering": {
+                    "title": "Flowering",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "seeds_forming": {
+                    "title": "Seeds Forming",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "senescent": {
+                    "title": "Senescent",
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "senescent",
+                  "seeds_forming",
+                  "flowering",
+                  "bolts",
+                  "rosettes",
+                  "seedlings",
+                  "winter_dormant"
+                ]
+              },
+              {
+                "properties": {
+                  "phenology_details_recorded": {
+                    "const": false
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "required": ["phenology_details_recorded"]
+      },
+      "Spread_Results": {
+        "title": "Spread Results",
+        "type": "object",
+        "required": ["spread_details_recorded"],
+        "properties": {
+          "spread_details_recorded": {
+            "title": "Spread Details Recorded",
+            "type": "boolean"
+          }
+        },
+        "dependencies": {
+          "spread_details_recorded": {
+            "oneOf": [
+              {
+                "properties": {
+                  "spread_details_recorded": {
+                    "const": true
+                  },
+                  "agent_density": {
+                    "title": "% Agent Density",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "x-tooltip-text": "% Agent density is: Total # agents at the site ÷ total # plants with agents) x 100"
+                  },
+                  "plant_attack": {
+                    "title": "% Plant Attack",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "x-tooltip-text": "% Attack is: Total # agents at the site ÷ total # plants with agents, x 100"
+                  },
+                  "max_spread_distance": {
+                    "title": "Max Spread Distance (m)",
+                    "type": "number",
+                    "minimum": 0,
+                    "x-tooltip-text": "Distance (m): Record the greatest distance the agent has spread over the site."
+                  },
+                  "max_spread_aspect": {
+                    "title": "Max Spread Aspect (degrees)",
+                    "type": "number",
+                    "minimum": 0,
+                    "x-tooltip-text": "Aspect (degrees): Record the direction/aspect of the greatest distance the agent has spread."
+                  }
+                },
+                "required": ["max_spread_aspect", "max_spread_distance", "plant_attack", "agent_density"]
+              },
+              {
+                "spread_details_recorded": {
+                  "const": false
+                }
+              }
+            ]
           }
         }
       },
@@ -4704,74 +4922,6 @@
             "title": "Percent Covered",
             "maximum": 100,
             "x-tooltip-text": "Percent covered by this shoreline type"
-          }
-        }
-      },
-      "ObservationPlantTerrestrialData": {
-        "type": "object",
-        "required": ["specific_use_code", "slope_code", "aspect_code", "research_detection_ind", "well_ind"],
-        "properties": {
-          "soil_texture_code": {
-            "type": "string",
-            "title": "Soil Texture",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "soil_texture_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Relative amount of sand, silt, clay, organic matter, and bedrock throughout the observation area"
-          },
-          "specific_use_code": {
-            "type": "string",
-            "title": "Specific Use",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "specific_use_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Notable land uses or attributes within the observation area"
-          },
-          "slope_code": {
-            "type": "string",
-            "title": "Slope",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "slope_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Exact or general slope of the land expressed as a percentage"
-          },
-          "aspect_code": {
-            "type": "string",
-            "title": "Aspect",
-            "x-enum-code": {
-              "x-enum-code-category-name": "invasives",
-              "x-enum-code-header-name": "aspect_code",
-              "x-enum-code-name": "code_name",
-              "x-enum-code-text": "code_description",
-              "x-enum-code-sort-order": "code_sort_order"
-            },
-            "x-tooltip-text": "Average orientation that slope is facing within the observation area (ie; SE = southeast)"
-          },
-          "research_detection_ind": {
-            "type": "string",
-            "title": "Research Observation",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Is this observation part of a research project? Add details in project code or comments fields"
-          },
-          "well_ind": {
-            "type": "string",
-            "title": "Visible Well Nearby",
-            "enum": ["Yes", "No", "Unknown"],
-            "default": "No",
-            "x-tooltip-text": "Is there a visible well nearby? Indicate the distance from the observation in the comments"
           }
         }
       },
